@@ -3,7 +3,7 @@
 /**
  * SOLR QueryBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,13 +28,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
-
 use VuFindSearch\Query\QueryGroup;
+
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * SOLR QueryBuilder.
@@ -153,7 +157,8 @@ class QueryBuilder implements QueryBuilderInterface
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             $string = $handler->preprocessQueryString($string);
-            if (!$handler->hasExtendedDismax()
+            if (
+                !$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
@@ -192,7 +197,8 @@ class QueryBuilder implements QueryBuilderInterface
             if (empty($extraParam['param']) || empty($extraParam['value'])) {
                 continue;
             }
-            if (!$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
+            if (
+                !$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
             ) {
                 continue;
             }
@@ -227,30 +233,30 @@ class QueryBuilder implements QueryBuilderInterface
             $values = reset($condition);
             $condition = key($condition);
             switch ($condition) {
-            case 'SearchTypeIn':
-                if (empty(array_intersect((array)$values, $searchTypes))) {
-                    return false;
-                }
-                break;
-            case 'AllSearchTypesIn':
-                if (array_diff($searchTypes, (array)$values)) {
-                    return false;
-                }
-                break;
-            case 'SearchTypeNotIn':
-                if (!empty(array_intersect((array)$values, $searchTypes))) {
-                    return false;
-                }
-                break;
-            case 'NoDismaxParams':
-                foreach ((array)$values as $value) {
-                    if ($this->hasDismaxParamsField($searchTypes, $value)) {
+                case 'SearchTypeIn':
+                    if (empty(array_intersect((array)$values, $searchTypes))) {
                         return false;
                     }
-                }
-                break;
-            default:
-                throw new \Exception("Unknown parameter condition: $condition");
+                    break;
+                case 'AllSearchTypesIn':
+                    if (array_diff($searchTypes, (array)$values)) {
+                        return false;
+                    }
+                    break;
+                case 'SearchTypeNotIn':
+                    if (!empty(array_intersect((array)$values, $searchTypes))) {
+                        return false;
+                    }
+                    break;
+                case 'NoDismaxParams':
+                    foreach ((array)$values as $value) {
+                        if ($this->hasDismaxParamsField($searchTypes, $value)) {
+                            return false;
+                        }
+                    }
+                    break;
+                default:
+                    throw new \Exception("Unknown parameter condition: $condition");
             }
         }
         return true;
@@ -414,9 +420,10 @@ class QueryBuilder implements QueryBuilderInterface
             // operations to determine eligibility for exact handling.
             if (isset($this->exactSpecs[$handler])) {
                 $searchString = trim($searchString);
-                if (strlen($searchString) > 1
-                    && substr($searchString, 0, 1) == '"'
-                    && substr($searchString, -1, 1) == '"'
+                if (
+                    strlen($searchString) > 1
+                    && str_starts_with($searchString, '"')
+                    && str_ends_with($searchString, '"')
                 ) {
                     return $this->exactSpecs[$handler];
                 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * PHP profiling support
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012-2017.
  * Copyright (C) The National Library of Finland 2017-2021.

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Results as feed" view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
@@ -33,6 +35,10 @@ use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\View\Helper\AbstractHelper;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function is_array;
+use function is_string;
+use function strlen;
 
 /**
  * "Results as feed" view helper
@@ -146,7 +152,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                     [
                         '%%start%%' => $results->getStartRecord(),
                         '%%end%%' => $results->getEndRecord(),
-                        '%%total%%' => $results->getResultTotal()
+                        '%%total%%' => $results->getResultTotal(),
                     ]
                 )
             )

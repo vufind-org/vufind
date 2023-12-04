@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class HierarchicalFacetHelperFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\Search\Solr;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -70,6 +72,7 @@ class HierarchicalFacetHelperFactory implements
         }
         $helper = new $requestedName();
         $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        $helper->setViewRenderer($container->get('ViewRenderer'));
         return $helper;
     }
 }

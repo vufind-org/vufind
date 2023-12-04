@@ -3,7 +3,7 @@
 /**
  * Solr fallback loader test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021, 2022.
  *
@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record\FallbackLoader;
 
 use VuFind\Record\FallbackLoader\Solr;
@@ -65,8 +66,8 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "Solr"
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'Solr'
                 && $command->getArguments()[0]->getString() ===
                 'previous_id_str_mv:"oldId"';
         };
@@ -99,6 +100,6 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $loader = new Solr($resource, $search, null);
-        $this->assertEquals(0, count($loader->load(['oldId'])));
+        $this->assertCount(0, $loader->load(['oldId']));
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for Image CAPTCHA module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -71,7 +73,7 @@ class ImageFactory implements FactoryInterface
             'font' => APPLICATION_PATH
                     . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
             'imgDir' => $container->get(\VuFind\Cache\Manager::class)
-                ->getCache('public')->getOptions()->getCacheDir()
+                ->getCache('public')->getOptions()->getCacheDir(),
         ];
 
         $config = $container->get(\VuFind\Config\PluginManager::class)

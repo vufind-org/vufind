@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Overdrive helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -27,6 +28,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -76,7 +78,7 @@ class OverdriveFactory implements FactoryInterface
         $connector = null;
         $showMyContent = $config->Overdrive->showMyContent;
         $showAdmin = $config->Overdrive->showOverdriveAdminMenu;
-        if ($showAdmin || $showMyContent != "never") {
+        if ($showAdmin || $showMyContent != 'never') {
             $connector = $container->get(
                 \VuFind\DigitalContent\OverdriveConnector::class
             );

@@ -3,7 +3,7 @@
 /**
  * Unit tests for RetrieveBatchCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -52,7 +53,7 @@ class RetrieveBatchCommandTest extends TestCase
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $ids = ["id1", "id2"];
+        $ids = ['id1', 'id2'];
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
@@ -75,7 +76,7 @@ class RetrieveBatchCommandTest extends TestCase
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $ids = ["id1", "id2"];
+        $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
             ->disableOriginalConstructor()->getMock();
@@ -106,7 +107,7 @@ class RetrieveBatchCommandTest extends TestCase
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $ids = ["id1", "id2"];
+        $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
         $expected = [$ids, $params];
         $this->assertEquals(
@@ -123,7 +124,7 @@ class RetrieveBatchCommandTest extends TestCase
     public function testgetRecordIdentifiers(): void
     {
         $backendId = 'bar';
-        $ids = ["id1", "id2"];
+        $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids);
         $this->assertEquals(
             $ids,

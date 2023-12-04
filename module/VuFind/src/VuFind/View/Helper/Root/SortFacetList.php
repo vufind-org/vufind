@@ -3,7 +3,7 @@
 /**
  * Sort facet list view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -64,7 +65,8 @@ class SortFacetList extends AbstractHelper implements
         $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
             $url = $urlHelper($searchRoute) . $results->getUrlQuery()
-                ->addFacet($field, $value['value'])->getParams();
+                ->addFacet($field, $value['value'], ($value['operator'] ?? 'AND'))
+                ->getParams();
             $facets[$url] = $value['displayText'];
         }
         $this->getSorter()->natsort($facets);

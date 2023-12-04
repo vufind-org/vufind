@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Demo (fake data) TOC content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\TOC;
 
 /**
@@ -53,7 +55,7 @@ class Demo extends \VuFind\Content\AbstractBase
         // Initialize return value:
         return [
             'Demo TOC key: ' . $key,
-            'Demo TOC ISBN: ' . $isbnObj->get13()
+            'Demo TOC ISBN: ' . $isbnObj->get13(),
         ];
     }
 }

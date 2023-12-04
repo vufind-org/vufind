@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic Syndetics content plugin factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -32,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function strlen;
 
 /**
  * Generic Syndetics content plugin factory.
@@ -72,7 +76,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
         // Special case: if the class name ends in Plus, we need to strip off
         // the "Plus" and instead configure the base Syndetics class into "plus"
         // mode.
-        $plus = substr($requestedName, -4) === 'Plus';
+        $plus = str_ends_with($requestedName, 'Plus');
         $className = $plus
             ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
 

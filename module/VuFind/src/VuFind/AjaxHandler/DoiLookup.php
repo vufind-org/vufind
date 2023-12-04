@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AJAX handler to look up DOI data.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\DoiLinker\PluginManager;
+
+use function count;
 
 /**
  * AJAX handler to look up DOI data.
@@ -138,7 +142,8 @@ class DoiLookup extends AbstractBase
                 }
                 // If all DOIs have been found and we're not in merge mode, we
                 // can short circuit out of here.
-                if ($this->multiMode !== 'merge'
+                if (
+                    $this->multiMode !== 'merge'
                     && count(array_diff($dois, array_keys($response))) == 0
                 ) {
                     break;

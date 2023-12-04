@@ -1,8 +1,9 @@
 <?php
+
 /**
  * TranslationEmpty view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\TranslationEmpty;
@@ -57,7 +59,7 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
                     'default' => [
                         'foo' => 'bar',
                         'baz' => '',
-                    ]
+                    ],
                 ]
             )
         );

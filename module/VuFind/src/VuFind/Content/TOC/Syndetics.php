@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics TOC content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\TOC;
 
 /**
@@ -47,8 +49,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'TOC' => [
             'title' => 'TOC',
             'file' => 'TOC.XML',
-            'div' => '<div id="syn_toc"></div>'
-        ]
+            'div' => '<div id="syn_toc"></div>',
+        ],
     ];
 
     /**
@@ -110,7 +112,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $toc = $sourceInfo['div'];
                 } else {
                     // Get the marc field for toc (970)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld970");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
 
                     foreach ($nodes as $node) {
                         $li = '';
@@ -118,7 +120,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         // Chapter labels.
                         $nodeList = $node->getElementsByTagName('l');
                         if ($nodeList->length > 0) {
-                            $li .= sprintf("%s. ", $nodeList->item(0)->nodeValue);
+                            $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
                         }
 
                         // Chapter title.

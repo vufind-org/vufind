@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -33,6 +35,8 @@ use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
+
+use function in_array;
 
 /**
  * Table Definition for resource
@@ -178,7 +182,7 @@ class Resource extends Gateway
                             'DISTINCT(?)',
                             ['resource.id'],
                             [Expression::TYPE_IDENTIFIER]
-                        ), Select::SQL_STAR
+                        ), Select::SQL_STAR,
                     ]
                 );
                 $s->join(
@@ -248,7 +252,8 @@ class Resource extends Gateway
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
-        if ($oldId !== $newId
+        if (
+            $oldId !== $newId
             && $resource = $this->findResource($oldId, $source, false)
         ) {
             $tableObjects = [];
@@ -300,7 +305,7 @@ class Resource extends Gateway
     {
         // Apply sorting, if necessary:
         $legalSorts = [
-            'title', 'title desc', 'author', 'author desc', 'year', 'year desc'
+            'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
         ];
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             // Strip off 'desc' to obtain the raw field name -- we'll need it

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EDS API Results
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  * Copyright (C) EBSCO Industries 2013
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\Command\SearchCommand;
@@ -81,13 +83,14 @@ class Results extends \VuFind\Search\Base\Results
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();
 
-            // Add a publication date facet
-            $this->responseFacets[] = [
-                'fieldName' => 'PublicationDate',
-                'displayName' => 'PublicationDate',
-                'displayText' => 'Publication Date',
-                'counts' => []
-            ];
+            // Add fake date facets if flagged earlier; this is necessary in order
+            // to display the date range facet control in the interface.
+            $dateFacets = $this->getParams()->getDateFacetSettings();
+            if (!empty($dateFacets)) {
+                foreach ($dateFacets as $dateFacet) {
+                    $this->responseFacets[$dateFacet] = [''];
+                }
+            }
 
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();

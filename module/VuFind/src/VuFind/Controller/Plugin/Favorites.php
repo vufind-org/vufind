@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Helper - Favorites Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use VuFind\Db\Row\User;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Favorites\FavoritesService;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Tags;
@@ -66,40 +69,26 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
     protected $tags;
 
     /**
+     * Favorites service
+     *
+     * @var FavoritesService
+     */
+    protected $favoritesService;
+
+    /**
      * Constructor
      *
-     * @param Loader $loader Record loader
-     * @param Cache  $cache  Record cache
-     * @param Tags   $tags   Tag parser
+     * @param Loader           $loader    Record loader
+     * @param Cache            $cache     Record cache
+     * @param Tags             $tags      Tag parser
+     * @param FavoritesService $favorites Favorites service
      */
-    public function __construct(Loader $loader, Cache $cache, Tags $tags)
+    public function __construct(Loader $loader, Cache $cache, Tags $tags, FavoritesService $favorites)
     {
         $this->loader = $loader;
         $this->cache = $cache;
         $this->tags = $tags;
-    }
-
-    /**
-     * Support method for saveBulk() -- get list to save records into. Either
-     * retrieves existing list or creates a new one.
-     *
-     * @param mixed $listId List ID to load (or empty/'NEW' to create new list)
-     * @param User  $user   User object.
-     *
-     * @return \VuFind\Db\Row\UserList
-     */
-    protected function getList($listId, User $user)
-    {
-        $table = $this->getController()->getTable('UserList');
-        if (empty($listId) || $listId == 'NEW') {
-            $list = $table->getNew($user);
-            $list->title = $this->getController()->translate('My Favorites');
-            $list->save($user);
-        } else {
-            $list = $table->getExisting($listId);
-            $list->rememberLastUsed(); // handled by save() in other case
-        }
-        return $list;
+        $this->favoritesService = $favorites;
     }
 
     /**
@@ -148,7 +137,7 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         }
 
         // Load helper objects needed for the saving process:
-        $list = $this->getList($params['list'] ?? '', $user);
+        $list = $this->favoritesService->getListObject($params['list'] ?? '', $user);
         $this->cache->setContext(Cache::CONTEXT_FAVORITE);
 
         $cacheRecordIds = [];   // list of record IDs to save to cache

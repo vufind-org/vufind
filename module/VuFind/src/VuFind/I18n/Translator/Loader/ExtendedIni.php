@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Translate Adapter ExtendedIni
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\I18n\Translator\Loader;
 
 use Laminas\I18n\Exception\InvalidArgumentException;
@@ -115,6 +117,10 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
+        if ($locale == 'debug') {
+            return null;
+        }
+
         // Reset the loaded files list:
         $this->resetLoadedFiles();
 

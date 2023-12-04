@@ -3,9 +3,9 @@
 /**
  * Trait for tests involving Laminas Translator.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 /**
@@ -52,9 +53,13 @@ trait TranslatorTrait
             return $translations[$domain][$str] ?? $str;
         };
         $translator
-            = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
+            = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
+                ->addMethods(['getLocale'])
+                ->getMockForAbstractClass();
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
+        $translator->expects($this->any())->method('getLocale')
+            ->will($this->returnValue('en'));
         return $translator;
     }
 }

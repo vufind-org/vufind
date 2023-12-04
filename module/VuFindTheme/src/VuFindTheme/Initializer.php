@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Theme Initializer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Laminas\Config\Config;
@@ -129,7 +131,7 @@ class Initializer
             $this->serviceManager = $eventOrContainer;
         } else {
             throw new \Exception(
-                'Illegal type for $eventOrContainer: ' . get_class($eventOrContainer)
+                'Illegal type for $eventOrContainer: ' . $eventOrContainer::class
             );
         }
 
@@ -146,7 +148,7 @@ class Initializer
     }
 
     /**
-     * Initialize the theme.  This needs to be triggered as part of the dispatch
+     * Initialize the theme. This needs to be triggered as part of the dispatch
      * event.
      *
      * @throws \Exception
@@ -232,14 +234,16 @@ class Initializer
         }
 
         // Do we have a non-standard selection?
-        if ($selectedUI != 'standard'
+        if (
+            $selectedUI != 'standard'
             && isset($this->config->alternate_themes)
         ) {
             // Check the alternate theme settings for a match:
             $parts = explode(',', $this->config->alternate_themes);
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
-                if ((trim($subparts[0]) == trim($selectedUI))
+                if (
+                    (trim($subparts[0]) == trim($selectedUI))
                     && isset($subparts[1]) && !empty($subparts[1])
                 ) {
                     return $subparts[1];
@@ -270,7 +274,7 @@ class Initializer
     }
 
     /**
-     * Return an array of information about user-selectable themes.  Each entry in
+     * Return an array of information about user-selectable themes. Each entry in
      * the array is an associative array with 'name', 'desc' and 'selected' keys.
      *
      * @return array
@@ -288,7 +292,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($this->cookieManager->get('ui') == $name)
+                        'selected' => ($this->cookieManager->get('ui') == $name),
                     ];
                 }
             }
@@ -431,7 +435,7 @@ class Initializer
                 // note of it:
                 $logger = $this->serviceManager->get(\VuFind\Log\Logger::class);
                 $logger->debug(
-                    'Problem loading cache: ' . get_class($e) . ' exception: '
+                    'Problem loading cache: ' . $e::class . ' exception: '
                     . $e->getMessage()
                 );
             }

@@ -3,7 +3,7 @@
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,12 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
 use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\WorkKeysQuery;
+
+use function array_key_exists;
+use function call_user_func;
+use function count;
 
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
@@ -68,7 +74,7 @@ abstract class QueryAdapter
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
                 $operator,
-                array_map(['self', 'deminify'], $search['g'])
+                array_map(self::class . '::deminify', $search['g'])
             );
         } else {
             // Special case: The outer-most group-of-groups.
@@ -76,7 +82,7 @@ abstract class QueryAdapter
                 $operator = $search[0]['j'];
                 return new QueryGroup(
                     $operator,
-                    array_map(['self', 'deminify'], $search)
+                    array_map(self::class . '::deminify', $search)
                 );
             } else {
                 // Simple query
@@ -99,6 +105,11 @@ abstract class QueryAdapter
         // Simple case -- basic query:
         if ($query instanceof Query) {
             return $query->getString();
+        }
+
+        // Work keys query:
+        if ($query instanceof WorkKeysQuery) {
+            return $query->getId() ?? '';
         }
 
         // Complex case -- advanced query:
@@ -133,11 +144,11 @@ abstract class QueryAdapter
                             = call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
                 // Is this an exclusion (NOT) group or a normal group?
-                $str = join(
+                $str = implode(
                     ' ' . call_user_func($translate, $search->getOperator())
                     . ' ',
                     $thisGroup
@@ -148,18 +159,18 @@ abstract class QueryAdapter
                     $groups[] = $str;
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
 
         // Base 'advanced' query
         $operator = call_user_func($translate, $query->getOperator());
-        $output = '(' . join(') ' . $operator . ' (', $groups) . ')';
+        $output = '(' . implode(') ' . $operator . ' (', $groups) . ')';
 
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' . call_user_func($translate, 'NOT') . ' (('
-                . join(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
+                . implode(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
                 . '))';
         }
 
@@ -186,20 +197,21 @@ abstract class QueryAdapter
             $groupId = $matches[1];
             $group = [];
             $lastBool = null;
+            $value = (array)$value;
 
             // Loop through each term inside the group
             for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get("type$groupId");
+                    $typeArr = (array)$request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get("op$groupId");
+                    $opArr = (array)$request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get("bool$groupId");
+                    $boolArr = (array)$request->get("bool$groupId");
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
@@ -232,8 +244,8 @@ abstract class QueryAdapter
             return [
                 [
                     'l' => $query->getString(),
-                    'i' => $query->getHandler()
-                ]
+                    'i' => $query->getHandler(),
+                ],
             ];
         }
 
@@ -244,7 +256,7 @@ abstract class QueryAdapter
             if ($topLevel) {
                 $retVal[] = [
                     'g' => self::minify($current, false),
-                    'j' => $operator
+                    'j' => $operator,
                 ];
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');
@@ -252,7 +264,7 @@ abstract class QueryAdapter
                 $currentArr = [
                     'f' => $current->getHandler(),
                     'l' => $current->getString(),
-                    'b' => $operator
+                    'b' => $operator,
                 ];
                 if (null !== ($op = $current->getOperator())) {
                     // Some search forms omit the operator for the first element;

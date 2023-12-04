@@ -3,7 +3,7 @@
 /**
  * Solr Prefix Autocomplete Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -26,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
+
 namespace VuFind\Autocomplete;
+
+use function is_object;
 
 /**
  * Solr autocomplete module with prefix queries using edge N-gram filter
@@ -154,7 +157,7 @@ class SolrPrefix implements AutocompleteInterface
     protected function mungeQuery($query)
     {
         $forbidden = [':', '(', ')', '*', '+', '"'];
-        return str_replace($forbidden, " ", $query);
+        return str_replace($forbidden, ' ', $query);
     }
 
     /**

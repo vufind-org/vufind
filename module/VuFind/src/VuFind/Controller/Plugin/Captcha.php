@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Helper - Captcha handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -26,10 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function in_array;
 
 /**
  * Action helper to manage Captcha fields

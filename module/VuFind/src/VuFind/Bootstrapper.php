@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Bootstrapper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind;
 
 use Laminas\Mvc\MvcEvent;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
+
+use function is_callable;
 
 /**
  * VuFind Bootstrapper
@@ -96,7 +100,7 @@ class Bootstrapper
         // automatically call all methods starting with "init":
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
-            if (substr($method, 0, 4) == 'init') {
+            if (str_starts_with($method, 'init')) {
                 $this->$method();
             }
         }
@@ -156,7 +160,7 @@ class Bootstrapper
             [
                 "{$this->config->Site->locale}.UTF8",
                 "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale
+                $this->config->Site->locale,
             ]
         );
         date_default_timezone_set($this->config->Site->timezone);
@@ -215,7 +219,8 @@ class Bootstrapper
         $settings = $this->container->get(LocaleSettings::class);
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
-        if (($user = $authManager->isLoggedIn())
+        if (
+            ($user = $authManager->isLoggedIn())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind;
+
+use function array_key_exists;
 
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
@@ -84,10 +88,10 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
      * @var array
      */
     protected $allowedFileExtensions = [
-        "gif" => "image/gif",
-        "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
-        "png" => "image/png",
-        "tiff" => "image/tiff", "tif" => "image/tiff"
+        'gif' => 'image/gif',
+        'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'tiff' => 'image/tiff', 'tif' => 'image/tiff',
     ];
 
     /**
@@ -173,7 +177,8 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         $noCoverImage = $this->searchTheme($this->configuredFailImage);
 
         // If file is blank/inaccessible, log error and display default:
-        if (empty($noCoverImage) || !file_exists($noCoverImage)
+        if (
+            empty($noCoverImage) || !file_exists($noCoverImage)
             || !is_readable($noCoverImage)
         ) {
             $this->debug("Cannot access '{$this->configuredFailImage}'");

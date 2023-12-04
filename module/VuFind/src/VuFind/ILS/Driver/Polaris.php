@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Polaris ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,9 +25,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function intval;
+use function strlen;
 
 /**
  * VuFind Connector for Polaris
@@ -125,14 +131,14 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function makeRequest(
         $api_query,
-        $http_method = "GET",
-        $patronpassword = "",
+        $http_method = 'GET',
+        $patronpassword = '',
         $json = false
     ) {
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
         date_default_timezone_set('GMT');
-        $date = date("D, d M Y H:i:s T");
+        $date = date('D, d M Y H:i:s T');
         date_default_timezone_set($site_config_TZ);
 
         $url = $this->ws_host . $this->ws_app . $api_query;
@@ -144,10 +150,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $auth_token = "PWS {$this->ws_api_id}:$signature";
         $http_headers = [
-            "Content-type: application/json",
-            "Accept: application/json",
+            'Content-type: application/json',
+            'Accept: application/json',
             "PolarisDate: $date",
-            "Authorization: $auth_token"
+            "Authorization: $auth_token",
         ];
 
         try {
@@ -163,7 +169,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // httpService doesn't explicitly support PUT, so add this:
             if ($http_method == 'PUT') {
-                $http_headers[] = "Content-Length: " . strlen($json_data);
+                $http_headers[] = 'Content-Length: ' . strlen($json_data);
             }
             $client->setHeaders($http_headers);
             $client->setMethod($http_method);
@@ -191,7 +197,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
         if (count($matches) > 0) {
             $matchestmp = intval($matches[1] / 1000);
-            $date = date("n-j-Y", $matchestmp);
+            $date = date('n-j-Y', $matchestmp);
         } else {
             $date = 'n/a';
         }
@@ -213,7 +219,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $unix_time = strtotime($date);
         //date_default_timezone_set($site_config_TZ);
 
-        $json_time = "/Date(" . $unix_time . "000)/";
+        $json_time = '/Date(' . $unix_time . '000)/';
         return $json_time;
     }
 
@@ -281,7 +287,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $copy_count++;
 
             $availability = 0;
-            if (($holdings_response->CircStatus == 'In')
+            if (
+                ($holdings_response->CircStatus == 'In')
                 || ($holdings_response->CircStatus == 'Just Returned')
                 || ($holdings_response->CircStatus == 'On Shelf')
                 || ($holdings_response->CircStatus == 'Available - Check shelves')
@@ -291,7 +298,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $duedate = '';
             if ($holdings_response->DueDate) {
-                $duedate = date("n-j-Y", strtotime($holdings_response->DueDate));
+                $duedate = date('n-j-Y', strtotime($holdings_response->DueDate));
             }
 
             $holding[] = [
@@ -461,10 +468,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -482,12 +489,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($this->ws_pickUpLocations as $code => $library) {
                 $locations[] = [
                     'locationID'      => $code,
-                    'locationDisplay' => $library
+                    'locationDisplay' => $library,
                 ];
             }
         } else {
             // we get them from the API
-            $response = $this->makeRequest("organizations/branch");
+            $response = $this->makeRequest('organizations/branch');
             $locations_response_array = $response->OrganizationsGetRows;
             foreach ($locations_response_array as $location_response) {
                 $locations[] = [
@@ -591,7 +598,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function patronLogin($username, $password)
     {
         // username == barcode
-        $response = $this->makeRequest("patron/$username", "GET", "$password");
+        $response = $this->makeRequest("patron/$username", 'GET', "$password");
 
         if (!$response->ValidPatron) {
             return null;
@@ -722,7 +729,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -775,7 +782,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         $result = [
             'count' => $count, 'details' => $item_response,
-            'blocks' => $item_blocks
+            'blocks' => $item_blocks,
         ];
 
         return $result;
@@ -820,7 +827,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/cancelled"
-                . "?wsid=1&userid=1",
+                . '?wsid=1&userid=1',
                 'PUT',
                 $patron['cat_password']
             );
@@ -829,13 +836,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $count++;
                 $item_response[$hold_id] = [
                 'success' => true,
-                'status'  => 'hold_cancel_success'
+                'status'  => 'hold_cancel_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_cancel_fail',
-                'sysMessage' => 'Failure calling ILS to cancel hold'
+                'sysMessage' => 'Failure calling ILS to cancel hold',
                 ];
             }
         }
@@ -978,7 +985,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $jsonrequest = [
                  'UserID' => '1',
-                 'ActivationDate' => "$jsondate"
+                 'ActivationDate' => "$jsondate",
                 ];
 
             $response = $this->makeRequest(
@@ -992,13 +999,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $count++;
                 $item_response[$hold_id] = [
                   'success' => true,
-                  'status'  => 'hold_suspend_success'
+                  'status'  => 'hold_suspend_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_suspend_fail',
-                'sysMessage' => 'Failure calling ILS to suspend hold'
+                'sysMessage' => 'Failure calling ILS to suspend hold',
                 ];
             }
         }
@@ -1037,7 +1044,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $hold_ids = $reactivateDetails['details'];
         $patron = $reactivateDetails['patron'];
 
-        $date = date("d/M/Y");
+        $date = date('d/M/Y');
         $jsondate = $this->encodeJSONTime($date);
 
         $count = 0;
@@ -1046,7 +1053,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $jsonrequest = [
                  'UserID' => '1',
-                 'ActivationDate' => "$jsondate"
+                 'ActivationDate' => "$jsondate",
                  ];
 
             $response = $this->makeRequest(
@@ -1060,13 +1067,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $count++;
                 $item_response[$hold_id] = [
                   'success' => true,
-                  'status'  => 'hold_reactivate_success'
+                  'status'  => 'hold_reactivate_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_reactivate_fail',
-                'sysMessage' => 'Failure calling ILS to reactivate hold'
+                'sysMessage' => 'Failure calling ILS to reactivate hold',
                 ];
             }
         }

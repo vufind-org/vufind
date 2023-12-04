@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for user_resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+
+use function is_array;
 
 /**
  * Table Definition for user_resource
@@ -87,7 +91,7 @@ class UserResource extends Gateway
                         'DISTINCT(?)',
                         ['user_resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR
+                    ), Select::SQL_STAR,
                 ]
             );
             $select->join(
@@ -131,7 +135,7 @@ class UserResource extends Gateway
     ) {
         $params = [
             'resource_id' => $resource_id, 'list_id' => $list_id,
-            'user_id' => $user_id
+            'user_id' => $user_id,
         ];
         $result = $this->select($params)->current();
 
@@ -150,7 +154,7 @@ class UserResource extends Gateway
     }
 
     /**
-     * Unlink rows for the specified resource.  This will also automatically remove
+     * Unlink rows for the specified resource. This will also automatically remove
      * any tags associated with the relationship.
      *
      * @param string|array $resource_id ID (or array of IDs) of resource(s) to
@@ -219,7 +223,7 @@ class UserResource extends Gateway
                     ['resource_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
-                'total' => new Expression('COUNT(*)')
+                'total' => new Expression('COUNT(*)'),
             ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -262,7 +266,7 @@ class UserResource extends Gateway
                         'MIN(?)',
                         ['id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->group(['resource_id', 'list_id', 'user_id']);

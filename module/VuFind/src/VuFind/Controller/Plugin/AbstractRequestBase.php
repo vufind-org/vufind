@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Helper - Requests Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -33,6 +35,10 @@ use Laminas\Session\SessionManager;
 use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
+
+use function count;
+use function get_class;
+use function in_array;
 
 /**
  * Action helper base class to perform request-related actions
@@ -145,7 +151,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     public function validateIds($ids): bool
     {
-        return (bool)array_diff($ids, $this->getValidIds());
+        return !(bool)array_diff($ids, $this->getValidIds());
     }
 
     /**
@@ -176,7 +182,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
 
         // Initialize gatheredDetails with any POST values we find; this will
         // allow us to repopulate the form with user-entered values if there
-        // is an error.  However, it is important that we load the POST data
+        // is an error. However, it is important that we load the POST data
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
         // values.
@@ -251,7 +257,8 @@ abstract class AbstractRequestBase extends AbstractPlugin
         if (!in_array('requestGroup', $extraHoldFields)) {
             return true;
         }
-        if (!isset($gatheredDetails['level'])
+        if (
+            !isset($gatheredDetails['level'])
             || $gatheredDetails['level'] !== 'title'
         ) {
             return true;
@@ -303,7 +310,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     ) {
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
-             ? explode(":", $checkHolds['defaultRequiredDate'])
+             ? explode(':', $checkHolds['defaultRequiredDate'])
              : [0, 1, 0];
 
         // Process special "driver" prefix and adjust default date
@@ -347,6 +354,9 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     protected function getDateFromArray($dateArray)
     {
+        if (!isset($dateArray[2])) {
+            return 0;
+        }
         [$d, $m, $y] = $dateArray;
         return mktime(
             0,

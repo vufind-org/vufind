@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Index-based generator plugin factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -32,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function is_callable;
 
 /**
  * Index-based generator plugin factory

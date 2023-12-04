@@ -1,8 +1,9 @@
 <?php
+
 /**
  * TOC Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\TOC;
@@ -59,13 +61,13 @@ class TOCTest extends \PHPUnit\Framework\TestCase
      */
     public function isActiveProvider(): array
     {
-        return ['Enabled' => ["foo", true], 'Not Enabled' => ["", false]];
+        return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
     }
 
     /**
      * Test if the tab is active.
      *
-     * @param string $toc TOC from record driver
+     * @param string $toc            TOC from record driver
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void
@@ -79,7 +81,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
             ->withConsecutive([$this->equalTo('getTOC')], [$this->equalTo('getCleanISBN')])
-            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue("bar"));
+            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue('bar'));
         $obj = new TOC();
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());

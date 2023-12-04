@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT importer support methods for sitemaps.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2010.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
+
+use function chr;
+use function is_array;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -216,7 +221,7 @@ class VuFindSitemap extends VuFind
     /**
      * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
      * This method will only work if Aperture is properly configured in the
-     * web/conf/fulltext.ini file.  Without proper configuration, this will
+     * web/conf/fulltext.ini file. Without proper configuration, this will
      * simply return an empty string.
      *
      * @param string $url URL of file to retrieve.
@@ -250,14 +255,14 @@ class VuFindSitemap extends VuFind
 
         // Use the appropriate full text parser:
         switch ($parser) {
-        case 'Aperture':
-            $fields = static::getApertureFields($htmlFile);
-            break;
-        case 'Tika':
-            $fields = static::getTikaFields($htmlFile);
-            break;
-        default:
-            throw new \Exception('Unexpected parser: ' . $parser);
+            case 'Aperture':
+                $fields = static::getApertureFields($htmlFile);
+                break;
+            case 'Tika':
+                $fields = static::getTikaFields($htmlFile);
+                break;
+            default:
+                throw new \Exception('Unexpected parser: ' . $parser);
         }
 
         // Clean up HTML file:

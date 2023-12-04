@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Content pages generator plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -25,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
 use VuFindTheme\ThemeInfo;
+
+use function in_array;
 
 /**
  * Content pages generator plugin
@@ -147,7 +151,8 @@ class ContentPages extends AbstractGeneratorPlugin
         // Check each file for language suffix and combine the files into a
         // non-language specific array
         foreach ($files as $fileInfo) {
-            if (in_array($fileInfo['relativeFile'], $this->excludedFiles)
+            if (
+                in_array($fileInfo['relativeFile'], $this->excludedFiles)
             ) {
                 continue;
             }

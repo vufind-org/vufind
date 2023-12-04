@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016-2017.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -36,6 +38,9 @@ use minSO;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Search\NormalizedSearch;
 use VuFind\Search\SearchNormalizer;
+
+use function count;
+use function is_object;
 
 /**
  * Table Definition for search
@@ -81,7 +86,7 @@ class Search extends Gateway
     {
         // Special case for PostgreSQL inserts -- we need to provide an extra
         // clue so that the database knows how to write bytea data correctly:
-        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql') {
             if (!is_object($this->featureSet)) {
                 $this->featureSet = new Feature\FeatureSet();
             }
@@ -290,6 +295,7 @@ class Search extends Gateway
                 $minified = $normalized->getMinified();
                 $minified->id = $existingRow->getSearchObject()->id;
                 $existingRow->search_object = serialize($minified);
+                $existingRow->session_id = $sessionId;
                 $existingRow->save();
             }
             // Register the appropriate search history database row with the current
@@ -303,7 +309,7 @@ class Search extends Gateway
         $this->insert(
             [
                 'created' => date('Y-m-d H:i:s'),
-                'checksum' => $normalized->getChecksum()
+                'checksum' => $normalized->getChecksum(),
             ]
         );
         $row = $this->getRowById($this->getLastInsertValue());

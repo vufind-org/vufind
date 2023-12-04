@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Horizon ILS Driver (w/ XML API support)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,9 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function in_array;
+use function is_array;
 
 /**
  * Horizon ILS Driver (w/ XML API support)
@@ -139,12 +144,12 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $itemData = [
             'id' => $row['ITEM_ID'],
-            'level' => 'item'
+            'level' => 'item',
         ];
 
         $holding = parent::processHoldingRow($id, $row, $patron);
         $holding += [
-            'addLink' => $this->checkRequestIsValid($id, $itemData, $patron)
+            'addLink' => $this->checkRequestIsValid($id, $itemData, $patron),
          ];
         return $holding;
     }
@@ -166,7 +171,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $renewData['renewable'] = ($requested == 0) ? true : false;
 
         if (!$renewData['renewable']) {
-            $renewData['message'] = "renew_item_requested";
+            $renewData['message'] = 'renew_item_requested';
         } else {
             $renewData['message'] = false;
         }
@@ -201,10 +206,10 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -220,35 +225,35 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         if ($this->wsPickUpLocations == false) {
             // Select
             $sqlSelect = [
-                    "l.location LOCATIONID",
-                    "l.name LOCATIONDISPLAY"
+                    'l.location LOCATIONID',
+                    'l.name LOCATIONDISPLAY',
             ];
 
             // From
-            $sqlFrom = ["pickup_location_sort pls"];
+            $sqlFrom = ['pickup_location_sort pls'];
 
             // Join
             $sqlJoin = [
-                    "location l on l.location = pls.pickup_location",
-                    "borrower b on b.location = pls.location",
-                    "borrower_barcode bb on bb.borrower# = b.borrower#"
+                    'location l on l.location = pls.pickup_location',
+                    'borrower b on b.location = pls.location',
+                    'borrower_barcode bb on bb.borrower# = b.borrower#',
             ];
 
             // Where
             $sqlWhere = [
-                    "pls.display = 1",
-                    "bb.bbarcode=\"" . addslashes($patron['id']) . "\""
+                    'pls.display = 1',
+                    'bb.bbarcode="' . addslashes($patron['id']) . '"',
             ];
 
             // Order by
-            $sqlOrder = ["l.name"];
+            $sqlOrder = ['l.name'];
 
             $sqlArray = [
                     'expressions' => $sqlSelect,
                     'from'        => $sqlFrom,
                     'join'        => $sqlJoin,
                     'where'       => $sqlWhere,
-                    'order'       => $sqlOrder
+                    'order'       => $sqlOrder,
             ];
 
             $sql = $this->buildSqlFromArray($sqlArray);
@@ -259,7 +264,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 foreach ($sqlStmt as $row) {
                     $pickresponse[] = [
                         'locationID'      => $row['LOCATIONID'],
-                        'locationDisplay' => $row['LOCATIONDISPLAY']
+                        'locationDisplay' => $row['LOCATIONDISPLAY'],
                     ];
                 }
             } catch (\Exception $e) {
@@ -269,7 +274,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             foreach ($this->wsPickUpLocations as $code => $library) {
                 $pickresponse[] = [
                     'locationID' => $code,
-                    'locationDisplay' => $library
+                    'locationDisplay' => $library,
                 ];
             }
         }
@@ -285,7 +290,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
@@ -295,24 +300,23 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if ($this->wsDefaultPickUpLocation == false) {
-
             // Select
-            $sqlSelect = ["b.location LOCATION"];
+            $sqlSelect = ['b.location LOCATION'];
 
             // From
-            $sqlFrom = ["borrower b"];
+            $sqlFrom = ['borrower b'];
 
             // Join
-            $sqlJoin = ["borrower_barcode bb on bb.borrower# = b.borrower#"];
+            $sqlJoin = ['borrower_barcode bb on bb.borrower# = b.borrower#'];
 
             // Where
-            $sqlWhere = ["bb.bbarcode=\"" . addslashes($patron['id']) . "\""];
+            $sqlWhere = ['bb.bbarcode="' . addslashes($patron['id']) . '"'];
 
             $sqlArray = [
                     'expressions' => $sqlSelect,
                     'from'        => $sqlFrom,
                     'join'        => $sqlJoin,
-                    'where'       => $sqlWhere
+                    'where'       => $sqlWhere,
             ];
 
             $sql = $this->buildSqlFromArray($sqlArray);
@@ -344,7 +348,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return obj  A Simple XML Object loaded with the xml data returned by the API
      */
-    protected function makeRequest($params = false, $mode = "GET")
+    protected function makeRequest($params = false, $mode = 'GET')
     {
         $queryString = [];
         // Build Url Base
@@ -354,18 +358,18 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         foreach ($params as $key => $param) {
             if (is_array($param)) {
                 foreach ($param as $sub) {
-                    $queryString[] = $key . "=" . urlencode($sub);
+                    $queryString[] = $key . '=' . urlencode($sub);
                 }
             } else {
                 // This is necessary as Horizon expects spaces to be represented by
                 // "+" rather than the url_encode "%20" for Pick Up Locations
-                $queryString[] = $key . "=" .
-                    str_replace("%20", "+", urlencode($param));
+                $queryString[] = $key . '=' .
+                    str_replace('%20', '+', urlencode($param));
             }
         }
 
         // Build Params
-        $urlParams .= "?" . implode("&", $queryString);
+        $urlParams .= '?' . implode('&', $queryString);
 
         // Create Proxy Request
         $client = $this->httpService->createClient($urlParams, $mode);
@@ -397,9 +401,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function getSession()
     {
-        $params = ["profile" => $this->wsProfile,
-                        "menu" => "account",
-                        "GetXML" => "true"
+        $params = ['profile' => $this->wsProfile,
+                        'menu' => 'account',
+                        'GetXML' => 'true',
                         ];
 
         $response = $this->makeRequest($params);
@@ -427,19 +431,19 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         // Get Session
         $session = $this->getSession();
 
-        $params = ["session" => $session,
-                        "profile" => $this->wsProfile,
-                        "menu" => "account",
-                        "sec1" => $userBarcode,
-                        "sec2" => $userPassword,
-                        "GetXML" => "true"
+        $params = ['session' => $session,
+                        'profile' => $this->wsProfile,
+                        'menu' => 'account',
+                        'sec1' => $userBarcode,
+                        'sec2' => $userPassword,
+                        'GetXML' => 'true',
                         ];
 
         $response = $this->makeRequest($params);
 
         $auth = (string)$response->security->auth;
 
-        if ($auth == "true") {
+        if ($auth == 'true') {
             return $session;
         }
 
@@ -466,21 +470,21 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         );
         if ($session) {
             $params = [
-                "session" => $session,
-                "profile" => $this->wsProfile,
-                "bibkey"  => $bibId,
-                "aspect"  => "submenu13",
-                "lang"    => "eng",
-                "menu"    => "request",
-                "submenu" => "none",
-                "source"  => "~!horizon",
-                "uri"     => "",
-                "GetXML"  => "true"
+                'session' => $session,
+                'profile' => $this->wsProfile,
+                'bibkey'  => $bibId,
+                'aspect'  => 'submenu13',
+                'lang'    => 'eng',
+                'menu'    => 'request',
+                'submenu' => 'none',
+                'source'  => '~!horizon',
+                'uri'     => '',
+                'GetXML'  => 'true',
             ];
 
             // set itemkey only if available and level is not title-level
             if ($itemData['item_id'] != '' && $itemData['level'] != 'title') {
-                $params += ["itemkey" => $itemData['item_id']];
+                $params += ['itemkey' => $itemData['item_id']];
             }
 
             $initResponse = $this->makeRequest($params);
@@ -503,11 +507,11 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function getItems($session)
     {
-        $params = ["session" => $session,
-                        "profile" => $this->wsProfile,
-                        "menu" => "account",
-                        "submenu" => "itemsout",
-                        "GetXML" => "true"
+        $params = ['session' => $session,
+                        'profile' => $this->wsProfile,
+                        'menu' => 'account',
+                        'submenu' => 'itemsout',
+                        'GetXML' => 'true',
                         ];
 
         $response = $this->makeRequest($params);
@@ -531,13 +535,13 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function renewItems($session, $items)
     {
-        $params = ["session" => $session,
-                        "profile" => $this->wsProfile,
-                        "menu" => "account",
-                        "submenu" => "itemsout",
-                        "renewitemkeys" => $items,
-                        "renewitems" => "Renew",
-                        "GetXML" => "true"
+        $params = ['session' => $session,
+                        'profile' => $this->wsProfile,
+                        'menu' => 'account',
+                        'submenu' => 'itemsout',
+                        'renewitemkeys' => $items,
+                        'renewitems' => 'Renew',
+                        'GetXML' => 'true',
                         ];
 
         $response = $this->makeRequest($params);
@@ -562,42 +566,42 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function placeRequest($session, $requestDetails)
     {
-        $params = ["session" => $session,
-                        "profile" => $this->wsProfile,
-                        "bibkey" => $requestDetails['bibId'],
-                        "aspect" => "submenu13",
-                        "lang" => "eng",
-                        "menu" => "request",
-                        "submenu" => "none",
-                        "source" => "~!horizon",
-                        "uri" => "",
-                        "GetXML" => "true"
+        $params = ['session' => $session,
+                        'profile' => $this->wsProfile,
+                        'bibkey' => $requestDetails['bibId'],
+                        'aspect' => 'submenu13',
+                        'lang' => 'eng',
+                        'menu' => 'request',
+                        'submenu' => 'none',
+                        'source' => '~!horizon',
+                        'uri' => '',
+                        'GetXML' => 'true',
                         ];
 
         // set itemkey only if available
         if ($requestDetails['itemId'] != '') {
-            $params += ["itemkey" => $requestDetails['itemId']];
+            $params += ['itemkey' => $requestDetails['itemId']];
         }
 
         $initResponse = $this->makeRequest($params);
 
         if ($initResponse->request_confirm) {
             $confirmParams = [
-                "session" => $session,
-                "profile" => $this->wsProfile,
-                "bibkey" => $requestDetails['bibId'],
-                "aspect" => "advanced",
-                "lang" => "eng",
-                "menu" => "request",
-                "submenu" => "none",
-                "source" => "~!horizon",
-                "uri" => "",
-                "link" => "direct",
-                "request_finish" => "Request",
-                "cl" => "PlaceRequestjsp",
-                "pickuplocation" => $requestDetails['pickuplocation'],
-                "notifyby" => $requestDetails['notify'],
-                "GetXML" => "true"
+                'session' => $session,
+                'profile' => $this->wsProfile,
+                'bibkey' => $requestDetails['bibId'],
+                'aspect' => 'advanced',
+                'lang' => 'eng',
+                'menu' => 'request',
+                'submenu' => 'none',
+                'source' => '~!horizon',
+                'uri' => '',
+                'link' => 'direct',
+                'request_finish' => 'Request',
+                'cl' => 'PlaceRequestjsp',
+                'pickuplocation' => $requestDetails['pickuplocation'],
+                'notifyby' => $requestDetails['notify'],
+                'GetXML' => 'true',
             ];
 
             $request = $this->makeRequest($confirmParams);
@@ -605,12 +609,12 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             if ($request->request_success) {
                 $response = [
                     'success' => true,
-                    'status' => "hold_success"
+                    'status' => 'hold_success',
                 ];
             } else {
                 $response = [
                     'success' => false,
-                    'status' => "hold_error_fail"
+                    'status' => 'hold_error_fail',
                 ];
             }
         } else {
@@ -620,8 +624,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             }
             $response = [
                 'success' => false,
-                'status' => "hold_error_fail",
-                'sysMessage' => $sysMessage
+                'status' => 'hold_error_fail',
+                'sysMessage' => $sysMessage,
             ];
         }
         return $response;
@@ -642,13 +646,13 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $responseItems = [];
 
-        $params = ["session"    => $session,
-                        "profile"    => $this->wsProfile,
-                        "lang"       => "eng",
-                        "menu"       => "account",
-                        "submenu"    => "holds",
-                        "cancelhold" => "Cancel Request",
-                        "GetXML"     => "true"
+        $params = ['session'    => $session,
+                        'profile'    => $this->wsProfile,
+                        'lang'       => 'eng',
+                        'menu'       => 'account',
+                        'submenu'    => 'holds',
+                        'cancelhold' => 'Cancel Request',
+                        'GetXML'     => 'true',
                         ];
 
         $cancelData = [];
@@ -656,7 +660,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $cancelData[] = $values['bib_id'] . ':' . $values['item_id'];
         }
 
-        $params += ["waitingholdselected" => $cancelData];
+        $params += ['waitingholdselected' => $cancelData];
 
         $response = $this->makeRequest($params);
 
@@ -678,11 +682,11 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 // If the bib id is matched, the cancel must have failed
                 if (in_array($values['bib_id'], $keys)) {
                     $responseItems[$itemID] = [
-                        'success' => false, 'status' => "hold_cancel_fail"
+                        'success' => false, 'status' => 'hold_cancel_fail',
                     ];
                 } else {
                     $responseItems[$itemID] = [
-                        'success' => true, 'status' => "hold_cancel_success",
+                        'success' => true, 'status' => 'hold_cancel_success',
 
                     ];
                     $count = $count + 1;
@@ -697,8 +701,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 $itemID = $values['item_id'];
                 $responseItems[$itemID] = [
                     'success' => false,
-                    'status' => "hold_cancel_fail",
-                    'sysMessage' => $message
+                    'status' => 'hold_cancel_fail',
+                    'sysMessage' => $message,
                 ];
             }
         }
@@ -734,7 +738,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $requestDetails = [
             'bibId'          => $bibId,
             'pickuplocation' => strtoupper($pickUpLocationID),
-            'notify'         => $notify
+            'notify'         => $notify,
         ];
 
         if ($level != 'title' && $itemId != '') {
@@ -747,7 +751,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $response = $this->placeRequest($session, $requestDetails);
         } else {
             $response = [
-                'success' => false, 'status' => "authentication_error_admin"
+                'success' => false, 'status' => 'authentication_error_admin',
             ];
         }
 
@@ -773,8 +777,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $userPassword = $cancelDetails['patron']['cat_password'];
 
         foreach ($details as $cancelItem) {
-            [$bibID, $itemID] = explode("|", $cancelItem);
-            $cancelIDs[]  = ["bib_id" =>  $bibID, "item_id" => $itemID];
+            [$bibID, $itemID] = explode('|', $cancelItem);
+            $cancelIDs[]  = ['bib_id' =>  $bibID, 'item_id' => $itemID];
         }
 
         // Register Account
@@ -783,7 +787,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $response = $this->cancelRequest($session, $cancelIDs);
         } else {
             $response = [
-                'success' => false, 'sysMessage' => "authentication_error_admin"
+                'success' => false, 'sysMessage' => 'authentication_error_admin',
             ];
         }
         return $response;
@@ -829,14 +833,14 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                     $response['details'][$ikey] = [
                         'item_id' => $ikey,
                         'new_date' =>  $dueDate,
-                        'success' => true
+                        'success' => true,
                     ];
                 } else {
                     $response['details'][$ikey] = [
                     'item_id' => $ikey,
-                    'new_date' => "",
+                    'new_date' => '',
                         'success'    => false,
-                        'sysMessage' => $renewerror
+                        'sysMessage' => $renewerror,
                     ];
                 }
             }
@@ -848,7 +852,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -871,7 +875,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             if ($origData) {
                 // Build Params
                 foreach ($renewals as $item) {
-                    [$itemID, $barcode] = explode("|", $item);
+                    [$itemID, $barcode] = explode('|', $item);
                     $renewItemKeys[] = $barcode;
                     $renewIDs[] = $itemID;
                 }
@@ -888,7 +892,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             }
         }
 
-        return ['blocks' => ["authentication_error_admin"]];
+        return ['blocks' => ['authentication_error_admin']];
     }
 
     /**
@@ -905,7 +909,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getRenewDetails($checkOutDetails)
     {
-        return $checkOutDetails['item_id'] . "|" . $checkOutDetails['barcode'];
+        return $checkOutDetails['item_id'] . '|' . $checkOutDetails['barcode'];
     }
 
     /**
@@ -925,7 +929,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
-        $cancelDetails = $holdDetails['id'] . "|" . $holdDetails['item_id'];
+        $cancelDetails = $holdDetails['id'] . '|' . $holdDetails['item_id'];
         return $cancelDetails;
     }
 }

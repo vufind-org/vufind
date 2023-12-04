@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CollectionHierarchyTree Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\CollectionHierarchyTree;
@@ -58,12 +60,12 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue('foo'));
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load->expects($this->once())->method('load')
-            ->with($this->equalTo("foo"))
+            ->with($this->equalTo('foo'))
             ->will($this->returnValue($recordDriver));
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);

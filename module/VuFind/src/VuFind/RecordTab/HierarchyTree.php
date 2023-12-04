@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HierarchyTree tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
+
+use function count;
+use function is_object;
 
 /**
  * HierarchyTree tab
@@ -144,7 +149,8 @@ class HierarchyTree extends AbstractBase
         if (is_object($hierarchyDriver)) {
             // No setting, or true setting -- use default setting:
             $settings = $hierarchyDriver->getTreeSettings();
-            if (!isset($settings['fullHierarchyRecordView'])
+            if (
+                !isset($settings['fullHierarchyRecordView'])
                 || $settings['fullHierarchyRecordView']
             ) {
                 return true;
@@ -171,7 +177,7 @@ class HierarchyTree extends AbstractBase
      */
     public function renderTree($baseUrl, $id = null, $context = 'Record')
     {
-        $id = $id ?? $this->getActiveTree();
+        $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {

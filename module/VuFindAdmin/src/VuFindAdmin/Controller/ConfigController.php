@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Admin Configuration Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindAdmin\Controller;
 
 /**
@@ -72,19 +74,23 @@ class ConfigController extends AbstractAdmin
         }
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
-        if ($writer->save()) {
-            $this->flashMessenger()
-                ->addMessage('Auto-configuration enabled.', 'success');
+        $success = false;
+        try {
+            $success = $writer->save();
+        } catch (\Exception $e) {
+            // Failure -- leave $success set to false.
+        }
+        if ($success) {
+            $this->flashMessenger()->addSuccessMessage('Auto-configuration enabled.');
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
             $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
                 ->reload('config');
         } else {
-            $this->flashMessenger()->addMessage(
+            $this->flashMessenger()->addErrorMessage(
                 'Could not enable auto-configuration; check permissions on '
-                . $configFile . '.',
-                'error'
+                . $configFile . '.'
             );
         }
         return $this->forwardTo('AdminConfig', 'Home');

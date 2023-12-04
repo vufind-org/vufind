@@ -1,0 +1,14 @@
+[
+    {
+        "comment": "Purge transaction history",
+        "expectedParams": {
+            "path": [
+                "v1", "contrib", "kohasuomi", "patrons", "bar",
+                "checkouts", "history"
+            ],
+            "method": "DELETE",
+            "errors": true
+        },
+        "result": []
+    }
+]

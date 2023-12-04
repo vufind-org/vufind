@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink test class for combined search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -56,7 +58,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'Solr:two' => [
                 'label' => 'Solr Two',
                 'hiddenFilter' => 'building:weird_ids.mrc',
-            ]
+            ],
         ];
     }
 
@@ -72,9 +74,9 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertResultsForDefaultQuery($page)
     {
         $expectedResults = [
-            "#combined_Solr____one" => "Journal of rational emotive therapy : "
-                . "the journal of the Institute for Rational-Emotive Therapy.",
-            "#combined_Solr____two" => "Pluses and Minuses of Pluses and Minuses",
+            '#combined_Solr____one' => 'Journal of rational emotive therapy : '
+                . 'the journal of the Institute for Rational-Emotive Therapy.',
+            '#combined_Solr____two' => 'Pluses and Minuses of Pluses and Minuses',
         ];
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(

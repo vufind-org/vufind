@@ -3,7 +3,7 @@
 /**
  * EDS API Query Adapter: search query parameters to AbstractQuery object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function call_user_func;
+use function count;
 
 /**
  * EDS API Query Adapter: search query parameters to AbstractQuery object
@@ -96,14 +100,14 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                             . call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
-        $output = '(' . join(' ', $all) . ')';
+        $output = '(' . implode(' ', $all) . ')';
 
         return $output;
     }

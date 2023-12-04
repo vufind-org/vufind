@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Config Factory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
 use VuFind\Config\PathResolver;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
+
+use function count;
 
 /**
  * Config Factory Test Class
@@ -131,7 +135,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     {
         // Make sure load succeeds:
         $config = $this->getConfig('unit-test-child');
-        $this->assertTrue(is_object($config));
+        $this->assertIsObject($config);
 
         // Make sure Section 1 was overridden; values from parent should not be
         // present.
@@ -160,7 +164,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     {
         // Make sure load succeeds:
         $config = $this->getConfig('unit-test-child2');
-        $this->assertTrue(is_object($config));
+        $this->assertIsObject($config);
 
         // Make sure Section 1 was overridden; values from parent should not be
         // present.

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VF Configuration Writer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
+
+use function dirname;
+use function is_array;
+use function is_int;
+use function strlen;
 
 /**
  * Class to update VuFind configuration settings
@@ -95,8 +102,8 @@ class Writer
 
         // Reset some flags and prepare to rewrite the content:
         $settingSet = false;
-        $currentSection = "";
-        $this->content = "";
+        $currentSection = '';
+        $this->content = '';
 
         // Process one line at a time...
         foreach ($lines as $line) {
@@ -109,7 +116,8 @@ class Writer
             if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
                 // If we just left the target section and didn't find the
                 // desired setting, we should write it to the end.
-                if ($currentSection == $section && !$settingSet
+                if (
+                    $currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
                     $line = $this->buildContentLine($setting, $value, 0)
@@ -178,7 +186,7 @@ class Writer
     }
 
     /**
-     * Save the modified file to disk.  Return true on success, false on error.
+     * Save the modified file to disk. Return true on success, false on error.
      *
      * @return bool
      */
@@ -214,7 +222,7 @@ class Writer
             return 'true';
         } elseif ($e === false) {
             return 'false';
-        } elseif ($e == "") {
+        } elseif ($e == '') {
             return '';
         } else {
             return '"' . str_replace('"', '\"', $e) . '"';
@@ -250,7 +258,7 @@ class Writer
                 // omit them from the key names; any other index should be
                 // explicitly set:
                 $currentIndex = ($i === $autoIndex) ? '' : $i;
-                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . " = "
+                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . ' = '
                     . $this->buildContentValue($current) . "\n";
                 $autoIndex++;
             }
@@ -258,7 +266,7 @@ class Writer
         }
 
         // Standard case: value is not an array:
-        return $key . $tabStr . " = " . $this->buildContentValue($value);
+        return $key . $tabStr . ' = ' . $this->buildContentValue($value);
     }
 
     /**
@@ -298,12 +306,12 @@ class Writer
      */
     protected function buildContent($assoc_arr, $comments)
     {
-        $content = "";
+        $content = '';
         foreach ($assoc_arr as $key => $elem) {
             if (isset($comments['sections'][$key]['before'])) {
                 $content .= $comments['sections'][$key]['before'];
             }
-            $content .= "[" . $key . "]";
+            $content .= '[' . $key . ']';
             if (!empty($comments['sections'][$key]['inline'])) {
                 $content .= "\t" . $comments['sections'][$key]['inline'];
             }

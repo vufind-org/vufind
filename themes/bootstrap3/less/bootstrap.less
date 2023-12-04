@@ -1,12 +1,15 @@
-/* #LESS> */
-@import "vendor/bootstrap/bootstrap";
-@import "vendor/font-awesome/font-awesome";
-/* <#LESS */
 /* #SCSS>
 $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap";
-@import "vendor/font-awesome/font-awesome";
 <#SCSS */
+/* #LESS> */
+@import "vendor/bootstrap/bootstrap";
+
+/* <#LESS */
+@import "variables";
+// Import custom (non-vendor) mixins
+@import "mixins/mixins";
+@import "vendor/font-awesome/font-awesome";
 
 @import "components/accessibility";
 @import "components/variables";
@@ -15,11 +18,12 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
-@import "components/cookie-consent";
+@import "components/cookie-consent/index";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
 @import "components/js-tree";
+@import "components/keyboard";
 @import "components/lightbox";
 @import "components/offcanvas";
 @import "components/record";
@@ -58,8 +62,11 @@ label { cursor: pointer; }
 .icon-bar { background-color: #888; }
 
 // Icons vs. Underline fix
+.btn {
+  text-decoration: none;
+}
 .btn-link {
-  &:extend(.icon--link);
+  &:extend(.icon-link);
 
   &.pull-left,
   &.pull-right {
@@ -67,16 +74,43 @@ label { cursor: pointer; }
   }
 }
 .nav > li > a {
-  &:extend(.icon--link);
+  &:extend(.icon-link);
   text-decoration: none;
+
+  &:hover,
+  &:focus {
+    /* borrowed from a11y accessibility */
+    color: @dropdown-bg;
+    text-decoration: none;
+    background-color: #333;
+    outline: dotted 1px #000;
+  }
 }
 .nav .dropdown-toggle {
   padding-right: 8px;
 
+  .icon {
+    margin-left: 4px;
+    margin-right: 0;
+  }
+
   body.rtl & {
     padding-left: 8px;
     padding-right: 10px;
+
+    .icon {
+      margin-left: 0;
+      margin-right: 4px;
+    }
   }
+}
+.navbar-nav button.dropdown-toggle {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: inherit;
+  background-color: transparent;
 }
 
 // Normalize highlighting
@@ -233,10 +267,42 @@ footer {
 }
 
 /* ------ Cart ------ */
-.cart-controls .checkbox {
-  line-height: 2.5rem;
-  padding-right: 1rem;
+.cart-controls,
+.cart-control-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
 }
+.cart-controls > .checkbox {
+  margin-top: 0.5rem;
+  /* wrap below */
+  order: 1;
+  flex-basis: 100%;
+}
+.cart-control-btns {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cart-controls .toolbar-btn {
+  &:extend(.toolbar-btn);
+  &:extend(.icon-link);
+
+  margin: 0;
+}
+
+@media (min-width: 992px) {
+  .cart-controls > .checkbox {
+    margin-block: 0;
+    padding-inline-end: 1rem;
+    padding-bottom: 0.25rem;
+    /* place inline */
+    order: unset;
+    flex-basis: auto;
+  }
+}
+
 .nav .btn-bookbag-toggle { float: left; }
 .nav .btn-bookbag-toggle a {
   display: block;
@@ -262,12 +328,19 @@ footer {
 /* ------ MyResearch ------ */
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
+  ul {
+    list-style: none;
+    margin-bottom: @myresearch-menu-ul-margin-bottom;
+    padding-left: @myresearch-menu-ul-padding-left;
+  }
   a {
-    display: block;
+    display: inline-flex;
+    gap: 0.375rem;
+    width: 100%;
     padding: 10px 15px;
-    &.flex {
-      display: flex;
-    }
+    line-height: 1.15;
+    align-items: baseline;
+
     &:hover {
       background-color: @gray-lighter;
       outline: dotted 1px #000;
@@ -282,15 +355,23 @@ footer {
       background-color: @brand-primary;
       color: #fff;
     }
+
+    .icon-link__icon {
+      width: 1rem;
+      text-align: center;
+    }
+
+    .icon-link__label {
+      flex: 1 1 0%;
+    }
   }
 
   .status {
-    float: right;
     display: flex;
+    gap: 2px;
     flex: none;
     .badge {
       border-radius: 2px;
-      margin: 0 2px;
       border: 1px solid; /* color inherited from bootstrap */
       height: 20px;
 
@@ -320,6 +401,17 @@ footer {
   }
 }
 
+ul.list-group {
+  list-style: none;
+}
+
+.dropdown-menu > li > .prompt-text {
+  &:extend(.dropdown-menu-ul-links);
+
+  white-space: inherit;
+  min-width: 200px;
+}
+
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
 #login-dropdown a {
   margin-right: .5rem;
@@ -346,6 +438,13 @@ footer {
 .table {
   table-layout: fixed;
   word-wrap: break-word;
+}
+// No wrapping for fines table in wide windows
+@media (min-width: 992px) {
+  .table.fines-table {
+    table-layout: auto;
+    word-wrap: normal;
+  }
 }
 
 /* ------ Visualization View ------ */
@@ -436,8 +535,7 @@ div.holding-notes {
 }
 
 /* --- Cookie Consent --- */
-.disable--interaction #cc-main .cm-wrapper::before,
-.show--preferences #cc-main .cc--anim.pm-wrapper::before {
+.show--preferences #cc-main .cc--anim .pm-overlay {
   opacity: @modal-backdrop-opacity;
 }
 
@@ -469,4 +567,11 @@ div.holding-notes {
   .pm__section--toggle {
     background: transparent;
   }
+}
+
+/* --- Help menu --- */
+.HelpMenu {
+  list-style-type: none;
+  margin-bottom: 1rem;
+  padding: 0;
 }

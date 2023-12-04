@@ -2,7 +2,7 @@
   <div class="footer-container">
     <div class="footer-column">
       <?php $this->slot('footer-left')->start(); ?>
-        <h2><?=$this->transEsc('Search Options')?></h2>
+        <h2><?=$this->transEsc('footer_header_search_options')?></h2>
         <ul>
           <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
           <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
@@ -11,7 +11,7 @@
     </div>
     <div class="footer-column">
       <?php $this->slot('footer-center')->start(); ?>
-        <h2><?=$this->transEsc('Find More')?></h2>
+        <h2><?=$this->transEsc('footer_header_find_more')?></h2>
         <ul>
           <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
           <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
@@ -23,7 +23,7 @@
     </div>
     <div class="footer-column">
       <?php $this->slot('footer-right')->start(); ?>
-        <h2><?=$this->transEsc('Need Help?')?></h2>
+        <h2><?=$this->transEsc('footer_header_need_help')?></h2>
         <ul>
           <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
           <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>

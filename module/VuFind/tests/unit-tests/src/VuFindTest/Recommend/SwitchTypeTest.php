@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SwitchType Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchType;
@@ -47,15 +49,15 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      */
     public function newHandlerNameProvider(): array
     {
-        return ['Test1' => ["foo:bar", "bar"],
-                'Test2' => ["foo", "All Fields"],
+        return ['Test1' => ['foo:bar', 'bar'],
+                'Test2' => ['foo', 'All Fields'],
             ];
     }
 
     /**
      * Test the description of new search handler.
      *
-     * @param string $settings Settings from searches.ini
+     * @param string $settings       Settings from searches.ini
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void
@@ -76,18 +78,18 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      */
     public function newHandlerProvider(): array
     {
-        return ['Test1' => ["foo:bar", "foo", false],
-                'Test2' => ["", "foo", "AllFields"],
-                'Test3' => ["foo:bar", "abc", "foo"],
+        return ['Test1' => ['foo:bar', 'foo', false],
+                'Test2' => ['', 'foo', 'AllFields'],
+                'Test3' => ['foo:bar', 'abc', 'foo'],
             ];
     }
 
     /**
      * Test getting the new search handler.
      *
-     * @param string $settings Settings from searches.ini
-     * @param string $searchHandler Settings from searches.ini
-     * @param bool|string   $expectedResult Expected return value from isActive
+     * @param string      $settings       Settings from searches.ini
+     * @param string      $searchHandler  Settings from searches.ini
+     * @param bool|string $expectedResult Expected return value from isActive
      *
      * @return void
      *
@@ -120,7 +122,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     public function testGetResults(): void
     {
         $obj = new SwitchType();
-        $obj->setConfig("foo");
+        $obj->setConfig('foo');
         $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -130,7 +132,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
         $parms->expects($this->once())->method('getSearchHandler')
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $obj->process($results);
         $this->assertSame($results, $obj->getResults());
     }

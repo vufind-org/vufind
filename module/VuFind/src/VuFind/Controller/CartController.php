@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Book Bag / Bulk Action Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+
+use function is_array;
+use function strlen;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -108,7 +113,7 @@ class CartController extends AbstractBase
         // ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (substr($referer, -strlen($bulk)) != $bulk) {
+        if (!str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -168,9 +173,9 @@ class CartController extends AbstractBase
             } else {
                 $addItems = $this->getCart()->addItems($ids);
                 if (!$addItems['success']) {
-                    $msg = $this->translate('bookbag_full_msg') . ". "
-                        . $addItems['notAdded'] . " "
-                        . $this->translate('items_already_in_bookbag') . ".";
+                    $msg = $this->translate('bookbag_full_msg') . '. '
+                        . $addItems['notAdded'] . ' '
+                        . $this->translate('items_already_in_bookbag') . '.';
                     $this->flashMessenger()->addMessage($msg, 'info');
                 }
             }
@@ -243,7 +248,8 @@ class CartController extends AbstractBase
 
         // Force login if necessary:
         $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+        if (
+            (!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
             return $this->forceLogin(
@@ -287,7 +293,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('success', 'bulk_email_success');
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
@@ -353,7 +359,7 @@ class CartController extends AbstractBase
             $exportType = $export->getBulkExportType($format);
             $params = [
                 'exportType' => $exportType,
-                'format' => $format
+                'format' => $format,
             ];
             if ('post' === $exportType) {
                 $records = $this->getRecordLoader()->loadBatch($ids);
@@ -375,7 +381,7 @@ class CartController extends AbstractBase
                 'msg' => $this->getViewRenderer()->render(
                     'cart/export-success.phtml',
                     $params
-                )
+                ),
             ];
             return $this->redirectToSource('success', $msg);
         }
@@ -384,7 +390,7 @@ class CartController extends AbstractBase
         $view = $this->createViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
-        // Assign the list of legal export options.  We'll filter them down based
+        // Assign the list of legal export options. We'll filter them down based
         // on what the selected records actually support.
         $view->exportOptions = $export->getFormatsForRecords($view->records);
 
@@ -474,7 +480,7 @@ class CartController extends AbstractBase
                 'html' => true,
                 'msg' => $this->translate('bulk_save_success') . '. '
                 . '<a href="' . $listUrl . '" class="gotolist">'
-                . $this->translate('go_to_list') . '</a>.'
+                . $this->translate('go_to_list') . '</a>.',
             ];
             $this->flashMessenger()->addMessage($message, 'success');
             return $this->redirect()->toUrl($listUrl);
@@ -484,7 +490,7 @@ class CartController extends AbstractBase
         return $this->createViewModel(
             [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists()
+                'lists' => $user->getLists(),
             ]
         );
     }
@@ -507,7 +513,7 @@ class CartController extends AbstractBase
 
         // If we entered the controller in the expected way (i.e. via the
         // myresearchbulk action), we should have a source set in the followup
-        // memory.  If that's missing for some reason, just forward to MyResearch.
+        // memory. If that's missing for some reason, just forward to MyResearch.
         if (isset($this->session->url)) {
             $target = $this->session->url;
             unset($this->session->url);

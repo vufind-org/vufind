@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Normalized search object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search;
 
 use minSO;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function get_class;
 
 /**
  * Normalized search object.
@@ -168,7 +172,7 @@ class NormalizedSearch
         // Deminify the other search:
         $searchToCheck = $otherSearch->deminify($this->resultsManager);
         // Check if classes and URLs match:
-        return get_class($searchToCheck) === get_class($this->raw)
+        return $searchToCheck::class === get_class($this->raw)
             && $this->url === $searchToCheck->getUrlQuery()->getParams();
     }
 }

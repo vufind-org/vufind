@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SuppressedCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -79,7 +81,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $args = [
             $solr ?? $this->getMockSolrWriter(),
-            $ils ?? $this->getMockIlsConnection()
+            $ils ?? $this->getMockIlsConnection(),
         ];
         return $this->getMockBuilder(SuppressedCommand::class)
             ->setConstructorArgs($args)
@@ -130,7 +132,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 
     /**

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SummonDatabases Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SummonDatabases;
@@ -60,7 +62,7 @@ class SummonDatabasesTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue("Summon"));
+            ->will($this->returnValue('Summon'));
         $obj->process($results);
         $results->expects($this->once())->method('getDatabaseRecommendations')
             ->will($this->returnValue(false));

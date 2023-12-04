@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SIP2 authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
@@ -43,7 +45,7 @@ use VuFind\Exception\Auth as AuthException;
 class SIP2 extends AbstractBase
 {
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
@@ -76,7 +78,7 @@ class SIP2 extends AbstractBase
         $msg_result = $mysip->get_message($in);
 
         // Make sure the response is 98 as expected
-        if (!preg_match("/^98/", $msg_result)) {
+        if (!preg_match('/^98/', $msg_result)) {
             $mysip->disconnect();
             throw new AuthException('authentication_error_technical');
         }
@@ -93,14 +95,15 @@ class SIP2 extends AbstractBase
         $msg_result = $mysip->get_message($in);
 
         // Make sure the response is 24 as expected
-        if (!preg_match("/^24/", $msg_result)) {
+        if (!preg_match('/^24/', $msg_result)) {
             $mysip->disconnect();
             throw new AuthException('authentication_error_technical');
         }
 
         $result = $mysip->parsePatronStatusResponse($msg_result);
         $mysip->disconnect();
-        if (($result['variable']['BL'][0] == 'Y')
+        if (
+            ($result['variable']['BL'][0] == 'Y')
             and ($result['variable']['CQ'][0] == 'Y')
         ) {
             // Success!!!
@@ -131,7 +134,7 @@ class SIP2 extends AbstractBase
     {
         $user = $this->getUserTable()->getByUsername($info['variable']['AA'][0]);
 
-        // This could potentially be different depending on the ILS.  Name could be
+        // This could potentially be different depending on the ILS. Name could be
         // Bob Wicksall or Wicksall, Bob. This is currently assuming Wicksall, Bob
         $ae = $info['variable']['AE'][0];
         $user->firstname = trim(substr($ae, 1 + strripos($ae, ',')));

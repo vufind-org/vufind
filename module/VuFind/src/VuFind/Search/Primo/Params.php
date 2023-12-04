@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Primo Central Search Parameters
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Primo;
 
 use VuFindSearch\ParamBag;
@@ -69,6 +71,7 @@ class Params extends \VuFind\Search\Base\Params
         'reference_entrys' => 'Reference Entries',
         'newsletterarticle' => 'Newsletter Articles',
         'archival_material_manuscripts' => 'Archival Materials / Manuscripts',
+        'magazinearticle' => 'Magazine Articles',
     ];
 
     /**
@@ -150,7 +153,7 @@ class Params extends \VuFind\Search\Base\Params
             }
             $result[$field] = [
                 'facetOp' => $facetOp,
-                'values' => $filter
+                'values' => $filter,
             ];
         }
         return $result;

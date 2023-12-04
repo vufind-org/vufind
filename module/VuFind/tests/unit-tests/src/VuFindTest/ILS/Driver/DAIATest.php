@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,13 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\ILS\Driver\DAIA;
 
 /**
@@ -55,13 +55,13 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'availability' => true,
                 'duedate' => null,
                 'requests_placed' => '',
-                'id' => "027586081",
-                'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134758",
-                'ilslink' => "http://opac.example-library.edu/loan/REQ?EPN=711134758",
+                'id' => '027586081',
+                'item_id' => 'http://uri.gbv.de/document/opac-de-000:epn:711134758',
+                'ilslink' => 'http://opac.example-library.edu/loan/REQ?EPN=711134758',
                 'number' => 1,
-                'barcode' => "1",
-                'reserve' => "N",
-                'callnumber' => "ABC 12",
+                'barcode' => '1',
+                'reserve' => 'N',
+                'callnumber' => 'ABC 12',
                 'location' => 'Example Library for DAIA Tests',
                 'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
                 'locationhref' => 'http://www.example-library.edu',
@@ -76,7 +76,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'addStorageRetrievalRequestLink' => true,
                 'customData' => [],
                 'limitation_types' => [],
-                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081',
             ],
         1 =>
             [
@@ -84,13 +84,13 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'availability' => true,
                 'duedate' => null,
                 'requests_placed' => '',
-                'id' => "027586081",
-                'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134766",
-                'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                'id' => '027586081',
+                'item_id' => 'http://uri.gbv.de/document/opac-de-000:epn:711134766',
+                'ilslink' => 'http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081',
                 'number' => 2,
-                'barcode' => "1",
-                'reserve' => "N",
-                'callnumber' => "DEF 34",
+                'barcode' => '1',
+                'reserve' => 'N',
+                'callnumber' => 'DEF 34',
                 'location' => 'Example Library for DAIA Tests',
                 'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
                 'locationhref' => 'http://www.example-library.edu',
@@ -105,21 +105,21 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'addStorageRetrievalRequestLink' => false,
                 'customData' => [],
                 'limitation_types' => [],
-                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081',
             ],
         2 =>
             [
                 'status' => '',
                 'availability' => false,
-                'duedate' => "02-09-2115",
+                'duedate' => '02-09-2115',
                 'requests_placed' => '',
-                'id' => "027586081",
-                'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:7111347777",
-                'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                'id' => '027586081',
+                'item_id' => 'http://uri.gbv.de/document/opac-de-000:epn:7111347777',
+                'ilslink' => 'http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081',
                 'number' => 3,
-                'barcode' => "1",
-                'reserve' => "N",
-                'callnumber' => "GHI 56",
+                'barcode' => '1',
+                'reserve' => 'N',
+                'callnumber' => 'GHI 56',
                 'location' => 'Example Library for DAIA Tests',
                 'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
                 'locationhref' => 'http://www.example-library.edu',
@@ -134,7 +134,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'addStorageRetrievalRequestLink' => false,
                 'customData' => [],
                 'limitation_types' => [],
-                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081',
             ],
     ];
 
@@ -163,7 +163,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                         'baseUrl'            => 'http://daia.gbv.de/',
                         'daiaIdPrefix'       => 'http://uri.gbv.de/document/opac-de-000:ppn:',
                         'daiaResponseFormat' => 'json',
-                    ]
+                    ],
             ]
         );
         $conn->init();
@@ -189,7 +189,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                         'baseUrl'            => 'http://daia.gbv.de/',
                         'daiaIdPrefix'       => 'http://uri.gbv.de/document/opac-de-000:ppn:',
                         'daiaResponseFormat' => 'xml',
-                    ]
+                    ],
             ]
         );
         $conn->init();

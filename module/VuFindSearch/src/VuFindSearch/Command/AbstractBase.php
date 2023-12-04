@@ -3,7 +3,7 @@
 /**
  * Abstract base command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -170,7 +171,7 @@ abstract class AbstractBase implements CommandInterface
     public function getResult()
     {
         if (!$this->isExecuted()) {
-            throw new LogicException("Command was not yet executed");
+            throw new LogicException('Command was not yet executed');
         }
         return $this->result ?? null;
     }

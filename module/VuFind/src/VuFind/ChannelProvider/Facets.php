@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Facet-driven channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -33,6 +35,8 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
 
 /**
  * Facet-driven channel provider.
@@ -43,8 +47,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Facets extends AbstractChannelProvider
-   implements TranslatorAwareInterface
+class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -253,7 +256,7 @@ class Facets extends AbstractChannelProvider
             'providerId' => $this->providerId,
             'groupId' => current(explode(':', $filter)),
             'token' => $this->getToken($filter, $title),
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -265,18 +268,18 @@ class Facets extends AbstractChannelProvider
         // Determine the filter for the current channel, and add it:
         $params->addFilter($filter);
 
-        $query = $newResults->getUrlQuery();
+        $query = $newResults->getUrlQuery()->getParams(false);
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',
             'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
-                . $query
+                . $query,
         ];
         $retVal['links'][] = [
             'label' => 'channel_expand',
             'icon' => 'fa-search-plus',
             'url' => $this->url->fromRoute('channels-search')
-                . $query . '&source=' . urlencode($params->getSearchClassId())
+                . $query . '&source=' . urlencode($params->getSearchClassId()),
         ];
 
         // Run the search and convert the results into a channel:

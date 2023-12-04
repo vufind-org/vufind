@@ -1,8 +1,9 @@
 <?php
+
 /**
  * MapSelection Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
@@ -41,7 +43,8 @@ use VuFindSearch\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class MapSelection implements \VuFind\Recommend\RecommendInterface,
+class MapSelection implements
+    \VuFind\Recommend\RecommendInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -174,7 +177,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     /**
      * Process
      *
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -189,11 +192,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match(
-                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0],
-                    $match
-                )
+                if (
+                    preg_match(
+                        '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
+                        $value[0],
+                        $match
+                    )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,
@@ -256,7 +260,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     {
         return [
             $this->basemapOptions['basemap_url'],
-            $this->basemapOptions['basemap_attribution']
+            $this->basemapOptions['basemap_attribution'],
         ];
     }
 
@@ -318,7 +322,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
             return [
                 $current->id,
                 $current->{$this->geoField},
-                $current->title ?? $defaultTitle
+                $current->title ?? $defaultTitle,
             ];
         };
         return array_map($callback, $response->response->docs);
@@ -334,7 +338,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
         $filters = $params->get('fq');
-        return (!empty($filters) && strpos($filters[0], $this->geoField) !== false)
+        return (!empty($filters) && str_contains($filters[0], $this->geoField))
             ? $this->fetchDataFromSearchService() : [];
     }
 
@@ -361,7 +365,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
                     $recCoords = [$floats[1], $floats[2], $floats[3], $floats[4]];
                 }
                 $results[] = [$recId, $title, $recCoords[0],
-                    $recCoords[1], $recCoords[2], $recCoords[3]
+                    $recCoords[1], $recCoords[2], $recCoords[3],
                 ];
             }
         }

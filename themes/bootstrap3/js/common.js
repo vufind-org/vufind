@@ -1,8 +1,5 @@
-/*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
-
-// IE 9< console polyfill
-window.console = window.console || { log: function polyfillLog() {} };
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -10,9 +7,13 @@ var VuFind = (function VuFind() {
   var _initialized = false;
   var _submodules = [];
   var _cspNonce = '';
+  var _searchId = null;
 
   var _icons = {};
   var _translations = {};
+
+  var _elementBase;
+  var _iconsCache = {};
 
   // Emit a custom event
   // Recommendation: prefix with vf-
@@ -67,32 +68,42 @@ var VuFind = (function VuFind() {
     return null;
   };
 
-  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
-    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
-      var $form = $(this);
-      // Disable submit elements via setTimeout so that the submit button value gets
-      // included in the submitted data before being disabled:
-      setTimeout(
-        function disableSubmit() {
-          $form.find('[type=submit]').prop('disabled', true);
-        },
-        0
-      );
-    });
+  var initDisableSubmitOnClick = () => {
+    var forms = document.querySelectorAll("[data-disable-on-submit]");
+    forms.forEach(form =>
+      form.addEventListener("submit", () => {
+        var submitButtons = form.querySelectorAll('[type="submit"]');
+        // Disable submit elements via setTimeout so that the submit button value gets
+        // included in the submitted data before being disabled:
+        setTimeout(() => {
+          submitButtons.forEach(button => button.disabled = true);
+        }, 0);
+      }));
   };
 
   var initClickHandlers = function initClickHandlers() {
+    let checkClickHandlers = function (event, elem) {
+      if (elem.hasAttribute('data-click-callback')) {
+        return evalCallback(elem.dataset.clickCallback, event, {});
+      }
+      if (elem.hasAttribute('data-click-set-checked')) {
+        document.getElementById(elem.dataset.clickSetChecked).checked = true;
+        event.preventDefault();
+      }
+      if (elem.hasAttribute('data-toggle-aria-expanded')) {
+        elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+        event.preventDefault();
+      }
+      // Check also parent node for spans (e.g. a button with icon)
+      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+        checkClickHandlers(event, elem.parentNode);
+      }
+    };
+
     window.addEventListener(
       'click',
       function handleClick(event) {
-        let elem = event.target;
-        if (elem.hasAttribute('data-click-callback')) {
-          return evalCallback(elem.dataset.clickCallback, event, {});
-        }
-        if (elem.hasAttribute('data-click-set-checked')) {
-          document.getElementById(elem.dataset.clickSetChecked).checked = true;
-          event.preventDefault();
-        }
+        checkClickHandlers(event, event.target);
       }
     );
     window.addEventListener(
@@ -104,18 +115,6 @@ var VuFind = (function VuFind() {
         }
       }
     );
-  };
-
-  var init = function init() {
-    for (var i = 0; i < _submodules.length; i++) {
-      if (this[_submodules[i]].init) {
-        this[_submodules[i]].init();
-      }
-    }
-    _initialized = true;
-
-    initDisableSubmitOnClick();
-    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -145,46 +144,60 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name, attrs = {}) {
+
+  /**
+   * Get an icon identified by a name.
+   *
+   * @param {String} name          Name of the icon to create
+   * @param {Object} attrs         Object containing attributes,
+   *                               key is the attribute of an HTMLElement,
+   *                               value is the values to add for the attribute.
+   * @param {Boolean}   returnElement [Optional] Should the function return an HTMLElement.
+   *                               Default is false.
+   *
+   * @returns {String|HTMLElement}
+   */
+  var icon = function icon(name, attrs = {}, returnElement = false) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
+    // Create a template element for icon function
+    if (!_elementBase) {
+      _elementBase = document.createElement('div');
+    }
+    const cacheKey = `${name}||${JSON.stringify(attrs)}`;
+    if (_iconsCache[cacheKey]) {
+      return returnElement
+        ? _iconsCache[cacheKey].cloneNode(true)
+        : _iconsCache[cacheKey].outerHTML;
+    }
 
-    var html = _icons[name];
+    const clone = _elementBase.cloneNode();
+    clone.insertAdjacentHTML('afterbegin', _icons[name]);
+    let element = clone.firstChild;
 
     // Add additional attributes
-    function addAttrs(_html, _attrs = {}) {
-      var mod = String(_html);
-      for (var attr in _attrs) {
-        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
-          var sliceStart = html.indexOf(" ");
-          var sliceEnd = sliceStart;
-          var value = _attrs[attr];
-          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = html.match(regex);
-          if (existing) {
-            sliceStart = existing.index;
-            sliceEnd = sliceStart + existing[0].length;
-            value = existing[2] + " " + value;
-          }
-          mod = mod.slice(0, sliceStart) +
-              " " + attr + '="' + value + '"' +
-              mod.slice(sliceEnd);
+    function addAttrs(_element, _attrs = {}) {
+      Object.keys(_attrs).forEach(key => {
+        if (key !== 'class') {
+          _element.setAttribute(key, _attrs[key]);
+          return;
         }
-      }
-      return mod;
+        let newAttrs = _attrs[key].split(" ");
+        const oldAttrs = _element.getAttribute(key) || [];
+        const newAttrsSet = new Set([...newAttrs, ...oldAttrs.split(" ")]);
+        _element.className = Array.from(newAttrsSet).join(" ");
+      });
     }
 
     if (typeof attrs == "string") {
-      return addAttrs(html, { class: attrs });
+      addAttrs(element, { class: attrs });
+    } else if (Object.keys(attrs).length > 0) {
+      addAttrs(element, attrs);
     }
-
-    if (Object.keys(attrs).length > 0) {
-      return addAttrs(html, attrs);
-    }
-
-    return html;
+    _iconsCache[cacheKey] = element;
+    return returnElement ? element.cloneNode(true) : element.outerHTML;
   };
   // Icon shortcut methods
   var spinner = function spinner(extraClass = "") {
@@ -245,6 +258,79 @@ var VuFind = (function VuFind() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
 
+  var getCurrentSearchId = function getCurrentSearchId() {
+    if (null !== _searchId) {
+      return _searchId;
+    }
+    var match = location.href.match(/[&?]sid=(\d+)/);
+    return match ? match[1] : '';
+  };
+
+  var setCurrentSearchId = function setCurrentSearchId(searchId) {
+    _searchId = searchId;
+  };
+
+  function setupQRCodeLinks(_container) {
+    var container = _container || document.body;
+    var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
+    qrcodeLinks.forEach((link) => {
+      link.addEventListener('click', function toggleQRCode() {
+        var holder = this.nextElementSibling;
+        if (holder.querySelectorAll('img').length === 0) {
+          // We need to insert the QRCode image
+          var template = holder.querySelector('.qrCodeImgTag').innerHTML;
+          holder.innerHTML = template;
+        }
+      });
+    });
+  }
+
+  /**
+   * Initialize result page scripts.
+   *
+   * @param {string|JQuery} container
+   */
+  var initResultScripts = function initResultScripts(container) {
+    let jqContainer = typeof container === 'string' ? $(container) : container;
+    if (typeof this.openurl !== 'undefined') {
+      this.openurl.init(jqContainer);
+    }
+    if (typeof this.itemStatuses !== 'undefined') {
+      this.itemStatuses.init(jqContainer);
+    }
+    if (typeof this.saveStatuses !== 'undefined') {
+      this.saveStatuses.init(jqContainer);
+    }
+    if (typeof this.recordVersions !== 'undefined') {
+      this.recordVersions.init(jqContainer);
+    }
+    if (typeof this.cart !== 'undefined') {
+      this.cart.registerToggles(jqContainer);
+    }
+    if (typeof this.embedded !== 'undefined') {
+      this.embedded.init(jqContainer);
+    }
+    this.lightbox.bind(jqContainer);
+    setupQRCodeLinks(jqContainer[0]);
+    if (typeof loadCovers === 'function') {
+      loadCovers();
+    }
+  };
+
+  var init = function init() {
+    for (var i = 0; i < _submodules.length; i++) {
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
+    }
+    _initialized = true;
+
+    initDisableSubmitOnClick();
+    initClickHandlers();
+    // handle QR code links
+    setupQRCodeLinks();
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -266,7 +352,11 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     translate: translate,
-    updateCspNonce: updateCspNonce
+    updateCspNonce: updateCspNonce,
+    getCurrentSearchId: getCurrentSearchId,
+    setCurrentSearchId: setCurrentSearchId,
+    initResultScripts: initResultScripts,
+    setupQRCodeLinks: setupQRCodeLinks
   };
 })();
 
@@ -278,6 +368,67 @@ function htmlEncode(value) {
     return '';
   }
 }
+
+/**
+ * Keyboard and focus controllers
+ * Adapted from Micromodal
+ * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
+ */
+const FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+function getFocusableNodes(container) {
+  const nodes = container.querySelectorAll(FOCUSABLE_ELEMENTS);
+  return Array.from(nodes);
+}
+
+/**
+ * Adapted from Laminas.
+ * Source: https://github.com/laminas/laminas-escaper/blob/2.13.x/src/Escaper.php
+ *
+ * @param  {string} str Attribute
+ * @return {string}
+ */
+function escapeHtmlAttr(str) {
+  if (!str) {
+    return str;
+  }
+
+  const namedEntities = {
+    34: 'quot', // quotation mark
+    38: 'amp', // ampersand
+    60: 'lt', // less-than sign
+    62: 'gt', // greater-than sign
+  };
+
+  const regexp = new RegExp(/[^a-z0-9,\\.\\-_]/giu);
+  return str.replace(regexp, (char) => {
+    const code = char.charCodeAt(0);
+
+    // Named entities
+    if (code in namedEntities) {
+      return `&${namedEntities[code]};`;
+    }
+
+    /**
+     * The following replaces characters undefined in HTML with the
+     * hex entity for the Unicode replacement character.
+     */
+    if (
+      (code >= 0x7f && code <= 0x9f) ||
+      (code <= 0x1f && char !== "\t" && char !== "\n" && char !== "\r")
+    ) {
+      return '&#xFFFD;';
+    }
+
+    const hex = code.toString(16).toUpperCase();
+
+    if (code > 255) {
+      return `&#x${hex.padStart(4, 0)};`;
+    }
+
+    return `&#x${hex.padStart(2, 0)};`;
+  });
+}
+
 function extractClassParams(selector) {
   var str = $(selector).attr('class');
   if (typeof str === "undefined") {
@@ -306,7 +457,7 @@ function deparam(url) {
     if (name.length === 0) {
       continue;
     }
-    if (name.substring(name.length - 2) === '[]') {
+    if (name.endsWith('[]')) {
       name = name.substring(0, name.length - 2);
       if (!request[name]) {
         request[name] = [];
@@ -366,12 +517,16 @@ function phoneNumberFormHandler(numID, regionCode) {
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = $('.g-recaptcha:empty');
+    var captchas = document.querySelectorAll('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
+      var captchaElement = captchas[i];
+      var captchaData = captchaElement.dataset;
+      var captchaId = grecaptcha.render(captchaElement, captchaData);
+      captchaElement.dataset.captchaId = captchaId;
     }
   }
 }
+
 function resetCaptcha($form) {
   if (typeof grecaptcha !== 'undefined') {
     var captcha = $form.find('.g-recaptcha');
@@ -396,7 +551,7 @@ function bulkFormHandler(event, data) {
 // Ready functions
 function setupOffcanvas() {
   if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
-    $('[data-toggle="offcanvas"]').click(function offcanvasClick(e) {
+    $('[data-toggle="offcanvas"]').on("click", function offcanvasClick(e) {
       e.preventDefault();
       $('body.offcanvas').toggleClass('active');
     });
@@ -405,61 +560,111 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var searchbox = $('#searchForm_lookfor.autocomplete');
-  if (searchbox.length < 1) {
-    return;
-  }
-  // Auto-submit based on config
-  var acCallback = function ac_cb_noop() {};
-  if (searchbox.hasClass("ac-auto-submit")) {
-    acCallback = function autoSubmitAC(item, input) {
-      input.val(item.value);
-      $("#searchForm").submit();
-      return false;
+  var $searchboxes = $('input.autocomplete');
+  $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
+    const $searchbox = $(searchboxElement);
+    const formattingRules = $searchbox.data('autocompleteFormattingRules');
+    const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
+    const typePrefix = $searchbox.data('autocompleteTypePrefix');
+    const getFormattingRule = function getAutocompleteFormattingRule(type) {
+      if (typeof(formattingRules) !== "undefined") {
+        if (typeof(formattingRules[type]) !== "undefined") {
+          return formattingRules[type];
+        }
+        // If we're using combined handlers, we may need to use a backend-specific wildcard:
+        const typeParts = type.split("|");
+        if (typeParts.length > 1) {
+          const backendWildcard = typeParts[0] + "|*";
+          if (typeof(formattingRules[backendWildcard]) !== "undefined") {
+            return formattingRules[backendWildcard];
+          }
+        }
+        // Special case: alphabrowse options in combined handlers:
+        const alphabrowseRegex = /^External:.*\/Alphabrowse.*\?source=([^&]*)/;
+        const alphabrowseMatches = alphabrowseRegex.exec(type);
+        if (alphabrowseMatches && alphabrowseMatches.length > 1) {
+          const alphabrowseKey = "VuFind:Solr|alphabrowse_" + alphabrowseMatches[1];
+          if (typeof(formattingRules[alphabrowseKey]) !== "undefined") {
+            return formattingRules[alphabrowseKey];
+          }
+        }
+        // Global wildcard fallback:
+        if (typeof(formattingRules["*"]) !== "undefined") {
+          return formattingRules["*"];
+        }
+      }
+      return "none";
     };
-  }
-  // Search autocomplete
-  searchbox.autocomplete({
-    rtl: $(document.body).hasClass("rtl"),
-    maxResults: 10,
-    loadingString: VuFind.translate('loading_ellipsis'),
-    // Auto-submit selected item
-    callback: acCallback,
-    // AJAX call for autocomplete results
-    handler: function vufindACHandler(input, cb) {
-      var query = input.val();
-      var searcher = extractClassParams(input);
+    const typeahead = new Autocomplete({
+      rtl: $(document.body).hasClass("rtl"),
+      maxResults: 10,
+      loadingString: VuFind.translate('loading_ellipsis'),
+    });
+
+    let cache = {};
+    const input = $searchbox[0];
+    typeahead(input, function vufindACHandler(query, callback) {
+      const classParams = extractClassParams(input);
+      const searcher = classParams.searcher;
+      const selectedType = classParams.type
+        ? classParams.type
+        : $(typeFieldSelector ? typeFieldSelector : '#searchForm_type').val();
+      const type = (typePrefix ? typePrefix : "") + selectedType;
+      const formattingRule = getFormattingRule(type);
+
+      const cacheKey = searcher + "|" + type;
+      if (typeof cache[cacheKey] === "undefined") {
+        cache[cacheKey] = {};
+      }
+
+      if (typeof cache[cacheKey][query] !== "undefined") {
+        callback(cache[cacheKey][query]);
+        return;
+      }
+
       var hiddenFilters = [];
       $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
         hiddenFilters.push($(this).val());
       });
-      $.fn.autocomplete.ajax({
+
+      $.ajax({
         url: VuFind.path + '/AJAX/JSON',
         data: {
           q: query,
           method: 'getACSuggestions',
-          searcher: searcher.searcher,
-          type: searcher.type ? searcher.type : $('#searchForm_type').val(),
-          hiddenFilters: hiddenFilters
+          searcher: searcher,
+          type: type,
+          hiddenFilters,
         },
         dataType: 'json',
         success: function autocompleteJSON(json) {
-          if (json.data.suggestions.length > 0) {
-            var datums = [];
-            for (var j = 0; j < json.data.suggestions.length; j++) {
-              datums.push(json.data.suggestions[j]);
-            }
-            cb(datums);
-          } else {
-            cb([]);
-          }
+          const highlighted = json.data.suggestions.map(
+            (item) => ({
+              text: item.replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll(query, `<b>${query}</b>`),
+              value: formattingRule === 'phrase'
+                ? '"' + item.replaceAll('"', '\\"') + '"'
+                : item,
+            })
+          );
+          cache[cacheKey][query] = highlighted;
+          callback(highlighted);
         }
       });
+    });
+
+    // Bind autocomplete auto submit
+    if ($searchbox.hasClass("ac-auto-submit")) {
+      input.addEventListener("ac-select", (event) => {
+        const value = typeof event.detail === "string"
+          ? event.detail
+          : event.detail.value;
+        input.value = value;
+        input.form.submit();
+      });
     }
-  });
-  // Update autocomplete on type change
-  $('#searchForm_type').change(function searchTypeChange() {
-    searchbox.autocomplete().clearCache();
   });
 }
 
@@ -469,7 +674,7 @@ function setupAutocomplete() {
 function keyboardShortcuts() {
   var $searchform = $('#searchForm_lookfor');
   if ($('.pager').length > 0) {
-    $(window).keydown(function shortcutKeyDown(e) {
+    $(window).on("keydown", function shortcutKeyDown(e) {
       if (!$searchform.is(':focus')) {
         var $target = null;
         switch (e.keyCode) {
@@ -504,24 +709,20 @@ function keyboardShortcuts() {
   }
 }
 
-function setupIeSupport() {
-  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
-  // Cannot use conditional comments since IE 11 doesn't support them but still has
-  // the issue
-  var ua = window.navigator.userAgent;
-  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
-    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
-  }
+function unwrapJQuery(node) {
+  return node instanceof Node ? node : node[0];
 }
 
 function setupJumpMenus(_container) {
   var container = _container || $('body');
-  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+  container.find('select.jumpMenu').on("change", function jumpMenu() {
+    $(this).parent('form').trigger("submit");
+  });
 }
 
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
-  $(searchPrefix + 'target').change(function onChangeLoginTarget() {
+  $(searchPrefix + 'target').on("change", function onChangeLoginTarget() {
     var target = $(this).val();
     var $username = $(searchPrefix + 'username');
     var $usernameGroup = $username.closest('.form-group');
@@ -543,31 +744,10 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
         $password.val('');
       }
     }
-  }).change();
+  }).trigger("change");
 }
 
-function setupQRCodeLinks(_container) {
-  var container = _container || $('body');
-
-  container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    if ($(this).hasClass("active")) {
-      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
-    } else {
-      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
-    }
-
-    var holder = $(this).next('.qrcode');
-    if (holder.find('img').length === 0) {
-      // We need to insert the QRCode image
-      var template = holder.find('.qrCodeImgTag').html();
-      holder.html(template);
-    }
-    holder.toggleClass('hidden');
-    return false;
-  });
-}
-
-$(document).ready(function commonDocReady() {
+$(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
   // Setup search autocomplete
@@ -579,9 +759,6 @@ $(document).ready(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // handle QR code links
-  setupQRCodeLinks();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
@@ -611,6 +788,4 @@ $(document).ready(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
-
-  setupIeSupport();
 });

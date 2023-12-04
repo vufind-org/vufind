@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record loader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2015.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 use VuFind\Exception\RecordMissing as RecordMissingException;
@@ -37,6 +39,9 @@ use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
+
+use function count;
+use function is_object;
 
 /**
  * Record loader
@@ -120,7 +125,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
-            if (null !== $this->recordCache
+            if (
+                null !== $this->recordCache
                 && $this->recordCache->isPrimary($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
@@ -136,17 +142,22 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                     }
                 }
             }
-            if (empty($results) && null !== $this->recordCache
+            if (
+                empty($results) && null !== $this->recordCache
                 && $this->recordCache->isFallback($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
+                if (!empty($results)) {
+                    $results[0]->setExtraDetail('cached_record', true);
+                }
             }
 
             if (!empty($results)) {
                 return $results[0];
             }
 
-            if ($this->fallbackLoader
+            if (
+                $this->fallbackLoader
                 && $this->fallbackLoader->has($source)
             ) {
                 try {
@@ -233,7 +244,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         }
 
         $retVal = $genuineRecords;
-        if ($list->hasUnchecked() && $this->fallbackLoader
+        if (
+            $list->hasUnchecked() && $this->fallbackLoader
             && $this->fallbackLoader->has($source)
         ) {
             try {
@@ -257,7 +269,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
             }
         }
 
-        if ($list->hasUnchecked() && null !== $this->recordCache
+        if (
+            $list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
             // Try to load missing records from cache if source is cachable
@@ -297,7 +310,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * requested order.
      *
      * @param array      $ids                       Array of associative arrays with
-     * id/source keys or strings in source|id format.  In associative array formats,
+     * id/source keys or strings in source|id format. In associative array formats,
      * there is also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.

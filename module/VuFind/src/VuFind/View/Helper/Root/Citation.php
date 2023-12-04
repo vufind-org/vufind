@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Citation view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +27,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function function_exists;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Citation view helper
@@ -41,8 +49,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \Laminas\View\Helper\AbstractHelper
-    implements TranslatorAwareInterface
+class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -93,7 +100,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @var string[]
      */
     protected $uncappedPhrases = [
-        'even if', 'if only', 'now that', 'on top of'
+        'even if', 'if only', 'now that', 'on top of',
     ];
 
     /**
@@ -177,7 +184,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle')
+            'journal' => $driver->tryMethod('getContainerTitle'),
         ];
 
         return $this;
@@ -202,7 +209,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // also know if we have a valid corporate author name that it should be
         // left alone... otherwise, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+        if (
+            !($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
             && !$isCorporate
         ) {
             $callables[] = function (string $name): string {
@@ -288,7 +296,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $apa = [
             'title' => $this->getAPATitle(),
             'authors' => $this->getAPAAuthors(),
-            'edition' => $this->getEdition()
+            'edition' => $this->getEdition(),
         ];
 
         // Show a period after the title if it does not already have punctuation
@@ -475,7 +483,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Construct volume/issue/date portion of APA citation.  Returns an array with
+     * Construct volume/issue/date portion of APA citation. Returns an array with
      * three elements: volume, issue and date (since these end up in different areas
      * of the final citation, we don't return a single string, but since their
      * determination is related, we need to do the work in a single function).
@@ -507,7 +515,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         if (!empty($vol) || !empty($num)) {
             // If only the number is non-empty, move the value to the volume to
             // simplify template behavior:
-            if (empty($vol) && !empty($num)) {
+            if (empty($vol)) {
                 $vol = $num;
                 $num = '';
             }
@@ -603,7 +611,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function fixAbbreviatedNameLetters($str)
     {
         // Fix abbreviated letters.
-        if (strlen($str) == 1
+        if (
+            strlen($str) == 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -703,7 +712,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $newwords = [];
         $followsColon = false;
         foreach ($words as $word) {
-            // Capitalize words unless they are in the exception list...  but even
+            // Capitalize words unless they are in the exception list... but even
             // exceptional words get capitalized if they follow a colon. Note that
             // we need to strip non-word characters (like punctuation) off of words
             // in order to reliably look them up in the uncappedWords list.
@@ -717,12 +726,12 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             }
             array_push($newwords, $word);
 
-            $followsColon = substr($word, -1) == ':';
+            $followsColon = str_ends_with($word, ':');
         }
 
         // We've dealt with capitalization of words; now we need to deal with
         // multi-word phrases:
-        $adjustedTitle = ucfirst(join(' ', $newwords));
+        $adjustedTitle = ucfirst(implode(' ', $newwords));
         foreach ($this->uncappedPhrases as $phrase) {
             // We need to cover two cases: the phrase at the start of a title,
             // and the phrase in the middle of a title:
@@ -770,7 +779,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getAPAAuthors()
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -797,7 +807,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                     // the list. Useful for two-item lists including corporate
                     // authors as the first entry.
                     $skipComma = ($i + 2 == $authorCount)
-                        && (strpos($authorStr . $author, ',') === false);
+                        && (!str_contains($authorStr . $author, ','));
                     $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
                     $authorStr .= $this->stripPunctuation($author) . '.';
@@ -817,12 +827,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getEdition()
     {
         // Find the first edition statement that isn't "1st ed."
-        if (isset($this->details['edition'])
+        if (
+            isset($this->details['edition'])
             && is_array($this->details['edition'])
         ) {
             foreach ($this->details['edition'] as $edition) {
                 // Strip punctuation from the edition to get rid of unwanted
-                // junk...  but if there is nothing left after stripping, put
+                // junk... but if there is nothing left after stripping, put
                 // back at least one period!
                 $edition = $this->stripPunctuation($edition);
                 if (empty($edition)) {
@@ -878,7 +889,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     {
         // If there is no comma in the name, we don't need to reverse it and
         // should leave its punctuation alone (since it was adjusted earlier).
-        return strpos($author, ',') === false
+        return !str_contains($author, ',')
             ? $author : $this->reverseName($this->stripPunctuation($author));
     }
 
@@ -893,7 +904,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getMLAAuthors($etAlThreshold = 2)
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -908,7 +920,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where
                         // the first author is a corporate author.
-                        $finalJoin = strpos($authorStr, ',') !== false ? ', ' : ' ';
+                        $finalJoin = str_contains($authorStr, ',') ? ', ' : ' ';
                         $authorStr .= $finalJoin . $this->translate('and') . ' '
                             . $this->formatSecondaryMLAAuthor($author);
                     } elseif ($i > 0) {
@@ -936,11 +948,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getPublisher($includePubPlace = true)
     {
         $parts = [];
-        if ($includePubPlace && !empty($this->details['pubPlace'])
+        if (
+            $includePubPlace && !empty($this->details['pubPlace'])
         ) {
             $parts[] = $this->stripPunctuation($this->details['pubPlace']);
         }
-        if (!empty($this->details['pubName'])
+        if (
+            !empty($this->details['pubName'])
         ) {
             $parts[] = $this->details['pubName'];
         }

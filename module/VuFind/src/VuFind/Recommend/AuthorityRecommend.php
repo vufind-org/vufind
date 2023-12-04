@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AuthorityRecommend Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -26,10 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Recommend;
 
 use Laminas\Stdlib\Parameters;
 use VuFindSearch\Backend\Exception\RequestErrorException;
+
+use function count;
+use function intval;
 
 /**
  * AuthorityRecommend Module
@@ -222,7 +227,7 @@ class AuthorityRecommend implements RecommendInterface
             'type0' => ['Heading'],
             'bool1' => ['NOT'],
             'lookfor1' => [$this->lookfor],
-            'type1' => ['MainHeading']
+            'type1' => ['MainHeading'],
         ];
 
         // loop through records and assign id and headings to separate arrays defined
@@ -242,7 +247,7 @@ class AuthorityRecommend implements RecommendInterface
         // Build a simple "MainHeading" search.
         $params = [
             'lookfor' => [$this->lookfor],
-            'type' => ['MainHeading']
+            'type' => ['MainHeading'],
         ];
 
         // loop through records and assign id and headings to separate arrays defined
@@ -266,11 +271,11 @@ class AuthorityRecommend implements RecommendInterface
      */
     protected function isModeActive($mode)
     {
-        return $this->mode === '*' || strpos($this->mode, $mode) !== false;
+        return $this->mode === '*' || str_contains($this->mode, $mode);
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -293,7 +298,8 @@ class AuthorityRecommend implements RecommendInterface
         }
 
         // check result limit before proceeding...
-        if ($this->resultLimit > 0
+        if (
+            $this->resultLimit > 0
             && $this->resultLimit < $results->getResultTotal()
         ) {
             return;

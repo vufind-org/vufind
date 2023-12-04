@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for pulling Summon-specific recommendations.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
@@ -110,7 +112,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -120,7 +122,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      */
     public function process($results)
     {
-        // If we received a Summon search object, we'll use that.  If not, we need
+        // If we received a Summon search object, we'll use that. If not, we need
         // to create a new Summon search object using the specified request
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {

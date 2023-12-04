@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Tree Data Source (Solr)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
@@ -32,6 +34,8 @@ use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
+
+use function count;
 
 /**
  * Hierarchy Tree Data Source (Solr)
@@ -129,7 +133,7 @@ class Solr extends AbstractBase
      * Build the XML file from the Solr fields
      *
      * @param string $id      Hierarchy ID.
-     * @param array  $options Additional options for XML generation.  (Currently one
+     * @param array  $options Additional options for XML generation. (Currently one
      * option is supported: 'refresh' may be set to true to bypass caching).
      *
      * @return string
@@ -200,7 +204,7 @@ class Solr extends AbstractBase
                     // Override any default timeAllowed since it cannot be used with
                     // cursorMark
                     'timeAllowed' => -1,
-                    'cursorMark' => $cursorMark
+                    'cursorMark' => $cursorMark,
                 ]
             );
             $command = new RawJsonSearchCommand(
@@ -313,7 +317,7 @@ class Solr extends AbstractBase
      * Build the JSON file from the Solr fields
      *
      * @param string $id      Hierarchy ID.
-     * @param array  $options Additional options for JSON generation.  (Currently one
+     * @param array  $options Additional options for JSON generation. (Currently one
      * option is supported: 'refresh' may be set to true to bypass caching).
      *
      * @return string
@@ -350,7 +354,8 @@ class Solr extends AbstractBase
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
         $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
 
-        if ($useCache && file_exists($cacheFile)
+        if (
+            $useCache && file_exists($cacheFile)
             && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
         ) {
             $this->debug("Using cached data from $cacheFile");
@@ -401,7 +406,8 @@ class Solr extends AbstractBase
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 
-        if (!isset($settings['checkAvailability'])
+        if (
+            !isset($settings['checkAvailability'])
             || $settings['checkAvailability'] == 1
         ) {
             if (!$this->getRecord($id)) {

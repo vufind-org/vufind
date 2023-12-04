@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract cover text layer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
 /**
@@ -100,7 +102,7 @@ abstract class AbstractTextLayer extends AbstractLayer
 
         // If the wrap width is smaller than the image width, we want to account
         // for this when right or left aligning to maintain padding on the image.
-        $wrapGap = ($settings->width - $settings->wrapWidth) / 2;
+        $wrapGap = (int)(($settings->width - $settings->wrapWidth) / 2);
 
         $textWidth = $this->textWidth($text, $font, $fontSize);
         if ($textWidth > $settings->width) {
@@ -108,15 +110,15 @@ abstract class AbstractTextLayer extends AbstractLayer
             $wrapGap = 0; // kill wrap gap to maximize text fit
         }
         switch ($align ?? $settings->textAlign) {
-        case 'left':
-            $x = $wrapGap;
-            break;
-        case 'right':
-            $x = $settings->width - ($textWidth + $wrapGap);
-            break;
-        case 'center':
-        default:
-            $x = ($settings->width - $textWidth) / 2;
+            case 'left':
+                $x = $wrapGap;
+                break;
+            case 'right':
+                $x = $settings->width - ($textWidth + $wrapGap);
+                break;
+            case 'center':
+            default:
+                $x = (int)(($settings->width - $textWidth) / 2);
         }
 
         // Generate 5 lines of text, 4 offset in a border color
@@ -127,6 +129,6 @@ abstract class AbstractTextLayer extends AbstractLayer
             imagettftext($im, $fontSize, 0, $x - 1, $y, $scolor, $font, $text);
         }
         // 1 centered in main color
-        imagettftext($im, $fontSize, 0, $x, $y, $mcolor, $font, $text);
+        imagettftext($im, $fontSize, 0, $x, (int)$y, $mcolor, $font, $text);
     }
 }

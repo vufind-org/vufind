@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Search params plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Params;
 
 /**
@@ -49,9 +51,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'combined' => \VuFind\Search\Combined\Params::class,
         'eds' => \VuFind\Search\EDS\Params::class,
         'eit' => \VuFind\Search\EIT\Params::class,
+        'epf' => \VuFind\Search\EPF\Params::class,
         'emptyset' => \VuFind\Search\EmptySet\Params::class,
         'favorites' => \VuFind\Search\Favorites\Params::class,
         'libguides' => \VuFind\Search\LibGuides\Params::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Params::class,
         'mixedlist' => \VuFind\Search\MixedList\Params::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Params::class,
         'primo' => \VuFind\Search\Primo\Params::class,
@@ -80,9 +84,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Combined\Params::class => ParamsFactory::class,
         \VuFind\Search\EDS\Params::class => ParamsFactory::class,
         \VuFind\Search\EIT\Params::class => ParamsFactory::class,
+        \VuFind\Search\EPF\Params::class => ParamsFactory::class,
         \VuFind\Search\EmptySet\Params::class => ParamsFactory::class,
         \VuFind\Search\Favorites\Params::class => ParamsFactory::class,
         \VuFind\Search\LibGuides\Params::class => ParamsFactory::class,
+        \VuFind\Search\LibGuidesAZ\Params::class => ParamsFactory::class,
         \VuFind\Search\MixedList\Params::class => ParamsFactory::class,
         \VuFind\Search\Pazpar2\Params::class => ParamsFactory::class,
         \VuFind\Search\Primo\Params::class => ParamsFactory::class,

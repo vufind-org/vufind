@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Validator;
+
+use function array_slice;
+use function count;
 
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
@@ -36,8 +41,7 @@ namespace VuFind\Validator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SessionCsrf extends \Laminas\Validator\Csrf
-    implements CsrfInterface
+class SessionCsrf extends \Laminas\Validator\Csrf implements CsrfInterface
 {
     /**
      * Keep only the most recent N tokens.

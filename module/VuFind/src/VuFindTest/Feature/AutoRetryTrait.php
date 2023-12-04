@@ -6,7 +6,7 @@
  *
  * Inspired by discussion here at https://stackoverflow.com/questions/7705169
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -29,10 +29,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Util\Test;
+
+use function call_user_func;
+use function get_class;
+use function is_callable;
 
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
@@ -101,7 +106,7 @@ trait AutoRetryTrait
                 return;
             } catch (\Exception $e) {
                 // Don't retry skipped tests!
-                if (get_class($e) == SkippedTestError::class) {
+                if ($e::class == SkippedTestError::class) {
                     throw $e;
                 }
                 // Execute callbacks for interrupted test, unless this is the
@@ -109,7 +114,7 @@ trait AutoRetryTrait
                 if ($this->retriesLeft > 0) {
                     $logMethod = [
                         $this,
-                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning'
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning',
                     ];
                     if (is_callable($logMethod)) {
                         $method = get_class($this) . '::' . $this->getName(false);

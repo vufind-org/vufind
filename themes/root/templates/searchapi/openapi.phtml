@@ -234,25 +234,26 @@
         "schemas": {
             "Authors": {
                 "type": "object",
+                "description": "Deduplicated author information including primary, corporate and secondary authors",
                 "properties": {
-                    "main": {
-                        "description": "Main authors",
-                        "type": "array",
-                        "items": {
+                    "primary": {
+                        "description": "Primary authors",
+                        "type": "object",
+                        "additionalProperties": {
                             "$ref": "#/components/schemas/AuthorWithRoles"
                         }
                     },
                     "secondary": {
                         "description": "Secondary authors",
-                        "type": "array",
-                        "items": {
+                        "type": "object",
+                        "additionalProperties": {
                             "$ref": "#/components/schemas/AuthorWithRoles"
                         }
                     },
                     "corporate": {
                         "description": "Corporate authors",
-                        "type": "array",
-                        "items": {
+                        "type": "object",
+                        "additionalProperties": {
                             "$ref": "#/components/schemas/AuthorWithRoles"
                         }
                     }

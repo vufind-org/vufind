@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Search Runner
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
 use Laminas\EventManager\EventManager;
@@ -32,6 +34,9 @@ use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
+
+use function is_array;
+use function is_callable;
 
 /**
  * VuFind Search Runner

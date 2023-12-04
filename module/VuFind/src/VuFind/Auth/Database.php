@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Database authentication class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Crypt\Password\Bcrypt;
@@ -35,6 +37,9 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+
+use function in_array;
+use function is_object;
 
 /**
  * Database authentication class
@@ -64,7 +69,7 @@ class Database extends AbstractBase
     protected $password;
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -175,7 +180,7 @@ class Database extends AbstractBase
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
         $params = [
-            'username' => '', 'password' => '', 'password2' => ''
+            'username' => '', 'password' => '', 'password2' => '',
         ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
@@ -398,7 +403,7 @@ class Database extends AbstractBase
         // in the code below.
         $params = [
             'firstname' => '', 'lastname' => '', 'username' => '',
-            'password' => '', 'password2' => '', 'email' => ''
+            'password' => '', 'password2' => '', 'email' => '',
         ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);

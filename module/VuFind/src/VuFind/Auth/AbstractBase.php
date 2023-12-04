@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract authentication base class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
+
+use function get_class;
+use function in_array;
 
 /**
  * Abstract authentication base class
@@ -42,7 +47,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
+abstract class AbstractBase implements
+    \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
@@ -65,7 +71,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     protected $config = null;
 
     /**
-     * Get configuration (load automatically if not previously set).  Throw an
+     * Get configuration (load automatically if not previously set). Throw an
      * exception if the configuration is invalid.
      *
      * @throws AuthException
@@ -154,7 +160,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -167,7 +173,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -243,7 +249,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -473,7 +479,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         array $policy,
         string $string
     ): void {
-        if (isset($policy['minLength'])
+        if (
+            isset($policy['minLength'])
             && mb_strlen($string, 'UTF-8') < $policy['minLength']
         ) {
             // e.g. password_minimum_length or username_minimum_length:
@@ -484,7 +491,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 )
             );
         }
-        if (isset($policy['maxLength'])
+        if (
+            isset($policy['maxLength'])
             && mb_strlen($string, 'UTF-8') > $policy['maxLength']
         ) {
             // e.g. password_maximum_length or username_maximum_length:
@@ -506,7 +514,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                     $valid = false;
                 }
             } else {
-                $result = preg_match("/({$policy['pattern']})/u", $string, $matches);
+                $result = @preg_match(
+                    "/({$policy['pattern']})/u",
+                    $string,
+                    $matches
+                );
                 if ($result === false) {
                     throw new \Exception(
                         "Invalid regexp in $type pattern: " . $policy['pattern']

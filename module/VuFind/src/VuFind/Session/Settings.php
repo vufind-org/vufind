@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Container for session settings, allowing those settings to be configured
  * "just in case" they are needed, without invoking the heavy weight of
  * instantiating the session itself. See \VuFind\Session\ManagerFactory for
  * details on the use of this object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -28,9 +29,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Session\SessionManager;
+
+use function is_callable;
 
 /**
  * Container for session settings, allowing those settings to be configured

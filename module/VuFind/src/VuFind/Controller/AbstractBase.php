@@ -1,9 +1,10 @@
 <?php
+
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,18 +27,23 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+
+use function intval;
+use function is_object;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -67,8 +73,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController
-    implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -199,6 +204,14 @@ class AbstractBase extends AbstractActionController
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
+        $lightboxParentUrl = new Http($this->getServerUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
+        if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
+            $this->layout()->lightboxChild = $lightboxChild;
+        }
         return new ViewModel($params);
     }
 
@@ -238,19 +251,22 @@ class AbstractBase extends AbstractActionController
         }
 
         // Set default values if applicable:
-        if ((!isset($view->to) || empty($view->to)) && $user
+        if (
+            (!isset($view->to) || empty($view->to)) && $user
             && isset($config->Mail->user_email_in_to)
             && $config->Mail->user_email_in_to
         ) {
             $view->to = $user->email;
         }
         if (!isset($view->from) || empty($view->from)) {
-            if ($user && isset($config->Mail->user_email_in_from)
+            if (
+                $user && isset($config->Mail->user_email_in_from)
                 && $config->Mail->user_email_in_from
             ) {
                 $view->userEmailInFrom = true;
                 $view->from = $user->email;
-            } elseif (isset($config->Mail->default_from)
+            } elseif (
+                isset($config->Mail->default_from)
                 && $config->Mail->default_from
             ) {
                 $view->from = $config->Mail->default_from;
@@ -342,16 +358,11 @@ class AbstractBase extends AbstractActionController
             $msg = 'You must be logged in first';
         }
 
-        // We don't want to return to the lightbox
-        $serverUrl = $this->getServerUrl();
-        $serverUrl = str_replace(
-            ['?layout=lightbox', '&layout=lightbox'],
-            ['?', '&'],
-            $serverUrl
-        );
+        // store parent url of lightboxes
+        $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras, $serverUrl);
+        $this->followup()->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -384,7 +395,8 @@ class AbstractBase extends AbstractActionController
         // Now check if the user has provided credentials with which to log in:
         $ilsAuth = $this->getILSAuthenticator();
         $patron = null;
-        if (($username = $this->params()->fromPost('cat_username', false))
+        if (
+            ($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
             // If somebody is POSTing credentials but that logic is disabled, we
@@ -402,7 +414,8 @@ class AbstractBase extends AbstractActionController
                     $routeMatch = $this->getEvent()->getRouteMatch();
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
-                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
+                    $ilsAuth->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
                     $this->flashMessenger()
                         ->addSuccessMessage('email_login_link_sent');
                 } else {
@@ -417,7 +430,8 @@ class AbstractBase extends AbstractActionController
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
-        } elseif ('ILS' === $this->params()->fromQuery('auth_method', false)
+        } elseif (
+            'ILS' === $this->params()->fromQuery('auth_method', false)
             && ($hash = $this->params()->fromQuery('hash', false))
         ) {
             try {
@@ -591,8 +605,8 @@ class AbstractBase extends AbstractActionController
                     'confirm' => $yesTarget,
                     'cancel' => $noTarget,
                     'messages' => (array)$messages,
-                    'extras' => $extras
-                ]
+                    'extras' => $extras,
+                ],
             ]
         );
     }
@@ -663,9 +677,11 @@ class AbstractBase extends AbstractActionController
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
+     * @param bool $allowCurrentUrl Whether the current URL is valid for followup
+     *
      * @return void
      */
-    protected function setFollowupUrlToReferer()
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true)
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -683,7 +699,7 @@ class AbstractBase extends AbstractActionController
         // want internal post-login redirects.
         $baseUrl = $this->getServerUrl('home');
         $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
             return;
         }
 
@@ -701,9 +717,17 @@ class AbstractBase extends AbstractActionController
         // ignore this and instead rely on any previously stored referer.
         $myUserLogin = $this->getServerUrl('myresearch-userlogin');
         $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
-        if (0 === strpos($refererNorm, $mulNorm)) {
+        if (str_starts_with($refererNorm, $mulNorm)) {
             return;
         }
+
+        // Check that the referer is not current URL if not allowed:
+        if (!$allowCurrentUrl && $this->getRequest()->getUriString() === $referer) {
+            return;
+        }
+
+        // Clear previously stored lightboxParent.
+        $this->followup()->clear('lightboxParent');
 
         // If we got this far, we want to store the referer:
         $this->followup()->store([], $referer);
@@ -724,15 +748,43 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Checks if a followup url is set
+     *
+     * @return bool
+     */
+    protected function hasFollowupUrl()
+    {
+        return null !== $this->followup()->retrieve('url');
+    }
+
+    /**
      * Retrieve a referer to keep post-login redirect pointing
      * to an appropriate location.
      * Unset the followup before returning.
      *
+     * @param bool $checkRedirect Whether the query should be checked for param 'redirect'
+     *
      * @return string
      */
-    protected function getFollowupUrl()
+    protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        return $this->followup()->retrieve('url', '');
+        if ($url = $this->followup()->retrieveAndClear('url')) {
+            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
+                if (null !== $lightboxParent && !$this->inLightbox()) {
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
+                    $params['lightboxChild'] = $url;
+                    $parentUrl->setQuery($params);
+                    return $parentUrl;
+                }
+                return $url;
+            }
+        }
+        return null;
     }
 
     /**
@@ -742,6 +794,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function clearFollowupUrl()
     {
+        $this->followup()->clear('lightboxParent');
         $this->followup()->clear('url');
     }
 

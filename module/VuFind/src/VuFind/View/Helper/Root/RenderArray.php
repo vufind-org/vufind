@@ -1,8 +1,9 @@
 <?php
+
 /**
  * View helper to render a portion of an array.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -43,7 +45,7 @@ class RenderArray extends AbstractHelper
     /**
      * Render a portion of an array.
      *
-     * @param string $tpl  A template for displaying each row.  This should
+     * @param string $tpl  A template for displaying each row. This should
      * include %%LABEL%% and %%VALUE%% placeholders
      * @param array  $arr  An associative array of possible values to display
      * @param array  $rows A label => profile key associative array specifying

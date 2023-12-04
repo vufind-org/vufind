@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: switch database encryption algorithm.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Laminas\Config\Config;
@@ -38,6 +40,8 @@ use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Table\User as UserTable;
+
+use function count;
 
 /**
  * Console command: switch database encryption algorithm.
@@ -155,7 +159,8 @@ class SwitchDbHashCommand extends Command
         $newhash = $input->getArgument('newmethod');
 
         // Pull existing encryption settings from the configuration:
-        if (!isset($this->config->Authentication->ils_encryption_key)
+        if (
+            !isset($this->config->Authentication->ils_encryption_key)
             || !($this->config->Authentication->encrypt_ils_password ?? false)
         ) {
             $oldhash = 'none';
@@ -215,17 +220,22 @@ class SwitchDbHashCommand extends Command
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             $pass = null;
-            if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
-                $oldcipher = new BlockCipher($oldCrypt);
-                $oldcipher->setKey($oldkey);
-                $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+            if ($oldhash != 'none' && $row['cat_pass_enc'] ?? null !== null) {
+                try {
+                    $oldcipher = new BlockCipher($oldCrypt);
+                    $oldcipher->setKey($oldkey);
+                    $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+                } catch (\Exception $e) {
+                    $output->writeln("Problem with user {$row['username']}: " . (string)$e);
+                    continue;
+                }
             } else {
                 $pass = $row['cat_password'];
             }
             $newcipher = new BlockCipher($newCrypt);
             $newcipher->setKey($newkey);
             $row['cat_password'] = null;
-            $row['cat_pass_enc'] = $newcipher->encrypt($pass);
+            $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
             $row->save();
         }
 

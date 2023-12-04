@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait for implementing containers that produces mock objects.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Container;
 
 use PHPUnit\Framework\TestCase;
+
+use function in_array;
 
 /**
  * Trait for implementing containers that produces mock objects.

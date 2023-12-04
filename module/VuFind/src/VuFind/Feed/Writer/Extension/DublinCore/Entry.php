@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Laminas\Feed\Entry extension for Dublin Core
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\DublinCore;
 
 use Laminas\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
@@ -34,8 +36,8 @@ use Laminas\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to
- * Itunes-related functionality.  To work around this, we are extending the
- * equivalent Itunes plugin.  This works fine, but perhaps in future there will
+ * Itunes-related functionality. To work around this, we are extending the
+ * equivalent Itunes plugin. This works fine, but perhaps in future there will
  * be a more elegant way to achieve the same effect.
  *
  * @category VuFind

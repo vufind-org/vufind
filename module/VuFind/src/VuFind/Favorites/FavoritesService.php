@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Favorites service
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Favorites;
 
 use VuFind\Db\Table\Resource as ResourceTable;
@@ -94,7 +96,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @throws \VuFind\Exception\ListPermission
      */
-    protected function getListObject($listId, \VuFind\Db\Row\User $user)
+    public function getListObject($listId, \VuFind\Db\Row\User $user)
     {
         if (empty($listId) || $listId == 'NEW') {
             $list = $this->userListTable->getNew($user);

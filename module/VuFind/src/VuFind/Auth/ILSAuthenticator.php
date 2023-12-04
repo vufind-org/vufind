@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class for managing ILS-specific authentication.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\ILS as ILSException;
@@ -102,7 +104,7 @@ class ILSAuthenticator
         if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
             return [
                 'cat_username' => $user->cat_username,
-                'cat_password' => $user->cat_password
+                'cat_password' => $user->cat_password,
             ];
         }
         return false;
@@ -169,12 +171,14 @@ class ILSAuthenticator
     /**
      * Send email authentication link
      *
-     * @param string $email Email address
-     * @param string $route Route for the login link
+     * @param string $email       Email address
+     * @param string $route       Route for the login link
+     * @param array  $routeParams Route parameters
+     * @param array  $urlParams   URL parameters
      *
      * @return void
      */
-    public function sendEmailLoginLink($email, $route)
+    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = [])
     {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
@@ -185,8 +189,9 @@ class ILSAuthenticator
             $this->emailAuthenticator->sendAuthenticationLink(
                 $patron['email'],
                 $patron,
-                ['auth_method' => 'ILS'],
-                $route
+                ['auth_method' => 'ILS'] + $urlParams,
+                $route,
+                $routeParams
             );
         }
     }

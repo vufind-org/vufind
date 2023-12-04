@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SimilarItemsCarousel Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\SimilarItemsCarousel;
@@ -50,7 +52,10 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $obj = new SimilarItemsCarousel($search);
+        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $obj = new SimilarItemsCarousel($search, $config);
         $expected = 'Similar Items';
         $this->assertSame($expected, $obj->getDescription());
     }
@@ -65,17 +70,20 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
         )->getMock();
-        $obj = new SimilarItemsCarousel($service);
+        $obj = new SimilarItemsCarousel($service, $config);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue('foo'));
         $recordDriver->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $obj->setRecordDriver($recordDriver);
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
@@ -85,9 +93,9 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($rci));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SimilarCommand::class
-                && $command->getTargetIdentifier() === "foo"
-                && $command->getArguments()[0] === "bar"
+            return $command::class === \VuFindSearch\Command\SimilarCommand::class
+                && $command->getTargetIdentifier() === 'foo'
+                && $command->getArguments()[0] === 'bar'
                 && $command->getArguments()[1]->getArrayCopy() === ['rows' => [40]];
         };
         $service->expects($this->once())->method('invoke')

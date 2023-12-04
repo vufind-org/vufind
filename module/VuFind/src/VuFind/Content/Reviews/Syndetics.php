@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics review content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Reviews;
 
 /**
@@ -76,7 +78,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'KIREVIEW' => ['title' => 'Kirkus Book Review',
                             'file' => 'KIREVIEW.XML'],
         'CRITICASEREVIEW' => ['title' => 'Criti Case Review',
-                            'file' => 'CRITICASEREVIEW.XML']
+                            'file' => 'CRITICASEREVIEW.XML'],
     ];
 
     /**
@@ -90,7 +92,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * for more information.
      * Configuration:  Sources are processed in order - refer to $sourceList above.
      * If your library prefers one reviewer over another change the order.
-     * If your library does not like a reviewer, remove it.  If there are more
+     * If your library does not like a reviewer, remove it. If there are more
      * syndetics reviewers add another entry.
      *
      * @param string           $key     API key (unused here)
@@ -142,7 +144,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $review[$i]['Content'] = $sourceInfo['div'];
                 } else {
                     // Get the marc field for reviews (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
                     if (!$nodes->length) {
                         // Skip reviews with missing text
                         continue;
@@ -155,7 +157,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     );
 
                     // Get the marc field for copyright (997)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld997");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld997');
                     if ($nodes->length) {
                         $review[$i]['Copyright']
                             = html_entity_decode($xmldoc2->saveXML($nodes->item(0)));

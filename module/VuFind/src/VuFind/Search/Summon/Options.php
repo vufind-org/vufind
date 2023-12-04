@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Summon Search Options
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Summon;
+
+use function count;
 
 /**
  * Summon Search Options
@@ -65,7 +69,8 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'Summon';
         // Load facet preferences:
         $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->Advanced_Facet_Settings->translated_facets)
+        if (
+            isset($facetSettings->Advanced_Facet_Settings->translated_facets)
             && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
@@ -86,7 +91,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->limit_options)) {
             $this->limitOptions
-                = explode(",", $searchSettings->General->limit_options);
+                = explode(',', $searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference
@@ -100,10 +105,6 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load search preferences:
-        if (isset($searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
-        }
         if (isset($searchSettings->General->default_filters)) {
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
@@ -135,7 +136,8 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
-        if (isset($searchSettings->DefaultSortingByType)
+        if (
+            isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {

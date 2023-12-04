@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink favorites test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+
+use function count;
 
 /**
  * Mink favorites test class.
@@ -151,13 +155,15 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForLightboxHidden();
 
         // Check list page
-        $session = $this->getMinkSession();
-        $recordURL = $this->stripHash($session->getCurrentUrl());
+        $recordURL = $this->stripHash($this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
-        $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
+        $this->assertEquals(
+            $recordURL,
+            $this->stripHash($this->getCurrentUrlWithoutSid())
+        );
         $this->clickCss($page, '.logoutOptions a.logout');
     }
 
@@ -306,10 +312,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Check list page
         $this->clickCss($page, '.result a.title');
         $session = $this->getMinkSession();
-        $recordURL = $session->getCurrentUrl();
+        $recordURL = $this->getCurrentUrlWithoutSid();
         $this->clickCss($page, '.savedLists a');
         $this->clickCss($page, '.resultItemLine1 a');
-        $this->assertEquals($recordURL, $session->getCurrentUrl());
+        $this->assertEquals($recordURL, $this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.logoutOptions a.logout');
     }
 
@@ -582,7 +588,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testBulkPrint()
     {
-        $session = $this->getMinkSession();
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
@@ -599,9 +604,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEqualsWithTimeout(
             'print=true',
-            function () use ($session) {
-                $urlParts = explode('?', $session->getCurrentUrl());
-                return $urlParts[1] ?? '';
+            function () {
+                return $this->getCurrentQueryString(true);
             }
         );
     }
@@ -649,6 +653,119 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your item(s) were emailed',
             $this->findCss($page, '.modal .alert-success')->getText()
         );
+    }
+
+    /**
+     * Data provider for testListTaggingToDisplayChannel
+     *
+     * @return array
+     */
+    public function getListTagData(): array
+    {
+        $defaultChannelConfig = ['tags' => ['channel'], 'displayPublicLists' => false];
+        return [
+            'case insensitive channel match' => [
+                'CHANNEL',
+                $defaultChannelConfig,
+                false, // case insensitive
+                true,   // match expected
+            ],
+            'case sensitive channel match' => [
+                'channel',
+                $defaultChannelConfig,
+                true, // case sensitive
+                true,  // match expected
+            ],
+            'case sensitive channel mismatch' => [
+                'Channel',
+                $defaultChannelConfig,
+                true, // case sensitive
+                false, // mismatch expected
+            ],
+            'case sensitive AND mismatch' => [
+                'channel',
+                ['tags' => ['channel', 'banana'], 'displayPublicLists' => false],
+                true, // case sensitive
+                false, // mismatch expected
+            ],
+            'case sensitive AND match' => [
+                'channel banana',
+                ['tags' => ['channel', 'banana'], 'displayPublicLists' => false],
+                true, // case sensitive
+                true,  // match expected
+            ],
+            'case sensitive OR match' => [
+                'channel',
+                ['tags' => ['channel', 'banana'], 'displayPublicLists' => false, 'tagsOperator' => 'OR'],
+                true, // case sensitive
+                true,  // match expected
+            ],
+            'case insensitive OR match' => [
+                'channel',
+                ['tags' => ['chAnnEl', 'banana'], 'displayPublicLists' => false, 'tagsOperator' => 'OR'],
+                false, // case insensitive
+                true,   // match expected
+            ],
+        ];
+    }
+
+    /**
+     * Test that a public list can be tagged and displayed as a channel.
+     *
+     * @param string $listTags      Tags to assign to the list
+     * @param array  $channelConfig Config array for listitems channel
+     * @param bool   $caseSensitive Use case sensitive tags?
+     * @param bool   $matchExpected Do we expect the list to show up in channel?
+     *
+     * @depends testEmailPublicList
+     *
+     * @dataProvider getListTagData
+     *
+     * @return void
+     */
+    public function testListTaggingToDisplayChannel(
+        string $listTags,
+        array $channelConfig,
+        bool $caseSensitive,
+        bool $matchExpected
+    ): void {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['listitems'],
+                    ],
+                    'provider.listitems' => $channelConfig,
+                ],
+                'config' => [
+                    'Social' => [
+                        'listTags' => 'enabled',
+                        'case_sensitive_tags' => $caseSensitive,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->gotoUserAccount();
+        // Click on the first list and tag it:
+        $link = $this->findAndAssertLink($page, 'Test List');
+        $link->click();
+        $button = $this->findAndAssertLink($page, 'Edit List');
+        $button->click();
+        $this->findCssAndSetValue($page, '#list_tags', $listTags);
+        $this->clickCss($page, 'input[name="submit"]'); // submit button
+
+        // Now go to the channel page, where the tagged public list should appear:
+        $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');
+        $this->waitForPageLoad($page);
+        if ($matchExpected) {
+            $this->assertEquals('Test List', $this->findCss($page, '.channel-title h2')->getText());
+            $this->assertCount(1, $page->findAll('css', '.channel-record'));
+        } else {
+            $this->unfindCss($page, '.channel-title h2');
+        }
     }
 
     /**

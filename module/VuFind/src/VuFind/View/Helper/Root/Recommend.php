@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Recommendation module view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Recommend\RecommendInterface;
@@ -57,11 +59,11 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
         $index = null
     ) {
         $template = 'Recommend/%s.phtml';
-        $className = get_class($recommend);
+        $className = $recommend::class;
         $context = [
             'recommend' => $recommend,
             'location' => $location,
-            'configIndex' => $index
+            'configIndex' => $index,
         ];
         return $this->renderClassTemplate($template, $className, $context);
     }

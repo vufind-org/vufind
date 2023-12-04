@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class FeedbackController
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -27,10 +26,16 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFindAdmin\Controller;
 
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Table\Feedback;
+
+use function count;
+use function is_array;
 
 /**
  * Class FeedbackController
@@ -70,7 +75,8 @@ class FeedbackController extends AbstractAdmin
         $feedback = $feedbackTable->getFeedbackByFilter(
             $this->convertFilter($this->getParam('form_name')),
             $this->convertFilter($this->getParam('site_url')),
-            $this->convertFilter($this->getParam('status'))
+            $this->convertFilter($this->getParam('status')),
+            $this->getParam('page')
         );
         $view = $this->createViewModel(
             [
@@ -127,7 +133,7 @@ class FeedbackController extends AbstractAdmin
         $this->flashMessenger()->addMessage(
             [
                 'msg' => 'feedback_delete_success',
-                'tokens' => ['%%count%%' => $delete]
+                'tokens' => ['%%count%%' => $delete],
             ],
             'success'
         );
@@ -149,7 +155,7 @@ class FeedbackController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_feedback",
+                'title' => 'confirm_delete_feedback',
                 'messages' => $this->getConfirmDeleteMessages(count($ids)),
                 'ids' => $ids,
                 'extras' => [
@@ -157,8 +163,8 @@ class FeedbackController extends AbstractAdmin
                     'site_url' => $this->getParam('site_url', true),
                     'status' => $this->getParam('status', true),
                     'ids' => $ids,
-                ]
-            ]
+                ],
+            ],
         ];
         return $this->forwardTo('Confirm', 'Confirm', $data);
     }
@@ -187,7 +193,7 @@ class FeedbackController extends AbstractAdmin
         $messages = [];
         $messages[] = [
             'msg' => 'feedback_delete_warning',
-            'tokens' => ['%%count%%' => $count]
+            'tokens' => ['%%count%%' => $count],
         ];
 
         if (array_filter(array_map([$this, 'getParam'], $params))) {
@@ -197,7 +203,7 @@ class FeedbackController extends AbstractAdmin
                     '%%formname%%' => $paramMessages['form_name'],
                     '%%siteurl%%' => $paramMessages['site_url'],
                     '%%status%%' => $paramMessages['status'],
-                ]
+                ],
             ];
         }
         $messages[] = ['msg' => 'confirm_delete'];
@@ -232,11 +238,13 @@ class FeedbackController extends AbstractAdmin
             'admin/feedback',
             [],
             [
-                'query' => [
-                    'form_name' => $this->getParam('form_name'),
-                    'site_url' => $this->getParam('site_url'),
-                    'status' => $this->getParam('status'),
-                ],
+                'query' => array_filter(
+                    [
+                        'form_name' => $this->getParam('form_name'),
+                        'site_url' => $this->getParam('site_url'),
+                        'status' => $this->getParam('status'),
+                    ]
+                ),
             ]
         );
     }
@@ -280,7 +288,7 @@ class FeedbackController extends AbstractAdmin
      */
     protected function convertFilter(?string $value): ?string
     {
-        return ("ALL" !== $value && null !== $value)
+        return ('ALL' !== $value && null !== $value)
             ? $value : null;
     }
 

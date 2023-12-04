@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for building the CollectionHierarchyTree tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -41,8 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CollectionHierarchyTreeFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class CollectionHierarchyTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

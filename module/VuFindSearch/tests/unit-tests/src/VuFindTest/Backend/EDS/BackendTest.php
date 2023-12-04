@@ -3,7 +3,7 @@
 /**
  * Unit tests for EDS backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EDS;
 
 use InvalidArgumentException;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * Unit tests for EDS backend.
@@ -63,14 +66,14 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $back = $this->getBackend(
             $conn,
-            $this->getRCFactory(),
+            $this->getEdsRCFactory(),
             null,
             null,
             [],
             ['getAutocompleteData']
         );
         $autocompleteData = [
-            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
+            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234',
         ];
         $back->expects($this->any())
             ->method('getAutocompleteData')
@@ -85,25 +88,26 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retrieving a record.
+     * Test retrieving an EDS record.
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieveEdsItem()
     {
-        $conn = $this->getConnectorMock(['retrieve']);
+        $conn = $this->getConnectorMock(['retrieveEdsItem']);
         $conn->expects($this->once())
-            ->method('retrieve')
-            ->will($this->returnValue($this->loadResponse('retrieve')));
+            ->method('retrieveEdsItem')
+            ->will($this->returnValue($this->loadResponse('retrieveEdsItem')));
 
         $back = $this->getBackend(
             $conn,
-            $this->getRCFactory(),
+            $this->getEdsRCFactory(),
             null,
             null,
             [],
             ['getAuthenticationToken', 'getSessionToken']
         );
+        $back->setBackendType('EDS');
         $back->expects($this->any())
             ->method('getAuthenticationToken')
             ->will($this->returnValue('auth1234'));
@@ -121,6 +125,43 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test retrieving an EPF record.
+     *
+     * @return void
+     */
+    public function testRetrieveEpfItem()
+    {
+        $conn = $this->getConnectorMock(['retrieveEpfItem']);
+        $conn->expects($this->once())
+            ->method('retrieveEpfItem')
+            ->will($this->returnValue($this->loadResponse('retrieveEpfItem')));
+
+        $back = $this->getBackend(
+            $conn,
+            $this->getEpfRCFactory(),
+            null,
+            null,
+            [],
+            ['getAuthenticationToken', 'getSessionToken']
+        );
+        $back->setBackendType('EPF');
+        $back->expects($this->any())
+            ->method('getAuthenticationToken')
+            ->will($this->returnValue('auth1234'));
+        $back->expects($this->any())
+            ->method('getSessionToken')
+            ->will($this->returnValue('sess1234'));
+        $back->setIdentifier('test');
+
+        $coll = $back->retrieve('edp297646');
+        $this->assertCount(1, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('edp297646', $rec->getUniqueID());
+    }
+
+    /**
      * Test performing a search.
      *
      * @return void
@@ -134,7 +175,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $back = $this->getBackend(
             $conn,
-            $this->getRCFactory(),
+            $this->getEdsRCFactory(),
             null,
             null,
             [],
@@ -162,10 +203,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(65924, $coll->getTotal());
         $this->assertEquals(0, $coll->getOffset());
         $rawFacets = $coll->getRawFacets();
-        $this->assertEquals(7, count($rawFacets));
+        $this->assertCount(7, $rawFacets);
         $this->assertEquals('SourceType', $rawFacets[0]['Id']);
         $this->assertEquals('Source Type', $rawFacets[0]['Label']);
-        $this->assertEquals(8, count($rawFacets[0]['AvailableFacetValues']));
+        $this->assertCount(8, $rawFacets[0]['AvailableFacetValues']);
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
@@ -210,8 +251,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $config = [
             'EBSCO_Account' => [
                 'user_name' => 'un', 'password' => 'pw', 'ip_auth' => true,
-                'profile' => 'pr', 'organization_id' => 'oi'
-            ]
+                'profile' => 'pr', 'organization_id' => 'oi',
+            ],
         ];
         $back = $this->getBackend($conn, $fact, null, null, $config);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
@@ -262,13 +303,22 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @param \VuFindSearch\Backend\EDS\Connector                     $connector Connector
      * @param \VuFindSearch\Response\RecordCollectionFactoryInterface $factory   Record collection factory
-     * @param \Laminas\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
-     * @param \Laminas\Session\Container                                 $container Session container
+     * @param \Laminas\Cache\Storage\Adapter\AbstractAdapter          $cache     Object cache adapter
+     * @param \Laminas\Session\Container                              $container Session container
      * @param array                                                   $settings  Additional settings
-     * @param array                                                   $mock      Methods to mock (or null for a real object)
+     * @param array                                                   $mock      Methods to mock (or null for a
+     * real object)
+     *
+     * @return \VuFindSearch\Backend\EDS\Backend
      */
-    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = [], $mock = null)
-    {
+    protected function getBackend(
+        $connector,
+        $factory = null,
+        $cache = null,
+        $container = null,
+        $settings = [],
+        $mock = null
+    ) {
         if (null === $factory) {
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         }
@@ -291,14 +341,38 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a real record collection factory
+     * Build a real record collection factory for EDS records
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getRCFactory()
+    protected function getEdsRCFactory()
     {
-        $callback = function ($data) {
-            $driver = new \VuFind\RecordDriver\EDS();
+        $driverClass = \VuFind\RecordDriver\EDS::class;
+        return $this->getRCFactory($driverClass);
+    }
+
+    /**
+     * Build a real record collection factory for EPF records
+     *
+     * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+     */
+    protected function getEpfRCFactory()
+    {
+        $driverClass = \VuFind\RecordDriver\EPF::class;
+        return $this->getRCFactory($driverClass);
+    }
+
+    /**
+     * Build a real record collection factory
+     *
+     * @param string $driverClass class of the RecordDriver to create
+     *
+     * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+     */
+    protected function getRCFactory($driverClass)
+    {
+        $callback = function ($data) use ($driverClass) {
+            $driver = new $driverClass();
             $driver->setRawData($data);
             return $driver;
         };

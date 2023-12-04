@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2019.
@@ -28,9 +29,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -47,7 +53,8 @@ use VuFindSearch\Command\SearchCommand;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+class SolrDefault extends DefaultRecord implements
+    Feature\PreviousUniqueIdInterface,
     Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;
@@ -61,11 +68,11 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
      * @var array
      */
     protected $preferredSnippetFields = [
-        'contents', 'topic'
+        'contents', 'topic',
     ];
 
     /**
-     * These Solr fields should NEVER be used for snippets.  (We exclude author
+     * These Solr fields should NEVER be used for snippets. (We exclude author
      * and title because they are already covered by displayed fields; we exclude
      * spelling because it contains lots of fields jammed together and may cause
      * glitchy output; we exclude ID because random numbers are not helpful).
@@ -134,7 +141,8 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;
-        if (isset($searchSettings->Snippet_Captions)
+        if (
+            isset($searchSettings->Snippet_Captions)
             && count($searchSettings->Snippet_Captions) > 0
         ) {
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
@@ -220,20 +228,21 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
                 if (isset($this->highlightDetails[$current][0])) {
                     return [
                         'snippet' => $this->highlightDetails[$current][0],
-                        'caption' => $this->getSnippetCaption($current)
+                        'caption' => $this->getSnippetCaption($current),
                     ];
                 }
             }
 
             // No preferred field found, so try for a non-forbidden field:
-            if (isset($this->highlightDetails)
+            if (
+                isset($this->highlightDetails)
                 && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
                     if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
                         return [
                             'snippet' => $value[0],
-                            'caption' => $this->getSnippetCaption($key)
+                            'caption' => $this->getSnippetCaption($key),
                         ];
                     }
                 }
@@ -280,7 +289,8 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
     {
         // Shortcut: if this record is not the top record, let's not find out the
         // count. This assumes that contained records cannot contain more records.
-        if (!$this->containerLinking
+        if (
+            !$this->containerLinking
             || empty($this->fields['is_hierarchy_id'])
             || null === $this->searchService
         ) {

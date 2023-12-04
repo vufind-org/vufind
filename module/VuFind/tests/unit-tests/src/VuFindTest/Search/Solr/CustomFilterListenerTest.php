@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Unit tests for Custom Filter Listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
@@ -102,7 +104,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testRemapping(): void
     {
         $normal = [
-            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
         $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
@@ -110,7 +112,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
-            ['foo:"bar"', "field1:normal OR field2:alsoNormal"],
+            ['foo:"bar"', 'field1:normal OR field2:alsoNormal'],
             $params->get('fq')
         );
     }
@@ -123,7 +125,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testMismatchedBackendIsIgnored(): void
     {
         $normal = [
-            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
         $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
@@ -144,7 +146,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testWrongContextIsIgnored(): void
     {
         $normal = [
-            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
         $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
@@ -174,7 +176,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
-            ['foo:"bar"', "field3:invertedFilter"],
+            ['foo:"bar"', 'field3:invertedFilter'],
             $params->get('fq')
         );
     }

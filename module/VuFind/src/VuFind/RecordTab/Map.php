@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Map tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,9 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFind\Config\PathResolver;
+
+use function count;
 
 /**
  * Map tab
@@ -301,7 +305,7 @@ class Map extends AbstractBase
                 [
                     $geoCoords[$key][0], $geoCoords[$key][1],
                     $geoCoords[$key][2], $geoCoords[$key][3],
-                    $mapLabel, $mapCoords
+                    $mapLabel, $mapCoords,
                 ]
             );
         }

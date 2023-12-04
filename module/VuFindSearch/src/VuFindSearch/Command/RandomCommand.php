@@ -3,7 +3,7 @@
 /**
  * Return random records command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2021.
@@ -28,12 +28,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
+
+use function in_array;
 
 /**
  * Return random records command.
@@ -95,7 +98,7 @@ class RandomCommand extends CallMethodCommand
         return [
             $this->getQuery(),
             $this->getLimit(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

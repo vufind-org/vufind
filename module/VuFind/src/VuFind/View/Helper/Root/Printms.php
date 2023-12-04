@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Prints a human readable format from a number of milliseconds
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -72,7 +74,7 @@ class Printms extends AbstractHelper
 
                 if ($years) {
                     return sprintf(
-                        "%d years %d days %d hours %d minutes %d seconds",
+                        '%d years %d days %d hours %d minutes %d seconds',
                         $years,
                         $days,
                         $hours,
@@ -81,7 +83,7 @@ class Printms extends AbstractHelper
                     );
                 } else {
                     return sprintf(
-                        "%d days %d hours %d minutes %d seconds",
+                        '%d days %d hours %d minutes %d seconds',
                         $days,
                         $hours,
                         $minutes,
@@ -90,14 +92,14 @@ class Printms extends AbstractHelper
                 }
             } else {
                 return sprintf(
-                    "%d hours %d minutes %d seconds",
+                    '%d hours %d minutes %d seconds',
                     $hours,
                     $minutes,
                     $seconds
                 );
             }
         } else {
-            return sprintf("%d minutes %d seconds", $minutes, $seconds);
+            return sprintf('%d minutes %d seconds', $minutes, $seconds);
         }
     }
 }

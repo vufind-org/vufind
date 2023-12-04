@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: index course reserves into Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,6 +35,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Reserves\CsvReader;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
+
+use function count;
+use function in_array;
+use function ini_get;
 
 /**
  * Console command: index course reserves into Solr.
@@ -103,7 +109,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 InputOption::VALUE_REQUIRED,
                 'provides a template showing where important values can be found '
                 . "within the file.\nThe template is a comma-separated list of "
-                . "values.  Choose from:\n"
+                . "values. Choose from:\n"
                 . "BIB_ID     - bibliographic ID\n"
                 . "COURSE     - course name\n"
                 . "DEPARTMENT - department name\n"
@@ -155,7 +161,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'course_id' => $courseId,
                     'course' => $courses[$courseId] ?? '',
                     'department_id' => $departmentId,
-                    'department' => $departments[$departmentId] ?? ''
+                    'department' => $departments[$departmentId] ?? '',
                 ];
             }
             if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
@@ -178,8 +184,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      * @param array|string $files     Array of files to load (or single filename).
      * @param string       $delimiter Delimiter used by file(s).
      * @param string       $template  Template showing field positions within
-     * file(s).  Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
-     * DEPARTMENT and/or SKIP.  Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
+     * file(s). Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
+     * DEPARTMENT and/or SKIP. Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
      *
      * @return CsvReader
      */
@@ -241,7 +247,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
         // Make sure we have reserves and at least one of: instructors, courses,
         // departments:
-        if ((!empty($instructors) || !empty($courses) || !empty($departments))
+        if (
+            (!empty($instructors) || !empty($courses) || !empty($departments))
             && !empty($reserves)
         ) {
             // Delete existing records

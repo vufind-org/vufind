@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ExternalSearch Recommendation Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Recommend;
 
 /**
@@ -93,7 +95,7 @@ class ExternalSearch implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -123,7 +125,7 @@ class ExternalSearch implements RecommendInterface
      */
     public function getUrl()
     {
-        return (false === strpos($this->template, '%%lookfor%%'))
+        return (!str_contains($this->template, '%%lookfor%%'))
             ? $this->template . urlencode($this->lookfor)
             : str_replace('%%lookfor%%', urlencode($this->lookfor), $this->template);
     }

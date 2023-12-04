@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Dynamic Book Cover Generator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -25,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use VuFind\Cover\Layer\LayerInterface;
 use VuFind\Cover\Layer\PluginManager as LayerManager;
 use VuFindTheme\ThemeInfo;
+
+use function count;
 
 /**
  * Dynamic Book Cover Generator

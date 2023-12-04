@@ -3,7 +3,7 @@
 /**
  * Plugin for Bokinfo coverimages
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) imCode Partner AB 2022.
  * Copyright (C) Moravian Library 2019.
@@ -27,9 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 use SimpleXMLElement;
+
+use function strlen;
 
 /**
  * Plugin for Bokinfo coverimages
@@ -83,7 +86,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
             );
 
             $client->getRequest()->getHeaders()
-                  ->addHeaderLine("Ocp-Apim-Subscription-Key", $key);
+                  ->addHeaderLine('Ocp-Apim-Subscription-Key', $key);
 
             $resp = $client->send();
             $body = $resp->getBody();
@@ -147,8 +150,8 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      */
     protected function getImageUrl($rawXML)
     {
-        if (!str_contains($rawXML, "ResourceLink")) {
-            return "";
+        if (!str_contains($rawXML, 'ResourceLink')) {
+            return '';
         }
 
         // This is already wrapped in try..catch
@@ -156,7 +159,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
 
         foreach ($xml->getDocNamespaces() as $strPrefix => $strNamespace) {
             if (strlen($strPrefix) == 0) {
-                $strPrefix = "_"; // Assign an arbitrary namespace prefix.
+                $strPrefix = '_'; // Assign an arbitrary namespace prefix.
             }
             $xml->registerXPathNamespace($strPrefix, $strNamespace);
         }

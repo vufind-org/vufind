@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Open Library Utilities
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
+
+use function count;
 
 /**
  * Open Library Utilities
@@ -90,25 +94,25 @@ class OpenLibrary
         // normalise subject term
         $subject = $this->normaliseSubjectString($subject);
         if ($ebooks) {
-            $ebooks = "true";
+            $ebooks = 'true';
         }
         if ($details) {
-            $details = "true";
+            $details = 'true';
         }
 
         for ($i = 0; $i < count($subjectTypes); $i++) {
             if (empty($result)) {
-                $subjectType = "";
-                $subjectType = $subjectTypes[$i] == "topic" ? "" :
-                    $subjectTypes[$i] . ":";
+                $subjectType = '';
+                $subjectType = $subjectTypes[$i] == 'topic' ? '' :
+                    $subjectTypes[$i] . ':';
 
                 // build url
                 // ebooks parameter does not work at present, so limit has been set
                 // to 50 to increase likelihood of full-text, public scans being
                 // returned. see https://bugs.launchpad.net/openlibrary/+bug/709772
-                $url = "http://openlibrary.org/subjects/" . $subjectType . $subject .
-                    ".json?ebooks=" . $ebooks . "&details=" . $details .
-                    "&offset=" . $offset . "&limit=50&published_in=" . $publishedIn;
+                $url = 'http://openlibrary.org/subjects/' . $subjectType . $subject .
+                    '.json?ebooks=' . $ebooks . '&details=' . $details .
+                    '&offset=' . $offset . '&limit=50&published_in=' . $publishedIn;
 
                 // make API call
                 $result = $this->processSubjectsApi($url, $limit, $publicFullText);
@@ -145,7 +149,8 @@ class OpenLibrary
                 $i = 1;
                 foreach ($data['works'] as $work) {
                     if ($i <= $limit) {
-                        if ($publicFullText && (!$work['public_scan']
+                        if (
+                            $publicFullText && (!$work['public_scan']
                             || !$work['has_fulltext'])
                         ) {
                             continue;
@@ -182,7 +187,7 @@ class OpenLibrary
         // Normalise search term
         $subject = str_replace(['"', ',', '/'], '', $subject);
         $subject = trim(strtolower($subject));
-        $subject = preg_replace("/\s+/", "_", $subject);
+        $subject = preg_replace("/\s+/", '_', $subject);
         return $subject;
     }
 }

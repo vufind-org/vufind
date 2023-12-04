@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2013.
@@ -28,10 +29,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Driver\MultiBackend;
+
+use function in_array;
 
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
@@ -47,7 +51,7 @@ use VuFind\ILS\Driver\MultiBackend;
 class MultiILS extends ILS
 {
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.

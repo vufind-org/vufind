@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EDSResultsDeferred recommendation module Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 /**
@@ -52,6 +54,25 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
         );
         $this->assertEquals(
             'mod=EDSResults&params=lookfor%3A3&lookfor=foo',
+            $mod->getUrlParams()
+        );
+    }
+
+    /**
+     * Test behavior when lookfor is an array (unexpected, but possible through
+     * query manipulation).
+     *
+     * @return void
+     */
+    public function testLookforArray()
+    {
+        $mod = $this->getRecommend(
+            \VuFind\Recommend\EDSResultsDeferred::class,
+            ':3',
+            new \Laminas\Stdlib\Parameters(['lookfor' => ['foo', 'bar']])
+        );
+        $this->assertEquals(
+            'mod=EDSResults&params=lookfor%3A3&lookfor=foo+bar',
             $mod->getUrlParams()
         );
     }

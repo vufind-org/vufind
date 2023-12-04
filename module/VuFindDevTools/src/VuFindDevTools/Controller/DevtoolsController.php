@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Development Tools Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,12 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFindDevTools\Controller;
 
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
+
+use function is_callable;
 
 /**
  * Development Tools Controller
@@ -114,7 +118,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function iconAction()
     {
         $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
+            ->getMergedConfig('icons');
         $aliases = array_keys($config['aliases'] ?? []);
         sort($aliases);
         return compact('aliases');

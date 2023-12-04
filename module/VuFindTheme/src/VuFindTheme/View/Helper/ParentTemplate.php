@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Helper to get path to a parent template (for including)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use Laminas\View\Resolver\TemplatePathStack;
@@ -69,7 +71,12 @@ class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
     public function __invoke($template, $targetTheme = null)
     {
         $paths = $this->templatePathStack->getPaths();
+
+        // rewind to fix problems with multiple invokes
+        $paths->rewind();
+        // skip current theme
         $paths->next();
+
         while (
             $paths->current() &&
             (!file_exists($paths->current() . $template) ||

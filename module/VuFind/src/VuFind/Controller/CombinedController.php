@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Combined Search Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Search\SearchRunner;
+
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -105,7 +112,8 @@ class CombinedController extends AbstractSearch
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Should we suppress content due to emptiness?
-        if (($settings['hide_if_empty'] ?? false)
+        if (
+            ($settings['hide_if_empty'] ?? false)
             && $settings['view']->results->getResultTotal() == 0
         ) {
             $html = '';
@@ -120,7 +128,8 @@ class CombinedController extends AbstractSearch
                 'showCartControls' => $currentOptions->supportsCart()
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
-                    && ($general->Site->showBulkOptions ?? false)
+                    && ($general->Site->showBulkOptions ?? false),
+                'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
             // Load custom CSS, if necessary:
             $html = ($this->getViewRenderer()->plugin('headLink'))();
@@ -208,13 +217,26 @@ class CombinedController extends AbstractSearch
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';
-        if (!in_array($placement, ['distributed', 'left', 'right'])) {
+        if (!in_array($placement, ['distributed', 'left', 'right', 'grid'])) {
             $placement = 'distributed';
         }
 
         // Get default config for showBulkOptions
         $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
+
+        // Identify if any modules use include_recommendations_side.
+        $columnSideRecommendations = [];
+        $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
+        foreach ($config as $subconfig) {
+            if (is_array($subconfig['include_recommendations_side'] ?? false)) {
+                foreach ($subconfig['include_recommendations_side'] as $recommendation) {
+                    $recommendationModuleName = strtok($recommendation, ':');
+                    $recommendationModule = $recommendationManager->get($recommendationModuleName);
+                    $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+                }
+            }
+        }
 
         // Build view model:
         return $this->createViewModel(
@@ -227,7 +249,8 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
+                'columnSideRecommendations' => $columnSideRecommendations,
             ]
         );
     }
@@ -241,40 +264,42 @@ class CombinedController extends AbstractSearch
     {
         [$type, $target] = explode(':', $this->params()->fromQuery('type'), 2);
         switch ($type) {
-        case 'VuFind':
-            [$searchClassId, $type] = explode('|', $target);
-            $params = $this->getRequest()->getQuery()->toArray();
-            $params['type'] = $type;
+            case 'VuFind':
+                [$searchClassId, $type] = explode('|', $target);
+                $params = $this->getRequest()->getQuery()->toArray();
+                $params['type'] = $type;
 
-            // Disable retained filters if we are switching classes!
-            $activeClass = $this->params()->fromQuery('activeSearchClassId');
-            if ($activeClass != $searchClassId) {
-                unset($params['filter']);
-            }
-            unset($params['activeSearchClassId']); // don't need to pass this forward
+                // Disable retained filters if we are switching classes!
+                $activeClass = $this->params()->fromQuery('activeSearchClassId');
+                if ($activeClass != $searchClassId) {
+                    unset($params['filter']);
+                }
+                // We don't need to pass activeSearchClassId forward:
+                unset($params['activeSearchClassId']);
 
-            $route = $this->serviceLocator
-                ->get(\VuFind\Search\Options\PluginManager::class)
-                ->get($searchClassId)->getSearchAction();
-            $base = $this->url()->fromRoute($route);
-            return $this->redirect()->toUrl($base . '?' . http_build_query($params));
-        case 'External':
-            $lookfor = $this->params()->fromQuery('lookfor');
-            $finalTarget = (false === strpos($target, '%%lookfor%%'))
-                ? $target . urlencode($lookfor)
-                : str_replace('%%lookfor%%', urlencode($lookfor), $target);
-            return $this->redirect()->toUrl($finalTarget);
-        default:
-            // If parameters are completely missing, just redirect to home instead
-            // of throwing an error; this is possibly a misbehaving crawler that
-            // followed the SearchBox URL without passing any parameters.
-            if (empty($type) && empty($target)) {
-                return $this->redirect()->toRoute('home');
-            }
-            // If we have a weird value here, report it as an Exception:
-            throw new \VuFind\Exception\BadRequest(
-                'Unexpected search type: "' . $type . '".'
-            );
+                $route = $this->serviceLocator
+                    ->get(\VuFind\Search\Options\PluginManager::class)
+                    ->get($searchClassId)->getSearchAction();
+                $base = $this->url()->fromRoute($route);
+                return $this->redirect()
+                    ->toUrl($base . '?' . http_build_query($params));
+            case 'External':
+                $lookfor = $this->params()->fromQuery('lookfor');
+                $finalTarget = (!str_contains($target, '%%lookfor%%'))
+                    ? $target . urlencode($lookfor)
+                    : str_replace('%%lookfor%%', urlencode($lookfor), $target);
+                return $this->redirect()->toUrl($finalTarget);
+            default:
+                // If parameters are completely missing, redirect to home instead
+                // of throwing an error; this is possibly a misbehaving crawler that
+                // followed the SearchBox URL without passing any parameters.
+                if (empty($type) && empty($target)) {
+                    return $this->redirect()->toRoute('home');
+                }
+                // If we have a weird value here, report it as an Exception:
+                throw new \VuFind\Exception\BadRequest(
+                    'Unexpected search type: "' . $type . '".'
+                );
         }
     }
 
@@ -314,18 +339,23 @@ class CombinedController extends AbstractSearch
         // Override the search type:
         $query->type = $searchType;
 
-        // Always leave noresults active (useful for 0-hit searches) and
-        // side inactive (no room to display) but display or hide top based
-        // on include_recommendations setting.
-        if ($settings['include_recommendations'] ?? false) {
-            $query->noRecommend = 'side';
-            if (is_array($settings['include_recommendations'])) {
-                $query->recommendOverride
-                    = ['top' => $settings['include_recommendations']];
-            }
+        // Always leave noresults active (useful for 0-hit searches).
+        // Display or hide top based on include_recommendations setting.
+        // Display or hide side based on include_recommendations_side setting.
+        $recommendOverride = [];
+        $noRecommend = [];
+        if (is_array($settings['include_recommendations'] ?? false)) {
+            $recommendOverride['top'] = $settings['include_recommendations'];
         } else {
-            $query->noRecommend = 'top,side';
+            $noRecommend[] = 'top';
         }
+        if (is_array($settings['include_recommendations_side'] ?? false)) {
+            $recommendOverride['side'] = $settings['include_recommendations_side'];
+        } else {
+            $noRecommend[] = 'side';
+        }
+        $query->recommendOverride = $recommendOverride;
+        $query->noRecommend = count($noRecommend) ? implode(',', $noRecommend) : false;
     }
 
     /**

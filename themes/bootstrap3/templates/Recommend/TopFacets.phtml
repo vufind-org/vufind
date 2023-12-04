@@ -9,7 +9,7 @@
   ];
 ?>
 <?php if (isset($topFacetSet)): ?>
-  <?php foreach($topFacetSet as $title => $cluster): ?>
+  <?php foreach ($topFacetSet as $title => $cluster): ?>
     <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
@@ -18,9 +18,9 @@
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
-        <div class="top-facets-contents" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
-          <?php foreach($cluster['list'] as $index => $thisFacet): ?>
-            <span class="facet top-facet">
+        <ul class="top-facets-contents" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
+          <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
+            <li class="facet top-facet">
               <span class="top-facet-inner">
                 <?php if ($thisFacet['isApplied']):
                   if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
@@ -44,18 +44,18 @@
                   <?php endif; ?>
                 <?php endif; ?>
               </span>
-            </span>
+            </li>
           <?php endforeach; ?>
-        </div>
+        </ul>
       </div>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
 <?php
-$script = <<<JS
-VuFind.truncate.initTruncate('.top-facets-contents');
-// Close with JS (ensures content is shown to non-JS users)
-$(this).find('.collapse').removeClass('in');
-JS;
+  $script = <<<JS
+      VuFind.truncate.initTruncate('.top-facets-contents');
+      // Close with JS (ensures content is shown to non-JS users)
+      $(this).find('.collapse').removeClass('in');
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>

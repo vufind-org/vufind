@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Similar items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016, 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -35,6 +37,9 @@ use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Command\SimilarCommand;
 
+use function count;
+use function is_object;
+
 /**
  * "Similar items" channel provider.
  *
@@ -44,8 +49,7 @@ use VuFindSearch\Command\SimilarCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SimilarItems extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -167,7 +171,8 @@ class SimilarItems extends AbstractChannelProvider
         }
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
-        if (empty($channels)
+        if (
+            empty($channels)
             && is_object($driver ?? null)
             && $channelToken !== null
         ) {
@@ -203,7 +208,7 @@ class SimilarItems extends AbstractChannelProvider
         $retVal = [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
@@ -221,14 +226,14 @@ class SimilarItems extends AbstractChannelProvider
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
         }
         return $retVal;

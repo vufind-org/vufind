@@ -4,10 +4,8 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
-        //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
-        'flex-fallback.css::lt IE 10', // flex polyfill
     ],
     'js' => [
         /**
@@ -40,14 +38,39 @@ return [
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
-        ['file' => 'lib/form-attr-polyfill.js', 'priority' => 210], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
-        ['file' => 'lib/autocomplete.js', 'priority' => 220],
+        ['file' => 'vendor/autocomplete.js', 'priority' => 220],
+        ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
-        ['file' => 'truncate.js', 'priority' => 330],
-        ['file' => 'trigger_print.js', 'priority' => 340],
-        ['file' => 'observer_manager.js', 'priority' => 350],
+        ['file' => 'searchbox_controls.js', 'priority' => 330],
+        ['file' => 'truncate.js', 'priority' => 340],
+        ['file' => 'trigger_print.js', 'priority' => 350],
+        ['file' => 'observer_manager.js', 'priority' => 360],
     ],
+    /**
+     * Configuration for a single or multiple favicons.
+     *
+     * Can be a single string that is a path to an .ico icon relative to the theme image folder.
+     *
+     * For multiple favicons the value must be an array of arrays of attributes
+     * that will be rendered as link elements.
+     *
+     * Example:
+     *  [
+     *      [
+     *          'href' => 'favicon-32x32.png',
+     *          'rel' => 'icon',
+     *          'type' => 'image/png',
+     *          'sizes' => '32x32',
+     *      ],
+     *       [
+     *          'href' => 'favicon-180x180.png',
+     *          'rel' => 'apple-touch-icon',
+     *          'type' => 'image/png',
+     *          'sizes' => '180x180',
+     *      ],
+     *  ]
+     */
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
@@ -62,8 +85,8 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
-            'search' => 'VuFind\View\Helper\Bootstrap3\Search'
-        ]
+            'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+        ],
     ],
     'icons' => [
         'defaultSet' => 'FontAwesome',
@@ -89,6 +112,10 @@ return [
             ],
             'Collapse' => [
                 'template' => 'collapse',
+            ],
+            // Unicode symbol characters. Icons are defined as hex code points.
+            'Unicode' => [
+                'template' => 'unicode',
             ],
             /* For an example of an images set, see Bootprint's theme.config.php. */
         ],
@@ -133,7 +160,10 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
+            'facet-collapse' => 'FontAwesome:caret-down',
             'facet-exclude' => 'FontAwesome:times',
+            'facet-expand' => 'FontAwesome:caret-right',
+            'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',
             'format-atlas' => 'FontAwesome:compass',
@@ -243,10 +273,10 @@ return [
             'sign-out' => 'FontAwesome:sign-out',
             'spinner' => 'FontAwesome:spinner:icon--spin',
             'status-available' => 'FontAwesome:check',
-            'status-indicator' => 'FontAwesome:circle',
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
+            'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',
             'tree-context' => 'FontAwesome:sitemap',
@@ -261,6 +291,7 @@ return [
             'ui-failure' => 'FontAwesome:times',
             'ui-menu' => 'FontAwesome:bars',
             'ui-remove' => 'FontAwesome:times',
+            'ui-reset-search' => 'Alias:ui-remove',
             'ui-save' => 'FontAwesome:floppy-o',
             'ui-success' => 'FontAwesome:check',
             'user-checked-out' => 'FontAwesome:book',
@@ -282,5 +313,5 @@ return [
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
-    'doctype' => 'HTML5'
+    'doctype' => 'HTML5',
 ];

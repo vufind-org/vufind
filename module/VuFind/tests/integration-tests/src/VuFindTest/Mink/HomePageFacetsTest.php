@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test functionality of the home page facets.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -40,6 +42,27 @@ namespace VuFindTest\Mink;
 class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Test that normal facets work properly.
+     *
+     * @return void
+     */
+    public function testNormalFacets()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $container = $this->findCss($page, '.home-facet.callnumber-first a');
+        $this->assertEquals('A - General Works', $container->getText());
+        $this->clickCss($page, '.home-facet.callnumber-first a');
+        $this->waitForPageLoad($page);
+        $this->assertStringEndsWith(
+            'Search/Results?filter%5B%5D=callnumber-first%3A%22A+-+General+Works%22',
+            $this->getMinkSession()->getCurrentUrl()
+        );
+    }
+
+    /**
      * Test that hierarchy facets work properly.
      *
      * @return void
@@ -50,22 +73,28 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
                     ],
                     'HomePage' => [
-                        'hierarchical_facet_str_mv' => 'Hierarchical'
-                    ]
-                ]
+                        'hierarchical_facet_str_mv' => 'Hierarchical',
+                    ],
+                ],
             ]
         );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $container = $this->findCss($page, "#facet_hierarchical_facet_str_mv");
+        $container = $this->findCss($page, '.home-facet.hierarchical_facet_str_mv .home-facet-list');
         $this->assertEquals('level1a level1z', $container->getText());
+        $this->clickCss($page, '.home-facet.hierarchical_facet_str_mv .facet');
+        $this->waitForPageLoad($page);
+        $this->assertStringEndsWith(
+            '/Search/Results?filter%5B%5D=hierarchical_facet_str_mv%3A%220%2Flevel1a%2F%22',
+            $this->getMinkSession()->getCurrentUrl()
+        );
     }
 }

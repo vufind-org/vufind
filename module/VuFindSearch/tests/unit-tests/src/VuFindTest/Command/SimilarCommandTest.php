@@ -3,7 +3,7 @@
 /**
  * Unit tests for SimilarCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -57,7 +58,7 @@ class SimilarCommandTest extends TestCase
             ->will($this->returnValue($backendId));
         $backend->expects($this->once())->method('similar')
             ->with(
-                $this->equalTo("id"),
+                $this->equalTo('id'),
                 $this->equalTo($params)
             )->will($this->returnValue('result'));
         $command = $this->getCommand();
@@ -144,7 +145,7 @@ class SimilarCommandTest extends TestCase
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
 
-        $command = new SimilarCommand($backendId, "id", $params);
+        $command = new SimilarCommand($backendId, 'id', $params);
         return $command;
     }
 
