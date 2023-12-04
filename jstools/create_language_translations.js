@@ -12,7 +12,7 @@ let lines = "";
 codes.getAll639_3().forEach((code) => {
     const translation = codes.getName(code, lang);
     if (translation != null) {
-        lines += `${code} = "${translation.replace('"', '\\"')}"\n`;
+        lines += `${code} = "${translation.replace(/"/g, '\\"')}"\n`;
     }
 });
 
