@@ -245,8 +245,11 @@ VuFind.register('search', function search() {
    * @param {string} _style Scroll behavior ('smooth' (default), 'instant' or 'auto')
    */
   function scrollToResults(_style) {
-    let style = typeof _style !== 'undefined' ? _style : 'smooth';
-    document.querySelector(scrollElementSelector).scrollIntoView({behavior: style});
+    const scrollEl = document.querySelector(scrollElementSelector);
+    if (scrollEl && window.scrollY > scrollEl.offsetTop) {
+      const style = typeof _style !== 'undefined' ? _style : 'smooth';
+      document.querySelector(scrollElementSelector).scrollIntoView({behavior: style});
+    }
   }
 
   /**
