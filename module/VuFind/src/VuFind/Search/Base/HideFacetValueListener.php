@@ -139,10 +139,14 @@ class HideFacetValueListener
         }
         $facets = $result->getFacets();
 
+        // Count how many values have been filtered as we go:
+        $filteredFacetCounts = [];
+
         foreach ($this->hideFacets as $facet => $values) {
             foreach ((array)$values as $value) {
                 if (isset($facets[$facet][$value])) {
                     unset($facets[$facet][$value]);
+                    $filteredFacetCounts[$facet] = ($filteredFacetCounts[$facet] ?? 0) + 1;
                 }
             }
         }
@@ -155,9 +159,15 @@ class HideFacetValueListener
                 foreach ($valuesToHide as $valueToHide) {
                     if (isset($facets[$facet][$valueToHide])) {
                         unset($facets[$facet][$valueToHide]);
+                        $filteredFacetCounts[$facet] = ($filteredFacetCounts[$facet] ?? 0) + 1;
                     }
                 }
             }
+        }
+
+        // If the result object is capable of receiving filter counts, send the data:
+        if (is_callable([$result, 'setFilteredFacetCounts'])) {
+            $result->setFilteredFacetCounts($filteredFacetCounts);
         }
 
         $result->setFacets($facets);
