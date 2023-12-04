@@ -56,6 +56,7 @@ function Autocomplete(_settings) {
   }
 
   let lastInput = false;
+  let lastCB;
   function _show(input) {
     lastInput = input;
     list.style.left = "-100%"; // hide offscreen
@@ -169,7 +170,6 @@ function Autocomplete(_settings) {
     _currentIndex = -1;
   }
 
-  let lastCB;
   function _search(handler, input) {
     if (input.value.length < settings.minInputLength) {
       _hide();
