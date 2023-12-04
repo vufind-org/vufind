@@ -13,6 +13,7 @@
 
 <?php if (!empty($this->exportOptions) && count($this->records) > 0): ?>
   <form class="form-cart-export" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEscAttr('Export Items')?>">
+    <input type="hidden" name="redirectInLightbox" value="true">
     <?php foreach ($this->records as $current): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
     <?php endforeach; ?>
