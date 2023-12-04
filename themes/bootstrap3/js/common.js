@@ -538,18 +538,22 @@ function resetCaptcha($form) {
 
 function bulkFormHandler(event, data) {
   let numberOfSelected = $('.checkbox-select-item:checked').length;
-  let limit = event.originalEvent.submitter.dataset.itemLimit;
+
   if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (numberOfSelected > limit) {
-    VuFind.lightbox.alert(
-      VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
-      'danger'
-    );
-    return false;
+  if (event.originalEvent !== undefined) {
+    let limit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfSelected > limit) {
+      VuFind.lightbox.alert(
+        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
+        'danger'
+      );
+      return false;
+    }
   }
+
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;
