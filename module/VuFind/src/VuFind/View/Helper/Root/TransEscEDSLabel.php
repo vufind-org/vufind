@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -55,7 +56,7 @@ class TransEscEDSLabel extends AbstractHelper
 
         // Replace non-alphanumeric characters with underscores (to ensure
         // legal translation keys):
-        $normalizedStr = preg_replace("/[^A-Za-z0-9 ]/", "_", $str);
+        $normalizedStr = preg_replace('/[^A-Za-z0-9 ]/', '_', $str);
 
         // Now apply translation: ideally we want a match from the EDS namespace,
         // but if that's not found, we'll fall back on the default namespace, and
