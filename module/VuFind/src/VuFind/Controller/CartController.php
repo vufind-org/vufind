@@ -246,12 +246,12 @@ class CartController extends AbstractBase
     {
         // Retrieve ID list:
         $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+            ? $this->params()->fromPost('ids', [])
+            : $this->params()->fromPost('idsAll', []);
 
         // Retrieve follow-up information if necessary:
         if (!is_array($ids) || empty($ids)) {
-            $ids = $this->followup()->retrieveAndClear('cartIds');
+            $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
 
         // Force login if necessary:
@@ -276,16 +276,16 @@ class CartController extends AbstractBase
 
         $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
         if (!is_array($ids) || empty($ids)) {
-            if ($this->inLightbox()) {
-                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
-            } else {
-                return $this->redirectToSource('error', 'bulk_noitems_advice');
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
             }
         } elseif (count($ids) > $actionLimit) {
-            if ($this->inLightbox()) {
-                $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
-            } else {
-                return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
             }
         } elseif ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Build the URL to share:
@@ -337,7 +337,11 @@ class CartController extends AbstractBase
         // Check if id limit is exceeded
         $actionLimit = $this->config?->BulkActions?->limits?->printcart ?? 0;
         if (count($ids) > $actionLimit) {
-            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            return $this->redirectToSource('error', $errorMsg);
         }
 
         $callback = function ($i) {
@@ -367,8 +371,8 @@ class CartController extends AbstractBase
     {
         // Get the desired ID list:
         $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+            ? $this->params()->fromPost('ids', [])
+            : $this->params()->fromPost('idsAll', []);
 
         // Get export tools:
         $export = $this->getExport();
@@ -380,16 +384,16 @@ class CartController extends AbstractBase
             ?? 0;
 
         if (!is_array($ids) || empty($ids)) {
-            if ($this->inLightbox()) {
-                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
-            } else {
-                return $this->redirectToSource('error', 'bulk_noitems_advice');
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
             }
         } elseif (count($ids) > $actionLimit) {
-            if ($this->inLightbox()) {
-                $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
-            } else {
-                return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
@@ -499,10 +503,10 @@ class CartController extends AbstractBase
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
         $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
-            : $this->params()->fromPost('idsAll');
+            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids', []))
+            : $this->params()->fromPost('idsAll', []);
         if (!is_array($ids) || empty($ids)) {
-            $ids = $this->followup()->retrieveAndClear('cartIds');
+            $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
 
         // Check if id limit is exceeded
@@ -516,18 +520,17 @@ class CartController extends AbstractBase
             );
         }
 
-        // Process submission if necessary:
         if (!is_array($ids) || empty($ids)) {
-            if ($this->inLightbox()) {
-                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
-            } else {
-                return $this->redirectToSource('error', 'bulk_noitems_advice');
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
             }
         } elseif (count($ids) > $actionLimit) {
-            if ($this->inLightbox()) {
-                $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
-            } else {
-                return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
             $results = $this->favorites()
@@ -569,6 +572,11 @@ class CartController extends AbstractBase
         // Set flash message if requested:
         if (null !== $flashNamespace && !empty($flashMsg)) {
             $this->flashMessenger()->addMessage($flashMsg, $flashNamespace);
+        }
+
+        // Do not redirect if in lightbox only if required
+        if (!$this->params()->fromPost('redirectInLightbox', false) && $this->inLightbox()) {
+            return false;
         }
 
         // If we entered the controller in the expected way (i.e. via the
