@@ -1,3 +1,4 @@
+const childProcess = require("child_process");
 const codes = require("all-iso-language-codes");
 const fs = require("fs");
 
@@ -25,4 +26,9 @@ codes.getAll639_3().forEach((code) => {
 });
 
 const home = process.env.VUFIND_HOME;
-fs.writeFileSync(`${home}/languages/ISO639-3/${lang}.ini`, lines);
+const outfile = `${home}/languages/ISO639-3/${lang}.ini`;
+const existing = fs.existsSync(outfile) ? fs.readFileSync(outfile) : "";
+
+fs.writeFileSync(`${home}/languages/ISO639-3/${lang}.ini`, lines + "\n" + existing);
+
+childProcess.execSync(`php ${home}/public/index.php language normalize languages`);
