@@ -17,7 +17,7 @@ codes.getAll639_3().forEach((code) => {
     if (translation != null
         // Filter out English translations unless we're generating the English file:
         && (lang == "en" || translation != engTranslation)
-        // Translate out native translations unless it's the native translation of the language we're working on:
+        // Filter out native translations unless it's the native translation of the language we're working on:
         && (translation == langNative || translation != nativeTranslation)
     ) {
         lines += `${code} = "${translation.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"\n`;
