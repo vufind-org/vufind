@@ -43,28 +43,11 @@ table { font-size: @reduced-font-size; }
 
 .form-control { box-shadow: none; }
 .form-control:hover,
-.form-control:focus { border-color: @brand-primary; }
 .form-control:focus {
   --outline-color: @gold;
 
-  padding-bottom: 4px; // Prevent jumping
-  border-bottom: 3px solid @brand-secondary;
+  border-color: @brand-primary;
   outline: 3px solid var(--outline-color);
-}
-select.form-control {
-  padding-bottom: @padding-base-vertical;
-  border: 1px solid @light-silver;
-}
-form .form-control:focus {
-  /* #LESS> */
-  --outline-color: fade(@brand-primary, 40%);
-  /* <#LESS */
-  /* #SCSS>
-  --outline-color: color.change($brand-primary, $alpha: 0.4);
-  <#SCSS */
-}
-header .form-control:focus {
-  --outline-color: @gold;
 }
 
 .breadcrumb a { color: @dark-gray; }
