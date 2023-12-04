@@ -435,7 +435,8 @@ class Folio extends AbstractAPI implements
      */
     public function getStatus($itemId)
     {
-        return $this->getHolding($itemId);
+        $holding = $this->getHolding($itemId);
+        return $holding['holdings'] ?? [];
     }
 
     /**
