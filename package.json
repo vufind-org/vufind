@@ -14,21 +14,17 @@
     "watch": "npm run watch:css",
     "build-dev": "npm run build-dev:css",
     "watch-dev": "npm run watch-dev:css",
-
     "build:css": "npm run build:less",
     "watch:css": "npm run watch:less",
     "build-dev:css": "npm run build-dev:less",
     "watch-dev:css": "npm run watch-dev:less",
-
     "build:less": "grunt less && npm run lessToSass",
     "watch:less": "grunt watch:less",
     "build-dev:less": "grunt lessdev && npm run lessToSass",
     "watch-dev:less": "grunt watch:lessdev",
-
     "build:scss": "grunt scss",
     "check:scss": "grunt check:scss",
     "watch:scss": "grunt watch:scss",
-
     "lessToSass": "grunt lessToSass",
     "watch:lessToSass": "grunt watch:lessToSass"
   },
@@ -42,6 +38,7 @@
     "node-sass": "^7.0.1"
   },
   "devDependencies": {
+    "all-iso-language-codes": "^1.0.13",
     "eslint": "^8.15.0",
     "eslint-plugin-no-jquery": "^2.7.0",
     "grunt-contrib-watch": "^1.1.0",
