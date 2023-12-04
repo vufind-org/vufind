@@ -7,12 +7,20 @@ if (args.length < 1) {
     return;
 }
 const lang = args[0];
+const langNative = codes.getNativeName(lang);
 
 let lines = "";
 codes.getAll639_3().forEach((code) => {
     const translation = codes.getName(code, lang);
-    if (translation != null) {
-        lines += `${code} = "${translation.replace(/"/g, '\\"')}"\n`;
+    const engTranslation = codes.getName(code, "en");
+    const nativeTranslation = codes.getNativeName(code);
+    if (translation != null
+        // Filter out English translations unless we're generating the English file:
+        && (lang == "en" || translation != engTranslation)
+        // Translate out native translations unless it's the native translation of the language we're working on:
+        && (translation == langNative || translation != nativeTranslation)
+    ) {
+        lines += `${code} = "${translation.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"\n`;
     }
 });
 
