@@ -300,10 +300,13 @@ function cartFormHandler(event, data) {
       }
     }
   }
-  let itemLimit = event.originalEvent.submitter.dataset.itemLimit;
-  if (numberOfItems < 1 || numberOfItems > itemLimit) {
-    return null;
+  if (event.originalEvent !== undefined) {
+    let itemLimit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfItems < 1 || numberOfItems > itemLimit) {
+      return null;
+    }
   }
+
   if (isPrint) {
     return true;
   }
