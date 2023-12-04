@@ -51,11 +51,11 @@ Options:
 EOF
 }
 
-while getopts ":dhmpx:z" OPT
+while getopts ":dhmp:x:z" OPT
 do
   case $OPT in
     d) BASEPATH_UNDER_HARVEST=false;;
-    h) usage; 
+    h) usage;
        exit 0;;
     m) MOVE_DATA=false;;
     p) PROPERTIES_FILE="$OPTARG"; export PROPERTIES_FILE;;
