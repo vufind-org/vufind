@@ -44,10 +44,18 @@ table { font-size: @reduced-font-size; }
 .form-control { box-shadow: none; }
 .form-control:hover,
 .form-control:focus {
-  --outline-color: @gold;
+  /* #LESS> */
+  --outline-color: fade(@brand-primary, 40%);
+  /* <#LESS */
+  /* #SCSS>
+  --outline-color: color.change($brand-primary, $alpha: 0.4);
+  <#SCSS */
 
   border-color: @brand-primary;
-  outline: 3px solid var(--outline-color);
+  outline: 4px solid var(--outline-color);
+}
+.form-control:focus {
+  --outline-color: @gold;
 }
 
 .breadcrumb a { color: @dark-gray; }
