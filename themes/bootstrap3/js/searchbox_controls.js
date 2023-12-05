@@ -19,6 +19,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   };
 
   function _handleInputChange(input, triggerInputEvent = true) {
+    // Virtual Keyboard
     if ( typeof _keyboard !== 'undefined') {
       _keyboard.setInput(input);
     }
@@ -42,11 +43,11 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
   }
 
-  function _onChange(input){
+  function _onChange(input) {
     _handleInputChange(input);
   }
 
-  function _onKeyPress(button){
+  function _onKeyPress(button) {
     if (button === "{shift}" || button === "{lock}") {
       let currentLayoutType = _keyboard.options.layoutName;
       _keyboard.setOptions({
@@ -78,7 +79,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
   }
 
-  function _initKeyboard(){
+  function setupKeyboard() {
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
 
@@ -273,7 +274,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
     // Setup keyboard
     if (typeof window.SimpleKeyboard !== 'undefined') {
-      _initKeyboard();
+      setupKeyboard();
     }
 
     _handleInputChange(_textInput.value);
