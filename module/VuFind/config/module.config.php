@@ -139,39 +139,6 @@ $config = [
                     ],
                 ],
             ],
-            'admin' => [
-                'type' => 'Laminas\Router\Http\Literal',
-                'options' => [
-                    'route'    => '/Admin',
-                    'defaults' => [
-                        'controller' => 'Admin',
-                        'action'     => 'Home',
-                    ]
-                ],
-                'may_terminate' => true,
-                'child_routes' => [
-                    'notifications-pages' => [
-                        'type' => 'Laminas\Router\Http\Segment',
-                        'options' => [
-                            'route'    => '/Notifications[/:action][?page_id=:page_id]',
-                            'defaults' => [
-                                'controller' => 'Notifications',
-                                'action'     => 'Home',
-                            ]
-                        ],
-                    ],
-                    'notifications-broadcasts' => [
-                        'type' => 'Laminas\Router\Http\Segment',
-                        'options' => [
-                            'route'    => '/Notifications[/:action][?broadcast_id=:broadcast_id]',
-                            'defaults' => [
-                                'controller' => 'Notifications',
-                                'action'     => 'Home',
-                            ]
-                        ],
-                    ],
-                ],
-            ],
         ],
     ],
     'controllers' => [

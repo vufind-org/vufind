@@ -117,6 +117,26 @@ $config = [
                             ],
                         ],
                     ],
+                    'notifications-pages' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Notifications[/:action][?page_id=:page_id]',
+                            'defaults' => [
+                                'controller' => 'Notifications',
+                                'action'     => 'Home',
+                            ]
+                        ],
+                    ],
+                    'notifications-broadcasts' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Notifications[/:action][?broadcast_id=:broadcast_id]',
+                            'defaults' => [
+                                'controller' => 'Notifications',
+                                'action'     => 'Home',
+                            ]
+                        ],
+                    ],
                 ],
             ],
         ],
