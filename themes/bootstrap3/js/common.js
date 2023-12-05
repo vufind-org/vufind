@@ -1,4 +1,4 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid, Splide */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers, Splide */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupCarousels, setupMultiILSLoginFields, unwrapJQuery */
 
 function unwrapJQuery(node) {
