@@ -274,6 +274,16 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get an array of the configured virtual keyboard layouts
+     *
+     * @return array
+     */
+    public function getKeyboardLayouts()
+    {
+        return $this->config['VirtualKeyboard']['layouts'] ?? [];
+    }
+
+    /**
      * Get an array of information on search handlers for use in generating a
      * drop-down or hidden field. Returns an array of arrays with 'value', 'label',
      * 'indent' and 'selected' keys.

@@ -30,6 +30,7 @@
   <property name="vufinddbpass" value="vufindtestpass" />
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
+  <property name="mysqlport" value="3306" />
   <property name="mysqlrootuser" value="root" />
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
@@ -57,7 +58,7 @@
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
-  <property name="version" value="9.0.3" />
+  <property name="version" value="9.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -383,6 +384,10 @@
         <exclude name="themes/default-dark/" />
       </fileset>
     </copy>
+    <!-- simple-keyboard -->
+    <copy file="${srcdir}/node_modules/simple-keyboard/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard" overwrite="true" />
+    <copy file="${srcdir}/node_modules/simple-keyboard/build/css/index.css" todir="${srcdir}/themes/bootstrap3/css/vendor/simple-keyboard" overwrite="true" />
+    <copy file="${srcdir}/node_modules/simple-keyboard-layouts/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard-layouts" overwrite="true" />
     <!-- splide -->
     <copy file="${srcdir}/node_modules/@splidejs/splide/dist/css/splide.min.css" todir="${srcdir}/themes/bootstrap3/css/vendor" overwrite="true" />
     <copy file="${srcdir}/node_modules/@splidejs/splide/dist/js/splide.min.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
@@ -497,7 +502,7 @@
         <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
-        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
+        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}:${mysqlport}/${vufinddb}" />
       </else>
     </if>
 
@@ -561,13 +566,13 @@
       </then>
       <else>
         <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
       </else>
     </if>
   </target>
@@ -653,8 +658,8 @@ ${git_status}
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>
 

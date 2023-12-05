@@ -67,6 +67,23 @@ class RecordDataFormatter extends AbstractHelper
     protected $driver = null;
 
     /**
+     * Config.
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param ?\Laminas\Config\Config $config Config
+     */
+    public function __construct($config = null)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Store a record driver object and return this object so that the appropriate
      * data can be rendered.
      *
@@ -122,10 +139,14 @@ class RecordDataFormatter extends AbstractHelper
      * @param mixed  $data    Data to render
      * @param array  $options Rendering options
      *
-     * @return array
+     * @return ?array
      */
     protected function render($field, $data, $options)
     {
+        if (!($options['enabled'] ?? true)) {
+            return null;
+        }
+
         // Check whether the data is worth rendering.
         if (!$this->allowValue($data, $options, true)) {
             return null;
@@ -219,6 +240,14 @@ class RecordDataFormatter extends AbstractHelper
                 throw new \Exception('Callback for ' . $key . ' must return array');
             }
         }
+        // Adding defaults from config
+        foreach ($this->config->Defaults->$key ?? [] as $field) {
+            $this->defaults[$key][$field] = [];
+        }
+        // Adding options from config
+        foreach ($this->defaults[$key] as $field => $options) {
+            $this->defaults[$key][$field] = $this->addOptions($key, $field, $options);
+        }
         // Send back array:
         return $this->defaults[$key];
     }
@@ -238,6 +267,45 @@ class RecordDataFormatter extends AbstractHelper
             throw new \Exception('$values must be array or callable');
         }
         $this->defaults[$key] = $values;
+    }
+
+    /**
+     * Add global and configured options to options of a field.
+     *
+     * @param string $context Context of the field.
+     * @param string $field   Field
+     * @param array  $options Options of a field.
+     *
+     * @return ?array
+     */
+    protected function addOptions($context, $field, $options)
+    {
+        if ($globalOptions = ($this->config->Global ?? false)) {
+            $options = array_filter($options, function ($val) {
+                return $val !== null;
+            });
+            $options = array_merge($globalOptions->toArray(), $options);
+        }
+
+        $section = 'Field_' . $field;
+        if ($fieldOptions = ($this->config->$section ?? false)) {
+            $fieldOptions = array_filter($fieldOptions->toArray(), function ($val) {
+                return $val !== null;
+            });
+            $options = array_merge($options, $fieldOptions);
+        }
+
+        $contextSection = $options['overrideContext'][$context] ?? false;
+        if (
+            $contextOptions = $this->config->$contextSection ?? false
+        ) {
+            $contextOptions = array_filter($contextOptions->toArray(), function ($val) {
+                return $val !== null;
+            });
+            $options = array_merge($options, $contextOptions);
+        }
+
+        return $options;
     }
 
     /**
@@ -262,14 +330,15 @@ class RecordDataFormatter extends AbstractHelper
 
         if ($useCache = ($options['useCache'] ?? false)) {
             $cacheKey = $this->driver->getUniqueID() . '|'
-                . $this->driver->getSourceIdentifier() . '|' . $method;
+                . $this->driver->getSourceIdentifier() . '|' . $method
+                . (isset($options['dataMethodParams']) ? '|' . serialize($options['dataMethodParams']) : '');
             if (isset($cache[$cacheKey])) {
                 return $cache[$cacheKey];
             }
         }
 
         // Default action: try to extract data from the record driver:
-        $data = $this->driver->tryMethod($method);
+        $data = $this->driver->tryMethod($method, $options['dataMethodParams'] ?? []);
 
         if ($useCache) {
             $cache[$cacheKey] = $data;

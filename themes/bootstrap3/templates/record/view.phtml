@@ -89,7 +89,7 @@
 
         <div class="tab-content">
           <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab" aria-labelledby="record-tab-<?=$this->escapeHtmlAttr($activeTabName)?>">
+            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab" aria-labelledby="record-tab-<?=$this->escapeHtmlAttr($activeTabName ?? '')?>">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <?php endif; ?>

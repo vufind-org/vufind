@@ -691,7 +691,15 @@ class Params
 
         // Validate and assign the sort value:
         $valid = array_keys($this->getOptions()->getSortOptions());
-        if (!empty($sort) && in_array($sort, $valid)) {
+
+        $matchedHiddenPatterns = array_filter(
+            $this->getOptions()->getHiddenSortOptions(),
+            function ($pattern) use ($sort) {
+                return preg_match('/' . $pattern . '/', $sort);
+            }
+        );
+
+        if (!empty($sort) && (in_array($sort, $valid) || count($matchedHiddenPatterns) > 0)) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();
@@ -786,10 +794,10 @@ class Params
         $value = count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
-        if (substr($value, 0, 1) == '"') {
+        if (str_starts_with($value, '"')) {
             $value = substr($value, 1);
         }
-        if (substr($value, -1, 1) == '"') {
+        if (str_ends_with($value, '"')) {
             $value = substr($value, 0, -1);
         }
         // One last little clean on whitespace
@@ -901,10 +909,7 @@ class Params
      */
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '(' || substr($filter, 0, 2) == '-(') {
-            return true;
-        }
-        return false;
+        return str_starts_with($filter, '(') || str_starts_with($filter, '-(');
     }
 
     /**
@@ -1997,7 +2002,7 @@ class Params
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
         $retVal = false;
         // If the section is in reverse order, the tilde will flag this:
-        if (substr($facetList, 0, 1) == '~') {
+        if (str_starts_with($facetList, '~')) {
             foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;

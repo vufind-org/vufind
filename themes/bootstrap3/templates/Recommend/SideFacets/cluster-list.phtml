@@ -31,8 +31,13 @@
       $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
     }
   }
+  $ulAttrs = $this->htmlAttributes(['class' => 'facet__list']);
+  if ($truncateSettings) {
+    $ulAttrs->add('class', 'truncate-facets');
+    $ulAttrs->add('data-truncate', $this->htmlSafeJsonEncode($truncateSettings, null));
+  }
 ?>
-<ul <?php if ($truncateSettings): ?>class="facet__list truncate-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php else: ?>class="facet__list"<?php endif; ?>>
+<ul<?=$ulAttrs?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <li class="facet__list__item">
       <?php if ($i == $this->facets_before_more): ?>
