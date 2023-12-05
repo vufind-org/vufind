@@ -693,7 +693,11 @@ table.search-history-table {
   display: inline-block;
 
   #searchForm_lookfor {
-    padding-right: 28px;
+    padding-right: 34px;
+
+    &.with-keyboard-selection {
+      padding-right: 72px;
+    }
   }
 
   #searchForm_controls {
