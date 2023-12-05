@@ -31,7 +31,6 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
@@ -66,15 +65,16 @@ use function is_object;
  */
 class MyResearchController extends AbstractBase
 {
+    use Feature\BulkActionTrait;
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * VuFind configuration
+     * Configuration loader
      *
-     * @param Config
+     * @var \VuFind\Config\PluginManager
      */
-    protected $config;
+    protected $configLoader;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -99,13 +99,15 @@ class MyResearchController extends AbstractBase
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm     Service locator
-     * @param Config                  $config VuFind configuration
+     * @param ServiceLocatorInterface      $sm           Service locator
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
-    public function __construct(ServiceLocatorInterface $sm, Config $config)
-    {
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        \VuFind\Config\PluginManager $configLoader
+    ) {
         parent::__construct($sm);
-        $this->config = $config;
+        $this->configLoader = $configLoader;
     }
 
     /**
@@ -814,20 +816,18 @@ class MyResearchController extends AbstractBase
             ? $this->params()->fromPost('ids', [])
             : $this->params()->fromPost('idsAll', []);
 
-        $actionLimit = $this->config?->BulkActions?->limits?->delete ?? 0;
+        $actionLimit = $this->getBulkActionLimit('delete');
         if (!is_array($ids) || empty($ids)) {
-            $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
-            if ($this->params()->fromPost('redirectInLightbox', false) || !$this->inLightbox()) {
-                return $this->redirect()->toUrl($newUrl);
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
             }
         } elseif (count($ids) > $actionLimit) {
             $errorMsg = $this->translate(
                 'bulk_limit_exceeded',
                 ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
             );
-            $this->flashMessenger()->addMessage($errorMsg, 'error');
-            if ($this->params()->fromPost('redirectInLightbox', false) || !$this->inLightbox()) {
-                return $this->redirect()->toUrl($newUrl);
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
             $this->favorites()->delete($ids, $listID, $user);

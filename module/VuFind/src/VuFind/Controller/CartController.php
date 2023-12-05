@@ -29,7 +29,6 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
@@ -50,6 +49,8 @@ use function strlen;
  */
 class CartController extends AbstractBase
 {
+    use Feature\BulkActionTrait;
+
     /**
      * Session container
      *
@@ -58,24 +59,27 @@ class CartController extends AbstractBase
     protected $session;
 
     /**
-     * VuFind configuration
+     * Configuration loader
      *
-     * @param Config
+     * @var \VuFind\Config\PluginManager
      */
-    protected $config;
+    protected $configLoader;
 
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm        Service manager
-     * @param Container               $container Session container
-     * @param Config                  $config    VuFind configuration
+     * @param ServiceLocatorInterface      $sm           Service manager
+     * @param Container                    $container    Session container
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
-    public function __construct(ServiceLocatorInterface $sm, Container $container, Config $config)
-    {
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        Container $container,
+        \VuFind\Config\PluginManager $configLoader
+    ) {
         parent::__construct($sm);
         $this->session = $container;
-        $this->config = $config;
+        $this->configLoader = $configLoader;
     }
 
     /**
@@ -253,7 +257,7 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
-        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
+        $actionLimit = $this->getBulkActionLimit('email');
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
                 return $redirect;
@@ -315,7 +319,7 @@ class CartController extends AbstractBase
                     $view->subject,
                     $cc
                 );
-                return $this->redirectToSource('success', 'bulk_email_success');
+                return $this->redirectToSource('success', 'bulk_email_success', true);
             } catch (MailException $e) {
                 $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
@@ -339,7 +343,7 @@ class CartController extends AbstractBase
         }
 
         // Check if id limit is exceeded
-        $actionLimit = $this->config?->BulkActions?->limits?->printcart ?? 0;
+        $actionLimit = $this->getBulkActionLimit('printcart');
         if (count($ids) > $actionLimit) {
             $errorMsg = $this->translate(
                 'bulk_limit_exceeded',
@@ -383,9 +387,7 @@ class CartController extends AbstractBase
 
         // Get id limit
         $format = $this->params()->fromPost('format');
-        $actionLimit = $this->config?->BulkExport?->limits?->$format
-            ?? $this->config?->BulkActions?->limits?->export
-            ?? 0;
+        $actionLimit = $this->getExportActionLimit($format);
 
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
@@ -431,7 +433,7 @@ class CartController extends AbstractBase
                     $params
                 ),
             ];
-            return $this->redirectToSource('success', $msg);
+            return $this->redirectToSource('success', $msg, true);
         }
 
         // Load the records:
@@ -468,9 +470,7 @@ class CartController extends AbstractBase
         }
 
         // Check if id limit is exceeded
-        $actionLimit = $this->config?->BulkExport?->limits?->$format
-            ?? $this->config?->BulkActions?->limits?->export
-            ?? 0;
+        $actionLimit = $this->getExportActionLimit($format);
         if (count($ids) > $actionLimit) {
             return $this->redirectToSource('error', 'bulk_limit_exceeded');
         }
@@ -512,7 +512,7 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
-        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
+        $actionLimit = $this->getBulkActionLimit('save');
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
                 return $redirect;
@@ -562,38 +562,5 @@ class CartController extends AbstractBase
                 'lists' => $user->getLists(),
             ]
         );
-    }
-
-    /**
-     * Support method: redirect to the page we were on when the bulk action was
-     * initiated.
-     *
-     * @param string $flashNamespace Namespace for flash message (null for none)
-     * @param string $flashMsg       Flash message to set (ignored if namespace null)
-     *
-     * @return mixed
-     */
-    public function redirectToSource($flashNamespace = null, $flashMsg = null)
-    {
-        // Set flash message if requested:
-        if (null !== $flashNamespace && !empty($flashMsg)) {
-            $this->flashMessenger()->addMessage($flashMsg, $flashNamespace);
-        }
-
-        // Do not redirect if in lightbox only if required
-        if (!$this->params()->fromPost('redirectInLightbox', false) && $this->inLightbox()) {
-            return false;
-        }
-
-        // If we entered the controller in the expected way (i.e. via the
-        // myresearchbulk action), we should have a source set in the followup
-        // memory. If that's missing for some reason, just forward to MyResearch.
-        if (isset($this->session->url)) {
-            $target = $this->session->url;
-            unset($this->session->url);
-        } else {
-            $target = $this->url()->fromRoute('myresearch-home');
-        }
-        return $this->redirect()->toUrl($target);
     }
 }

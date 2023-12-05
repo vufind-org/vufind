@@ -11,7 +11,6 @@
 <?=$this->flashmessages()?>
 <?php if (count($this->records) > 0): ?>
   <form class="form-cart-email" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
-    <input type="hidden" name="redirectInLightbox" value="true">
     <?php foreach ($this->records as $current): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
     <?php endforeach; ?>
