@@ -75,7 +75,6 @@ class GetSideFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
             $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
             $container->get('ViewRenderer')
         );
         return $result;

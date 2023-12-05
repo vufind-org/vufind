@@ -308,18 +308,11 @@ class SideFacets extends AbstractFacets
                     );
                 }
 
-                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
+                $facetSet[$hierarchicalFacet]['list'] = $this->hierarchicalFacetHelper->filterFacets(
                     $hierarchicalFacet,
-                    $facetSet[$hierarchicalFacet]['list']
-                );
-                $facetArray = $this->hierarchicalFacetHelper->filterFacets(
-                    $hierarchicalFacet,
-                    $facetArray,
+                    $facetSet[$hierarchicalFacet]['list'],
                     $this->results->getOptions()
                 );
-                $facetSet[$hierarchicalFacet]['list'] = $this
-                    ->hierarchicalFacetHelper
-                    ->flattenFacetHierarchy($facetArray);
             }
         }
 

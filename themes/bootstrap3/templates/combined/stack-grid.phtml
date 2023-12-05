@@ -1,5 +1,5 @@
 <div class="combined-search-container grid"
-  style="grid-template-columns: repeat(<?=$this->escapeHtmlAttr($columns)?>, 1fr)"
+  style="grid-template-columns: repeat(<?=$this->escapeHtmlAttr($columns)?>, minmax(0, 1fr))"
 >
   <?php $columnIndex = 0; ?>
   <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
