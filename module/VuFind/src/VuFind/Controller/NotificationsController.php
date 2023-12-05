@@ -70,6 +70,7 @@
         {
             parent::__construct($sm);
             $this->config = $sm->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml');
+            $this->accessPermission = 'notifications.Admin';
         }
 
         /**
