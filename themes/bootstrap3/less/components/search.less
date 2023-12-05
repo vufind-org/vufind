@@ -444,13 +444,18 @@ body.rtl {
   margin-left: 1rem;
   margin-right: 1rem;
 
+  // This is overridden via JS in combined/results-list.phtml
+  visibility: hidden;
+
   ul {
     display: inline;
     list-style: none;
     padding-left: 0;
 
     li {
-      display: inline;
+      // This is overridden via JS in combined/results-list.phtml
+      display: none;
+
       white-space: nowrap;
       &:not(:first-child):before {
         content: '\2013'; // n-dash
