@@ -55,7 +55,7 @@ $thumbnail-width-large:  160px;
   list-style: none;
 }
 // Reset styling of hierarchical facets on the home page:
-.home-facet .facet-tree li {
+.home-facet.facet-tree li {
   line-height: inherit;
   padding-top: 0;
   padding-bottom: 0;
@@ -80,7 +80,6 @@ $thumbnail-width-large:  160px;
   .home-facet-container { display: flex; }
   .home-facet {
     flex: 1 1 100%;
-    flex-basis: auto;
   }
   .home-facet-list { flex: 0 1 100%; }
 }
