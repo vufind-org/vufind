@@ -558,21 +558,20 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
         $button = $this->findCss($page, '.cart-controls button[name=email]');
 
-        // First try clicking without selecting anything -- we should get a login prompt.:
+        // First try clicking without selecting anything:
         $button->click();
-
-        // Create an account.
-        $this->checkForLoginMessage($page);
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm($page);
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-
         $this->checkForNonSelectedMessage($page);
 
-        // Now do it for real
+        // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
         $this->waitForPageLoad($page);
+        $this->checkForLoginMessage($page);
+
+        // Create an account.
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
@@ -601,21 +600,19 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpGenericCartTest();
         $button = $this->findCss($page, '.cart-controls button[name=saveCart]');
 
-        // First try clicking without selecting anything -- we should get a login prompt:
+        // First try clicking without selecting anything:
         $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get a login prompt.
+        $this->selectAllItemsInCart($page);
+        $button->click();
+        $this->waitForPageLoad($page);
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
-        $this->waitForPageLoad($page);
-
-        $this->checkForNonSelectedMessage($page);
-
-        // Now do it for real.
-        $this->selectAllItemsInCart($page);
-        $button->click();
-        $this->waitForPageLoad($page);
 
         // Save the favorites.
         $this->clickCss($page, '.modal-body input[name=submit]');

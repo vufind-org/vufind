@@ -253,6 +253,22 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
+        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
+        if (!is_array($ids) || empty($ids)) {
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
+            }
+            $submitDisabled = true;
+        } elseif (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
+            }
+            $submitDisabled = true;
+        }
 
         // Force login if necessary:
         $config = $this->getConfig();
@@ -274,20 +290,8 @@ class CartController extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
 
-        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
-        if (!is_array($ids) || empty($ids)) {
-            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
-                return $redirect;
-            }
-        } elseif (count($ids) > $actionLimit) {
-            $errorMsg = $this->translate(
-                'bulk_limit_exceeded',
-                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
-            );
-            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
-                return $redirect;
-            }
-        } elseif ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        // Process form submission:
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -508,9 +512,22 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
-
-        // Check if id limit is exceeded
-        $actionLimit = $this->config?->BulkActions?->limits?->save ?? 0;
+        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
+        if (!is_array($ids) || empty($ids)) {
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
+            }
+            $submitDisabled = true;
+        } elseif (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
+            }
+            $submitDisabled = true;
+        }
 
         // Make sure user is logged in:
         if (!($user = $this->getUser())) {
@@ -520,19 +537,8 @@ class CartController extends AbstractBase
             );
         }
 
-        if (!is_array($ids) || empty($ids)) {
-            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
-                return $redirect;
-            }
-        } elseif (count($ids) > $actionLimit) {
-            $errorMsg = $this->translate(
-                'bulk_limit_exceeded',
-                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
-            );
-            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
-                return $redirect;
-            }
-        } elseif ($this->formWasSubmitted()) {
+        // Process submission if necessary:
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
             $results = $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
