@@ -204,8 +204,9 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Load the language file for a given locale and domain.
      *
-     * @param string $locale Locale name
-     * @param string $domain Text domain (if any)
+     * @param string $locale         Locale name
+     * @param string $domain         Text domain (if any)
+     * @param bool   $processAliases Should we process alias data?
      *
      * @return TextDomain
      */
@@ -250,6 +251,8 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Load an alias configuration (if not already loaded) and mark it loaded.
      *
+     * @param string $filename Filename to load
+     *
      * @return void
      */
     protected function markAndLoadAliases(string $filename): void
@@ -265,8 +268,9 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Search the path stack for language files and merge them together.
      *
-     * @param string $filename    Name of file to search path stack for.
-     * @param bool   $failOnError If true, throw an exception when file not found.
+     * @param string $filename       Name of file to search path stack for.
+     * @param bool   $failOnError    If true, throw an exception when file not found.
+     * @param bool   $processAliases Should we process alias data?
      *
      * @return TextDomain
      */
@@ -310,7 +314,8 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Support method for loadLanguageFile: retrieve parent data.
      *
-     * @param TextDomain $data TextDomain to populate with parent information.
+     * @param TextDomain $data           TextDomain to populate with parent information.
+     * @param bool       $processAliases Should we process alias data?
      *
      * @return TextDomain
      */
