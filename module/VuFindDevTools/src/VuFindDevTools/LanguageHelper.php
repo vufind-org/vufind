@@ -147,8 +147,8 @@ class LanguageHelper
     public function compareLanguages($lang1, $lang2, $lang1NoAliases, $lang2NoAliases)
     {
         // We don't want to double-count aliased terms, nor do we want to count alias
-        // overrides as "extra lines". Thus, we need to use aliased and non-aliased versions
-        // of the data in different circumstances.
+        // overrides as "extra lines". Thus, we find meaningful differences by subtracting
+        // the aliased data of one language from the non-aliased data of the other.
         return [
             'notInL1' => $this->findMissingLanguageStrings($lang2NoAliases, $lang1),
             'notInL2' => $this->findMissingLanguageStrings($lang1NoAliases, $lang2),
