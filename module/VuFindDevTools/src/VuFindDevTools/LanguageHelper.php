@@ -102,7 +102,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function getLanguages()
+    protected function getLanguages(): array
     {
         $langs = [];
         $dir = opendir(APPLICATION_PATH . '/languages');
@@ -126,7 +126,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function findMissingLanguageStrings($lang1, $lang2)
+    protected function findMissingLanguageStrings(TextDomain $lang1, TextDomain $lang2): array
     {
         // Find strings missing from language 2:
         return array_values(
@@ -144,8 +144,12 @@ class LanguageHelper
      *
      * @return array
      */
-    public function compareLanguages($lang1, $lang2, $lang1NoAliases, $lang2NoAliases)
-    {
+    public function compareLanguages(
+        TextDomain $lang1,
+        TextDomain $lang2,
+        TextDomain $lang1NoAliases,
+        TextDomain $lang2NoAliases
+    ): array {
         // We don't want to double-count aliased terms, nor do we want to count alias
         // overrides as "extra lines". Thus, we find meaningful differences by subtracting
         // the aliased data of one language from the non-aliased data of the other.
@@ -239,20 +243,44 @@ class LanguageHelper
     }
 
     /**
-     * Return details on how $langCode differs from $main.
+     * Find duplicated values within the language.
      *
-     * @param array  $main            The main language (full details)
-     * @param array  $mainNoAliases   The main language (with aliases disabled)
-     * @param string $langCode        The code of a language to compare against $main
-     * @param bool   $includeOptional Include optional translations (e.g. DDC23)
+     * @param TextDomain $lang Language to analyze.
      *
      * @return array
      */
-    protected function getLanguageDetails($main, $mainNoAliases, $langCode, $includeOptional)
+    protected function findDuplicatedValues(TextDomain $lang): array
     {
+        $index = [];
+        foreach ($lang as $key => $val) {
+            $index[$val] = array_merge($index[$val] ?? [], [$key]);
+        }
+        $callback = function ($set) {
+            return count($set) > 1;
+        };
+        return array_filter($index, $callback);
+    }
+
+    /**
+     * Return details on how $langCode differs from $main.
+     *
+     * @param TextDomain $main            The main language (full details)
+     * @param TextDomain $mainNoAliases   The main language (with aliases disabled)
+     * @param string     $langCode        The code of a language to compare against $main
+     * @param bool       $includeOptional Include optional translations (e.g. DDC23)
+     *
+     * @return array
+     */
+    protected function getLanguageDetails(
+        TextDomain $main,
+        TextDomain $mainNoAliases,
+        string $langCode,
+        bool $includeOptional
+    ): array {
         $lang = $this->loadLanguage($langCode, $includeOptional);
         $langNoAliases = $this->loadLanguage($langCode, $includeOptional, false);
         $details = $this->compareLanguages($main, $lang, $mainNoAliases, $langNoAliases);
+        $details['dupes'] = $this->findDuplicatedValues($lang);
         $details['object'] = $lang;
         $details['name'] = $this->getLangName($langCode);
         $details['helpFiles'] = $this->getHelpFiles($langCode);
@@ -262,13 +290,13 @@ class LanguageHelper
     /**
      * Return details on how all languages differ from $main.
      *
-     * @param array $main            The main language (full details)
-     * @param array $mainNoAliases   The main language (with aliases disabled)
-     * @param bool  $includeOptional Include optional translations (e.g. DDC23)
+     * @param TextDomain $main            The main language (full details)
+     * @param TextDomain $mainNoAliases   The main language (with aliases disabled)
+     * @param bool       $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    protected function getAllLanguageDetails($main, $mainNoAliases, $includeOptional)
+    protected function getAllLanguageDetails(TextDomain $main, TextDomain $mainNoAliases, bool $includeOptional): array
     {
         $details = [];
         $allLangs = $this->getLanguages();
@@ -301,6 +329,7 @@ class LanguageHelper
             $data[] = [
                 'lang' => $langCode,
                 'name' => $diffs['name'],
+                'dupes' => $diffs['dupes'],
                 'langtitle' => $langCode . (($langCode != $diffs['name'])
                     ? ' (' . $diffs['name'] . ')' : ''),
                 'missing' => count($diffs['notInL2']),
