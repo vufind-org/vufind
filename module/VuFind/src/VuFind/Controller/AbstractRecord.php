@@ -378,6 +378,7 @@ class AbstractRecord extends AbstractBase
      */
     public function ajaxtabAction()
     {
+        $this->disableSessionWrites();
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
@@ -421,8 +422,7 @@ class AbstractRecord extends AbstractBase
         $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($url);
         }
 
