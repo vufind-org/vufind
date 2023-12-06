@@ -181,8 +181,8 @@ abstract class AbstractCommand extends Command
     protected function processDirectory($dir, $callback, $statusCallback = false)
     {
         while ($file = $dir->read()) {
-            // Only process .ini files, and ignore native.ini special case file:
-            if (str_ends_with($file, '.ini') && $file !== 'native.ini') {
+            // Only process .ini files, and ignore native.ini/aliases.ini special case files:
+            if (str_ends_with($file, '.ini') && $file !== 'native.ini' && $file !== 'aliases.ini') {
                 if (is_callable($statusCallback)) {
                     $statusCallback("Processing $file...");
                 }
