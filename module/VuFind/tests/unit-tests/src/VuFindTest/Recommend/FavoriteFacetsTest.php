@@ -74,13 +74,11 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Search\Solr\Results                 $results      results object
-     * @param string                                      $tagSetting   Are tags enabled?
-     * @param string                                      $settings     settings
-     * @param \Laminas\Stdlib\Parameters                  $request      request
-     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper
-     * (true to build default, null to omit)
-     * @param \VuFind\Config\PluginManager                $configLoader config loader
+     * @param \VuFind\Search\Solr\Results  $results      results object
+     * @param string                       $tagSetting   Are tags enabled?
+     * @param string                       $settings     settings
+     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param \VuFind\Config\PluginManager $configLoader config loader
      *
      * @return FavoriteFacets
      */
@@ -89,7 +87,6 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         $tagSetting = 'enabled',
         $settings = '',
         $request = null,
-        $facetHelper = null,
         $configLoader = null
     ) {
         if (null === $results) {
@@ -97,7 +94,6 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         }
         $sf = new FavoriteFacets(
             $configLoader ?? $this->getMockConfigPluginManager([]),
-            $facetHelper ?? new \VuFind\Search\Solr\HierarchicalFacetHelper(),
             $tagSetting
         );
         $sf->setConfig($settings);
