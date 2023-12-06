@@ -280,7 +280,7 @@ class LanguageHelper
         $lang = $this->loadLanguage($langCode, $includeOptional);
         $langNoAliases = $this->loadLanguage($langCode, $includeOptional, false);
         $details = $this->compareLanguages($main, $lang, $mainNoAliases, $langNoAliases);
-        $details['dupes'] = $this->findDuplicatedValues($lang);
+        $details['dupes'] = $this->findDuplicatedValues($langNoAliases);
         $details['object'] = $lang;
         $details['name'] = $this->getLangName($langCode);
         $details['helpFiles'] = $this->getHelpFiles($langCode);
