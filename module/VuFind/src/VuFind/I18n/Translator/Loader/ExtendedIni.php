@@ -33,6 +33,9 @@ use Laminas\I18n\Exception\InvalidArgumentException;
 use Laminas\I18n\Translator\Loader\FileLoaderInterface;
 use Laminas\I18n\Translator\TextDomain;
 
+use function dirname;
+use function in_array;
+
 /**
  * Handles the language loading and language file parsing
  *
@@ -72,6 +75,20 @@ class ExtendedIni implements FileLoaderInterface
      * @var ExtendedIniReader
      */
     protected $reader;
+
+    /**
+     * Map of translation aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
+     * List of loaded alias configuration files.
+     *
+     * @var array
+     */
+    protected $loadedAliasFiles = [];
 
     /**
      * Constructor
@@ -121,11 +138,17 @@ class ExtendedIni implements FileLoaderInterface
             return null;
         }
 
+        // Reset loaded aliases:
+        $this->resetAliases();
+
         // Reset the loaded files list:
         $this->resetLoadedFiles();
 
         // Load base data:
-        $data = $this->loadLanguageLocale($locale, $filename);
+        $data = $this->loadLanguageLocale($locale, $filename, true);
+
+        // Apply aliases:
+        $this->applyAliases($data);
 
         // Load fallback data, if any:
         foreach ($this->fallbackLocales as $fallbackLocale) {
@@ -186,14 +209,57 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      */
-    protected function loadLanguageLocale($locale, $domain)
+    protected function loadLanguageLocale($locale, $domain, $processAliases = false)
     {
         $filename = $this->getLanguageFilename($locale, $domain);
         // Load the language file, and throw a fatal exception if it's missing
         // and we're not dealing with text domains. A missing base file is an
         // unexpected, fatal error; a missing domain-specific file is more likely
         // due to the possibility of incomplete translations.
-        return $this->loadLanguageFile($filename, empty($domain));
+        return $this->loadLanguageFile($filename, empty($domain), $processAliases);
+    }
+
+    /**
+     * Apply loaded aliases to the provided TextDomain.
+     *
+     * @param TextDomain $data Text domain to update
+     *
+     * @return void
+     */
+    protected function applyAliases(TextDomain $data): void
+    {
+        foreach ($this->aliases as $alias => $target) {
+            // Do not overwrite existing values with alias, and do not create aliases
+            // when target values are missing.
+            if ($data->offsetExists($target) && !$data->offsetExists($alias)) {
+                $data->offsetSet($alias, $data->offsetGet($target));
+            }
+        }
+    }
+
+    /**
+     * Reset all collected alias data.
+     *
+     * @return void
+     */
+    protected function resetAliases(): void
+    {
+        $this->aliases = $this->loadedAliasFiles = [];
+    }
+
+    /**
+     * Load an alias configuration (if not already loaded) and mark it loaded.
+     *
+     * @return void
+     */
+    protected function markAndLoadAliases(string $filename): void
+    {
+        if (!in_array($filename, $this->loadedAliasFiles)) {
+            $this->loadedAliasFiles[] = $filename;
+            if (file_exists($filename)) {
+                $this->aliases = array_merge($this->aliases, parse_ini_file($filename));
+            }
+        }
     }
 
     /**
@@ -204,7 +270,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      */
-    protected function loadLanguageFile($filename, $failOnError = true)
+    protected function loadLanguageFile($filename, $failOnError = true, $processAliases = false)
     {
         // Don't load a file that has already been loaded:
         if ($this->checkAndMarkLoadedFile($filename)) {
@@ -213,10 +279,12 @@ class ExtendedIni implements FileLoaderInterface
 
         $data = false;
         foreach ($this->pathStack as $path) {
-            if (file_exists($path . '/' . $filename)) {
+            $fileOnPath = $path . '/' . $filename;
+            if (file_exists($fileOnPath)) {
                 // Load current file with parent data, if necessary:
                 $current = $this->loadParentData(
-                    $this->reader->getTextDomain($path . '/' . $filename)
+                    $this->reader->getTextDomain($fileOnPath),
+                    $processAliases
                 );
                 if ($data === false) {
                     $data = $current;
@@ -224,6 +292,7 @@ class ExtendedIni implements FileLoaderInterface
                     $data->merge($current);
                 }
             }
+            $this->markAndLoadAliases(dirname($fileOnPath) . '/aliases.ini');
         }
         if ($data === false) {
             // Should we throw an exception? If not, return an empty result:
@@ -245,12 +314,12 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      */
-    protected function loadParentData($data)
+    protected function loadParentData($data, $processAliases)
     {
         if (!isset($data['@parent_ini'])) {
             return $data;
         }
-        $parent = $this->loadLanguageFile($data['@parent_ini']);
+        $parent = $this->loadLanguageFile($data['@parent_ini'], true, $processAliases);
         $parent->merge($data);
         return $parent;
     }
