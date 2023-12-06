@@ -13,7 +13,7 @@
       $value = $fieldValue[$i] ?? '';
       $exactMatch = $explainElement['exactMatch'][$i] ?? '';
       if (!empty($name)) {
-        $description = $this->transEsc('IndexFieldDescription::' . $name);
+        $description = $this->translate('IndexFieldDescription::' . $name);
         $description = $name !== $description ? $description : '';
       } else {
         $description = '';
