@@ -137,16 +137,21 @@ class LanguageHelper
     /**
      * Compare two languages and return an array of details about how they differ.
      *
-     * @param TextDomain $lang1 Left side of comparison
-     * @param TextDomain $lang2 Right side of comparison
+     * @param TextDomain $lang1          Left side of comparison
+     * @param TextDomain $lang2          Right side of comparison
+     * @param TextDomain $lang1NoAliases Left side of comparison (with aliases disabled)
+     * @param TextDomain $lang2NoAliases Right side of comparison (with aliases disabled)
      *
      * @return array
      */
-    public function compareLanguages($lang1, $lang2)
+    public function compareLanguages($lang1, $lang2, $lang1NoAliases, $lang2NoAliases)
     {
+        // We don't want to double-count aliased terms, nor do we want to count alias
+        // overrides as "extra lines". Thus, we need to use aliased and non-aliased versions
+        // of the data in different circumstances.
         return [
-            'notInL1' => $this->findMissingLanguageStrings($lang2, $lang1),
-            'notInL2' => $this->findMissingLanguageStrings($lang1, $lang2),
+            'notInL1' => $this->findMissingLanguageStrings($lang2NoAliases, $lang1),
+            'notInL2' => $this->findMissingLanguageStrings($lang1NoAliases, $lang2),
             'l1Percent' => number_format(count($lang1) / count($lang2) * 100, 2),
             'l2Percent' => number_format(count($lang2) / count($lang1) * 100, 2),
         ];
@@ -210,11 +215,13 @@ class LanguageHelper
      *
      * @param string $lang            Language to load
      * @param bool   $includeOptional Include optional translations (e.g. DDC23)
+     * @param bool   $includeAliases  Include alias details
      *
      * @return array
      */
-    protected function loadLanguage($lang, $includeOptional)
+    protected function loadLanguage($lang, $includeOptional, $includeAliases = true)
     {
+        $includeAliases ? $this->loader->enableAliases() : $this->loader->disableAliases();
         $base = $this->loader->load($lang, null);
         foreach ($this->getTextDomains($includeOptional) as $domain) {
             $current = $this->loader->load($lang, $domain);
@@ -235,15 +242,17 @@ class LanguageHelper
      * Return details on how $langCode differs from $main.
      *
      * @param array  $main            The main language (full details)
+     * @param array  $mainNoAliases   The main language (with aliases disabled)
      * @param string $langCode        The code of a language to compare against $main
      * @param bool   $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    protected function getLanguageDetails($main, $langCode, $includeOptional)
+    protected function getLanguageDetails($main, $mainNoAliases, $langCode, $includeOptional)
     {
         $lang = $this->loadLanguage($langCode, $includeOptional);
-        $details = $this->compareLanguages($main, $lang);
+        $langNoAliases = $this->loadLanguage($langCode, $includeOptional, false);
+        $details = $this->compareLanguages($main, $lang, $mainNoAliases, $langNoAliases);
         $details['object'] = $lang;
         $details['name'] = $this->getLangName($langCode);
         $details['helpFiles'] = $this->getHelpFiles($langCode);
@@ -254,18 +263,19 @@ class LanguageHelper
      * Return details on how all languages differ from $main.
      *
      * @param array $main            The main language (full details)
+     * @param array $mainNoAliases   The main language (with aliases disabled)
      * @param bool  $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    protected function getAllLanguageDetails($main, $includeOptional)
+    protected function getAllLanguageDetails($main, $mainNoAliases, $includeOptional)
     {
         $details = [];
         $allLangs = $this->getLanguages();
         sort($allLangs);
         foreach ($allLangs as $langCode) {
             $details[$langCode] = $this
-                ->getLanguageDetails($main, $langCode, $includeOptional);
+                ->getLanguageDetails($main, $mainNoAliases, $langCode, $includeOptional);
         }
         return $details;
     }
@@ -316,7 +326,8 @@ class LanguageHelper
     public function getAllDetails($mainLanguage, $includeOptional = true)
     {
         $main = $this->loadLanguage($mainLanguage, $includeOptional);
-        $details = $this->getAllLanguageDetails($main, $includeOptional);
+        $mainNoAliases = $this->loadLanguage($mainLanguage, $includeOptional, false);
+        $details = $this->getAllLanguageDetails($main, $mainNoAliases, $includeOptional);
         $dirHelpParts = [
             APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations',
         ];

@@ -77,6 +77,13 @@ class ExtendedIni implements FileLoaderInterface
     protected $reader;
 
     /**
+     * Is aliasing enabled?
+     *
+     * @var bool
+     */
+    protected $useAliases = true;
+
+    /**
      * Map of translation aliases.
      *
      * @var array
@@ -145,10 +152,12 @@ class ExtendedIni implements FileLoaderInterface
         $this->resetLoadedFiles();
 
         // Load base data:
-        $data = $this->loadLanguageLocale($locale, $filename, true);
+        $data = $this->loadLanguageLocale($locale, $filename, $this->useAliases);
 
         // Apply aliases:
-        $this->applyAliases($data);
+        if ($this->useAliases) {
+            $this->applyAliases($data);
+        }
 
         // Load fallback data, if any:
         foreach ($this->fallbackLocales as $fallbackLocale) {
@@ -249,6 +258,26 @@ class ExtendedIni implements FileLoaderInterface
     }
 
     /**
+     * Disable aliasing functionality.
+     *
+     * @return void
+     */
+    public function disableAliases(): void
+    {
+        $this->useAliases = false;
+    }
+
+    /**
+     * Enable aliasing functionality.
+     *
+     * @return void
+     */
+    public function enableAliases(): void
+    {
+        $this->useAliases = true;
+    }
+
+    /**
      * Load an alias configuration (if not already loaded) and mark it loaded.
      *
      * @param string $filename Filename to load
@@ -296,7 +325,9 @@ class ExtendedIni implements FileLoaderInterface
                     $data->merge($current);
                 }
             }
-            $this->markAndLoadAliases(dirname($fileOnPath) . '/aliases.ini');
+            if ($processAliases) {
+                $this->markAndLoadAliases(dirname($fileOnPath) . '/aliases.ini');
+            }
         }
         if ($data === false) {
             // Should we throw an exception? If not, return an empty result:
