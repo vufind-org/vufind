@@ -9,21 +9,82 @@ $actionLimits = $this->config()->get('config')?->BulkActions?->limits;
     </div>
     <ul class="action-toolbar">
       <?php if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>
-        <?php if (($actionLimits?->email ?? 0) > 0): ?>
-          <li><button id="<?=$this->idPrefix?>ribbon-email" class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?> data-item-limit="<?=$actionLimits?->email?>"><?=$this->icon('send-email') ?> <?=$this->transEsc('Email')?></button></li>
-        <?php endif; ?>
+        <?=
+          $this->bulkAction()->button(
+              'email',
+              'send-email',
+              'Email',
+              array_merge(
+                  [
+                    'id' => $this->idPrefix . 'ribbon-email',
+                    'title' => $this->translate('bookbag_email_selected'),
+                  ],
+                  $this->formAttr ? ['form' => $this->formAttr] : []
+              )
+          )
+        ?>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-        <?php if (($actionLimits?->export ?? 0) > 0 && count($exportOptions) > 0): ?>
-          <li><button id="<?=$this->idPrefix?>ribbon-export" class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?> data-item-limit="<?=$actionLimits?->export?>"><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
+        <?php if (count($exportOptions) > 0): ?>
+          <?=
+            $this->bulkAction()->button(
+                'export',
+                'export',
+                'Export',
+                array_merge(
+                    [
+                      'id' => $this->idPrefix . 'ribbon-export',
+                      'title' => $this->translate('bookbag_export_selected'),
+                    ],
+                    $this->formAttr ? ['form' => $this->formAttr] : []
+                )
+            )
+          ?>
         <?php endif; ?>
-        <?php if (($actionLimits?->printcart ?? 0) > 0): ?>
-          <li><button id="<?=$this->idPrefix?>ribbon-print" class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('bookbag_print_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?> data-item-limit="<?=$actionLimits?->printcart?>"><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>
-        <?php endif; ?>
-        <?php if (($actionLimits?->save ?? 0) > 0 && $this->userlist()->getMode() !== 'disabled'): ?>
-          <li><button id="<?=$this->idPrefix?>ribbon-save" class="toolbar-btn" type="submit" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?> data-item-limit="<?=$actionLimits?->save?>"><?=$this->icon('user-list-add') ?> <?=$this->transEsc('Save')?></button></li>
+        <?=
+          $this->bulkAction()->button(
+              'print',
+              'print',
+              'Print',
+              array_merge(
+                  [
+                    'id' => $this->idPrefix . 'ribbon-print',
+                    'title' => $this->translate('bookbag_print_selected'),
+                  ],
+                  $this->formAttr ? ['form' => $this->formAttr] : []
+              )
+          )
+        ?>
+        <?php if (($actionLimits?->saveCart ?? 0) > 0 && $this->userlist()->getMode() !== 'disabled'): ?>
+          <?=
+            $this->bulkAction()->button(
+                'saveCart',
+                'user-list-add',
+                'Save',
+                array_merge(
+                    [
+                      'id' => $this->idPrefix . 'ribbon-save',
+                      'title' => $this->translate('bookbag_save_selected'),
+                    ],
+                    $this->formAttr ? ['form' => $this->formAttr] : []
+                )
+            )
+          ?>
         <?php endif; ?>
       <?php endif; ?>
       <?php if (isset($this->showCartControls) && $this->showCartControls): ?>
+        <?=
+          $this->bulkAction()->button(
+              'add',
+              'cart-add',
+              'Add to Book Bag',
+              array_merge(
+                  [
+                    'id' => $this->idPrefix . 'updateCart',
+                  ],
+                  $this->formAttr ? ['form' => $this->formAttr] : []
+              )
+          )
+        ?>
         <li><button id="<?=$this->idPrefix?>updateCart" type="submit" class="toolbar-btn" name="add" value="1"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('cart-add') ?> <?=$this->transEsc('Add to Book Bag')?></button></li>
       <?php endif; ?>
     </ul>

@@ -73,8 +73,9 @@ trait BulkActionTrait
      * Support method: redirect to the page we were on when the bulk action was
      * initiated.
      *
-     * @param string $flashNamespace Namespace for flash message (null for none)
-     * @param string $flashMsg       Flash message to set (ignored if namespace null)
+     * @param string $flashNamespace     Namespace for flash message (null for none)
+     * @param string $flashMsg           Flash message to set (ignored if namespace null)
+     * @param bool   $redirectInLightbox If the redirects are performed even if in lightbox
      *
      * @return mixed
      */

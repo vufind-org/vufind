@@ -343,7 +343,7 @@ class CartController extends AbstractBase
         }
 
         // Check if id limit is exceeded
-        $actionLimit = $this->getBulkActionLimit('printcart');
+        $actionLimit = $this->getBulkActionLimit('print');
         if (count($ids) > $actionLimit) {
             $errorMsg = $this->translate(
                 'bulk_limit_exceeded',
@@ -512,7 +512,7 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
-        $actionLimit = $this->getBulkActionLimit('save');
+        $actionLimit = $this->getBulkActionLimit('saveCart');
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
                 return $redirect;
