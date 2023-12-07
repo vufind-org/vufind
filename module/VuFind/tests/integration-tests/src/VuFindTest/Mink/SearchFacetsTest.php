@@ -198,11 +198,33 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $excludes = $page
             ->findAll('css', '#modal #facet-list-index .exclude');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
-        // sort by index again
+        // sort by count again
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        // now back to title, to see if loading a second page works
+        $this->clickCss($page, '[data-sort="index"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '#modal #facet-list-index .js-facet-next-page');
+        $this->waitForPageLoad($page);
+        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
+        $this->assertCount($limit * 2, $items); // reset number of items
+        $this->assertEquals(
+            'Fiction 7 results 7 ' . $excludeControl
+            . 'The Study Of P|pes 1 results 1 ' . $excludeControl
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 ' . $excludeControl
+            . 'The Study of "Important" Things 1 results 1 ' . $excludeControl
+            . 'The Study of %\'s? 1 results 1 ' . $excludeControl
+            . 'The Study of +\'s? 1 results 1 ' . $excludeControl
+            . 'The Study of @Twitter #test 1 results 1 ' . $excludeControl
+            . 'The Study of Back S\ashes 1 results 1 ' . $excludeControl
+            . 'more…',
+            $this->findCss($page, '#modal #facet-list-index')->getText()
+        );
+        // back to count one last time...
+        $this->clickCss($page, '[data-sort="count"]');
+        $this->waitForPageLoad($page);
         // When exclusion is active, the result count is outside of the link tag:
         $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9 results 9';
         $weirdIDs = $this->findAndAssertLink(
