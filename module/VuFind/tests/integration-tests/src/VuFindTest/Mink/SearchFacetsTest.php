@@ -31,6 +31,8 @@
 
 namespace VuFindTest\Mink;
 
+use VuFindTest\Feature\SearchSortTrait;
+
 use function count;
 
 /**
@@ -46,6 +48,8 @@ use function count;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchSortTrait;
+
     /**
      * CSS selector for finding the active filter values
      *
@@ -221,6 +225,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public function testApplyFacet()
     {
         $page = $this->performSearch('building:weird_ids.mrc');
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
 
         // Confirm that we are NOT using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
@@ -228,6 +234,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
+
+        // Verify that sort order is still correct:
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -247,6 +256,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
 
         // Confirm that we ARE using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
@@ -254,6 +265,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
+
+        // Verify that sort order is still correct:
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -348,7 +362,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickHierarchyFacet($page)
+    protected function clickHierarchicalFacet($page)
     {
         // Open second level:
         $this->clickCss($page, $this->facetExpandSelector);
@@ -366,7 +380,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that hierarchy facets work properly.
+     * Test that hierarchical facets work properly.
      *
      * @return void
      */
@@ -384,8 +398,16 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+        // Do a search and verify that sort order is maintained:
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        $this->clickHierarchyFacet($page);
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
+        $this->clickHierarchicalFacet($page);
+        $this->assertSelectedSort($page, 'title');
+        // Remove the filter:
+        $this->clickCss($page, $this->activeFilterSelector);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -460,7 +482,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-panel-format .collapsed');
         // Uncollapse hierarchical facet so we can click it:
         $this->clickCss($page, '#side-panel-hierarchical_facet_str_mv .collapsed');
-        $this->clickHierarchyFacet($page);
+        $this->clickHierarchicalFacet($page);
 
         // We have now reloaded the page. Let's toggle format off and on to confirm
         // that it was opened, and let's also toggle building on to confirm that
