@@ -28,6 +28,10 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
     if (triggerInputEvent) {
       _textInput.dispatchEvent(new Event('input'));
+      let caretPos = _keyboard.getCaretPosition();
+      if (caretPos) {
+        _textInput.setSelectionRange(caretPos, caretPos);
+      }
     }
     _textInput.focus();
   }
@@ -117,6 +121,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         )
       ) {
         _hideKeyboard();
+      } else {
+        _textInput.focus();
       }
     });
 
@@ -127,7 +133,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         display: _display,
         syncInstanceInputs: true,
         mergeDisplay: true,
-        physicalKeyboardHighlight: true
+        physicalKeyboardHighlight: true,
+        preventMouseDownDefault: true
       });
 
     let layout = window.Cookies.get("keyboard");
