@@ -3,8 +3,8 @@
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
 <?php endif; ?>
 <?php
-$user = $this->auth()->isLoggedIn();
-$actionLimits = $this->config()->get('config')?->BulkActions?->limits;
+  $user = $this->auth()->isLoggedIn();
+  $actionLimits = $this->config()->get('config')?->BulkActions?->limits;
 ?>
 <nav class="bulkActionButtons">
   <div class="bulk-checkbox">
