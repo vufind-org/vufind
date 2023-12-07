@@ -70,6 +70,13 @@ abstract class AbstractCommand extends Command
     protected $languageDir;
 
     /**
+     * Files to ignore when processing directories
+     *
+     * @var string[]
+     */
+    protected $filesToIgnore = ['aliases.ini', 'native.ini'];
+
+    /**
      * Constructor
      *
      * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
@@ -181,8 +188,8 @@ abstract class AbstractCommand extends Command
     protected function processDirectory($dir, $callback, $statusCallback = false)
     {
         while ($file = $dir->read()) {
-            // Only process .ini files, and ignore native.ini/aliases.ini special case files:
-            if (str_ends_with($file, '.ini') && $file !== 'native.ini' && $file !== 'aliases.ini') {
+            // Only process .ini files, and ignore special case files:
+            if (str_ends_with($file, '.ini') && !in_array($file, $this->filesToIgnore)) {
                 if (is_callable($statusCallback)) {
                     $statusCallback("Processing $file...");
                 }
