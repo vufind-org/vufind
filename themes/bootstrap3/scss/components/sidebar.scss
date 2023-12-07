@@ -307,5 +307,6 @@ h3.facet-title {
 }
 
 #btn-reset-contains {
-  @extend .btn .btn-default;
+  @extend .btn;
+  @extend .btn-default;
 }
