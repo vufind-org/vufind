@@ -34,6 +34,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
@@ -203,6 +204,14 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
+        $lightboxParentUrl = new Http($this->getServerUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
+        if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
+            $this->layout()->lightboxChild = $lightboxChild;
+        }
         return new ViewModel($params);
     }
 
@@ -349,16 +358,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $msg = 'You must be logged in first';
         }
 
-        // We don't want to return to the lightbox
-        $serverUrl = $this->getServerUrl();
-        $serverUrl = str_replace(
-            ['?layout=lightbox', '&layout=lightbox'],
-            ['?', '&'],
-            $serverUrl
-        );
+        // store parent url of lightboxes
+        $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras, $serverUrl);
+        $this->followup()->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -722,6 +726,9 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             return;
         }
 
+        // Clear previously stored lightboxParent.
+        $this->followup()->clear('lightboxParent');
+
         // If we got this far, we want to store the referer:
         $this->followup()->store([], $referer);
     }
@@ -741,15 +748,43 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
+     * Checks if a followup url is set
+     *
+     * @return bool
+     */
+    protected function hasFollowupUrl()
+    {
+        return null !== $this->followup()->retrieve('url');
+    }
+
+    /**
      * Retrieve a referer to keep post-login redirect pointing
      * to an appropriate location.
      * Unset the followup before returning.
      *
+     * @param bool $checkRedirect Whether the query should be checked for param 'redirect'
+     *
      * @return string
      */
-    protected function getFollowupUrl()
+    protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        return $this->followup()->retrieve('url', '');
+        if ($url = $this->followup()->retrieveAndClear('url')) {
+            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
+                if (null !== $lightboxParent && !$this->inLightbox()) {
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
+                    $params['lightboxChild'] = $url;
+                    $parentUrl->setQuery($params);
+                    return $parentUrl;
+                }
+                return $url;
+            }
+        }
+        return null;
     }
 
     /**
@@ -759,6 +794,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function clearFollowupUrl()
     {
+        $this->followup()->clear('lightboxParent');
         $this->followup()->clear('url');
     }
 
