@@ -35,6 +35,7 @@ use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
 use function count;
+use function in_array;
 use function is_callable;
 
 /**
