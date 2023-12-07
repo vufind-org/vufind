@@ -33,7 +33,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         _textInput.setSelectionRange(caretPos, caretPos);
       }
     }
-    _textInput.focus();
   }
 
   function _showKeyboard() {
@@ -161,6 +160,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (_resetButton) {
       _resetButton.addEventListener('click', function resetOnClick() {
         _handleInputChange('');
+        _textInput.focus();
       });
     }
 
