@@ -102,14 +102,16 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _showKeyboard();
     });
     document.addEventListener("click", (event) => {
+      if (!_keyboard.options.theme.includes('show-keyboard')) {
+        return;
+      }
       function hasClass(el, className) {
         return el.className !== undefined && el.className.includes(className);
       }
       if (
         event.target.parentNode == null ||
         event.target.parentNode.parentNode == null || (
-          _keyboard.options.theme.includes('show-keyboard')
-          && !hasClass(event.target, 'searchForm_lookfor')
+          !hasClass(event.target, 'searchForm_lookfor')
           && !hasClass(event.target, 'keyboard-selection')
           && !hasClass(event.target, 'hg-button')
           && !hasClass(event.target, 'hg-row')
