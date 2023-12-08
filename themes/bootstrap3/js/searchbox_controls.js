@@ -29,7 +29,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (triggerInputEvent) {
       _textInput.dispatchEvent(new Event('input'));
     }
-    _textInput.focus();
   }
 
   function _showKeyboard() {
@@ -154,6 +153,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (_resetButton) {
       _resetButton.addEventListener('click', function resetOnClick() {
         _handleInputChange('');
+        _textInput.focus();
       });
     }
 
