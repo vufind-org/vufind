@@ -2,10 +2,7 @@
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
 <?php endif; ?>
-<?php
-$user = $this->auth()->isLoggedIn();
-$actionLimits = $this->config()->get('config')?->BulkActions?->limits;
-?>
+<?php $user = $this->auth()->isLoggedIn(); ?>
 <nav class="bulkActionButtons">
   <div class="bulk-checkbox">
     <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">

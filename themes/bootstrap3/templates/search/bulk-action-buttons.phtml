@@ -1,6 +1,3 @@
-<?php
-$actionLimits = $this->config()->get('config')?->BulkActions?->limits;
-?>
 <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
   <nav class="bulkActionButtons">
     <div class="bulk-checkbox">
@@ -54,7 +51,7 @@ $actionLimits = $this->config()->get('config')?->BulkActions?->limits;
               )
           )
         ?>
-        <?php if (($actionLimits?->saveCart ?? 0) > 0 && $this->userlist()->getMode() !== 'disabled'): ?>
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
           <?=
             $this->bulkAction()->button(
                 'saveCart',
@@ -85,7 +82,6 @@ $actionLimits = $this->config()->get('config')?->BulkActions?->limits;
               )
           )
         ?>
-        <li><button id="<?=$this->idPrefix?>updateCart" type="submit" class="toolbar-btn" name="add" value="1"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('cart-add') ?> <?=$this->transEsc('Add to Book Bag')?></button></li>
       <?php endif; ?>
     </ul>
   </nav>
