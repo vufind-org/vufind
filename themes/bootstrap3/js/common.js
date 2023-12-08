@@ -537,7 +537,7 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  let numberOfSelected = $('.checkbox-select-item:checked').length;
+  let numberOfSelected = document.querySelectorAll('.checkbox-select-item:checked').length;
 
   if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
