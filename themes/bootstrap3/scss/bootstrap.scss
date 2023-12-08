@@ -474,8 +474,7 @@ ul.list-group {
       background: #fff;
       &:before {
         display: flex;
-        align-items: last baseline;
-        flex-basis: 30%;
+        flex-basis: 40%;
         flex-shrink: 0;
         font-weight: bold;
         content: attr(data-label);
