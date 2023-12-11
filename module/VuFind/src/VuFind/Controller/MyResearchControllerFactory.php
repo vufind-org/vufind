@@ -68,9 +68,6 @@ class MyResearchControllerFactory extends AbstractBaseFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        return $this->applyPermissions(
-            $container,
-            new $requestedName($container, $configLoader)
-        );
+        return parent::__invoke($container, $requestedName, [$configLoader]);
     }
 }
