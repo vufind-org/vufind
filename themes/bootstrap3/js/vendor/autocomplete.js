@@ -36,6 +36,9 @@ function Autocomplete(_settings) {
   }
 
   function _align(input) {
+    if (input === false) {
+      return;
+    }
     const inputBox = input.getBoundingClientRect();
     list.style.minWidth = inputBox.width + "px";
     list.style.top = inputBox.bottom + window.scrollY + "px";
@@ -270,12 +273,12 @@ function Autocomplete(_settings) {
         document.body.appendChild(list);
         window.addEventListener(
           "resize",
-          function acresize() {
-            if (lastInput === false) {
-              return;
-            }
-            _align(lastInput);
-          },
+          () => _align(lastInput),
+          false
+        );
+        window.addEventListener(
+          "scroll",
+          () => _align(lastInput),
           false
         );
       }
