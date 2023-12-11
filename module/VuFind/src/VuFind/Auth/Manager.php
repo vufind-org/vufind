@@ -306,7 +306,7 @@ class Manager implements
      */
     public function getPersistentLoginLifetime()
     {
-        return $this->config->Authentication->persistent_login_lifetime ?? 0;
+        return $this->config->Authentication->persistent_login_lifetime ?? 14;
     }
 
     /**

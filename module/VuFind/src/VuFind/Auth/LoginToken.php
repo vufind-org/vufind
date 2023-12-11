@@ -181,7 +181,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
             throw new AuthException('Problem with browscap.ini');
         }
         if ($expires === 0) {
-            $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 0;
+            $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
         try {
