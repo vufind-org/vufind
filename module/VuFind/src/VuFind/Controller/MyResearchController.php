@@ -32,6 +32,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -97,16 +98,26 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
+     * Session container
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface      $sm           Service locator
+     * @param Container                    $container    Session container
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
     public function __construct(
         ServiceLocatorInterface $sm,
+        Container $container,
         \VuFind\Config\PluginManager $configLoader
     ) {
         parent::__construct($sm);
+        $this->session = $container;
         $this->configLoader = $configLoader;
     }
 

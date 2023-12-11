@@ -67,7 +67,11 @@ class MyResearchControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $session = new \Laminas\Session\Container(
+            'cart_followup',
+            $container->get(\Laminas\Session\SessionManager::class)
+        );
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        return parent::__invoke($container, $requestedName, [$configLoader]);
+        return parent::__invoke($container, $requestedName, [$session, $configLoader]);
     }
 }

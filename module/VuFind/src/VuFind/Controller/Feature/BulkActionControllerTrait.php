@@ -2,7 +2,7 @@
 
 /**
  * VuFind Action Feature Trait - Bulk action helper methods
- * Depends on access to the config loader.
+ * Depends on access to the config loader and the cart_followup session container.
  *
  * PHP version 8
  *
