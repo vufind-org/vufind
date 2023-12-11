@@ -82,13 +82,7 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
         $attributes['data-item-limit'] = $limit;
         return $this->getView()->render(
             'Helpers/bulk-action-button.phtml',
-            [
-                'action' => $action,
-                'icon' => $icon,
-                'content' => $content,
-                'limit' => $limit,
-                'attributes' => $attributes,
-            ]
+            compact('action', 'icon', 'content', 'limit', 'attributes')
         );
     }
 
