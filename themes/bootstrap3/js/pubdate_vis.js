@@ -130,7 +130,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
 
         var link = document.createElement("a");
         link.textContent = document.getElementById("clearButtonText").innerText;
-        link.setAttribute("href", encodeURIComponent(val.removalURL));
+        link.setAttribute("href", val.removalURL);
         newdiv.append(link);
 
         placeholder.before(newdiv);

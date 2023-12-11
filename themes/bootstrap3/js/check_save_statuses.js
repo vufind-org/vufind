@@ -9,11 +9,11 @@ VuFind.register("saveStatuses", function ItemStatuses() {
       var listEl = document.createElement("ul");
       listEl.append(...itemLists.map(function convertToLi(l) {
         const aEl = document.createElement("a");
-        aEl.setAttribute("href", encodeURIComponent(l.list_url));
+        aEl.setAttribute("href", l.list_url);
         aEl.textContent = l.list_title;
 
         const liEl = document.createElement("li");
-        listEl.append(aEl);
+        liEl.append(aEl);
         return liEl;
       }));
 
