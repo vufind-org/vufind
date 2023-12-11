@@ -65,7 +65,7 @@ use function is_object;
  */
 class MyResearchController extends AbstractBase
 {
-    use Feature\BulkActionTrait;
+    use Feature\BulkActionControllerTrait;
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
 

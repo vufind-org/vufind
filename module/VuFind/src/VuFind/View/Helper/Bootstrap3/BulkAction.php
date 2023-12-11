@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Bootstrap3;
 
-use VuFind\Controller\Feature\BulkActionTrait;
-
 /**
  * Bulk action view helper
  *
@@ -42,7 +40,7 @@ use VuFind\Controller\Feature\BulkActionTrait;
  */
 class BulkAction extends \Laminas\View\Helper\AbstractHelper
 {
-    use BulkActionTrait;
+    use \VuFind\Feature\BulkActionTrait;
 
     /**
      * Configuration loader
