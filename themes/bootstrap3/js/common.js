@@ -1,10 +1,6 @@
 /*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers, Splide */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupCarousels, setupMultiILSLoginFields, unwrapJQuery */
 
-function unwrapJQuery(node) {
-  return node instanceof Node ? node : node[0];
-}
-
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
   var path = null;
@@ -371,6 +367,10 @@ function htmlEncode(value) {
   } else {
     return '';
   }
+}
+
+function unwrapJQuery(node) {
+  return node instanceof Node ? node : node[0];
 }
 
 /**
