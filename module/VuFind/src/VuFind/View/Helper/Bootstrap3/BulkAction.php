@@ -85,14 +85,4 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
             compact('action', 'icon', 'content', 'limit', 'attributes')
         );
     }
-
-    /**
-     * Disable trait method
-     *
-     * @return mixed
-     */
-    public function redirectToSource()
-    {
-        return null;
-    }
 }
