@@ -49,8 +49,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       document.getElementById("searchForm").submit();
     }
 
-    _textInput.focus();
-
     let caretPos = _keyboard.getCaretPosition();
     if (caretPos) {
       _textInput.setSelectionRange(caretPos, caretPos);
@@ -134,10 +132,11 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         )
       ) {
         _hideKeyboard();
-      } else if (event.target.parentNode == null || (
-        !hasId(event.target, 'keyboard-selection-button')
-        && !hasId(event.target.parentNode, 'keyboard-selection-button')
-      )
+      } else if (
+        event.target.parentNode == null || (
+          !hasId(event.target, 'keyboard-selection-button')
+          && !hasId(event.target.parentNode, 'keyboard-selection-button')
+        )
       ) {
         _textInput.focus();
       }
@@ -274,12 +273,13 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function setupSearchResetButton() {
-    _textInput = document.getElementById("searchForm_lookfor");
     _resetButton = document.getElementById("searchForm-reset");
 
     if (!_resetButton) {
       return;
     }
+
+    _textInput = document.getElementById("searchForm_lookfor");
 
     if (_textInput.value !== "") {
       _resetButton.classList.remove("hidden");
