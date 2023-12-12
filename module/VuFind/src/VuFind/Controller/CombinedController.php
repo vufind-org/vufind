@@ -356,8 +356,8 @@ class CombinedController extends AbstractSearch
             $noRecommend[] = 'side';
         }
 
-        // Display or hide no results recommendations, based on 
-        // include_recommendations_noresults setting (to display them in the bento box) or 
+        // Display or hide no results recommendations, based on
+        // include_recommendations_noresults setting (to display them in the bento box) or
         // include_recommendations_noresults_side setting (to display them in the sidebar).
         if (is_array($settings['include_recommendations_noresults'] ?? false)) {
             $recommendOverride['noresults'] = $settings['include_recommendations_noresults'];
