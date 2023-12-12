@@ -290,9 +290,11 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
 
     _resetButton.addEventListener("click", function resetOnClick() {
-      _textInput.value = "";
-      _textInput.dispatchEvent(new Event("input"));
-      _textInput.focus();
+      requestAnimationFrame(() => {
+        _textInput.value = "";
+        _textInput.dispatchEvent(new Event("input"));
+        _textInput.focus();
+      });
     });
   }
 
