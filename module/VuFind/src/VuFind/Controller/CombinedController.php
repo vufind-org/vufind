@@ -339,21 +339,32 @@ class CombinedController extends AbstractSearch
         // Override the search type:
         $query->type = $searchType;
 
-        // Always leave noresults active (useful for 0-hit searches).
-        // Display or hide top based on include_recommendations setting.
-        // Display or hide side based on include_recommendations_side setting.
         $recommendOverride = [];
         $noRecommend = [];
+
+        // Display or hide top based on include_recommendations setting.
         if (is_array($settings['include_recommendations'] ?? false)) {
             $recommendOverride['top'] = $settings['include_recommendations'];
         } else {
             $noRecommend[] = 'top';
         }
+
+        // Display or hide side based on include_recommendations_side setting.
         if (is_array($settings['include_recommendations_side'] ?? false)) {
             $recommendOverride['side'] = $settings['include_recommendations_side'];
         } else {
             $noRecommend[] = 'side';
         }
+
+        // Display or hide no results recommendations, based on 
+        // include_recommendations_noresults setting (to display them in the bento box) or 
+        // include_recommendations_noresults_side setting (to display them in the sidebar).
+        if (is_array($settings['include_recommendations_noresults'] ?? false)) {
+            $recommendOverride['noresults'] = $settings['include_recommendations_noresults'];
+        } elseif (is_array($settings['include_recommendations_noresults_side'] ?? false)) {
+            $recommendOverride['noresults_side'] = $settings['include_recommendations_noresults_side'];
+        }
+
         $query->recommendOverride = $recommendOverride;
         $query->noRecommend = count($noRecommend) ? implode(',', $noRecommend) : false;
     }
