@@ -362,11 +362,12 @@ var VuFind = (function VuFind() {
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
-  if (value) {
-    return $('<div />').text(value).html();
-  } else {
-    return '';
-  }
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 /**
