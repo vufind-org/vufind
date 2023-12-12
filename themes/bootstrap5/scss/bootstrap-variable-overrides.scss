@@ -1,0 +1,29 @@
+$nav-link-padding-y: 1rem !default;
+
+$primary:         #265680 !default;
+$success:         #028302 !default;
+$info:            #1C5F74 !default;
+$warning:         #A56100 !default;
+$danger:          #A41915 !default;
+
+$breadcrumb-bg:                 #f5f5f5 !default;
+$breadcrumb-padding-y:              8px !default;
+$breadcrumb-padding-x:              15px !default;
+
+$navbar-nav-link-padding-x: 1rem !default;
+$navbar-light-color: $primary !default;
+
+// Disable transitions to allow the bs3-compat.js to do its work without visual distractions:
+$enable-transitions: false !default;
+
+// Disable several default icons:
+$accordion-button-active-icon: none !default;
+$accordion-button-active-icon-dark: none !default;
+$accordion-button-icon: none !default;
+$accordion-button-icon-dark: none !default;
+$form-select-indicator: none !default;
+$form-select-indicator-dark: none !default;
+$form-switch-bg-image: none !default;
+$form-switch-bg-image-dark: none !default;
+$navbar-dark-toggler-icon-bg: none !default;
+$navbar-light-toggler-icon-bg: none !default;

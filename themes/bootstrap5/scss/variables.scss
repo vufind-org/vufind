@@ -1,5 +1,5 @@
 // Cookie consent dialog should have a z-index low enough to stay below dropdowns and modals
-$zindex-cookie-consent: ($zindex-dropdown - 10);
+$zindex-cookie-consent: ($zindex-dropdown - 10) !default;
 
 // Variables used in Sidebar Menu Lists
 $myresearch-menu-ul-margin-bottom: 0 !default;

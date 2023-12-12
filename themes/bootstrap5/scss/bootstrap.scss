@@ -10,14 +10,14 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "twbs/bootstrap/scss/functions";
 
 // Include any variable overrides here
-@import "variable-overrides";
+@import "bootstrap-variable-overrides";
 
 // Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
 @import "twbs/bootstrap/scss/variables";
 @import "twbs/bootstrap/scss/variables-dark";
 
 // Include any map overrides here
-@import "map-overrides";
+@import "bootstrap-map-overrides";
 
 // Include remainder of required parts
 @import "twbs/bootstrap/scss/maps";
