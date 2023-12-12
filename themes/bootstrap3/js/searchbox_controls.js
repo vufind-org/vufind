@@ -49,10 +49,12 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       document.getElementById("searchForm").submit();
     }
 
-    let caretPos = _keyboard.getCaretPosition();
-    if (caretPos) {
-      _textInput.setSelectionRange(caretPos, caretPos);
-    }
+    requestAnimationFrame(() => {
+      let caretPos = _keyboard.getCaretPosition();
+      if (caretPos) {
+        _textInput.setSelectionRange(caretPos, caretPos);
+      }
+    });
   }
 
   function _updateKeyboardLayout(layoutName) {
