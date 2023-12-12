@@ -189,8 +189,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         // Ensure limit is at least 1 since Primo seems to be flaky with 0:
         $args['limit'] = max(1, $args['limit']);
 
-        $result = $this->performSearch($terms, $args);
-        return $result;
+        return $this->performSearch($terms, $args);
     }
 
     /**
@@ -268,9 +267,8 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         if ($args['phrase']) {
             $precision = 'exact';
         }
-        // determine which primo index to search
 
-        //default index is any and initialize lookfor to an empty string
+        // Default index is any and initialize lookfor to an empty string
         $lookin  = 'any';
         $lookfor = '';
 
@@ -460,7 +458,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Translate Primo's XML into array of arrays.
+     * Translate Primo's JSON into array of arrays.
      *
      * @param string $data   The raw xml from Primo
      * @param array  $params Request parameters
@@ -574,17 +572,32 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $items[] = $item;
         }
 
-        // Process faces
+        // Add active filters to the facet list (Primo doesn't return them):
         $facets = [];
+        foreach ($params['filterList'] ?? [] as $current) {
+            if ('NOT' === $current['facetOp']) {
+                continue;
+            }
+            $field = $current['field'];
+            foreach ($current['values'] as $value) {
+                $facets[$field][$value] = null;
+            }
+        }
+
+        // Process received facets
         foreach ($response->facets as $facet) {
-            $facets[$facet->name] = array_combine(
-                array_column($facet->values, 'value'),
-                array_column($facet->values, 'count')
-            );
+            $facets[$facet->name] = [
+                ...($facets[$facet->name] ?? []),
+                ...array_combine(
+                    array_column($facet->values, 'value'),
+                    array_column($facet->values, 'count')
+                ),
+            ];
             uasort(
                 $facets[$facet->name],
                 function ($a, $b) {
-                    return $b <=> $a;
+                    // Put the selected facets (with null as value) on the top:
+                    return ($b ?? PHP_INT_MAX) <=> ($a ?? PHP_INT_MAX);
                 }
             );
         }
