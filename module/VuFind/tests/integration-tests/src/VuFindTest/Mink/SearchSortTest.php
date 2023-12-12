@@ -103,6 +103,45 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test the sort control
+     *
+     * @return void
+     */
+    public function testHiddenSort(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_sort' => 'title',
+                    ],
+                    'Sorting' => [
+                        'title' => 'Title',
+                    ],
+                    'HiddenSorting' => [
+                        'pattern' => [
+                            '.* desc',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=title');
+        $page = $session->getPage();
+
+        // Check expected first and last record on first page:
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
+
+        // Change sort to title reversed (hidden option) and verify:
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=title desc');
+        $page = $session->getPage();
+
+        // Check expected first and last record:
+        $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
+    }
+
+    /**
      * Set up a search page with sorting configured
      *
      * @param string $sortParam Requested sort option

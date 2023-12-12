@@ -200,6 +200,7 @@ h3.facet-title {
 .facet-tree {
   padding-left: 0;
 
+  // Constrain the width of lower levels to avoid overflow:
   ul {
     padding: 0;
     width: 100%;
@@ -217,6 +218,7 @@ h3.facet-title {
       border: 0;
       background: none;
       max-width: 1.5em;
+      padding: 0;
 
       &:hover {
         background-color: @list-group-hover-bg;
@@ -275,12 +277,12 @@ h3.facet-title {
   }
 
   // Top level bottom border:
-  & > ul > li, .more-less-btn-wrapper {
+  & > li, .more-less-btn-wrapper {
     border-bottom: 1px solid @list-group-border;
   }
   // Make the first child level start a bit higher to counter the padding of top
   // level items:
-  & > ul > li > ul {
+  & > li > ul {
     margin-top: -0.2rem;
   }
 }

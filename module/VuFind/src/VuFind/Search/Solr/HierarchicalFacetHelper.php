@@ -30,6 +30,7 @@
 
 namespace VuFind\Search\Solr;
 
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
@@ -61,6 +62,25 @@ class HierarchicalFacetHelper implements
 {
     use TranslatorAwareTrait;
     use HasSorterTrait;
+
+    /**
+     * View renderer
+     *
+     * @var RendererInterface
+     */
+    protected $viewRenderer = null;
+
+    /**
+     * Set view renderer
+     *
+     * @param RendererInterface $renderer View renderer
+     *
+     * @return void
+     */
+    public function setViewRenderer(RendererInterface $renderer): void
+    {
+        $this->viewRenderer = $renderer;
+    }
 
     /**
      * Helper method for building hierarchical facets:
