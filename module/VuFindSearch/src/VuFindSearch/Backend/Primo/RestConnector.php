@@ -499,9 +499,9 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             if ($display->creator ?? null) {
                 $item['creator'] = array_map('trim', $display->creator);
             }
-            // subjects
-            if ($display->subject ?? null) {
-                $item['subjects'] = $display->subject;
+            // subjects (use the search fields instead of display to get them as an array instead of a long string)
+            if ($search->subject ?? null) {
+                $item['subjects'] = $search->subject;
             }
             $item['ispartof'] = $display->ispartof[0] ?? '';
             $item['description'] = $display->description[0]
