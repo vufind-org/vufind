@@ -25,6 +25,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "twbs/bootstrap/scss/root";
 
 // Optionally include any other parts as needed
+@import "twbs/bootstrap/scss/alert";
 @import "twbs/bootstrap/scss/utilities";
 @import "twbs/bootstrap/scss/reboot";
 @import "twbs/bootstrap/scss/type";

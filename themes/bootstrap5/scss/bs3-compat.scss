@@ -4,15 +4,21 @@
 @use 'sass:math';
 
 // *** Variables ***
-$border-radius-base: $border-radius !default;
-$border-radius-large: $border-radius-lg !default;
+$brand-primary: $primary !default;
+$brand-success: $success !default;
+$brand-info:    $info !default;
+$brand-warning: $warning !default;
+$brand-danger:  $danger !default;
+
+$border-radius-base:   $border-radius !default;
+$border-radius-large:  $border-radius-lg !default;
 
 $breadcrumb-separator: $breadcrumb-divider !default;
 
 $btn-border-radius-base: $btn-border-radius;
-$btn-default-color: map-get($theme-colors, "light") !default;
-$btn-default-bg: map-get($theme-colors, "primary") !default;
-$btn-default-border: shade-color($btn-default-bg, $btn-active-bg-shade-amount) !default;
+$btn-default-color:      map-get($theme-colors, "light") !default;
+$btn-default-bg:         map-get($theme-colors, "primary") !default;
+$btn-default-border:     shade-color($btn-default-bg, $btn-active-bg-shade-amount) !default;
 
 $gray-base:              #000 !default;
 $gray-darker:            lighten($gray-base, 13.5%) !default; // #222
@@ -25,8 +31,8 @@ $input-height-base: $input-height !default;
 
 $list-group-border: $list-group-border-color !default;
 
-$nav-link-hover-bg: $gray-lighter !default;
-$nav-link-padding: $nav-link-padding-y !default;
+$nav-link-hover-bg:   $gray-lighter !default;
+$nav-link-padding:    $nav-link-padding-y !default;
 
 $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
@@ -56,23 +62,14 @@ $screen-lg-max:          ($screen-xl-min - 1);
 $grid-float-breakpoint:     $screen-sm-min !default;
 $grid-float-breakpoint-max: ($grid-float-breakpoint - 1) !default;
 
-$state-danger-text:              var(--#{$prefix}danger) !default;
-$state-danger-bg:                var(--#{$prefix}danger-bg-subtle) !default;
-$state-info-text:                var(--#{$prefix}info) !default;
-$state-info-bg:                  var(--#{$prefix}body-bg) !default;
-$state-success-text:             var(--#{$prefix}success) !default;
-$state-success-bg:               var(--#{$prefix}success-bg-subtle) !default;
-$state-warning-text:             var(--#{$prefix}warning) !default;
-$state-warning-bg:               var(--#{$prefix}warning-bg-subtle) !default;
-
-$alert-danger-bg:             $state-danger-bg !default;
-$alert-danger-text:           $state-danger-text !default;
-$alert-info-bg:               $state-info-bg !default;
-$alert-info-text:             $state-info-text !default;
-$alert-success-bg:            $state-success-bg !default;
-$alert-success-text:          $state-success-text !default;
-$alert-warning-bg:            $state-warning-bg !default;
-$alert-warning-text:          $state-warning-text !default;
+$state-danger-text:           var(--#{$prefix}danger) !default;
+$state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
+$state-info-text:             var(--#{$prefix}info) !default;
+$state-info-bg:               var(--#{$prefix}body-bg) !default;
+$state-success-text:          var(--#{$prefix}success) !default;
+$state-success-bg:            var(--#{$prefix}success-bg-subtle) !default;
+$state-warning-text:          var(--#{$prefix}warning) !default;
+$state-warning-bg:            var(--#{$prefix}warning-bg-subtle) !default;
 
 $text-color: $body-color !default;
 
@@ -94,6 +91,7 @@ $cursor-disabled:                not-allowed !default;
 $table-bg-accent: var(--bs-table-accent-bg) !default;
 
 $line-height-computed: $line-height-base;
+
 
 // *** Styles ***
 .sr-only {
