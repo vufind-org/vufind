@@ -3552,6 +3552,15 @@ class SierraRest extends AbstractBase implements
         }
         return false;
     }
+
+    /**
+     * Gets title information for holds placed in an INN-Reach system
+     *
+     * @param $holdId
+     * @param $itemId
+     * @return array
+     * @throws ILSException
+     */
     private function getInnReachHoldTitleInfoFromId($holdId, $itemId)
     {
         $titleInfo = array();
@@ -3585,6 +3594,15 @@ class SierraRest extends AbstractBase implements
 
         return $titleInfo;
     }
+
+    /**
+     * Gets title information for checked out items from INN-Reach systems
+     *
+     * @param $holdId
+     * @param $itemId
+     * @return array|void
+     * @throws ILSException
+     */
     private function getInnReachCheckoutTitleInfoFromId($holdId, $itemId){
         $titleInfo = array();
 
