@@ -495,9 +495,9 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $item['recordid'] = substr($control->recordid[0], 3);
             $item['title'] = $display->title[0] ?? '';
             $item['format'] = $display->type ?? [];
-            // creators
-            if ($display->creator ?? null) {
-                $item['creator'] = array_map('trim', $display->creator);
+            // creators (use the search fields instead of display to get them as an array instead of a long string)
+            if ($search->creator ?? null) {
+                $item['creator'] = array_map('trim', $search->creator);
             }
             // subjects (use the search fields instead of display to get them as an array instead of a long string)
             if ($search->subject ?? null) {
@@ -513,7 +513,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $item['identifier'] = $display->identifier[0] ?? '';
             $item['fulltext'] = $pnx->delivery->fulltext[0] ?? '';
             $item['issn'] = $search->issn ?? [];
-            $item['publisher'] = $display->publisher[0] ?? '';
+            $item['publisher'] = $display->publisher ?? [];
             $item['peer_reviewed'] = ($display->lds50[0] ?? '') === 'peer_reviewed';
             $openurl = $pnx->links->openurl[0] ?? '';
             $item['url'] = $openurl && !str_starts_with($openurl, '$')
@@ -568,7 +568,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             // Fix description now that highlighting is done:
             $item['description'] = $this->processDescription($item['description']);
 
-            $item['fullrecord'] = json_encode($pnx);
+            $item['fullrecord'] = json_decode(json_encode($pnx), true);
             $items[] = $item;
         }
 
