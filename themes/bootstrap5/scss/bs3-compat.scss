@@ -91,6 +91,9 @@ $pager-disabled-color:                 $pagination-disabled-color !default;
 
 $cursor-disabled:                not-allowed !default;
 
+$table-bg-accent: var(--bs-table-accent-bg) !default;
+
+$line-height-computed: $line-height-base;
 
 // *** Styles ***
 .sr-only {
