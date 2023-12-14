@@ -225,15 +225,18 @@ class CombinedController extends AbstractSearch
         $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        // Identify if any modules use include_recommendations_side.
+        // Identify if any modules use include_recommendations_side or
+        // include_recommendations_noresults_side.
         $columnSideRecommendations = [];
         $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
         foreach ($config as $subconfig) {
-            if (is_array($subconfig['include_recommendations_side'] ?? false)) {
-                foreach ($subconfig['include_recommendations_side'] as $recommendation) {
-                    $recommendationModuleName = strtok($recommendation, ':');
-                    $recommendationModule = $recommendationManager->get($recommendationModuleName);
-                    $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+            foreach (['include_recommendations_side', 'include_recommendations_noresults_side'] as $type) {
+                if (is_array($subconfig[$type] ?? false)) {
+                    foreach ($subconfig[$type] as $recommendation) {
+                        $recommendationModuleName = strtok($recommendation, ':');
+                        $recommendationModule = $recommendationManager->get($recommendationModuleName);
+                        $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+                    }
                 }
             }
         }
