@@ -439,7 +439,7 @@ class SierraRest extends AbstractBase implements
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-        if($this->config['InnReach']['enabled']){
+        if ($this->config['InnReach']['enabled']) {
             try {
                 $conn_string = "host=" . $this->config['InnReach']['dna_url']
                     . " port=" . $this->config['InnReach']['dna_port']
@@ -450,7 +450,6 @@ class SierraRest extends AbstractBase implements
             } catch (\Exception $e) {
                 $this->throwAsIlsException($e);
             }
-
         }
         // Validate config
         $required = ['host', 'client_key', 'client_secret'];
@@ -860,10 +859,11 @@ class SierraRest extends AbstractBase implements
             }
             $transactions[] = $transaction;
         }
-        if($this->config['InnReach']['enabled']){
-            $n=0;
-            foreach($transactions as $transaction){
-                if($transaction['item_id'] && strstr($transaction['item_id'], $this->config['InnReach']['identifier'])){
+        if ($this->config['InnReach']['enabled']) {
+            $n = 0;
+            foreach ($transactions as $transaction) {
+                $irIdentifier = $this->config['InnReach']['identifier'];
+                if ($transaction['item_id'] && strstr($transaction['item_id'], $irIdentifier)) {
                     $irCheckoutId = $transaction['checkout_id'];
                     $irItemId = $transaction['item_id'];
                     $innReach = $this->getInnReachCheckoutTitleInfoFromId($irCheckoutId, $irItemId);
@@ -1216,16 +1216,15 @@ class SierraRest extends AbstractBase implements
             ];
         }
         $n = 0;
-        foreach($holds as $hold){
-
-            if($this->config['InnReach']['enabled']){
-                if(!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
+        foreach ($holds as $hold) {
+            if ($this->config['InnReach']['enabled']) {
+                if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
                     $id = $hold['id'];
                     $volume = $hold['volume'];
 
                     $innReach = $this->getInnReachHoldTitleInfoFromId($hold['reqnum'], $hold['id']);
                     $holds[$n]['id'] = $innReach['id'];
-                    $holds[$n]['title']= $innReach['title'];
+                    $holds[$n]['title'] = $innReach['title'];
                     $holds[$n]['author'] = $innReach['author'];
                 }
             }
@@ -3469,7 +3468,6 @@ class SierraRest extends AbstractBase implements
             }
         }
         if ($this->config['InnReach']['enabled']) {
-
             foreach ($itemIds as $key => $iRId) {
                 if (strstr($iRId, $this->config['InnReach']['identifier'])) {
                     $innReachIndices[$key] = $iRId;
@@ -3553,8 +3551,8 @@ class SierraRest extends AbstractBase implements
     /**
      * Gets title information for holds placed in an INN-Reach system
      *
-     * @param $holdId   the id of the hold from Sierra
-     * @param $itemId   the id of the item or bib from Sierra
+     * @param $holdId the id of the hold from Sierra
+     * @param $itemId the id of the item or bib from Sierra
      *
      * @return array
      *
@@ -3563,7 +3561,7 @@ class SierraRest extends AbstractBase implements
     private function getInnReachHoldTitleInfoFromId($holdId, $itemId)
     {
         $titleInfo = array();
-        try{
+        try {
             $query = "SELECT 
                         bib_record_property.best_title as title,
                         bib_record_property.best_author as author,
@@ -3587,7 +3585,7 @@ class SierraRest extends AbstractBase implements
                     'author' => $resultArray[1]
                 ];
             }
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
 
@@ -3597,17 +3595,18 @@ class SierraRest extends AbstractBase implements
     /**
      * Gets title information for checked out items from INN-Reach systems
      *
-     * @param $checkOutId   the id of the checkout from Sierra
-     * @param $itemId       the id of the item or bib from Sierra
+     * @param $checkOutId the id of the checkout from Sierra
+     * @param $itemId     the id of the item or bib from Sierra
      *
      * @return array|void
      *
      * @throws ILSException
      */
-    private function getInnReachCheckoutTitleInfoFromId($checkOutId, $itemId){
+    private function getInnReachCheckoutTitleInfoFromId($checkOutId, $itemId)
+    {
         $titleInfo = array();
 
-        try{
+        try {
             $query = "SELECT 
   bib_record_property.best_title as title,
   bib_record_property.best_author as author,
@@ -3628,7 +3627,7 @@ WHERE
                 $titleInfo['author'] = $resultArray[1];
                 return $titleInfo;
             }
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
     }
