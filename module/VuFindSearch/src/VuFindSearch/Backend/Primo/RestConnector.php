@@ -109,6 +109,31 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     ];
 
     /**
+     * Mappings from VuFind index names to Primo
+     *
+     * @var array
+     */
+    protected $indexMappings = [
+        'AllFields' => 'any',
+        'Title' => 'title',
+        'Author' => 'creator',
+        'Subject' => 'sub',
+        'Abstract' => 'desc',
+        'ISSN' => 'issn',
+    ];
+
+    /**
+     * Legacy sort mappings
+     *
+     * @var array
+     */
+    protected $sortMappings = [
+        'scdate' => 'date',
+        'screator' => 'author',
+        'stitle' => 'title',
+    ];
+
+    /**
      * Constructor
      *
      * Sets up the Primo API Client
@@ -212,21 +237,17 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         // It would be tempting to use 'exact' matching here, but it does not work
         // with all record IDs, so need to use 'contains'. Contrary to the old
         // brief search API, quotes are necessary here for all IDs to work.
-        $qs[] = 'q=rid,contains,' . urlencode('"' . str_replace(';', ' ', $recordId) . '"');
-        $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
-        $qs[] = 'offset=0';
-        $qs[] = 'limit=1';
+        $qs['q'] = 'rid,contains,"' . str_replace(';', ' ', $recordId) . '"';
+        $qs['offset'] = '0';
+        $qs['limit'] = '1';
         // pcAvailability=true is needed for records, which
         // are NOT in the PrimoCentral Holdingsfile.
         // It won't hurt to have this parameter always set to true.
         // But it'd hurt to have it not set in case you want to get
         // a record, which is not in the Holdingsfile.
-        $qs[] = 'pcAvailability=true';
+        $qs['pcAvailability'] = 'true';
 
-        // Send Request
-        $result = $this->call(implode('&', $qs));
-
-        return $result;
+        return $this->processResponse($this->call(http_build_query($qs)));
     }
 
     /**
@@ -263,10 +284,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         //   to primo and they will interpret it correctly.
         //   leaving this flag in b/c it's not hurting anything, but we
         //   don't currently have a situation where we need to use "exact"
-        $precision = 'contains';
-        if ($args['phrase']) {
-            $precision = 'exact';
-        }
+        $precision = $args['phrase'] ? 'exact' : 'contains';
 
         $primoQuery = [];
         if (is_array($terms)) {
@@ -276,33 +294,14 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
                     continue;
                 }
                 // Set the index to search
-                switch ($thisTerm['index']) {
-                    case 'AllFields':
-                        $lookin = 'any';
-                        break;
-                    case 'Title':
-                        $lookin = 'title';
-                        break;
-                    case 'Author':
-                        $lookin = 'creator';
-                        break;
-                    case 'Subject':
-                        $lookin = 'sub';
-                        break;
-                    case 'Abstract':
-                        $lookin = 'desc';
-                        break;
-                    case 'ISSN':
-                        $lookin = 'issn';
-                        break;
-                }
+                $index = $this->indexMappings[$thisTerm['index']] ?? 'any';
 
                 // Set precision
                 if (array_key_exists('op', $thisTerm) && !empty($thisTerm['op'])) {
                     $precision = $thisTerm['op'];
                 }
 
-                $primoQuery[] = "$lookin,$precision," . urlencode($lookfor);
+                $primoQuery[] = "$index,$precision,$lookfor";
             }
         }
 
@@ -312,21 +311,12 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         }
 
         if ($primoQuery) {
-            $qs[] = 'q=' . implode(';', $primoQuery);
-        }
-
-        // QUERYSTRING: onCampus
-        if ($args['onCampus']) {
-            $qs[] = 'onCampus=true';
-        } else {
-            $qs[] = 'onCampus=false';
+            $qs['q'] = implode(';', $primoQuery);
         }
 
         // QUERYSTRING: query (filter list)
         // Date-related TODO:
         //   - provide additional support / processing for [x to y] limits?
-        //   - sys/Summon.php messes with publication date to enable date
-        //     range facet control in the interface. look for injectPubDate
         if (!empty($args['filterList'])) {
             $multiFacets = [];
             $qInclude = [];
@@ -347,13 +337,13 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
                 }
             }
             if ($multiFacets) {
-                $qs[] = 'multiFacets=' . urlencode(implode('|,|', $multiFacets));
+                $qs['multiFacets'] = implode('|,|', $multiFacets);
             }
             if ($qInclude) {
-                $qs[] = 'qInclude=' . urlencode(implode('|,|', $qInclude));
+                $qs['qInclude='] = implode('|,|', $qInclude);
             }
             if ($qExclude) {
-                $qs[] = 'qExclude=' . urlencode(implode('|,|', $qExclude));
+                $qs['qExclude='] =  implode('|,|', $qExclude);
             }
         }
 
@@ -365,57 +355,44 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
         // are NOT available via Holdingsfile are returned
         // (yes, right, set this to true - thats ExLibris Logic)
         if ($args['pcAvailability']) {
-            $qs[] = 'pcAvailability=true';
+            $qs['pcAvailability'] = 'true';
         }
 
         // QUERYSTRING: offset and limit
         $recordStart = ($args['pageNumber'] - 1) * $args['limit'];
-        $qs[] = "offset=$recordStart";
-        $qs[] = 'limit=' . $args['limit'];
+        $qs['offset'] = $recordStart;
+        $qs['limit'] = $args['limit'];
 
         // QUERYSTRING: sort
         // Possible values are rank (default), title, author or date.
         $sort = $args['sort'] ?? null;
         if ($sort && 'relevance' !== $sort) {
             // Map legacy sort options:
-            $map = [
-                'scdate' => 'date',
-                'screator' => 'author',
-                'stitle' => 'title',
-            ];
-            $qs[] = 'sort=' . ($map[$sort] ?? $sort);
+            $qs['sort'] = $this->sortMappings[$sort] ?? $sort;
         }
 
-        // Send Request
-        return $this->call(implode('&', $qs), $args);
+        return $this->processResponse($this->call(http_build_query($qs)), $args);
     }
 
     /**
      * Small wrapper for sendRequest, process to simplify error handling.
      *
-     * @param string $qs        Query string
-     * @param array  $params    Request parameters
-     * @param string $method    HTTP method
-     * @param bool   $cacheable Whether the request is cacheable
+     * @param string $qs Query string
      *
-     * @return object    The parsed primo data
+     * @return string Result body
      * @throws \Exception
      */
-    protected function call($qs, $params = [], $method = 'GET', $cacheable = true)
+    protected function call(string $qs): string
     {
         $url = $this->getUrl($this->searchUrl);
         $url .= (str_contains($url, '?') ? '&' : '?') . $qs;
-        $this->debug("$method: $url");
+        $this->debug("GET: $url");
         $client = ($this->clientFactory)($url);
-        if ($method !== 'GET') {
-            throw new \Exception("$method not supported");
-        }
-
-        $client->setMethod($method);
+        $client->setMethod('GET');
         // Check cache:
         $resultBody = null;
         $cacheKey = null;
-        if ($cacheable && $this->cache) {
+        if ($this->cache) {
             $cacheKey = $this->getCacheKey($client);
             $resultBody = $this->getCachedData($cacheKey);
         }
@@ -452,7 +429,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
                 $this->putCachedData($cacheKey, $resultBody);
             }
         }
-        return $this->process($resultBody, $params);
+        return $resultBody;
     }
 
     /**
@@ -463,7 +440,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
      *
      * @return array The processed response from Primo
      */
-    protected function process($data, $params = [])
+    protected function processResponse(string $data, array $params = []): array
     {
         // Make sure data exists
         if ('' === $data) {
