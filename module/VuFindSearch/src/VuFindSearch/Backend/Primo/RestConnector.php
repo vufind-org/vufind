@@ -268,10 +268,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $precision = 'exact';
         }
 
-        // Default index is any and initialize lookfor to an empty string
-        $lookin  = 'any';
-        $lookfor = '';
-
+        $primoQuery = [];
         if (is_array($terms)) {
             foreach ($terms as $thisTerm) {
                 $lookfor = str_replace(';', ' ', $thisTerm['lookfor']);
@@ -305,17 +302,18 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
                     $precision = $thisTerm['op'];
                 }
 
-                $qs[] = "q=$lookin,$precision," . urlencode($lookfor);
+                $primoQuery[] = "$lookin,$precision," . urlencode($lookfor);
             }
         }
 
         // Return if we don't have any query terms:
-        if ('' === $lookfor && empty($args['filterList'])) {
+        if (!$primoQuery && empty($args['filterList'])) {
             return self::$emptyQueryResponse;
         }
 
-        // It's a giant nested thing!  This is because we really have to
-        // have a query to send to primo or it hates us
+        if ($primoQuery) {
+            $qs[] = 'q=' . implode(';', $primoQuery);
+        }
 
         // QUERYSTRING: onCampus
         if ($args['onCampus']) {
@@ -479,10 +477,6 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             throw new \Exception('Error while parsing Primo response');
         }
 
-        if ($msg = $response->errorDetails->errorMessages[0] ?? null) {
-            throw new \Exception('Primo error: ' . $msg);
-        }
-
         $totalhits = (int)$response->info->total;
         $items = [];
         foreach ($response->docs as $doc) {
@@ -508,7 +502,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
                 ?? $search->description[0]
                 ?? '';
             // and the rest!
-            $item['language'] = $display->language[0];
+            $item['language'] = $display->language[0] ?? '';
             $item['source'] = implode('; ', $display->source ?? []);
             $item['identifier'] = $display->identifier[0] ?? '';
             $item['fulltext'] = $pnx->delivery->fulltext[0] ?? '';
@@ -609,6 +603,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             'documents' => $items,
             'facets' => $facets,
             'didYouMean' => [],
+            'error' => $response->info->errorDetails->errorMessages[0] ?? [],
         ];
     }
 
