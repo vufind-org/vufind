@@ -1219,7 +1219,6 @@ class SierraRest extends AbstractBase implements
         if ($this->config['InnReach']['enabled'] ?? false) {
             $n = 0;
             foreach ($holds as $hold) {
-
                 if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
                     $id = $hold['id'];
                     $volume = $hold['volume'];
@@ -1231,7 +1230,6 @@ class SierraRest extends AbstractBase implements
                 }
                 $n++;
             }
-
         }
         return $holds;
     }
