@@ -439,7 +439,7 @@ class SierraRest extends AbstractBase implements
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-        if ($this->config['InnReach']['enabled']) {
+        if ($this->config['InnReach']['enabled'] ?? false) {
             try {
                 $conn_string = 'host=' . $this->config['InnReach']['dna_url']
                     . ' port=' . $this->config['InnReach']['dna_port']
@@ -859,7 +859,7 @@ class SierraRest extends AbstractBase implements
             }
             $transactions[] = $transaction;
         }
-        if ($this->config['InnReach']['enabled']) {
+        if ($this->config['InnReach']['enabled'] ?? false) {
             $n = 0;
             foreach ($transactions as $transaction) {
                 $irIdentifier = $this->config['InnReach']['identifier'];
@@ -1215,9 +1215,11 @@ class SierraRest extends AbstractBase implements
                 'updateDetails' => $updateDetails,
             ];
         }
-        $n = 0;
-        foreach ($holds as $hold) {
-            if ($this->config['InnReach']['enabled']) {
+
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            $n = 0;
+            foreach ($holds as $hold) {
+
                 if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
                     $id = $hold['id'];
                     $volume = $hold['volume'];
@@ -1227,8 +1229,9 @@ class SierraRest extends AbstractBase implements
                     $holds[$n]['title'] = $innReach['title'];
                     $holds[$n]['author'] = $innReach['author'];
                 }
+                $n++;
             }
-            $n++;
+
         }
         return $holds;
     }
@@ -3467,7 +3470,7 @@ class SierraRest extends AbstractBase implements
                 $bibIdsToItems[$this->extractId($bibId)][$itemId] = true;
             }
         }
-        if ($this->config['InnReach']['enabled']) {
+        if ($this->config['InnReach']['enabled'] ?? false) {
             foreach ($itemIds as $key => $iRId) {
                 if (strstr($iRId, $this->config['InnReach']['identifier'])) {
                     $innReachIndices[$key] = $iRId;
