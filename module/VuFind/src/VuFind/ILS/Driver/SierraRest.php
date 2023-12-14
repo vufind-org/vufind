@@ -441,11 +441,11 @@ class SierraRest extends AbstractBase implements
         }
         if ($this->config['InnReach']['enabled']) {
             try {
-                $conn_string = "host=" . $this->config['InnReach']['dna_url']
-                    . " port=" . $this->config['InnReach']['dna_port']
-                    . " dbname=" . $this->config['InnReach']['dna_db']
-                    . " user=" . $this->config['InnReach']['dna_user']
-                    . " password=" . $this->config['InnReach']['dna_password'];
+                $conn_string = 'host=' . $this->config['InnReach']['dna_url']
+                    . ' port=' . $this->config['InnReach']['dna_port']
+                    . ' dbname=' . $this->config['InnReach']['dna_db']
+                    . ' user=' . $this->config['InnReach']['dna_user']
+                    . ' password=' . $this->config['InnReach']['dna_password'];
                 $this->db = pg_connect($conn_string);
             } catch (\Exception $e) {
                 $this->throwAsIlsException($e);
@@ -3560,9 +3560,9 @@ class SierraRest extends AbstractBase implements
      */
     private function getInnReachHoldTitleInfoFromId($holdId, $itemId)
     {
-        $titleInfo = array();
+        $titleInfo = [];
         try {
-            $query = "SELECT 
+            $query = 'SELECT 
                         bib_record_property.best_title as title,
                         bib_record_property.best_author as author,
                         --hold.status, -- this shows sierra hold status not inn-reach status
@@ -3575,14 +3575,14 @@ class SierraRest extends AbstractBase implements
                         hold.id = $1
                     AND hold.is_ir=true
                     AND hold.record_id = bib_record_item_record_link.item_record_id
-                    AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id";
-            pg_prepare($this->db, "prep_query", $query);
-            $results = pg_execute($this->db, "prep_query", [$holdId]);
+                    AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
+            pg_prepare($this->db, 'prep_query', $query);
+            $results = pg_execute($this->db, 'prep_query', [$holdId]);
             while ($resultArray = pg_fetch_row($results)) {
                 $titleInfo = [
                     'id' => $itemId,
                     'title' => $resultArray[0],
-                    'author' => $resultArray[1]
+                    'author' => $resultArray[1],
                 ];
             }
         } catch (\Exception $e) {
@@ -3604,10 +3604,10 @@ class SierraRest extends AbstractBase implements
      */
     private function getInnReachCheckoutTitleInfoFromId($checkOutId, $itemId)
     {
-        $titleInfo = array();
+        $titleInfo = [];
 
         try {
-            $query = "SELECT 
+            $query = 'SELECT 
   bib_record_property.best_title as title,
   bib_record_property.best_author as author,
   bib_record_property.best_title_norm as sort_title
@@ -3618,9 +3618,9 @@ FROM
 WHERE 
   checkout.id = $1
   AND checkout.item_record_id = bib_record_item_record_link.item_record_id
-  AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id";
-            pg_prepare($this->db, "prep_query", $query);
-            $results = pg_execute($this->db, "prep_query", [$checkOutId]);
+  AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
+            pg_prepare($this->db, 'prep_query', $query);
+            $results = pg_execute($this->db, 'prep_query', [$checkOutId]);
             while ($resultArray = pg_fetch_row($results)) {
                 $titleInfo['id'] = $itemId;
                 $titleInfo['title'] = $resultArray[0];
