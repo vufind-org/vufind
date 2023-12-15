@@ -245,7 +245,9 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Apply loaded aliases to the provided TextDomain.
      *
-     * @param TextDomain $data Text domain to update
+     * @param TextDomain $data          Text domain to update
+     * @param string     $currentLocale The locale currently being loaded
+     * @param string     $currentDomain The name of the text domain currently being loaded
      *
      * @return void
      */
@@ -265,7 +267,8 @@ class ExtendedIni implements FileLoaderInterface
             }
             // Do not overwrite existing values with alias, and do not create aliases
             // when target values are missing.
-            if ($this->aliasDomains[$domain]->offsetExists($key)
+            if (
+                $this->aliasDomains[$domain]->offsetExists($key)
                 && !$data->offsetExists($alias)
             ) {
                 $data->offsetSet($alias, $this->aliasDomains[$domain]->offsetGet($key));
