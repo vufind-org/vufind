@@ -33,6 +33,7 @@ use Laminas\I18n\Exception\InvalidArgumentException;
 use Laminas\I18n\Translator\Loader\FileLoaderInterface;
 use Laminas\I18n\Translator\TextDomain;
 
+use function count;
 use function dirname;
 use function in_array;
 
