@@ -70,6 +70,11 @@ class Results extends \VuFind\Search\Base\Results
     protected $responsePivotFacets = null;
 
     /**
+     * Counts of filtered-out facet values, indexed by field name.
+     */
+    protected $filteredFacetCounts = null;
+
+    /**
      * Search backend identifier.
      *
      * @var string
@@ -202,6 +207,7 @@ class Results extends \VuFind\Search\Base\Results
         $this->extraSearchBackendDetails = $command->getExtraRequestDetails();
 
         $this->responseFacets = $collection->getFacets();
+        $this->filteredFacetCounts = $collection->getFilteredFacetCounts();
         $this->responseQueryFacets = $collection->getQueryFacets();
         $this->responsePivotFacets = $collection->getPivotFacets();
         $this->resultTotal = $collection->getTotal();
@@ -315,6 +321,20 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
+     * Get counts of facet values filtered out by the HideFacetValueListener,
+     * indexed by field name.
+     *
+     * @return array
+     */
+    public function getFilteredFacetCounts(): array
+    {
+        if (null === $this->filteredFacetCounts) {
+            $this->performAndProcessSearch();
+        }
+        return $this->filteredFacetCounts;
+    }
+
+    /**
      * Get complete facet counts for several index fields
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
@@ -377,6 +397,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Do search
         $result = $clone->getFacetList();
+        $filteredCounts = $clone->getFilteredFacetCounts();
 
         // Reformat into a hash:
         foreach ($result as $key => $value) {
@@ -384,7 +405,7 @@ class Results extends \VuFind\Search\Base\Results
             $more = false;
             if (
                 isset($page) && count($value['list']) > 0
-                && count($value['list']) == $limit + 1
+                && (count($value['list']) + ($filteredCounts[$key] ?? 0)) == $limit + 1
             ) {
                 $more = true;
                 array_pop($value['list']);
