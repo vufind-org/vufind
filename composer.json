@@ -107,6 +107,7 @@
         "phpunit/php-code-coverage": "9.2.28",
         "phpunit/phpcov": "^8.2",
         "phpunit/phpunit": "9.6.12",
+        "pietercolpaert/hardf": "0.3.1",
         "squizlabs/php_codesniffer": "3.7.2"
     },
     "extra": {
