@@ -37,7 +37,7 @@
     <?php foreach($this->languages as $language): ?>
       <div id="notifications-tabs-<?=$language?>">
         <div class="form-group">
-            <?php $content = $form->get('content_'.$language); ?>
+            <?php $content = $form->get('content_' . $language); ?>
             <?php $content->setLabelOptions(['disable_html_escape' => true]); ?>
             <?= $this->formLabel($content) ?>
             <?= $this->formElement($content) ?>

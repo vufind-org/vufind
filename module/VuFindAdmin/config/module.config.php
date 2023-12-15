@@ -124,7 +124,7 @@ $config = [
                             'defaults' => [
                                 'controller' => 'Notifications',
                                 'action'     => 'Home',
-                            ]
+                            ],
                         ],
                     ],
                     'notifications-broadcasts' => [
@@ -134,7 +134,7 @@ $config = [
                             'defaults' => [
                                 'controller' => 'Notifications',
                                 'action'     => 'Home',
-                            ]
+                            ],
                         ],
                     ],
                 ],

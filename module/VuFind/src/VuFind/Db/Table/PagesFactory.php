@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -57,7 +58,7 @@ class PagesFactory extends \VuFind\Db\Table\GatewayFactory
     {
         $rowManager = $container->get(\VuFind\Db\Row\PluginManager::class);
         // Map Table class to matching Row class.
-        $name = str_replace("\\Table\\", "\\Row\\", $requestedName);
+        $name = str_replace('\\Table\\', '\\Row\\', $requestedName);
         return $rowManager->has($name) ? $rowManager->get($name) : null;
     }
 
