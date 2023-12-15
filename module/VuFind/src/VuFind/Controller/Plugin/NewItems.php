@@ -115,6 +115,16 @@ class NewItems extends AbstractPlugin
     }
 
     /**
+     * Should we include facets in the new items search page?
+     *
+     * @return bool
+     */
+    public function includeFacets(): bool
+    {
+        return $this->config->include_facets ?? false;
+    }
+
+    /**
      * Get fund list
      *
      * @return array
