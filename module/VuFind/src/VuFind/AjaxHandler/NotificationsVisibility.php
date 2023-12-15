@@ -63,8 +63,8 @@ class NotificationsVisibility extends AbstractBase
     /**
      * Constructor
      *
-     * @param Pages      $pagesTable  Database table for pages
-     * @param Broadcasts $broadcastsTable  Database table for broadcasts
+     * @param Pages      $pagesTable      Database table for pages
+     * @param Broadcasts $broadcastsTable Database table for broadcasts
      */
     public function __construct(Pages $pagesTable, Broadcasts $broadcastsTable)
     {

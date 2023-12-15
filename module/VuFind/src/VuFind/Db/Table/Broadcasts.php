@@ -59,12 +59,12 @@ class Broadcasts extends Gateway
     /**
      * Constructor
      *
-     * @param Adapter       $adapter       Database adapter
-     * @param PluginManager $tm            Table manager
-     * @param array         $cfg           Laminas configuration
-     * @param mixed         $config        Notifications config
-     * @param RowGateway    $rowObj        Row prototype object (null for default)
-     * @param string        $table         Name of database table to interface with
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Laminas configuration
+     * @param mixed         $config  Notifications config
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
     public function __construct(
         Adapter $adapter,
@@ -81,9 +81,9 @@ class Broadcasts extends Gateway
     /**
      * Insert a new broadcast into the database or update an existing one..
      *
-     * @param array $data Data to be written to the database
+     * @param array $data          Data to be written to the database
      * @param array $broadcastData Data of an existing broadcast
-     * @param array $broadcast_id Id of the broadcast to be edited
+     * @param array $broadcast_id  Id of the broadcast to be edited
      *
      * @throws Exception
      */
@@ -245,8 +245,8 @@ class Broadcasts extends Gateway
     /**
      * Get a broadcast object by broadcast_id and language
      *
-     * @param int $broadcast_id Id of the broadcast
-     * @param string $language Language of the broadcast
+     * @param int    $broadcast_id Id of the broadcast
+     * @param string $language     Language of the broadcast
      *
      * @return mixed broadcast object
      */
@@ -260,7 +260,7 @@ class Broadcasts extends Gateway
     /**
      * Set the priority of a broadcast
      *
-     * @param int $index New position of the broadcast
+     * @param int $index        New position of the broadcast
      * @param int $broadcast_id Id of the broadcast
      */
     public function setPriorityForBroadcastId($index, $broadcast_id)
@@ -275,7 +275,7 @@ class Broadcasts extends Gateway
     /**
      * Set the visibility of a broadcast
      *
-     * @param int $visibility New visibility of the broadcast
+     * @param int $visibility   New visibility of the broadcast
      * @param int $broadcast_id Id of the broadcast
      */
     public function setVisibilityForBroadcastId($visibility, $broadcast_id)
@@ -291,7 +291,7 @@ class Broadcasts extends Gateway
      * Set the global visibility of a broadcast
      *
      * @param int $visibility_global New visibility of the broadcast
-     * @param int $broadcast_id Id of the broadcast
+     * @param int $broadcast_id      Id of the broadcast
      */
     public function setVisibilityGlobalForBroadcastId($visibility_global, $broadcast_id)
     {

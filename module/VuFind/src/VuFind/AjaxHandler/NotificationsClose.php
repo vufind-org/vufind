@@ -60,7 +60,6 @@ class NotificationsClose extends AbstractBase
 
     /**
      * Constructor
-     *
      */
     public function __construct(\Laminas\Session\SessionManager $sessionManager)
     {

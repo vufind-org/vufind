@@ -64,8 +64,8 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
     /**
      * Constructor
      *
-     * @param TranslatorInterface  $translator  Translator interface
-     * @param mixed  $config  Notifications config
+     * @param TranslatorInterface $translator Translator interface
+     * @param mixed               $config     Notifications config
      */
     public function __construct(TranslatorInterface $translator, $config)
     {
@@ -103,7 +103,6 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
         ]);
 
         foreach ($this->config['Notifications']['languages'] as $language) {
-
             $this->add([
                 'name' => 'headline_' . $language,
                 'type' => Text::class,

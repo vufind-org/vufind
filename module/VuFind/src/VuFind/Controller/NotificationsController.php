@@ -329,7 +329,8 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $b = $this->translator->translate('Delete');
         $c = $this->getRequest()->getPost('confirm', 'no');
 
-        if ($page_id != $this->getRequest()->getPost('page_id')
+        if (
+            $page_id != $this->getRequest()->getPost('page_id')
             || $this->translator->translate('Delete') !== $this->getRequest()->getPost('confirm', 'no')
         ) {
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'Pages']);
@@ -382,7 +383,8 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             return $view;
         }
 
-        if ($broadcast_id != $this->getRequest()->getPost('broadcast_id')
+        if (
+            $broadcast_id != $this->getRequest()->getPost('broadcast_id')
             || $this->translator->translate('Delete') !== $this->getRequest()->getPost('confirm', 'no')
         ) {
             return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);

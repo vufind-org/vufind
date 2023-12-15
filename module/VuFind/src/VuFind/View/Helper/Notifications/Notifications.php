@@ -87,7 +87,7 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
      * Constructor
      *
      * @param PluginManager $database Database
-     * @param mixed $config Notifications config
+     * @param mixed         $config   Notifications config
      */
     public function __construct(\VuFind\Db\Table\PluginManager $database, $config)
     {

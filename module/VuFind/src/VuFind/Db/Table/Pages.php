@@ -60,12 +60,12 @@ class Pages extends Gateway
     /**
      * Constructor
      *
-     * @param Adapter       $adapter       Database adapter
-     * @param PluginManager $tm            Table manager
-     * @param array         $cfg           Laminas configuration
-     * @param mixed         $config        Notifications config
-     * @param RowGateway    $rowObj        Row prototype object (null for default)
-     * @param string        $table         Name of database table to interface with
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Laminas configuration
+     * @param mixed         $config  Notifications config
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
     public function __construct(
         Adapter $adapter,
@@ -82,9 +82,9 @@ class Pages extends Gateway
     /**
      * Insert a new page into the database or update an existing one.
      *
-     * @param array $data Data to be written to the database
+     * @param array $data     Data to be written to the database
      * @param array $pageData Data of an existing page
-     * @param int $page_id Id of the page to be edited
+     * @param int   $page_id  Id of the page to be edited
      *
      * @throws Exception
      */
@@ -240,7 +240,7 @@ class Pages extends Gateway
     /**
      * Get a page object by page_id and language
      *
-     * @param int $page_id Id of the page
+     * @param int    $page_id  Id of the page
      * @param string $language Language of the page
      *
      * @return mixed page object
@@ -255,7 +255,7 @@ class Pages extends Gateway
     /**
      * Set the priority of a page
      *
-     * @param int $index New position of the page
+     * @param int $index   New position of the page
      * @param int $page_id Id of the page
      */
     public function setPriorityForPageId($index, $page_id)
@@ -271,7 +271,7 @@ class Pages extends Gateway
      * Set the visibility of a page
      *
      * @param int $visibility New visibility of the page
-     * @param int $page_id Id of the page
+     * @param int $page_id    Id of the page
      */
     public function setVisibilityForPageId($visibility, $page_id)
     {
@@ -286,7 +286,7 @@ class Pages extends Gateway
      * Set the global visibility of a page
      *
      * @param int $visibility_global New visibility of the page
-     * @param int $page_id Id of the page
+     * @param int $page_id           Id of the page
      */
     public function setVisibilityGlobalForPageId($visibility_global, $page_id)
     {

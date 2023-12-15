@@ -65,8 +65,8 @@ class BroadcastsForm extends Form implements InputFilterProviderInterface, Trans
     /**
      * Constructor
      *
-     * @param TranslatorInterface  $translator  Translator interface
-     * @param mixed  $config  Notifications config
+     * @param TranslatorInterface $translator Translator interface
+     * @param mixed               $config     Notifications config
      */
     public function __construct(TranslatorInterface $translator, $config)
     {
