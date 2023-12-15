@@ -404,7 +404,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function initNewItemsFacets()
     {
-        // Load Advanced settings if HomePage settings are missing (fallback to defaults):
+        // Load Advanced settings if NewItems settings are missing (fallback to defaults):
         if (!$this->initFacetList('NewItems', 'NewItems_Settings')) {
             $this->initAdvancedFacets();
         }
