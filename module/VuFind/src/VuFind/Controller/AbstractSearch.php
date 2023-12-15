@@ -40,6 +40,7 @@ use VuFind\Solr\Utils as SolrUtils;
 use function count;
 use function in_array;
 use function intval;
+use function is_array;
 
 /**
  * VuFind Search Controller
