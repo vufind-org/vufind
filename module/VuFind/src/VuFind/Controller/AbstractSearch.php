@@ -247,7 +247,7 @@ class AbstractSearch extends AbstractBase
 
             // Special case: override recommend settings through parameter (used by
             // combined search)
-            if ($override) {
+            if (is_array($override)) {
                 $config = array_merge($config, $override);
             }
 
