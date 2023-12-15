@@ -105,6 +105,16 @@ class NewItems extends AbstractPlugin
     }
 
     /**
+     * Get default setting (null to use regular default).
+     *
+     * @return ?string
+     */
+    public function getDefaultSort(): ?string
+    {
+        return $this->config->default_sort ?? null;
+    }
+
+    /**
      * Get fund list
      *
      * @return array

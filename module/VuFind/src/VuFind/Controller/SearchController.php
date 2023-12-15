@@ -237,6 +237,7 @@ class SearchController extends AbstractSolrSearch
 
         return $this->createViewModel(
             [
+                'defaultSort' => $this->newItems()->getDefaultSort(),
                 'fundList' => $this->newItems()->getFundList(),
                 'ranges' => $this->newItems()->getRanges(),
             ]
