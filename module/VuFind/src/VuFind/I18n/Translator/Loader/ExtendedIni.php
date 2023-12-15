@@ -98,6 +98,13 @@ class ExtendedIni implements FileLoaderInterface
     protected $loadedAliasFiles = [];
 
     /**
+     * Loaded TextDomains used for resolving aliases.
+     *
+     * @var array
+     */
+    protected $aliasDomains = [];
+
+    /**
      * Constructor
      *
      * @param array             $pathStack       List of directories to search for
@@ -151,12 +158,18 @@ class ExtendedIni implements FileLoaderInterface
         // Reset the loaded files list:
         $this->resetLoadedFiles();
 
+        // Identify the current TextDomain name:
+        $currentDomain = empty($filename) ? 'default' : $filename;
+
         // Load base data:
         $data = $this->loadLanguageLocale($locale, $filename, $this->useAliases);
 
+        // Set up a reference to the current domain for use in alias processing:
+        $this->aliasDomains[$currentDomain] = $data;
+
         // Apply aliases:
         if ($this->useAliases) {
-            $this->applyAliases($data);
+            $this->applyAliases($data, $locale, $currentDomain);
         }
 
         // Load fallback data, if any:
@@ -236,13 +249,26 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return void
      */
-    protected function applyAliases(TextDomain $data): void
+    protected function applyAliases(TextDomain $data, string $currentLocale, string $currentDomain): void
     {
         foreach ($this->aliases as $alias => $target) {
+            // If the current alias target does not include a TextDomain part, assume it refers
+            // to the current active TextDomain:
+            if (count($target) < 2) {
+                array_unshift($target, $currentDomain);
+            }
+            [$domain, $key] = $target;
+            // If the alias references another TextDomain, we need to load that now; note that we
+            // do not process aliases again at this step, so aliases to aliases will not work.
+            if (!isset($this->aliasDomains[$domain])) {
+                $this->aliasDomains[$domain] = $this->loadLanguageLocale($currentLocale, $domain);
+            }
             // Do not overwrite existing values with alias, and do not create aliases
             // when target values are missing.
-            if ($data->offsetExists($target) && !$data->offsetExists($alias)) {
-                $data->offsetSet($alias, $data->offsetGet($target));
+            if ($this->aliasDomains[$domain]->offsetExists($key)
+                && !$data->offsetExists($alias)
+            ) {
+                $data->offsetSet($alias, $this->aliasDomains[$domain]->offsetGet($key));
             }
         }
     }
@@ -278,6 +304,18 @@ class ExtendedIni implements FileLoaderInterface
     }
 
     /**
+     * Expand an alias string into an array (either [textdomain, key] or just [key]).
+     *
+     * @param string $alias String to parse
+     *
+     * @return string[]
+     */
+    protected function normalizeAlias(string $alias): array
+    {
+        return explode('::', $alias);
+    }
+
+    /**
      * Load an alias configuration (if not already loaded) and mark it loaded.
      *
      * @param string $filename Filename to load
@@ -289,7 +327,10 @@ class ExtendedIni implements FileLoaderInterface
         if (!in_array($filename, $this->loadedAliasFiles)) {
             $this->loadedAliasFiles[] = $filename;
             if (file_exists($filename)) {
-                $this->aliases = array_merge($this->aliases, parse_ini_file($filename));
+                // Parse and normalize the alias configuration:
+                $newAliases = array_map([$this, 'normalizeAlias'], parse_ini_file($filename));
+                // Merge with pre-existing aliases:
+                $this->aliases = array_merge($this->aliases, $newAliases);
             }
         }
     }
