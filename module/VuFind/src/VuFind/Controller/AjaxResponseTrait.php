@@ -183,12 +183,12 @@ trait AjaxResponseTrait
      * @param string $errfile File where error occurred
      * @param string $errline Line number of error
      *
-     * @return bool           Always true to cancel default error handling
+     * @return bool           True in production to cancel default error handling, false otherwise
      */
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
         self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br>\n"
             . ' Occurred in ' . $errfile . ' on line ' . $errline . '.';
-        return true;
+        return APPLICATION_ENV === 'production';
     }
 }
