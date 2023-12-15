@@ -5,6 +5,11 @@ VuFind.combinedSearch = (function CombinedSearch() {
     VuFind.loadHtml(container, url, '', function containerLoad(responseText) {
       if (responseText.length === 0) {
         container.hide();
+        let parent = container.parent();
+        while (parent.hasClass('js-hide-if-empty')) {
+          parent.hide();
+          parent = parent.parent();
+        }
       } else {
         VuFind.initResultScripts(container);
       }
