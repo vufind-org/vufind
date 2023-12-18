@@ -123,7 +123,7 @@ class SolrDefault extends DefaultRecord implements
     protected $searchService = null;
 
     /**
-     * If the explain features is enabled
+     * If the explain feature is enabled
      *
      * @var bool
      */
