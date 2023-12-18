@@ -31,8 +31,8 @@
 
 namespace VuFindTest\Mink;
 
-use VuFindTest\Feature\SearchSortTrait;
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\SearchSortTrait;
 
 use function count;
 
