@@ -3,7 +3,7 @@
 /**
  * Helper that provides support methods for record versions search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020-2023.
  *
