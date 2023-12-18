@@ -100,7 +100,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
 
-        // Should never have full pagination:
+        // Should never have full top pagination:
         $this->unFindCss($page, '.pagination-top');
 
         if ($jsResults) {
