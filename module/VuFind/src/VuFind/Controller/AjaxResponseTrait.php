@@ -176,19 +176,19 @@ trait AjaxResponseTrait
     }
 
     /**
-     * Store the errors for later, to be added to the output
+     * Store the errors for later
      *
      * @param string $errno   Error code number
      * @param string $errstr  Error message
      * @param string $errfile File where error occurred
      * @param string $errline Line number of error
      *
-     * @return bool           True in production to cancel default error handling, false otherwise
+     * @return bool           True to cancel default error handling
      */
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
         self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br>\n"
             . ' Occurred in ' . $errfile . ' on line ' . $errline . '.';
-        return APPLICATION_ENV === 'production';
+        return true;
     }
 }
