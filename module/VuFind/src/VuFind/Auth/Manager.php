@@ -759,6 +759,7 @@ class Manager implements
             try {
                 $this->loginToken->createToken($user, '', $this->sessionManager->getId());
             } catch (\Exception $e) {
+                $this->logError((string)$e);
                 throw new AuthException('authentication_error_technical', 0, $e);
             }
         }
