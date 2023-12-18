@@ -340,10 +340,10 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
                 $qs['multiFacets'] = implode('|,|', $multiFacets);
             }
             if ($qInclude) {
-                $qs['qInclude='] = implode('|,|', $qInclude);
+                $qs['qInclude'] = implode('|,|', $qInclude);
             }
             if ($qExclude) {
-                $qs['qExclude='] =  implode('|,|', $qExclude);
+                $qs['qExclude'] =  implode('|,|', $qExclude);
             }
         }
 
