@@ -27,7 +27,8 @@
  * @link     https://vufind.org/wiki/automation Wiki
  */
 
-include_once __DIR__.'/../vendor/autoload.php';
+$VUFIND_HOME = __DIR__ . '/../..';
+include_once "$VUFIND_HOME/vendor/autoload.php";
 
 use pietercolpaert\hardf\TriGParser;
 use pietercolpaert\hardf\Util;
@@ -92,7 +93,7 @@ foreach ($map as $lang => $vals) {
 }
 
 // Merge the parsed data with the existing data (favoring existing data over new data):
-$langDir = __DIR__ . "/../languages/ISO639-3";
+$langDir = "$VUFIND_HOME/languages/ISO639-3";
 $dir = opendir($langDir);
 while ($file = readdir($dir)) {
     if (str_ends_with($file, '.ini') && file_exists("$tmpDir/lang/$file")) {
@@ -103,5 +104,4 @@ while ($file = readdir($dir)) {
 closedir($dir);
 
 // Normalize everything:
-$VUFIND_HOME = __DIR__ . '/..';
-passthru("php $VUFIND_HOME/public/index.php language normalize languages");
+passthru("php $VUFIND_HOME/public/index.php language normalize $VUFIND_HOME/languages");
