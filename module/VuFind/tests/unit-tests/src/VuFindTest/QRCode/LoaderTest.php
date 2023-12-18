@@ -33,6 +33,8 @@ use Laminas\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 
+use function strlen;
+
 /**
  * QR Code Loader Test Class
  *

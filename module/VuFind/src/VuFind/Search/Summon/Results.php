@@ -31,6 +31,9 @@ namespace VuFind\Search\Summon;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function in_array;
+use function is_array;
+
 /**
  * Summon Search Parameters
  *

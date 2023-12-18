@@ -33,6 +33,11 @@ use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
+use function array_slice;
+use function count;
+use function intval;
+use function is_string;
+
 /**
  * Action helper to perform new items-related actions
  *

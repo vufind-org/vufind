@@ -1,0 +1,66 @@
+<?php
+  $this->parentNodeId ??= '';
+  $nodeId = 0;
+?>
+<?php foreach ($this->facetList as $item): ?>
+  <?php
+    $renderedEntryHtml = $this->render('Recommend/SideFacets/single-facet.phtml', [
+      'exclude' => $this->allowExclude,
+      'facet' => $item,
+      'group' => $this->group,
+      'url' => $this->url,
+      'urlBase' => $this->urlBase,
+    ]);
+
+    // Use facet text as button label so that a screen reader can read it as
+    // "Expanded <text>" or "Collapsed <text>":
+    if (!empty($item['displayText'])) {
+      $buttonLabel = $this->escapeHtml($item['displayText']);
+    } elseif (!empty($item['value'])) {
+      $buttonLabel = $this->escapeHtml($item['value']);
+    } else {
+      $buttonLabel = '-';
+    }
+  ?>
+  <?php if ($item['children'] ?? false): ?>
+    <li class="facet-tree__parent">
+      <?php
+        ++$nodeId;
+        $childUlId = 'facet_' . $this->group . '_' . $this->parentNodeId . '_' . $nodeId;
+        $buttonAttrs = $this->htmlAttributes(
+            [
+                'class' => 'facet-tree__toggle-expanded',
+                'aria-expanded' => $item['hasAppliedChildren'] ? 'true' : 'false',
+                'aria-controls' => $childUlId,
+                'aria-label' => $buttonLabel,
+                'data-toggle-aria-expanded' => '',
+            ]
+        );
+      ?>
+      <button<?=$buttonAttrs?>>
+        <?=$this->icon('facet-expand', 'facet-tree__expand')?>
+        <?=$this->icon('facet-collapse', 'facet-tree__collapse')?>
+      </button>
+      <span class="facet-tree__item-container<?=$this->allowExclude ? ' facet-tree__item-container--exclude' : ''?>">
+        <?=$renderedEntryHtml?>
+      </span>
+      <ul id="<?=$this->escapeHtmlAttr($childUlId)?>">
+        <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+          'allowExclude' => $this->allowExclude,
+          'facetList' => $item['children'],
+          'group' => $this->group,
+          'url' => $this->url,
+          'urlBase' => $this->urlBase,
+          'parentNodeId' => $this->parentNodeId . '_' . $nodeId,
+        ]) ?>
+      </ul>
+    </li>
+  <?php else: ?>
+    <li>
+      <button class="facet-tree__toggle-expanded" disabled aria-label="<?=$this->transEscAttr($buttonLabel)?>"></button>
+      <span class="facet-tree__item-container<?=$this->allowExclude ? ' facet-tree__item-container--exclude' : ''?>">
+        <?=$renderedEntryHtml?>
+      </span>
+    </li>
+  <?php endif; ?>
+<?php endforeach; ?>

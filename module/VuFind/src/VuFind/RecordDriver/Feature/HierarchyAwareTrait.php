@@ -29,6 +29,9 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function count;
+use function in_array;
+
 /**
  * Hierarchy support for record drivers.
  *

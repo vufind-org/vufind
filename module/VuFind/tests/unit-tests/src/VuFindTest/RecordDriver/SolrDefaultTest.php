@@ -184,7 +184,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetContainerRecordID()
     {
-        $this->assertEquals("", $this->getDriver()->getContainerRecordID());
+        $this->assertEquals('', $this->getDriver()->getContainerRecordID());
     }
 
     /**
@@ -204,7 +204,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetHighlightedTitle()
     {
-        $this->assertEquals("", $this->getDriver()->getHighlightedTitle());
+        $this->assertEquals('', $this->getDriver()->getHighlightedTitle());
     }
 
     /**

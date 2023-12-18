@@ -52,7 +52,10 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $obj = new SimilarItemsCarousel($search);
+        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $obj = new SimilarItemsCarousel($search, $config);
         $expected = 'Similar Items';
         $this->assertSame($expected, $obj->getDescription());
     }
@@ -67,17 +70,20 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
         )->getMock();
-        $obj = new SimilarItemsCarousel($service);
+        $obj = new SimilarItemsCarousel($service, $config);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue('foo'));
         $recordDriver->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $obj->setRecordDriver($recordDriver);
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
@@ -88,8 +94,8 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SimilarCommand::class
-                && $command->getTargetIdentifier() === "foo"
-                && $command->getArguments()[0] === "bar"
+                && $command->getTargetIdentifier() === 'foo'
+                && $command->getArguments()[0] === 'bar'
                 && $command->getArguments()[1]->getArrayCopy() === ['rows' => [40]];
         };
         $service->expects($this->once())->method('invoke')

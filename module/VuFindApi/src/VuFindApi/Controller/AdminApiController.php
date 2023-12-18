@@ -32,6 +32,8 @@ namespace VuFindApi\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Cache\Manager as CacheManager;
 
+use function in_array;
+
 /**
  * Admin Api Controller
  *

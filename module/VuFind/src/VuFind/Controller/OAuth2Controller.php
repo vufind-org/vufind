@@ -45,6 +45,9 @@ use VuFind\OAuth2\Entity\UserEntity;
 use VuFind\OAuth2\Repository\IdentityRepository;
 use VuFind\Validator\CsrfInterface;
 
+use function in_array;
+use function is_array;
+
 /**
  * OAuth2 Controller
  *

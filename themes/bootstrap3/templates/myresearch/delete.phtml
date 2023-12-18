@@ -3,9 +3,9 @@
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
     <?php if (!$this->list): ?>
-      <div class="alert alert-info"><?=$this->transEsc("fav_delete_warn") ?></div>
+      <div class="alert alert-info"><?=$this->transEsc('fav_delete_warn') ?></div>
     <?php else: ?>
-      <h3><?=$this->transEsc("List") ?>: <?=$this->escapeHtml($this->list->title) ?></h3>
+      <h3><?=$this->transEsc('List') ?>: <?=$this->escapeHtml($this->list->title) ?></h3>
     <?php endif; ?>
 
     <ul class="record-list">

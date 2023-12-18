@@ -30,6 +30,11 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Functions for reading MARC records.
  *

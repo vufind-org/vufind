@@ -32,6 +32,8 @@ namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\MakeTag;
 
+use function call_user_func_array;
+
 /**
  * MakeTag view helper Test Class
  *

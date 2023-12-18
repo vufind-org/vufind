@@ -38,6 +38,10 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Symphony Web Services (symws) ILS Driver
  *
@@ -374,7 +378,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     // ILSException didn't seem to produce an error message
                     // when checkSymwsVersion() was called from the catch
                     // block in makeRequest().
-                    throw new \Exception("SymWS version too old");
+                    throw new \Exception('SymWS version too old');
                 }
                 break;
             }
@@ -1195,7 +1199,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             $primaryAddress = $result->patronAddressInfo->primaryAddress;
 
-            $primaryAddressInfo = "Address" . $primaryAddress . "Info";
+            $primaryAddressInfo = 'Address' . $primaryAddress . 'Info';
 
             $addressInfo = $result->patronAddressInfo->$primaryAddressInfo;
             $address1    = $addressInfo[0]->addressValue;

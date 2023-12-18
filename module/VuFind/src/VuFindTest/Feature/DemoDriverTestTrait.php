@@ -51,7 +51,7 @@ trait DemoDriverTestTrait
      */
     protected function getFakeTransactions($bibId)
     {
-        $rawDueDate = strtotime("now +5 days");
+        $rawDueDate = strtotime('now +5 days');
         return json_encode(
             [
                 [
@@ -186,7 +186,7 @@ trait DemoDriverTestTrait
             'addLink'      => true,
             'addStorageRetrievalRequestLink' => 'check',
             'addILLRequestLink' => 'check',
-            "__electronic__" => false,
+            '__electronic__' => false,
         ];
     }
 

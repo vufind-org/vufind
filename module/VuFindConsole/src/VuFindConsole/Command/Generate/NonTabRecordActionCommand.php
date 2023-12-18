@@ -121,7 +121,7 @@ class NonTabRecordActionCommand extends AbstractCommand
         foreach ($this->mainConfig['router']['routes'] as $key => $val) {
             if (
                 isset($val['options']['route'])
-                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
+                && str_ends_with($val['options']['route'], '[:id[/[:tab]]]')
             ) {
                 $newRoute = $key . '-' . strtolower($action);
                 if (isset($this->mainConfig['router']['routes'][$newRoute])) {

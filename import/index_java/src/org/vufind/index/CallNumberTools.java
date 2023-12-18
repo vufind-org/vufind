@@ -325,7 +325,7 @@ public class CallNumberTools
                 float currentVal = Float.parseFloat(callNum.getClassification());
 
                 // Round the call number value to the specified precision:
-                Float finalVal = new Float(Math.floor(currentVal / precision) * precision);
+                Float finalVal = Double.valueOf(Math.floor(currentVal / precision) * precision).floatValue();
 
                 // Convert the rounded value back to a string (with leading zeros) and save it:
                 // TODO: Provide different conversion to remove CallNumUtils dependency

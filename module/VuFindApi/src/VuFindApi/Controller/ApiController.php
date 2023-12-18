@@ -29,6 +29,8 @@
 
 namespace VuFindApi\Controller;
 
+use function in_array;
+
 /**
  * API Controller
  *

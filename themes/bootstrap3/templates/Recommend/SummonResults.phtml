@@ -1,7 +1,8 @@
 <?php $searchObject = $this->recommend->getResults(); ?>
 <?php $results = $searchObject->getResults(); ?>
+<?php $heading = $this->recommend->getHeading(); ?>
 <?php if (!empty($results)): ?>
-  <h4><?=$this->transEsc('Summon Results')?></h4>
+  <h2><?=$this->transEsc($heading)?></h2>
   <div class="list-group">
     <?php foreach ($results as $driver): ?>
       <div class="list-group-item">

@@ -78,7 +78,7 @@ class SolrAuthMarc extends SolrAuthDefault
         }
         $lccns = $this->getFieldArray('700', ['0']);
         foreach ($lccns as $lccn) {
-            if (substr($lccn, 0, '5') == '(DLC)') {
+            if (str_starts_with($lccn, '(DLC)')) {
                 return substr($lccn, 5);
             }
         }

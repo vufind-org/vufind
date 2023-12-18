@@ -30,6 +30,8 @@
 
 namespace VuFind\MetadataVocabulary;
 
+use function is_array;
+
 /**
  * Metadata vocabulary base class
  * (provides results from available RecordDriver methods in a standardized form)

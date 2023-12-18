@@ -57,13 +57,13 @@
                     $spanClass = 'olPreviewSpan';
                     $options = isset($this->config->Content->OpenLibraryOptions)
                         ? str_replace(' ', '', $this->config->Content->OpenLibraryOptions)
-                        : "full,partial";
+                        : 'full,partial';
                     break;
                 case 'hathitrust':
                     $spanClass = 'hathiPreviewSpan';
                     $options = isset($this->config->Content->HathiRights)
                         ? str_replace(' ', '', $this->config->Content->HathiRights)
-                        : "pd,ic-world";
+                        : 'pd,ic-world';
                     break;
                 default:
                     $spanClass = $options = false;
@@ -78,7 +78,7 @@
             // add the necessary identifier code:
             if (!empty($html)) {
                 $html .= '<span class="previewBibkeys ' . $idClasses . '"></span>';
-                $this->headScript()->appendFile("preview.js");
+                $this->headScript()->appendFile('preview.js');
                 echo $html;
             }
         }

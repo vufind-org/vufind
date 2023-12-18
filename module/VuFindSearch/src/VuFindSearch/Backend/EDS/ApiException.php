@@ -29,6 +29,9 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function count;
+use function is_array;
+
 /**
  * EBSCO API Exception class
  *

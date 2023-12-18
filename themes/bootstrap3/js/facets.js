@@ -1,153 +1,13 @@
 /*global VuFind */
-/*exported initFacetTree */
-function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
-{
-  var json = [];
-  var selected = VuFind.translate('Selected');
-  var separator = VuFind.translate('number_thousands_separator');
-
-  for (var i = 0; i < data.length; i++) {
-    var facet = data[i];
-
-    var url = currentPath + facet.href;
-    var excludeUrl = currentPath + facet.exclude;
-    var item = document.createElement('span');
-    item.className = 'text';
-    if (facet.isApplied) {
-      item.className += ' applied';
-    }
-    item.setAttribute('title', facet.displayText);
-    if (facet.operator === 'OR') {
-      item.innerHTML = facet.isApplied ? VuFind.icon('facet-checked', { title: selected, class: 'icon-link__icon' }) : VuFind.icon('facet-unchecked', 'icon-link__icon');
-    }
-    var facetValue = document.createElement('span');
-    facetValue.className = 'facet-value icon-link__label';
-    facetValue.appendChild(document.createTextNode(facet.displayText));
-    item.appendChild(facetValue);
-
-    var children = null;
-    if (typeof facet.children !== 'undefined' && facet.children.length > 0) {
-      children = buildFacetNodes(facet.children, currentPath, allowExclude, excludeTitle, counts);
-    }
-
-    json.push({
-      text: item.outerHTML,
-      children: children,
-      state: {
-        opened: facet.hasAppliedChildren,
-        selected: facet.isApplied
-      },
-      a_attr: {
-        class: 'hierarchical-facet-anchor icon-link',
-        href: url
-      },
-      data: {
-        url: url.replace(/&amp;/g, '&'),
-        count: !facet.isApplied && counts && facet.count
-          ? facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator) : null,
-        excludeUrl: allowExclude && !facet.isApplied ? excludeUrl : '',
-        excludeTitle: excludeTitle
-      }
-    });
-  }
-
-  return json;
-}
-
-function buildFacetTree(treeNode, facetData, inSidebar) {
-  // Enable keyboard navigation also when a screen reader is active
-  treeNode.bind('select_node.jstree', VuFind.sideFacets.showLoadingOverlay);
-
-  var currentPath = treeNode.data('path');
-  var allowExclude = treeNode.data('exclude');
-  var excludeTitle = treeNode.data('exclude-title');
-
-  var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
-  treeNode.find('.loading-spinner').parent().remove();
-  if (inSidebar) {
-    treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-      treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-      treeNode.find('a.exclude').click(VuFind.sideFacets.showLoadingOverlay);
-    });
-    if (treeNode.parent().hasClass('truncate-hierarchy')) {
-      treeNode.on('loaded.jstree', function initHierarchyTruncate(/*e, data*/) {
-        VuFind.truncate.initTruncate(treeNode.parent(), '.list-group-item');
-      });
-    }
-  }
-
-  treeNode.jstree({
-    'core': {
-      'data': results
-    },
-    'plugins': ['vufindFacet']
-  });
-}
-
-function loadFacetTree(treeNode, inSidebar)
-{
-  var loaded = treeNode.data('loaded');
-  if (loaded) {
-    return;
-  }
-  treeNode.data('loaded', true);
-
-  if (inSidebar) {
-    treeNode.prepend('<li class="jstree-node list-group-item facet-load-indicator">' + VuFind.loading() + '</li>');
-  } else {
-    treeNode.prepend('<div>' + VuFind.loading() + '<div>');
-  }
-  var request = {
-    method: "getFacetData",
-    source: treeNode.data('source'),
-    facetName: treeNode.data('facet'),
-    facetSort: treeNode.data('sort'),
-    facetOperator: treeNode.data('operator'),
-    query: treeNode.data('query'),
-    querySuppressed: treeNode.data('querySuppressed'),
-    extraFields: treeNode.data('extraFields')
-  };
-  $.getJSON(VuFind.path + '/AJAX/JSON?' + request.query,
-    request,
-    function getFacetData(response/*, textStatus*/) {
-      buildFacetTree(treeNode, response.data.facets, inSidebar);
-    }
-  );
-}
-
-function initFacetTree(treeNode, inSidebar)
-{
-  // Defer init if the facet is collapsed:
-  let $collapse = treeNode.parents('.facet-group').find('.collapse');
-  if (!$collapse.hasClass('in')) {
-    $collapse.on('show.bs.collapse', function onExpand() {
-      loadFacetTree(treeNode, inSidebar);
-    });
-    return;
-  } else {
-    loadFacetTree(treeNode, inSidebar);
-  }
-}
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
-  function showLoadingOverlay(e, data) {
-    e.preventDefault();
+  function showLoadingOverlay() {
     var overlay = '<div class="facet-loading-overlay">'
       + '<span class="facet-loading-overlay-label">'
       + VuFind.loading()
       + "</span></div>";
     $(this).closest(".collapse").append(overlay);
-    if (typeof data !== "undefined") {
-      // Remove jstree-clicked class from JSTree links to avoid the color change:
-      data.instance.get_node(data.node, true).children().removeClass('jstree-clicked');
-    }
-    // This callback operates both as a click handler and a JSTree callback;
-    // if the data element is undefined, we assume we are handling a click.
-    var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"
-      ? $(this).attr('href') : data.node.data.url;
-    window.location.assign(href);
-    return false;
   }
 
   function activateFacetBlocking(context) {
@@ -194,11 +54,6 @@ VuFind.register('sideFacets', function SideFacets() {
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
             activateFacetBlocking($facetContainer);
-          } else {
-            var treeNode = $facetContainer.find('.jstree-facet');
-            VuFind.emit('VuFind.sidefacets.treenodeloaded', {node: treeNode});
-
-            buildFacetTree(treeNode, facetData.list, true);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
@@ -338,7 +193,9 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 });
 
 function registerSideFacetTruncation() {
-  VuFind.truncate.initTruncate('.truncate-facets', '.facet');
+  VuFind.truncate.initTruncate('.truncate-facets', '.facet__list__item');
+  // Only top level is truncatable with hierarchical facets:
+  VuFind.truncate.initTruncate('.truncate-hierarchical-facets', '> li');
 }
 
 VuFind.listen('VuFind.sidefacets.loaded', registerSideFacetTruncation);

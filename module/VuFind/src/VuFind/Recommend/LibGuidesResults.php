@@ -53,4 +53,14 @@ class LibGuidesResults extends AbstractSearchObject
     {
         return 'LibGuides';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'libguides_recommendations';
+    }
 }

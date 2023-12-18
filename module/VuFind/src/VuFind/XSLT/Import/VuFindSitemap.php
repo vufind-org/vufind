@@ -29,6 +29,9 @@
 
 namespace VuFind\XSLT\Import;
 
+use function chr;
+use function is_array;
+
 /**
  * XSLT support class -- all methods of this class must be public and static;
  * they will be automatically made available to your XSL stylesheet for use

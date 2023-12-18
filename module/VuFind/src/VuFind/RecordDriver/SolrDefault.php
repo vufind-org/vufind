@@ -34,6 +34,10 @@ namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.

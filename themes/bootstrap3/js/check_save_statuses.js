@@ -81,7 +81,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   });
 
   function checkSaveStatus(el) {
-    if (!userIsLoggedIn) {
+    const savedListsEl = el.querySelector(".savedLists");
+    if (!userIsLoggedIn || !savedListsEl) {
       VuFind.emit("save-status-done");
 
       return;
@@ -100,7 +101,6 @@ VuFind.register("saveStatuses", function ItemStatuses() {
 
     el.classList.add("js-save-pending");
 
-    const savedListsEl = el.querySelector(".savedLists");
     savedListsEl.classList.remove("loaded", "hidden");
     savedListsEl.innerHTML +=
       '<span class="js-load">' +

@@ -61,7 +61,7 @@
   <p><?=$this->transEsc('Cannot find similar records')?></p>
 <?php endif; ?>
 <?php
-  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : "";
+  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : '';
   $script .= <<<JS
       var normalizeHeightCount = $('#similar-items-carousel img').length;
       function normalizeHeights() {

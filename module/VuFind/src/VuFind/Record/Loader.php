@@ -40,6 +40,9 @@ use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
+use function count;
+use function is_object;
+
 /**
  * Record loader
  *

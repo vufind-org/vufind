@@ -35,6 +35,8 @@ use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
 
+use function is_callable;
+
 /**
  * Development Tools Controller
  *

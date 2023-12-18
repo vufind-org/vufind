@@ -36,6 +36,8 @@ use VuFind\I18n\Locale\LocaleDetectorFactory;
 use VuFind\I18n\Locale\LocaleDetectorParamStrategy;
 use VuFind\I18n\Locale\LocaleSettings;
 
+use function func_get_args;
+
 /**
  * LocaleDetectorFactory Test Class
  *

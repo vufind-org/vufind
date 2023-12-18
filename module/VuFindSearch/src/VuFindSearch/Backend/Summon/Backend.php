@@ -40,6 +40,9 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
+use function count;
+use function in_array;
+
 /**
  * Summon backend.
  *

@@ -34,6 +34,8 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
+use function is_array;
+
 /**
  * Table Definition for user_resource
  *

@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 
+use function in_array;
+
 /**
  * LDAP authentication class
  *
@@ -62,7 +64,7 @@ class LDAP extends AbstractBase
                 || empty($this->config->LDAP->$param)
             ) {
                 throw new AuthException(
-                    "One or more LDAP parameters are missing. Check your config.ini!"
+                    'One or more LDAP parameters are missing. Check your config.ini!'
                 );
             }
         }
@@ -278,8 +280,8 @@ class LDAP extends AbstractBase
 
         // Loop through LDAP response and map fields to database object based
         // on configuration settings:
-        for ($i = 0; $i < $data["count"]; $i++) {
-            for ($j = 0; $j < $data[$i]["count"]; $j++) {
+        for ($i = 0; $i < $data['count']; $i++) {
+            for ($j = 0; $j < $data[$i]['count']; $j++) {
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
@@ -288,7 +290,7 @@ class LDAP extends AbstractBase
                         // if no separator is given map only the first value
                         if (isset($separator)) {
                             $tmp = [];
-                            for ($k = 0; $k < $value["count"]; $k++) {
+                            for ($k = 0; $k < $value['count']; $k++) {
                                 $tmp[] = $value[$k];
                             }
                             $value = implode($separator, $tmp);
@@ -296,7 +298,7 @@ class LDAP extends AbstractBase
                             $value = $value[0];
                         }
 
-                        if ($field != "cat_password") {
+                        if ($field != 'cat_password') {
                             $user->$field = $value ?? '';
                         } else {
                             $catPassword = $value;

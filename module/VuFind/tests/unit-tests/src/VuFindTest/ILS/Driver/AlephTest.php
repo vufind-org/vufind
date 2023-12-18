@@ -70,7 +70,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
-                'id' => "patron_id",
+                'id' => 'patron_id',
             ]
         );
         $expected = [

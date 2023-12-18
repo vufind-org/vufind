@@ -47,7 +47,7 @@
     </div>
   <?php endif; ?>
 
-  <?php if (in_array("requiredByDate", $this->fields)): ?>
+  <?php if (in_array('requiredByDate', $this->fields)): ?>
     <div class="form-group hold-required-by">
       <label for="required_by_date" class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
       <input id="required_by_date" type="text" name="gatheredDetails[requiredBy]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['requiredBy'] ?? '')?>" size="10" class="form-control">

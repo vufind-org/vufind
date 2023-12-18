@@ -33,6 +33,12 @@ use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * ChoiceAuth Authentication plugin
  *
@@ -105,8 +111,8 @@ class ChoiceAuth extends AbstractBase
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
-                "One or more ChoiceAuth parameters are missing. " .
-                "Check your config.ini!"
+                'One or more ChoiceAuth parameters are missing. ' .
+                'Check your config.ini!'
             );
         }
     }

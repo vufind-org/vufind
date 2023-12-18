@@ -31,6 +31,8 @@ namespace VuFindTest\Container;
 
 use PHPUnit\Framework\TestCase;
 
+use function in_array;
+
 /**
  * Trait for implementing containers that produces mock objects.
  *

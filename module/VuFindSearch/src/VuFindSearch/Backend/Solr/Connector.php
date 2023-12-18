@@ -43,6 +43,11 @@ use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
 
+use function call_user_func_array;
+use function count;
+use function is_callable;
+use function strlen;
+
 /**
  * SOLR connector.
  *

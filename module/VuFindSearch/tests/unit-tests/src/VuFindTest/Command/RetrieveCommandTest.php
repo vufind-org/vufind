@@ -57,7 +57,7 @@ class RetrieveCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $result = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->getMock();
-        $command = new RetrieveCommand($backendId, "id", $params);
+        $command = new RetrieveCommand($backendId, 'id', $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($backendId));
         $backend->expects($this->once())->method('retrieve')

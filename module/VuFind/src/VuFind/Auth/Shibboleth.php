@@ -162,7 +162,7 @@ class Shibboleth extends AbstractBase
         $shib = $this->config->Shibboleth;
         if (!isset($shib->username) || empty($shib->username)) {
             throw new AuthException(
-                "Shibboleth username is missing in your configuration file."
+                'Shibboleth username is missing in your configuration file.'
             );
         }
 
@@ -387,14 +387,14 @@ class Shibboleth extends AbstractBase
 
         // Now extract user attribute values:
         foreach ($config as $key => $value) {
-            if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
+            if (preg_match('/userattribute_[0-9]{1,}/', $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
                 $sortedUserAttributes[$value] = $config[$valueKey] ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value . " is missing!"
+                        'User attribute value of ' . $value . ' is missing!'
                     );
                 }
             }

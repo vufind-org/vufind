@@ -40,6 +40,8 @@ use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
+use function in_array;
+
 /**
  * Solr merged record handling listener.
  *

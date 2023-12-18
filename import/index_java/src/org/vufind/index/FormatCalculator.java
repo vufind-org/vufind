@@ -24,7 +24,6 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -220,7 +219,7 @@ public class FormatCalculator
      * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromBibLevel(Record record, char recordType, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
+    protected String getFormatFromBibLevel(Record record, char recordType, char bibLevel, ControlField marc008, boolean couldBeBook, List<Character> formatCodes007) {
         switch (bibLevel) {
             // Component parts
             case 'a':

@@ -31,6 +31,12 @@ namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
 
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
+
 /**
  * Cart Class
  *

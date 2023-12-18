@@ -52,4 +52,14 @@ class WebResults extends AbstractSearchObject
     {
         return 'SolrWeb';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'Library Web Search';
+    }
 }

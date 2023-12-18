@@ -2,7 +2,7 @@
   echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'openurl.js', 'SET');
   $classes = '';
   if ($this->openUrlEmbed) {
-    $classes = "fulltext";
+    $classes = 'fulltext';
   } elseif ($this->openUrlWindow) {
     $classes = 'fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow);
   }

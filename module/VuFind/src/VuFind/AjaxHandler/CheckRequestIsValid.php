@@ -31,6 +31,8 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 
+use function is_array;
+
 /**
  * "Check Request is Valid" AJAX handler
  *

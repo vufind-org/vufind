@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function strlen;
+
 /**
  * View helper to support ILS holdings display
  *

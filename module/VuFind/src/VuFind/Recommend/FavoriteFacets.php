@@ -29,8 +29,6 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Search\Solr\HierarchicalFacetHelper;
-
 /**
  * FavoriteFacets Recommendations Module
  *
@@ -55,16 +53,13 @@ class FavoriteFacets extends SideFacets
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
-     * hierarchical facets
      * @param string                       $tagSetting   Tag capability setting
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper = null,
         $tagSetting = 'enabled'
     ) {
-        parent::__construct($configLoader, $facetHelper);
+        parent::__construct($configLoader);
         $this->tagSetting = $tagSetting;
     }
 

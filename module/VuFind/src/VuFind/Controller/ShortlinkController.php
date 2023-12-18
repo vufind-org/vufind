@@ -33,6 +33,9 @@ use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
+use function is_callable;
+use function strlen;
+
 /**
  * Short link controller
  *

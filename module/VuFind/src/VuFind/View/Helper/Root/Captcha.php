@@ -30,6 +30,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function count;
+
 /**
  * Captcha view helper
  *

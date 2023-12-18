@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Response;
 
+use function array_slice;
+use function count;
+use function in_array;
+
 /**
  * Abstract record collection (implements some shared low-level functionality).
  *

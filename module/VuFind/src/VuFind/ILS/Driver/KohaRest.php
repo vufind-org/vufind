@@ -37,6 +37,14 @@ use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Service\CurrencyFormatter;
 
+use function array_key_exists;
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
+
 /**
  * VuFind Driver for Koha, using REST API
  *
@@ -2042,7 +2050,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         } else {
             $this->logError(
-                "Unable to determine status for item: " . print_r($item, true)
+                'Unable to determine status for item: ' . print_r($item, true)
             );
         }
 

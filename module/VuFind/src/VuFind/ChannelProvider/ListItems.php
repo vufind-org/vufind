@@ -34,6 +34,8 @@ use Laminas\Stdlib\Parameters;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 
+use function count;
+
 /**
  * "List items" channel provider.
  *

@@ -36,6 +36,8 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
+use function in_array;
+
 /**
  * Primo Central backend.
  *

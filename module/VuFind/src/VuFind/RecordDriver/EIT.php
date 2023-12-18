@@ -29,6 +29,10 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
@@ -438,7 +442,7 @@ class EIT extends DefaultRecord
     protected function getCoinsID()
     {
         // Added at Richard and Leslie's request, to facilitate ILL
-        return parent::getCoinsID() . ".ebsco";
+        return parent::getCoinsID() . '.ebsco';
     }
 
     /**

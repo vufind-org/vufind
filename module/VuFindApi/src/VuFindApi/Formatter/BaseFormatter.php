@@ -29,6 +29,10 @@
 
 namespace VuFindApi\Formatter;
 
+use function count;
+use function is_array;
+use function is_bool;
+
 /**
  * Base formatter for API responses
  *

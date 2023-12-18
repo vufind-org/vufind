@@ -31,6 +31,8 @@ namespace VuFind\SMS;
 
 use VuFind\Exception\SMS as SMSException;
 
+use function function_exists;
+
 /**
  * Class for text messaging via Clickatell's HTTP API
  *
@@ -85,7 +87,7 @@ class Clickatell extends AbstractBase
         if (empty($response)) {
             throw new SMSException('Problem sending text.', SMSException::ERROR_UNKNOWN);
         }
-        if ('ID:' !== substr($response, 0, 3)) {
+        if (!str_starts_with($response, 'ID:')) {
             throw new SMSException($response, SMSException::ERROR_UNKNOWN);
         }
         return true;
@@ -148,14 +150,14 @@ class Clickatell extends AbstractBase
         // Get base URL:
         $url = isset($this->smsConfig->Clickatell->url)
             ? trim($this->smsConfig->Clickatell->url, '?')
-            : "https://api.clickatell.com/http/sendmsg";
+            : 'https://api.clickatell.com/http/sendmsg';
 
         // Add parameters to URL:
-        $url .= "?api_id=" . urlencode($this->getApiId());
-        $url .= "&user=" . urlencode($this->getApiUsername());
-        $url .= "&password=" . urlencode($this->getApiPassword());
-        $url .= "&to=" . urlencode($this->filterPhoneNumber($to));
-        $url .= "&text=" . urlencode($this->formatMessage($message));
+        $url .= '?api_id=' . urlencode($this->getApiId());
+        $url .= '&user=' . urlencode($this->getApiUsername());
+        $url .= '&password=' . urlencode($this->getApiPassword());
+        $url .= '&to=' . urlencode($this->filterPhoneNumber($to));
+        $url .= '&text=' . urlencode($this->formatMessage($message));
 
         return $url;
     }

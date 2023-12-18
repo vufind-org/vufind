@@ -32,6 +32,8 @@ namespace VuFindTest\Search;
 use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
 
+use function count;
+
 /**
  * QueryAdapter unit tests.
  *

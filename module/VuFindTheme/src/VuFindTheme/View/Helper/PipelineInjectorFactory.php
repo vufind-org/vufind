@@ -36,6 +36,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function count;
+
 /**
  * Factory for helpers relying on asset pipeline configuration.
  *

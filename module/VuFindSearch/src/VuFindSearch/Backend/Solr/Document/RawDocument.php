@@ -86,7 +86,7 @@ class RawDocument implements DocumentInterface
     public function getContentType(): string
     {
         return $this->mime
-            . (empty($this->encoding) ? '' : "; charset=" . $this->encoding);
+            . (empty($this->encoding) ? '' : '; charset=' . $this->encoding);
     }
 
     /**

@@ -78,7 +78,7 @@ class SIP2 extends AbstractBase
         $msg_result = $mysip->get_message($in);
 
         // Make sure the response is 98 as expected
-        if (!preg_match("/^98/", $msg_result)) {
+        if (!preg_match('/^98/', $msg_result)) {
             $mysip->disconnect();
             throw new AuthException('authentication_error_technical');
         }
@@ -95,7 +95,7 @@ class SIP2 extends AbstractBase
         $msg_result = $mysip->get_message($in);
 
         // Make sure the response is 24 as expected
-        if (!preg_match("/^24/", $msg_result)) {
+        if (!preg_match('/^24/', $msg_result)) {
             $mysip->disconnect();
             throw new AuthException('authentication_error_technical');
         }

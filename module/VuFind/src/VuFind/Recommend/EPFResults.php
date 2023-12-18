@@ -53,4 +53,14 @@ class EPFResults extends AbstractSearchObject
     {
         return 'EPF';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'epf_recommendations';
+    }
 }

@@ -81,7 +81,7 @@ class SyndeticsPlus extends \Laminas\View\Helper\AbstractHelper
         if (isset($this->config->plus_id)) {
             $baseUrl = (isset($this->config->use_ssl) && $this->config->use_ssl)
                 ? 'https://secure.syndetics.com' : 'http://plus.syndetics.com';
-            return $baseUrl . "/widget.php?id="
+            return $baseUrl . '/widget.php?id='
                 . urlencode($this->config->plus_id);
         }
 

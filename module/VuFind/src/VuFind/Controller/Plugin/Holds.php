@@ -33,6 +33,8 @@ namespace VuFind\Controller\Plugin;
 
 use VuFind\Date\DateException;
 
+use function in_array;
+
 /**
  * Action helper to perform holds-related actions
  *
@@ -66,7 +68,7 @@ class Holds extends AbstractRequestBase
         // Generate Form Details for cancelling Holds if Cancelling Holds
         // is enabled
         if ($cancelStatus) {
-            if ($cancelStatus['function'] == "getCancelHoldLink") {
+            if ($cancelStatus['function'] == 'getCancelHoldLink') {
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
                     = $catalog->getCancelHoldLink($ilsDetails, $patron);
@@ -130,7 +132,7 @@ class Holds extends AbstractRequestBase
 
         if (!empty($details)) {
             // Confirm?
-            if ($params->fromPost('confirm') === "0") {
+            if ($params->fromPost('confirm') === '0') {
                 if ($params->fromPost('cancelAll') !== null) {
                     return $this->getController()->confirm(
                         'hold_cancel_all',

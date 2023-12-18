@@ -131,12 +131,16 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
         // Get base URI, if available:
         $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
+        // Optionally parse the resource description
+        $displayDescription = $this->libGuidesConfig->General->displayDescription ?? false;
+
         // Create connector:
         $connector = new Connector(
             $iid,
             $this->createHttpClient($this->libGuidesConfig->General->timeout ?? 30),
             $ver,
-            $baseUrl
+            $baseUrl,
+            $displayDescription
         );
         $connector->setLogger($this->logger);
         return $connector;

@@ -96,7 +96,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @throws \VuFind\Exception\ListPermission
      */
-    protected function getListObject($listId, \VuFind\Db\Row\User $user)
+    public function getListObject($listId, \VuFind\Db\Row\User $user)
     {
         if (empty($listId) || $listId == 'NEW') {
             $list = $this->userListTable->getNew($user);

@@ -35,6 +35,8 @@ use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
 use VuFindSearch\Service;
 
+use function array_slice;
+
 /**
  * GetIdsWithTermsCommand Test Class
  *

@@ -31,6 +31,8 @@
 
 namespace VuFindTest\Feature;
 
+use function count;
+
 /**
  * Mix-in for accessing a real database during testing.
  *

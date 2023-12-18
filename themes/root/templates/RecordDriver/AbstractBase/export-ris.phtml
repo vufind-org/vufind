@@ -24,7 +24,7 @@ if ($marcProceedingsField) {
 // Type
 echo 'TY  - ' . $format . "\r\n";
 
-$title = rtrim($this->driver->getTitle(), " /");
+$title = rtrim($this->driver->getTitle(), ' /');
 if (!empty($title)) {
     echo 'TI  - ' . "$title\r\n";
 }
@@ -82,10 +82,10 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "CY  - " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\r\n";
+            echo 'CY  - ' . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\r\n";
         }
         if (isset($pubNames[$i])) {
-            echo "PB  - " . rtrim($pubNames[$i], ", ") . "\r\n";
+            echo 'PB  - ' . rtrim($pubNames[$i], ', ') . "\r\n";
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {

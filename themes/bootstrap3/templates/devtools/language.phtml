@@ -13,9 +13,9 @@
 
 <h1><?=$this->escapeHtml($pageTitle)?></h1>
 
-Current filter mode: <?=$includeOptional ? "Unfiltered" : "Mandatory strings only"?><br>
+Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings only'?><br>
 <a href="?main=<?=urlencode($mainCode)?>&amp;includeOptional=<?=$includeOptional ? 0 : 1?>">
-  <?=$includeOptional ? "Exclude optional text domains" : "Include optional text domains"?>
+  <?=$includeOptional ? 'Exclude optional text domains' : 'Include optional text domains'?>
 </a>
 
 <table id="lang-summary" class="table table-striped">
@@ -61,7 +61,7 @@ Current filter mode: <?=$includeOptional ? "Unfiltered" : "Mandatory strings onl
               <ul class="dropdown-menu" aria-labelledby="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
               <?php foreach ($row['files'] as $k => $v): ?>
                 <li>
-                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url("help-home") . "?lng=" . $this->escapeHtmlAttr($row['lang']) . "&amp;topic=" . $this->escapeHtmlAttr(str_replace(".phtml", "", $v));?>">
+                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url('help-home') . '?lng=' . $this->escapeHtmlAttr($row['lang']) . '&amp;topic=' . $this->escapeHtmlAttr(str_replace('.phtml', '', $v));?>">
                     <?=$this->escapeHtml($v)?>
                   </a>
                 </li>

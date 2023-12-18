@@ -18,7 +18,6 @@ package org.vufind.index;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-import java.util.Iterator;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.ControlField;

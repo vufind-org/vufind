@@ -52,4 +52,14 @@ class CatalogResults extends AbstractSearchObject
     {
         return 'Solr';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'Catalog Results';
+    }
 }

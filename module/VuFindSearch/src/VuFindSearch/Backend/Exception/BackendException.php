@@ -31,6 +31,8 @@ namespace VuFindSearch\Backend\Exception;
 
 use VuFindSearch\Exception\RuntimeException;
 
+use function in_array;
+
 /**
  * BackendException.
  *

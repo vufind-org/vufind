@@ -33,6 +33,9 @@ namespace VuFind\Recommend;
 use Laminas\Stdlib\Parameters;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 
+use function count;
+use function intval;
+
 /**
  * AuthorityRecommend Module
  *

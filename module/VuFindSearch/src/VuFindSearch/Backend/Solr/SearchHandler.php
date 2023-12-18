@@ -31,6 +31,10 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function chr;
+use function in_array;
+use function intval;
+
 /**
  * VuFind SearchHandler.
  *
@@ -448,6 +452,9 @@ class SearchHandler
                     $operation[2],
                     $string
                 );
+                break;
+            case 'prepend':
+                $string = $operation[1] . $string;
                 break;
             case 'ucfirst':
                 $string = ucfirst($string);

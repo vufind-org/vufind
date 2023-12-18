@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>     nas  2200301 a 4500</leader>
+    <controlfield tag="001">autocomplete1</controlfield>
+    <controlfield tag="008">231104c2023    xx  x goo     0   a|eng||</controlfield>
+    <datafield tag="024" ind1=" " ind2=" ">
+      <subfield code="2">test</subfield>
+      <subfield code="a">autocomplete1</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="0">
+      <subfield code="a">Letterhead enclosure: &quot;The Millers Mechanical Battlefield: world's greatest exhibition&quot;, [1920?].</subfield>
+    </datafield>
+  </record>
+</collection>

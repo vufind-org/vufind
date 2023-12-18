@@ -226,10 +226,13 @@ VuFind.register('embedded', function embedded() {
     }
   }
 
-  function init() {
-    $('.getFull').on('click', function linkToggle() { return toggleDataView(this); });
+  function init(_container) {
+    const container = typeof _container !== 'undefined' ? _container : $(document);
+    container.find('.getFull').on('click', function linkToggle() { return toggleDataView(this); });
     loadStorage();
   }
 
-  return { init: init };
+  return {
+    init: init
+  };
 });

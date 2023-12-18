@@ -30,6 +30,8 @@
 
 namespace VuFind\Search\EIT;
 
+use function count;
+
 /**
  * EBSCO EIT Search Options
  * Largely copied from WorldCat Search Options

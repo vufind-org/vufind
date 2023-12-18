@@ -28,25 +28,24 @@
 <?php ob_start(); ?>
   <?php foreach ($this->checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
-      <span class="filter-value">
-        <?php
-          $removeLink = isset($urlQuery)
-            ? $urlQuery->removeFilter($filter['filter'])
-            : $this->searchMemory()->getEditLink(
-                $this->searchClassId,
-                'removeFilter',
-                $filter['filter']
-            );
-          $desc = $this->translate($filter['desc']);
-          $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
-        ?>
-        <?=$desc?>
-        <?php if ($removeLink): ?>
-          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>">
-            <?=$this->icon('search-filter-remove') ?>
-          </a>
-        <?php endif; ?>
-      </span>
+      <?php
+        $removeLink = isset($urlQuery)
+          ? $urlQuery->removeFilter($filter['filter'])
+          : $this->searchMemory()->getEditLink(
+              $this->searchClassId,
+              'removeFilter',
+              $filter['filter']
+          );
+      ?>
+      <?php if ($removeLink): ?>
+        <a class="filter-value" href="<?=$removeLink?>">
+          <span class="sr-only">
+            <?=$this->translate('Remove filter') ?>
+          </span>
+          <span class="text"><?=$this->transEsc($filter['desc'])?></span>
+          <?=$this->icon('search-filter-remove') ?>
+        </a>
+      <?php endif; ?>
     <?php endif ?>
   <?php endforeach; ?>
 
@@ -129,7 +128,7 @@
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
     <span class="sr-only"><?=$this->transEscAttr('page_reload_on_deselect_hint') ?></span>
-    <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+    <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
       <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
     <?php elseif ($advancedSearch): ?>
       <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
@@ -144,7 +143,7 @@
   <div class="active-filters visible-xs">
     <span class="sr-only"><?=$this->transEscAttr('page_reload_on_deselect_hint') ?></span>
     <div class="filters-toggle-bar">
-      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+      <?php if ($resetLink && $options->shouldDisplayResetFilters()): ?>
         <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
       <?php endif; ?>
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">

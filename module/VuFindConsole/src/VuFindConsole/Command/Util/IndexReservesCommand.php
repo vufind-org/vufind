@@ -36,6 +36,10 @@ use VuFind\Reserves\CsvReader;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 
+use function count;
+use function in_array;
+use function ini_get;
+
 /**
  * Console command: index course reserves into Solr.
  *

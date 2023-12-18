@@ -33,6 +33,8 @@ namespace VuFind\Auth;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 
+use function in_array;
+
 /**
  * Password Access authentication class
  *

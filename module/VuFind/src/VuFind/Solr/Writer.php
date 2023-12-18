@@ -38,6 +38,8 @@ use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
 
+use function func_get_args;
+
 /**
  * Solr Writer service
  *

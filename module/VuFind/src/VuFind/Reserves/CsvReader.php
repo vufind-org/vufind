@@ -29,6 +29,9 @@
 
 namespace VuFind\Reserves;
 
+use function count;
+use function is_array;
+
 /**
  * Support class to build reserves data from CSV file(s).
  *

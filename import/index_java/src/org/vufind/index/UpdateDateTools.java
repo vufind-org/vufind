@@ -22,8 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Iterator;
-import java.util.Set;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import org.marc4j.marc.Record;

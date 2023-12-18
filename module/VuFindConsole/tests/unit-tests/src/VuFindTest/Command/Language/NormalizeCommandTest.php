@@ -96,7 +96,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
@@ -134,7 +134,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 

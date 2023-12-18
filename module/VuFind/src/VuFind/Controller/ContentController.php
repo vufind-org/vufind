@@ -33,6 +33,8 @@ namespace VuFind\Controller;
 
 use Laminas\View\Model\ViewModel;
 
+use function is_callable;
+
 /**
  * Controller for mostly static pages that doesn't fall under any particular
  * function.
@@ -64,7 +66,7 @@ class ContentController extends AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $pathPrefix = "templates/content/";
+        $pathPrefix = 'templates/content/';
         $pageLocator = $this->serviceLocator
             ->get(\VuFind\Content\PageLocator::class);
         $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);

@@ -31,6 +31,8 @@ namespace VuFind\Db\Row;
 
 use VuFind\Crypt\HMAC;
 
+use function is_resource;
+
 /**
  * Row Definition for search
  *

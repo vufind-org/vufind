@@ -34,6 +34,9 @@ namespace VuFind\Session;
 
 use Laminas\Config\Config;
 
+use function get_class;
+use function in_array;
+
 /**
  * Memcache session handler
  *

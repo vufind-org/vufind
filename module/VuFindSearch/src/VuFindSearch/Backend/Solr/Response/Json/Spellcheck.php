@@ -33,6 +33,9 @@ use ArrayObject;
 use Countable;
 use IteratorAggregate;
 
+use function is_array;
+use function strlen;
+
 /**
  * SOLR spellcheck information.
  *

@@ -102,7 +102,7 @@ class OverdriveConnectorFactory implements
         $connector->setCacheStorage(
             $container->get(\VuFind\Cache\Manager::class)->getCache(
                 'object',
-                "Overdrive"
+                'Overdrive'
             )
         );
 

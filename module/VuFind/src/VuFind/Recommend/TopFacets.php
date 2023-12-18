@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function in_array;
+
 /**
  * SideFacets Recommendations Module
  *

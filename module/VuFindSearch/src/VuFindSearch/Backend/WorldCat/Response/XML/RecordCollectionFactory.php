@@ -33,6 +33,11 @@ use VuFind\Marc\MarcReader;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
+
 /**
  * Simple XML-based factory for record collection.
  *

@@ -49,7 +49,7 @@
       if (!empty($summInCollection)): ?>
         <?php foreach ($summInCollection as $collId => $collText): ?>
           <div>
-            <b><?=$this->transEsc("in_collection_label")?></b>
+            <b><?=$this->transEsc('in_collection_label')?></b>
             <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
               <?=$this->escapeHtml($collText)?>
             </a>
@@ -124,7 +124,7 @@
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
 
-      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

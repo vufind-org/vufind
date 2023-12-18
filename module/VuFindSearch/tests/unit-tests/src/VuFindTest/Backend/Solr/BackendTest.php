@@ -41,6 +41,8 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
+use function count;
+
 /**
  * Unit tests for SOLR backend.
  *
@@ -617,7 +619,7 @@ class BackendTest extends TestCase
      */
     public function testExtraRequestDetails()
     {
-        $solrUri = new Http("https://www.someExampleSolr.com");
+        $solrUri = new Http('https://www.someExampleSolr.com');
         $connector = $this->getConnectorMock(['getLastUrl']);
         $connector->expects($this->once())->method('getLastUrl')
             ->will($this->returnValue($solrUri));
@@ -635,7 +637,7 @@ class BackendTest extends TestCase
      */
     public function testResetExtraRequestDetails()
     {
-        $solrUri = new Http("https://www.someExampleSolr.com");
+        $solrUri = new Http('https://www.someExampleSolr.com');
         $connector = $this->getConnectorMock(['getLastUrl', 'resetLastUrl']);
         $connector->expects($this->once())->method('resetLastUrl');
         $connector->expects($this->exactly(2))->method('getLastUrl')

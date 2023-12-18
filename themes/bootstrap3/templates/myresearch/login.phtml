@@ -11,7 +11,7 @@
   $offlineMode = $this->ils()->getOfflineMode();
 ?>
 
-<?php if ($offlineMode == "ils-offline"): ?>
+<?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php endif; ?>
 

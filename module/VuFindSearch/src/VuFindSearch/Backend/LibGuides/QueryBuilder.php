@@ -55,7 +55,7 @@ class QueryBuilder
      *
      * @var string
      */
-    protected $defaultWidgetType = "1";
+    protected $defaultWidgetType = '1';
 
     /// Public API
 

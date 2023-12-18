@@ -23,11 +23,14 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
 namespace VuFind\Controller;
+
+use function in_array;
 
 /**
  * AbstractSearch with Solr-specific features added.
@@ -35,6 +38,7 @@ namespace VuFind\Controller;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -145,18 +149,20 @@ class AbstractSolrSearch extends AbstractSearch
         $hierarchicalFacets = [],
         $hierarchicalFacetsSortOptions = []
     ) {
-        // Process the facets
         $facetHelper = null;
-        if (!empty($hierarchicalFacets)) {
-            $facetHelper = $this->serviceLocator
-                ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-        }
+        $options = null;
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
             if (in_array($facet, $hierarchicalFacets)) {
-                $tmpList = $list['list'];
+                // Process the facets
+                if (!$facetHelper) {
+                    $facetHelper = $this->serviceLocator
+                        ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+                    $options = $this->getOptionsForClass();
+                }
 
+                $tmpList = $list['list'];
                 $sort = $hierarchicalFacetsSortOptions[$facet]
                     ?? $hierarchicalFacetsSortOptions['*'] ?? 'top';
 
@@ -165,6 +171,13 @@ class AbstractSolrSearch extends AbstractSearch
                     $facet,
                     $tmpList
                 );
+                if ($options->getFilterHierarchicalFacetsInAdvanced()) {
+                    $tmpList = $facetHelper->filterFacets(
+                        $facet,
+                        $tmpList,
+                        $options
+                    );
+                }
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
             }
 

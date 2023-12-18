@@ -30,6 +30,9 @@
 
 namespace VuFindTest\RecordDriver;
 
+use function count;
+use function in_array;
+
 /**
  * SolrMarc Record Driver Test Class
  *

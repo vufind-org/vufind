@@ -32,6 +32,8 @@ namespace VuFind\CSV;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
+use function count;
+
 /**
  * VuFind CSV importer configuration
  *
@@ -272,8 +274,8 @@ class Importer
         );
         $argCallback = function ($arg) use ($value, $fieldValues) {
             if (
-                substr($arg, 0, 2) == '$$'
-                && substr($arg, -2) == '$$'
+                str_starts_with($arg, '$$')
+                && str_ends_with($arg, '$$')
             ) {
                 $parts = explode(':', trim($arg, '$'), 2);
                 switch ($parts[0]) {

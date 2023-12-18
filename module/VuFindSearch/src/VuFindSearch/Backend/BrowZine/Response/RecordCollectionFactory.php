@@ -33,6 +33,11 @@ use VuFindSearch\Backend\Solr\Response\Json\Record;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
+
 /**
  * Simple factory for record collection.
  *

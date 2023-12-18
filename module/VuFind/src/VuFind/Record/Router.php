@@ -29,6 +29,9 @@
 
 namespace VuFind\Record;
 
+use function count;
+use function is_object;
+
 /**
  * Record route generator
  *

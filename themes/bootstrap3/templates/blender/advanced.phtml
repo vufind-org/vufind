@@ -1,0 +1,50 @@
+<?php
+  // Load the Blender-specific advanced search and inject it into the
+  // standard advanced search layout:
+  $this->buildPageOverride = '/search/advanced/build_page_blender.phtml';
+
+  ob_start();
+?>
+<div id="new_group_template">
+  <div class="adv-group adv-group__blender">
+    <input type="hidden" name="join" value="AND">
+    <input type="hidden" name="bool0[]" value="AND">
+    <label class="adv-group-label"><?=$this->transEsc('adv_search_label')?>:</label>
+    <?php for ($search = 0; $search < 3; $search++): ?>
+      <?php if ($search === 0): ?>
+        <div id="new_search_template">
+      <?php endif; ?>
+      <div class="adv-search">
+        <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="adv-term-input form-control" type="text" value="" aria-label="<?=$this->transEscAttr('search_terms')?>">
+        <select id="search_type0_<?=$search ?>" name="type0[]" class="adv-term-type form-control" aria-label="<?=$this->transEscAttr('Search type')?>">
+          <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+            <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+          <?php endforeach; ?>
+        </select>
+        <a href="#" class="adv-term-remove">
+          <?=$this->icon('ui-remove') ?>
+          <span class="sr-only"><?=$this->transEsc('remove') ?></span>
+        </a>
+      </div>
+      <?php if ($search === 0): ?>
+        </div>
+      <?php endif; ?>
+    <?php endfor; ?>
+    <span class="search_place_holder"></span>
+    <div>
+      <a href="#" class="add_search_link hidden icon-link">
+        <?=$this->icon('ui-add', 'search_place_holder icon-link__icon hidden') ?>
+        <span class="icon-link__label"><?=$this->transEsc('add_search')?></span>
+      </a>
+    </div>
+  </div>
+</div>
+<?php
+  $this->formOverride = ob_get_contents();
+  ob_end_clean();
+
+  $params = (array)$this->vars() + [
+      'helpTopics' => ['blender_advsearch' => 'Help with Advanced Search', 'blender' => 'Help with Search Operators'],
+  ];
+  echo $this->render('search/advanced/layout.phtml', $params);
+?>

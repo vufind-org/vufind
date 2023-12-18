@@ -29,6 +29,8 @@
 
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use function is_object;
+
 /**
  * Hierarchy Tree Renderer
  *

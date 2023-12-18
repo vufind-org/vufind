@@ -68,17 +68,17 @@ class SolrCN extends Solr
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"'];
-        $query = str_replace($forbidden, " ", $query);
+        $query = str_replace($forbidden, ' ', $query);
 
         // Assign display fields and sort order based on the query -- if the
         // first character is a number, give Dewey priority; otherwise, give
         // LC priority:
         if (is_numeric(substr(trim($query), 0, 1))) {
             $this->setDisplayField(['dewey-full', 'callnumber-raw']);
-            $this->setSortField("dewey-sort,callnumber-sort");
+            $this->setSortField('dewey-sort,callnumber-sort');
         } else {
             $this->setDisplayField(['callnumber-raw', 'dewey-full']);
-            $this->setSortField("callnumber-sort,dewey-sort");
+            $this->setSortField('callnumber-sort,dewey-sort');
         }
 
         return $query;

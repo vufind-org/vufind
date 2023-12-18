@@ -1,7 +1,7 @@
 <?php $this->headScript()->appendFile('collection_record.js'); ?>
 <div class="media">
   <?php
-    $QRCode = $this->record($this->driver)->getQRCode("core");
+    $QRCode = $this->record($this->driver)->getQRCode('core');
     $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
@@ -34,7 +34,7 @@
 
     <?php /* Display the lists that this record is saved to */ ?>
     <div class="savedLists" id="savedLists">
-      <strong><?=$this->transEsc("Saved in")?>:</strong>
+      <strong><?=$this->transEsc('Saved in')?>:</strong>
     </div>
 
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>

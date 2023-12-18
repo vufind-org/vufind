@@ -37,6 +37,8 @@ use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Where;
 use VuFind\Db\Row\RowGateway;
 
+use function count;
+
 /**
  * Table Definition for record
  *

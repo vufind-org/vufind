@@ -30,6 +30,10 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function intval;
+use function strlen;
+
 /**
  * VuFind Connector for Polaris
  *
@@ -127,14 +131,14 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function makeRequest(
         $api_query,
-        $http_method = "GET",
-        $patronpassword = "",
+        $http_method = 'GET',
+        $patronpassword = '',
         $json = false
     ) {
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
         date_default_timezone_set('GMT');
-        $date = date("D, d M Y H:i:s T");
+        $date = date('D, d M Y H:i:s T');
         date_default_timezone_set($site_config_TZ);
 
         $url = $this->ws_host . $this->ws_app . $api_query;
@@ -146,8 +150,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $auth_token = "PWS {$this->ws_api_id}:$signature";
         $http_headers = [
-            "Content-type: application/json",
-            "Accept: application/json",
+            'Content-type: application/json',
+            'Accept: application/json',
             "PolarisDate: $date",
             "Authorization: $auth_token",
         ];
@@ -165,7 +169,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // httpService doesn't explicitly support PUT, so add this:
             if ($http_method == 'PUT') {
-                $http_headers[] = "Content-Length: " . strlen($json_data);
+                $http_headers[] = 'Content-Length: ' . strlen($json_data);
             }
             $client->setHeaders($http_headers);
             $client->setMethod($http_method);
@@ -193,7 +197,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
         if (count($matches) > 0) {
             $matchestmp = intval($matches[1] / 1000);
-            $date = date("n-j-Y", $matchestmp);
+            $date = date('n-j-Y', $matchestmp);
         } else {
             $date = 'n/a';
         }
@@ -215,7 +219,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $unix_time = strtotime($date);
         //date_default_timezone_set($site_config_TZ);
 
-        $json_time = "/Date(" . $unix_time . "000)/";
+        $json_time = '/Date(' . $unix_time . '000)/';
         return $json_time;
     }
 
@@ -294,7 +298,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $duedate = '';
             if ($holdings_response->DueDate) {
-                $duedate = date("n-j-Y", strtotime($holdings_response->DueDate));
+                $duedate = date('n-j-Y', strtotime($holdings_response->DueDate));
             }
 
             $holding[] = [
@@ -490,7 +494,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         } else {
             // we get them from the API
-            $response = $this->makeRequest("organizations/branch");
+            $response = $this->makeRequest('organizations/branch');
             $locations_response_array = $response->OrganizationsGetRows;
             foreach ($locations_response_array as $location_response) {
                 $locations[] = [
@@ -594,7 +598,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function patronLogin($username, $password)
     {
         // username == barcode
-        $response = $this->makeRequest("patron/$username", "GET", "$password");
+        $response = $this->makeRequest("patron/$username", 'GET', "$password");
 
         if (!$response->ValidPatron) {
             return null;
@@ -823,7 +827,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/cancelled"
-                . "?wsid=1&userid=1",
+                . '?wsid=1&userid=1',
                 'PUT',
                 $patron['cat_password']
             );
@@ -1040,7 +1044,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $hold_ids = $reactivateDetails['details'];
         $patron = $reactivateDetails['patron'];
 
-        $date = date("d/M/Y");
+        $date = date('d/M/Y');
         $jsondate = $this->encodeJSONTime($date);
 
         $count = 0;

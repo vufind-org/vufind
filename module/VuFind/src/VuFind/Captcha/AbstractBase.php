@@ -31,6 +31,8 @@ namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 
+use function get_class;
+
 /**
  * Abstract base CAPTCHA
  *

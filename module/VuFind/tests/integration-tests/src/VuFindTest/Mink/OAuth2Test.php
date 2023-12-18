@@ -237,7 +237,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             200,
             $response->getStatusCode(),
-            "Response: " . $response->getContent()
+            'Response: ' . $response->getContent()
         );
         $jwks = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
@@ -277,7 +277,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             200,
             $response->getStatusCode(),
-            "Response: " . $response->getContent()
+            'Response: ' . $response->getContent()
         );
 
         $userInfo = json_decode($response->getBody(), true);
@@ -302,7 +302,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             401,
             $response->getStatusCode(),
-            "Response: " . $response->getContent()
+            'Response: ' . $response->getContent()
         );
         $tokenResult = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('error', $tokenResult);

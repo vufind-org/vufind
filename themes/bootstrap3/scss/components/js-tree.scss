@@ -66,32 +66,16 @@
 .jstree-clicked:active,
 .jstree-clicked:focus,
 .jstree-clicked:hover {
-  &:not(.hierarchical-facet-anchor) {
+  color: $list-group-active-color;
+  background-color: $list-group-active-bg;
+
+  .jstree-themeicon-custom {
     color: $list-group-active-color;
-    background-color: $list-group-active-bg;
-
-    .jstree-themeicon-custom {
-      color: #fff;
-      filter: invert(1);
-    }
+    filter: invert(1);
   }
 }
 
-.jstree-facet {
-  padding: 0;
-
-  .jstree-node.list-group-item {
-    padding: 0.5rem;
-  }
-
-  .jstree-node .facet {
-    padding: 2px 0;
-    border: 0;
-  }
-}
-
-.hierarchy-tree,
-.jstree-facet {
+.hierarchy-tree {
   .jstree-initial-node {
     display: none;
   }
@@ -123,26 +107,6 @@
   color: #000;
 }
 
-/* --- Facets --- */
-/* facet list styling */
-.jstree-facet .jstree-container-ul {
-  padding: 0;
-}
-
-li.jstree-facet,
-li.jstree-node {
-  list-style: none;
-}
-li.jstree-facet .badge {
-  cursor: text;
-}
-.jstree-facet .jstree-ocl {
-  float: left;
-  &::before {
-    width: 1.3rem;
-  }
-}
-
 /* RTL */
 body.rtl {
   .jstree-node .jstree-children {
@@ -154,12 +118,5 @@ body.rtl {
   }
   .jstree-leaf > .jstree-ocl::before {
     content: "\25C2"; // Unicode black left-pointing small triangle
-  }
-  .jstree-facet .jstree-ocl {
-    float: right;
-  }
-  .jstree-facet .active > .jstree-anchor .facet {
-      padding-left: 0;
-      padding-right: 2px;
   }
 }

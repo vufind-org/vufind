@@ -33,6 +33,9 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function count;
+use function in_array;
+
 /**
  * Lucene query syntax helper class.
  *
@@ -126,7 +129,7 @@ class LuceneSyntaxHelper
     {
         $rangeReg = self::SOLR_RANGE_RE;
         if (!$this->caseSensitiveRanges) {
-            $rangeReg .= "i";
+            $rangeReg .= 'i';
         }
         return preg_match($rangeReg, $searchString) ? true : false;
     }
@@ -404,7 +407,7 @@ class LuceneSyntaxHelper
     protected function normalizeWildcards($input)
     {
         // Ensure wildcards are not at beginning of input
-        return ((substr($input, 0, 1) == '*') || (substr($input, 0, 1) == '?'))
+        return str_starts_with($input, '*') || str_starts_with($input, '?')
             ? substr($input, 1) : $input;
     }
 
@@ -606,13 +609,13 @@ class LuceneSyntaxHelper
         if (
             $this->caseSensitiveBooleans === false
             || $this->caseSensitiveBooleans === 0
-            || $this->caseSensitiveBooleans === "0"
+            || $this->caseSensitiveBooleans === '0'
         ) {
             return $this->allBools;
         } elseif (
             $this->caseSensitiveBooleans === true
             || $this->caseSensitiveBooleans === 1
-            || $this->caseSensitiveBooleans === "1"
+            || $this->caseSensitiveBooleans === '1'
         ) {
             return [];
         }

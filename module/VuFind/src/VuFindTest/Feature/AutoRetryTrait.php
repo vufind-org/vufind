@@ -35,6 +35,10 @@ namespace VuFindTest\Feature;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Util\Test;
 
+use function call_user_func;
+use function get_class;
+use function is_callable;
+
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
  * fail intermittently due to timing issues (e.g. Mink integration tests).

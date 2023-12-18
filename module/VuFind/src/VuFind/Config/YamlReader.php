@@ -33,6 +33,10 @@ namespace VuFind\Config;
 
 use Symfony\Component\Yaml\Yaml;
 
+use function array_key_exists;
+use function dirname;
+use function is_array;
+
 /**
  * VuFind YAML Configuration Reader
  *

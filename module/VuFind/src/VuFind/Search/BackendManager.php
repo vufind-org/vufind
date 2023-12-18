@@ -37,6 +37,9 @@ use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
 
+use function gettype;
+use function is_object;
+
 /**
  * Manager for search backends.
  *

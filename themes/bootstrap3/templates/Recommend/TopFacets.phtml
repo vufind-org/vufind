@@ -18,9 +18,9 @@
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
-        <div class="top-facets-contents" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
+        <ul class="top-facets-contents" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
           <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
-            <span class="facet top-facet">
+            <li class="facet top-facet">
               <span class="top-facet-inner">
                 <?php if ($thisFacet['isApplied']):
                   if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
@@ -44,9 +44,9 @@
                   <?php endif; ?>
                 <?php endif; ?>
               </span>
-            </span>
+            </li>
           <?php endforeach; ?>
-        </div>
+        </ul>
       </div>
     </div>
   <?php endforeach; ?>

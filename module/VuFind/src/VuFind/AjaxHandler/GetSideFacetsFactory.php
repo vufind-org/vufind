@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -40,6 +41,7 @@ use Psr\Container\ContainerInterface;
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -73,8 +75,6 @@ class GetSideFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
             $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('facets'),
             $container->get('ViewRenderer')
         );
         return $result;

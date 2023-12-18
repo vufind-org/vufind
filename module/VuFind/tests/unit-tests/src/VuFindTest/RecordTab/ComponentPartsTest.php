@@ -118,9 +118,9 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('getUniqueID')
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue('foo'));
         $recordDriver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -128,13 +128,13 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($rci));
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "bar"
+                && $command->getTargetIdentifier() === 'bar'
                 && $command->getArguments()[0]->getAllTerms() === 'hierarchy_parent_id:"foo"'
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 101
                 && $command->getArguments()[3]->getArrayCopy() === [
-                    "hl" => ["false"],
-                    "sort" => ["hierarchy_sequence ASC,title ASC"],
+                    'hl' => ['false'],
+                    'sort' => ['hierarchy_sequence ASC,title ASC'],
                 ];
         };
         $service->expects($this->once())->method('invoke')

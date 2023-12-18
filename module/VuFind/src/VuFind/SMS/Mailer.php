@@ -31,6 +31,9 @@ namespace VuFind\SMS;
 
 use VuFind\Exception\SMS as SMSException;
 
+use function count;
+use function in_array;
+
 /**
  * VuFind Mailer Class for SMS messages
  *

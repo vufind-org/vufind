@@ -35,6 +35,8 @@ use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RandomCommand;
 
+use function count;
+
 /**
  * "Random items" channel provider.
  *
@@ -138,7 +140,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     public function getFromSearch(Results $results, $channelToken = null)
     {
         $params = $results->getParams();
-        if ("retain" !== $this->mode) {
+        if ('retain' !== $this->mode) {
             $randomParams = $this->paramManager->get($params->getSearchClassId());
         } else {
             $randomParams = clone $params;

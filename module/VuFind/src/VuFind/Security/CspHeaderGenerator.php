@@ -32,6 +32,8 @@ namespace VuFind\Security;
 use Laminas\Http\Header\ContentSecurityPolicy;
 use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
 
+use function in_array;
+
 /**
  * VuFind class for generating Content Security Policy http headers
  *

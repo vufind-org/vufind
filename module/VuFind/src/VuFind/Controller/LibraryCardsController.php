@@ -219,8 +219,7 @@ class LibraryCardsController extends AbstractBase
         }
 
         $this->setFollowupUrlToReferer(false);
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));
         }
         return $this->redirect()->toRoute('myresearch-home');
@@ -302,8 +301,8 @@ class LibraryCardsController extends AbstractBase
                 && !$this->getAuthManager()->allowsUserIlsLogin()
             ) {
                 throw new \Exception(
-                    "Illegal configuration: "
-                    . "password-based library cards and disabled user login"
+                    'Illegal configuration: '
+                    . 'password-based library cards and disabled user login'
                 );
             }
             $catalog = $this->getILS();

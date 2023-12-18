@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function is_array;
+
 /**
  * Model for Solr authority records.
  *

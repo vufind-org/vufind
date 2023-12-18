@@ -31,6 +31,8 @@
 
 namespace VuFind\Connection;
 
+use function func_get_args;
+
 /**
  * Helper trait for OAuth 2.0 connections.
  *
@@ -72,16 +74,16 @@ trait OauthServiceTrait
         $clientId,
         $clientSecret
     ) {
-        $this->oauthServiceTraitDebug("connecting to API");
+        $this->oauthServiceTraitDebug('connecting to API');
         $tokenData = $this->tokenData;
-        $this->oauthServiceTraitDebug("Last API Token: " . print_r($tokenData, true));
+        $this->oauthServiceTraitDebug('Last API Token: ' . print_r($tokenData, true));
         if (
             $tokenData == null
             || !isset($tokenData->access_token)
             || time() >= $tokenData->expirationTime
         ) {
             $authHeader = base64_encode(
-                $clientId . ":" . $clientSecret
+                $clientId . ':' . $clientSecret
             );
             $headers = [
                 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
@@ -89,25 +91,25 @@ trait OauthServiceTrait
             ];
 
             $this->client->setHeaders($headers);
-            $this->client->setMethod("POST");
-            $this->client->setRawBody("grant_type=client_credentials");
+            $this->client->setMethod('POST');
+            $this->client->setRawBody('grant_type=client_credentials');
             $response = $this->client
                 ->setUri($oauthUrl)
                 ->send();
 
             if ($response->isServerError()) {
                 $this->oauthServiceTraitError(
-                    "API HTTP Error: " .
+                    'API HTTP Error: ' .
                     $response->getStatusCode()
                 );
-                $this->oauthServiceTraitDebug("Request: " . $this->client->getRequest());
+                $this->oauthServiceTraitDebug('Request: ' . $this->client->getRequest());
                 return false;
             }
 
             $body = $response->getBody();
             $tokenData = json_decode($body);
             $this->oauthServiceTraitDebug(
-                "TokenData returned from API Call: " . print_r(
+                'TokenData returned from API Call: ' . print_r(
                     $tokenData,
                     true
                 )
@@ -115,7 +117,7 @@ trait OauthServiceTrait
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
                     // In some cases, this should be returned perhaps...
-                    $this->oauthServiceTraitError("API Error: " . $tokenData->errorCode);
+                    $this->oauthServiceTraitError('API Error: ' . $tokenData->errorCode);
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
@@ -125,10 +127,10 @@ trait OauthServiceTrait
                 }
             } else {
                 $this->oauthServiceTraitError(
-                    "Error: Nothing returned from API call."
+                    'Error: Nothing returned from API call.'
                 );
                 $this->oauthServiceTraitDebug(
-                    "Body return from API Call: " . print_r($body, true)
+                    'Body return from API Call: ' . print_r($body, true)
                 );
             }
         }

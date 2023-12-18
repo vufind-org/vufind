@@ -61,13 +61,6 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     protected $connector;
 
     /**
-     * Config object
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Cache adapter object
      *
      * @var CacheAdapter
@@ -92,24 +85,9 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
         $this->connector = $this->getMockBuilder(LibGuides::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $accountsFixture = $this->getFixture("libguides/api/accounts");
+        $accountsFixture = $this->getFixture('libguides/api/accounts');
         $accounts = json_decode(substr($accountsFixture, strpos($accountsFixture, '[')));
         $this->connector->method('getAccounts')->willReturn($accounts);
-
-        // Mock config and caching logic in LibGuidesProfile.
-        // Caching is from a trait, which is not the point of this test suite,
-        // and the config is only used in LibGuidesProfile for caching.
-        $this->config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->cacheAdapter = $this->getMockBuilder(CacheAdapter::class)->getMock();
-
-        // For the target class LibGuidesProfile, only mock the caching methods
-        $this->libGuidesProfile = $this->getMockBuilder(LibGuidesProfile::class)
-            ->setConstructorArgs([$this->connector, $this->config, $this->cacheAdapter])
-            ->onlyMethods(['getCachedData', 'putCachedData'])
-            ->getMock();
-        $this->libGuidesProfile->method('getCachedData')->willReturn(null);
     }
 
     /**
@@ -119,10 +97,14 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
      */
     public function testSubjectExactMatch()
     {
-        $queryResults = $this->buildQueryResults('Geography');
-        $this->libGuidesProfile->process($queryResults);
+        $config = new Config([], true);
+        $config->Profile = ['strategies' =>  ['Subject']];
+        $libGuidesProfile = $this->buildProfile($config);
 
-        $account = $this->libGuidesProfile->getResults();
+        $queryResults = $this->buildQueryResults('Geography');
+        $libGuidesProfile->process($queryResults);
+
+        $account = $libGuidesProfile->getResults();
         $this->assertEquals('eratosthenes@alexandria.org', $account->email);
     }
 
@@ -133,11 +115,15 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
      */
     public function testSubjectSubstring()
     {
+        $config = new Config([], true);
+        $config->Profile = ['strategies' =>  ['Subject']];
+        $libGuidesProfile = $this->buildProfile($config);
+
         // Exact match would be "Decimal Classification"
         $queryResults = $this->buildQueryResults('Classification');
-        $this->libGuidesProfile->process($queryResults);
+        $libGuidesProfile->process($queryResults);
 
-        $account = $this->libGuidesProfile->getResults();
+        $account = $libGuidesProfile->getResults();
         $this->assertEquals('melvil@dewey.edu', $account->email);
     }
 
@@ -148,22 +134,92 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
      */
     public function testSubjectLooseMatch()
     {
+        $config = new Config([], true);
+        $config->Profile = ['strategies' =>  ['Subject']];
+        $libGuidesProfile = $this->buildProfile($config);
+
         // Exact match would be "Music Theory"
         $queryResults = $this->buildQueryResults('Rock Musicians');
-        $this->libGuidesProfile->process($queryResults);
+        $libGuidesProfile->process($queryResults);
 
-        $account = $this->libGuidesProfile->getResults();
+        $account = $libGuidesProfile->getResults();
         $this->assertEquals('eratosthenes@alexandria.org', $account->email);
+    }
+
+    /**
+     * Test call number match
+     *
+     * @return void
+     */
+    public function testCallNumberMatch()
+    {
+        $config = new Config([], true);
+        $config->Profile = [
+            'strategies' =>  ['CallNumber'],
+            'profile_aliases' => [
+                'Dewey' => 1234,
+                'Eratosthenes' => 5678,
+            ],
+            'call_numbers' => [
+                'D' => 'Eratosthenes',
+                'P' => 'Dewey',
+            ],
+        ];
+        $libGuidesProfile = $this->buildProfile($config);
+
+        // D (World History) is the most prominent subject, which matches Eratosthenes
+        $facets = [
+            'callnumber-first' => [
+                'list' => [
+                    [
+                        'value' => 'D - World History',
+                        'count' => 8,
+                    ],
+                    [
+                        'value' => 'P - Language and Literature',
+                        'count' => 7,
+                    ],
+                ],
+            ],
+        ];
+        $queryResults = $this->buildQueryResults('Query does not matter', $facets);
+        $libGuidesProfile->process($queryResults);
+
+        $account = $libGuidesProfile->getResults();
+        $this->assertEquals('eratosthenes@alexandria.org', $account->email);
+    }
+
+    /**
+     * Build a partially mocked LibGuidesProfile object
+     *
+     * @param Config $config The config object
+     *
+     * @return LibGuidesProfile
+     */
+    protected function buildProfile($config)
+    {
+        // Mock caching logic in LibGuidesProfile.
+        // Caching is from a trait, which is not the point of this test suite.
+        $this->cacheAdapter = $this->getMockBuilder(CacheAdapter::class)->getMock();
+
+        // For the target class LibGuidesProfile, only mock the caching methods
+        $libGuidesProfile = $this->getMockBuilder(LibGuidesProfile::class)
+            ->setConstructorArgs([$this->connector, $config, $this->cacheAdapter])
+            ->onlyMethods(['getCachedData', 'putCachedData'])
+            ->getMock();
+        $libGuidesProfile->method('getCachedData')->willReturn(null);
+        return $libGuidesProfile;
     }
 
     /**
      * Build a partially mocked Results object for a given query string
      *
      * @param string $queryString The query string
+     * @param array  $facets      The result facets
      *
      * @return Results The Results object
      */
-    protected function buildQueryResults($queryString)
+    protected function buildQueryResults($queryString, $facets = [])
     {
         // Build query Params
         $queryParams = new Params(
@@ -178,7 +234,9 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
             $this->createStub(\VuFindSearch\Service::class),
             $this->getMockBuilder(\VuFind\Record\Loader::class)
                 ->disableOriginalConstructor()
-                ->getMock()
+                ->getMock(),
+            null,
+            $facets
         );
         return $queryResults;
     }

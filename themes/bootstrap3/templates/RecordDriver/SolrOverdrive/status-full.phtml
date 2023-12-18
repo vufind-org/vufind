@@ -15,28 +15,28 @@ if ($code == 'od_code_login_for_avail') {
 $data = [];
 foreach ($ids as $id) {
     $current = [];
-    $current['status'] = "OK";
+    $current['status'] = 'OK';
     $current['id'] = $id;
     $avail = $this->result->data[$id] ?? new \stdClass();
 
     if ($noshow) {
-        $current['full_status'] = "";
+        $current['full_status'] = '';
     } elseif ($isError || $avail->code == 'od_code_resource_not_found') {
         $current['error'] = $this->transEsc('status_unknown_message');
-        $current['full_status'] = "";
+        $current['full_status'] = '';
     } elseif ($loginForAvail || $avail->code == 'od_code_login_for_avail') {
         $current['full_status'] = "<p class='alert-info'>"
-            . $this->transEsc('od_code_login_for_avail') . "</p>";
+            . $this->transEsc('od_code_login_for_avail') . '</p>';
     } else {
         $current['full_status'] = "<p><div class='copies'><strong>"
-            . $this->transEsc('od_avail_total') . "</strong> "
+            . $this->transEsc('od_avail_total') . '</strong> '
             . $this->escapeHtml($avail->copiesOwned)
             . "</div><div class='avail'><strong>"
-            . $this->transEsc('od_avail_avail') . "</strong> "
+            . $this->transEsc('od_avail_avail') . '</strong> '
             . $this->escapeHtml($avail->copiesAvailable)
             . "</div><div class='holds'><strong>"
-            . $this->transEsc('od_avail_holds') . "</strong> "
-            . $this->escapeHtml($avail->numberOfHolds) . "</div></p>";
+            . $this->transEsc('od_avail_holds') . '</strong> '
+            . $this->escapeHtml($avail->numberOfHolds) . '</div></p>';
     }
     $data[] = $current;
 }

@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+
 /**
  * Model for Primo Central records.
  *

@@ -32,6 +32,8 @@ namespace VuFindTest\Controller\Plugin;
 use Laminas\Session\Container;
 use VuFind\Controller\Plugin\Followup;
 
+use function get_class;
+
 /**
  * Followup controller plugin tests.
  *

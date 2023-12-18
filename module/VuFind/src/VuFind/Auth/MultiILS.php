@@ -35,6 +35,8 @@ namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Driver\MultiBackend;
 
+use function in_array;
+
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *

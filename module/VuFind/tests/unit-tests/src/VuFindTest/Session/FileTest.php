@@ -31,6 +31,8 @@ namespace VuFindTest\Session;
 
 use VuFind\Session\File;
 
+use function function_exists;
+
 /**
  * File Session Handler Test Class
  *

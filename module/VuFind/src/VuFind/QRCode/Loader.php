@@ -39,6 +39,9 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelQuartile;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
+use function intval;
+use function strlen;
+
 /**
  * QR Code Generator
  *

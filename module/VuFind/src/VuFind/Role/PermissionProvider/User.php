@@ -31,6 +31,8 @@ namespace VuFind\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
 
+use function count;
+
 /**
  * LDAP permission provider for VuFind.
  * based on permission provider Username.php

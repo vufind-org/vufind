@@ -14,9 +14,27 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
   <form class="form-inline" method="get" name="reservesSearchForm">
-    <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
-    <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?>>
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr("Find")?>">
+    <label for="reservesSearchForm_lookfor"><?=$this->transEsc('Your search terms')?></label>
+    <?php
+      $searchboxAttributes = [
+        'id' => 'reservesSearchForm_lookfor',
+        'type' => 'search',
+        'name' => 'lookfor',
+        'size' => '40',
+        'value' => $reservesLookfor,
+        'aria-label' => $this->translate('search_terms'),
+      ];
+      if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
+        $searchboxAttributes['placeholder'] = $placeholder;
+      }
+      if ($this->searchbox()->autocompleteEnabled('SolrReserves')) {
+        $searchboxAttributes['class'] = ' autocomplete form-control searcher:SolrReserves type:Reserves'
+          . ($this->searchbox()->autocompleteAutoSubmit('SolrReserves') ? ' ac-auto-submit' : '');
+        $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson('SolrReserves');
+      }
+    ?>
+    <input<?=$this->htmlAttributes($searchboxAttributes)?>>
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Find')?>">
   </form>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 

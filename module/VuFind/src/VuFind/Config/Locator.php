@@ -29,6 +29,9 @@
 
 namespace VuFind\Config;
 
+use function defined;
+use function strlen;
+
 /**
  * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *

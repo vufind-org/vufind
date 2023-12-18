@@ -104,6 +104,23 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test stack rewinding bug (VUFIND-1604)
+     *
+     * @return void
+     */
+    public function testRepeatCalls()
+    {
+        $helper = $this->getHelper(['parent', 'child']);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->assertEquals(
+                "{$this->fixturePath}/parent/templates/foo/bar/child.phtml",
+                $helper('foo/bar/child.phtml')
+            );
+        }
+    }
+
+    /**
      * Test deeper parent return
      *
      * @return void

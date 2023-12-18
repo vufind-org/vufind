@@ -29,6 +29,9 @@
 
 namespace VuFind\Validator;
 
+use function array_slice;
+use function count;
+
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *

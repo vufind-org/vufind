@@ -47,8 +47,10 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemStatus extends AbstractBase
+class SystemStatus extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Session Manager
      *
@@ -118,6 +120,9 @@ class SystemStatus extends AbstractBase
                 self::STATUS_HTTP_UNAVAILABLE
             );
         }
+
+        // Test logging (note that the message doesn't need to get written for the log writers to initialize):
+        $this->log('info', 'SystemStatus log check', [], true);
 
         // Test search index
         try {

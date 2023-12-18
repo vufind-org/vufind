@@ -29,6 +29,9 @@
 
 namespace VuFind\Net;
 
+use function count;
+use function defined;
+
 /**
  * IP address utility functions.
  *

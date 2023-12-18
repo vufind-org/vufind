@@ -54,7 +54,23 @@
       <?php endforeach; ?>
     </select>
     <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-    <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control">
+    <?php
+      $searchboxAttributes = [
+        'type' => 'text',
+        'name' => 'from',
+        'id' => 'alphaBrowseForm_from',
+        'value' => $this->from,
+        'class' => 'form-control',
+      ];
+      if ($this->searchbox()->autocompleteEnabled('Solr')) {
+        $searchboxAttributes['class'] .= ' autocomplete'
+          . ($this->searchbox()->autocompleteAutoSubmit('SolrReserves') ? ' ac-auto-submit' : '');
+        $searchboxAttributes['data-autocomplete-type-field-selector'] = '#alphaBrowseForm_source';
+        $searchboxAttributes['data-autocomplete-type-prefix'] = 'alphabrowse_';
+        $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson('Solr');
+      }
+    ?>
+    <input<?=$this->htmlAttributes($searchboxAttributes)?>>
     <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Browse') ?>">
   </form>
 <?php endif; ?>
@@ -65,12 +81,12 @@
     <thead>
       <tr>
         <th class="<?=$this->source ?>">
-          <?=$this->transEsc("browse_" . $this->source) ?>
+          <?=$this->transEsc('browse_' . $this->source) ?>
         </th>
         <?php foreach ($this->extras as $e): ?>
-          <th><?=$this->transEsc("browse_" . $e) ?></th>
+          <th><?=$this->transEsc('browse_' . $e) ?></th>
         <?php endforeach; ?>
-        <th class="titles"><?=$this->transEsc("alphabrowse_matches") ?></th>
+        <th class="titles"><?=$this->transEsc('alphabrowse_matches') ?></th>
       </tr>
     </thead>
     <tbody>
@@ -78,7 +94,7 @@
       <?php foreach ($this->result['Browse']['items'] as $item): ?>
         <?php if (isset($this->highlight_row) && $row == $this->highlight_row): ?>
           <tr class="browse-match">
-          <?php if (isset($this->match_type) && ($this->match_type == "NONE")): ?>
+          <?php if (isset($this->match_type) && ($this->match_type == 'NONE')): ?>
             <?php // this is the right row but query doesn't match value ?>
             <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
             </tr>

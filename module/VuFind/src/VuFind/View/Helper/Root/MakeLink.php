@@ -30,6 +30,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+
 /**
  * Make link view helper
  *

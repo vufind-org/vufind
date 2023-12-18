@@ -31,6 +31,8 @@ namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
 
+use function in_array;
+
 /**
  * Config Upgrade Test Class
  *
@@ -102,15 +104,15 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             . 'For usage tracking, please configure Google Analytics or Matomo.',
         ];
         if ((float)$version < 1.3) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the default theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the default theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         } elseif ((float)$version < 2.4) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the blueprint theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the blueprint theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         }
         $this->assertEquals($expectedWarnings, $warnings);
 
@@ -510,6 +512,44 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'fileContainsMeaningfulLines',
                 [$meaningful]
             )
+        );
+    }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction()
+    {
+        $upgrader = $this->getUpgrader('comments');
+        $config = $this->getFixtureDir() . 'configs/comments/config.ini';
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $this->callMethod($upgrader, 'extractComments', [$config])
         );
     }
 
