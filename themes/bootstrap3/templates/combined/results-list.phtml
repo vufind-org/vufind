@@ -26,9 +26,12 @@
           template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
           const span = template.content.children[0];
 
-          const link = document.querySelector('.combined-jump-links .$classId');
+          const combinedJumpLinks = document.querySelector('.combined-jump-links');
+          const link = combinedJumpLinks?.querySelector('.$classId');
           if (link) {
             link.append(span);
+            link.style.display = "inline";
+            combinedJumpLinks.style.visibility = "inherit";
           }
         }
 

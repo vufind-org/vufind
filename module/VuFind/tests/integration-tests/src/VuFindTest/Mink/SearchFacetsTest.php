@@ -32,6 +32,7 @@
 namespace VuFindTest\Mink;
 
 use VuFindTest\Feature\SearchSortTrait;
+use Behat\Mink\Element\Element;
 
 use function count;
 
@@ -102,9 +103,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get filtered search
      *
-     * @return \Behat\Mink\Element\Element
+     * @return Element
      */
-    protected function getFilteredSearch()
+    protected function getFilteredSearch(): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"weird_ids.mrc"');
@@ -114,11 +115,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Helper function for simple facet application test
      *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * @param Element $page Mink page object
      *
      * @return void
      */
-    protected function facetApplyProcedure($page)
+    protected function facetApplyProcedure(Element $page): void
     {
         // Confirm that we have 9 results and no filters to begin with:
         $stats = $this->findCss($page, '.search-stats');
@@ -148,13 +149,13 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Helper function for facets lists
      *
-     * @param \Behat\Mink\Element\Element $page            Mink page object
-     * @param int                         $limit           Configured lightbox length
-     * @param bool                        $exclusionActive Is facet exclusion on?
+     * @param Element $page            Mink page object
+     * @param int     $limit           Configured lightbox length
+     * @param bool    $exclusionActive Is facet exclusion on?
      *
      * @return void
      */
-    protected function facetListProcedure($page, $limit, $exclusionActive = false)
+    protected function facetListProcedure(Element $page, int $limit, bool $exclusionActive = false): void
     {
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
@@ -200,11 +201,33 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $excludes = $page
             ->findAll('css', '#modal #facet-list-index .exclude');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
-        // sort by index again
+        // sort by count again
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        // now back to title, to see if loading a second page works
+        $this->clickCss($page, '[data-sort="index"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '#modal #facet-list-index .js-facet-next-page');
+        $this->waitForPageLoad($page);
+        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
+        $this->assertCount($limit * 2, $items); // reset number of items
+        $this->assertEquals(
+            'Fiction 7 results 7 ' . $excludeControl
+            . 'The Study Of P|pes 1 results 1 ' . $excludeControl
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 ' . $excludeControl
+            . 'The Study of "Important" Things 1 results 1 ' . $excludeControl
+            . 'The Study of %\'s? 1 results 1 ' . $excludeControl
+            . 'The Study of +\'s? 1 results 1 ' . $excludeControl
+            . 'The Study of @Twitter #test 1 results 1 ' . $excludeControl
+            . 'The Study of Back S\ashes 1 results 1 ' . $excludeControl
+            . 'more…',
+            $this->findCss($page, '#modal #facet-list-index')->getText()
+        );
+        // back to count one last time...
+        $this->clickCss($page, '[data-sort="count"]');
+        $this->waitForPageLoad($page);
         // When exclusion is active, the result count is outside of the link tag:
         $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9 results 9';
         $weirdIDs = $this->findAndAssertLink(
@@ -222,7 +245,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testApplyFacet()
+    public function testApplyFacet(): void
     {
         $page = $this->performSearch('building:weird_ids.mrc');
         $this->sortResults($page, 'title');
@@ -244,7 +267,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testApplyFacetDeferred()
+    public function testApplyFacetDeferred(): void
     {
         $this->changeConfigs(
             [
@@ -275,7 +298,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFacetLightbox()
+    public function testFacetLightbox(): void
     {
         $limit = 4;
         $this->changeConfigs(
@@ -304,7 +327,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFacetLightboxMoreSetting()
+    public function testFacetLightboxMoreSetting(): void
     {
         $limit = 4;
         $this->changeConfigs(
@@ -334,7 +357,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFacetLightboxExclusion()
+    public function testFacetLightboxExclusion(): void
     {
         $limit = 4;
         $this->changeConfigs(
@@ -356,13 +379,60 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Support method to click a hierarchical facet.
-     *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * Test that filtering out facet values does not break lightbox pagination.
      *
      * @return void
      */
-    protected function clickHierarchicalFacet($page)
+    public function testFilteredLightboxPagination(): void
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'HideFacetValue' => [
+                        'genre_facet' => [
+                            'Fiction',
+                        ],
+                    ],
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => $limit,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the genre facet
+        $this->clickCss($page, '#side-collapse-genre_facet .more-facets');
+        $this->waitForPageLoad($page);
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertCount($limit - 1, $items); // (-1 is for the filtered value)
+        // more
+        $this->clickCss($page, '#modal .js-facet-next-page');
+        $this->waitForPageLoad($page);
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit * 2 - 1, count($items));
+        $this->assertEquals(
+            'Weird IDs 9 results 9 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'more…',
+            $this->findCss($page, '#modal #facet-list-count')->getText()
+        );
+    }
+
+    /**
+     * Support method to click a hierarchical facet.
+     *
+     * @param Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function clickHierarchicalFacet(Element $page): void
     {
         // Open second level:
         $this->clickCss($page, $this->facetExpandSelector);
@@ -384,7 +454,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testHierarchicalFacets()
+    public function testHierarchicalFacets(): void
     {
         $this->changeConfigs(
             [
@@ -415,7 +485,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testHierarchicalFacetExclude()
+    public function testHierarchicalFacetExclude(): void
     {
         $this->changeConfigs(
             [
@@ -460,7 +530,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCollapseStatePersistence()
+    public function testCollapseStatePersistence(): void
     {
         $this->changeConfigs(
             [
@@ -496,11 +566,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert that the filter used by these tests is still applied.
      *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * @param Element $page Mink page object
      *
      * @return void
      */
-    protected function assertFilterIsStillThere($page)
+    protected function assertFilterIsStillThere(Element $page): void
     {
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $this->assertEquals('Remove Filter weird_ids.mrc', $filter->getText());
@@ -509,11 +579,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert that no filters are applied.
      *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * @param Element $page Mink page object
      *
      * @return void
      */
-    protected function assertNoFilters($page)
+    protected function assertNoFilters(Element $page): void
     {
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertCount(0, $items);
@@ -536,11 +606,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert that the "reset filters" button is not present.
      *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * @param Element $page Mink page object
      *
      * @return void
      */
-    protected function assertNoResetFiltersButton($page)
+    protected function assertNoResetFiltersButton(Element $page): void
     {
         $reset = $page->findAll('css', '.reset-filters-btn');
         $this->assertCount(0, $reset);
@@ -551,7 +621,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testDefaultRetainFiltersBehavior()
+    public function testDefaultRetainFiltersBehavior(): void
     {
         $page = $this->getFilteredSearch();
         $this->assertFilterIsStillThere($page);
@@ -570,7 +640,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRetainFiltersOnHomePageBehavior()
+    public function testRetainFiltersOnHomePageBehavior(): void
     {
         $page = $this->getFilteredSearch();
         // Back to home spage:
@@ -589,7 +659,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFiltersOnRecord()
+    public function testFiltersOnRecord(): void
     {
         $page = $this->getFilteredSearch();
         $this->assertFilterIsStillThere($page);
@@ -608,7 +678,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testNeverRetainFiltersBehavior()
+    public function testNeverRetainFiltersBehavior(): void
     {
         $this->changeConfigs(
             [
@@ -681,7 +751,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testDefaultFiltersWithResetButton()
+    public function testDefaultFiltersWithResetButton(): void
     {
         // Unlike the other tests, which use $this->getFilteredSearch() to set up
         // the weird_ids.mrc filter through a URL parameter, this test sets up the
@@ -720,7 +790,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testOrFacets()
+    public function testOrFacets(): void
     {
         $this->changeConfigs(
             [
