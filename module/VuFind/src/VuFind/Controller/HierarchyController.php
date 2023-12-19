@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Stdlib\ResponseInterface;
+
 use function array_slice;
 use function count;
 
@@ -44,30 +46,14 @@ use function count;
 class HierarchyController extends AbstractBase
 {
     /**
-     * XML output routine
-     *
-     * @param string $xml XML to output
-     *
-     * @return \Laminas\Http\Response
-     */
-    protected function output($xml)
-    {
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/xml');
-        $response->setContent($xml);
-        return $response;
-    }
-
-    /**
      * Output JSON
      *
      * @param string $json   A JSON string
      * @param int    $status Response status code
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
-    protected function outputJSON($json, $status = 200)
+    protected function outputJSON($json, $status = 200): ResponseInterface
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
@@ -78,12 +64,11 @@ class HierarchyController extends AbstractBase
     }
 
     /**
-     * Search the tree and echo a json result of items that
-     * matched the keywords.
+     * Search the tree and output a JSON result of items that matched the keywords.
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
-    public function searchtreeAction()
+    public function searchtreeAction(): ResponseInterface
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $config = $this->getConfig();
@@ -117,98 +102,20 @@ class HierarchyController extends AbstractBase
     }
 
     /**
-     * Gets a Hierarchy Tree
-     *
-     * @return mixed
-     */
-    public function gettreeAction()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        // Retrieve the record from the index
-        $id = $this->params()->fromQuery('id');
-        $source = $this->params()
-            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->getRecordLoader();
-        try {
-            if ($recordDriver = $loader->load($id, $source)) {
-                $results = $recordDriver->getHierarchyDriver()->render(
-                    $recordDriver,
-                    $this->params()->fromQuery('context'),
-                    $this->params()->fromQuery('mode'),
-                    $this->params()->fromQuery('hierarchyID')
-                );
-                if ($results) {
-                    return $this->output($results);
-                }
-            }
-        } catch (\Exception $e) {
-            // Let exceptions fall through to error condition below:
-        }
-
-        // If we got this far, something went wrong:
-        return $this->output(
-            '<error>' . $this->translate('hierarchy_tree_error') . '</error>'
-        );
-    }
-
-    /**
-     * Gets a Hierarchy Tree
-     *
-     * @return mixed
-     */
-    public function gettreejsonAction()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        // Retrieve the record from the index
-        $id = $this->params()->fromQuery('id');
-        $source = $this->params()
-            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->getRecordLoader();
-        $message = 'Service Unavailable'; // default error message
-        try {
-            if ($recordDriver = $loader->load($id, $source)) {
-                $results = $recordDriver->getHierarchyDriver()
-                    ->getTreeRenderer($recordDriver)->getJSON(
-                        $this->params()->fromQuery('hierarchyID'),
-                        $this->params()->fromQuery('context')
-                    );
-                if ($results) {
-                    return $this->outputJSON($results);
-                } else {
-                    return $this->outputJSON($results, 204); // No Content
-                }
-            }
-        } catch (\Exception $e) {
-            // Let exceptions fall through to error condition below:
-            $message = APPLICATION_ENV === 'development'
-                ? (string)$e : 'Unexpected exception';
-        }
-
-        // If we got this far, something went wrong:
-        $code = 503;
-        $response = ['error' => compact('code', 'message')];
-        return $this->outputJSON(json_encode($response), $code);
-        // Service Unavailable
-    }
-
-    /**
      * Get a record for display within a tree
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    public function getrecordAction()
+    public function getrecordAction(): ResponseInterface
     {
         $id = $this->params()->fromQuery('id');
-        $source = $this->params()
-            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $loader = $this->getRecordLoader();
         try {
             $record = $loader->load($id, $source);
-            $result = $this->getViewRenderer()->record($record)
-                ->getCollectionBriefRecord();
+            $result = $this->getViewRenderer()->record($record)->getCollectionBriefRecord();
         } catch (\VuFind\Exception\RecordMissing $e) {
-            $result = $this->getViewRenderer()
-                ->render('collection/collection-record-error.phtml');
+            $result = $this->getViewRenderer()->render('collection/collection-record-error.phtml');
         }
         $response = $this->getResponse();
         $response->setContent($result);

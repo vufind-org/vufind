@@ -1,0 +1,165 @@
+.facet-tree, .hierarchy-tree {
+  padding-left: 0;
+
+  // Constrain the width of lower levels to avoid overflow:
+  ul {
+    padding: 0;
+    width: 100%;
+  }
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    // Ensure that there is enough room for a button focus outline:
+    padding-left: .2rem;
+
+    .facet-tree__toggle-expanded, .hierarchy-tree__toggle-expanded {
+      flex: 1 1;
+      border: 0;
+      background: none;
+      max-width: 1.5em;
+      padding: 0;
+
+      &:hover {
+        background-color: $list-group-hover-bg;
+      }
+
+      &[aria-expanded=false] {
+        .facet-tree__collapse, .hierarchy-tree__collapse {
+          display: none;
+        }
+        & ~ ul {
+          display: none;
+        }
+      }
+      &[aria-expanded=true] {
+        .facet-tree__expand, .hierarchy-tree__expand {
+          display: none;
+        }
+      }
+    }
+
+    .facet-tree__item-container, .hierarchy-tree__item-container {
+      // Leave space for the open/close icon (see above):
+      width: calc(100% - 1.5em);
+
+      .text {
+        // Leave space for the badge:
+        width: calc(100% - 1.5em);
+      }
+
+      &--exclude .text {
+        // Leave space for the badge and exclude link:
+        width: calc(100% - 3.0em);
+      }
+
+      .facet-value {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: inline;
+      }
+    }
+
+    // Child items:
+    ul {
+      padding-left: 1rem;
+      flex: 1;
+      .facet {
+        // Smaller padding to make the list a bit more condensed:
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+      }
+    }
+  }
+}
+
+.facet-tree {
+  .facet {
+    border: 0;
+    padding-left: .1rem;
+  }
+
+  // Top level bottom border:
+  & > li, .more-less-btn-wrapper {
+    border-bottom: 1px solid $list-group-border;
+  }
+  // Make the first child level start a bit higher to counter the padding of top
+  // level items:
+  & > li > ul {
+    margin-top: -0.2rem;
+  }
+}
+
+.hierarchy-tree {
+  .hierarchy-tree__selected:not(.hierarchy-tree__search-match) > .hierarchy-tree__item-container a {
+    color: $list-group-active-color;
+    background-color: $list-group-active-bg;
+  }
+  .hierarchy-tree__search-match > .hierarchy-tree__item-container a {
+    font-style: italic;
+    color: #8b0000;
+    font-weight: bold;
+  }
+}
+@media (min-width: 768px) {
+  .collection-hierarchytree {
+    display: flex;
+  }
+  .collection-hierarchytree .tree-panel,
+  .collection-hierarchytree #tree-preview {
+    flex-basis: 50%;
+    padding: 1rem;
+  }
+  #modal .collection-hierarchytree {
+    display: block;
+  }
+  #modal .tree-panel {
+    flex-basis: 100%;
+    padding: 0;
+  }
+  #modal #tree-preview {
+    display: none;
+  }
+}
+
+/* --- Record --- */
+.hierarchy-tree-container {
+  .hierarchy-tree {
+    margin-top: 0.5rem;
+    // Use padding to ensure focus rectangles display properly:
+    padding-top: 0.3rem;
+    max-height: 75vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-right: 1px solid $gray-lighter;
+  }
+
+  .hierarchy-tree-selector {
+    margin-left: 0.3rem;
+  }
+
+  .hierarchy-tree-toggle-full {
+    margin-top: 0.5rem;
+    margin-left: 0.3rem;
+
+    label {
+      font-weight: inherit;
+    }
+  }
+
+  .hierarchy-tree-search-form {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-left: 0.3rem;
+
+    .alert {
+      display: inline;
+      padding: 0.4rem;
+      margin: 0;
+    }
+  }
+}

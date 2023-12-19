@@ -376,14 +376,6 @@
   <target name="copynodemodules">
     <!-- autocomplete.js -->
     <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-    <!-- jstree -->
-    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
-      <fileset dir="${srcdir}/node_modules/jstree/dist/" >
-        <include name="**/**" />
-        <exclude name="jstree.js" />
-        <exclude name="themes/default-dark/" />
-      </fileset>
-    </copy>
     <!-- simple-keyboard -->
     <copy file="${srcdir}/node_modules/simple-keyboard/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard" overwrite="true" />
     <copy file="${srcdir}/node_modules/simple-keyboard/build/css/index.css" todir="${srcdir}/themes/bootstrap3/css/vendor/simple-keyboard" overwrite="true" />

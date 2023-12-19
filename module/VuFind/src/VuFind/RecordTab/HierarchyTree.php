@@ -149,10 +149,7 @@ class HierarchyTree extends AbstractBase
         if (is_object($hierarchyDriver)) {
             // No setting, or true setting -- use default setting:
             $settings = $hierarchyDriver->getTreeSettings();
-            if (
-                !isset($settings['fullHierarchyRecordView'])
-                || $settings['fullHierarchyRecordView']
-            ) {
+            if ($settings['fullHierarchyRecordView'] ?? true) {
                 return true;
             }
         }
@@ -169,24 +166,19 @@ class HierarchyTree extends AbstractBase
     /**
      * Render a hierarchy tree
      *
-     * @param string $baseUrl Base URL to use in links within tree
-     * @param string $id      Hierarchy ID (omit to use active tree)
-     * @param string $context Context for use by renderer
+     * @param string  $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $context Context for use by renderer or null for default
+     * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree($baseUrl, $id = null, $context = 'Record')
+    public function renderTree(string $id = null, ?string $context = null, array $options = [])
     {
         $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {
-            $tree = $hierarchyDriver->render($recordDriver, $context, 'List', $id);
-            return str_replace(
-                '%%%%VUFIND-BASE-URL%%%%',
-                rtrim($baseUrl, '/'),
-                $tree
-            );
+            return $hierarchyDriver->render($recordDriver, $context ?? 'Record', 'List', $id, $options);
         }
         return '';
     }
@@ -211,6 +203,16 @@ class HierarchyTree extends AbstractBase
     {
         $config = $this->getConfig();
         return $config->Hierarchy->treeSearchLimit ?? -1;
+    }
+
+    /**
+     * Get the current active record. Returns record driver if found or null if ID invalid.
+     *
+     * @return ?\VuFind\RecordDriver\AbstractBase
+     */
+    public function getActiveRecord(): ?\VuFind\RecordDriver\AbstractBase
+    {
+        return null;
     }
 
     /**

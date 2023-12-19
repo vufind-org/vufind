@@ -1,0 +1,24 @@
+<?php
+  $treeAttrs = $this->htmlAttributes([
+    'class' => 'hierarchy-tree js-hierarchy-tree',
+    'data-selected-id' => $selectedID,
+    'data-hierarchy-id' => $hierarchyID,
+    'data-source' => $driver->getSourceIdentifier(),
+    'data-context' => $context,
+    'data-preview-element' => $options['previewElement'] ?? '',
+  ]);
+  if ($options['lightbox'] ?? false) {
+    $treeAttrs->add('data-lightbox', null);
+  }
+  if ($options['fullHierarchy'] ?? false) {
+    $treeAttrs->add('data-full-hierarchy', null);
+  }
+?>
+<ul<?=$treeAttrs?>>
+  <?=
+    $this->render(
+        'hierarchy/tree-level.phtml',
+        compact('nodes', 'context', 'hierarchyID', 'driver', 'selectedID')
+    );
+  ?>
+</ul>
