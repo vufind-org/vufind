@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExternalVuFind recommendation module factory.
+ * ConsortialVuFind recommendation module factory.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
 use Psr\Container\ContainerInterface;
 
 /**
- * ExternalVuFind recommendation module factory.
+ * ConsortialVuFind recommendation module factory.
  *
  * @category VuFind
  * @package  Recommendations
@@ -40,7 +40,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -68,8 +68,8 @@ class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryIn
         }
 
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('ExternalVuFind'),
-            $container->get(\VuFind\Connection\ExternalVuFind::class)
+            $container->get(\VuFind\Config\PluginManager::class)->get('ConsortialVuFind'),
+            $container->get(\VuFind\Connection\ConsortialVuFind::class)
         );
     }
 }

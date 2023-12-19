@@ -1,12 +1,12 @@
-<div class="externalVuFind">
+<div class="consortialVuFind">
   <?php $results = $this->recommend->getResults() ?>
   <?php $records = $results['records'] ?? [] ?>
   <?php $resultCount = $results['resultCount'] ?? 0; ?>
   <?php $moreResultsUrl = $this->recommend->getMoreResultsUrl(); ?>
   <?php if (!empty($records)): ?>
-    <h2><?=$this->transEsc('external_vufind_recommend_heading')?></h2>
-    <?php if ($this->translate('external_vufind_recommend_intro', [], '')): ?>
-      <p><?=$this->translate('external_vufind_recommend_intro', [
+    <h2><?=$this->transEsc('consortial_vufind_recommend_heading')?></h2>
+    <?php if ($this->translate('consortial_vufind_recommend_intro', [], '')): ?>
+      <p><?=$this->translate('consortial_vufind_recommend_intro', [
           '%%result_count%%' => $this->localizedNumber($resultCount),
           '%%url%%' => $moreResultsUrl,
       ])?></p>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExternalVuFind Recommendations Module
+ * ConsortialVuFind Recommendations Module
  *
  * PHP version 8
  *
@@ -30,19 +30,17 @@
 namespace VuFind\Recommend;
 
 use Laminas\Config\Config;
-use VuFind\Connection\ExternalVuFind as Connection;
+use VuFind\Connection\ConsortialVuFind as Connection;
 
 use function intval;
 
 /**
- * ExternalVuFind Recommendations Module
+ * ConsortialVuFind Recommendations Module
  *
  * This class searches a separate instance of VuFind via its public API and links to
- * the record and results pages hosted within that instance.
- *
- * One intended use case is to search and link to a consortial catalog, such as
- * ReShare, which uses its own VuFind instance to display consortium holdings
- * and facilitate borrowing between institutions.
+ * the record and results pages hosted within that instance. This is intended to
+ * search and link to a consortial catalog, such as ReShare, which uses its own VuFind
+ * instance to display consortium holdings and facilitate borrowing between institutions.
  *
  * @category VuFind
  * @package  Recommendations
@@ -50,7 +48,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class ExternalVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
+class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -69,14 +67,14 @@ class ExternalVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInte
     protected $limit = 5;
 
     /**
-     * Connection to external VuFind API
+     * Connection to consortial VuFind API
      *
      * @var Connection
      */
     protected $connection;
 
     /**
-     * ExternalVuFind.ini configuration
+     * ConsortialVuFind.ini configuration
      *
      * @var Config
      */
@@ -120,8 +118,8 @@ class ExternalVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInte
     /**
      * Constructor
      *
-     * @param Config     $config     ExternalVuFind.ini configuration
-     * @param Connection $connection Connection to external VuFind API
+     * @param Config     $config     ConsortialVuFind.ini configuration
+     * @param Connection $connection Connection to consortial VuFind API
      */
     public function __construct(
         Config $config,
@@ -163,10 +161,10 @@ class ExternalVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInte
                 && $configSection->api_base_url;
             if (!$this->hasMinimumConfig) {
                 $this->logError("Required configuration missing in '$configSectionName'
-                    section of ExternalVuFind.ini.");
+                    section of ConsortialVuFind.ini.");
             }
         } else {
-            $this->logError("No section found '$configSectionName' in ExternalVuFind.ini.");
+            $this->logError("No section found '$configSectionName' in ConsortialVuFind.ini.");
         }
     }
 
@@ -205,7 +203,7 @@ class ExternalVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInte
     }
 
     /**
-     * Get the external VuFind instance's search results.
+     * Get the consortial VuFind instance's search results.
      *
      * @return array
      */
@@ -228,7 +226,7 @@ class ExternalVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInte
     }
 
     /**
-     * Get a URL to the full search results page in the external VuFind instance.
+     * Get a URL to the full search results page in the consortial VuFind instance.
      *
      * @return string The url
      */

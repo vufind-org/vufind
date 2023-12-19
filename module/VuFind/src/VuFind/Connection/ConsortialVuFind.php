@@ -1,7 +1,7 @@
 <?php
 
 /**
- * External VuFind API connection class.
+ * Consortial VuFind API connection class.
  *
  * PHP version 8
  *
@@ -33,13 +33,7 @@ use Exception;
 use Laminas\Log\LoggerAwareInterface;
 
 /**
- * External VuFind API connection class.
- *
- * Note: This is for the LibGuides API used by the LibGuidesProfile recommendation service,
- * this is *not* for the LibGuides search widget "API" used by the LibGuides and LibGuidesAZ
- * data sources.
- *
- * Closely adapted from VuFind\DigitalContent\OverdriveConnector.
+ * Consortial VuFind API connection class.
  *
  * @category VuFind
  * @package  Connection
@@ -47,7 +41,7 @@ use Laminas\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ExternalVuFind implements
+class ConsortialVuFind implements
     \VuFindHttp\HttpServiceAwareInterface,
     LoggerAwareInterface
 {
@@ -110,7 +104,7 @@ class ExternalVuFind implements
 
         if ($response->isServerError()) {
             $this->logError(
-                'ExternalVuFind API HTTP Error: ' .
+                'ConsortialVuFind API HTTP Error: ' .
                 $response->getStatusCode()
             );
             return [];
