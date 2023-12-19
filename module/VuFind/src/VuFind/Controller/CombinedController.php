@@ -344,9 +344,10 @@ class CombinedController extends AbstractSearch
         // Display or hide side based on include_recommendations_side setting.
         $recommendOverride = [];
         $noRecommend = [];
-        if (is_array($settings['include_recommendations'] ?? false)) {
+        $includeRecommendSetting = $settings['include_recommendations'] ?? false;
+        if (is_array($includeRecommendSetting)) {
             $recommendOverride['top'] = $settings['include_recommendations'];
-        } else {
+        } elseif (!$includeRecommendSetting) {
             $noRecommend[] = 'top';
         }
         if (is_array($settings['include_recommendations_side'] ?? false)) {
