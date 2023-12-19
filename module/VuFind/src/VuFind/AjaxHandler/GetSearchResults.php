@@ -31,6 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\Search;
@@ -125,8 +126,16 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Elements to render for each search results page.
      *
-     * Note that results list is last so that we update most controls before hiding
-     * the loading indicator (in practice this only affects tests).
+     * Note that results list is last before scripts so that we update most controls
+     * before hiding the loading indicator (in practice this only affects tests).
+     *
+     * Key is a selector that finds all elements to update.
+     * Value is an associative array with the following keys:
+     *
+     *   method  Method to create the response content
+     *   target  Target attribute in the element for the content
+     *           (inner for innerHTML, outer for outerHTML or null for none)
+     *   attrs   New attributes for the element
      *
      * @var array
      */
@@ -153,6 +162,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         '.js-result-list' => [
             'method' => 'renderResults',
             'target' => 'outer',
+        ],
+        'head' => [
+            'method' => 'renderAnalytics',
+            'target' => null,
         ],
     ];
 
@@ -269,10 +282,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
 
         $result = [];
         foreach ($this->elements as $selector => $element) {
-            $html = call_user_func([$this, $element['method']], $params, $results);
-            if (null !== $html) {
+            $content = call_user_func([$this, $element['method']], $params, $results);
+            if (null !== $content) {
                 $result[$selector] = [
-                    'html' => $html,
+                    'content' => $content,
                     'target' => $element['target'],
                     'attrs' => $element['attrs'] ?? [],
                 ];
@@ -403,6 +416,24 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         ];
 
         return $this->translate($statsKey, $transParams);
+    }
+
+    /**
+     * Render analytics
+     *
+     * @param Params  $params  Request params
+     * @param Results $results Search results
+     *
+     * @return ?string
+     */
+    protected function renderAnalytics(Params $params, Results $results): ?string
+    {
+        // Mimic the typical page structure so that analytics helpers can find the
+        // search results:
+        $view = new ViewModel();
+        $view->setTemplate('Helpers/analytics.phtml');
+        $view->addChild(new ViewModel(compact('results')));
+        return $this->renderer->render($view);
     }
 
     /**
