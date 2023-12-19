@@ -36,7 +36,7 @@ namespace VuFind\Recommend;
  * This class sets up an AJAX call to trigger a call to the ConsortialVuFind module.
  *
  * Note: ConsortialVuFind is not actually an AbstractSearchObject subclass.  But
- * AbstractSearchObjectDeferred does not require that. 
+ * AbstractSearchObjectDeferred does not require that.
  *
  * @category VuFind
  * @package  Recommendations
@@ -47,7 +47,6 @@ namespace VuFind\Recommend;
  */
 class ConsortialVuFindDeferred extends AbstractSearchObjectDeferred
 {
-
     /**
      * Number of expected module parameters (from .ini config)
      *
