@@ -240,7 +240,11 @@ class ExtendedIni implements FileLoaderInterface
         // and we're not dealing with text domains. A missing base file is an
         // unexpected, fatal error; a missing domain-specific file is more likely
         // due to the possibility of incomplete translations.
-        return $this->loadLanguageFile($filename, empty($domain), $processAliases ? $domain ?? 'default' : null);
+        return $this->loadLanguageFile(
+            $filename,
+            empty($domain),
+            $processAliases ? (empty($domain) ? 'default' : $domain) : null
+        );
     }
 
     /**
