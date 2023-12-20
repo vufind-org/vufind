@@ -233,7 +233,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             return self::$emptyQueryResponse;
         }
         // Query String Parameters
-        $qs   = [];
+        $qs = [];
         // It would be tempting to use 'exact' matching here, but it does not work
         // with all record IDs, so need to use 'contains'. Contrary to the old
         // brief search API, quotes are necessary here for all IDs to work.
