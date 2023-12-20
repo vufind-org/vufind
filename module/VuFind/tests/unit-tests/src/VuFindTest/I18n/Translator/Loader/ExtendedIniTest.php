@@ -189,6 +189,27 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
                 'baz' => 'Domain Translation',
                 'foo' => 'Translation',
                 'xyzzy' => 'Domain Translation',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test circular alias infinite loop prevention.
+     *
+     * @return void
+     */
+    public function testCircularAliasSafety(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/circularaliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en', null);
+        $this->assertEquals(
+            [
+                'foo' => 'bar',
             ],
             (array)$result
         );
@@ -212,7 +233,8 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
                 'baz' => 'Domain Translation',
                 'foo' => 'Translation',
                 'xyzzy' => 'Child Overriding Alias',
-                '@parent_ini' => 'en.ini'
+                '@parent_ini' => 'en.ini',
+                'foofoo' => 'Translation',
             ],
             (array)$result
         );

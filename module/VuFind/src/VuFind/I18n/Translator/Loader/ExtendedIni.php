@@ -240,7 +240,48 @@ class ExtendedIni implements FileLoaderInterface
         // and we're not dealing with text domains. A missing base file is an
         // unexpected, fatal error; a missing domain-specific file is more likely
         // due to the possibility of incomplete translations.
-        return $this->loadLanguageFile($filename, empty($domain), $processAliases);
+        return $this->loadLanguageFile($filename, empty($domain), $processAliases ? $domain ?? 'default' : null);
+    }
+
+    /**
+     * Resolve a single alias (or return null if it cannot be resolved)
+     *
+     * @param array  $alias         The [domain, key] or [key] alias array
+     * @param string $defaultDomain The domain to use if $alias does not specify one
+     * @param string $locale        The locale currently being loaded
+     * @param array  $breadcrumbs   Previously-resolved aliases (to prevent infinite loops)
+     *
+     * @return ?string
+     */
+    protected function resolveAlias(
+        array $alias,
+        string $defaultDomain,
+        string $locale,
+        array $breadcrumbs = []
+    ): ?string {
+        // If the current alias target does not include a TextDomain part, assume it refers
+        // to the current active TextDomain:
+        if (count($alias) < 2) {
+            array_unshift($alias, $defaultDomain);
+        }
+        [$domain, $key] = $alias;
+
+        // If the alias references another TextDomain, we need to load that now.
+        if (!isset($this->aliasDomains[$domain])) {
+            $this->aliasDomains[$domain] = $this->loadLanguageLocale($locale, $domain, true);
+        }
+        if ($this->aliasDomains[$domain]->offsetExists($key)) {
+            return $this->aliasDomains[$domain]->offsetGet($key);
+        } elseif (isset($this->aliases[$domain][$key])) {
+            // Circular alias infinite loop prevention:
+            $breadcrumbKey = "$domain::$key";
+            if (in_array($breadcrumbKey, $breadcrumbs)) {
+                return null;
+            }
+            $breadcrumbs[] = $breadcrumbKey;
+            return $this->resolveAlias($this->aliases[$domain][$key], $domain, $locale, $breadcrumbs);
+        }
+        return null;
     }
 
     /**
@@ -254,25 +295,14 @@ class ExtendedIni implements FileLoaderInterface
      */
     protected function applyAliases(TextDomain $data, string $currentLocale, string $currentDomain): void
     {
-        foreach ($this->aliases as $alias => $target) {
-            // If the current alias target does not include a TextDomain part, assume it refers
-            // to the current active TextDomain:
-            if (count($target) < 2) {
-                array_unshift($target, $currentDomain);
-            }
-            [$domain, $key] = $target;
-            // If the alias references another TextDomain, we need to load that now; note that we
-            // do not process aliases again at this step, so aliases to aliases will not work.
-            if (!isset($this->aliasDomains[$domain])) {
-                $this->aliasDomains[$domain] = $this->loadLanguageLocale($currentLocale, $domain);
-            }
+        foreach ($this->aliases[$currentDomain] ?? [] as $alias => $target) {
             // Do not overwrite existing values with alias, and do not create aliases
             // when target values are missing.
             if (
-                $this->aliasDomains[$domain]->offsetExists($key)
-                && !$data->offsetExists($alias)
+                !$data->offsetExists($alias)
+                && $aliasValue = $this->resolveAlias($target, $currentDomain, $currentLocale)
             ) {
-                $data->offsetSet($alias, $this->aliasDomains[$domain]->offsetGet($key));
+                $data->offsetSet($alias, $aliasValue);
             }
         }
     }
@@ -326,15 +356,16 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return void
      */
-    protected function markAndLoadAliases(string $filename): void
+    protected function markAndLoadAliases(string $aliasDomain, string $filename): void
     {
-        if (!in_array($filename, $this->loadedAliasFiles)) {
-            $this->loadedAliasFiles[] = $filename;
+        $loadedFiles = $this->loadedAliasFiles[$aliasDomain] ?? [];
+        if (!in_array($filename, $loadedFiles)) {
+            $this->loadedAliasFiles[$aliasDomain] = array_merge($loadedFiles, [$filename]);
             if (file_exists($filename)) {
                 // Parse and normalize the alias configuration:
                 $newAliases = array_map([$this, 'normalizeAlias'], parse_ini_file($filename));
                 // Merge with pre-existing aliases:
-                $this->aliases = array_merge($this->aliases, $newAliases);
+                $this->aliases[$aliasDomain] = array_merge($this->aliases[$aliasDomain] ?? [], $newAliases);
             }
         }
     }
@@ -342,13 +373,14 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Search the path stack for language files and merge them together.
      *
-     * @param string $filename       Name of file to search path stack for.
-     * @param bool   $failOnError    If true, throw an exception when file not found.
-     * @param bool   $processAliases Should we process alias data?
+     * @param string $filename    Name of file to search path stack for.
+     * @param bool   $failOnError If true, throw an exception when file not found.
+     * @param bool   $aliasDomain Name of TextDomain for which we should process aliases
+     * (or null to skip alias processing)
      *
      * @return TextDomain
      */
-    protected function loadLanguageFile($filename, $failOnError = true, $processAliases = false)
+    protected function loadLanguageFile($filename, $failOnError, ?string $aliasDomain)
     {
         // Don't load a file that has already been loaded:
         if ($this->checkAndMarkLoadedFile($filename)) {
@@ -362,7 +394,7 @@ class ExtendedIni implements FileLoaderInterface
                 // Load current file with parent data, if necessary:
                 $current = $this->loadParentData(
                     $this->reader->getTextDomain($fileOnPath),
-                    $processAliases
+                    $aliasDomain
                 );
                 if ($data === false) {
                     $data = $current;
@@ -370,8 +402,8 @@ class ExtendedIni implements FileLoaderInterface
                     $data->merge($current);
                 }
             }
-            if ($processAliases) {
-                $this->markAndLoadAliases(dirname($fileOnPath) . '/aliases.ini');
+            if ($aliasDomain) {
+                $this->markAndLoadAliases($aliasDomain, dirname($fileOnPath) . '/aliases.ini');
             }
         }
         if ($data === false) {
@@ -390,17 +422,18 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Support method for loadLanguageFile: retrieve parent data.
      *
-     * @param TextDomain $data           TextDomain to populate with parent information.
-     * @param bool       $processAliases Should we process alias data?
+     * @param TextDomain $data        TextDomain to populate with parent information.
+     * @param bool       $aliasDomain Name of TextDomain for which we should process aliases
+     * (or null to skip alias processing)
      *
      * @return TextDomain
      */
-    protected function loadParentData($data, $processAliases)
+    protected function loadParentData($data, ?string $aliasDomain)
     {
         if (!isset($data['@parent_ini'])) {
             return $data;
         }
-        $parent = $this->loadLanguageFile($data['@parent_ini'], true, $processAliases);
+        $parent = $this->loadLanguageFile($data['@parent_ini'], true, $aliasDomain);
         $parent->merge($data);
         return $parent;
     }
