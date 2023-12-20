@@ -67,7 +67,7 @@ VuFind.register('doi', function Doi() {
       VuFind.observerManager.createIntersectionObserver(
         'doiLinks',
         embedDoiLinks,
-        Array.from(container.querySelectorAll('.ajaxItem'))
+        Array.from(container.querySelectorAll('.doiLink'))
       );
     }
   }

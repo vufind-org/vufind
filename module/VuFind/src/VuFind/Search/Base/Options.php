@@ -957,6 +957,28 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Return the route name for the "cites" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitesAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cited by" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitedByAction()
+    {
+        return false;
+    }
+
+    /**
      * Does this search option support the cart/book bag?
      *
      * @return bool
