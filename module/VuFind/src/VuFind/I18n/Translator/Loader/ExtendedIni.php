@@ -352,7 +352,8 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Load an alias configuration (if not already loaded) and mark it loaded.
      *
-     * @param string $filename Filename to load
+     * @param string $aliasDomain Domain for which aliases are being loaded
+     * @param string $filename    Filename to load
      *
      * @return void
      */
