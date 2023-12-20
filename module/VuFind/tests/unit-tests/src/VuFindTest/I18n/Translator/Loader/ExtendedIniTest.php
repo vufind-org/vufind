@@ -188,6 +188,31 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
                 'bar' => 'Translation',
                 'baz' => 'Domain Translation',
                 'foo' => 'Translation',
+                'xyzzy' => 'Domain Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test inheriting aliases from a parent file.
+     *
+     * @return void
+     */
+    public function testInheritedAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en-gb', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'baz' => 'Domain Translation',
+                'foo' => 'Translation',
+                'xyzzy' => 'Child Overriding Alias',
+                '@parent_ini' => 'en.ini'
             ],
             (array)$result
         );
@@ -209,6 +234,15 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'bar' => 'Translation',
+            ],
+            (array)$result
+        );
+        $result = $loader->load('en-gb', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'xyzzy' => 'Child Overriding Alias',
+                '@parent_ini' => 'en.ini',
             ],
             (array)$result
         );
