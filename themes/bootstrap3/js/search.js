@@ -248,7 +248,7 @@ VuFind.register('search', function search() {
     const scrollEl = document.querySelector(scrollElementSelector);
     if (scrollEl && window.scrollY > scrollEl.offsetTop) {
       const style = typeof _style !== 'undefined' ? _style : 'smooth';
-      document.querySelector(scrollElementSelector).scrollIntoView({behavior: style});
+      scrollEl.scrollIntoView({behavior: style});
     }
   }
 
