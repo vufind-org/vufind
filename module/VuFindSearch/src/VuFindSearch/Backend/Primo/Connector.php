@@ -55,8 +55,10 @@ use function strlen;
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
+ *
+ * @deprecated Use RestConnector instead
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -283,12 +285,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             //   - sys/Summon.php messes with publication date to enable date
             //     range facet control in the interface. look for injectPubDate
             if (!empty($args['filterList'])) {
-                foreach ($args['filterList'] as $facet => $values) {
-                    $facetOp = 'AND';
-                    if (isset($values['values'])) {
-                        $facetOp = $values['facetOp'];
-                        $values = $values['values'];
-                    }
+                foreach ($args['filterList'] as $current) {
+                    $facet = $current['field'];
+                    $facetOp = $current['facetOp'];
+                    $values = $current['values'];
                     $values = array_map(
                         function ($value) {
                             return urlencode(str_replace(',', ' ', $value));
@@ -477,15 +477,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 = substr((string)$prefix->PrimoNMBib->record->control->recordid, 3);
             $item['title']
                 = (string)$prefix->PrimoNMBib->record->display->title;
-            // Format -- Convert to displayable words and return as an array:
-            $format = ucwords(
-                str_replace(
-                    '_',
-                    ' ',
-                    (string)$prefix->PrimoNMBib->record->display->type
-                )
-            );
-            $item['format'] = [$format];
+            $item['format'] = [(string)$prefix->PrimoNMBib->record->display->type];
             // creators
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
@@ -635,7 +627,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @param bool    $onCampus  Whether the user is on campus
      *
      * @throws \Exception
-     * @return string    The requested resource
+     * @return array             An array of query results
      */
     public function getRecord(string $recordId, $inst_code = null, $onCampus = false)
     {
@@ -674,12 +666,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Retrieves multiple documents specified by the ID.
      *
-     * @param array  $recordIds The documents to retrieve from the Primo API
-     * @param string $inst_code Institution code (optional)
-     * @param bool   $onCampus  Whether the user is on campus
+     * @param array   $recordIds The documents to retrieve from the Primo API
+     * @param ?string $inst_code Institution code (optional)
+     * @param bool    $onCampus  Whether the user is on campus
      *
      * @throws \Exception
-     * @return string    The requested resource
+     * @return array             An array of query results
      */
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {

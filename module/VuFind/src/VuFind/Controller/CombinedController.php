@@ -344,11 +344,10 @@ class CombinedController extends AbstractSearch
 
         $recommendOverride = [];
         $noRecommend = [];
-
-        // Display or hide top based on include_recommendations setting.
-        if (is_array($settings['include_recommendations'] ?? false)) {
+        $includeRecommendSetting = $settings['include_recommendations'] ?? false;
+        if (is_array($includeRecommendSetting)) {
             $recommendOverride['top'] = $settings['include_recommendations'];
-        } else {
+        } elseif (!$includeRecommendSetting) {
             $noRecommend[] = 'top';
         }
 
