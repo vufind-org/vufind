@@ -347,16 +347,14 @@ class CombinedController extends AbstractSearch
         $includeRecommendSetting = $settings['include_recommendations'] ?? false;
         if (is_array($includeRecommendSetting)) {
             $recommendOverride['top'] = $settings['include_recommendations'];
-        }
-        elseif (!$includeRecommendSetting) {
+        } elseif (!$includeRecommendSetting) {
             $noRecommend[] = 'top';
         }
 
         // Display or hide side based on include_recommendations_side setting.
         if (is_array($settings['include_recommendations_side'] ?? false)) {
             $recommendOverride['side'] = $settings['include_recommendations_side'];
-        }
-        else {
+        } else {
             $noRecommend[] = 'side';
         }
 
@@ -366,15 +364,13 @@ class CombinedController extends AbstractSearch
         $includeRecommendNoResultsSetting = $settings['include_recommendations_noresults'] ?? false;
         if (is_array($includeRecommendNoResultsSetting)) {
             $recommendOverride['noresults'] = $settings['include_recommendations_noresults'];
-        }
-        else if (!$includeRecommendNoResultsSetting) {
+        } else if (!$includeRecommendNoResultsSetting) {
             $noRecommend[] = 'noresults';
         }
 
         if (is_array($settings['include_recommendations_noresults_side'] ?? false)) {
             $recommendOverride['noresults_side'] = $settings['include_recommendations_noresults_side'];
-        }
-        else {
+        } else {
             $noRecommend[] = 'noresults_side';
         }
 
