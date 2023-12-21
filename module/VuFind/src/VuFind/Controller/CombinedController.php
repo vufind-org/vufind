@@ -364,7 +364,7 @@ class CombinedController extends AbstractSearch
         $includeRecommendNoResultsSetting = $settings['include_recommendations_noresults'] ?? false;
         if (is_array($includeRecommendNoResultsSetting)) {
             $recommendOverride['noresults'] = $settings['include_recommendations_noresults'];
-        } else if (!$includeRecommendNoResultsSetting) {
+        } elseif (!$includeRecommendNoResultsSetting) {
             $noRecommend[] = 'noresults';
         }
 
