@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Consortial VuFind API connection class.
+ * External VuFind API connection class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Exception;
 use Laminas\Log\LoggerAwareInterface;
 
 /**
- * Consortial VuFind API connection class.
+ * External VuFind API connection class.
  *
  * @category VuFind
  * @package  Connection
@@ -41,7 +41,7 @@ use Laminas\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ConsortialVuFind implements
+class ExternalVuFind implements
     \VuFindHttp\HttpServiceAwareInterface,
     LoggerAwareInterface
 {
@@ -104,7 +104,7 @@ class ConsortialVuFind implements
 
         if ($response->isServerError()) {
             $this->logError(
-                'ConsortialVuFind API HTTP Error: ' .
+                'ExternalVuFind API HTTP Error: ' .
                 $response->getStatusCode()
             );
             return [];
