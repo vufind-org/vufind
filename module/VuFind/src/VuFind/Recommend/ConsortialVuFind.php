@@ -163,7 +163,7 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
                     section of ConsortialVuFind.ini.");
             }
         } else {
-            $this->logError("No section found '$configSectionName' in ConsortialVuFind.ini.");
+            $this->logError("'$configSectionName' section not found in ConsortialVuFind.ini.");
         }
     }
 
