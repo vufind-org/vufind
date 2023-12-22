@@ -157,7 +157,11 @@ class LoginToken extends Gateway
      */
     public function getByUserId(int $userId)
     {
-        return $this->select(['user_id' => $userId]);
+        $callback = function ($select) use ($userId) {
+            $select->where->equalTo('user_id', $userId);
+            $select->order('last_login DESC');
+        };
+        return $this->select($callback);
     }
 
     /**
