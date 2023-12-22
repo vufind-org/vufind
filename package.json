@@ -37,9 +37,9 @@
     "grunt": "^1.0.4",
     "grunt-contrib-less": "^2.0.0",
     "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",
-    "grunt-sass": "^3.1.0",
+    "grunt-dart-sass": "^2.0.1",
     "jit-grunt": "^0.10.0",
-    "node-sass": "^7.0.1"
+    "sass": "^1.69.5"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
