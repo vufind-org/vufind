@@ -140,9 +140,8 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
     {
         $settings = explode(':', $settings);
         $this->requestParam = !empty($settings[0]) ? $settings[0] : $this->requestParam;
-        $this->limit
-            = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
-            ? intval($settings[1]) : $this->limit;
+        $limitSetting = intval($settings[1] ?? 0);
+        $this->limit = $limitSetting > 0 ? $limitSetting : $this->limit;
         $configSectionName = $settings[2] ?? 'ReShare';
 
         // Read config file
