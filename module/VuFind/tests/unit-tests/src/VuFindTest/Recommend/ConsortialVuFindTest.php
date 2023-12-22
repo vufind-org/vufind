@@ -124,8 +124,6 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * Build an object representing an ExternalVuFind.ini configuration file
      *
-     * @param Config $config The config object
-     *
      * @return ConsortialVuFind
      */
     protected function buildConfig()
