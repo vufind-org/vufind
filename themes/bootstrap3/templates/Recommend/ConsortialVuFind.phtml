@@ -11,21 +11,21 @@
           '%%url%%' => $moreResultsUrl,
       ])?></p>
     <?php endif; ?>
-    <div class="list-group">
+    <ul class="list-group">
       <?php foreach ($records as $record): ?>
-        <div class="list-group-item">
+        <li class="list-group-item">
           <span>
             <a href="<?=$record['url']?>" class="title icon-link" target="_blank">
               <?=$this->icon('external-link', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->escapeHtml($record['title'])?></span>
             </a>
           </span>
-        </div>
+        </li>
       <?php endforeach; ?>
       <a class="list-group-item" href="<?=$moreResultsUrl?>">
         <?=$this->icon('external-link', 'icon-link__icon') ?>
         <?=$this->transEsc('More results')?>...
       </a>
-    </div>
+    </ul>
   <?php endif; ?>
 </div>
