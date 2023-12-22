@@ -83,7 +83,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test search term that is an exact match for a subject specialty
+     * Test the getResults function
      *
      * @return void
      */
@@ -107,6 +107,11 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * Test the getMoreResultsUrl function
+     *
+     * @return void
+     */
     public function testGetMoreResultsUrl()
     {
         $config = $this->buildConfig();
@@ -116,6 +121,13 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('https://some.url/Search/Results?lookfor=civil+war', $moreResultsUrl);
     }
 
+    /**
+     * Build an object representing an ExternalVuFind.ini configuration file
+     *
+     * @param Config $config The config object
+     *
+     * @return ConsortialVuFind
+     */
     protected function buildConfig()
     {
         $config = new Config([
@@ -129,7 +141,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a partially mocked ConsortialVuFind object
+     * Build and pre-process a ConsortialVuFind object
      *
      * @param Config $config The config object
      *
