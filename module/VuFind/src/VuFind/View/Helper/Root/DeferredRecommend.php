@@ -30,8 +30,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Recommend\RecommendInterface;
-
 /**
  * Deferred recommendation module view helper
  *
@@ -49,9 +47,7 @@ class DeferredRecommend extends \Laminas\View\Helper\AbstractHelper
     /**
      * Render code to load a recommendation module via AJAX.
      *
-     * @param RecommendInterface $recommend The recommendation object to render
-     * @param string             $location  Recommendation location (side, top)
-     * @param int                $index     Index of the recommendation configuration
+     * @param string $containerId HTML ID of the parent container for this recommendation
      *
      * @return string
      */
