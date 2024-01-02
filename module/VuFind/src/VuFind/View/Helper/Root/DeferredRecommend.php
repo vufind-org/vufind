@@ -56,7 +56,6 @@ class DeferredRecommend extends \Laminas\View\Helper\AbstractHelper
      * @return string
      */
     public function __invoke(
-        $urlParams,
         $containerId,
     ) {
         $template = 'Recommend/Deferred.phtml';
