@@ -232,6 +232,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $hierarchicalFacetSeparators = [];
 
     /**
+     * Hierarchical facet sort settings
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortSettings = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -806,6 +813,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getHierarchicalFacetSeparators()
     {
         return $this->hierarchicalFacetSeparators;
+    }
+
+    /**
+     * Get hierarchical facet sort settings.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortSettings()
+    {
+        return $this->hierarchicalFacetSortSettings;
     }
 
     /**
