@@ -256,6 +256,7 @@ class ExtendedIni implements FileLoaderInterface
      * @param array  $breadcrumbs   Previously-resolved aliases (to prevent infinite loops)
      *
      * @return ?string
+     * @throws \Exception
      */
     protected function resolveAlias(
         array $alias,
@@ -280,7 +281,7 @@ class ExtendedIni implements FileLoaderInterface
             // Circular alias infinite loop prevention:
             $breadcrumbKey = "$domain::$key";
             if (in_array($breadcrumbKey, $breadcrumbs)) {
-                return null;
+                throw new \Exception("Circular alias detected resolving $breadcrumbKey");
             }
             $breadcrumbs[] = $breadcrumbKey;
             return $this->resolveAlias($this->aliases[$domain][$key], $domain, $locale, $breadcrumbs);
