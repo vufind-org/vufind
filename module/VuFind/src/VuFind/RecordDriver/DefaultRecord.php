@@ -734,9 +734,9 @@ class DefaultRecord extends AbstractBase
         $formats = $this->getFormats();
         if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
-        } elseif (in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats) || in_array('electronic Article', $formats)) {
             return 'Article';
-        } elseif (in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats) || in_array('eJournal', $formats)) {
             return 'Journal';
         } elseif (strlen($this->getCleanISSN()) > 0) {
             // If the record has an ISSN and we have not already
