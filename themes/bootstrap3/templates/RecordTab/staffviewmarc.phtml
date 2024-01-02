@@ -3,8 +3,7 @@
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
 <h2>MARC</h2>
-<?php $xml = $this->driver->getXML('marc21'); ?>
-<?php if ($xml !== false): ?>
+<?php if (($xml = $this->driver->getXML('marc21')) !== false): ?>
   <?=\VuFind\XSLT\Processor::process('record-marc.xsl', $xml)?>
 <?php else: ?>
   <?=$this->transEsc('error_creating_marc_xml')?>
