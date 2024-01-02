@@ -1210,10 +1210,12 @@ class DefaultRecord extends AbstractBase
      */
     public function getShortTitle()
     {
-        if (is_array($this->fields['title_short'])) {
-            $title = $this->fields['title_short'][0];
-        } else {
-            $title = $this->fields['title_short'];
+        if (array_key_exists('title_short', $this->fields)) {
+            if (is_array($this->fields['title_short'])) {
+                $title = $this->fields['title_short'][0];
+            } else {
+                $title = $this->fields['title_short'];
+            }
         }
         return $title ?? '';
     }
@@ -1348,10 +1350,12 @@ class DefaultRecord extends AbstractBase
      */
     public function getTitle()
     {
-        if (is_array($this->fields['title'])) {
-            $title = $this->fields['title'][0];
-        } else {
-            $title = $this->fields['title'];
+        if (array_key_exists('title', $this->fields)) {
+            if (is_array($this->fields['title'])) {
+                $title = $this->fields['title'][0];
+            } else {
+                $title = $this->fields['title'];
+            }
         }
         return $title ?? '';
     }
