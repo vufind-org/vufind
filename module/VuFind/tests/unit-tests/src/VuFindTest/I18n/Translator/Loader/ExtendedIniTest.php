@@ -206,7 +206,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
             realpath($this->getFixtureDir() . 'language/circularaliases'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
-        $this->expectExceptionMessage("Circular alias detected resolving Domain::baz");
+        $this->expectExceptionMessage('Circular alias detected resolving Domain::baz');
         $result = $loader->load('en', null);
     }
 
