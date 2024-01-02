@@ -214,13 +214,14 @@ abstract class AbstractBase implements
      */
     public function addTags($user, $tags)
     {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
+        $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
+        $resource = $resourceService->findResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
+        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
         foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
+            $tagService->addTag($resource, $tag, $user->id);
         }
     }
 
@@ -234,13 +235,14 @@ abstract class AbstractBase implements
      */
     public function deleteTags($user, $tags)
     {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
+        $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
+        $resource = $resourceService->findResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
+        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
         foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
+            $tagService->deleteTag($resource, $tag, $user->id);
         }
     }
 
@@ -311,12 +313,11 @@ abstract class AbstractBase implements
     {
         // Clear rating cache:
         $this->ratingCache = [];
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
+        $resource = $this->getDbService(\VuFind\Db\Service\ResourceService::class)->findResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
-        $resource->addOrUpdateRating($userId, $rating);
+        $this->getDbService(\VuFind\Db\Service\RatingsService::class)->addOrUpdateRating($resource, $userId, $rating);
     }
 
     /**

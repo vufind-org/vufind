@@ -29,7 +29,14 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Ratings;
+use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\User;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Log\LoggerAwareTrait;
+
+use function is_object;
 
 /**
  * Database service for Ratings.
@@ -40,9 +47,10 @@ use VuFind\Db\Entity\Ratings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RatingsService extends AbstractService implements \VuFind\Db\Service\ServiceAwareInterface
+class RatingsService extends AbstractService implements \VuFind\Db\Service\ServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Db\Service\ServiceAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Get average rating and rating count associated with the specified resource.
@@ -178,5 +186,74 @@ class RatingsService extends AbstractService implements \VuFind\Db\Service\Servi
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;
+    }
+
+    /**
+     * Add or update user's rating for a resource.
+     *
+     * @param Resource $resource Resource to add or update rating.
+     * @param int|User $user     User
+     * @param ?int     $rating   Rating (null to delete)
+     *
+     * @throws LoginRequiredException
+     * @throws \Exception
+     * @return int ID of rating added, deleted or updated
+     */
+    public function addOrUpdateRating($resource, $user, $rating): int
+    {
+        if (null !== $rating && ($rating < 0 || $rating > 100)) {
+            throw new \Exception('Rating value out of range');
+        }
+
+        $dql = 'SELECT r '
+            . 'FROM ' . $this->getEntityClass(Ratings::class) . ' r '
+            . 'WHERE r.user = :user AND r.resource = :resource';
+        $parameters = compact('resource', 'user');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if ($existing = current($query->getResult())) {
+            if (null === $rating) {
+                $this->entityManager->remove($existing);
+            } else {
+                $existing->setRating($rating);
+            }
+            $updatedRatingId = $existing->getId();
+            try {
+                $this->entityManager->flush();
+            } catch (\Exception $e) {
+                $this->logError('Rating update failed: ' . $e->getMessage());
+                throw $e;
+            }
+            return $updatedRatingId;
+        }
+
+        if (null === $rating) {
+            return 0;
+        }
+
+        $row = $this->createRatings()
+                ->setResource($resource)
+                ->setUser(is_object($user) ? $user : $this->entityManager->getReference(User::class, $user))
+                ->setRating($rating)
+                ->setCreated(new \DateTime());
+        try {
+            $this->persistEntity($row);
+        } catch (\Exception $e) {
+            $this->logError('Could not save rating: ' . $e->getMessage());
+            return 0;
+        }
+        return $row->getId();
+    }
+
+    /**
+     * Create a ratings entity.
+     *
+     * @return Ratings
+     */
+    public function createRatings(): Ratings
+    {
+        $class = $this->getEntityClass(Ratings::class);
+        return new $class();
     }
 }

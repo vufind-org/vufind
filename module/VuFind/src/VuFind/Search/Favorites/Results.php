@@ -31,8 +31,8 @@ namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Db\Service\ResourceService as ResourceService;
 use VuFind\Db\Service\UserListService as ListService;
-use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
@@ -69,11 +69,11 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     protected $list = false;
 
     /**
-     * Resource table
+     * Resource database service
      *
-     * @var ResourceTable
+     * @var ResourceService
      */
-    protected $resourceTable;
+    protected $resourceService;
 
     /**
      * UserList database service
@@ -92,22 +92,22 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params        Object representing user
-     * search parameters.
-     * @param SearchService              $searchService Search service
-     * @param Loader                     $recordLoader  Record loader
-     * @param ResourceTable              $resourceTable Resource table
-     * @param ListService                $listService   UserList service
+     * @param \VuFind\Search\Base\Params $params          Object representing user
+     *                                                    search parameters.
+     * @param SearchService              $searchService   Search service
+     * @param Loader                     $recordLoader    Record loader
+     * @param ResourceService            $resourceService Resource database service
+     * @param ListService                $listService     UserList service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        ResourceTable $resourceTable,
+        ResourceService $resourceService,
         ListService $listService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->resourceTable = $resourceTable;
+        $this->resourceService = $resourceService;
         $this->listService = $listService;
     }
 
@@ -200,7 +200,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         // How many results were there?
         $userId = null === $list ? $this->user->id : $list->getUser()->getId();
         $listId = null === $list ? null : $list->getId();
-        $rawResults = $this->resourceTable->getFavorites(
+        $rawResults = $this->resourceService->getFavorites(
             $userId,
             $listId,
             $this->getTagFilters(),
@@ -211,7 +211,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->resourceTable->getFavorites(
+            $rawResults = $this->resourceService->getFavorites(
                 $userId,
                 $listId,
                 $this->getTagFilters(),
@@ -224,10 +224,11 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         // Retrieve record drivers for the selected items.
         $recordsToRequest = [];
         foreach ($rawResults as $row) {
+            $resource = $row[0];
             $recordsToRequest[] = [
-                'id' => $row->record_id, 'source' => $row->source,
+                'id' => $resource->getRecordId(), 'source' => $resource->getSource(),
                 'extra_fields' => [
-                    'title' => $row->title,
+                    'title' => $resource->getTitle(),
                 ],
             ];
         }

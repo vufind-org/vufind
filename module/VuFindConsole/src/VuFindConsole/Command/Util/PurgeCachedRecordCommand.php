@@ -35,7 +35,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Db\Service\RecordService;
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Service\ResourceService;
 
 /**
  * Console command: purge a record from cache
@@ -63,27 +63,27 @@ class PurgeCachedRecordCommand extends Command
     protected $recordService;
 
     /**
-     * Resource table object
+     * Resource service object
      *
-     * @var Resource
+     * @var ResourceService
      */
-    protected $resourceTable;
+    protected $resourceService;
 
     /**
      * Constructor
      *
-     * @param Record      $recordService Record service object
-     * @param Resource    $resource      Resource table object
-     * @param string|null $name          The name of the command; passing null means it
-     *                                   must be set in configure()
+     * @param RecordService   $recordService   Record service object
+     * @param ResourceService $resourceService Resource service object
+     * @param string|null     $name            The name of the command;
+     * passing null means it must be set in configure()
      */
     public function __construct(
         RecordService $recordService,
-        Resource $resource,
+        ResourceService $resourceService,
         $name = null
     ) {
         $this->recordService = $recordService;
-        $this->resourceTable = $resource;
+        $this->resourceService = $resourceService;
         parent::__construct($name);
     }
 
@@ -126,7 +126,7 @@ class PurgeCachedRecordCommand extends Command
             $output->writeln('No cached record found');
         }
         if ($input->getOption('purge-resource')) {
-            if ($this->resourceTable->delete(['source' => $source, 'record_id' => $id])) {
+            if ($this->resourceService->deleteResource($id, $source)) {
                 $output->writeln('Resource deleted');
             } else {
                 $output->writeln('No resource found');

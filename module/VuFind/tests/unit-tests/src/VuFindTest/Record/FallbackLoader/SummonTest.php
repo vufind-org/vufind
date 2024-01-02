@@ -83,23 +83,22 @@ class SummonTest extends \PHPUnit\Framework\TestCase
             ->with($this->callback($checkCommand))
             ->will($this->returnValue($commandObj));
 
-        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
+        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
             ->disableOriginalConstructor()->getMock();
-        $resource->expects($this->once())->method('updateRecordId')
+        $resourceService->expects($this->once())->method('updateRecordId')
             ->with(
                 $this->equalTo('oldId'),
                 $this->equalTo('newId'),
                 $this->equalTo('Summon')
             );
-        $row = $this->getMockBuilder(\VuFind\Db\Row\Resource::class)
+        $row = $this->getMockBuilder(\VuFind\Db\Entity\Resource::class)
             ->disableOriginalConstructor()->getMock();
-        $row->expects($this->once())->method('__get')
-            ->with($this->equalTo('extra_metadata'))
+        $row->expects($this->once())->method('getExtraMetadata')
             ->will($this->returnValue('{ "bookmark": "bar" }'));
-        $resource->expects($this->once())->method('findResource')
+        $resourceService->expects($this->once())->method('findResource')
             ->with($this->equalTo('oldId'), $this->equalTo('Summon'))
             ->will($this->returnValue($row));
-        $loader = new Summon($resource, $search);
+        $loader = new Summon($resourceService, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));
     }
 }

@@ -58,9 +58,7 @@ class FavoritesServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         return new FavoritesService(
-            $tableManager->get('resource'),
             $sm->get(\VuFind\Record\Cache::class)
         );
     }

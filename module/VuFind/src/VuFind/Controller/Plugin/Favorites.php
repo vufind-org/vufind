@@ -150,16 +150,17 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
             [$source, $id] = explode('|', $current, 2);
 
             // Get or create a resource object as needed:
-            $resourceTable = $this->getController()->getTable('Resource');
-            $resource = $resourceTable->findResource($id, $source);
+            $resourceService = $this->getController()->getDbService(\VuFind\Db\Service\ResourceService::class);
+            $resource = $resourceService->findResource($id, $source);
 
             // Add the information to the user's account:
             $tags = isset($params['mytags'])
                 ? $this->tags->parse($params['mytags']) : [];
-            $user->saveResource($resource, $list->getId(), $tags, '', false);
+            $userService = $this->getController()->getDbService(\VuFind\Db\Service\UserService::class);
+            $userService->saveResource($resource, $user->id, $list, $tags, '', false);
 
             // Collect record IDs for caching
-            if ($this->cache->isCachable($resource->source)) {
+            if ($this->cache->isCachable($resource->getSource())) {
                 $cacheRecordIds[] = $current;
             }
         }

@@ -89,10 +89,10 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('123'), $this->equalTo('Solr'))
             ->willReturn($recordRetVal);
 
-        $resourceTable = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
+        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
             ->disableOriginalConstructor()->getMock();
         if (null !== $resourceRetVal) {
-            $resourceTable->expects($this->once())->method('delete')
+            $resourceService->expects($this->once())->method('deleteResource')
                 ->willReturn($resourceRetVal);
         }
         $params = compact('source', 'id');
@@ -100,7 +100,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $params['--purge-resource'] = true;
         }
 
-        $command = new PurgeCachedRecordCommand($recordService, $resourceTable);
+        $command = new PurgeCachedRecordCommand($recordService, $resourceService);
         $commandTester = new CommandTester($command);
         $commandTester->execute($params);
         $expected = $recordRetVal ? "Cached record deleted\n" : "No cached record found\n";

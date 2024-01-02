@@ -72,11 +72,10 @@ class Missing extends DefaultRecord
         // If available, load title from database:
         $id = $this->getUniqueId();
         if ($id) {
-            $table = $this->getDbTable('Resource');
-            $resource = $table
-                ->findResource($id, $this->getSourceIdentifier(), false);
-            if (!empty($resource) && !empty($resource->title)) {
-                return $resource->title;
+            $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
+            $resource = $resourceService->findResource($id, $this->getSourceIdentifier(), false);
+            if (!empty($resource) && !empty($resource->getTitle())) {
+                return $resource->getTitle();
             }
         }
 

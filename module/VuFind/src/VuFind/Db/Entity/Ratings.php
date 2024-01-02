@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -108,6 +109,16 @@ class Ratings implements EntityInterface
     protected $created = '2000-01-01 00:00:00';
 
     /**
+     * Id getter
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
      * Get user.
      *
      * @return \VuFind\Db\Entity\User
@@ -115,5 +126,87 @@ class Ratings implements EntityInterface
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * User setter
+     *
+     * @param User $user User
+     *
+     * @return Ratings
+     */
+    public function setUser(User $user): Ratings
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * Rating setter
+     *
+     * @param int $rating Rating
+     *
+     * @return Ratings
+     */
+    public function setRating(int $rating): Ratings
+    {
+        $this->rating = $rating;
+        return $this;
+    }
+
+    /**
+     * Rating getter
+     *
+     * @return int
+     */
+    public function getRating(): int
+    {
+        return $this->rating;
+    }
+
+    /**
+     * Resource setter
+     *
+     * @param Resource $resource Resource
+     *
+     * @return Ratings
+     */
+    public function setResource(Resource $resource): Ratings
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * Resource getter
+     *
+     * @return Resource
+     */
+    public function getResource(): Resource
+    {
+        return $this->resource;
+    }
+
+    /**
+     * Created setter.
+     *
+     * @param Datetime $dateTime Created date
+     *
+     * @return UserList
+     */
+    public function setCreated(DateTime $dateTime): Ratings
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated(): Datetime
+    {
+        return $this->created;
     }
 }

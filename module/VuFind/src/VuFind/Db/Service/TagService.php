@@ -1179,4 +1179,60 @@ class TagService extends AbstractService implements LoggerAwareInterface
             $this->fixDuplicateTag($dupe['tag']);
         }
     }
+
+    /**
+     * Remove a tag from the resource.
+     *
+     * @param Resource $resource Resource from which tag should be deleted.
+     * @param string   $tagText  The tag to delete.
+     * @param int|User $user     The user deleting the tag.
+     * @param string   $list_id  The list associated with the tag
+     *                           (optional).
+     *
+     * @return void
+     */
+    public function deleteTag($resource, $tagText, $user, $list_id = null)
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tagIds = [];
+            foreach ($this->getByText($tagText, false, false) as $tag) {
+                $tagIds[] = $tag->getId();
+            }
+            if (!empty($tagIds)) {
+                $this->destroyResourceLinks(
+                    $resource,
+                    $user,
+                    $list_id,
+                    $tagIds
+                );
+            }
+        }
+    }
+
+    /**
+     * Add a tag to the resource.
+     *
+     * @param Resource|int $resource Resource associated.
+     * @param string       $tagText  The tag to save.
+     * @param User|int     $user     The user posting the tag.
+     * @param ?UserList    $list     The list associated with the tag
+     *                               (optional).
+     *
+     * @return void
+     */
+    public function addTag($resource, $tagText, $user, $list = null)
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tag = $this->getByText($tagText);
+
+            $this->createLink(
+                $tag,
+                $resource,
+                $user,
+                $list
+            );
+        }
+    }
 }

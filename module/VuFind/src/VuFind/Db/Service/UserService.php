@@ -192,15 +192,11 @@ class UserService extends AbstractService implements LoggerAwareInterface, Servi
      *
      * @param Resource|int $resource        The resource to add/update
      * @param User|int     $user            Logged in user
-     * @param UserList|int $list            The list to store the resource
-     *                                      in.
-     * @param array        $tagArray        An array of tags to associate
-     *                                      with the resource.
+     * @param UserList|int $list            The list to store the resource in.
+     * @param array        $tagArray        An array of tags to associate with the resource.
      * @param string       $notes           User notes about the resource.
-     * @param bool         $replaceExisting Whether to replace all
-     *                                      existing tags (true)
-     *                                      or append to the
-     *                                      existing list (false).
+     * @param bool         $replaceExisting Whether to replace all existing tags (true) or append to the
+     * existing list (false).
      *
      * @return void
      */
@@ -212,13 +208,11 @@ class UserService extends AbstractService implements LoggerAwareInterface, Servi
         $notes,
         $replaceExisting = true
     ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
+        // Create the resource link if it doesn't exist and update the notes in any case:
         $linkService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
         $linkService->createOrUpdateLink($resource, $user, $list, $notes);
 
-        // If we're replacing existing tags, delete the old ones before adding the
-        // new ones:
+        // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
             $unlinker = $this->getDbService(\VuFind\Db\Service\TagService::class);
             $unlinker->destroyResourceLinks($resource, $user, $list);
@@ -226,8 +220,8 @@ class UserService extends AbstractService implements LoggerAwareInterface, Servi
 
         // Add the new tags:
         foreach ($tagArray as $tag) {
-            $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
-            $resourceService->addTag($resource, $tag, $user, $list);
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tagService->addTag($resource, $tag, $user, $list);
         }
     }
 }

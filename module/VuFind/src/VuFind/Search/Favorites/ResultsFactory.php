@@ -73,7 +73,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
             $container,
             $requestedName,
             [
-                $tm->get('Resource'),
+                $sm->get(\VuFind\Db\Service\ResourceService::class),
                 $sm->get(\VuFind\Db\Service\UserListService::class),
             ]
         );

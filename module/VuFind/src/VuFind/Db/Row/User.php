@@ -325,42 +325,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Add/update a resource in the user's account.
-     *
-     * @param \VuFind\Db\Row\Resource $resource        The resource to add/update
-     * @param int                     $list            The list to store the resource in.
-     * @param array                   $tagArray        An array of tags to associate with the resource.
-     * @param string                  $notes           User notes about the resource.
-     * @param bool                    $replaceExisting Whether to replace all
-     * existing tags (true) or append to the existing list (false).
-     *
-     * @return void
-     */
-    public function saveResource(
-        $resource,
-        $list,
-        $tagArray,
-        $notes,
-        $replaceExisting = true
-    ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list, $notes);
-
-        // If we're replacing existing tags, delete the old ones before adding the
-        // new ones:
-        if ($replaceExisting) {
-            $resource->deleteTags($this, $list);
-        }
-
-        // Add the new tags:
-        foreach ($tagArray as $tag) {
-            $resource->addTag($tag, $this, $list);
-        }
-    }
-
-    /**
      * Given an array of item ids, remove them from all lists
      *
      * @param array  $ids    IDs to remove from the list
@@ -371,18 +335,13 @@ class User extends RowGateway implements
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Retrieve a list of resource IDs:
-        $resourceTable = $this->getDbTable('Resource');
-        $resources = $resourceTable->findResources($ids, $source);
-
-        $resourceIDs = [];
-        foreach ($resources as $current) {
-            $resourceIDs[] = $current->id;
-        }
+        $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
+        $resources = $resourceService->findResources($ids, $source);
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = $this->getDbTable('UserResource');
+        $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
         // true here makes sure that only tags in lists are deleted
-        $userResourceTable->destroyLinks($resourceIDs, $this->id, true);
+        $userResourceService->destroyLinks($this->id, $resources, true);
     }
 
     /**

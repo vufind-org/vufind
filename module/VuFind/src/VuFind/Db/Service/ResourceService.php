@@ -36,7 +36,7 @@ use VuFind\Date\DateException;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
-use VuFind\Db\Entity\UserList;
+use VuFind\Db\Entity\UserResource;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Record\Loader;
@@ -368,29 +368,137 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
     }
 
     /**
-     * Add a tag to the current resource.
+     * Update the database to reflect a changed record identifier.
      *
-     * @param Resource|int $resource Resource associated.
-     * @param string       $tagText  The tag to save.
-     * @param User|int     $user     The user posting the tag.
-     * @param ?UserList    $list     The list associated with the tag
-     *                               (optional).
+     * @param string $oldId  Original record ID
+     * @param string $newId  Revised record ID
+     * @param string $source Record source
      *
      * @return void
      */
-    public function addTag($resource, $tagText, $user, $list = null)
+    public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $tagText = trim($tagText);
-        if (!empty($tagText)) {
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-            $tag = $tagService->getByText($tagText);
-
-            $tagService->createLink(
-                $tag,
-                $resource,
-                $user,
-                $list
-            );
+        if (
+            $oldId !== $newId
+            && $resource = $this->findResource($oldId, $source, false)
+        ) {
+            // Do this as a transaction to prevent odd behavior:
+            $this->entityManager->getConnection()->beginTransaction();
+            // Does the new ID already exist?
+            $deduplicate = false;
+            if ($newResource = $this->findResource($newId, $source, false)) {
+                // Special case: merge new ID and old ID:
+                $entitiesToUpdate = [
+                    \VuFind\Db\Entity\Comments::class,
+                    \VuFind\Db\Entity\UserResource::class,
+                    \VuFind\Db\Entity\ResourceTags::class,
+                ];
+                foreach ($entitiesToUpdate as $entityToUpdate) {
+                    $this->updateResource($entityToUpdate, $newResource, $resource);
+                }
+                $this->entityManager->remove($resource);
+                $deduplicate = true;
+            } else {
+                // Default case: just update the record ID:
+                $resource->setRecordId($newId);
+            }
+            // Done -- commit the transaction:
+            try {
+                $this->entityManager->flush();
+                $this->entityManager->getConnection()->commit();
+            } catch (\Exception $e) {
+                $this->logError('Could not update the record: ' . $e->getMessage());
+                $this->entityManager->getConnection()->rollBack();
+                throw $e;
+            }
+            // Deduplicate rows where necessary (this can be safely done outside of the transaction):
+            if ($deduplicate) {
+                $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+                $tagService->deduplicateResourceLinks();
+                $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+                $userResourceService->deduplicate();
+            }
         }
+    }
+
+    /**
+     * Get a set of records from the requested favorite list.
+     *
+     * @param int|User     $user   ID of user owning favorite list
+     * @param int|UserList $list   ID of list to retrieve (null for all favorites)
+     * @param array        $tags   Tags to use for limiting results
+     * @param string       $sort   Resource table field to use for sorting (null for
+     *                             no particular sort).
+     * @param int          $offset Offset for results
+     * @param int          $limit  Limit for results (null for none)
+     *
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     */
+    public function getFavorites(
+        $user,
+        $list = null,
+        $tags = [],
+        $sort = null,
+        $offset = 0,
+        $limit = null
+    ) {
+        $dql = 'SELECT DISTINCT(r.id), r '
+            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH r.id = ur.resource ';
+        $dqlWhere = [];
+        $dqlWhere[] = 'ur.user = :user';
+        $parameters = compact('user');
+        if (null !== $list) {
+            $dqlWhere[] = 'ur.list = :list';
+            $parameters['list'] = $list;
+        }
+
+        // Adjust for tags if necessary:
+        if (!empty($tags)) {
+            $linkingTable = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $matches = [];
+            foreach ($tags as $tag) {
+                $matches[] = $linkingTable
+                    ->getResourceIDsForTag($tag, $user, $list);
+            }
+            $dqlWhere[] = 'r.id IN (:ids)';
+            $parameters['ids'] = $matches;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        if (!empty($sort)) {
+            $dql .= ResourceService::getOrderByClause($sort);
+        }
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if ($offset > 0) {
+            $query->setFirstResult($offset);
+        }
+        if (null !== $limit) {
+            $query->setMaxResults($limit);
+        }
+
+        $result = $query->getResult();
+        return $result;
+    }
+
+    /**
+     * Delete a resource by source and id
+     *
+     * @param string $id     Resource ID
+     * @param string $source Resource source
+     *
+     * @return mixed
+     */
+    public function deleteResource($id, $source)
+    {
+        $dql = 'DELETE FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
+        $parameters = compact('id', 'source');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->execute();
+        return $result;
     }
 }

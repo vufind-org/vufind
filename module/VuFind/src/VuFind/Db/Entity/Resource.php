@@ -171,6 +171,16 @@ class Resource implements EntityInterface
     }
 
     /**
+     * Title getter
+     *
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
      * Author setter
      *
      * @param ?string $author Author of the title.
@@ -230,5 +240,15 @@ class Resource implements EntityInterface
     {
         $this->extraMetadata = $extraMetadata;
         return $this;
+    }
+
+    /**
+     * Extra Metadata getter
+     *
+     * @return ?string
+     */
+    public function getExtraMetadata(): ?string
+    {
+        return $this->extraMetadata;
     }
 }
