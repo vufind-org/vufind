@@ -129,9 +129,9 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
 
     /**
      * URL to a list of all available databases, for display in the results list,
-     * or null to omit.
+     * or false to omit.
      */
-    protected $linkToAllDatabases = null;
+    protected $linkToAllDatabases = false;
 
     /**
      * Callable for LibGuides connector
