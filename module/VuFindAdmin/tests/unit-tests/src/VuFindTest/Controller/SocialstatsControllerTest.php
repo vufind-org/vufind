@@ -92,6 +92,13 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $tagService->expects($this->once())->method('getStatistics')
             ->will($this->returnValue($mockTagStats));
         $dbServices->set(TagService::class, $tagService);
+        $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
+            ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
+        $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
+            ->will($this->returnValue(function ($input) {
+                return 'url';
+            }));
+        $container->set('ViewRenderer', $viewRenderer);
 
         // Build the controller to test:
         $c = new \VuFindAdmin\Controller\SocialstatsController($container);

@@ -30,6 +30,8 @@
 
 namespace VuFind\Controller;
 
+use Laminas\View\Model\ViewModel;
+
 use function in_array;
 
 /**
@@ -47,6 +49,34 @@ class AbstractSolrSearch extends AbstractSearch
     use Feature\RecordVersionsSearchTrait;
 
     /**
+     * Set up facet details in the view (for use in advanced search and similar).
+     *
+     * @param ViewModel $view View model to update
+     * @param string    $list Name of facet list to retrieve
+     *
+     * @return void
+     */
+    protected function addFacetDetailsToView(ViewModel $view, $list = 'Advanced'): void
+    {
+        $facets = $this->serviceLocator
+            ->get(\VuFind\Search\FacetCache\PluginManager::class)
+            ->get($this->searchClassId)
+            ->getList($list);
+        $view->hierarchicalFacets
+            = $this->getHierarchicalFacets($view->options->getFacetsIni());
+        $view->hierarchicalFacetsSortOptions
+            = $this->getAdvancedHierarchicalFacetsSortOptions(
+                $view->options->getFacetsIni()
+            );
+        $view->facetList = $this->processAdvancedFacets(
+            $facets,
+            $view->saved ?? false,
+            $view->hierarchicalFacets,
+            $view->hierarchicalFacetsSortOptions
+        );
+    }
+
+    /**
      * Handle an advanced search
      *
      * @return mixed
@@ -57,22 +87,7 @@ class AbstractSolrSearch extends AbstractSearch
         $view = parent::advancedAction();
 
         // Set up facet information:
-        $facets = $this->serviceLocator
-            ->get(\VuFind\Search\FacetCache\PluginManager::class)
-            ->get($this->searchClassId)
-            ->getList('Advanced');
-        $view->hierarchicalFacets
-            = $this->getHierarchicalFacets($view->options->getFacetsIni());
-        $view->hierarchicalFacetsSortOptions
-            = $this->getAdvancedHierarchicalFacetsSortOptions(
-                $view->options->getFacetsIni()
-            );
-        $view->facetList = $this->processAdvancedFacets(
-            $facets,
-            $view->saved,
-            $view->hierarchicalFacets,
-            $view->hierarchicalFacetsSortOptions
-        );
+        $this->addFacetDetailsToView($view);
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
         );

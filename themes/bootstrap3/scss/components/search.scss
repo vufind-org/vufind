@@ -29,7 +29,7 @@ $thumbnail-width-large:  160px;
   list-style: none;
 }
 // Reset styling of hierarchical facets on the home page:
-.home-facet .facet-tree li {
+.home-facet.facet-tree li {
   line-height: inherit;
   padding-top: 0;
   padding-bottom: 0;
@@ -37,8 +37,7 @@ $thumbnail-width-large:  160px;
 
   .facet-tree__toggle-expanded {
     line-height: inherit;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0;
   }
 
   .facet {
@@ -55,25 +54,8 @@ $thumbnail-width-large:  160px;
   .home-facet-container { display: flex; }
   .home-facet {
     flex: 1 1 100%;
-    flex-basis: auto;
   }
   .home-facet-list { flex: 0 1 100%; }
-}
-
-.searchForm {
-  margin: 0;
-  padding: 0;
-
-  .input-group .form-control:first-child {
-    border-top-right-radius: $input-border-radius;
-    border-bottom-right-radius: $input-border-radius;
-  }
-
-  @media (max-width: 767px) {
-    .input-group {
-      width: 100%;
-    }
-  }
 }
 
 header .container.navbar { margin-bottom: 0; }
@@ -438,11 +420,18 @@ body.rtl {
 .combined-search-container.grid {
   margin-left: 1rem;
   margin-right: 1rem;
+
+  .combined-list {
+    overflow-wrap: anywhere;
+  }
 }
 
 .combined-jump-links {
   margin-left: 1rem;
   margin-right: 1rem;
+
+  // This is overridden via JS in combined/results-list.phtml
+  visibility: hidden;
 
   ul {
     display: inline;
@@ -450,7 +439,9 @@ body.rtl {
     padding-left: 0;
 
     li {
-      display: inline;
+      // This is overridden via JS in combined/results-list.phtml
+      display: none;
+
       white-space: nowrap;
       &:not(:first-child):before {
         content: '\2013'; // n-dash
@@ -676,42 +667,71 @@ body.rtl {
 .search-history-table {
   @extend .table;
   @extend .table-striped;
+  @extend .table-responsive;
 }
 table.search-history-table {
   table-layout: auto;
 
-  tbody > tr > td { vertical-align: middle; }
-  .history_time {
-    width: 20%;
+  @media screen and (min-width: 768px) {
+    tbody > tr > td { vertical-align: middle; }
+    .history_time {
+      width: 20%;
+    }
   }
 }
 
-.searchForm-query {
-  position: relative;
-  display: inline-block;
+.searchForm {
+  margin: 0;
+  padding: 0;
 
-  #searchForm_lookfor {
-    padding-right: 28px;
+  .searchForm-query {
+    position: relative;
+
+    @media (min-width: 768px) {
+      display: inline-block;
+    }
+
+    #searchForm_lookfor {
+      padding-right: 34px;
+    }
+
+    /* Adjust padding for the virtual keyboard button */
+    @media (min-width: 401px) {
+      #searchForm_lookfor.with-keyboard-selection {
+        padding-right: 72px;
+      }
+    }
+
+    #searchForm_controls {
+      position: absolute;
+      right: 3px;
+      top: 5px;
+      z-index: 4;
+      height: 2em;
+    }
+
+    #searchForm-reset {
+      bottom: 0;
+      width: 2em;
+      border: none;
+      border-radius: 50%;
+      background-color: $gray-lighter;
+      margin: 0;
+      padding: 2px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  }
+}
+
+/* Hide virtual keyboard on narrow screens */
+@media (max-width: 400px) {
+  .keyboard-selection {
+    display: none;
   }
 
-  #searchForm_controls {
-    position: absolute;
-    right: 3px;
-    top: 5px;
-    z-index: 4;
-    height: 2em;
-  }
-
-  #searchForm-reset {
-    bottom: 0;
-    width: 2em;
-    border: none;
-    border-radius: 50%;
-    background-color: $gray-lighter;
-    margin: 0;
-    padding: 2px;
-    font-size: 1em;
-    cursor: pointer;
+  .show-keyboard, .simple-keyboard {
+    display: none;
   }
 }
 

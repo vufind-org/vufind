@@ -29,7 +29,12 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (triggerInputEvent) {
       _textInput.dispatchEvent(new Event('input'));
     }
-    _textInput.focus();
+    if ( typeof _keyboard !== 'undefined' && triggerInputEvent) {
+      let caretPos = _keyboard.getCaretPosition();
+      if (caretPos) {
+        _textInput.setSelectionRange(caretPos, caretPos);
+      }
+    }
   }
 
   function _showKeyboard() {
@@ -98,14 +103,19 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _showKeyboard();
     });
     document.addEventListener("click", (event) => {
+      if (!_keyboard.options.theme.includes('show-keyboard')) {
+        return;
+      }
       function hasClass(el, className) {
         return el.className !== undefined && el.className.includes(className);
+      }
+      function hasId(el, id) {
+        return el.id === id;
       }
       if (
         event.target.parentNode == null ||
         event.target.parentNode.parentNode == null || (
-          _keyboard.options.theme.includes('show-keyboard')
-          && !hasClass(event.target, 'searchForm_lookfor')
+          !hasClass(event.target, 'searchForm_lookfor')
           && !hasClass(event.target, 'keyboard-selection')
           && !hasClass(event.target, 'hg-button')
           && !hasClass(event.target, 'hg-row')
@@ -117,6 +127,12 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         )
       ) {
         _hideKeyboard();
+      } else if (event.target.parentNode == null || (
+        !hasId(event.target, 'keyboard-selection-button')
+        && !hasId(event.target.parentNode, 'keyboard-selection-button')
+      )
+      ) {
+        _textInput.focus();
       }
     });
 
@@ -127,7 +143,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         display: _display,
         syncInstanceInputs: true,
         mergeDisplay: true,
-        physicalKeyboardHighlight: true
+        physicalKeyboardHighlight: true,
+        preventMouseDownDefault: true
       });
 
     let layout = window.Cookies.get("keyboard");
@@ -154,6 +171,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (_resetButton) {
       _resetButton.addEventListener('click', function resetOnClick() {
         _handleInputChange('');
+        _textInput.focus();
       });
     }
 

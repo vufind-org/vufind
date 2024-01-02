@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2018-2019.
+ * Copyright (C) The National Library of Finland 2018-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -34,15 +34,11 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
-use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Results;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
 
-use function in_array;
 use function is_callable;
 
 /**
@@ -74,13 +70,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     protected $searchRunner;
 
     /**
-     * Hierarchical facet helper
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $facetHelper;
-
-    /**
      * View renderer
      *
      * @var RendererInterface
@@ -90,23 +79,20 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     /**
      * Constructor
      *
-     * @param SessionSettings         $ss       Session settings
-     * @param RecommendPluginManager  $rpm      Recommend plugin manager
-     * @param SearchRunner            $sr       Search runner
-     * @param HierarchicalFacetHelper $fh       Facet helper
-     * @param RendererInterface       $renderer View renderer
+     * @param SessionSettings        $ss       Session settings
+     * @param RecommendPluginManager $rpm      Recommend plugin manager
+     * @param SearchRunner           $sr       Search runner
+     * @param RendererInterface      $renderer View renderer
      */
     public function __construct(
         SessionSettings $ss,
         \VuFind\Recommend\PluginManager $rpm,
         SearchRunner $sr,
-        HierarchicalFacetHelper $fh,
         RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->recommendPluginManager = $rpm;
         $this->searchRunner = $sr;
-        $this->facetHelper = $fh;
         $this->renderer = $renderer;
     }
 
@@ -235,27 +221,16 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         Results $results
     ) {
         $response = [];
-        $options = $results->getOptions();
-        $hierarchicalFacets = $options->getHierarchicalFacets();
-        $hierarchicalFacetSortOptions
-            = $recommend->getHierarchicalFacetSortOptions();
         $facetSet = $recommend->getFacetSet();
-        $urlHelper = $results->getUrlQuery();
         foreach ($facets as $facet) {
             if (strpos($facet, ':')) {
                 $response[$facet]['checkboxCount']
                     = $this->getCheckboxFacetCount($facet, $results);
-            } elseif (in_array($facet, $hierarchicalFacets)) {
-                $response[$facet]['list'] = $this->getHierarchicalFacetData(
-                    $facet,
-                    $hierarchicalFacetSortOptions,
-                    $facetSet[$facet]['list'] ?? [],
-                    $urlHelper,
-                    $results->getOptions(),
-                );
             } else {
                 $context['facet'] = $facet;
-                $context['cluster'] = $facetSet[$facet] ?? [];
+                $context['cluster'] = $facetSet[$facet] ?? [
+                    'list' => [],
+                ];
                 $context['collapsedFacets'] = [];
                 $response[$facet]['html'] = $this->renderer->render(
                     'Recommend/SideFacets/facet.phtml',
@@ -278,44 +253,5 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     {
         // There's currently no good way to return counts for checkbox filters.
         return null;
-    }
-
-    /**
-     * Get facet data for a hierarchical facet
-     *
-     * @param string         $facet       Facet
-     * @param array          $sortOptions Hierarchical facet sort options
-     * @param array          $facetList   Facet list
-     * @param UrlQueryHelper $urlHelper   UrlQueryHelper for creating facet URLs
-     * @param Options        $options     Results options
-     *
-     * @return array
-     */
-    protected function getHierarchicalFacetData(
-        $facet,
-        $sortOptions,
-        $facetList,
-        UrlQueryHelper $urlHelper,
-        Options $options
-    ) {
-        if (!empty($sortOptions[$facet])) {
-            $this->facetHelper->sortFacetList(
-                $facetList,
-                'top' === $sortOptions[$facet]
-            );
-        }
-
-        $result = $this->facetHelper->buildFacetArray(
-            $facet,
-            $facetList,
-            $urlHelper,
-            false
-        );
-        $result = $this->facetHelper->filterFacets(
-            $facet,
-            $result,
-            $options
-        );
-        return $result;
     }
 }

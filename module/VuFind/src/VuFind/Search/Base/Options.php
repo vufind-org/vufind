@@ -64,6 +64,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $sortOptions = [];
 
     /**
+     * Allowed hidden sort options
+     *
+     * @var array
+     */
+    protected $hiddenSortOptions = [];
+
+    /**
      * Available sort options for facets
      *
      * @var array
@@ -223,6 +230,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var array
      */
     protected $hierarchicalFacetSeparators = [];
+
+    /**
+     * Hierarchical facet sort settings
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortSettings = [];
 
     /**
      * Spelling setting
@@ -391,6 +405,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
         $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
     }
 
     /**
@@ -569,6 +584,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getSortOptions()
     {
         return $this->sortOptions;
+    }
+
+    /**
+     * Get an array of hidden sort options.
+     *
+     * @return array
+     */
+    public function getHiddenSortOptions()
+    {
+        return $this->hiddenSortOptions;
     }
 
     /**
@@ -791,6 +816,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get hierarchical facet sort settings.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortSettings()
+    {
+        return $this->hierarchicalFacetSortSettings;
+    }
+
+    /**
      * Get current spellcheck setting and (optionally) change it.
      *
      * @param bool $bool True to enable, false to disable, null to leave alone
@@ -934,6 +969,28 @@ abstract class Options implements TranslatorAwareInterface
      * @return string|bool
      */
     public function getVersionsAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cites" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitesAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cited by" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitedByAction()
     {
         return false;
     }

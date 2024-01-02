@@ -160,7 +160,7 @@ class MyResearchController extends AbstractBase
                     if (
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
-                        && empty($this->getFollowupUrl())
+                        && !$this->hasFollowupUrl()
                     ) {
                         return $this->getRefreshResponse();
                     }
@@ -172,6 +172,13 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
+            if (
+                $this->followup()->retrieve('lightboxParent')
+                && $url = $this->getAndClearFollowupUrl(true)
+            ) {
+                return $this->redirect()->toUrl($url);
+            }
+
             // Allow bypassing of post-login redirect
             if ($this->params()->fromQuery('redirect', true)) {
                 $this->setFollowupUrlToReferer();
@@ -180,14 +187,8 @@ class MyResearchController extends AbstractBase
         }
         // Logged in?  Forward user to followup action
         // or default action (if no followup provided):
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
-            // If a user clicks on the "Your Account" link, we want to be sure
-            // they get to their account rather than being redirected to an old
-            // followup URL. We'll use a redirect=0 GET flag to indicate this:
-            if ($this->params()->fromQuery('redirect', true)) {
-                return $this->redirect()->toUrl($url);
-            }
+        if ($url = $this->getAndClearFollowupUrl(true)) {
+            return $this->redirect()->toUrl($url);
         }
 
         $config = $this->getConfig();
@@ -219,7 +220,7 @@ class MyResearchController extends AbstractBase
         }
 
         // If there's already a followup url, keep it; otherwise set one.
-        if (!$this->getFollowupUrl()) {
+        if (!$this->hasFollowupUrl()) {
             $this->setFollowupUrlToReferer();
         }
 
