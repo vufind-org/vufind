@@ -261,7 +261,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getResponseHeader ()
+    public function getResponseHeader()
     {
         return $this->response['responseHeader'] ?? [];
     }
