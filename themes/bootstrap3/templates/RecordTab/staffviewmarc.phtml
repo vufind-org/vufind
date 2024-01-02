@@ -7,7 +7,7 @@
 <?php if ($xml !== false): ?>
   <?=\VuFind\XSLT\Processor::process('record-marc.xsl', $xml)?>
 <?php else: ?>
-  <?=$this->translate('error_creating_marc_xml')?>
+  <?=$this->transEsc('error_creating_marc_xml')?>
 <?php endif; ?>
 <?php if ($this->config()->alwaysDisplayIndexRecordInStaffView()): ?>
     <h2><?=$this->transEsc('Record in the Search Index')?></h2>
