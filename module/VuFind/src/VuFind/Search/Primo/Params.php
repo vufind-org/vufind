@@ -151,7 +151,8 @@ class Params extends \VuFind\Search\Base\Params
                 $facetOp = '~' === $prefix ? 'OR' : 'NOT';
                 $field = substr($field, 1);
             }
-            $result[$field] = [
+            $result[] = [
+                'field' => $field,
                 'facetOp' => $facetOp,
                 'values' => $filter,
             ];
