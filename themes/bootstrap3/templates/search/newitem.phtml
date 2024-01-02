@@ -13,6 +13,9 @@
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
 <?php endif; ?>
 <form method="get" class="form-search-newitem">
+  <?php if (!empty($this->defaultSort)): ?>
+    <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($this->defaultSort)?>">
+  <?php endif; ?>
   <div class="form-group">
     <label class="control-label"><?=$this->transEsc('Range')?>:</label>
     <div class="btn-group" data-toggle="buttons">
@@ -24,6 +27,7 @@
       <?php endforeach; ?>
     </div>
   </div>
+  <?=$this->render('search/advanced/solr-facets.phtml')?>
   <?php if (is_array($this->fundList) && !empty($this->fundList)): ?>
     <div class="form-group">
       <label class="control-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
