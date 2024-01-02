@@ -1210,7 +1210,12 @@ class DefaultRecord extends AbstractBase
      */
     public function getShortTitle()
     {
-        return $this->fields['title_short'] ?? '';
+        if (is_array($this->fields['title_short'])) {
+            $title = $this->fields['title_short'][0];
+        } else {
+            $title = $this->fields['title_short'];
+        }
+        return $title ?? '';
     }
 
     /**
@@ -1231,7 +1236,14 @@ class DefaultRecord extends AbstractBase
      */
     public function getSubtitle()
     {
-        return $this->fields['title_sub'] ?? '';
+        if (array_key_exists('title_sub', $this->fields)) {
+            if (is_array($this->fields['title_sub'])) {
+                $subtitle = $this->fields['title_sub'][0];
+            } else {
+                $subtitle = $this->fields['title_sub'];
+            }
+        }
+        return $subtitle ?? '';
     }
 
     /**
@@ -1336,7 +1348,12 @@ class DefaultRecord extends AbstractBase
      */
     public function getTitle()
     {
-        return $this->fields['title'] ?? '';
+        if (is_array($this->fields['title'])) {
+            $title = $this->fields['title'][0];
+        } else {
+            $title = $this->fields['title'];
+        }
+        return $title ?? '';
     }
 
     /**
