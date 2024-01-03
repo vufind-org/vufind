@@ -52,10 +52,10 @@ class TransEsc extends AbstractHelper
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
+    public function __invoke($str, $tokens = [], $default = null, $conditionToken = null)
     {
         $escaper = $this->getView()->plugin('escapeHtml');
         $translator = $this->getView()->plugin('translate');
-        return $escaper($translator($str, $tokens, $default));
+        return $escaper($translator($str, $tokens, $default, $conditionToken));
     }
 }

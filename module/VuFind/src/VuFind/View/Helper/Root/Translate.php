@@ -52,8 +52,8 @@ class Translate extends \Laminas\View\Helper\AbstractHelper implements \VuFind\I
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
+    public function __invoke($str, $tokens = [], $default = null, $conditionToken = null)
     {
-        return $this->translate($str, $tokens, $default);
+        return $this->translate($str, $tokens, $default, $conditionToken);
     }
 }

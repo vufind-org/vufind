@@ -104,7 +104,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translate($target, $tokens = [], $default = null)
+    public function translate($target, $tokens = [], $default = null, $conditionToken = null)
     {
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
@@ -149,7 +149,7 @@ trait TranslatorAwareTrait
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
-        return $this->translateString((string)$str, $tokens, $default, $domain);
+        return $this->translateString((string)$str, $tokens, $default, $conditionToken, $domain);
     }
 
     /**
@@ -196,9 +196,23 @@ trait TranslatorAwareTrait
         $str,
         $tokens = [],
         $default = null,
+        $conditionToken = null,
         $domain = 'default'
     ) {
-        $msg = (null === $this->translator)
+        // Try a translation using the conditionToken
+        if ($conditionToken) {
+            $conditionValue = $tokens[$conditionToken] ?? null;
+            if ($conditionValue) {
+                $key = $str . '_token_matches_' . $conditionValue;
+                $translation = $this->translator->translate($key, $domain);
+                if ($translation != $key) {
+                    $msg = $translation;
+                }
+            }
+        }
+
+        // Try a normal translation
+        $msg ??= (null === $this->translator)
             ? $str : $this->translator->translate($str, $domain);
 
         // Did the translation fail to change anything?  If so, use default:
