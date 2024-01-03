@@ -372,26 +372,6 @@
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
-  <!-- Copy files from node modules to themes -->
-  <target name="copynodemodules">
-    <!-- autocomplete.js -->
-    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-    <!-- jstree -->
-    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
-      <fileset dir="${srcdir}/node_modules/jstree/dist/" >
-        <include name="**/**" />
-        <exclude name="jstree.js" />
-        <exclude name="themes/default-dark/" />
-      </fileset>
-    </copy>
-    <!-- simple-keyboard -->
-    <copy file="${srcdir}/node_modules/simple-keyboard/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard" overwrite="true" />
-    <copy file="${srcdir}/node_modules/simple-keyboard/build/css/index.css" todir="${srcdir}/themes/bootstrap3/css/vendor/simple-keyboard" overwrite="true" />
-    <copy file="${srcdir}/node_modules/simple-keyboard-layouts/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard-layouts" overwrite="true" />
-    <!-- vanilla-cookieconsent -->
-    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-  </target>
-
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
     <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />

@@ -1,0 +1,22 @@
+{
+  "name": "vufind-bootstrap3",
+  "version": "9.1.0",
+  "description": "Dependencies for the bootstrap3 theme",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/vufind-org/vufind"
+  },
+  "bugs": {
+    "url": "https://vufind.org/jira"
+  },
+  "scripts": {
+    "updateDeps": "npm update && node copyDependencies.mjs"
+  },
+  "dependencies": {
+    "autocomplete.js": "vufind-org/autocomplete.js#v2.1.7",
+    "jstree": "3.3.15",
+    "simple-keyboard": "^3.6.0",
+    "simple-keyboard-layouts": "^3.0.0",
+    "vanilla-cookieconsent": "3.0.0-rc.16"
+  }
+}
