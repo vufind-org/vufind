@@ -187,7 +187,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist
+     * Request a token where one does not exist (RTR authentication)
+     *
+     * @return void
+     */
+    public function testTokensWithExpiry(): void
+    {
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'rtr_tenant';
+        $config['API']['legacy_authentication'] = 0;
+        $this->createConnector('get-tokens-rtr', $config); // saves to $this->driver
+        $this->driver->getMyProfile(['id' => 'whatever']);
+    }
+
+    /**
+     * Request a token where one does not exist (legacy authentication)
      *
      * @return void
      */
