@@ -58,6 +58,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'tenant' => 'config_tenant',
             'username' => 'config_username',
             'password' => 'config_password',
+            'legacy_authentication' => 'true',
         ],
     ];
 

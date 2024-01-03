@@ -865,6 +865,16 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Should we use the legacy authentication mechanism?
+     *
+     * @return bool
+     */
+    protected function useLegacyAuthentication(): bool
+    {
+        return $this->config['API']['legacy_authentication'] ?? false;
+    }
+
+    /**
      * Support method to perform a username/password login to Okapi.
      *
      * @param string $username The patron username
@@ -874,12 +884,13 @@ class Folio extends AbstractAPI implements
      */
     protected function performOkapiUsernamePasswordAuthentication(string $username, string $password): Response
     {
+        $newMethod = !($this->config['API']['legacy_authentication'] ?? false);
         $tenant = $this->config['API']['tenant'];
         $credentials = compact('tenant', 'username', 'password');
         // Get token
         return $this->makeRequest(
             method: 'POST',
-            path: '/authn/login',
+            path: $this->useLegacyAuthentication() ? '/authn/login' : '/authn/login-with-expiry',
             params: json_encode($credentials),
             debugParams: '{"username":"...","password":"..."}'
         );
@@ -895,7 +906,19 @@ class Folio extends AbstractAPI implements
      */
     protected function extractTokenFromResponse(Response $response): string
     {
-        return $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
+        if ($this->useLegacyAuthentication()) {
+            return $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
+        }
+        $folioUrl = $this->config['API']['base_url'];
+        $cookies = new \Laminas\Http\Cookies();
+        $cookies->addCookiesFromResponse($response, $folioUrl);
+        $results = $cookies->getAllCookies();
+        foreach ($results as $cookie) {
+            if ($cookie->getName() == 'folioAccessToken') {
+                return $cookie->getValue();
+            }
+        }
+        throw new \Exception('Could not find token in response');
     }
 
     /**
