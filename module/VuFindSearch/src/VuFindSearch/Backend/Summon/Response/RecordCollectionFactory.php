@@ -29,7 +29,6 @@
 
 namespace VuFindSearch\Backend\Summon\Response;
 
-use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFindSearch\Backend\Solr\Response\Json\Record;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
@@ -92,7 +91,6 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      * @param array $response Summon response
      *
      * @return RecordCollection
-     * @throws RecordMissingException
      */
     public function factory($response)
     {
@@ -103,9 +101,6 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
                     gettype($response)
                 )
             );
-        }
-        if (empty($response['documents'])) {
-            throw new RecordMissingException('Record does not exist.');
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['documents'] as $doc) {
