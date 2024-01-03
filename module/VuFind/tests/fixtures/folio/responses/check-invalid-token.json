@@ -8,7 +8,7 @@
     "comment": "send new token",
     "expectedMethod": "POST",
     "expectedPath": "/authn/login",
-    "expectedParams": "{\"username\":\"config_username\",\"password\":\"config_password\"}",
+    "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"config_username\",\"password\":\"config_password\"}",
     "headers": { "X-Okapi-Token": "x-okapi-token-after-invalid" }
   },
   {
