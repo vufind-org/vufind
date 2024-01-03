@@ -214,7 +214,6 @@ trait TranslatorAwareTrait
                 ? $default->getDisplayString() : $default;
         }
 
-
         // Do we need to perform substitutions?
         if (!empty($tokens)) {
             if ($messageFormatter) {
