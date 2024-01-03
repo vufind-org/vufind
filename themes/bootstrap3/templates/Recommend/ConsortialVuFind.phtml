@@ -10,6 +10,7 @@
 
   <?php if (!empty($records)): ?>
     <h2><?=$this->transEsc('consortial_vufind_recommend_heading')?></h2>
+    <?php /* \u200c is an empty translation value; see ExtendedIniReader.php. */ ?>
     <?php if (!empty($intro) && ("\u{200c}" !== $intro)): ?>
       <p><?=$intro?></p>
     <?php endif; ?>
