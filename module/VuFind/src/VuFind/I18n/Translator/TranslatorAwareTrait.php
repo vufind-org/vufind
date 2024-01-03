@@ -95,16 +95,17 @@ trait TranslatorAwareTrait
     /**
      * Translate a string (or string-castable object)
      *
-     * @param string|object|array $target  String to translate or an array of text
+     * @param string|object|array $target           String to translate or an array of text
      * domain and string to translate
-     * @param array               $tokens  Tokens to inject into the translated
-     * string
-     * @param string              $default Default value to use if no translation is
+     * @param array               $tokens           Tokens to inject into the translated string
+     * @param string              $default          Default value to use if no translation is
      * found (null for no default).
+     * @param bool                $messageFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
      *
      * @return string
      */
-    public function translate($target, $tokens = [], $default = null, $conditionToken = null)
+    public function translate($target, $tokens = [], $default = null, $messageFormatter = false)
     {
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
@@ -130,7 +131,7 @@ trait TranslatorAwareTrait
             // On this pass, don't use the $default, since we want to fail over
             // to getDisplayString before giving up:
             $translated = $this
-                ->translateString((string)$str, $tokens, null, $domain);
+                ->translateString((string)$str, $tokens, null, $domain, $messageFormatter);
             if ($translated !== (string)$str) {
                 return $translated;
             }
@@ -142,27 +143,28 @@ trait TranslatorAwareTrait
             // least with hierarchical facets where translation key can be the exact
             // facet value (e.g. "0/Book/") or a displayable value (e.g. "Book").
             if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
-                return $this->translate($str, $tokens, $default);
+                return $this->translate($str, $tokens, $default, $messageFormatter);
             } else {
                 [$domain, $str] = $this->extractTextDomain($str);
             }
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
-        return $this->translateString((string)$str, $tokens, $default, $conditionToken, $domain);
+        return $this->translateString((string)$str, $tokens, $default, $domain, $messageFormatter);
     }
 
     /**
      * Translate a string (or string-castable object) using a prefix, or without the
      * prefix if a prefixed translation is not found.
      *
-     * @param string              $prefix  Translation key prefix
-     * @param string|object|array $target  String to translate or an array of text
+     * @param string              $prefix           Translation key prefix
+     * @param string|object|array $target           String to translate or an array of text
      * domain and string to translate
-     * @param array               $tokens  Tokens to inject into the translated
-     * string
-     * @param string              $default Default value to use if no translation is
+     * @param array               $tokens           Tokens to inject into the translated string
+     * @param string              $default          Default value to use if no translation is
      * found (null for no default).
+     * @param bool                $messageFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
      *
      * @return string
      */
@@ -170,7 +172,8 @@ trait TranslatorAwareTrait
         $prefix,
         $target,
         $tokens = [],
-        $default = null
+        $default = null,
+        $messageFormatter = false
     ) {
         if (is_string($target)) {
             if (null === $default) {
@@ -178,17 +181,19 @@ trait TranslatorAwareTrait
             }
             $target = $prefix . $target;
         }
-        return $this->translate($target, $tokens, $default);
+        return $this->translate($target, $tokens, $default, $messageFormatter);
     }
 
     /**
      * Get translation for a string
      *
-     * @param string $str     String to translate
-     * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found
+     * @param string $str              String to translate
+     * @param array  $tokens           Tokens to inject into the translated string
+     * @param string $default          Default value to use if no translation is found
      * (null for no default).
-     * @param string $domain  Text domain (omit for default)
+     * @param string $domain           Text domain (omit for default)
+     * @param bool   $messageFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
      *
      * @return string
      */
@@ -196,21 +201,9 @@ trait TranslatorAwareTrait
         $str,
         $tokens = [],
         $default = null,
-        $conditionToken = null,
-        $domain = 'default'
+        $domain = 'default',
+        $messageFormatter = false
     ) {
-        // Try a translation using the conditionToken
-        if ($conditionToken) {
-            $conditionValue = $tokens[$conditionToken] ?? null;
-            if ($conditionValue) {
-                $key = $str . '_token_matches_' . $conditionValue;
-                $translation = $this->translator->translate($key, $domain);
-                if ($translation != $key) {
-                    $msg = $translation;
-                }
-            }
-        }
-
         // Try a normal translation
         $msg ??= (null === $this->translator)
             ? $str : $this->translator->translate($str, $domain);
@@ -221,8 +214,12 @@ trait TranslatorAwareTrait
                 ? $default->getDisplayString() : $default;
         }
 
+
         // Do we need to perform substitutions?
         if (!empty($tokens)) {
+            if ($messageFormatter) {
+                return \MessageFormatter::formatMessage($this->getTranslatorLocale(), $msg, $tokens);
+            }
             $in = $out = [];
             foreach ($tokens as $key => $value) {
                 $in[] = $key;
