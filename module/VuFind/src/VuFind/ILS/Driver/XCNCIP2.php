@@ -296,6 +296,17 @@ class XCNCIP2 extends AbstractBase implements
     protected $maxNumberOfPages;
 
     /**
+     * Some ItemUseRestrictionType values could be useful as status. This property controls which values from
+     * ItemRestrictionType should replace the status value in response of getHolding method.
+     *
+     * @var array
+     */
+    protected $itemUseRestrictionType2Status = [
+        'In Library Use Only',
+        'Not For Loan',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -652,6 +663,13 @@ class XCNCIP2 extends AbstractBase implements
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = (string)($status[0] ?? '');
+
+        $itemUseRestrictionType = $current->xpath('ns1:ItemOptionalFields/ns1:ItemUseRestrictionType');
+        $itemUseRestrictionType = (string)($itemUseRestrictionType[0] ?? '');
+
+        if (in_array($itemUseRestrictionType, $this->itemUseRestrictionType2Status)) {
+            $status = $itemUseRestrictionType;
+        }
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
         $itemId = (string)($itemId[0] ?? '');
