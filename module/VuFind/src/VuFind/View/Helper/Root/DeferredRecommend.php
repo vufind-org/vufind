@@ -56,9 +56,7 @@ class DeferredRecommend extends \Laminas\View\Helper\AbstractHelper
     ) {
         $template = 'Recommend/Deferred.phtml';
         $className = $this::class;
-        $context = [
-            'containerId' => $containerId,
-        ];
+        $context = compact('containerId');
         return $this->renderClassTemplate($template, $className, $context);
     }
 }
