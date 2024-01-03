@@ -1,5 +1,6 @@
 <div class="databases">
   <?php $databases = $this->recommend->getResults(); ?>
+  <?php $linkToAll = $this->recommend->getLinkToAllDatabases(); ?>
   <?php if (!empty($databases)): ?>
     <h2><?=$this->transEsc('databases_recommend_heading')?></h2>
     <?php if ($this->transEsc('databases_recommend_intro', [], '')): ?>
@@ -16,6 +17,16 @@
           </span>
         </div>
       <?php endforeach; ?>
+      <?php if ($linkToAll): ?>
+        <div class="list-group-item">
+          <span>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($linkToAll))?>" class="title icon-link" target="_blank">
+              <?=$this->icon('external-link', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('databases_recommend_link_to_all')?></span>
+            </a>
+          </span>
+        </div>
+      <?php endif; ?>
     </div>
   <?php endif ?>
 </div>
