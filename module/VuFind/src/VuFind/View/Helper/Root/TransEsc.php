@@ -45,20 +45,20 @@ class TransEsc extends AbstractHelper
     /**
      * Translate and escape a string
      *
-     * @param string|object|array $str              String to translate or an array of text
-     * domain and string to translate
-     * @param array               $tokens           Tokens to inject into the translated string
-     * @param string              $default          Default value to use if no translation is
-     * found (null for no default).
-     * @param bool                $messageFormatter Should we use an ICU message formatter instead
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
      * of the default behavior?
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null, $messageFormatter = false)
+    public function __invoke($str, $tokens = [], $default = null, $useIcuFormatter = false)
     {
         $escaper = $this->getView()->plugin('escapeHtml');
         $translator = $this->getView()->plugin('translate');
-        return $escaper($translator($str, $tokens, $default, $messageFormatter));
+        return $escaper($translator($str, $tokens, $default, $useIcuFormatter));
     }
 }
