@@ -14,7 +14,7 @@
       : $this->translate('showing_results_of_html', $transParams);
     // Append search-heading only if it's not empty to avoid extra whitespace:
     if ($heading = $this->slot('search-heading')->get()) {
-      $showingResults .= $heading;
+      $showingResults .= ' ' . $heading;
     }
   } else {
     $showingResults = !empty($this->skipTotalCount)
