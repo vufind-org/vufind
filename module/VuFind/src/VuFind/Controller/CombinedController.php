@@ -342,6 +342,7 @@ class CombinedController extends AbstractSearch
         // Override the search type:
         $query->type = $searchType;
 
+        // Display or hide top based on include_recommendations setting.
         $recommendOverride = [];
         $noRecommend = [];
         $includeRecommendSetting = $settings['include_recommendations'] ?? false;
