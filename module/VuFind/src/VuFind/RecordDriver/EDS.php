@@ -263,20 +263,23 @@ class EDS extends DefaultRecord
             $orig_items   = $this->fields['Items'];
             $pos          = '';
             $defaultOrder = count($orig_items);
-            $ItemCoreOrderConfig = isset($this->recordConfig->ItemCoreOrder)
+            $itemCoreOrderConfig = isset($this->recordConfig->ItemCoreOrder)
                 ? $this->recordConfig->ItemCoreOrder->toArray() : [];
-	    $count = count($ItemCoreOrderConfig, COUNT_RECURSIVE);
+            $count = count($itemCoreOrderConfig, COUNT_RECURSIVE);
             if ($count > 0) {
                 for ($i = 0; $i < count($orig_items); $i++) {
-                    $label_name = $orig_items[$i]["Label"];
-                    if (isset($ItemCoreOrderConfig[$label_name])) {
-                        $pos  = $ItemCoreOrderConfig[$label_name];
-                        $orig_items[$i]["Pos"] = $pos;
+                    $label_name = $orig_items[$i]['Label'];
+                    if (array_search($label_name, $itemCoreOrderConfig)) {
+                        $pos  = array_search($label_name, $itemCoreOrderConfig);
+                        $orig_items[$i]['Pos'] = $pos;
                     } else {
-                        $orig_items[$i]["Pos"] = $defaultOrder++;
+                        $orig_items[$i]['Pos'] = $defaultOrder++;
                     }
                 }
             }
+            $positions = array_column($orig_items, 'Pos');
+            array_multisort($positions, SORT_ASC, $orig_items);
+
 	    foreach ($this->fields['Items'] ?? [] as $item) {
                 $nextItem = [
                     'Label' => $item['Label'] ?? '',
