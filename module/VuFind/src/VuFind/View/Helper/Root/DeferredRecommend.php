@@ -42,8 +42,6 @@ namespace VuFind\View\Helper\Root;
  */
 class DeferredRecommend extends \Laminas\View\Helper\AbstractHelper
 {
-    use ClassBasedTemplateRendererTrait;
-
     /**
      * Render code to load a recommendation module via AJAX.
      *
@@ -54,9 +52,15 @@ class DeferredRecommend extends \Laminas\View\Helper\AbstractHelper
     public function __invoke(
         $containerId,
     ) {
-        $template = 'Recommend/Deferred.phtml';
-        $className = $this::class;
+        // Pass $containerId to the template
         $context = compact('containerId');
-        return $this->renderClassTemplate($template, $className, $context);
+
+        // Save any existing context before the render; restore after.
+        $view = $this->getView();
+        $contextHelper = $view->plugin('context');
+        $oldContext = $contextHelper($view)->apply($context);
+        $html = $view->render('Recommend/Deferred.phtml');
+        $contextHelper($view)->restore($oldContext);
+        return $html;
     }
 }
