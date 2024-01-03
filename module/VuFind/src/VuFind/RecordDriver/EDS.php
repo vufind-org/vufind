@@ -258,22 +258,41 @@ class EDS extends DefaultRecord
         $groupFilter = null,
         $nameFilter = null
     ) {
-        $items = [];
-        foreach ($this->fields['Items'] ?? [] as $item) {
-            $nextItem = [
-                'Label' => $item['Label'] ?? '',
-                'Group' => $item['Group'] ?? '',
-                'Name' => $item['Name'] ?? '',
-                'Data'  => isset($item['Data'])
-                    ? $this->toHTML($item['Data'], $item['Group']) : '',
-            ];
-            if (
-                !$this->itemIsExcluded($nextItem, $context)
-                && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
-                && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
-                && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
-            ) {
-                $items[] = $nextItem;
+	$items = [];
+        if (isset($this->fields['Items'])) {
+            $orig_items   = $this->fields['Items'];
+            $pos          = '';
+            $defaultOrder = count($orig_items);
+            $ItemCoreOrderConfig = isset($this->recordConfig->ItemCoreOrder)
+                ? $this->recordConfig->ItemCoreOrder->toArray() : [];
+	    $count = count($ItemCoreOrderConfig, COUNT_RECURSIVE);
+            if ($count > 0) {
+                for ($i = 0; $i < count($orig_items); $i++) {
+                    $label_name = $orig_items[$i]["Label"];
+                    if (isset($ItemCoreOrderConfig[$label_name])) {
+                        $pos  = $ItemCoreOrderConfig[$label_name];
+                        $orig_items[$i]["Pos"] = $pos;
+                    } else {
+                        $orig_items[$i]["Pos"] = $defaultOrder++;
+                    }
+                }
+            }
+	    foreach ($this->fields['Items'] ?? [] as $item) {
+                $nextItem = [
+                    'Label' => $item['Label'] ?? '',
+                    'Group' => $item['Group'] ?? '',
+                    'Name' => $item['Name'] ?? '',
+                    'Data'  => isset($item['Data'])
+                        ? $this->toHTML($item['Data'], $item['Group']) : '',
+                ];
+                if (
+                    !$this->itemIsExcluded($nextItem, $context)
+                    && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
+                    && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
+                    && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
+                ) {
+		    $items[] = $nextItem;
+		}
             }
         }
         return $items;
