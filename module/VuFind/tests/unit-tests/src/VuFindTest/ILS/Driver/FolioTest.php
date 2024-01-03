@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ILS driver test
+ * FOLIO ILS driver test
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -34,7 +34,7 @@ use Laminas\Http\Response;
 use VuFind\ILS\Driver\Folio;
 
 /**
- * ILS driver test
+ * FOLIO ILS driver test
  *
  * @category VuFind
  * @package  Tests
@@ -58,7 +58,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'tenant' => 'config_tenant',
             'username' => 'config_username',
             'password' => 'config_password',
-            'legacy_authentication' => 'true',
         ],
     ];
 
@@ -191,14 +190,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTokensWithExpiry(): void
+    public function testTokens(): void
     {
-        // Take default configuration, but use a different tenant (to avoid
-        // session collision with other tests) and disable legacy authentication:
-        $config = $this->defaultDriverConfig;
-        $config['API']['tenant'] = 'rtr_tenant';
-        $config['API']['legacy_authentication'] = 0;
-        $this->createConnector('get-tokens-rtr', $config); // saves to $this->driver
+        $this->createConnector('get-tokens'); // saves to $this->driver
         $this->driver->getMyProfile(['id' => 'whatever']);
     }
 
@@ -207,9 +201,14 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTokens(): void
+    public function testTokensWithLegacyAuth(): void
     {
-        $this->createConnector('get-tokens'); // saves to $this->driver
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector('get-tokens-legacy', $config); // saves to $this->driver
         $this->driver->getMyProfile(['id' => 'whatever']);
     }
 
@@ -225,13 +224,29 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache
+     * Check and renew an invalid token retrieved from session cache (RTR authentication)
      *
      * @return void
      */
     public function testCheckInvalidToken(): void
     {
         $this->createConnector('check-invalid-token');
+        $this->driver->getPickupLocations(['username' => 'whatever']);
+    }
+
+    /**
+     * Check and renew an invalid token retrieved from session cache (legacy authentication)
+     *
+     * @return void
+     */
+    public function testCheckInvalidTokenLegacyAuth(): void
+    {
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector('check-invalid-token-legacy', $config);
         $this->driver->getPickupLocations(['username' => 'whatever']);
     }
 
@@ -283,7 +298,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi
+     * Test patron login with Okapi (RTR authentication)
      *
      * @return void
      */
@@ -292,6 +307,33 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->createConnector(
             'successful-patron-login-with-okapi',
             $this->defaultDriverConfig + ['User' => ['okapi_login' => true]]
+        );
+        $result = $this->driver->patronLogin('foo', 'bar');
+        $expected = [
+            'id' => 'fake-id',
+            'username' => 'foo',
+            'cat_username' => 'foo',
+            'cat_password' => 'bar',
+            'firstname' => 'first',
+            'lastname' => 'last',
+            'email' => 'fake@fake.com',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test patron login with Okapi (Legacy authentication)
+     *
+     * @return void
+     */
+    public function testSuccessfulPatronLoginWithOkapiLegacyAuth(): void
+    {
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector(
+            'successful-patron-login-with-okapi-legacy',
+            $config + ['User' => ['okapi_login' => true]]
         );
         $result = $this->driver->patronLogin('foo', 'bar');
         $expected = [
