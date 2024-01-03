@@ -54,7 +54,7 @@ class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterf
      * Translate and escape a value while applying a prefix
      *
      * @param string              $prefix           Translation key prefix
-     * @param string|object|array $target           String to translate or an array of text
+     * @param string|object|array $str              String to translate or an array of text
      * domain and string to translate
      * @param array               $tokens           Tokens to inject into the translated string
      * @param string              $default          Default value to use if no translation is
