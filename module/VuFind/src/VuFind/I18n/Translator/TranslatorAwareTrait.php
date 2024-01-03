@@ -205,7 +205,7 @@ trait TranslatorAwareTrait
         $messageFormatter = false
     ) {
         // Try a normal translation
-        $msg ??= (null === $this->translator)
+        $msg = (null === $this->translator)
             ? $str : $this->translator->translate($str, $domain);
 
         // Did the translation fail to change anything?  If so, use default:
