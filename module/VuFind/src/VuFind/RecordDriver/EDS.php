@@ -261,14 +261,14 @@ class EDS extends DefaultRecord
     ) {
         $items = [];
         if (is_array($this->fields['Items'] ?? null)) {
-            $itemCoreOrderConfig = $this->recordConfig?->ItemCoreOrder?->toArray() ?? [];
+            $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
             $origItems = $this->fields['Items'];
             // Only sort by label if we have a sort config and we're fetching multiple labels:
-            if (!empty($itemCoreOrderConfig) && $labelFilter === null) {
+            if (!empty($itemGlobalOrderConfig) && $labelFilter === null) {
                 $nextPos = count($origItems); // 1st position to use for non-configured labels
                 foreach (array_keys($origItems) as $key) {
                     $label = $origItems[$key]['Label'] ?? '';
-                    $configuredPos = array_search($label, $itemCoreOrderConfig);
+                    $configuredPos = array_search($label, $itemGlobalOrderConfig);
                     $origItems[$key]['Pos'] = $configuredPos === false
                         ? $nextPos++ : $configuredPos;
                 }
