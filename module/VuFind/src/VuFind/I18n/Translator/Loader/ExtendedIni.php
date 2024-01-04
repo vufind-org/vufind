@@ -369,7 +369,10 @@ class ExtendedIni implements FileLoaderInterface
             $this->loadedAliasFiles[$aliasDomain] = array_merge($loadedFiles, [$filename]);
             if (file_exists($filename)) {
                 // Parse and normalize the alias configuration:
-                $newAliases = array_map([$this, 'normalizeAlias'], parse_ini_file($filename));
+                $newAliases = array_map(
+                    [$this, 'normalizeAlias'],
+                    $this->reader->getTextDomain($filename)->getArrayCopy()
+                );
                 // Merge with pre-existing aliases:
                 $this->aliases[$aliasDomain] = array_merge($this->aliases[$aliasDomain] ?? [], $newAliases);
             }
