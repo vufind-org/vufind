@@ -232,6 +232,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $hierarchicalFacetSeparators = [];
 
     /**
+     * Hierarchical facet sort settings
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortSettings = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -809,6 +816,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get hierarchical facet sort settings.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortSettings()
+    {
+        return $this->hierarchicalFacetSortSettings;
+    }
+
+    /**
      * Get current spellcheck setting and (optionally) change it.
      *
      * @param bool $bool True to enable, false to disable, null to leave alone
@@ -952,6 +969,28 @@ abstract class Options implements TranslatorAwareInterface
      * @return string|bool
      */
     public function getVersionsAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cites" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitesAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cited by" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitedByAction()
     {
         return false;
     }
