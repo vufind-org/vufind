@@ -260,27 +260,22 @@ class EDS extends DefaultRecord
     ) {
         $items = [];
         if (isset($this->fields['Items'])) {
-            $orig_items   = $this->fields['Items'];
-            $pos          = '';
-            $defaultOrder = count($orig_items);
-            $itemCoreOrderConfig = isset($this->recordConfig->ItemCoreOrder)
-                ? $this->recordConfig->ItemCoreOrder->toArray() : [];
-            $count = count($itemCoreOrderConfig, COUNT_RECURSIVE);
-            if ($count > 0) {
-                for ($i = 0; $i < count($orig_items); $i++) {
-                    $label_name = $orig_items[$i]['Label'];
-                    if (array_search($label_name, $itemCoreOrderConfig)) {
-                        $pos  = array_search($label_name, $itemCoreOrderConfig);
-                        $orig_items[$i]['Pos'] = $pos;
-                    } else {
-                        $orig_items[$i]['Pos'] = $defaultOrder++;
-                    }
+            $itemCoreOrderConfig = $this->recordConfig?->ItemCoreOrder?->toArray() ?? [];
+            // Only sort by label if we have a sort config and we're fetching multiple labels:
+            $origItems = $this->fields['Items'] ?? [];
+            if (!empty($itemCoreOrderConfig) && $labelFilter === null) {
+                $nextPos = count($origItems);
+                foreach (array_keys($origItems) as $key) {
+                    $label = $origItems[$key]['Label'] ?? '';
+                    $configuredPos = array_search($label, $itemCoreOrderConfig);
+                    $origItems[$key]['Pos'] = $configuredPos === false
+                        ? $nextPos++ : $configuredPos;
                 }
+                $positions = array_column($origItems, 'Pos');
+                array_multisort($positions, SORT_ASC, $origItems);
             }
-            $positions = array_column($orig_items, 'Pos');
-            array_multisort($positions, SORT_ASC, $orig_items);
 
-            foreach ($this->fields['Items'] ?? [] as $item) {
+            foreach ($origItems as $item) {
                 $nextItem = [
                     'Label' => $item['Label'] ?? '',
                     'Group' => $item['Group'] ?? '',
