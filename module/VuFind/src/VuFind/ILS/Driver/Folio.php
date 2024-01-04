@@ -871,7 +871,7 @@ class Folio extends AbstractAPI implements
      */
     protected function useLegacyAuthentication(): bool
     {
-        return $this->config['API']['legacy_authentication'] ?? false;
+        return $this->config['API']['legacy_authentication'] ?? true;
     }
 
     /**
@@ -884,7 +884,6 @@ class Folio extends AbstractAPI implements
      */
     protected function performOkapiUsernamePasswordAuthentication(string $username, string $password): Response
     {
-        $newMethod = !($this->config['API']['legacy_authentication'] ?? false);
         $tenant = $this->config['API']['tenant'];
         $credentials = compact('tenant', 'username', 'password');
         // Get token
