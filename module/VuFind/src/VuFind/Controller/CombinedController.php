@@ -225,15 +225,18 @@ class CombinedController extends AbstractSearch
         $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        // Identify if any modules use include_recommendations_side.
+        // Identify if any modules use include_recommendations_side or
+        // include_recommendations_noresults_side.
         $columnSideRecommendations = [];
         $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
         foreach ($config as $subconfig) {
-            if (is_array($subconfig['include_recommendations_side'] ?? false)) {
-                foreach ($subconfig['include_recommendations_side'] as $recommendation) {
-                    $recommendationModuleName = strtok($recommendation, ':');
-                    $recommendationModule = $recommendationManager->get($recommendationModuleName);
-                    $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+            foreach (['include_recommendations_side', 'include_recommendations_noresults_side'] as $type) {
+                if (is_array($subconfig[$type] ?? false)) {
+                    foreach ($subconfig[$type] as $recommendation) {
+                        $recommendationModuleName = strtok($recommendation, ':');
+                        $recommendationModule = $recommendationManager->get($recommendationModuleName);
+                        $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+                    }
                 }
             }
         }
@@ -339,21 +342,39 @@ class CombinedController extends AbstractSearch
         // Override the search type:
         $query->type = $searchType;
 
-        // Always leave noresults active (useful for 0-hit searches).
         // Display or hide top based on include_recommendations setting.
-        // Display or hide side based on include_recommendations_side setting.
         $recommendOverride = [];
         $noRecommend = [];
-        if (is_array($settings['include_recommendations'] ?? false)) {
+        $includeRecommendSetting = $settings['include_recommendations'] ?? false;
+        if (is_array($includeRecommendSetting)) {
             $recommendOverride['top'] = $settings['include_recommendations'];
-        } else {
+        } elseif (!$includeRecommendSetting) {
             $noRecommend[] = 'top';
         }
+
+        // Display or hide side based on include_recommendations_side setting.
         if (is_array($settings['include_recommendations_side'] ?? false)) {
             $recommendOverride['side'] = $settings['include_recommendations_side'];
         } else {
             $noRecommend[] = 'side';
         }
+
+        // Display or hide no results recommendations, based on
+        // include_recommendations_noresults setting (to display them in the bento box) or
+        // include_recommendations_noresults_side setting (to display them in the sidebar).
+        $includeRecommendNoResultsSetting = $settings['include_recommendations_noresults'] ?? false;
+        if (is_array($includeRecommendNoResultsSetting)) {
+            $recommendOverride['noresults'] = $settings['include_recommendations_noresults'];
+        } elseif (!$includeRecommendNoResultsSetting) {
+            $noRecommend[] = 'noresults';
+        }
+
+        if (is_array($settings['include_recommendations_noresults_side'] ?? false)) {
+            $recommendOverride['noresults_side'] = $settings['include_recommendations_noresults_side'];
+        } else {
+            $noRecommend[] = 'noresults_side';
+        }
+
         $query->recommendOverride = $recommendOverride;
         $query->noRecommend = count($noRecommend) ? implode(',', $noRecommend) : false;
     }

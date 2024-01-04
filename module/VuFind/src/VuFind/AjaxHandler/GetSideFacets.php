@@ -228,7 +228,9 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
                     = $this->getCheckboxFacetCount($facet, $results);
             } else {
                 $context['facet'] = $facet;
-                $context['cluster'] = $facetSet[$facet] ?? [];
+                $context['cluster'] = $facetSet[$facet] ?? [
+                    'list' => [],
+                ];
                 $context['collapsedFacets'] = [];
                 $response[$facet]['html'] = $this->renderer->render(
                     'Recommend/SideFacets/facet.phtml',

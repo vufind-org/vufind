@@ -105,6 +105,26 @@ class NewItems extends AbstractPlugin
     }
 
     /**
+     * Get default setting (null to use regular default).
+     *
+     * @return ?string
+     */
+    public function getDefaultSort(): ?string
+    {
+        return $this->config->default_sort ?? null;
+    }
+
+    /**
+     * Should we include facets in the new items search page?
+     *
+     * @return bool
+     */
+    public function includeFacets(): bool
+    {
+        return $this->config->include_facets ?? false;
+    }
+
+    /**
      * Get fund list
      *
      * @return array
