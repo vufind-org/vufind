@@ -5,8 +5,8 @@
     {
         "comment": "login attempt",
         "expectedMethod": "POST",
-        "expectedPath": "/authn/login-with-expiry",
-        "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"foo\",\"password\":\"bar\"}"
+        "expectedPath": "/authn/login",
+        "expectedParams": "{\"tenant\":\"legacy_tenant\",\"username\":\"foo\",\"password\":\"bar\"}"
     },
     {
         "comment": "profile retrieval",
