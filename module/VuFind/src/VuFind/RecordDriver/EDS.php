@@ -258,7 +258,7 @@ class EDS extends DefaultRecord
         $groupFilter = null,
         $nameFilter = null
     ) {
-	$items = [];
+        $items = [];
         if (isset($this->fields['Items'])) {
             $orig_items   = $this->fields['Items'];
             $pos          = '';
@@ -280,7 +280,7 @@ class EDS extends DefaultRecord
             $positions = array_column($orig_items, 'Pos');
             array_multisort($positions, SORT_ASC, $orig_items);
 
-	    foreach ($this->fields['Items'] ?? [] as $item) {
+            foreach ($this->fields['Items'] ?? [] as $item) {
                 $nextItem = [
                     'Label' => $item['Label'] ?? '',
                     'Group' => $item['Group'] ?? '',
@@ -294,8 +294,8 @@ class EDS extends DefaultRecord
                     && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
                     && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
                 ) {
-		    $items[] = $nextItem;
-		}
+                    $items[] = $nextItem;
+                }
             }
         }
         return $items;
