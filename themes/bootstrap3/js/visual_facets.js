@@ -66,9 +66,10 @@ function settitle() {
 function showVisualFacets(pivotdata) {
   if (!d3.select("#visualResults").empty()) {
     $('#visualResults').html('');
-    $('.limitSelect').css('display', 'none');
-    $('.sortSelector').css('display', 'none');
+    $('.search-result-limit').css('display', 'none');
+    $('.search-sort').css('display', 'none');
     $('.pagination').css('display', 'none');
+    $('.pagination-simple').css('display', 'none');
     $('.bulkActionButtons').css('display', 'none');
 
     //  Color scheme developed using the awesome site
