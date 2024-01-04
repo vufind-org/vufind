@@ -30,6 +30,7 @@
 namespace VuFindSearch\Feature;
 
 use VuFindSearch\ParamBag;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Work expressions feature interface definition.
@@ -46,10 +47,14 @@ interface WorkExpressionsInterface
      * Return work expressions.
      *
      * @param string   $id            Id of record to compare with
-     * @param array    $workKeys      Work identification keys
+     * @param array    $includeSelf   Whether to include the record to compare with in the results
      * @param ParamBag $defaultParams Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function workExpressions($id, $workKeys, ParamBag $defaultParams = null);
+    public function workExpressions(
+        string $id,
+        bool $includeSelf,
+        ParamBag $defaultParams = null
+    ): RecordCollectionInterface;
 }

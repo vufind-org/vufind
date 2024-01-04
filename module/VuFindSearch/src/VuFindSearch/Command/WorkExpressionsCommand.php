@@ -30,7 +30,6 @@
 
 namespace VuFindSearch\Command;
 
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Command\Feature\RecordIdentifierTrait;
 use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
@@ -50,29 +49,28 @@ class WorkExpressionsCommand extends CallMethodCommand
     use RecordIdentifierTrait;
 
     /**
-     * Work identification keys.
+     * Whether to include the record to compare with in the results
      *
-     * @var ?array
+     * @var bool
      */
-    protected $workKeys;
+    protected $includeSelf;
 
     /**
      * WorkExpressionsCommand constructor.
      *
-     * @param string    $backendId Search backend identifier
-     * @param string    $id        Identifier of record to compare with
-     * @param ?array    $workKeys  Work identification keys (optional; retrieved from
-     *                             the record to compare with if not specified)
-     * @param ?ParamBag $params    Search backend parameters
+     * @param string    $backendId   Search backend identifier
+     * @param string    $id          Identifier of record to compare with
+     * @param bool      $includeSelf Whether to include the record to compare with in the results
+     * @param ?ParamBag $params      Search backend parameters
      */
     public function __construct(
         string $backendId,
         string $id,
-        ?array $workKeys,
+        bool $includeSelf,
         ?ParamBag $params = null
     ) {
         $this->id = $id;
-        $this->workKeys = $workKeys;
+        $this->includeSelf = $includeSelf;
         parent::__construct(
             $backendId,
             WorkExpressionsInterface::class,
@@ -90,41 +88,18 @@ class WorkExpressionsCommand extends CallMethodCommand
     {
         return [
             $this->getRecordIdentifier(),
-            $this->getWorkKeys(),
+            $this->getIncludeSelf(),
             $this->getSearchParameters(),
         ];
     }
 
     /**
-     * Execute command on backend.
+     * Return "include self" setting.
      *
-     * @param BackendInterface $backend Backend
-     *
-     * @return CommandInterface Command instance for method chaining
+     * @return bool
      */
-    public function execute(BackendInterface $backend): CommandInterface
+    public function getIncludeSelf(): bool
     {
-        $id = $this->getRecordIdentifier();
-        $workKeys = $this->getWorkKeys();
-
-        if (empty($workKeys)) {
-            $records = $backend->retrieve($id)->getRecords();
-            if (!empty($records[0])) {
-                $fields = $records[0]->getRawData();
-                $this->workKeys = $fields['work_keys_str_mv'] ?? [];
-            }
-        }
-
-        return parent::execute($backend);
-    }
-
-    /**
-     * Return work identification keys.
-     *
-     * @return array|null
-     */
-    public function getWorkKeys(): ?array
-    {
-        return $this->workKeys;
+        return $this->includeSelf;
     }
 }
