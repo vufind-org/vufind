@@ -259,10 +259,10 @@ class EDS extends DefaultRecord
         $nameFilter = null
     ) {
         $items = [];
-        if (isset($this->fields['Items'])) {
+        if (is_array($this->fields['Items'] ?? null)) {
             $itemCoreOrderConfig = $this->recordConfig?->ItemCoreOrder?->toArray() ?? [];
             // Only sort by label if we have a sort config and we're fetching multiple labels:
-            $origItems = $this->fields['Items'] ?? [];
+            $origItems = $this->fields['Items'];
             if (!empty($itemCoreOrderConfig) && $labelFilter === null) {
                 $nextPos = count($origItems);
                 foreach (array_keys($origItems) as $key) {
