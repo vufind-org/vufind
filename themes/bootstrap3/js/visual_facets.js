@@ -68,6 +68,7 @@ function showVisualFacets(pivotdata) {
     $('#visualResults').html('');
     $('.search-result-limit').css('display', 'none');
     $('.search-sort').css('display', 'none');
+    $('.search-stats').css('visibility', 'hidden');
     $('.pagination').css('display', 'none');
     $('.pagination-simple').css('display', 'none');
     $('.bulkActionButtons').css('display', 'none');
