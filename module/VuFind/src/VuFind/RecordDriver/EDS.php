@@ -270,7 +270,7 @@ class EDS extends DefaultRecord
                     $label = $origItems[$key]['Label'] ?? '';
                     $configuredPos = array_search($label, $itemGlobalOrderConfig);
                     $origItems[$key]['Pos'] = $configuredPos === false
-                        ? $nextPos++ : $configuredPos;
+                        ? ++$nextPos : $configuredPos;
                 }
                 $positions = array_column($origItems, 'Pos');
                 array_multisort($positions, SORT_ASC, $origItems);
