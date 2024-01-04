@@ -265,7 +265,8 @@ class EDS extends DefaultRecord
             $origItems = $this->fields['Items'];
             // Only sort by label if we have a sort config and we're fetching multiple labels:
             if (!empty($itemGlobalOrderConfig) && $labelFilter === null) {
-                $nextPos = count($origItems); // 1st position to use for non-configured labels
+                // We want unassigned labels to appear AFTER configured labels:
+                $nextPos = max(array_keys($itemGlobalOrderConfig));
                 foreach (array_keys($origItems) as $key) {
                     $label = $origItems[$key]['Label'] ?? '';
                     $configuredPos = array_search($label, $itemGlobalOrderConfig);
