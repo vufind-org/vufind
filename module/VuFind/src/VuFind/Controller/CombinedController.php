@@ -125,10 +125,6 @@ class CombinedController extends AbstractSearch
             $viewParams = [
                 'searchClassId' => $searchClassId,
                 'currentSearch' => $settings,
-                'showCartControls' => $currentOptions->supportsCart()
-                    && $cart->isActive(),
-                'showBulkOptions' => $currentOptions->supportsCart()
-                    && ($general->Site->showBulkOptions ?? false),
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
             // Load custom CSS, if necessary:
@@ -169,8 +165,6 @@ class CombinedController extends AbstractSearch
             ->get(\VuFind\Search\Options\PluginManager::class);
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('combined')->toArray();
-        $supportsCart = false;
-        $supportsCartOptions = [];
         // Save the initial type value, since it may get manipulated below:
         $initialType = $this->params()->fromQuery('type');
         foreach ($this->getTabConfig($config) as $current => $settings) {
@@ -180,10 +174,6 @@ class CombinedController extends AbstractSearch
                 $settings,
                 $currentOptions->getHandlerForLabel($initialType)
             );
-            $supportsCartOptions[] = $currentOptions->supportsCart();
-            if ($currentOptions->supportsCart()) {
-                $supportsCart = true;
-            }
             [$controller, $action]
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
@@ -221,10 +211,6 @@ class CombinedController extends AbstractSearch
             $placement = 'distributed';
         }
 
-        // Get default config for showBulkOptions
-        $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-
         // Identify if any modules use include_recommendations_side or
         // include_recommendations_noresults_side.
         $columnSideRecommendations = [];
@@ -250,9 +236,6 @@ class CombinedController extends AbstractSearch
                 'params' => $results->getParams(),
                 'placement' => $placement,
                 'results' => $results,
-                'supportsCart' => $supportsCart,
-                'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
                 'columnSideRecommendations' => $columnSideRecommendations,
             ]
         );

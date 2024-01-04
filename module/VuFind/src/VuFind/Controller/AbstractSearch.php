@@ -430,11 +430,6 @@ class AbstractSearch extends AbstractBase
             return $this->getRssSearchResponse($view);
         }
 
-        // Search toolbar
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $view->showBulkOptions = $config->Site->showBulkOptions ?? false;
-
         // Schedule options for footer tools
         $view->scheduleOptions = $this->serviceLocator
             ->get(\VuFind\Search\History::class)
