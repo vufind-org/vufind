@@ -61,5 +61,4 @@ args.forEach(lang => {
     fs.writeFileSync(`${home}/languages/ISO639-3/${lang}.ini`, lines + "\n" + existing);
 });
 
-
 childProcess.execSync(`php ${home}/public/index.php language normalize languages`);
