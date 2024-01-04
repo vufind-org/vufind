@@ -128,7 +128,9 @@
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
         "qa": "phing qa-console -Ddefaultconfigs=true",
-        "install-npm-dependencies": "npm install && phing copynodemodules",
-        "update-npm-dependencies": "npm update && phing copynodemodules"
+        "update-npm-dependencies": [
+            "npm update",
+            "cd themes/bootstrap3 && npm run updateDeps"
+        ]
     }
 }
