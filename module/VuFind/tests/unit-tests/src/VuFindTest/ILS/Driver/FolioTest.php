@@ -215,6 +215,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Check a valid token retrieved from session cache
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testCheckValidToken(): void
@@ -226,6 +228,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Check and renew an invalid token retrieved from session cache (RTR authentication)
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testCheckInvalidToken(): void
@@ -236,6 +240,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Check and renew an invalid token retrieved from session cache (legacy authentication)
+     *
+     * @depends testTokensWithLegacyAuth
      *
      * @return void
      */
@@ -253,6 +259,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Confirm that cancel holds validates the current patron.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testCancelHoldsPatronValidation(): void
@@ -267,6 +275,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Confirm that cancel holds processes various statuses appropriately.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -289,6 +299,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test an unsuccessful patron login with default settings
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testUnsuccessfulPatronLogin(): void
@@ -299,6 +311,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test patron login with Okapi (RTR authentication)
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -323,6 +337,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test patron login with Okapi (Legacy authentication)
+     *
+     * @depends testTokensWithLegacyAuth
      *
      * @return void
      */
@@ -351,6 +367,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testSuccessfulPlaceHold(): void
@@ -374,6 +392,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful place hold (using an old version of mod-circulation)
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -399,6 +419,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold with no expiration date
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testSuccessfulPlaceHoldNoExpirationDate(): void
@@ -420,6 +442,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test unsuccessful place hold with invalid expiration date
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -444,6 +468,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test unsuccessful place hold
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testUnsuccessfulPlaceHold(): void
@@ -467,6 +493,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful renewal
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -495,6 +523,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful call to holds, no items
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testNoItemsGetMyHolds(): void
@@ -510,6 +540,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, one available item
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -538,6 +570,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, one available item placed for a proxy
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -568,6 +602,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful call to holds, one in_transit item
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testInTransitItemGetMyHolds(): void
@@ -595,6 +631,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, item in queue, position x
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -625,6 +663,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable when no excludeHoldLocationsCompareMode
      * config value is set
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableDefaultConfig(): void
@@ -639,6 +679,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable with the exact compare mode
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -659,6 +701,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test calls to isHoldable when using regex mode
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableRegexMode(): void
@@ -678,6 +722,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test calls to isHoldable to verify handling of invalid regex
      * when in regex compare mode
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -703,6 +749,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
      * config is case insensitive
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableCaseSensitivityConfig(): void
@@ -727,6 +775,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable using exact mode with invalid
      * location values and paramter values to isHoldable
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableExactModeInvalidInput(): void
@@ -744,6 +794,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the getMyProfile method.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -772,6 +824,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the getProxiedUsers method.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetProxiedUsers(): void
@@ -787,6 +841,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the getProxyingUsers method.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -838,6 +894,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding with HRID-based lookup
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingWithHridLookup(): void
@@ -850,6 +908,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getStatuses.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -865,6 +925,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getHolding with FOLIO-based sorting.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -904,6 +966,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding filters empty holding statements appropriately.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingFilteringOfEmptyHoldingStatements(): void
@@ -942,6 +1006,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding with checked out item.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingWithDueDate(): void
@@ -977,6 +1043,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getHolding with VuFind-based sorting.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -1039,6 +1107,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getPagedResults with less than the limit value returned
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetPagedResultsLessThanLimit(): void
@@ -1066,6 +1136,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getPagedResults with greater than the limit value returned
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetPagedResultsGreaterThanLimit(): void
@@ -1092,6 +1164,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getPagedResults with results equal to the limit value returned
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -1123,6 +1197,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * testGetPagedResultsEqualToLimit since the totalRecords in the
      * response from the API is inacurrate for the first response
      * (i.e. just an estimate).
+     *
+     * @depends testTokens
      *
      * @return void
      */
