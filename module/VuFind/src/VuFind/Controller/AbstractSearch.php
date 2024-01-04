@@ -40,6 +40,7 @@ use VuFind\Solr\Utils as SolrUtils;
 use function count;
 use function in_array;
 use function intval;
+use function is_array;
 
 /**
  * VuFind Search Controller
@@ -231,18 +232,10 @@ class AbstractSearch extends AbstractBase
         $rManager = $this->serviceLocator
             ->get(\VuFind\Recommend\PluginManager::class);
 
-        // Special case: override recommend settings through parameter (used by
-        // combined search)
-        if ($override = $this->params()->fromQuery('recommendOverride')) {
-            return function ($runner, $p, $searchId) use ($rManager, $override) {
-                $listener = new RecommendListener($rManager, $searchId);
-                $listener->setConfig($override);
-                $listener->attach($runner->getEventManager()->getSharedManager());
-            };
-        }
+        $override = $this->params()->fromQuery('recommendOverride');
 
-        // Standard case: retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
+        // Retrieve recommend settings from params object:
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()
@@ -252,6 +245,13 @@ class AbstractSearch extends AbstractBase
                     $config[$key] = $value;
                 }
             }
+
+            // Special case: override recommend settings through parameter (used by
+            // combined search)
+            if (is_array($override)) {
+                $config = array_merge($config, $override);
+            }
+
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
