@@ -240,19 +240,31 @@ var VuFind = (function VuFind() {
   };
 
   var loadHtml = function loadHtml(_element, url, data, success) {
-    var $elem = $(_element);
-    if ($elem.length === 0) {
+    var element = document.querySelector(_element);
+  
+    if (!element) {
       return;
     }
-    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
-      if ('success' === textStatus || 'notmodified' === textStatus) {
-        $elem.html(updateCspNonce(responseText));
+  
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+  
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+        element.innerHTML = updateCspNonce(xhr.responseText);
+  
+        if (typeof success !== 'undefined') {
+          success(xhr.responseText, xhr.statusText, xhr);
+        }
       }
-      if (typeof success !== 'undefined') {
-        success(responseText, textStatus, jqXhr);
-      }
-    });
-  };
+    };
+  
+    xhr.onerror = () => {
+      console.error('Request failed');
+    };
+  
+    xhr.send(data);
+  };  
 
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
