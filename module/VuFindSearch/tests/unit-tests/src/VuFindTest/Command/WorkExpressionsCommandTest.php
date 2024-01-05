@@ -30,6 +30,7 @@
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Command\WorkExpressionsCommand;
 
 /**
@@ -57,57 +58,19 @@ class WorkExpressionsCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
             ->will($this->returnValue($backendId));
+        $result = new RecordCollection([]);
         $backend->expects($this->once())->method('workExpressions')
             ->with(
                 $this->equalTo('id'),
-                $this->equalTo(['key1', 'key2']),
+                $this->equalTo(true),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));  // not a realistic value!
+            )->willReturn($result);  // not a realistic value!
         $command = new WorkExpressionsCommand(
             $backendId,
             'id',
-            ['key1', 'key2'],
+            true,
             $params
         );
-        $this->assertEquals('result', $command->execute($backend)->getResult());
-    }
-
-    /**
-     * Test that the command looks up work keys if they are omitted
-     *
-     * @return void
-     */
-    public function testWorkKeyAutofill()
-    {
-        $params = new \VuFindSearch\ParamBag([]);
-        $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $collection = new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
-            ['response' => ['numFound' => 1]]
-        );
-        $mockRecord = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()->getMock();
-        $mockRecord->expects($this->once())->method('getRawData')
-            ->will($this->returnValue(['work_keys_str_mv' => ['key1', 'key2']]));
-        $collection->add($mockRecord);
-        $backend->expects($this->once())->method('retrieve')
-            ->with($this->equalTo('id'))
-            ->will($this->returnValue($collection));
-        $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
-        $backend->expects($this->once())->method('workExpressions')
-            ->with(
-                $this->equalTo('id'),
-                $this->equalTo(['key1', 'key2']),
-                $this->equalTo($params)
-            )->will($this->returnValue('result'));  // not a realistic value!
-        $command = new WorkExpressionsCommand(
-            $backendId,
-            'id',
-            null
-        );
-        $this->assertEquals('result', $command->execute($backend)->getResult());
+        $this->assertEquals($result, $command->execute($backend)->getResult());
     }
 }
