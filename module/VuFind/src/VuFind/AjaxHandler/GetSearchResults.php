@@ -42,6 +42,7 @@ use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 
 use function call_user_func;
+use function in_array;
 
 /**
  * "Get Search Results" AJAX handler
