@@ -219,7 +219,8 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
             $this->searchFilters
         );
         foreach (($results['records'] ?? []) as $i => $record) {
-            $results['records'][$i]['url'] = $this->recordBaseUrl . '/' . $record['id'];
+            $results['records'][$i]['url'] =
+                $this->recordBaseUrl . '/' . urlencode($record['id']);
         }
         return $results;
     }
