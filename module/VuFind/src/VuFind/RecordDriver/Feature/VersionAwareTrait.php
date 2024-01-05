@@ -70,7 +70,7 @@ trait VersionAwareTrait
         }
 
         if (!isset($this->otherVersionsCount)) {
-            if (!($workKeys = $this->tryMethod('getWorkKeys'))) {
+            if (!$this->tryMethod('getWorkKeys')) {
                 if (!($this instanceof VersionAwareInterface)) {
                     throw new \Exception(
                         'VersionAwareTrait requires VersionAwareInterface'
@@ -84,7 +84,7 @@ trait VersionAwareTrait
             $command = new WorkExpressionsCommand(
                 $this->getSourceIdentifier(),
                 $this->getUniqueID(),
-                $workKeys,
+                false,
                 $params
             );
             $results = $this->searchService->invoke($command)->getResult();
@@ -104,11 +104,7 @@ trait VersionAwareTrait
      */
     public function getVersions($includeSelf = false, $count = 20, $offset = 0)
     {
-        if (null === $this->searchService) {
-            return false;
-        }
-
-        if (!($workKeys = $this->getWorkKeys())) {
+        if (null === $this->searchService || !$this->getWorkKeys()) {
             return false;
         }
 
@@ -118,8 +114,8 @@ trait VersionAwareTrait
             $params->add('start', $offset);
             $command = new WorkExpressionsCommand(
                 $this->getSourceIdentifier(),
-                $includeSelf ? '' : $this->getUniqueID(),
-                $workKeys,
+                $this->getUniqueID(),
+                $includeSelf,
                 $params
             );
             $this->otherVersions = $this->searchService->invoke(

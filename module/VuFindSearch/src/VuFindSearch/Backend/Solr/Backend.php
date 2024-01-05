@@ -137,7 +137,7 @@ class Backend extends AbstractBackend implements
         ParamBag $params = null
     ) {
         if ($query instanceof WorkKeysQuery) {
-            return $this->workExpressions($query->getId(), $query->getWorkKeys(), $params);
+            return $this->workExpressions($query->getId(), $query->getIncludeSelf(), $params);
         }
         $json = $this->rawJsonSearch($query, $offset, $limit, $params);
         $collection = $this->createRecordCollection($json);
@@ -422,18 +422,28 @@ class Backend extends AbstractBackend implements
      * Return work expressions.
      *
      * @param string   $id            Id of record to compare with
-     * @param array    $workKeys      Work identification keys
+     * @param array    $includeSelf   Whether to include the record to compare with in the results
      * @param ParamBag $defaultParams Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function workExpressions($id, $workKeys, ParamBag $defaultParams = null)
-    {
+    public function workExpressions(
+        string $id,
+        bool $includeSelf,
+        ParamBag $defaultParams = null
+    ): RecordCollectionInterface {
+        $recordResponse = $this->connector->retrieve($id);
+        $recordCollection = $this->createRecordCollection($recordResponse);
+        $record = $recordCollection->first();
+        if (!$record || !($workKeys = $record->getWorkKeys())) {
+            return $this->createRecordCollection('{}');
+        }
+
         $params = $defaultParams ? clone $defaultParams
             : new \VuFindSearch\ParamBag();
         $this->injectResponseWriter($params);
         $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
-        if ($id) {
+        if (!$includeSelf) {
             $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
         }
         if (!$params->hasParam('rows')) {
