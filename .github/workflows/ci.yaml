@@ -12,8 +12,9 @@ jobs:
     strategy:
       matrix:
         php-version: ['8.1', '8.2', '8.3']
-        # We run most tests on all platforms, but we only run Javascript-related tests in 8.1.
-        # Since the results should be the same on all platforms, we don't need to repeat them.
+        # We run PHP-based tests on all platforms (qa-php), but we only include PHP AND
+        # Javascript-related tests (qa-console) once. Since the JS results should be the
+        # same on all platforms, we don't need to repeat them.
         include:
           - php-version: 8.1
             phing_tasks: "qa-php"
