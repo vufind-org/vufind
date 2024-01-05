@@ -556,9 +556,11 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         // Set the private recordConfig property
         // TODO -- is there a better way to set this config?
-        $reflection = new \ReflectionProperty($record::class, 'recordConfig');
-        $reflection->setAccessible(true);
-        $reflection->setValue($record, (object)($config ?? $this->defaultDriverConfig));
+        $this->setProperty(
+            $record,
+            'recordConfig',
+            (object)($config ?? $this->defaultDriverConfig)
+        );
 
         return $record;
     }
