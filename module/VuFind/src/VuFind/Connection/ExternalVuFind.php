@@ -62,7 +62,7 @@ class ExternalVuFind implements
      *
      * @return void
      */
-    public function setBaseUrl($baseUrl)
+    public function setBaseUrl(string $baseUrl): void
     {
         $this->baseUrl = $baseUrl;
     }
@@ -77,8 +77,12 @@ class ExternalVuFind implements
      *
      * @return array The JSON-decoded response from the API.
      */
-    public function search($queryString, $requestParam, $limit, $searchFilters = [])
-    {
+    public function search(
+        string $queryString,
+        string $requestParam,
+        int $limit,
+        array $searchFilters = []
+    ): array {
         if (!$this->baseUrl) {
             $this->logError('Must call setBaseUrl() before searching.');
             return [];
