@@ -46,8 +46,6 @@ use VuFind\RecordDriver\EDS;
  */
 class EDSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ReflectionTrait;
-
     /**
      * Default test configuration
      *
@@ -214,14 +212,11 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         // Change the default order the array data is in and exclude one of the items
         // to ensure it appears at the end
-        $driverConfig = [
-            'ItemGlobalOrder' => [
-                '1' => 'Authors', // note that we used the 'Label' and not the 'Name'
-                '2' => 'Title',
-            ],
-        ];
+        $config = $this->defaultDriverConfig;
+        $config['ItemGlobalOrder']['1'] = 'Authors';
+        $config['ItemGlobalOrder']['2'] = 'Title';
 
-        $driver = $this->getDriverWithItemData($driverConfig);
+        $driver = $this->getDriverWithItemData($config);
         $items = [
             [
                 'Name' => 'Author',
@@ -253,11 +248,11 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetItemsWithInvalidConfig(): void
     {
-        $driverConfig = [
-            'ItemGlobalOrder' => 'invalid',
-        ];
+        $config = $this->defaultDriverConfig;
+        $config['ItemGlobalOrder']['invalid'] = null;
 
-        $driver = $this->getDriverWithItemData($driverConfig);
+        $driver = $this->getDriverWithItemData($config);
+
         // items in original order are returned when the config can't be parsed
         $items = [
             [
@@ -551,16 +546,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver($overrides = [], array $config = null): EDS
     {
-        $record = new EDS();
+        $record = new EDS(null, new \Laminas\Config\Config($config ?? $this->defaultDriverConfig));
         $record->setRawData($overrides);
-
-        // Set the private recordConfig property
-        // TODO -- is there a better way to set this config?
-        $this->setProperty(
-            $record,
-            'recordConfig',
-            (object)($config ?? $this->defaultDriverConfig)
-        );
 
         return $record;
     }
