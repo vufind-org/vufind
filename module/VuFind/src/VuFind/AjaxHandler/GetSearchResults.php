@@ -326,9 +326,9 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         string $template = 'search/pagination.phtml',
         string $ulClass = ''
     ): ?string {
-        $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
-        $paginationOptions = 'EDS' === $backend
-            ? ['disableFirst' => true, 'disableLast' => true] : [];
+        $paginationOptions = $results->getOptions()->supportsFirstLastNavigation()
+            ? []
+            : ['disableFirst' => true, 'disableLast' => true];
         if ($ulClass) {
             $paginationOptions['className'] = $ulClass;
         }
