@@ -62,7 +62,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
   }
 
-  function doTreeSearch(searchEl, treeEl) {
+  function doTreeSearch(containerEl, searchEl, treeEl) {
     const loadIndicatorEl = searchEl.querySelector('.js-load-indicator');
     const searchTextEl = searchEl.querySelector('.js-search-text');
     const searchTypeEl = searchEl.querySelector('.js-search-type');
@@ -71,9 +71,17 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       console.error('Could not find search fields');
       return;
     }
-    const limitMsgEl = searchEl.querySelector('.js-limit-reached');
-    const errorMsgEl = searchEl.querySelector('.js-search-error');
-    const noResultsMsgEl = searchEl.querySelector('.js-no-results');
+
+    // Show full hierarchy for search results
+    const showEl = containerEl.querySelector('.js-show-full-tree');
+    if (showEl && !showEl.checked) {
+      showEl.checked = true;
+      showFullHierarchy(treeEl);
+    }
+
+    const limitMsgEl = containerEl.querySelector('.js-limit-reached');
+    const errorMsgEl = containerEl.querySelector('.js-search-error');
+    const noResultsMsgEl = containerEl.querySelector('.js-no-results');
     if (limitMsgEl) {
       limitMsgEl.classList.add('hidden');
     }
@@ -200,13 +208,13 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       searchEl.classList.remove('hidden');
       const submitBtn = searchEl.querySelector('.js-submit');
       if (submitBtn) {
-        submitBtn.addEventListener('click', () => doTreeSearch(searchEl, treeEl));
+        submitBtn.addEventListener('click', () => doTreeSearch(containerEl, searchEl, treeEl));
       }
       const fieldEl = searchEl.querySelector('.js-search-text');
       if (fieldEl) {
         fieldEl.addEventListener('keyup', (ev) => {
           if (ev.code === 'Enter' && !submitBtn.disabled) {
-            doTreeSearch(searchEl, treeEl);
+            doTreeSearch(containerEl, searchEl, treeEl);
           }
         });
       }

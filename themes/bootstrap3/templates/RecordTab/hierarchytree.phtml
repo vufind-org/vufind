@@ -37,11 +37,11 @@
         </select>
         <input type="submit" class="btn btn-default js-submit" value="<?=$this->transEscAttr('Search') ?>">
         <?=$this->icon('spinner', 'js-load-indicator hidden') ?>
-        <div class="js-search-error alert alert-danger hidden"><?=$this->transEsc('An error has occurred')?></div>
-        <div class="js-no-results alert alert-danger hidden"><?=$this->transEsc('nohit_heading')?></div>
-        <div class="js-limit-rearched alert alert-danger hidden">
-          <?=$this->translate('tree_search_limit_reached_html', ['%%limit%%' => $this->tab->getSearchLimit()])?>
-        </div>
+      </div>
+      <div class="js-search-error alert alert-danger hidden"><?=$this->transEsc('An error has occurred')?></div>
+      <div class="js-no-results alert alert-danger hidden"><?=$this->transEsc('nohit_heading')?></div>
+      <div class="js-limit-reached alert alert-danger hidden">
+        <?=$this->translate('tree_search_limit_reached_html', ['%%limit%%' => $this->tab->getSearchLimit()])?>
       </div>
     <?php endif; ?>
     <?=
