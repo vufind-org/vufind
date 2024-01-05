@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.1"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -25,7 +25,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ahand/mobileesp": "dev-master",
         "apereo/phpcas": "1.6.1",
         "cap60552/php-sip2": "1.0.0",
