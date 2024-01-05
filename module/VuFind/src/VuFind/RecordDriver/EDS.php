@@ -276,6 +276,7 @@ class EDS extends DefaultRecord
                 $positions = array_column($origItems, 'Pos');
                 array_multisort($positions, SORT_ASC, $origItems);
             }
+
             foreach ($origItems as $item) {
                 $nextItem = [
                     'Label' => $item['Label'] ?? '',
