@@ -114,7 +114,7 @@ class ExternalVuFind implements
             return [];
         }
 
-        $responseData = trim($response->getContent());
+        $responseData = trim($response->getBody());
         $arr = json_decode($responseData, true);
         return $arr ?? [];
     }
