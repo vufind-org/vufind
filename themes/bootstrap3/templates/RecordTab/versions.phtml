@@ -18,8 +18,9 @@
       ?>
     </div>
     <div class="search-controls">
-      <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <?=$this->icon('more') ?> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+      <a class="more-link icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
+        <?=$this->icon('more', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?></span>
       </a>
     </div>
   </nav>
@@ -32,8 +33,9 @@
   <?php endforeach; ?>
   <div class="search-tools hidden-print">
     <div class="search-controls">
-      <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <?=$this->icon('more') ?> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+      <a class="more-link icon-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
+        <?=$this->icon('more', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?></span>
       </a>
     </div>
   </div>
