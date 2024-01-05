@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
 
 /**
@@ -89,8 +90,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
         if (!($this->config['Site']['showBulkOptions'] ?? false)) {
             return false;
         }
-        $options = $this->params->getOptions();
-        return $options->supportsCart();
+        return $this->getOptions()->supportsCart();
     }
 
     /**
@@ -100,10 +100,9 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
      */
     public function cartControlsEnabled()
     {
-        $options = $this->params->getOptions();
         $cart = $this->view->plugin('cart');
         return
-            $options->supportsCart()
+            $this->getOptions()->supportsCart()
             && $cart()->isActive()
             && ($this->bulkOptionsEnabled() || !$cart()->isActiveInSearch());
     }
@@ -116,5 +115,18 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     public function checkboxesEnabled()
     {
         return $this->bulkOptionsEnabled() || $this->cartControlsEnabled();
+    }
+
+    /**
+     * Get search options from params
+     *
+     * @return Options
+     */
+    protected function getOptions(): Options
+    {
+        if (null === $this->params) {
+            throw new \Exception('Params not provided for SearchSettings helper');
+        }
+        return $this->params->getOptions();
     }
 }
