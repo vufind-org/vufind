@@ -36,7 +36,6 @@ use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\Search;
 use VuFind\Record\Loader as RecordLoader;
-use VuFind\Record\VersionsHelper;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchNormalizer;
@@ -117,13 +116,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     protected $config;
 
     /**
-     * Record versions helper
-     *
-     * @var VersionsHelper
-     */
-    protected $versionsHelper;
-
-    /**
      * Elements to render for each search results page.
      *
      * Note that results list is last before scripts so that we update most controls
@@ -170,6 +162,15 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     ];
 
     /**
+     * Search types that are not saved to history
+     *
+     * @var array
+     */
+    protected $searchTypesWithoutHistory = [
+        'versions',
+    ];
+
+    /**
      * Constructor
      *
      * @param SessionSettings  $sessionSettings Session settings
@@ -181,7 +182,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param SearchNormalizer $normalizer      Search normalizer
      * @param SearchTable      $searchTable     Search table
      * @param array            $config          Main configuration
-     * @param VersionsHelper   $versionsHelper  Versions helper
      */
     public function __construct(
         SessionSettings $sessionSettings,
@@ -192,8 +192,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         string $sessionId,
         SearchNormalizer $normalizer,
         Search $searchTable,
-        array $config,
-        VersionsHelper $versionsHelper
+        array $config
     ) {
         $this->sessionSettings = $sessionSettings;
         $this->resultsManager = $resultsManager;
@@ -204,7 +203,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $this->searchNormalizer = $normalizer;
         $this->searchTable = $searchTable;
         $this->config = $config;
-        $this->versionsHelper = $versionsHelper;
     }
 
     /**
@@ -236,26 +234,13 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         parse_str($params->fromQuery('querystring', ''), $searchParams);
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $searchType = $params->fromQuery('searchType', '');
-        if ('versions' === $searchType) {
-            $driverAndKeys = $this->versionsHelper->getDriverAndWorkKeysFromParams(
-                $searchParams,
-                $backend
-            );
-            if (empty($driverAndKeys['keys'])) {
-                return null;
-            }
-
-            $searchParams['lookfor'] = $this->versionsHelper
-                ->getSearchStringFromWorkKeys((array)$driverAndKeys['keys']);
-            $searchParams['type'] = $this->versionsHelper->getWorkKeysSearchType();
-        }
 
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->initFromRequest(new Parameters($searchParams));
 
-        if ('versions' !== $searchType) {
+        if (!in_array($searchType, $this->searchTypesWithoutHistory)) {
             $this->saveSearchToHistory($results);
         }
 
@@ -272,14 +257,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function getElements(Params $params, Results $results): array
     {
-        if ($params->fromQuery('searchType', '') === 'versions') {
-            // Customize the URL helper to make sure it builds proper versions URLs
-            $results->getUrlQuery()
-                ->setDefaultParameter('id', $params->fromQuery('id'))
-                ->setDefaultParameter('keys', $params->fromQuery('keys'))
-                ->setSuppressQuery(true);
-        }
-
         $result = [];
         foreach ($this->elements as $selector => $element) {
             $content = call_user_func([$this, $element['method']], $params, $results);
