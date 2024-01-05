@@ -62,6 +62,19 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
   }
 
+  function hideFullHierarchy(treeEl) {
+    treeEl.querySelectorAll('li').forEach(el => el.classList.add('hidden'));
+    let liEl = treeEl.querySelector('.hierarchy-tree__selected');
+    while (liEl) {
+      liEl.classList.remove('hidden');
+      liEl = liEl.parentElement.closest('li');
+    }
+  }
+
+  function showFullHierarchy(treeEl) {
+    treeEl.querySelectorAll('li').forEach(el => el.classList.remove('hidden'));
+  }
+
   function doTreeSearch(containerEl, searchEl, treeEl) {
     const loadIndicatorEl = searchEl.querySelector('.js-load-indicator');
     const searchTextEl = searchEl.querySelector('.js-search-text');
@@ -149,19 +162,6 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     if (selectedEl) {
       selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  }
-
-  function hideFullHierarchy(treeEl) {
-    treeEl.querySelectorAll('li').forEach(el => el.classList.add('hidden'));
-    let liEl = treeEl.querySelector('.hierarchy-tree__selected');
-    while (liEl) {
-      liEl.classList.remove('hidden');
-      liEl = liEl.parentElement.closest('li');
-    }
-  }
-
-  function showFullHierarchy(treeEl) {
-    treeEl.querySelectorAll('li').forEach(el => el.classList.remove('hidden'));
   }
 
   function initTree(containerEl) {
