@@ -14,7 +14,7 @@
       : '<span class="js-search-stats" data-key="showing_results_of_html">' . $this->translate('showing_results_of_html', $transParams) . '</span>';
     // Append search-heading only if it's not empty to avoid extra whitespace:
     if ($heading = $this->slot('search-heading')->get()) {
-      $showingResults .= $heading;
+      $showingResults .= ' ' . $heading;
     }
   } else {
     $showingResults = !empty($this->skipTotalCount)

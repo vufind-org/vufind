@@ -24,8 +24,7 @@
     </div>
   <?php endif; ?>
   <div class="media-body">
-
-    <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+    <h1><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
 
     <?php $summary = $this->driver->getSummary(); ?>
     <?php if ($summary = $summary[0] ?? false): ?>

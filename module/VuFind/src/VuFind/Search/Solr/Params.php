@@ -398,6 +398,19 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Initialize facet settings for the new items page.
+     *
+     * @return void
+     */
+    public function initNewItemsFacets()
+    {
+        // Load Advanced settings if NewItems settings are missing (fallback to defaults):
+        if (!$this->initFacetList('NewItems', 'NewItems_Settings')) {
+            $this->initAdvancedFacets();
+        }
+    }
+
+    /**
      * Add filters to the object based on values found in the request object.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user

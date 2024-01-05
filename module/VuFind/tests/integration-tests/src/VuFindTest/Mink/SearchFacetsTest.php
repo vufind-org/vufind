@@ -526,6 +526,126 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testHierarchicalFacetSort
+     *
+     * @return array
+     */
+    public function hierarchicalFacetSortProvider(): array
+    {
+        return [
+            [
+                null,
+                [
+                    [
+                        'value' => 'Top Level, Sorted Last',
+                        'children' => [
+                            'level2a',
+                            'level2b',
+                        ],
+                    ],
+                    [
+                        'value' => 'Top Level, Sorted First',
+                        'children' => [
+                            'Second Level, Sorted Last',
+                            'Second Level, Sorted First',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'top',
+                [
+                    [
+                        'value' => 'Top Level, Sorted First',
+                        'children' => [
+                            'Second Level, Sorted Last',
+                            'Second Level, Sorted First',
+                        ],
+                    ],
+                    [
+                        'value' => 'Top Level, Sorted Last',
+                        'children' => [
+                            'level2a',
+                            'level2b',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'all',
+                [
+                    [
+                        'value' => 'Top Level, Sorted First',
+                        'children' => [
+                            'Second Level, Sorted First',
+                            'Second Level, Sorted Last',
+                        ],
+                    ],
+                    [
+                        'value' => 'Top Level, Sorted Last',
+                        'children' => [
+                            'level2a',
+                            'level2b',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test that hierarchical facet sort options work properly.
+     *
+     * @param ?string $sort     Sort option
+     * @param array   $expected Expected facet values in order
+     *
+     * @dataProvider hierarchicalFacetSortProvider
+     *
+     * @return void
+     */
+    public function testHierarchicalFacetSort(?string $sort, array $expected): void
+    {
+        $facetConfig = [
+            'Results' => [
+                'hierarchical_facet_str_mv' => 'hierarchy',
+            ],
+            'SpecialFacets' => [
+                'hierarchical[]' => 'hierarchical_facet_str_mv',
+            ],
+            'Advanced_Settings' => [
+                'translated_facets[]' => 'hierarchical_facet_str_mv:Facets',
+            ],
+        ];
+        if (null !== $sort) {
+            $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions[hierarchical_facet_str_mv]'] = $sort;
+        }
+        $this->changeConfigs(
+            [
+                'facets' => $facetConfig,
+            ]
+        );
+        $page = $this->performSearch('building:"hierarchy.mrc"');
+        foreach ($expected as $index => $facet) {
+            $topLi = $this->findCss($page, '#side-collapse-hierarchical_facet_str_mv ul.facet-tree > li', null, $index);
+            $item = $this->findCss($topLi, '.facet-value');
+            $this->assertEquals(
+                $facet['value'],
+                $item->getText(),
+                "Hierarchical facet item $index"
+            );
+            foreach ($facet['children'] as $childIndex => $childFacet) {
+                $childLi = $this->findCss($topLi, 'ul > li.facet-tree__parent', null, $childIndex);
+                $childItem = $this->findCss($childLi, '.facet-value');
+                $this->assertEquals(
+                    $childFacet,
+                    $childItem->getText(),
+                    "Hierarchical facet item $index child $childIndex"
+                );
+            }
+        }
+    }
+
+    /**
      * Test that we can persist uncollapsed state of collapsed facets
      *
      * @return void
