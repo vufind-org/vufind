@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -43,6 +45,7 @@ use function is_array;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -89,18 +92,16 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $sectionId = $this->params()->fromQuery('id');
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('combined')->toArray();
-        $tabConfig = $this->getTabConfig($config);
+        $optionsManager = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class);
+        $combinedOptions = $optionsManager->get('combined');
+        $tabConfig = $combinedOptions->getTabConfig();
         if (!isset($tabConfig[$sectionId])) {
             throw new \Exception('Illegal ID');
         }
         [$searchClassId] = explode(':', $sectionId);
 
         // Retrieve results:
-        $options = $this->serviceLocator
-            ->get(\VuFind\Search\Options\PluginManager::class);
-        $currentOptions = $options->get($searchClassId);
+        $currentOptions = $optionsManager->get($searchClassId);
         [$controller, $action]
             = explode('-', $currentOptions->getSearchAction());
         $settings = $tabConfig[$sectionId];
@@ -118,17 +119,9 @@ class CombinedController extends AbstractSearch
         ) {
             $html = '';
         } else {
-            $cart = $this->serviceLocator->get(\VuFind\Cart::class);
-            $general = $this->serviceLocator
-                ->get(\VuFind\Config\PluginManager::class)
-                ->get('config');
             $viewParams = [
                 'searchClassId' => $searchClassId,
                 'currentSearch' => $settings,
-                'showCartControls' => $currentOptions->supportsCart()
-                    && $cart->isActive(),
-                'showBulkOptions' => $currentOptions->supportsCart()
-                    && ($general->Site->showBulkOptions ?? false),
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
             // Load custom CSS, if necessary:
@@ -165,25 +158,17 @@ class CombinedController extends AbstractSearch
 
         // Gather combined results:
         $combinedResults = [];
-        $options = $this->serviceLocator
-            ->get(\VuFind\Search\Options\PluginManager::class);
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('combined')->toArray();
-        $supportsCart = false;
-        $supportsCartOptions = [];
+        $optionsManager = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class);
+        $combinedOptions = $optionsManager->get('combined');
         // Save the initial type value, since it may get manipulated below:
         $initialType = $this->params()->fromQuery('type');
-        foreach ($this->getTabConfig($config) as $current => $settings) {
+        foreach ($combinedOptions->getTabConfig() as $current => $settings) {
             [$searchClassId] = explode(':', $current);
-            $currentOptions = $options->get($searchClassId);
+            $currentOptions = $optionsManager->get($searchClassId);
             $this->adjustQueryForSettings(
                 $settings,
                 $currentOptions->getHandlerForLabel($initialType)
             );
-            $supportsCartOptions[] = $currentOptions->supportsCart();
-            if ($currentOptions->supportsCart()) {
-                $supportsCart = true;
-            }
             [$controller, $action]
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
@@ -214,16 +199,13 @@ class CombinedController extends AbstractSearch
         $results->performAndProcessSearch();
 
         $actualMaxColumns = count($combinedResults);
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)->get('combined')->toArray();
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right', 'grid'])) {
             $placement = 'distributed';
         }
-
-        // Get default config for showBulkOptions
-        $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
 
         // Identify if any modules use include_recommendations_side or
         // include_recommendations_noresults_side.
@@ -250,9 +232,6 @@ class CombinedController extends AbstractSearch
                 'params' => $results->getParams(),
                 'placement' => $placement,
                 'results' => $results,
-                'supportsCart' => $supportsCart,
-                'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
                 'columnSideRecommendations' => $columnSideRecommendations,
             ]
         );
@@ -377,23 +356,5 @@ class CombinedController extends AbstractSearch
 
         $query->recommendOverride = $recommendOverride;
         $query->noRecommend = count($noRecommend) ? implode(',', $noRecommend) : false;
-    }
-
-    /**
-     * Get tab configuration based on the full combined results configuration.
-     *
-     * @param array $config Combined results configuration
-     *
-     * @return array
-     */
-    protected function getTabConfig($config)
-    {
-        // Strip out non-tab sections of the configuration:
-        unset($config['Basic_Searches']);
-        unset($config['HomePage']);
-        unset($config['Layout']);
-        unset($config['RecommendationModules']);
-
-        return $config;
     }
 }
