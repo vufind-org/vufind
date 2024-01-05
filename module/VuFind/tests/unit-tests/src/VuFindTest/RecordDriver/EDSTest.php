@@ -46,6 +46,20 @@ use VuFind\RecordDriver\EDS;
  */
 class EDSTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
+    /**
+     * Default test configuration
+     *
+     * @var array
+     */
+    protected $defaultDriverConfig = [
+        'General' => [
+            'default_sort' => 'relevance',
+        ],
+        'ItemGlobalOrder' => [],
+    ];
+
     /**
      * Test getUniqueID for a record.
      *
@@ -158,6 +172,114 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetItems(): void
     {
         $this->assertEquals([], $this->getDriver()->getItems());
+    }
+
+    /**
+     * Test getItems for a record.
+     *
+     * @return void
+     */
+    public function testGetItemsWithData(): void
+    {
+        $driver = $this->getDriverWithItemData();
+        $items = [
+            [
+                'Name' => 'Title',
+                'Label' => 'Title',
+                'Group' => 'Ti',
+                'Data' => 'MEOW! Welcome to CAT ISLAND.',
+            ],
+            [
+                'Name' => 'Author',
+                'Label' => 'Authors',
+                'Group' => 'Au',
+                'Data' => 'Lusted, Marcia Amidon (AUTHOR)',
+            ],
+            [
+                'Name' => 'TitleSource',
+                'Label' => 'Source',
+                'Group' => 'Src',
+                'Data' => 'Feb2022, Vol. 38 Issue 5, p32-33. 2p. 4 Color Photographs.',
+            ],
+        ];
+        $this->assertEquals($items, $driver->getItems());
+    }
+
+    /**
+     * Test getItems sorting the data for a record.
+     *
+     * @return void
+     */
+    public function testGetItemsWithDataSorted(): void
+    {
+        // Change the default order the array data is in and exclude one of the items
+        // to ensure it appears at the end
+        $driverConfig = [
+            'ItemGlobalOrder' => [
+                '1' => 'Authors', // note that we used the 'Label' and not the 'Name'
+                '2' => 'Title',
+            ],
+        ];
+
+        $driver = $this->getDriverWithItemData($driverConfig);
+        $items = [
+            [
+                'Name' => 'Author',
+                'Label' => 'Authors',
+                'Group' => 'Au',
+                'Data' => 'Lusted, Marcia Amidon (AUTHOR)',
+            ],
+            [
+                'Name' => 'Title',
+                'Label' => 'Title',
+                'Group' => 'Ti',
+                'Data' => 'MEOW! Welcome to CAT ISLAND.',
+            ],
+            [
+                'Name' => 'TitleSource',
+                'Label' => 'Source',
+                'Group' => 'Src',
+                'Data' => 'Feb2022, Vol. 38 Issue 5, p32-33. 2p. 4 Color Photographs.',
+            ],
+        ];
+        $this->assertEquals($items, $driver->getItems());
+    }
+
+    /**
+     * Test getItems when invalid data is returned from EDS (i.e. not in the structure
+     * VuFind expected)
+     *
+     * @return void
+     */
+    public function testGetItemsWithInvalidConfig(): void
+    {
+        $driverConfig = [
+            'ItemGlobalOrder' => 'invalid',
+        ];
+
+        $driver = $this->getDriverWithItemData($driverConfig);
+        // items in original order are returned when the config can't be parsed
+        $items = [
+            [
+                'Name' => 'Title',
+                'Label' => 'Title',
+                'Group' => 'Ti',
+                'Data' => 'MEOW! Welcome to CAT ISLAND.',
+            ],
+            [
+                'Name' => 'Author',
+                'Label' => 'Authors',
+                'Group' => 'Au',
+                'Data' => 'Lusted, Marcia Amidon (AUTHOR)',
+            ],
+            [
+                'Name' => 'TitleSource',
+                'Label' => 'Source',
+                'Group' => 'Src',
+                'Data' => 'Feb2022, Vol. 38 Issue 5, p32-33. 2p. 4 Color Photographs.',
+            ],
+        ];
+        $this->assertEquals($items, $driver->getItems());
     }
 
     /**
@@ -334,11 +456,49 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a record driver with fake identifier data.
+     * Get a record driver with fake item data.
+     *
+     * @param array $config overrides the EDS config for testing
      *
      * @return EDS
      */
-    protected function getDriverWithIdentifierData(): EDS
+    protected function getDriverWithItemData(array $config = null): EDS
+    {
+        return $this->getDriver(
+            [
+                'Items' => [
+                    [
+                        'Name' => 'Title',
+                        'Label' => 'Title',
+                        'Group' => 'Ti',
+                        'Data' => 'MEOW! Welcome to CAT ISLAND.',
+                    ],
+                    [
+                        'Name' => 'Author',
+                        'Label' => 'Authors',
+                        'Group' => 'Au',
+                        'Data' => 'Lusted, Marcia Amidon (AUTHOR)',
+                    ],
+                    [
+                        'Name' => 'TitleSource',
+                        'Label' => 'Source',
+                        'Group' => 'Src',
+                        'Data' => 'Feb2022, Vol. 38 Issue 5, p32-33. 2p. 4 Color Photographs.',
+                    ],
+                ],
+            ],
+            $config
+        );
+    }
+
+    /**
+     * Get a record driver with fake identifier data.
+     *
+     * @param array $config overrides the EDS config for testing
+     *
+     * @return EDS
+     */
+    protected function getDriverWithIdentifierData(array $config = null): EDS
     {
         return $this->getDriver(
             [
@@ -376,7 +536,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-            ]
+            ],
+            $config
         );
     }
 
@@ -384,13 +545,21 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * Get a record driver with fake data.
      *
      * @param array $overrides Raw data for testing
+     * @param array $config    overrides the EDS config for testing
      *
      * @return EDS
      */
-    protected function getDriver($overrides = []): EDS
+    protected function getDriver($overrides = [], array $config = null): EDS
     {
         $record = new EDS();
         $record->setRawData($overrides);
+
+        // Set the private recordConfig property
+        // TODO -- is there a better way to set this config?
+        $reflection = new \ReflectionProperty($record::class, 'recordConfig');
+        $reflection->setAccessible(true);
+        $reflection->setValue($record, (object)($config ?? $this->defaultDriverConfig));
+
         return $record;
     }
 }
