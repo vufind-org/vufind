@@ -616,7 +616,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'firstname' => $data['firstname'],
             'lastname' => $data['surname'],
             'cat_username' => $username,
-            'cat_password' => $password ?? '',
+            'cat_password' => (string)$password || '',
             'email' => $data['email'],
             'major' => null,
             'college' => null,
