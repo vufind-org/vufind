@@ -109,7 +109,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Validate passwords
      *
-     * @var string
+     * @var bool
      */
     protected $dontValidatePasswords = false;
 
