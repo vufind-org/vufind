@@ -55,15 +55,24 @@ class WorkKeysQuery extends AbstractQuery
     protected $includeSelf;
 
     /**
+     * Work keys
+     *
+     * @var array
+     */
+    protected $workKeys;
+
+    /**
      * Constructor.
      *
      * @param ?string $id          Record ID
-     * @param boo     $includeSelf Whether to include the record to compare with in the results
+     * @param bool    $includeSelf Whether to include the record to compare with in the results
+     * @param array   $workKeys    Work keys to use
      */
-    public function __construct(?string $id, bool $includeSelf)
+    public function __construct(?string $id, bool $includeSelf, array $workKeys = [])
     {
         $this->id = $id;
         $this->includeSelf = $includeSelf;
+        $this->workKeys = $workKeys;
     }
 
     /**
@@ -108,6 +117,28 @@ class WorkKeysQuery extends AbstractQuery
     public function setIncludeSelf(bool $includeSelf): void
     {
         $this->includeSelf = $includeSelf;
+    }
+
+    /**
+     * Return work keys
+     *
+     * @return array
+     */
+    public function getWorkKeys(): array
+    {
+        return $this->workKeys;
+    }
+
+    /**
+     * Set work keys
+     *
+     * @param array $workKeys Work keys
+     *
+     * @return void
+     */
+    public function setWorkKeys(array $workKeys): void
+    {
+        $this->workKeys = $workKeys;
     }
 
     /**
