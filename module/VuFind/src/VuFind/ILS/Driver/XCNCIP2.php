@@ -301,10 +301,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @var array
      */
-    protected $itemUseRestrictionType2Status = [
-        'In Library Use Only',
-        'Not For Loan',
-    ];
+    protected $itemUseRestrictionTypesForStatus = [];
 
     /**
      * Constructor
@@ -394,6 +391,8 @@ class XCNCIP2 extends AbstractBase implements
                 );
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
+
+        $this->itemUseRestrictionTypesForStatus = $this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? [];
     }
 
     /**
@@ -667,7 +666,7 @@ class XCNCIP2 extends AbstractBase implements
         $itemUseRestrictionType = $current->xpath('ns1:ItemOptionalFields/ns1:ItemUseRestrictionType');
         $itemUseRestrictionType = (string)($itemUseRestrictionType[0] ?? '');
 
-        if (in_array($itemUseRestrictionType, $this->itemUseRestrictionType2Status)) {
+        if (in_array($itemUseRestrictionType, $this->itemUseRestrictionTypesForStatus)) {
             $status = $itemUseRestrictionType;
         }
 

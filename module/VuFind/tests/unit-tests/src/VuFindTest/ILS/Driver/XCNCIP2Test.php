@@ -979,8 +979,20 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetHolding()
     {
+        $config = [
+            'Catalog' => [
+                'url' => 'https://test.ncip.example',
+                'consortium' => false,
+                'agency' => 'Test agency',
+                'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                'itemUseRestrictionTypesForStatus' => [
+                    'In Library Use Only',
+                    'Not For Loan',
+                ],
+            ],
+        ];
         foreach ($this->holdingTests as $test) {
-            $this->configureDriver();
+            $this->configureDriver($config);
             $this->mockResponse($test['file']);
             $holdings = $this->driver->getHolding('123456');
             $this->assertEquals(
