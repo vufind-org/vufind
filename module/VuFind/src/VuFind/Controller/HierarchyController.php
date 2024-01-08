@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010-2023.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -33,6 +35,7 @@ use Laminas\Stdlib\ResponseInterface;
 
 use function array_slice;
 use function count;
+use function is_object;
 
 /**
  * Hierarchy Controller
@@ -40,6 +43,7 @@ use function count;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -48,19 +52,57 @@ class HierarchyController extends AbstractBase
     /**
      * Output JSON
      *
-     * @param string $json   A JSON string
-     * @param int    $status Response status code
+     * @param array $result Result to be encoded as JSON
+     * @param int   $status Response status code
      *
      * @return ResponseInterface
      */
-    protected function outputJSON($json, $status = 200): ResponseInterface
+    protected function outputJSON(array $result, int $status = 200): ResponseInterface
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'application/json');
-        $response->setContent($json);
+        $response->setContent(json_encode($result));
         $response->setStatusCode($status);
         return $response;
+    }
+
+    /**
+     * Gets a Hierarchy Tree
+     *
+     * @return mixed
+     */
+    public function gettreeAction()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+
+        $id = $this->params()->fromQuery('id');
+        $source = $this->params()->fromQuery('sourceId', DEFAULT_SEARCH_BACKEND);
+        $loader = $this->getRecordLoader();
+        $message = 'Service Unavailable'; // default error message
+        try {
+            $recordDriver = $loader->load($id, $source);
+            $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
+            if (is_object($hierarchyDriver)) {
+                return $this->outputJSON([
+                    'html' => $hierarchyDriver->render(
+                        $recordDriver,
+                        $this->params()->fromQuery('context', 'Record'),
+                        'List',
+                        $this->params()->fromQuery('hierarchyId', ''),
+                        $this->params()->fromQuery(),
+                    ),
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Let exceptions fall through to error condition below:
+            $message = APPLICATION_ENV === 'development' ? (string)$e : 'Unexpected exception';
+        }
+
+        // If we got this far, something went wrong:
+        $code = 503;
+        $response = ['error' => compact('code', 'message')];
+        return $this->outputJSON($response, $code);
     }
 
     /**
@@ -98,7 +140,7 @@ class HierarchyController extends AbstractBase
             'limitReached' => $limitReached,
             'results' => array_slice($resultIDs, 0, $limit),
         ];
-        return $this->outputJSON(json_encode($returnArray));
+        return $this->outputJSON($returnArray);
     }
 
     /**

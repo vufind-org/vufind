@@ -164,8 +164,8 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
   }
 
-  function initTree(containerEl) {
-    const treeEl = containerEl.querySelector('.hierarchy-tree');
+  function setupTree(containerEl) {
+    const treeEl = containerEl.querySelector('.js-hierarchy-tree');
     if (!treeEl) {
       console.error('Could not find tree element');
       return;
@@ -219,6 +219,36 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
         });
       }
     }
+  }
+
+  function initTree(containerEl) {
+    const treePlaceholderEl = containerEl.querySelector('.js-hierarchy-tree-placeholder');
+    if (!treePlaceholderEl) {
+      console.error('Could not find tree container element');
+      return;
+    }
+
+    const loadIndicatorEl = containerEl.querySelector('.js-tree-loading');
+    if (loadIndicatorEl) {
+      loadIndicatorEl.classList.remove('hidden');
+    }
+
+    const queryParams = new URLSearchParams(treePlaceholderEl.dataset);
+    fetch(VuFind.path + '/Hierarchy/GetTree?' + queryParams.toString())
+      .then((response) => response.json())
+      .then((json) => {
+        if (loadIndicatorEl) {
+          loadIndicatorEl.classList.add('hidden');
+        }
+        treePlaceholderEl.outerHTML = VuFind.updateCspNonce(json.html);
+        setupTree(containerEl);
+      })
+      .catch(() => {
+        if (loadIndicatorEl) {
+          loadIndicatorEl.classList.add('hidden');
+        }
+        treePlaceholderEl.innerHTML = VuFind.translate('error_occurred');
+      });
   }
 
   return { initTree };

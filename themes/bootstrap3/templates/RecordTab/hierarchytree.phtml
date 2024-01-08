@@ -4,7 +4,7 @@
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
 ?>
-<div class="hierarchy-tree-container">
+<div class="hierarchy-tree-container js-hierarchy-tree-container">
   <?php if (count($hierarchyTreeList) > 0): ?>
     <div class="hierarchy-tree-selector">
       <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
@@ -44,23 +44,26 @@
         <?=$this->translate('tree_search_limit_reached_html', ['%%limit%%' => $this->tab->getSearchLimit()])?>
       </div>
     <?php endif; ?>
-    <?=
-      $this->tab->renderTree(
-          null,
-          null,
-          [
-          'previewElement' => '#tree-preview',
-          'lightbox' => $this->layout()->getTemplate() === 'layout/lightbox',
-          'fullHierarchy' => $this->tab->isFullHierarchyVisible(),
-        ]
-      );
+    <div class="js-tree-loading hidden"><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></div>
+    <?php
+      $treeContainerAttrs = $this->htmlAttributes([
+        'class' => 'js-hierarchy-tree-placeholder',
+        'data-id' => $this->driver->getUniqueId(),
+        'data-source-id' => $this->driver->getSourceIdentifier(),
+        'data-hierarchy-id' => $activeTree,
+        'data-context' => $this->treeContext ?? 'Record',
+        'data-preview' => '#tree-preview',
+        'data-lightbox' => $this->layout()->getTemplate() === 'layout/lightbox',
+        'data-full-hierarchy' => $this->tab->isFullHierarchyVisible(),
+      ]);
     ?>
+    <div<?=$treeContainerAttrs?>></div>
   <?php endif; ?>
 </div>
 <?php
   $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchy_tree.js');
   $js = <<<JS
-        document.querySelectorAll('.hierarchy-tree-container').forEach((el) => VuFind.hierarchyTree.initTree(el));
+        document.querySelectorAll('.js-hierarchy-tree-container').forEach((el) => VuFind.hierarchyTree.initTree(el));
       JS;
   echo $this->inlineScript()->appendScript($js);
 ?>
