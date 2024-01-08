@@ -223,7 +223,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
-            $data = $fulldata[strtolower($od_id)];
+            $data = $fulldata[strtolower($od_id)] ?? null;
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
@@ -240,7 +240,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
             }
         }
-        $this->debug('previewlinks:' . print_r($results, true));
         return $results;
     }
 
@@ -251,8 +250,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        $this->debug('ajax status:' . $this->config->enableAjaxStatus);
-        $this->debug('all configs:' . print_r($this->config, true));
         return $this->config->enableAjaxStatus;
     }
 
@@ -305,7 +302,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result = strtolower($this->getUniqueID());
             }
         }
-        $this->debug("odid: $result");
         return $result;
     }
 
@@ -333,7 +329,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isCheckedOut()
     {
-        $this->debug('isCheckedOut', [], true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
         if ($result->status) {
@@ -341,7 +336,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $checkouts = $result->data;
             $result->data = [];
             foreach ($checkouts as $checkout) {
-                $this->debug("comparing: {$checkout->reserveId} to $overdriveID");
                 if ($checkout->metadata->mediaType == 'Magazine') {
                     $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
                 } else {
@@ -359,8 +353,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result->data = false;
             }
         }
-        // If it didn't work, an error should be logged from the connector
-        $this->debug("ischeckedOut ($overdriveID) result: " . print_r($result->data, true));
         return $result;
     }
 
@@ -461,7 +453,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
-            $data = $fulldata[strtolower($od_id)];
+            $data = $fulldata[strtolower($od_id)] ?? null;
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
@@ -485,19 +477,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $newDesc = preg_replace('/&#8217;/i', '', $desc);
         $newDesc = strip_tags($newDesc);
         return [$newDesc];
-    }
-
-    /**
-     * Retrieve raw data from object (primarily for use in staff view and
-     * autocomplete; avoid using whenever possible).
-     *
-     * @return mixed
-     */
-    public function getRawData()
-    {
-        return $this->getIsMarc()
-            ? parent::getRawData()
-            : json_decode($this->fields['fullrecord'], true);
     }
 
     /**
@@ -553,8 +532,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 . $creator['name'];
         }
         $data['creators'] = implode('<br>', $c_arr);
-
-        $this->debug('raw data:' . print_r($data, true));
         return $data;
     }
 
@@ -593,9 +570,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getURLs()
     {
         $permlink =  $this->getPermanentLink();
-        //todo translate
-        $desc = 'Overdrive Resource Page';
-        $retVal[] = ['url' => $permlink, 'desc' => $desc ?: $permlink];
+        $desc = $this->translate('od_resource_page');
+        $retVal[] = ['url' => $permlink, 'desc' => $desc];
         return $retVal;
     }
 
@@ -608,8 +584,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         $od_id = $this->getOverdriveID();
         $result = $this->connector->getPermanentLinks([$od_id]);
-
-        $this->debug("overdrive permananent link for $od_id:" . print_r($result, true));
         return $result[$od_id];
     }
 }
