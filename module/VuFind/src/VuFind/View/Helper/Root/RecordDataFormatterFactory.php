@@ -163,9 +163,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                           . '<span property="name">',
-             'itemSuffix' => '</span></span>']
+            [
+                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                    . '<span property="name">',
+                'itemSuffix' => '</span></span>',
+                'translate' => true,
+                'translationTextDomain' => 'ISO639-3::',
+            ]
         );
         $spec->setTemplateLine(
             'Published',
@@ -226,9 +230,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                           . '<span property="name">',
-             'itemSuffix' => '</span></span>']
+            [
+                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                    . '<span property="name">',
+                'itemSuffix' => '</span></span>',
+                'translate' => true,
+                'translationTextDomain' => 'ISO639-3::',
+            ]
         );
         $spec->setLine(
             'Format',
@@ -281,9 +289,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                           . '<span property="name">',
-             'itemSuffix' => '</span></span>']
+            [
+                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                    . '<span property="name">',
+                'itemSuffix' => '</span></span>',
+                'translate' => true,
+                'translationTextDomain' => 'ISO639-3::',
+            ]
         );
         $spec->setTemplateLine(
             'Published',

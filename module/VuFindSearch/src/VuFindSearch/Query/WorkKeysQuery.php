@@ -29,8 +29,6 @@
 
 namespace VuFindSearch\Query;
 
-use function in_array;
-
 /**
  * A work keys query.
  *
@@ -50,6 +48,13 @@ class WorkKeysQuery extends AbstractQuery
     protected $id;
 
     /**
+     * Whether to include the record to compare with in the results
+     *
+     * @var bool
+     */
+    protected $includeSelf;
+
+    /**
      * Work keys
      *
      * @var array
@@ -59,12 +64,14 @@ class WorkKeysQuery extends AbstractQuery
     /**
      * Constructor.
      *
-     * @param ?string $id       Record ID
-     * @param array   $workKeys Work keys
+     * @param ?string $id          Record ID
+     * @param bool    $includeSelf Whether to include the record to compare with in the results
+     * @param array   $workKeys    Work keys to use
      */
-    public function __construct(?string $id, array $workKeys)
+    public function __construct(?string $id, bool $includeSelf, array $workKeys = [])
     {
         $this->id = $id;
+        $this->includeSelf = $includeSelf;
         $this->workKeys = $workKeys;
     }
 
@@ -88,6 +95,28 @@ class WorkKeysQuery extends AbstractQuery
     public function setId(?string $id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * Return "include self" setting
+     *
+     * @return bool
+     */
+    public function getIncludeSelf(): bool
+    {
+        return $this->includeSelf;
+    }
+
+    /**
+     * Set "include self" setting
+     *
+     * @param bool $includeSelf New value
+     *
+     * @return void
+     */
+    public function setIncludeSelf(bool $includeSelf): void
+    {
+        $this->includeSelf = $includeSelf;
     }
 
     /**
@@ -124,7 +153,7 @@ class WorkKeysQuery extends AbstractQuery
      */
     public function containsTerm($needle, $normalizer = null)
     {
-        return in_array($normalizer ? $normalizer($needle) : $needle, $this->workKeys);
+        return false;
     }
 
     /**
@@ -134,7 +163,7 @@ class WorkKeysQuery extends AbstractQuery
      */
     public function getAllTerms()
     {
-        return implode(',', $this->workKeys);
+        return $this->id;
     }
 
     /**
@@ -149,11 +178,6 @@ class WorkKeysQuery extends AbstractQuery
      */
     public function replaceTerm($from, $to, $normalizer = null)
     {
-        $from = $normalizer ? $normalizer($from) : $from;
-        $to = $normalizer ? $normalizer($to) : $to;
-
-        if (false !== ($i = array_search($from, $this->workKeys))) {
-            $this->workKeys[$i] = $to;
-        }
+        // Not applicable
     }
 }

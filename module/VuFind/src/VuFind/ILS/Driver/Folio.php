@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Laminas\Http\Response;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
@@ -250,21 +251,14 @@ class Folio extends AbstractAPI implements
     protected function renewTenantToken()
     {
         $this->token = null;
-        $auth = [
-            'username' => $this->config['API']['username'],
-            'password' => $this->config['API']['password'],
-        ];
-        $response = $this->makeRequest(
-            method: 'POST',
-            path: '/authn/login',
-            params: json_encode($auth),
-            debugParams: '{"username":"...","password":"..."}'
+        $response = $this->performOkapiUsernamePasswordAuthentication(
+            $this->config['API']['username'],
+            $this->config['API']['password']
         );
-        $this->token = $response->getHeaders()->get('X-Okapi-Token')
-            ->getFieldValue();
+        $this->token = $this->extractTokenFromResponse($response);
         $this->sessionCache->folio_token = $this->token;
         $this->debug(
-            'Token renewed. Tenant: ' . $auth['username'] .
+            'Token renewed. Username: ' . $this->config['API']['username'] .
             ' Token: ' . substr($this->token, 0, 30) . '...'
         );
     }
@@ -920,6 +914,62 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Should we use the legacy authentication mechanism?
+     *
+     * @return bool
+     */
+    protected function useLegacyAuthentication(): bool
+    {
+        return $this->config['API']['legacy_authentication'] ?? true;
+    }
+
+    /**
+     * Support method to perform a username/password login to Okapi.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return Response
+     */
+    protected function performOkapiUsernamePasswordAuthentication(string $username, string $password): Response
+    {
+        $tenant = $this->config['API']['tenant'];
+        $credentials = compact('tenant', 'username', 'password');
+        // Get token
+        return $this->makeRequest(
+            method: 'POST',
+            path: $this->useLegacyAuthentication() ? '/authn/login' : '/authn/login-with-expiry',
+            params: json_encode($credentials),
+            debugParams: '{"username":"...","password":"..."}'
+        );
+    }
+
+    /**
+     * Given a response from performOkapiUsernamePasswordAuthentication(),
+     * extract the token value.
+     *
+     * @param Response $response Response from performOkapiUsernamePasswordAuthentication().
+     *
+     * @return string
+     */
+    protected function extractTokenFromResponse(Response $response): string
+    {
+        if ($this->useLegacyAuthentication()) {
+            return $response->getHeaders()->get('X-Okapi-Token')->getFieldValue();
+        }
+        $folioUrl = $this->config['API']['base_url'];
+        $cookies = new \Laminas\Http\Cookies();
+        $cookies->addCookiesFromResponse($response, $folioUrl);
+        $results = $cookies->getAllCookies();
+        foreach ($results as $cookie) {
+            if ($cookie->getName() == 'folioAccessToken') {
+                return $cookie->getValue();
+            }
+        }
+        throw new \Exception('Could not find token in response');
+    }
+
+    /**
      * Support method for patronLogin(): authenticate the patron with an Okapi
      * login attempt. Returns a CQL query for retrieving more information about
      * the authenticated user.
@@ -931,22 +981,14 @@ class Folio extends AbstractAPI implements
      */
     protected function patronLoginWithOkapi($username, $password)
     {
-        $tenant = $this->config['API']['tenant'];
-        $credentials = compact('tenant', 'username', 'password');
-        // Get token
-        $response = $this->makeRequest(
-            'POST',
-            '/authn/login',
-            json_encode($credentials)
-        );
+        $response = $this->performOkapiUsernamePasswordAuthentication($username, $password);
         $debugMsg = 'User logged in. User: ' . $username . '.';
         // We've authenticated the user with Okapi, but we only have their
         // username; set up a query to retrieve full info below.
         $query = 'username == ' . $username;
         // Replace admin with user as tenant if configured to do so:
         if ($this->config['User']['use_user_token'] ?? false) {
-            $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                ->getFieldValue();
+            $this->token = $this->extractTokenFromResponse($response);
             $debugMsg .= ' Token: ' . substr($this->token, 0, 30) . '...';
         }
         $this->debug($debugMsg);

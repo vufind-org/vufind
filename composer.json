@@ -109,6 +109,7 @@
         "phpunit/php-code-coverage": "9.2.28",
         "phpunit/phpcov": "^8.2",
         "phpunit/phpunit": "9.6.12",
+        "pietercolpaert/hardf": "0.3.1",
         "squizlabs/php_codesniffer": "3.7.2"
     },
     "extra": {
@@ -130,7 +131,9 @@
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
         "qa": "phing qa-console -Ddefaultconfigs=true",
-        "install-npm-dependencies": "npm install && phing copynodemodules",
-        "update-npm-dependencies": "npm update && phing copynodemodules"
+        "update-npm-dependencies": [
+            "npm update",
+            "cd themes/bootstrap3 && npm run updateDeps"
+        ]
     }
 }

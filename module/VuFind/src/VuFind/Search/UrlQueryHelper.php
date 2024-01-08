@@ -32,6 +32,7 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\WorkKeysQuery;
 
 use function call_user_func;
 use function count;
@@ -182,6 +183,9 @@ class UrlQueryHelper
             if (!empty($type)) {
                 $this->urlParams['type'] = $type;
             }
+        } elseif ($this->queryObject instanceof WorkKeysQuery) {
+            $this->urlParams['id'] = $this->queryObject->getId();
+            $this->urlParams['search'] = 'versions';
         }
     }
 

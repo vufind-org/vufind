@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05a1fe650eae31463c791cf0a2b3522b",
+    "content-hash": "507d40149bc070a49e9ee3b875c99b76",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -11421,6 +11421,74 @@
                 "source": "https://github.com/sirn-se/phrity-util-errorhandler/tree/1.0.1"
             },
             "time": "2022-10-27T12:14:42+00:00"
+        },
+        {
+            "name": "pietercolpaert/hardf",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pietercolpaert/hardf.git",
+                "reference": "8bebaa00f5ebde17f58ebe34b67814645b8f69d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/8bebaa00f5ebde17f58ebe34b67814645b8f69d8",
+                "reference": "8bebaa00f5ebde17f58ebe34b67814645b8f69d8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "*",
+                "phpstan/phpstan": "^0.12.36",
+                "phpunit/phpunit": "^7 || ^8 || ^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pietercolpaert\\hardf\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pieter Colpaert",
+                    "email": "pieter.colpaert@ugent.be",
+                    "homepage": "https://pietercolpaert.be",
+                    "role": "developer"
+                },
+                {
+                    "name": "Ruben Verborgh",
+                    "email": "ruben.verborgh@ugent.be",
+                    "homepage": "https://ruben.verborgh.org",
+                    "role": "developer"
+                }
+            ],
+            "description": "A fast parser for RDF serializations such as turtle, n-triples, n-quads, trig and N3",
+            "homepage": "https://github.com/pietercolpaert/hardf",
+            "keywords": [
+                "Linked Data",
+                "RDF",
+                "Triples",
+                "Turtle",
+                "n-quads",
+                "n-triples",
+                "n3",
+                "open data",
+                "quads",
+                "rdf1.1",
+                "streaming",
+                "trig"
+            ],
+            "support": {
+                "issues": "https://github.com/pietercolpaert/hardf/issues",
+                "source": "https://github.com/pietercolpaert/hardf"
+            },
+            "time": "2021-03-30T12:05:00+00:00"
         },
         {
             "name": "sebastian/cli-parser",
