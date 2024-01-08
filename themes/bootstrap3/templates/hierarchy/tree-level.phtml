@@ -1,24 +1,42 @@
 <?php
   $this->parentNodeId ??= '';
   $nodeId = 0;
+
+  // Set things up for faster iteration:
+  $icons = [
+    'hierarchy-collection' => $this->icon('hierarchy-collection'),
+    'hierarchy-record' => $this->icon('hierarchy-record'),
+    'hierarchy-expand' => $this->icon('hierarchy-expand', 'hierarchy-tree__expand'),
+    'hierarchy-collapse' => $this->icon('hierarchy-collapse', 'hierarchy-tree__collapse'),
+  ];
+  $buttonAttrs = $this->htmlAttributes([
+    'class' => 'hierarchy-tree__toggle-expanded js-toggle-expanded',
+  ]);
+
+  $aAttrs = $this->htmlAttributes([
+    'class' => 'js-record-link',
+    'data-lightbox-ignore' => null,
+  ]);
+
 ?>
 <?php foreach ($nodes as $node): ?>
   <?php
     $hasChildren = !empty($node->children);
-    $liAttrs = $this->htmlAttributes();
+    $liClasses = [];
     if ($hasChildren) {
-      $liAttrs->add('class', 'hierarchy-tree__parent');
+      $liClasses[] = 'hierarchy-tree__parent';
     }
     if ('collection' === $node->type) {
-      $liAttrs->add('class', 'hierarchy-tree__collection');
+      $liClasses[] = 'hierarchy-tree__collection';
       $icon = 'hierarchy-collection';
     } else {
-      $liAttrs->add('class', 'hierarchy-tree__record');
+      $liClasses[] = 'hierarchy-tree__record';
       $icon = 'hierarchy-record';
     }
     if ($selectedID === $node->id) {
-      $liAttrs->add('class', 'hierarchy-tree__selected');
+      $liClasses[] = 'hierarchy-tree__selected';
     }
+    $liAttrs = $liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '';
 
     // Use node title as button label so that a screen reader can read it as
     // "Expanded <text>" or "Collapsed <text>":
@@ -28,17 +46,15 @@
   <?php ob_start(); ?>
     <?php
       // Render the item first so that we can use it in two alternative cases:
-      $aAttrs = $this->htmlAttributes([
-        'class' => 'js-record-link',
+      $aAttrs->set([
         'name' => 'tree-' . preg_replace('/\W/', '-', $node->id),
         'href' => $node->href,
         'title' => $node->title,
-        'data-lightbox-ignore' => null,
         'data-record-id' => $node->id,
       ]);
     ?>
     <span class="hierarchy-tree__item-container">
-      <?=$this->icon($icon)?>
+      <?=$icons[$icon]?>
       <a<?=$aAttrs?>>
         <?=$this->truncate($node->title, 100)?>
       </a>
@@ -50,20 +66,18 @@
       <?php
         ++$nodeId;
         $childUlId = 'hierarchy_' . $context . '_' . $this->parentNodeId . '_' . $nodeId;
-        $buttonAttrs = $this->htmlAttributes(
-            [
-                'class' => 'hierarchy-tree__toggle-expanded js-toggle-expanded',
-                'aria-expanded' => $node->hasSelectedChild ? 'true' : 'false',
-                'aria-controls' => $childUlId,
-                'aria-label' => $buttonLabel,
-                'data-toggle-aria-expanded' => '',
-                'data-default-expanded' => $node->hasSelectedChild ? 'true' : 'false',
-            ]
-        );
+        $buttonAttrs->set([
+            'class' => 'hierarchy-tree__toggle-expanded js-toggle-expanded',
+            'aria-expanded' => $node->hasSelectedChild ? 'true' : 'false',
+            'aria-controls' => $childUlId,
+            'aria-label' => $buttonLabel,
+            'data-toggle-aria-expanded' => '',
+            'data-default-expanded' => $node->hasSelectedChild ? 'true' : 'false',
+        ]);
       ?>
       <button<?=$buttonAttrs?>>
-        <?=$this->icon('hierarchy-expand', 'hierarchy-tree__expand')?>
-        <?=$this->icon('hierarchy-collapse', 'hierarchy-tree__collapse')?>
+        <?=$icons['hierarchy-expand']?>
+        <?=$icons['hierarchy-collapse']?>
       </button>
 
       <?=$itemHtml?>
