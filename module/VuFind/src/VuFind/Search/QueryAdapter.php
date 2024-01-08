@@ -65,7 +65,7 @@ abstract class QueryAdapter
         $type = $search['s'] ?? null;
         if ('w' === $type) {
             // WorkKeysQuery
-            return new WorkKeysQuery($search['l'], $search['i']);
+            return new WorkKeysQuery($search['l'], $search['i'], $search['k'] ?? []);
         }
         // Use array_key_exists since null is also valid
         if ('b' === $type || array_key_exists('l', $search)) {
@@ -271,6 +271,7 @@ abstract class QueryAdapter
             return [
                 'l' => $query->getId(),
                 'i' => $query->getIncludeSelf(),
+                'k' => $query->getWorkKeys(),
                 's' => 'w',
             ];
         }
