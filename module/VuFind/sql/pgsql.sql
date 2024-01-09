@@ -387,7 +387,7 @@ PRIMARY KEY (id, type)
 DROP TABLE IF EXISTS "login_token";
 
 CREATE TABLE login_token (
-  id serial PRIMARY KEY,
+  id SERIAL,
   user_id int NOT NULL,
   token varchar(255) NOT NULL,
   series varchar(255) NOT NULL,
@@ -396,6 +396,7 @@ CREATE TABLE login_token (
   platform varchar(255),
   expires int NOT NULL,
   last_session_id varchar(255),
+  PRIMARY KEY (id),
   UNIQUE (user_id, series)
 );
 
