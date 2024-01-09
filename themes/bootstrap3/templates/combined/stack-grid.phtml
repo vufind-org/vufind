@@ -14,11 +14,6 @@
       $colParams = [
         'searchClassId' => $searchClassId,
         'currentSearch' => $currentSearch,
-        // Enable cart if appropriate:
-        'showCartControls' => $this->supportsCartOptions[$columnIndex] && $this->showCartControls,
-        // Enable bulk options if appropriate:
-        'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
-        // Other params
         'domId' => $currentSearch['domId'],
       ];
       if (isset($currentSearch['ajax'])) {
@@ -27,7 +22,7 @@
       $columnIndex ++;
     ?>
     <?php // This empty div prevents margin collapse, as the otherwise unneeded div.combined-column does elsewhere. ?>
-    <div>
+    <div class="js-hide-if-empty">
       <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
         <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>

@@ -182,10 +182,10 @@
 
   <!-- JSHint -->
   <target name="jshint">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
+    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules ${srcdir}/themes" checkreturn="true" passthru="true" />
   </target>
   <target name="jshint-report">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
   <!-- Run Sass build, error if it fails -->
@@ -539,7 +539,7 @@
       </then>
     </if>
 
-    <!-- Add a local translation for tests -->
+    <!-- Add local translations for tests -->
     <if>
       <not>
         <available file="${localdir}/languages" type="dir" />
@@ -548,7 +548,19 @@
         <mkdir dir="${localdir}/languages" />
       </then>
     </if>
+    <if>
+      <not>
+        <available file="${localdir}/languages/Facets" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages/Facets" />
+      </then>
+    </if>
     <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1a/ = Top Level, Sorted Last${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1z/ = Top Level, Sorted First${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2y/ = Second Level, Sorted Last${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2z/ = Second Level, Sorted First${line.separator}" />
   </target>
 
   <target name="setup_database" description="setup demo database">
@@ -771,7 +783,7 @@ ${git_status}
     </delete>
     <delete>
       <fileset dir="${localdir}/languages">
-        <include name="*" />
+        <include name="**/*" />
       </fileset>
     </delete>
     <delete file="${srcdir}/env.bat" />
