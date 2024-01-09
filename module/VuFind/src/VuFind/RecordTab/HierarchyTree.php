@@ -209,7 +209,8 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get the current active record. Returns record driver if found or null if ID invalid.
+     * Get the current active record. Returns record driver if there is an active
+     * record or null otherwise.
      *
      * @return ?\VuFind\RecordDriver\AbstractBase
      */
