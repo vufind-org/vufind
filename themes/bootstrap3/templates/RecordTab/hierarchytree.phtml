@@ -52,7 +52,7 @@
         'data-source-id' => $this->driver->getSourceIdentifier(),
         'data-hierarchy-id' => $activeTree,
         'data-context' => $this->treeContext ?? 'Record',
-        'data-preview-element' => '#tree-preview',
+        'data-preview-element' => $this->treePreviewElement ?? '',
         'data-lightbox' => $this->layout()->getTemplate() === 'layout/lightbox',
         'data-full-hierarchy' => $this->tab->isFullHierarchyVisible(),
       ]);

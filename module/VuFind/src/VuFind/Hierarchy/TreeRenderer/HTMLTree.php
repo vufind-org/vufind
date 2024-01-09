@@ -211,7 +211,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
             $url = $this->getUrlFromRouteCache($type, $node->id);
             return $type === 'collection'
                 ? $url . '#tabnav'
-                : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
+                : $url;
         }
     }
 

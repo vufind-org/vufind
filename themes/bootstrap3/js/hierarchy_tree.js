@@ -202,9 +202,6 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
       }
     }
 
-    // Scroll to selected element
-    scrollToSelected(treeEl);
-
     // Setup search
     const searchEl = containerEl.querySelector('.js-tree-search');
     if (searchEl) {
@@ -221,6 +218,11 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
           }
         });
       }
+    }
+
+    // Scroll to selected element
+    if ('Collection' === treeEl.dataset.context) {
+      scrollToSelected(treeEl);
     }
   }
 
