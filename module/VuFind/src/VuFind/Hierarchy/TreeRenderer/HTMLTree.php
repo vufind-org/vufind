@@ -118,13 +118,11 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
             }
         } else {
             // Return All Hierarchies
-            $i = 0;
             $hierarchies = [];
-            foreach ($inHierarchies as $hierarchyTopID) {
+            foreach ($inHierarchies as $i => $hierarchyTopID) {
                 if ($this->getDataSource()->supports($hierarchyTopID)) {
                     $hierarchies[$hierarchyTopID] = $inHierarchiesTitle[$i] ?? '';
                 }
-                $i++;
             }
             if (!empty($hierarchies)) {
                 return $hierarchies;
