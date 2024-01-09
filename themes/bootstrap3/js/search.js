@@ -279,10 +279,7 @@ VuFind.register('search', function search() {
       showError('ERROR: data-backend not set for record list');
       return;
     }
-    let searchType = recordList.dataset.searchType;
-    if (typeof searchType === 'undefined') {
-      searchType = '';
-    }
+    const history = recordList.dataset.history;
 
     const loadingOverlay = document.createElement('div');
     loadingOverlay.classList = 'loading-overlay';
@@ -296,8 +293,8 @@ VuFind.register('search', function search() {
 
     const queryParams = new URLSearchParams('method=getSearchResults');
     queryParams.set('source', backend);
-    if (searchType) {
-      queryParams.set('searchType', searchType);
+    if (typeof history !== 'undefined') {
+      queryParams.set('history', history);
     }
     queryParams.set('statsKey', statsKey);
     let pageUrlParts = pageUrl.split('?');

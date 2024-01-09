@@ -17,6 +17,7 @@
     } else {
       $this->resultsAttrs = $this->htmlAttributes(['data-backend' => $searchClass,]);
     }
+    $this->resultsAttrs->add('data-history', $this->saveToHistory ? '1' : '0');
   }
 ?>
 <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>

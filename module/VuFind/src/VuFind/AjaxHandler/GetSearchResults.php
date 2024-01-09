@@ -42,7 +42,6 @@ use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 
 use function call_user_func;
-use function in_array;
 
 /**
  * "Get Search Results" AJAX handler
@@ -163,15 +162,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     ];
 
     /**
-     * Search types that are not saved to history
-     *
-     * @var array
-     */
-    protected $searchTypesWithoutHistory = [
-        'versions',
-    ];
-
-    /**
      * Constructor
      *
      * @param SessionSettings  $sessionSettings Session settings
@@ -234,14 +224,13 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     {
         parse_str($params->fromQuery('querystring', ''), $searchParams);
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
-        $searchType = $params->fromQuery('searchType', '');
 
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->initFromRequest(new Parameters($searchParams));
 
-        if (!in_array($searchType, $this->searchTypesWithoutHistory)) {
+        if ($params->fromQuery('history')) {
             $this->saveSearchToHistory($results);
         }
 
