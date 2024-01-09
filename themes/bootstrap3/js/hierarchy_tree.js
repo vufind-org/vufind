@@ -19,6 +19,9 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
 
   function showRecord(treeEl, id) {
     selectRecord(treeEl, 'tree-' + id);
+    if (!treeEl.dataset.previewElement) {
+      return;
+    }
     const recordEl = document.querySelector(treeEl.dataset.previewElement);
     if (!recordEl) {
       console.error('Record preview element not found');
