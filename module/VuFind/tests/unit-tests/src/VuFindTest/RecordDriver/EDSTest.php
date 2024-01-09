@@ -158,7 +158,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetAccessLevel(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertFalse($driver->getAccessLevel());
+        $this->assertEquals('', $driver->getAccessLevel());
     }
 
     /**
@@ -535,7 +535,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetEbookLink(): void
+    public function testGetEbookLinkNoData(): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
         $this->assertFalse($driver->getEbookLink(['ebook-pdf']));
@@ -687,7 +687,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test geCleanDOI for a record.
+     * Test getCleanDOI for a record.
      *
      * @return void
      */
@@ -698,7 +698,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test geCleanDOI for a record when DOI is in bib data.
+     * Test getCleanDOI for a record when DOI is in bib data.
      *
      * @return void
      */
@@ -709,7 +709,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test geLanguages for a record.
+     * Test getLanguages for a record.
      *
      * @return void
      */
