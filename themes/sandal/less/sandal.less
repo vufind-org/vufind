@@ -35,13 +35,13 @@ body {
 }
 .banner .navbar-right { margin-top: calc((@banner-height-sm - 50px) / 2); } // Put right nav in the middle
 .banner .navbar-brand {
-  width: (170 / 65) * @banner-height-sm;
+  width: calc((170 / 65) * @banner-height-sm);
   height: @banner-height-sm;
 }
 @media (min-width: 768px) {
   .banner .navbar-right { margin-top: calc((@banner-height - 50px) / 2); }
   .banner .navbar-brand {
-    width: (170 / 65) * @banner-height;
+    width: calc((170 / 65) * @banner-height);
     height: @banner-height;
   }
 }
@@ -70,7 +70,7 @@ header {
     border-color: @black;
   }
   .nav > li > a,
-  .navbar-nav button.dropdown-toggle {
+  .nav.navbar-nav button.dropdown-toggle {
     &:hover,
     &:focus {
       color: @black;
