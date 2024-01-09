@@ -118,7 +118,12 @@ class EDS extends DefaultRecord
     /**
      * Get the access level of the record.
      *
-     * @return string
+     * @return string If not empty, will contain a numerical value corresponding to these levels of access:
+     *                0 - Not Available to search via Guest Access
+     *                1 - Metadata is searched, but only a placeholder record is displayed
+     *                2 - Display record in the results but no access to detailed record or full text
+     *                3 - Full access: search/display all content to guests
+     *                6 - Display full record but no access to full text
      */
     public function getAccessLevel()
     {
