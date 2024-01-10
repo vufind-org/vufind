@@ -324,33 +324,36 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * Is this resource already checked out to the user?
      *
      * @return object Returns the checkout information if currently checked out
-     *    by this user or false if not.
+     *    by this user or false in the data property if not.
      * @throws \Exception
      */
     public function isCheckedOut()
     {
-        $overdriveID = $this->getOverdriveID();
-        $result = $this->connector->getCheckouts(true);
-        if ($result->status) {
-            $checkedout = false;
-            $checkouts = $result->data;
-            $result->data = [];
-            foreach ($checkouts as $checkout) {
-                if ($checkout->metadata->mediaType == 'Magazine') {
-                    $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
-                } else {
-                    ($idToCheck = $checkout->reserveId);
-                }
+        $result = $this->connector->getResultObject();
+        if($this->isLoggedIn()){
+            $overdriveID = $this->getOverdriveID();
+            $result = $this->connector->getCheckouts(true);
+            if ($result->status) {
+                $checkedout = false;
+                $checkouts = $result->data;
+                $result->data = [];
+                foreach ($checkouts as $checkout) {
+                    if ($checkout->metadata->mediaType == 'Magazine') {
+                        $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
+                    } else {
+                        ($idToCheck = $checkout->reserveId);
+                    }
 
-                if (strtolower($idToCheck) == $overdriveID) {
-                    $checkedout = true;
-                    $result->status = true;
-                    $result->isMagazine = true;
-                    $result->data[] = $checkout;
+                    if (strtolower($idToCheck) == $overdriveID) {
+                        $checkedout = true;
+                        $result->status = true;
+                        $result->isMagazine = true;
+                        $result->data[] = $checkout;
+                    }
                 }
-            }
-            if (!$checkedout) {
-                $result->data = false;
+                if (!$checkedout) {
+                    $result->data = false;
+                }
             }
         }
         return $result;
@@ -365,13 +368,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isHeld()
     {
-        $overDriveId = $this->getOverdriveID();
-        $result = $this->connector->getHolds(true);
-        if ($result->status) {
-            $holds = $result->data;
-            foreach ($holds as $hold) {
-                if (strtolower($hold->reserveId) == $overDriveId) {
-                    return $hold;
+        if($this->isLoggedIn()){
+            $overDriveId = $this->getOverdriveID();
+            $result = $this->connector->getHolds(true);
+            if ($result->status) {
+                $holds = $result->data;
+                foreach ($holds as $hold) {
+                    if (strtolower($hold->reserveId) == $overDriveId) {
+                        return $hold;
+                    }
                 }
             }
         }
