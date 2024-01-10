@@ -86,6 +86,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         HoldingsILS::class => HoldingsILSFactory::class,
         HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
         Map::class => MapFactory::class,
+        OverdriveHoldings::class => InvokableFactory::class,
         Preview::class => PreviewFactory::class,
         Reviews::class => ReviewsFactory::class,
         Search2CollectionList::class => CollectionListFactory::class,
