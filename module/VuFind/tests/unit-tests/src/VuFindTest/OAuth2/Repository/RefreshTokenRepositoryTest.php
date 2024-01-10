@@ -42,7 +42,7 @@ use VuFind\OAuth2\Repository\RefreshTokenRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
+class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Test refresh token repository

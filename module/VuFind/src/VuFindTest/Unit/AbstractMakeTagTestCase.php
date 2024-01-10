@@ -40,7 +40,7 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractMakeTagTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get makeTag helper with mock view
