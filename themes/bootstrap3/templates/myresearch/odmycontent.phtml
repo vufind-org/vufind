@@ -152,7 +152,9 @@
 
                 <?=$this->transEsc('od_hold_placed_on', ['%%holdPlacedDate%%' => $resource['hold']->holdPlacedDate]);?>
                 <?=$this->transEsc('od_hold_queue', ['%%holdPosition%%' => $resource['hold']->holdListPosition, '%%numberOfHolds%%' => $resource['hold']->numberOfHolds]);?>
-                <?=$this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
+                <?php if(!empty($resource['hold']->emailAddress)): ?>
+                  <?=$this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
+                <?php endif; ?>
 
                 <div class="pull-right">
                   <div class="btn-group">
