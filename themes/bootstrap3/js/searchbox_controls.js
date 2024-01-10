@@ -277,11 +277,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   function setupSearchResetButton() {
     _resetButton = document.getElementById("searchForm-reset");
 
-    if (!_resetButton) {
+    if (!_resetButton || !_textInput) {
       return;
     }
-
-    _textInput = document.getElementById("searchForm_lookfor");
 
     if (_textInput.value !== "") {
       _resetButton.classList.remove("hidden");
@@ -301,6 +299,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function init() {
+    _textInput = document.getElementById("searchForm_lookfor");
+
     setupAutocomplete();
     setupSearchResetButton();
 
