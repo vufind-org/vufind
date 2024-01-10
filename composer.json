@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.1"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -25,7 +25,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ahand/mobileesp": "dev-master",
         "apereo/phpcas": "1.6.1",
         "cap60552/php-sip2": "1.0.0",
@@ -33,6 +33,7 @@
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.0",
         "endroid/qr-code": "4.8.2",
+        "friendsofphp/proxy-manager-lts": "1.0.16",
         "laminas/laminas-cache": "3.10.1",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
         "laminas/laminas-cache-storage-adapter-filesystem": "^2.0",
@@ -74,7 +75,6 @@
         "league/oauth2-server": "8.5.4",
         "lm-commons/lmc-rbac-mvc": "3.3.2",
         "matthiasmullie/minify": "1.3.71",
-        "ocramius/proxy-manager": "2.14.1",
         "pear/archive_tar": "^1.4",
         "pear/http_request2": "2.5.1",
         "phing/phing": "2.17.4",
@@ -101,7 +101,7 @@
         "behat/mink-selenium2-driver": "1.6.0",
         "dmore/chrome-mink-driver": "2.9.2",
         "firebase/php-jwt": "6.8.1",
-        "friendsofphp/php-cs-fixer": "3.26.1",
+        "friendsofphp/php-cs-fixer": "3.46.0",
         "phpmd/phpmd": "2.13.0",
         "phpstan/phpstan": "1.10.34",
         "phpunit/php-code-coverage": "9.2.28",

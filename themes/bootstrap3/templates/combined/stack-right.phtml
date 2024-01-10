@@ -21,7 +21,7 @@
         <?php $templateSuffix = ($currentSearch['ajax'] ?? false) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
-      <?php $columnIndex ++; ?>
+      <?php $columnIndex++; ?>
       <?php if ($columnIndex < $columns): ?>
     </div>
     <div class="combined-column">
