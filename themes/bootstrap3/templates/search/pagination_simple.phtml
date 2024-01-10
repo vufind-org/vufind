@@ -1,5 +1,11 @@
 <?php if ($this->pageCount): ?>
-  <ul class="pager pagination-simple">
+  <?php
+    $ulAttrs = $this->htmlAttributes(['class' => 'pager pagination-simple']);
+    if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+      $ulAttrs->add('class', 'js-pagination-simple');
+    }
+  ?>
+  <ul<?=$ulAttrs?>>
     <?php if (isset($this->previous)): ?>
       <li role="none">
         <a class="page-prev" href="<?=$this->results->getUrlQuery()->setPage($this->previous)?>">
