@@ -1,0 +1,204 @@
+{
+    "ResultId": 1,
+    "Header": {
+        "DbId": "edsgob",
+        "DbLabel": "GOBI E-books",
+        "An": "edsgob.14707011",
+        "RelevancyScore": 908,
+        "PubType": "eBook",
+        "PubTypeId": "ebook",
+        "PreciseRelevancyScore": 908.217102050781,
+        "AccessLevel": false
+    },
+    "PLink": "plink-unittest/edsgob.14707011",
+    "CustomLinks": [
+        {
+            "Url": "customlink-unittest/edsgob.14707011",
+            "Name": "Custom Link (s8364774)",
+            "Category": "custom link",
+            "Text": "Unit test custom link",
+            "Icon": "https://imageserver.ebscohost.com/branding/images/FTF.gif",
+            "MouseOverText": "Exciting text"
+        }
+    ],
+    "FullText": {
+        "Text": {
+            "Availability": 1,
+            "Value": "This is some wonderful full text"
+        },
+        "Links": [
+            {
+                "Type": "ebook-pdf",
+                "Url": "pdf ebook url test"
+            },
+            {
+                "Type": "ebook-epub",
+                "Url": "epub url test"
+            },
+            {
+                "Type": "other",
+                "Url": "linked full text url test"
+            }
+        ],
+        "CustomLinks": [
+            {
+                "Url": "customlink-fulltext-unittest/edsgob.14707011/&pages=1-10/",
+                "Name": "Full Text Finder (s8364774)",
+                "Category": "fullText",
+                "Text": "Full Text Finder",
+                "Icon": "https://imageserver.ebscohost.com/branding/images/FTF.gif",
+                "MouseOverText": "Full Text Finder"
+            }
+        ]
+    },
+    "Items": [
+        {
+            "Name": "Title",
+            "Label": "Title",
+            "Group": "Ti",
+            "Data": "METAPHOR IN PRACTICE: A PROFESSIONAL'S GUIDE TO USING THE SCIENCE OF LANGUAGE."
+        },
+        {
+            "Name": "Author",
+            "Label": "Authors",
+            "Group": "Au",
+            "Data": "&lt;searchLink fieldCode=\"AR\" term=\"%22TORNEKE%2C+NIKLAS%2E%22\"&gt;TORNEKE, NIKLAS.&lt;/searchLink"
+        },
+        {
+            "Name": "Publisher",
+            "Label": "Publisher Information",
+            "Group": "PubInfo",
+            "Data": "OAKLAND: NEW HARBINGER PUB, 2017."
+        },
+        {
+            "Name": "DatePubCY",
+            "Label": "Publication Year",
+            "Group": "Date",
+            "Data": 2017
+        },
+        {
+            "Name": "Subject",
+            "Label": "Subject Terms",
+            "Group": "Su",
+            "Data": "&lt;searchLink fieldCode=\"DE\" term=\"%22PSYCHOTHERAPY%22\"&gt;PSYCHOTHERAPY&lt;/searchLink&gt;&lt;br /&gt;&lt;searchLink fieldCode=\"DE\" term=\"%22METAPHOR%2E%22\"&gt;METAPHOR.&lt;/searchLink&gt;"
+        },
+        {
+            "Name": "AN",
+            "Label": "Original Identifier",
+            "Group": "ID",
+            "Data": "OCLC: ON1279015727"
+        },
+        {
+            "Name": "TypeDocument",
+            "Label": "Document Type",
+            "Group": "TypDoc",
+            "Data": "eBook"
+        },
+        {
+            "Name": "ISBN",
+            "Label": "ISBN",
+            "Group": "ISBN",
+            "Data": "978-1-62625-902-7"
+        },
+        {
+            "Name": "AN",
+            "Label": "Accession Number",
+            "Group": "ID",
+            "Data": "edsgob.14707011"
+        },
+        {
+            "Name": "Abstract",
+            "Label": "Abstract",
+            "Group": "Ab",
+            "Data": "unit test abstract"
+        },
+        {
+            "Name": "TitleSource",
+            "Label": "Title Source",
+            "Group": "Src",
+            "Data": "unit test source"
+        }
+    ],
+    "ImageInfo": [
+        {
+            "Size": "small",
+            "Target": "thumbnail link"
+        }
+    ],
+    "RecordInfo": {
+        "BibRecord": {
+            "BibEntity": {
+                "Languages": [
+                    {
+                        "Text": "English"
+                    }
+                ],
+                "PhysicalDescription": {
+                    "Pagination": {
+                        "PageCount": 217,
+                        "StartPage": 1
+                    }
+                },
+                "Subjects": [
+                    {
+                        "SubjectFull": "PSYCHOTHERAPY",
+                        "Type": "general"
+                    },
+                    {
+                        "SubjectFull": "METAPHOR.",
+                        "Type": "general"
+                    }
+                ],
+                "Titles": [
+                    {
+                        "TitleFull": "METAPHOR IN PRACTICE: A PROFESSIONAL'S GUIDE TO USING THE SCIENCE OF LANGUAGE.",
+                        "Type": "main"
+                    }
+                ]
+            },
+            "BibRelationships": {
+                "HasContributorRelationships": {
+                    "HasContributor": {
+                        "PersonEntity": {
+                            "Name": {
+                                "NameFull": "TORNEKE, NIKLAS."
+                            }
+                        }
+                    }
+                },
+                "IsPartOfRelationships": [
+                    {
+                        "BibEntity": {
+                            "Dates": [
+                                {
+                                    "D": 1,
+                                    "M": 1,
+                                    "Type": "published",
+                                    "Y": 2017
+                                }
+                            ],
+                            "Identifiers": [
+                                {
+                                    "Type": "isbn-print",
+                                    "Value": 9781626259027
+                                },
+                                {
+                                    "Type": "issn-locals",
+                                    "Value": "edsgob"
+                                },
+                                {
+                                    "Type": "issn-print",
+                                    "Value": "123456789"
+                                },
+                                {
+                                    "Type": "doi",
+                                    "Value": "doi-test"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

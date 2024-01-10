@@ -373,6 +373,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $topPaginatorStyle;
 
     /**
+     * Is loading of results with JavaScript enabled?
+     *
+     * @var bool
+     */
+    protected $loadResultsWithJs;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -402,9 +409,11 @@ abstract class Options implements TranslatorAwareInterface
             = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
 
         $searchSettings = $configLoader->get($this->searchIni);
-        $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
         $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator
+            ?? ($this->loadResultsWithJs ? 'simple' : false);
         $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
     }
 
@@ -1218,6 +1227,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Should we load results with JavaScript?
+     *
+     * @return bool
+     */
+    public function loadResultsWithJsEnabled(): bool
+    {
+        return $this->loadResultsWithJs;
     }
 
     /**
