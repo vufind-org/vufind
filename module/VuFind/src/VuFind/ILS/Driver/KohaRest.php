@@ -2142,7 +2142,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $result = $this->getSorter()->compare($a['location'], $b['location']);
 
         if (0 === $result && $this->sortItemsBySerialIssue) {
-            $result = strnatcmp($a['number'], $b['number']);
+            $result = strnatcmp($a['number'] ?? '', $b['number'] ?? '');
         }
 
         if (0 === $result) {
