@@ -98,7 +98,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
      *
      * @return array
      */
-    public function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): array
     {
         return [
             [null],
