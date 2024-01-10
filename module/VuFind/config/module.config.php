@@ -608,7 +608,7 @@ $config = [
             'user_card'        => ['id', 'user_card_id_seq'],
             'user_list'        => ['id', 'user_list_id_seq'],
             'user_resource'    => ['id', 'user_resource_id_seq'],
-            'login_token'      => ['id', 'login_token_id_seq']
+            'login_token'      => ['id', 'login_token_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
