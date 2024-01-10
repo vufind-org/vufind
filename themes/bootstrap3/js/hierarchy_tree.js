@@ -221,9 +221,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
 
     // Scroll to selected element
-    if ('Collection' === treeEl.dataset.context) {
-      scrollToSelected(treeEl);
-    }
+    scrollToSelected(treeEl);
   }
 
   function initTree(containerEl) {
