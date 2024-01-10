@@ -50,7 +50,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AbstractMultiDriverTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\ReflectionTrait;

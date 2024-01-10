@@ -434,6 +434,7 @@ class AbstractSearch extends AbstractBase
         $view->scheduleOptions = $this->serviceLocator
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
+        $view->saveToHistory = $this->saveToHistory;
         return $view;
     }
 

@@ -717,7 +717,10 @@ function unwrapJQuery(node) {
 function setupJumpMenus(_container) {
   var container = _container || $('body');
   container.find('select.jumpMenu').on("change", function jumpMenu() {
-    $(this).parent('form').trigger("submit");
+    // Check if jumpMenu is still enabled (search.js may have disabled it):
+    if ($(this).hasClass('jumpMenu')) {
+      $(this).parent('form').trigger("submit");
+    }
   });
 }
 
