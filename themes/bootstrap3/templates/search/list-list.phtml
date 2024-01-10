@@ -6,7 +6,7 @@
   $listStart = $this->results->getStartRecord() + $i - $this->indexStart;
   $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
 ?>
-<ol class="<?=$this->escapeHtmlAttr(trim('record-list ' . ($this->resultsClass ?? '')))?>" start="<?=$listStart?>">
+<ol class="<?=$this->escapeHtmlAttr(trim('record-list ' . ($this->resultsClass ?? '')))?>" start="<?=$listStart?>"<?=isset($this->resultsAttrs) ? ' ' . $this->resultsAttrs : ''?>>
   <?php foreach ($this->results->getResults() as $current): ?>
     <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
     <?php // Data-record-number attribute is for analytics use.  Do not remove. ?>
