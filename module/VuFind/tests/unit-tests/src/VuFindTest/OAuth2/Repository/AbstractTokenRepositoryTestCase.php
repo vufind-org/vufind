@@ -43,7 +43,7 @@ use VuFind\OAuth2\Entity\ClientEntity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $accessTokenTable = [];
 

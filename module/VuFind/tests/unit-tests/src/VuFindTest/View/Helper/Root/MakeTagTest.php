@@ -44,7 +44,7 @@ use function call_user_func_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
+class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
      * Get makeTag helper with mock view

@@ -47,7 +47,7 @@ use function call_user_func_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MultiBackendTest extends AbstractMultiDriverTest
+class MultiBackendTest extends AbstractMultiDriverTestCase
 {
     /**
      * Test that driver handles missing ILS driver configuration properly.
