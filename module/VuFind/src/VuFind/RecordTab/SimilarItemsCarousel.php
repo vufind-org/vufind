@@ -78,6 +78,17 @@ class SimilarItemsCarousel extends AbstractBase
     }
 
     /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // Assume we can load by AJAX; subclasses may add rules.
+        return false;
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string

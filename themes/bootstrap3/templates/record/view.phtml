@@ -8,10 +8,6 @@
   $this->headScript()->appendFile('record.js');
   $this->headScript()->appendFile('check_save_statuses.js');
 
-  // Add carousel library for Similar Items
-  $this->headScript()->appendFile('vendor/splide.min.js');
-  $this->headLink()->appendStylesheet('vendor/splide.min.css');
-
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());

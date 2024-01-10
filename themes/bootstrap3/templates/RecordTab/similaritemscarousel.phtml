@@ -1,3 +1,9 @@
+<?php
+  // Add carousel library for Similar Items
+  $this->headScript()->appendFile('vendor/splide.min.js');
+  $this->headLink()->appendStylesheet('vendor/splide.min.css');
+?>
+
 <h2><?=$this->transEsc('Similar Items')?></h2>
 <?php $similarRecords = $this->tab->getResults(); ?>
 <?php if (!empty($similarRecords)): ?>
