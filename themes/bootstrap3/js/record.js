@@ -1,4 +1,4 @@
-/*global deparam, escapeHtmlAttr, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, setupCarousels */
+/*global deparam, escapeHtmlAttr, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -186,7 +186,7 @@ function registerTabEvents($newTab) {
   handleAjaxTabLinks();
 
   if ($newTab) {
-    setupCarousels($newTab[0]);
+    VuFind.carousels.setup($newTab[0]);
   }
 
   VuFind.lightbox.bind('.tab-pane.active');

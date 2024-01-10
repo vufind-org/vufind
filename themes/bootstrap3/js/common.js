@@ -1,5 +1,5 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers, Splide */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupCarousels, setupMultiILSLoginFields, unwrapJQuery */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -672,33 +672,6 @@ function setupAutocomplete() {
   });
 }
 
-function setupCarousels(scope = document) {
-  if (typeof Splide === "undefined") {
-    return;
-  }
-
-  const config = {
-    autoHeight: true,
-    gap: "0.5em",
-    perPage: 4,
-    classes: {
-      // Add classes for pagination.
-      pagination: "splide__pagination carousel-pagination", // container
-      page: "splide__pagination__page carousel-indicator", // each button
-    }
-  };
-
-  unwrapJQuery(scope)
-    .querySelectorAll("[data-carousel]")
-    .forEach((carousel) => {
-      if (carousel.classList.contains("is-initialized")) {
-        return;
-      }
-
-      new Splide(carousel, config).mount();
-    });
-}
-
 /**
  * Handle arrow keys to jump to next record
  */
@@ -779,8 +752,6 @@ $(function commonDocReady() {
   VuFind.init();
   // Setup search autocomplete
   setupAutocomplete();
-  // Setup carousels
-  setupCarousels();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
