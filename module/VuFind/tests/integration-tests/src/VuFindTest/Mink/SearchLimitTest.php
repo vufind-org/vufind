@@ -232,7 +232,8 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 'Test Publication 20021', 'Test Publication 20040', 20);
 
         // Change limit and verify:
-        $this->clickCss($page, $this->limitControlSelector . ' option', null, 1);
+        $item = $this->clickCss($page, $this->limitControlSelector . ' li', null, 1);
+        $this->clickCss($item, 'a');
         $this->waitForPageLoad($page);
         // Check expected first and last record (page should be reset):
         $this->assertResultTitles($page, 'Test Publication 20001', 'Test Publication 20040', 40);

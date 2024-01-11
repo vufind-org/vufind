@@ -334,7 +334,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Now perform the search:
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
-        $this->assertSelectedSort($page, 'title');
+        $this->assertSelectedSort($page, 'Title');
     }
 
     /**
@@ -345,17 +345,16 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function getTagSearchSortData(): array
     {
         return [
-            [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
-            [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'],
-            [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'],
+            ['Author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
+            ['Date Descending', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'],
+            ['Date Ascending', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'],
         ];
     }
 
     /**
      * Test sorting the tag search results.
      *
-     * @param int    $index         Sort drop-down index to test
-     * @param string $expectedSort  Expected sort value at $index
+     * @param string $sort          Sort option to use
      * @param string $expectedFirst Expected first title after sorting
      * @param string $expectedLast  Expected last title after sorting
      *
@@ -366,16 +365,15 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @depends testTagSearch
      */
     public function testTagSearchSort(
-        int $index,
-        string $expectedSort,
+        string $sort,
         string $expectedFirst,
         string $expectedLast
     ): void {
         $page = $this->performSearch('five', 'tag');
-        $this->clickCss($page, $this->sortControlSelector . ' option', null, $index);
+        $this->sortResults($page, $sort);
         $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 3, $expectedFirst, $expectedLast);
-        $this->assertSelectedSort($page, $expectedSort);
+        $this->assertSelectedSort($page, $sort);
     }
 
     /**
@@ -758,26 +756,24 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'form.comment-form a');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         // Check result (wait for the value to update):
-        $this->assertEqualsWithTimeout(
-            [1, '80'],
-            function () use ($page, $checked) {
-                $inputs = $page->findAll('css', $checked);
+        $ratingCallback = function () use ($page, $checked) {
+            $inputs = $page->findAll('css', $checked);
+            // getValue can fail in the middle of update, so wrap in try..catch:
+            try {
                 return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+            } catch (\Exception $e) {
+                return [null, null];
             }
-        );
+        };
+
+        $this->assertEqualsWithTimeout([1, '80'], $ratingCallback);
         if ($allowRemove) {
             // Clear rating when adding another comment
             $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('two');
             $this->clickCss($page, 'form.comment-form a');
             $this->clickCss($page, 'form.comment-form .btn-primary');
             // Check result (wait for the value to update):
-            $this->assertEqualsWithTimeout(
-                [1, '70'],
-                function () use ($page, $checked) {
-                    $inputs = $page->findAll('css', $checked);
-                    return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
-                }
-            );
+            $this->assertEqualsWithTimeout([1, '70'], $ratingCallback);
         } else {
             // Check that the "Clear" link is no longer available:
             $this->unFindCss($page, 'form.comment-form a');

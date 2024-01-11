@@ -57,7 +57,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     public function testInvalidSort(): void
     {
         $page = $this->setUpSearch('foobar', 'relevance');
-        $this->assertSortControl($page, 'relevance');
+        $this->assertSortControl($page, 'Relevance');
     }
 
     /**
@@ -68,7 +68,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     public function testDefaultSort(): void
     {
         $page = $this->setUpSearch('', 'title desc');
-        $this->assertSortControl($page, 'title desc');
+        $this->assertSortControl($page, 'Title Reversed');
     }
 
     /**
@@ -81,7 +81,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpSearch('title', 'title');
 
         // Check current sort:
-        $this->assertSortControl($page, 'title');
+        $this->assertSortControl($page, 'Title');
 
         // Check expected first and last record on first page:
         $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
@@ -92,10 +92,10 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20021', 'Test Publication 20040');
 
         // Change sort to title reversed (last option) and verify:
-        $this->clickCss($page, $this->sortControlSelector . ' option', null, count($this->defaultSortOptions) + 1);
+        $this->sortResults($page, 'Title Reversed');
         $this->waitForPageLoad($page);
         // Check current sort:
-        $this->assertSortControl($page, 'title desc');
+        $this->assertSortControl($page, 'Title Reversed');
         // Check expected first and last record (page should be reset):
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
@@ -172,15 +172,15 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert the contents and selected element of the sort control.
      *
-     * @param Element $page   Current page
-     * @param string  $active Expected active option
+     * @param Element $page    Current page
+     * @param string  $active  Expected active option
      *
      * @return void
      */
     protected function assertSortControl(Element $page, string $active)
     {
         $this->assertSelectedSort($page, $active);
-        $optionElements = $page->findAll('css', $this->sortControlSelector . ' option');
+        $optionElements = $page->findAll('css', $this->sortControlSelector . ' li a');
         $callback = function (Element $element): string {
             return $element->getText();
         };

@@ -41,10 +41,10 @@
           $extraClasses = '';
         }
       ?>
-      <li class="dropdown__item<?=$extraClasses?>">
+      <li class="dropdown__item-container<?=$extraClasses?>">
         <?php
           $extra = $current['extraLinkAttributes'] ?? [];
-          $standard = ['class' => 'dropdown__link', 'href' => $current['url'], 'rel' => 'nofollow'];
+          $standard = ['class' => 'dropdown-item', 'href' => $current['url'], 'rel' => 'nofollow'];
           $linkAttributes = array_merge($extra, $standard);
         ?>
         <a<?=$this->htmlAttributes($linkAttributes)?>>

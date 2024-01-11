@@ -248,7 +248,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public function testApplyFacet(): void
     {
         $page = $this->performSearch('building:weird_ids.mrc');
-        $this->sortResults($page, 'title');
+        $this->sortResults($page, 'Title');
         $this->waitForPageLoad($page);
 
         // Confirm that we are NOT using the AJAX sidebar:
@@ -259,7 +259,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->facetApplyProcedure($page);
 
         // Verify that sort order is still correct:
-        $this->assertSelectedSort($page, 'title');
+        $this->assertSelectedSort($page, 'Title');
     }
 
     /**
@@ -279,7 +279,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
-        $this->sortResults($page, 'title');
+        $this->sortResults($page, 'Title');
         $this->waitForPageLoad($page);
 
         // Confirm that we ARE using the AJAX sidebar:
@@ -290,7 +290,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->facetApplyProcedure($page);
 
         // Verify that sort order is still correct:
-        $this->assertSelectedSort($page, 'title');
+        $this->assertSelectedSort($page, 'Title');
     }
 
     /**
@@ -470,14 +470,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Do a search and verify that sort order is maintained:
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        $this->sortResults($page, 'title');
+        $this->sortResults($page, 'Title');
         $this->waitForPageLoad($page);
         $this->clickHierarchicalFacet($page);
-        $this->assertSelectedSort($page, 'title');
+        $this->assertSelectedSort($page, 'Title');
         // Remove the filter:
         $this->clickCss($page, $this->activeFilterSelector);
         $this->waitForPageLoad($page);
-        $this->assertSelectedSort($page, 'title');
+        $this->assertSelectedSort($page, 'Title');
     }
 
     /**

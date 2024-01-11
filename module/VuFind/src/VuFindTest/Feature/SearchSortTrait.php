@@ -32,6 +32,7 @@
 namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 
 /**
  * Trait for working with sorting of search results.
@@ -49,7 +50,7 @@ trait SearchSortTrait
      *
      * @var string
      */
-    protected $sortControlSelector = '#sort_options_1';
+    protected $sortControlSelector = '.search__sort';
 
     /**
      * VuFind default sort options
@@ -92,20 +93,28 @@ trait SearchSortTrait
      */
     protected function sortResults(Element $page, string $value): void
     {
-        $this->findCssAndSetValue($page, $this->sortControlSelector, $value);
+        $sortControl = $this->clickCss($page, $this->sortControlSelector);
+        $links = $sortControl->findAll('css', 'a');
+        foreach ($links as $link) {
+            if ($link->getText() === $value) {
+                $link->click();
+                return;
+            }
+        }
+        throw new \Exception("Sort link for '$value' not found");
     }
 
     /**
      * Assert the selected sort option.
      *
-     * @param Element $page   Current page
-     * @param string  $active Selected sort option
+     * @param Element $page    Current page
+     * @param string  $active  Selected sort option
      *
      * @return void
      */
     protected function assertSelectedSort(Element $page, string $active): void
     {
-        $sort = $this->findCss($page, $this->sortControlSelector);
-        $this->assertEquals((string)$active, $sort->getValue());
+        $sort = $this->findCss($page, $this->sortControlSelector . ' li.active a');
+        $this->assertEquals($active, $sort->getText());
     }
 }
