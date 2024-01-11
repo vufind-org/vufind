@@ -33,8 +33,6 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
-use function count;
-
 /**
  * Test for sorting of search results.
  *
@@ -172,8 +170,8 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert the contents and selected element of the sort control.
      *
-     * @param Element $page    Current page
-     * @param string  $active  Expected active option
+     * @param Element $page   Current page
+     * @param string  $active Expected active option
      *
      * @return void
      */

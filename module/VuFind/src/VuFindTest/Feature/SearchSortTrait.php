@@ -32,7 +32,6 @@
 namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
-use Behat\Mink\Element\NodeElement;
 
 /**
  * Trait for working with sorting of search results.
@@ -107,8 +106,8 @@ trait SearchSortTrait
     /**
      * Assert the selected sort option.
      *
-     * @param Element $page    Current page
-     * @param string  $active  Selected sort option
+     * @param Element $page   Current page
+     * @param string  $active Selected sort option
      *
      * @return void
      */
