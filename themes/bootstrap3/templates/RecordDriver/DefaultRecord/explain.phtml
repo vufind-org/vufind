@@ -15,8 +15,8 @@ $restExplanation = $explanation->getExplanationForRest();
 $link = $this->recordLinker()->getUrl($this->driver);
 ?>
 <div class="explain">
-  <p><?=$this->transEsc('Top Result Relevance')?>: <?=$this->localizedNumber($maxScore, $decimalPlaces)?></p>
-  <h3><?=$this->transEsc('Explanation for search')?>: <?=$explanation->getLookfor()?></h3>
+  <p><?=$this->transEsc('explain_top_relevance')?>: <?=$this->localizedNumber($maxScore, $decimalPlaces)?></p>
+  <h3><?=$this->transEsc('explain_for_search')?>: <?=$explanation->getLookfor()?></h3>
   <p>
     <?=
       $this->translate('explain_relevance', [
