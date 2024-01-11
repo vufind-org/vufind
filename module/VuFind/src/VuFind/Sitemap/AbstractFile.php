@@ -29,6 +29,9 @@
 
 namespace VuFind\Sitemap;
 
+use function count;
+use function dirname;
+
 /**
  * Abstract class for representing XML sitemaps
  *

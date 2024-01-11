@@ -36,6 +36,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\CSV\Importer;
 
+use function is_callable;
+
 /**
  * Console command: CSV importer
  *

@@ -16,22 +16,22 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if (!empty($user->email)): ?>
     <div class="alert alert-info alert-email-notification">
-      <?=$this->transEsc("alert_email_address") . ': ' . $this->escapeHtml($user->email) ?>
+      <?=$this->transEsc('alert_email_address') . ': ' . $this->escapeHtml($user->email) ?>
       <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
-        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
+        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('edit');?></a>)
       <?php endif; ?>
     </div>
   <?php else: ?>
     <div class="alert alert-danger alert-email-notification">
-      <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
+      <?=$this->transEsc('no_email_address') . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('check_profile');?></a>
     </div>
   <?php endif; ?>
   <table>
     <tr>
-      <th><?=$this->transEsc("history_search")?>: </th>
+      <th><?=$this->transEsc('history_search')?>: </th>
       <td>
         <?php $desc = $this->results->getParams()->getDisplayQuery(); ?>
-        <?=empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc)?>
+        <?=empty($desc) ? $this->transEsc('history_empty_search') : $this->escapeHtml($desc)?>
       </td>
     </tr>
     <tr>
@@ -63,5 +63,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history'])?>
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'history'])?>
 </div>

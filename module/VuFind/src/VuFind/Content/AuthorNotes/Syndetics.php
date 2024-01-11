@@ -113,7 +113,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $anotes[$i]['Content'] = $sourceInfo['div'];
                 } else {
                     // Get the marc field for author notes (980)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld980");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld980');
                     if (!$nodes->length) {
                         // Skip fields with missing text
                         continue;

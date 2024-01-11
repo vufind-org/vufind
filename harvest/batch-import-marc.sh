@@ -51,11 +51,11 @@ Options:
 EOF
 }
 
-while getopts ":dhmpx:z" OPT
+while getopts ":dhmp:x:z" OPT
 do
   case $OPT in
     d) BASEPATH_UNDER_HARVEST=false;;
-    h) usage; 
+    h) usage;
        exit 0;;
     m) MOVE_DATA=false;;
     p) PROPERTIES_FILE="$OPTARG"; export PROPERTIES_FILE;;
@@ -138,7 +138,7 @@ else
 fi
 
 # Process all the files in the target directory:
-find $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | xargs -0 -n $MAX_BATCH_COUNT | \
+find -L $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | sort -z | xargs -0 -r -n $MAX_BATCH_COUNT | \
   while read -d $'\n' files
 do
   # Logging output handled by log() function

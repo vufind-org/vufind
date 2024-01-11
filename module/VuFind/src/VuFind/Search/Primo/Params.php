@@ -71,6 +71,7 @@ class Params extends \VuFind\Search\Base\Params
         'reference_entrys' => 'Reference Entries',
         'newsletterarticle' => 'Newsletter Articles',
         'archival_material_manuscripts' => 'Archival Materials / Manuscripts',
+        'magazinearticle' => 'Magazine Articles',
     ];
 
     /**
@@ -150,7 +151,8 @@ class Params extends \VuFind\Search\Base\Params
                 $facetOp = '~' === $prefix ? 'OR' : 'NOT';
                 $field = substr($field, 1);
             }
-            $result[$field] = [
+            $result[] = [
+                'field' => $field,
                 'facetOp' => $facetOp,
                 'values' => $filter,
             ];

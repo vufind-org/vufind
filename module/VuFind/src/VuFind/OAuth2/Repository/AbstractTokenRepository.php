@@ -32,6 +32,8 @@ namespace VuFind\OAuth2\Repository;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use VuFind\Db\Table\AccessToken;
 
+use function is_callable;
+
 /**
  * OAuth2 token repository base class.
  *

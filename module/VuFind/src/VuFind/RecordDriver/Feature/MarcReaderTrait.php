@@ -30,6 +30,11 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Functions for reading MARC records.
  *
@@ -75,6 +80,9 @@ trait MarcReaderTrait
                 $preferredMarcField = $testField;
                 break;
             }
+        }
+        if (empty($this->fields[$preferredMarcField])) {
+            throw new \Exception('Missing MARC data in record ' . $this->getUniqueId());
         }
         return trim($this->fields[$preferredMarcField]);
     }

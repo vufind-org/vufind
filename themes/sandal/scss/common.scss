@@ -43,15 +43,19 @@ table { font-size: $reduced-font-size; }
 
 .form-control { box-shadow: none; }
 .form-control:hover,
-.form-control:focus { border-color: $brand-primary; }
 .form-control:focus {
-  padding-bottom: 4px; // Prevent jumping
-  border-bottom: 3px solid $brand-secondary;
-  box-shadow: none;
+  /* #LESS>
+  --outline-color: rgba($brand-primary, (40/100));
+  <#LESS */
+  /* #SCSS> */
+  --outline-color: color.change($brand-primary, $alpha: 0.4);
+  /* <#SCSS */
+
+  border-color: $brand-primary;
+  outline: 4px solid var(--outline-color);
 }
-select.form-control {
-  padding-bottom: $padding-base-vertical;
-  border: 1px solid $light-silver;
+.form-control:focus {
+  --outline-color: $gold;
 }
 
 .breadcrumb a { color: $dark-gray; }

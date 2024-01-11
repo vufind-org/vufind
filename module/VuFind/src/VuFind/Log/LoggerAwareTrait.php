@@ -29,6 +29,8 @@
 
 namespace VuFind\Log;
 
+use function get_class;
+
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *

@@ -33,6 +33,11 @@ use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
+use function array_slice;
+use function count;
+use function intval;
+use function is_string;
+
 /**
  * Action helper to perform new items-related actions
  *
@@ -97,6 +102,26 @@ class NewItems extends AbstractPlugin
         }
 
         return $bibIDs;
+    }
+
+    /**
+     * Get default setting (null to use regular default).
+     *
+     * @return ?string
+     */
+    public function getDefaultSort(): ?string
+    {
+        return $this->config->default_sort ?? null;
+    }
+
+    /**
+     * Should we include facets in the new items search page?
+     *
+     * @return bool
+     */
+    public function includeFacets(): bool
+    {
+        return $this->config->include_facets ?? false;
     }
 
     /**

@@ -32,6 +32,13 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\WorkKeysQuery;
+
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
 
 /**
  * Class to help build URLs and forms in the view based on search settings.
@@ -176,6 +183,9 @@ class UrlQueryHelper
             if (!empty($type)) {
                 $this->urlParams['type'] = $type;
             }
+        } elseif ($this->queryObject instanceof WorkKeysQuery) {
+            $this->urlParams['id'] = $this->queryObject->getId();
+            $this->urlParams['search'] = 'versions';
         }
     }
 
@@ -620,10 +630,10 @@ class UrlQueryHelper
         foreach ($a as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $current) {
-                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current);
+                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current ?? '');
                 }
             } else {
-                $parts[] = urlencode($key) . '=' . urlencode($value);
+                $parts[] = urlencode($key) . '=' . urlencode($value ?? '');
             }
         }
         $retVal = implode('&', $parts);

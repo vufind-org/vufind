@@ -32,6 +32,9 @@
 
 namespace VuFind\Resolver;
 
+use function call_user_func_array;
+use function is_callable;
+
 /**
  * Resolver Connection Class
  *
@@ -96,7 +99,7 @@ class Connection
     {
         if (is_dir($cacheDir) && is_writable($cacheDir)) {
             $this->cachePath = $cacheDir;
-            if (!(substr($this->cachePath, -1) == '/')) {
+            if (!str_ends_with($this->cachePath, '/')) {
                 $this->cachePath .= '/';
             }
         }
