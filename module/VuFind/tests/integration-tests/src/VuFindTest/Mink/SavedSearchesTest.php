@@ -160,7 +160,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // in our search history.
         $this->findAndAssertLink($page, 'Search History')->click();
         $this->waitForPageLoad($page);
-        $this->assertSavedSearchList(["test"], $page);
+        $this->assertSavedSearchList(['test'], $page);
     }
 
     /**
@@ -338,7 +338,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // set it up for alerts and confirm that this auto-saves it.
         $this->findCss($page, '#recent-searches ' . $this->scheduleSelector)->click();
         $this->waitForPageLoad($page);
-        $this->findCss($page, '#recent-searches ' . $this->scheduleSelector)->findLink("Weekly")->click();
+        $this->findCss($page, '#recent-searches ' . $this->scheduleSelector)->findLink('Weekly')->click();
         $this->waitForPageLoad($page);
         $this->assertCount(
             2,
@@ -373,7 +373,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now confirm that we have the expected text:
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: None", $link->getText());
+        $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
 
@@ -385,13 +385,13 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We should now be on a page with a schedule selector; let's pick something:
         $this->findCss($page, $this->scheduleSelector)->click();
         $this->waitForPageLoad($page);
-        $this->findCss($page, $this->scheduleSelector)->findLink("Weekly")->click();
+        $this->findCss($page, $this->scheduleSelector)->findLink('Weekly')->click();
         $this->waitForPageLoad($page);
 
         // Let's confirm that if we repeat the search, the alert will now be set:
         $page = $this->performSearch('employment');
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: Weekly", $link->getText());
+        $this->assertEquals('Alert schedule: Weekly', $link->getText());
     }
 
     /**
@@ -411,7 +411,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We are not logged in, so we won't see the appropriate alert schedule yet
         // (it's always "None" for logged-out users).
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: None", $link->getText());
+        $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
 
@@ -424,7 +424,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // setting we set in the previous test, and with login deduplication, we
         // should now see the "Weekly" option already selected:
         $this->assertEquals(
-            "Weekly",
+            'Weekly',
             $this->findCss($page, $this->scheduleSelector . ' button')->getText()
         );
     }
@@ -462,7 +462,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $select = $this->findCss($page, '#recent-searches ' . $this->scheduleSelector);
         $select->click();
         $this->waitForPageLoad($page);
-        $select->findLink("Daily")->click();
+        $select->findLink('Daily')->click();
         $this->waitForPageLoad($page);
 
         // We should now be prompted to log in:
@@ -476,13 +476,13 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // look at! From previous tests, we expect to have two in our history, but
         // the important one ("employment") should be first, which enables us to
         // safely rely on the final assertion below.
-        $this->assertSavedSearchList(["employment", "test"], $page);
+        $this->assertSavedSearchList(['employment', 'test'], $page);
         $this->assertCount(
             2,
             $page->findAll('css', '#saved-searches ' . $this->scheduleSelector)
         );
         $this->assertEquals(
-            "Daily",
+            'Daily',
             $this->findCss($page, $this->scheduleSelector . ' button')->getText()
         );
     }

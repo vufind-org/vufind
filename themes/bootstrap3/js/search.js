@@ -1,0 +1,332 @@
+/*global VuFind */
+
+VuFind.register('search', function search() {
+  let jsRecordListSelector = '.js-result-list';
+  let paginationLinksSelector = '.js-pagination a,.js-pagination-simple a';
+  let scrollElementSelector = '.search-stats';
+  let searchStatsSelector = '.js-search-stats';
+  let searchFormSelector = 'form.searchForm';
+  let resultControlLinksSelector = '.js-search-sort a, .js-search-limit a';
+  let viewTypeSelector = '.view-buttons a';
+
+  // Forward declaration
+  let loadResults = function loadResultsForward() {};
+
+  /**
+   * Get the URL without any parameters
+   *
+   * @param {string} url
+   *
+   * @returns string
+   */
+  function getBaseUrl(url) {
+    const parts = url.split('?');
+    return parts[0];
+  }
+
+  /**
+   * Initialize pagination.
+   */
+  function initPagination() {
+    document.querySelectorAll(paginationLinksSelector).forEach((element) => {
+      if (!element.dataset.ajaxPagination) {
+        element.dataset.ajaxPagination = true;
+        element.addEventListener('click', function handleClick(event) {
+          event.preventDefault();
+          const href = this.getAttribute('href');
+          loadResults(href, true);
+        });
+      }
+    });
+  }
+
+  /**
+   * Initialize result controls that are not refreshed via AJAX.
+   *
+   * Note that view type links are updated in updateResultControls, but using them
+   * will cause a reload since page contents may change.
+   */
+  function initResultControls() {
+    document.querySelectorAll(resultControlLinksSelector).forEach(link => {
+      if (link.dataset.ajaxPagination) {
+        return;
+      }
+      link.dataset.ajaxPagination = true;
+      link.addEventListener('click', function handleClick(event) {
+        event.preventDefault();
+        // Build a URL from original link and load results:
+        let urlParts = link.getAttribute('href').split('?', 2);
+        const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
+        // Remove page so that any change resets it:
+        query.delete('page');
+        const url = urlParts[0] + '?' + query.toString();
+        loadResults(url, true);
+      });
+    });
+  }
+
+  /**
+   * Prepend a hidden field to a form.
+   *
+   * @param {?Element} form
+   * @param {string} name
+   * @param {string} value
+   */
+  function prependHiddenField(form, name, value) {
+    if (!form) {
+      return;
+    }
+    const input = document.createElement('input');
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.prepend(input);
+  }
+
+  /**
+   * Handle a hidden field.
+   *
+   * Adds, updates or removes the field as necessary.
+   *
+   * @param {string} formSelector
+   * @param {string} fieldName
+   * @param {?string} value
+   */
+  function handleHiddenField(formSelector, fieldName, value) {
+    let form = document.querySelector(formSelector);
+    if (!form) {
+      return;
+    }
+    let field = form.querySelector("input[name=" + fieldName + "]");
+    if (field) {
+      if (value) {
+        field.value = value;
+      } else {
+        field.remove();
+      }
+    } else if (value) {
+      prependHiddenField(form, fieldName, value);
+    }
+  }
+
+  /**
+   * Update URLs of result controls (sort, limit, view type)
+   *
+   * We will deliberately avoid replacing the controls for accessibility, so we need
+   * to ensure that they contain current URL parameters.
+   *
+   * @param {string} pageUrl
+   */
+  function updateResultControls(pageUrl) {
+    const parts = pageUrl.split('?', 2);
+    const params = new URLSearchParams(parts.length > 1 ? parts[1] : '');
+    const sort = params.get('sort');
+    const limit = params.get('limit');
+
+    // Update hidden fields of the search form:
+    handleHiddenField(searchFormSelector, 'limit', limit);
+    handleHiddenField(searchFormSelector, 'sort', sort);
+
+    // Update view type links:
+    document.querySelectorAll(viewTypeSelector).forEach((element) => {
+      const url = element.getAttribute('href');
+      const urlParts = url.split('?', 2);
+      const urlParams = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
+      if (sort) {
+        urlParams.set('sort', sort);
+      } else {
+        urlParams.delete('sort');
+      }
+      if (limit) {
+        urlParams.set('limit', limit);
+      } else {
+        urlParams.delete('limit');
+      }
+      element.setAttribute('href', urlParts[0] + '?' + urlParams.toString());
+    });
+  }
+
+  /**
+   * Update URLs of links pointing to the same results page
+   *
+   * Updates links pointing to this page to ensure that they contain current URL
+   * parameters (e.g. sort and limit). Any link that only contains query parameters
+   * is considered.
+   *
+   * @param {string} pageUrl
+   */
+  function updateResultLinks(pageUrl) {
+    let urlParts = pageUrl.split('?', 2);
+    const params = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
+    const sort = params.get('sort');
+    const limit = params.get('limit');
+
+    document.querySelectorAll('a').forEach((a) => {
+      // Use original href attribute since a.href returns an absolute URL:
+      const href = a.getAttribute('href');
+      if (!href || !href.startsWith('?')) {
+        return true;
+      }
+      const hrefParams = new URLSearchParams(href.substr(1));
+      if (null === sort) {
+        hrefParams.delete('sort');
+      } else {
+        hrefParams.set('sort', sort);
+      }
+      if (null === limit) {
+        hrefParams.delete('limit');
+      } else {
+        hrefParams.set('limit', limit);
+      }
+      a.href = '?' + hrefParams.toString();
+    });
+  }
+
+  /**
+   * Scroll view port to results
+   *
+   * @param {string} _style Scroll behavior ('smooth' (default), 'instant' or 'auto')
+   */
+  function scrollToResults(_style) {
+    const scrollEl = document.querySelector(scrollElementSelector);
+    if (scrollEl && window.scrollY > scrollEl.offsetTop) {
+      const style = typeof _style !== 'undefined' ? _style : 'smooth';
+      scrollEl.scrollIntoView({behavior: style});
+    }
+  }
+
+  /**
+   * Show an error message
+   *
+   * @param {string} error
+   */
+  function showError(error) {
+    let errorMsg = document.createElement('div');
+    errorMsg.classList = 'alert alert-danger';
+    errorMsg.textContent = error;
+    const recordList = document.querySelector(jsRecordListSelector);
+    recordList.innerHTML = '';
+    recordList.append(errorMsg);
+  }
+
+  /**
+   * Load results and update associated elements.
+   *
+   * @param {string} pageUrl
+   * @param {string} addToHistory
+   */
+  loadResults = function loadResultsReal(pageUrl, addToHistory) {
+    const recordList = document.querySelector(jsRecordListSelector);
+    const backend = recordList.dataset.backend;
+    if (typeof backend === 'undefined') {
+      showError('ERROR: data-backend not set for record list');
+      return;
+    }
+    const history = recordList.dataset.history;
+
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.classList = 'loading-overlay';
+    loadingOverlay.setAttribute('aria-live', 'polite');
+    loadingOverlay.setAttribute('role', 'status');
+    loadingOverlay.innerHTML = VuFind.loading();
+    recordList.prepend(loadingOverlay);
+    scrollToResults();
+    const searchStats = document.querySelector(searchStatsSelector);
+    const statsKey = searchStats.dataset.key;
+
+    const queryParams = new URLSearchParams('method=getSearchResults');
+    queryParams.set('source', backend);
+    if (typeof history !== 'undefined') {
+      queryParams.set('history', history);
+    }
+    queryParams.set('statsKey', statsKey);
+    let pageUrlParts = pageUrl.split('?');
+    if (typeof pageUrlParts[1] !== 'undefined') {
+      queryParams.set('querystring', pageUrlParts[1]);
+      if (addToHistory) {
+        window.history.pushState(
+          {
+            url: getBaseUrl(window.location.href) + '?' + pageUrlParts[1]
+          },
+          '',
+          '?' + pageUrlParts[1]
+        );
+      }
+    }
+    updateResultControls(pageUrl);
+    updateResultLinks(pageUrl);
+    VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
+    fetch(VuFind.path + '/AJAX/JSON?' + queryParams.toString())
+      .then((response) => response.json())
+      .then((result) => {
+        // We expect to get the results list in elements, but reset it to hide spinner just in case:
+        recordList.innerHTML = '';
+        Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
+          document.querySelectorAll(elementSelector).forEach((element) => {
+            // Extract any scripts from the HTML and add them separately so that they are executed properly:
+            const scripts = [];
+            const tmpDiv = document.createElement('div');
+            tmpDiv.innerHTML = contents.content;
+            tmpDiv.querySelectorAll('script').forEach((el) => {
+              const type = el.getAttribute('type');
+              if (!type || 'text/javascript' === type) {
+                scripts.push(el.cloneNode(true));
+                el.remove();
+              }
+            });
+
+            if (contents.target === 'inner') {
+              element.innerHTML = tmpDiv.innerHTML;
+            } else if (contents.target === 'outer') {
+              element.outerHTML = tmpDiv.outerHTML;
+            }
+            Object.entries(contents.attrs).forEach(([attr, value]) => element.setAttribute(attr, value));
+
+            // Append any scripts:
+            scripts.forEach((script) => {
+              const scriptEl = document.createElement('script');
+              scriptEl.innerHTML = script.innerHTML;
+              scriptEl.setAttribute('nonce', VuFind.getCspNonce());
+              element.appendChild(scriptEl);
+            });
+          });
+        });
+        VuFind.initResultScripts(jsRecordListSelector);
+        initPagination();
+        initResultControls();
+        VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
+      })
+      .catch((error) => {
+        showError(VuFind.translate('error_occurred') + ' - ' + error);
+      });
+  };
+
+  /**
+   * Handle history state change event and load results accordingly.
+   *
+   * @param {Event} event
+   */
+  function historyStateListener(event) {
+    if (event.state && event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {
+      event.preventDefault();
+      loadResults(event.state.url, false);
+    }
+  }
+
+  /**
+   * Initialize JS pagination if enabled
+   */
+  function init() {
+    if (document.querySelector(jsRecordListSelector)) {
+      initPagination();
+      initResultControls();
+      window.history.replaceState({url: window.location.href}, '', window.location.href);
+      window.addEventListener('popstate', historyStateListener);
+    }
+  }
+
+  return {
+    init: init,
+    scrollToResults
+  };
+});

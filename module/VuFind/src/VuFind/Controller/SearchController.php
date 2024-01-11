@@ -32,6 +32,10 @@ namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 
+use function array_slice;
+use function count;
+use function is_object;
+
 /**
  * Redirects the user to the appropriate default VuFind action.
  *
@@ -43,25 +47,6 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
  */
 class SearchController extends AbstractSolrSearch
 {
-    /**
-     * Blended search action.
-     *
-     * @return mixed
-     */
-    public function blendedAction()
-    {
-        $saveId = $this->searchClassId;
-        try {
-            $this->searchClassId = 'Blender';
-            $view = $this->resultsAction();
-        } catch (\Exception $e) {
-            $this->searchClassId = $saveId;
-            throw $e;
-        }
-        $this->searchClassId = $saveId;
-        return $view;
-    }
-
     /**
      * Show facet list for Solr-driven collections.
      *
@@ -250,12 +235,20 @@ class SearchController extends AbstractSolrSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
-        return $this->createViewModel(
+        $view = $this->createViewModel(
             [
+                'defaultSort' => $this->newItems()->getDefaultSort(),
                 'fundList' => $this->newItems()->getFundList(),
                 'ranges' => $this->newItems()->getRanges(),
             ]
         );
+        if ($this->newItems()->includeFacets()) {
+            $view->options = $this->serviceLocator
+                ->get(\VuFind\Search\Options\PluginManager::class)
+                ->get($this->searchClassId);
+            $this->addFacetDetailsToView($view, 'NewItems');
+        }
+        return $view;
     }
 
     /**
@@ -545,7 +538,6 @@ class SearchController extends AbstractSolrSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

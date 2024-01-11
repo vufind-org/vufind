@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use function is_array;
+
 /**
  * Relais Controller
  *

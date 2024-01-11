@@ -210,9 +210,8 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm the presence of a library card selector on the page:
-        $firstCard = $this->findCss($page, "#library_card option:nth-child(1)");
-        $secondCard = $this->findCss($page, "#library_card option:nth-child(2)");
-        $card2Value = $secondCard->getValue();
+        $firstCard = $this->findCss($page, '.select-library-card li:nth-child(1) a');
+        $secondCard = $this->findCss($page, '.select-library-card li:nth-child(2) a');
         $this->assertEquals('card 1', $firstCard->getText());
         $this->assertEquals('card 2', $secondCard->getText());
 
@@ -222,9 +221,8 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')->getText()
         );
 
-        // Switch to the second card; we can't currently use findCssAndSetValue() here because
-        // it conflicts with the behavior of jumpMenu.
-        $this->findCss($page, '#library_card')->setValue($card2Value);
+        // Switch to the second card
+        $this->clickCss($page, '.select-library-card li:nth-child(2) a');
         $this->waitForPageLoad($page);
 
         // Check that the appropriate username is reflected in the output:

@@ -5,6 +5,7 @@
       $this->component(
           'menu-button',
           [
+            'wrapperClass' => 'select-library-card',
             'showSelectedValue' => true,
             'toggleLabel' => 'Library Card',
             'menuItems' => array_merge(
@@ -13,7 +14,7 @@
                 ? [
                     [
                       'label' => '-',
-                      'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => ""]]),
+                      'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => '']]),
                       'extraLinkAttributes' => ['data-clear-account-cache' => ''],
                       'selected' => true,
                     ],

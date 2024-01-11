@@ -31,6 +31,8 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use VuFindSearch\Response\AbstractRecordCollection;
 
+use function array_key_exists;
+
 /**
  * Simple JSON-based record collection.
  *
@@ -76,6 +78,13 @@ class RecordCollection extends AbstractRecordCollection
      * @var array
      */
     protected $facetFields = null;
+
+    /**
+     * How many facet values have been filtered out, indexed by field.
+     *
+     * @var array
+     */
+    protected $filteredFacetCounts = [];
 
     /**
      * Constructor.
@@ -145,6 +154,28 @@ class RecordCollection extends AbstractRecordCollection
             }
         }
         return $this->facetFields;
+    }
+
+    /**
+     * Set filtered facet data.
+     *
+     * @param array $counts Counts of filtered facet values, indexed by field name.
+     *
+     * @return void
+     */
+    public function setFilteredFacetCounts(array $counts): void
+    {
+        $this->filteredFacetCounts = $counts;
+    }
+
+    /**
+     * Get filtered facet data.
+     *
+     * @return array
+     */
+    public function getFilteredFacetCounts(): array
+    {
+        return $this->filteredFacetCounts;
     }
 
     /**
@@ -223,6 +254,16 @@ class RecordCollection extends AbstractRecordCollection
     public function getCursorMark()
     {
         return $this->response['nextCursorMark'] ?? '';
+    }
+
+    /**
+     * Get response header.
+     *
+     * @return array
+     */
+    public function getResponseHeader()
+    {
+        return $this->response['responseHeader'] ?? [];
     }
 
     /**

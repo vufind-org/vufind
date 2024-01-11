@@ -67,7 +67,8 @@ class GetResultCountFactory implements \Laminas\ServiceManager\Factory\FactoryIn
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Search\Results\PluginManager::class)
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Session\Settings::class)
         );
     }
 }

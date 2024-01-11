@@ -49,7 +49,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     public function testJumpToFirst()
     {
         $this->changeConfigs(
-            ["config" => ["Record" => ["jump_to_single_search_result" => true]]]
+            ['config' => ['Record' => ['jump_to_single_search_result' => true]]]
         );
 
         $page = $this->performSearch('id:testbug2');
@@ -70,14 +70,10 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->performSearch('id:testbug2');
 
-        $expected = 'Showing 1 - 1 results of 1 for search \'id:testbug2\'';
-        $this->assertEquals(
+        $expected = 'Showing 1 - 1 results of 1';
+        $this->assertStringStartsWith(
             $expected,
-            substr(
-                $this->findCss($page, '.search-stats')->getText(),
-                0,
-                strlen($expected)
-            )
+            $this->findCss($page, '.search-stats')->getText()
         );
     }
 }

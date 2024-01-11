@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+
 /**
  * Model for Primo Central records.
  *
@@ -148,7 +150,13 @@ class Primo extends DefaultRecord
      */
     public function getFormats()
     {
-        return (array)($this->fields['format'] ?? []);
+        // Convert to displayable words and return as an array:
+        return array_map(
+            function ($s) {
+                return ucwords(str_replace('_', ' ', $s));
+            },
+            (array)($this->fields['format'])
+        );
     }
 
     /**

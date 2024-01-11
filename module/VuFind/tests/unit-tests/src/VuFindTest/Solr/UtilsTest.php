@@ -50,12 +50,12 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     public function testParseRange()
     {
         // basic range test:
-        $result = Utils::parseRange("[1 TO 100]");
+        $result = Utils::parseRange('[1 TO 100]');
         $this->assertEquals('1', $result['from']);
         $this->assertEquals('100', $result['to']);
 
         // test whitespace handling:
-        $result = Utils::parseRange("[1      TO     100]");
+        $result = Utils::parseRange('[1      TO     100]');
         $this->assertEquals('1', $result['from']);
         $this->assertEquals('100', $result['to']);
 

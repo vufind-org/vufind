@@ -31,6 +31,8 @@ namespace VuFindTest\Cookie;
 
 use VuFind\Cookie\Container;
 
+use function in_array;
+
 /**
  * Cookie Container Test Class
  *

@@ -42,18 +42,20 @@ return [
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
-        ['file' => 'truncate.js', 'priority' => 330],
-        ['file' => 'trigger_print.js', 'priority' => 340],
-        ['file' => 'observer_manager.js', 'priority' => 350],
+        ['file' => 'searchbox_controls.js', 'priority' => 330],
+        ['file' => 'truncate.js', 'priority' => 340],
+        ['file' => 'trigger_print.js', 'priority' => 350],
+        ['file' => 'observer_manager.js', 'priority' => 360],
+        ['file' => 'openurl.js', 'priority' => 370],
     ],
     /**
      * Configuration for a single or multiple favicons.
      *
      * Can be a single string that is a path to an .ico icon relative to the theme image folder.
-     * 
+     *
      * For multiple favicons the value must be an array of arrays of attributes
      * that will be rendered as link elements.
-     * 
+     *
      * Example:
      *  [
      *      [
@@ -112,6 +114,10 @@ return [
             'Collapse' => [
                 'template' => 'collapse',
             ],
+            // Unicode symbol characters. Icons are defined as hex code points.
+            'Unicode' => [
+                'template' => 'unicode',
+            ],
             /* For an example of an images set, see Bootprint's theme.config.php. */
         ],
         'aliases' => [
@@ -155,7 +161,10 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
+            'facet-collapse' => 'FontAwesome:caret-down',
             'facet-exclude' => 'FontAwesome:times',
+            'facet-expand' => 'FontAwesome:caret-right',
+            'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',
             'format-atlas' => 'FontAwesome:compass',
@@ -283,6 +292,7 @@ return [
             'ui-failure' => 'FontAwesome:times',
             'ui-menu' => 'FontAwesome:bars',
             'ui-remove' => 'FontAwesome:times',
+            'ui-reset-search' => 'Alias:ui-remove',
             'ui-save' => 'FontAwesome:floppy-o',
             'ui-success' => 'FontAwesome:check',
             'user-checked-out' => 'FontAwesome:book',

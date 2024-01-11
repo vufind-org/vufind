@@ -45,15 +45,18 @@ class Translate extends \Laminas\View\Helper\AbstractHelper implements \VuFind\I
     /**
      * Translate a string
      *
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
+    public function __invoke($str, $tokens = [], $default = null, $useIcuFormatter = false)
     {
-        return $this->translate($str, $tokens, $default);
+        return $this->translate($str, $tokens, $default, $useIcuFormatter);
     }
 }

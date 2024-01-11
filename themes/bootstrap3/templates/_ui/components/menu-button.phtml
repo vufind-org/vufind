@@ -1,11 +1,6 @@
 <?php
   $wrapperTag = $this->wrapperTag ?? 'div';
   $showSelectedValue = $this->showSelectedValue ?? false;
-  $wrapperClass = 'dropdown'; // Bootstrap class
-
-  if ($this->wrapperClass ?? false) {
-    $wrapperClass = $this->wrapperClass . ' dropdown'; // Bootstrap class
-  }
 
   // defaults
   $toggleAttrs = [
@@ -31,7 +26,7 @@
   $selected = $this->defaultSelectedValue ?? '';
 ?>
 <?php ob_start(); ?>
-  <ul class="dropdown-menu">
+  <ul class="dropdown-menu dropdown-menu-right">
     <?php foreach ($this->menuItems as $current): ?>
       <?php
         if ($current['selected'] ?? false) {
@@ -41,10 +36,10 @@
           $extraClasses = '';
         }
       ?>
-      <li class="dropdown__item<?=$extraClasses?>">
+      <li class="dropdown__item-container<?=$extraClasses?>">
         <?php
           $extra = $current['extraLinkAttributes'] ?? [];
-          $standard = ['class' => 'dropdown__link', 'href' => $current['url'], 'rel' => 'nofollow'];
+          $standard = ['class' => 'dropdown-item', 'href' => $current['url'], 'rel' => 'nofollow'];
           $linkAttributes = array_merge($extra, $standard);
         ?>
         <a<?=$this->htmlAttributes($linkAttributes)?>>
@@ -57,9 +52,6 @@
     $label = empty($this->toggleLabel) ? '' : $this->transEsc($this->toggleLabel);
     $buttonText = $showSelectedValue ? $selected : $label;
   ?>
-  <?php if ($showSelectedValue): ?>
-    <label for="<?=$this->escapeHtmlAttr($toggleAttrs['id'])?>"><?=$this->escapeHtml($label)?></label>
-  <?php endif; ?>
   <?=
     $this->makeTag(
         $toggleTag,
@@ -70,5 +62,24 @@
   ?>
 <?php $menuContents = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
+
+<?php if ($showSelectedValue && '' !== $label): ?>
+  <?php
+    // We need an inner wrapper to keep the label out of the dropdown and from
+    // affecting dropdown position
+    $menuContents = '<label for="' . $this->escapeHtmlAttr($toggleAttrs['id']) . '">'
+      . $this->escapeHtml($label)
+      . '</label>'
+      . $this->makeTag(
+          'div',
+          $menuContents,
+          'dropdown',
+          ['escapeContent' => false]
+      );
+    $wrapperClass = trim(($this->wrapperClass ?? '') . ' dropdown-container');
+  ?>
+<?php else: ?>
+  <?php $wrapperClass = trim(($this->wrapperClass ?? '') . ' dropdown'); ?>
+<?php endif; ?>
 
 <?=$this->makeTag($wrapperTag, $menuContents, $wrapperClass, ['escapeContent' => false]) ?>

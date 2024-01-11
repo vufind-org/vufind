@@ -3,7 +3,7 @@
 /**
  * Unit tests for Google cover loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -50,17 +50,21 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a callback to check the download function call.
      *
-     * @param string $body         Body for mock to return
-     * @param string $expectedISBN ISBN expected in request URL
+     * @param string $body           Body for mock to return
+     * @param string $expectedId     Identifier expected in request URL
+     * @param string $expectedIdType Expected identifier type in request URL
      *
      * @return callable
      */
-    protected function getDownloadCallback(string $body, string $expectedISBN): callable
-    {
-        return function ($url, $params, $callback) use ($body, $expectedISBN) {
+    protected function getDownloadCallback(
+        string $body,
+        string $expectedId,
+        string $expectedIdType = 'ISBN'
+    ): callable {
+        return function ($url, $params, $callback) use ($body, $expectedId, $expectedIdType) {
             $this->assertEquals(
                 'https://books.google.com/books?jscmd=viewapi'
-                . '&bibkeys=ISBN:' . $expectedISBN . '&callback=addTheCover',
+                . '&bibkeys=' . $expectedIdType . ':' . $expectedId . '&callback=addTheCover',
                 $url
             );
             $this->assertEquals([], $params);
@@ -105,6 +109,37 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test cover loading at a larger size
+     *
+     * @return void
+     */
+    public function testValidLargeCoverLoading(): void
+    {
+        $loader = new Google();
+
+        $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $downloadCallback = $this->getDownloadCallback(
+            $this->getFixture('content/covers/google-cover.js'),
+            '9781612917986'
+        );
+        $mockDownloader->expects($this->once())->method('download')
+            ->will($this->returnCallback($downloadCallback));
+        $loader->setCachingDownloader($mockDownloader);
+
+        $this->assertEquals(
+            'https://books.google.com/books/content'
+            . '?id=dEMBBAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl',
+            $loader->getUrl(
+                '',
+                'large',
+                ['isbn' => new ISBN('1612917984')]
+            )
+        );
+    }
+
+    /**
      * Test successful transaction containing no thumbnails.
      *
      * @return void
@@ -129,6 +164,36 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
                 '',
                 'small',
                 ['isbn' => new ISBN('1612917984')]
+            )
+        );
+    }
+
+    /**
+     * Test successful transaction using OCLC number.
+     *
+     * @return void
+     */
+    public function testOCLCLoading(): void
+    {
+        $loader = new Google();
+
+        $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $downloadCallback = $this->getDownloadCallback(
+            $this->getFixture('content/covers/google-cover-no-thumbnail.js'),
+            '1234',
+            'OCLC'
+        );
+        $mockDownloader->expects($this->once())->method('download')
+            ->will($this->returnCallback($downloadCallback));
+        $loader->setCachingDownloader($mockDownloader);
+
+        $this->assertFalse(
+            $loader->getUrl(
+                '',
+                'small',
+                ['oclc' => '1234']
             )
         );
     }
