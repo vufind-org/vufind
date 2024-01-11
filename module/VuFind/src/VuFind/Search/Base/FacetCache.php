@@ -147,7 +147,7 @@ abstract class FacetCache
      */
     public function getList($context = 'Advanced')
     {
-        if (!in_array($context, ['Advanced', 'HomePage'])) {
+        if (!in_array($context, ['Advanced', 'HomePage', 'NewItems'])) {
             throw new \Exception('Invalid context: ' . $context);
         }
         // For now, all contexts are handled the same way.

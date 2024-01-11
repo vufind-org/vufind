@@ -107,6 +107,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sessionCache;
 
     /**
+     * Validate passwords
+     *
+     * @var bool
+     */
+    protected $dontValidatePasswords = false;
+
+    /**
      * Default pickup location
      *
      * @var string
@@ -268,6 +275,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 throw new ILSException("Missing Catalog/{$current} config setting.");
             }
         }
+
+        $this->dontValidatePasswords
+            = !empty($this->config['Catalog']['dontValidatePasswords']);
 
         $this->defaultPickUpLocation
             = $this->config['Holds']['defaultPickUpLocation'] ?? '';
@@ -551,18 +561,48 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        if (empty($username) || empty($password)) {
+        if (empty($username)) {
             return null;
         }
 
-        $result = $this->makeRequest(
-            [
-                'path' => 'v1/contrib/kohasuomi/auth/patrons/validation',
-                'json' => ['userid' => $username, 'password' => $password],
-                'method' => 'POST',
-                'errors' => true,
-            ]
-        );
+        if ($this->dontValidatePasswords) {
+            $result = $this->makeRequest(
+                [
+                    'path' => 'v1/patrons',
+                    'query' => [
+                        'userid' => $username,
+                        '_match' => 'exact',
+                    ],
+                    'method' => 'GET',
+                    'errors' => true,
+                ]
+            );
+
+            if (isset($result['data'][0])) {
+                $data = $result['data'][0];
+            } else {
+                return null;
+            }
+        } else {
+            if (empty($password)) {
+                return null;
+            }
+
+            $result = $this->makeRequest(
+                [
+                    'path' => 'v1/contrib/kohasuomi/auth/patrons/validation',
+                    'json' => ['userid' => $username, 'password' => $password],
+                    'method' => 'POST',
+                    'errors' => true,
+                ]
+            );
+
+            if (isset($result['data'])) {
+                $data = $result['data'];
+            } else {
+                return null;
+            }
+        }
 
         if (401 === $result['code'] || 403 === $result['code']) {
             return null;
@@ -571,17 +611,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             throw new ILSException('Problem with Koha REST API.');
         }
 
-        $result = $result['data'];
         return [
-            'id' => $result['patron_id'],
-            'firstname' => $result['firstname'],
-            'lastname' => $result['surname'],
+            'id' => $data['patron_id'],
+            'firstname' => $data['firstname'],
+            'lastname' => $data['surname'],
             'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => $result['email'],
+            'cat_password' => (string)$password,
+            'email' => $data['email'],
             'major' => null,
             'college' => null,
-            'home_library' => $result['library_id'],
+            'home_library' => $data['library_id'],
         ];
     }
 
@@ -2142,7 +2181,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $result = $this->getSorter()->compare($a['location'], $b['location']);
 
         if (0 === $result && $this->sortItemsBySerialIssue) {
-            $result = strnatcmp($a['number'], $b['number']);
+            $result = strnatcmp($a['number'] ?? '', $b['number'] ?? '');
         }
 
         if (0 === $result) {

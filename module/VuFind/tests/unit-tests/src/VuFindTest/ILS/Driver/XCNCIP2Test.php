@@ -425,15 +425,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'lookupItemSet.xml',
             'result' => [
                 [
-                    'status' => 'Available on shelf', 'location' => null,
-                    'callnumber' => '621.3 ANG', 'availability' => true,
+                    'status' => 'Not For Loan', 'location' => null,
+                    'callnumber' => '621.3 ANG', 'availability' => false,
                     'reserve' => 'N', 'id' => '123456',
                     'item_id' => 'MZK01000000421-MZK50000000421000010',
                     'bib_id' => 'MZK01000000421', 'duedate' => '', 'volume' => '',
                     'number' => '', 'is_holdable' => false, 'addLink' => false,
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
-                    'item_agency_id' => 'My university', 'holdtype' => 'Hold',
+                    'item_agency_id' => 'My university', 'holdtype' => 'Recall',
                     'barcode' => 'MZK01000000421-MZK50000000421000010',
                 ], [
                     'status' => 'Available On Shelf', 'location' => null,
@@ -446,15 +446,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                 ], [
-                    'status' => 'Available On Shelf',
+                    'status' => 'In Library Use Only',
                     'location' => 'Some holding location',
-                    'callnumber' => '2-0997.767,2', 'availability' => true,
+                    'callnumber' => '2-0997.767,2', 'availability' => false,
                     'reserve' => 'N', 'id' => '123456',
                     'item_id' => 'MZK01000000425-MZK50000000425000020',
                     'bib_id' => 'MZK01000000425', 'item_agency_id' => 'Test agency',
                     'duedate' => '', 'volume' => '', 'number' => '',
                     'barcode' => 'Unknown barcode', 'is_holdable' => true,
-                    'addLink' => true, 'holdtype' => 'Hold',
+                    'addLink' => true, 'holdtype' => 'Recall',
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                     'collection_desc' => 'Some holding sublocation',
@@ -979,8 +979,20 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetHolding()
     {
+        $config = [
+            'Catalog' => [
+                'url' => 'https://test.ncip.example',
+                'consortium' => false,
+                'agency' => 'Test agency',
+                'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                'itemUseRestrictionTypesForStatus' => [
+                    'In Library Use Only',
+                    'Not For Loan',
+                ],
+            ],
+        ];
         foreach ($this->holdingTests as $test) {
-            $this->configureDriver();
+            $this->configureDriver($config);
             $this->mockResponse($test['file']);
             $holdings = $this->driver->getHolding('123456');
             $this->assertEquals(

@@ -6,10 +6,6 @@
         $viewParams = [
           'searchClassId' => $searchClassId,
           'currentSearch' => $currentSearch,
-          // Enable cart if appropriate:
-          'showCartControls' => $this->supportsCartOptions[$columnIndex] && $this->showCartControls,
-          // Enable bulk options if appropriate:
-          'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
         ];
       ?>
       <?php
@@ -25,7 +21,7 @@
         <?php $templateSuffix = ($currentSearch['ajax'] ?? false) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
-      <?php $columnIndex ++; ?>
+      <?php $columnIndex++; ?>
       <?php if ($columnIndex < $columns): ?>
     </div>
     <div class="combined-column">

@@ -13,11 +13,6 @@
       $colParams = [
         'searchClassId' => $searchClassId,
         'currentSearch' => $currentSearch,
-        // Enable cart if appropriate:
-        'showCartControls' => $this->supportsCartOptions[$columnIndex] && $this->showCartControls,
-        // Enable bulk options if appropriate:
-        'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
-        // Other params
         'domId' => $currentSearch['domId'],
       ];
       if (isset($currentSearch['ajax'])) {
@@ -29,7 +24,7 @@
         $columnedParams[$col] = [];
       }
       $columnedParams[$col][] = $colParams;
-      $columnIndex ++;
+      $columnIndex++;
     ?>
   <?php endforeach; ?>
   <?php foreach ($columnedParams as $currColumn): ?>

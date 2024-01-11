@@ -1,6 +1,8 @@
 /* #SCSS>
 $fa-font-path: "../../bootstrap3/css/fonts";
-@import "vendor/bootstrap";
+// Load bootstrap via include path to silence deprecation warnings
+// (see vendor subdirectory for the actual contents)
+@import "bootstrap/bootstrap";
 <#SCSS */
 /* #LESS> */
 @import "vendor/bootstrap/bootstrap";
@@ -9,7 +11,16 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "variables";
 // Import custom (non-vendor) mixins
 @import "mixins/mixins";
+
+/* #SCSS>
+$fa-font-path: "../../bootstrap3/css/fonts";
+// Load font-awesome via include path to silence deprecation warnings
+// (see vendor subdirectory for the actual contents)
+@import "font-awesome/font-awesome";
+<#SCSS */
+/* #LESS> */
 @import "vendor/font-awesome/font-awesome";
+/* <#LESS */
 
 @import "components/accessibility";
 @import "components/variables";
@@ -444,6 +455,45 @@ ul.list-group {
   .table.fines-table {
     table-layout: auto;
     word-wrap: normal;
+  }
+}
+
+/* ------ Responsive table for small screen size ------ */
+@media screen and (max-width: 768px) {
+  .table-responsive {
+    border: none;
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    tr {
+      display: block;
+      margin-bottom: @line-height-computed;
+      border-left: 1px solid @table-border-color;
+      border-right: 1px solid @table-border-color;
+      border-bottom: 4px solid @table-border-color;
+    }
+    td {
+      display: flex;
+      align-items: first baseline;
+      background: #fff;
+      &:before {
+        display: flex;
+        flex-basis: 40%;
+        flex-shrink: 0;
+        font-weight: bold;
+        content: attr(data-label);
+      }
+    }
+    td:nth-child(even) {
+      background-color: @table-bg-accent;
+    }
   }
 }
 
