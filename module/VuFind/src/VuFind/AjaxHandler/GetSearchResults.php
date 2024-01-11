@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -150,6 +150,14 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             'attrs' => [
                 'aria-live' => 'polite',
             ],
+        ],
+        '.js-search-sort' => [
+            'method' => 'renderSort',
+            'target' => 'inner',
+        ],
+        '.js-search-limit' => [
+            'method' => 'renderLimit',
+            'target' => 'inner',
         ],
         '.js-result-list' => [
             'method' => 'renderResults',
@@ -383,6 +391,46 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         ];
 
         return $this->translate($statsKey, $transParams);
+    }
+
+    /**
+     * Render sort control
+     *
+     * @param Params  $params  Request params
+     * @param Results $results Search results
+     *
+     * @return ?string
+     */
+    protected function renderSort(Params $params, Results $results): ?string
+    {
+        $params = $results->getParams();
+        return $this->renderer->render(
+            'search/controls/sort.phtml',
+            compact(
+                'results',
+                'params',
+            )
+        );
+    }
+
+    /**
+     * Render limit control
+     *
+     * @param Params  $params  Request params
+     * @param Results $results Search results
+     *
+     * @return ?string
+     */
+    protected function renderLimit(Params $params, Results $results): ?string
+    {
+        $params = $results->getParams();
+        return $this->renderer->render(
+            'search/controls/limit.phtml',
+            compact(
+                'results',
+                'params',
+            )
+        );
     }
 
     /**

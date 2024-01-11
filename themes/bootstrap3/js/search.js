@@ -6,9 +6,7 @@ VuFind.register('search', function search() {
   let scrollElementSelector = '.search-stats';
   let searchStatsSelector = '.js-search-stats';
   let searchFormSelector = 'form.searchForm';
-  let resultsControlFormSelector = '.search-controls form';
-  let sortFormSelector = resultsControlFormSelector + '.search-sort';
-  let limitFormSelector = resultsControlFormSelector + '.search-result-limit';
+  let resultControlLinksSelector = '.js-search-sort a, .js-search-limit a';
   let viewTypeSelector = '.view-buttons a';
 
   // Forward declaration
@@ -49,46 +47,21 @@ VuFind.register('search', function search() {
    * will cause a reload since page contents may change.
    */
   function initResultControls() {
-    document.querySelectorAll(resultsControlFormSelector).forEach((form) => {
-      if (!form.dataset.ajaxPagination) {
-        form.dataset.ajaxPagination = true;
-        form.querySelectorAll('.jumpMenu').forEach(jumpMenu => {
-          // Disable original jump menu function:
-          jumpMenu.classList.remove('jumpMenu');
-          jumpMenu.addEventListener('change', function handleSubmit(event) {
-            event.preventDefault();
-            // Build a URL from form action and fields and load results:
-            let urlParts = form.getAttribute('action').split('?', 2);
-            const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
-
-            function _addToQuery(el) {
-              if ('radio' === el.type && !el.checked) {
-                return;
-              }
-              if (el.name.endsWith('[]')) {
-                query.append(el.name, el.value);
-              } else {
-                query.set(el.name, el.value);
-              }
-            }
-
-            Object.entries(form.elements).forEach(([, element]) => {
-              // Chrome represents multiple hidden 'filter[]' fields as a RadioNodeList:
-              if (element instanceof RadioNodeList) {
-                Object.entries(element).forEach(([, setElement]) => {
-                  _addToQuery(setElement);
-                });
-              } else {
-                _addToQuery(element);
-              }
-            });
-            // Remove page so that any change resets it:
-            query.delete('page');
-            const url = urlParts[0] + '?' + query.toString();
-            loadResults(url, true);
-          });
-        });
+    document.querySelectorAll(resultControlLinksSelector).forEach(link => {
+      if (link.dataset.ajaxPagination) {
+        return;
       }
+      link.dataset.ajaxPagination = true;
+      link.addEventListener('click', function handleClick(event) {
+        event.preventDefault();
+        // Build a URL from original link and load results:
+        let urlParts = link.getAttribute('href').split('?', 2);
+        const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
+        // Remove page so that any change resets it:
+        query.delete('page');
+        const url = urlParts[0] + '?' + query.toString();
+        loadResults(url, true);
+      });
     });
   }
 
@@ -137,28 +110,6 @@ VuFind.register('search', function search() {
   }
 
   /**
-   * Update value of a select field
-   *
-   * @param {?Element} select
-   * @param {?string} value
-   */
-  function updateSelectValue(select, value) {
-    if (!select) {
-      return;
-    }
-    if (select.value !== value) {
-      if (value) {
-        select.value = value;
-      } else {
-        const defaultValue = select.querySelector('option[data-default]');
-        if (defaultValue) {
-          select.value = defaultValue.value;
-        }
-      }
-    }
-  }
-
-  /**
    * Update URLs of result controls (sort, limit, view type)
    *
    * We will deliberately avoid replacing the controls for accessibility, so we need
@@ -175,14 +126,6 @@ VuFind.register('search', function search() {
     // Update hidden fields of the search form:
     handleHiddenField(searchFormSelector, 'limit', limit);
     handleHiddenField(searchFormSelector, 'sort', sort);
-
-    // Update hidden fields of search control forms:
-    handleHiddenField(sortFormSelector, 'limit', limit);
-    handleHiddenField(limitFormSelector, 'sort', sort);
-
-    // Update currently selected values (required for history traversal to show correct values):
-    updateSelectValue(document.querySelector(sortFormSelector + ' select'), sort);
-    updateSelectValue(document.querySelector(limitFormSelector + ' select'), limit);
 
     // Update view type links:
     document.querySelectorAll(viewTypeSelector).forEach((element) => {
@@ -350,6 +293,7 @@ VuFind.register('search', function search() {
         });
         VuFind.initResultScripts(jsRecordListSelector);
         initPagination();
+        initResultControls();
         VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
       })
       .catch((error) => {

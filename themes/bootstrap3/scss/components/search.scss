@@ -98,11 +98,14 @@ header .container.navbar { margin-bottom: 0; }
 }
 
 @media (min-width: 768px) {
-  .search-header,
+  .search-header {
+    display: flex;
+  }
   .search-controls {
     display: flex;
-    align-items: center;
-    gap: 6px;
+    flex-direction: column;
+    gap: 2px;
+    align-items: end;
   }
   .search-stats { flex-grow: 1; }
 }
