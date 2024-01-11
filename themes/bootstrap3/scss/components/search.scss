@@ -96,6 +96,9 @@ header .container.navbar { margin-bottom: 0; }
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
+.search-controls .dropdown-menu {
+  min-width: 80px;
+}
 
 @media (min-width: 768px) {
   .search-header {

@@ -99,6 +99,8 @@ label { cursor: pointer; }
 }
 .nav .dropdown-toggle {
   padding-right: 8px;
+  height: inherit;
+  border-radius: 0;
 
   .icon {
     margin-left: 4px;
@@ -139,8 +141,13 @@ button.dropdown-toggle {
   color: inherit;
   background-color: transparent;
 }
-.dropdown label {
-  padding-right: 0.2rem;
+.dropdown-container {
+  label {
+    padding-right: 0.5rem;
+  }
+  .dropdown {
+    display: inline-block;
+  }
 }
 
 // Normalize highlighting
