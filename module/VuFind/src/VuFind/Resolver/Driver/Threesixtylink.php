@@ -76,7 +76,7 @@ class Threesixtylink extends AbstractBase
     public function fetchLinks($openURL)
     {
         // Make the call to SerialsSolutions and load results
-        $url = $this->baseUrl . (substr($this->baseUrl, -1) == '/' ? '' : '/') .
+        $url = $this->baseUrl . (str_ends_with($this->baseUrl, '/') ? '' : '/') .
             'openurlxml?version=1.0&' . $openURL;
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;

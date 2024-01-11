@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ILS driver test
+ * FOLIO ILS driver test
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -34,7 +34,7 @@ use Laminas\Http\Response;
 use VuFind\ILS\Driver\Folio;
 
 /**
- * ILS driver test
+ * FOLIO ILS driver test
  *
  * @category VuFind
  * @package  Tests
@@ -58,6 +58,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'tenant' => 'config_tenant',
             'username' => 'config_username',
             'password' => 'config_password',
+            'legacy_authentication' => false,
         ],
     ];
 
@@ -186,7 +187,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist
+     * Request a token where one does not exist (RTR authentication)
      *
      * @return void
      */
@@ -197,7 +198,25 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Request a token where one does not exist (legacy authentication)
+     *
+     * @return void
+     */
+    public function testTokensWithLegacyAuth(): void
+    {
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector('get-tokens-legacy', $config); // saves to $this->driver
+        $this->driver->getMyProfile(['id' => 'whatever']);
+    }
+
+    /**
      * Check a valid token retrieved from session cache
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -208,7 +227,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache
+     * Check and renew an invalid token retrieved from session cache (RTR authentication)
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -219,7 +240,27 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check and renew an invalid token retrieved from session cache (legacy authentication)
+     *
+     * @depends testTokensWithLegacyAuth
+     *
+     * @return void
+     */
+    public function testCheckInvalidTokenLegacyAuth(): void
+    {
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector('check-invalid-token-legacy', $config);
+        $this->driver->getPickupLocations(['username' => 'whatever']);
+    }
+
+    /**
      * Confirm that cancel holds validates the current patron.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -235,6 +276,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Confirm that cancel holds processes various statuses appropriately.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -257,6 +300,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test an unsuccessful patron login with default settings
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testUnsuccessfulPatronLogin(): void
@@ -266,7 +311,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi
+     * Test patron login with Okapi (RTR authentication)
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -290,7 +337,38 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test patron login with Okapi (Legacy authentication)
+     *
+     * @depends testTokensWithLegacyAuth
+     *
+     * @return void
+     */
+    public function testSuccessfulPatronLoginWithOkapiLegacyAuth(): void
+    {
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector(
+            'successful-patron-login-with-okapi-legacy',
+            $config + ['User' => ['okapi_login' => true]]
+        );
+        $result = $this->driver->patronLogin('foo', 'bar');
+        $expected = [
+            'id' => 'fake-id',
+            'username' => 'foo',
+            'cat_username' => 'foo',
+            'cat_password' => 'bar',
+            'firstname' => 'first',
+            'lastname' => 'last',
+            'email' => 'fake@fake.com',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test successful place hold
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -316,6 +394,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold (using an old version of mod-circulation)
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testSuccessfulPlaceHoldLegacy(): void
@@ -340,6 +420,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold with no expiration date
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testSuccessfulPlaceHoldNoExpirationDate(): void
@@ -361,6 +443,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test unsuccessful place hold with invalid expiration date
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -385,6 +469,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test unsuccessful place hold
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testUnsuccessfulPlaceHold(): void
@@ -408,6 +494,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful renewal
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -436,6 +524,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful call to holds, no items
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testNoItemsGetMyHolds(): void
@@ -451,6 +541,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, one available item
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -479,6 +571,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, one available item placed for a proxy
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -509,6 +603,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful call to holds, one in_transit item
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testInTransitItemGetMyHolds(): void
@@ -536,6 +632,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, item in queue, position x
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -566,6 +664,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable when no excludeHoldLocationsCompareMode
      * config value is set
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableDefaultConfig(): void
@@ -580,6 +680,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable with the exact compare mode
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -600,6 +702,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test calls to isHoldable when using regex mode
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableRegexMode(): void
@@ -619,6 +723,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test calls to isHoldable to verify handling of invalid regex
      * when in regex compare mode
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -644,6 +750,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
      * config is case insensitive
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableCaseSensitivityConfig(): void
@@ -668,6 +776,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable using exact mode with invalid
      * location values and paramter values to isHoldable
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableExactModeInvalidInput(): void
@@ -685,6 +795,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the getMyProfile method.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -713,6 +825,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the getProxiedUsers method.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetProxiedUsers(): void
@@ -728,6 +842,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the getProxyingUsers method.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -750,34 +866,41 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     protected function getExpectedGetHoldingResult(): array
     {
         return [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'foo',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => null,
-                'item_notes' => null,
-                'summary' => ['foo', 'bar baz'],
-                'supplements' => [],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'foo',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => null,
+                    'item_notes' => null,
+                    'summary' => ['foo', 'bar baz'],
+                    'supplements' => [],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                ],
             ],
+            'electronic_holdings' => [],
         ];
     }
 
     /**
      * Test getHolding with HRID-based lookup
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -792,6 +915,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getStatuses.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetStatuses(): void
@@ -801,11 +926,16 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['IDs']['type'] = 'hrid';
         $this->createConnector('get-holding', $driverConfig);
-        $this->assertEquals([$this->getExpectedGetHoldingResult()], $this->driver->getStatuses(['foo']));
+        $this->assertEquals(
+            [$this->getExpectedGetHoldingResult()['holdings']],
+            $this->driver->getStatuses(['foo'])
+        );
     }
 
     /**
      * Test getHolding with FOLIO-based sorting.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -815,35 +945,42 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig['Holdings']['folio_sort'] = 'volume';
         $this->createConnector('get-holding-sorted', $driverConfig);
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                ],
             ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
 
     /**
      * Test getHolding filters empty holding statements appropriately.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -853,29 +990,34 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig['Holdings']['folio_sort'] = 'volume';
         $this->createConnector('get-holding-empty-statements', $driverConfig);
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => ['summ1', 'summ2'],
-                'supplements' => ['supp1', 'supp2'],
-                'indexes' => ['ind1', 'ind2'],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => ['summ1', 'summ2'],
+                    'supplements' => ['supp1', 'supp2'],
+                    'indexes' => ['ind1', 'ind2'],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                ],
             ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
@@ -883,41 +1025,50 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding with checked out item.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingWithDueDate(): void
     {
         $this->createConnector('get-holding-checkedout');
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Checked out',
-                'duedate' => '06-01-2023',
-                'availability' => false,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 1,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Checked out',
+                    'duedate' => '06-01-2023',
+                    'availability' => false,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                ],
             ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
 
     /**
      * Test getHolding with VuFind-based sorting.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -927,58 +1078,66 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig['Holdings']['vufind_sort'] = 'enumchron';
         $this->createConnector('get-holding-multi-volume', $driverConfig);
         $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid2',
-                'holdings_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => 'v.2',
-                'barcode' => 'barcode-test2',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
+            'total' => 2,
+            'holdings' => [
+                0 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid2',
+                    'holdings_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => 'v.2',
+                    'barcode' => 'barcode-test2',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                ],
+                1 => [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'instanceid',
+                    'item_id' => 'itemid',
+                    'holdings_id' => 'holdingid',
+                    'number' => 2,
+                    'enumchron' => 'v.100',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => ['Fake note'],
+                    'item_notes' => null,
+                    'summary' => [],
+                    'supplements' => ['Fake supplement statement With a note!'],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                    'bound_with_records' => [],
+                ],
             ],
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holdings_id' => 'holdingid',
-                'number' => 2,
-                'enumchron' => 'v.100',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => [],
-                'supplements' => ['Fake supplement statement With a note!'],
-                'indexes' => [],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
-            ],
+            'electronic_holdings' => [],
         ];
         $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
 
     /**
      * Test getPagedResults with less than the limit value returned
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -1007,6 +1166,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getPagedResults with greater than the limit value returned
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetPagedResultsGreaterThanLimit(): void
@@ -1033,6 +1194,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getPagedResults with results equal to the limit value returned
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -1064,6 +1227,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * testGetPagedResultsEqualToLimit since the totalRecords in the
      * response from the API is inacurrate for the first response
      * (i.e. just an estimate).
+     *
+     * @depends testTokens
      *
      * @return void
      */

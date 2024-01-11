@@ -194,10 +194,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             'CAPTCHA not passed',
             $this->findCss($page, '.modal-body .alert-danger')->getText()
         );
-        $this->clickCss($page, '.modal-body button');
+        $this->closeLightbox($page);
         // Now fix the CAPTCHA
-        $this->findCss($page, 'form.comment-form [name="demo_captcha"]')
-            ->setValue('demo');
+        $this->findCssAndSetValue($page, 'form.comment-form [name="demo_captcha"]', 'demo');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->findCss($page, '.comment');
         // Remove comment
@@ -402,7 +401,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->getVuFindUrl() . '/Search/Results?lookfor=five&type=tag',
             $session->getCurrentUrl()
         );
-        $expected = 'Showing 1 - 3 results of 3 for search \'five\'';
+        $expected = 'Showing 1 - 3 results of 3';
         $this->assertEquals(
             $expected,
             substr(

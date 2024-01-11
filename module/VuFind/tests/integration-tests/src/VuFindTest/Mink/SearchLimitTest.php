@@ -228,6 +228,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to second page:
         $this->clickCss($page, '.pagination li > a');
+        $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 'Test Publication 20021', 'Test Publication 20040', 20);
 
         // Change limit and verify:

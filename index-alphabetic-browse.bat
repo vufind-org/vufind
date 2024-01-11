@@ -85,7 +85,7 @@ mkdir "%index_dir%"
 
 rem These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_browse
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbib_field_iterator=org.vufind.solr.indexing.StoredFieldIterator -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-raw 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
@@ -112,20 +112,24 @@ if "!%3!"=="!1!" goto skipauth
 set args="%bib_index%" "%field%" "%auth_index%" "%browse%.tmp"
 :skipauth
 
-rem Extract lines from Solr
-%JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
+rem Get the browse headings from Solr
+%JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% org.vufind.solr.indexing.PrintBrowseHeadings %args%
 
-rem Sort lines
+rem Sort the browse headings
 sort %browse%.tmp /o sorted-%browse%.tmp /rec 65535
 
 rem Remove duplicate lines
 php %VUFIND_HOME%\util\dedupe.php "sorted-%browse%.tmp" "unique-%browse%.tmp"
 
-rem Build database file
-%JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
+rem Build the SQLite database
+%JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% org.vufind.solr.indexing.CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
 
+rem Clear up temp files
 del /q *.tmp > nul
 
+rem Move the new database to the index directory
 move "%browse%_browse.db" "%index_dir%\%browse%_browse.db-updated" > nul
+
+rem Indicate that the new database is ready for use
 echo OK > "%index_dir%\%browse%_browse.db-ready"
 :end

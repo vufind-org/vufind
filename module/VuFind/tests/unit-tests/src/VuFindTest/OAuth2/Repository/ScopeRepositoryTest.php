@@ -40,7 +40,7 @@ use VuFind\OAuth2\Repository\ScopeRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ScopeRepositoryTest extends AbstractTokenRepositoryTest
+class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Data provider for testScopeRepository

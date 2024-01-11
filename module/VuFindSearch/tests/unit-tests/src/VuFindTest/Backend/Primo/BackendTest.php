@@ -264,7 +264,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $params = new ParamBag(
             [
                 'filterList' => [
-                    'pcAvailability' => [
+                    [
+                        'field' => 'pcAvailability',
                         'values' => [
                             $value,
                         ],

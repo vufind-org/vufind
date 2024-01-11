@@ -837,6 +837,11 @@ abstract class Results
             = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
             ? $this->getOptions()->getHierarchicalFacets()
             : [];
+        $hierarchicalFacetSortSettings
+            = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
+            ? $this->getOptions()->getHierarchicalFacetSortSettings()
+            : [];
+
         foreach (array_keys($filter) as $field) {
             $data = $facetList[$field] ?? [];
             // Skip empty arrays:
@@ -852,6 +857,7 @@ abstract class Results
             $translate = in_array($field, $translatedFacets);
             $hierarchical = in_array($field, $hierarchicalFacets);
             $operator = $this->getParams()->getFacetOperator($field);
+            $resultList = [];
             // Loop through values:
             foreach ($data as $value => $count) {
                 $displayText = $this->getParams()
@@ -873,7 +879,7 @@ abstract class Results
                     || $this->getParams()->hasFilter("~$field:" . $value);
 
                 // Store the collected values:
-                $result[$field]['list'][] = compact(
+                $resultList[] = compact(
                     'value',
                     'displayText',
                     'count',
@@ -881,6 +887,17 @@ abstract class Results
                     'isApplied'
                 );
             }
+
+            if ($hierarchical) {
+                $sort = $hierarchicalFacetSortSettings[$field]
+                    ?? $hierarchicalFacetSortSettings['*'] ?? 'count';
+                $this->hierarchicalFacetHelper->sortFacetList($resultList, $sort);
+
+                $resultList
+                    = $this->hierarchicalFacetHelper->buildFacetArray($field, $resultList);
+            }
+
+            $result[$field]['list'] = $resultList;
         }
         return $result;
     }

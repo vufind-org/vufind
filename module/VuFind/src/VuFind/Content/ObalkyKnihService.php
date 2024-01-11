@@ -199,7 +199,7 @@ class ObalkyKnihService implements
         $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid'] ?? '');
         $uuid = null;
         if (isset($ids['uuid'])) {
-            $uuid = (substr($ids['uuid'], 0, 5) === 'uuid:')
+            $uuid = str_starts_with($ids['uuid'], 'uuid:')
                 ? $ids['uuid']
                 : ('uuid:' . $ids['uuid']);
         }

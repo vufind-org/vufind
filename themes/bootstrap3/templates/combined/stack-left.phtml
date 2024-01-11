@@ -7,10 +7,6 @@
         $viewParams = [
           'searchClassId' => $searchClassId,
           'currentSearch' => $currentSearch,
-          // Enable cart if appropriate:
-          'showCartControls' => $this->supportsCartOptions[$columnIndex] && $this->showCartControls,
-          // Enable bulk options if appropriate:
-          'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
         ];
       ?>
       <?php
@@ -22,7 +18,7 @@
           continue;
         }
       ?>
-      <?php $columnIndex ++; ?>
+      <?php $columnIndex++; ?>
       <?php
         if ($columnIndex > 0 && $columnIndex < $columns) {
           $viewParams['domId'] = $currentSearch['domId'];
