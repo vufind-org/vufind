@@ -57,7 +57,7 @@
     $label = empty($this->toggleLabel) ? '' : $this->transEsc($this->toggleLabel);
     $buttonText = $showSelectedValue ? $selected : $label;
   ?>
-  <?php if ($showSelectedValue): ?>
+  <?php if ($showSelectedValue && '' !== $label): ?>
     <label for="<?=$this->escapeHtmlAttr($toggleAttrs['id'])?>"><?=$this->escapeHtml($label)?></label>
   <?php endif; ?>
   <?=
