@@ -111,8 +111,8 @@
 
 if (
 
-(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') > 0) &&
-(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') > 0) &&
+(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') == 0) &&
+(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') == 0) &&
 ($this->layout()->searchbox !== false)
 
 ):
