@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for SolrDefault-based record drivers that do not need a search service.
+ * Factory for Search2Default record drivers.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for SolrDefault-based record drivers that do not need a search service.
+ * Factory for Search2Default record drivers.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
+class Search2DefaultFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -68,8 +68,10 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('searches');
+            ->get('Search2');
         $finalOptions = [null, $config];
-        return parent::__invoke($container, $requestedName, $finalOptions);
+        $driver = parent::__invoke($container, $requestedName, $finalOptions);
+        $driver->attachSearchService($container->get(\VuFindSearch\Service::class));
+        return $driver;
     }
 }
