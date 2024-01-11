@@ -118,6 +118,7 @@ label { cursor: pointer; }
 button.dropdown-toggle {
   @extend .btn;
   @extend .btn-default;
+  vertical-align: baseline;
 
   .icon {
     margin-left: 4px;
@@ -137,6 +138,9 @@ button.dropdown-toggle {
   border: 0;
   color: inherit;
   background-color: transparent;
+}
+.dropdown label {
+  padding-right: 0.2rem;
 }
 
 // Normalize highlighting
