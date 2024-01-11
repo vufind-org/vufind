@@ -1,12 +1,12 @@
 <?php
     // Set page title.
-    $this->headTitle($this->translate('bookbag_save_selected'));
+    $this->headTitle($this->translate('bulk_save_cart'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ') .
-        '<li class="active">' . $this->transEsc('bookbag_save_selected') . '</li>';
+        '<li class="active">' . $this->transEsc('bulk_save_cart') . '</li>';
 ?>
-<h2><?=$this->transEsc('bookbag_save_selected')?></h2>
+<h2><?=$this->transEsc('bulk_save_cart')?></h2>
 
 <?=$this->flashmessages()?>
 

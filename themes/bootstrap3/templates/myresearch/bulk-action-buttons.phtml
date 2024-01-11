@@ -15,7 +15,7 @@
           'send-email',
           'Email',
           [
-            'title' => $this->translate('email_selected'),
+            'title' => $this->translate('bulk_email_myresearch'),
           ]
       )
     ?>
@@ -27,7 +27,7 @@
             'Delete',
             [
               'id' => $this->idPrefix . 'delete_list_items_' . (null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''),
-              'title' => $this->translate('delete_selected'),
+              'title' => $this->translate('bulk_delete_myresearch'),
             ]
         )
       ?>
@@ -40,7 +40,7 @@
             'export',
             'Export',
             [
-              'title' => $this->translate('export_selected'),
+              'title' => $this->translate('bulk_export_myresearch'),
             ]
         )
       ?>
@@ -51,7 +51,7 @@
           'print',
           'Print',
           [
-            'title' => $this->translate('print_selected'),
+            'title' => $this->translate('bulk_print_myresearch'),
             'data-lightbox-ignore' => '',
           ]
       )
