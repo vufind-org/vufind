@@ -182,10 +182,10 @@
 
   <!-- JSHint -->
   <target name="jshint">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
+    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules ${srcdir}/themes" checkreturn="true" passthru="true" />
   </target>
   <target name="jshint-report">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
   <!-- Run Sass build, error if it fails -->
@@ -372,28 +372,6 @@
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
-  <!-- Copy files from node modules to themes -->
-  <target name="copynodemodules">
-    <!-- autocomplete.js -->
-    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-    <!-- chart.js -->
-    <copy file="${srcdir}/node_modules/chart.js/dist/chart.umd.js" tofile="${srcdir}/themes/bootstrap3/js/vendor/chart.js" overwrite="true" />
-    <!-- jstree -->
-    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
-      <fileset dir="${srcdir}/node_modules/jstree/dist/" >
-        <include name="**/**" />
-        <exclude name="jstree.js" />
-        <exclude name="themes/default-dark/" />
-      </fileset>
-    </copy>
-    <!-- simple-keyboard -->
-    <copy file="${srcdir}/node_modules/simple-keyboard/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard" overwrite="true" />
-    <copy file="${srcdir}/node_modules/simple-keyboard/build/css/index.css" todir="${srcdir}/themes/bootstrap3/css/vendor/simple-keyboard" overwrite="true" />
-    <copy file="${srcdir}/node_modules/simple-keyboard-layouts/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard-layouts" overwrite="true" />
-    <!-- vanilla-cookieconsent -->
-    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-  </target>
-
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
     <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
@@ -538,7 +516,7 @@
       </then>
     </if>
 
-    <!-- Add a local translation for tests -->
+    <!-- Add local translations for tests -->
     <if>
       <not>
         <available file="${localdir}/languages" type="dir" />
@@ -547,7 +525,19 @@
         <mkdir dir="${localdir}/languages" />
       </then>
     </if>
+    <if>
+      <not>
+        <available file="${localdir}/languages/Facets" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages/Facets" />
+      </then>
+    </if>
     <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1a/ = Top Level, Sorted Last${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1z/ = Top Level, Sorted First${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2y/ = Second Level, Sorted Last${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2z/ = Second Level, Sorted First${line.separator}" />
   </target>
 
   <target name="setup_database" description="setup demo database">
@@ -770,7 +760,7 @@ ${git_status}
     </delete>
     <delete>
       <fileset dir="${localdir}/languages">
-        <include name="*" />
+        <include name="**/*" />
       </fileset>
     </delete>
     <delete file="${srcdir}/env.bat" />

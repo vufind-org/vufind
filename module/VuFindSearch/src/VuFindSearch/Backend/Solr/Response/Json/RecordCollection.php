@@ -80,6 +80,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $facetFields = null;
 
     /**
+     * How many facet values have been filtered out, indexed by field.
+     *
+     * @var array
+     */
+    protected $filteredFacetCounts = [];
+
+    /**
      * Constructor.
      *
      * @param array $response Deserialized SOLR response
@@ -147,6 +154,28 @@ class RecordCollection extends AbstractRecordCollection
             }
         }
         return $this->facetFields;
+    }
+
+    /**
+     * Set filtered facet data.
+     *
+     * @param array $counts Counts of filtered facet values, indexed by field name.
+     *
+     * @return void
+     */
+    public function setFilteredFacetCounts(array $counts): void
+    {
+        $this->filteredFacetCounts = $counts;
+    }
+
+    /**
+     * Get filtered facet data.
+     *
+     * @return array
+     */
+    public function getFilteredFacetCounts(): array
+    {
+        return $this->filteredFacetCounts;
     }
 
     /**
@@ -235,6 +264,16 @@ class RecordCollection extends AbstractRecordCollection
     public function getMaxScore()
     {
         return $this->response['response']['maxScore'] ?? null;
+    }
+
+    /**
+     * Get response header.
+     *
+     * @return array
+     */
+    public function getResponseHeader()
+    {
+        return $this->response['responseHeader'] ?? [];
     }
 
     /**

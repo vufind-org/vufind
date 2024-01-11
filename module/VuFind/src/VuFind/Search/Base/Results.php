@@ -912,7 +912,7 @@ abstract class Results
 
             if ($hierarchical) {
                 $sort = $hierarchicalFacetSortSettings[$field]
-                    ?? $hierarchicalFacetSortSettings['*'] ?? 'top';
+                    ?? $hierarchicalFacetSortSettings['*'] ?? 'count';
                 $this->hierarchicalFacetHelper->sortFacetList($resultList, $sort);
 
                 $resultList
