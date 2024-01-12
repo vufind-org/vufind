@@ -127,7 +127,7 @@ abstract class Explanation implements LoggerAwareInterface
     }
 
     /**
-     * Get the record id of title the explanation is build for.
+     * Get the record id of title the explanation is built for.
      *
      * @return string
      */
