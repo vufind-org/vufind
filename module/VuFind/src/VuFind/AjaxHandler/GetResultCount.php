@@ -33,6 +33,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use VuFind\Search\Options\PluginManager as OptionsManager;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -51,19 +52,28 @@ class GetResultCount extends AbstractBase
     /**
      * ResultsManager
      *
-     * @var resultsManager
+     * @var ResultsManager
      */
     protected $resultsManager;
+
+    /**
+     * OptionsManager
+     *
+     * @var OptionsManager
+     */
+    protected $optionsManager;
 
     /**
      * Constructor
      *
      * @param ResultsManager  $resultsManager Results Manager
+     * @param OptionsManager  $optionsManager Options Manager
      * @param SessionSettings $ss             Session settings
      */
-    public function __construct(ResultsManager $resultsManager, SessionSettings $ss)
+    public function __construct(ResultsManager $resultsManager, OptionsManager $optionsManager, SessionSettings $ss)
     {
         $this->resultsManager = $resultsManager;
+        $this->optionsManager = $optionsManager;
         $this->sessionSettings = $ss;
     }
 
@@ -81,13 +91,40 @@ class GetResultCount extends AbstractBase
         parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
 
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        if ($backend == 'Combined') {
+            $resultsTotal = 0;
+            $combinedOptions = $this->optionsManager->get('combined');
+            foreach ($combinedOptions->getTabConfig() as $current => $settings) {
+                $currentSearchParams = $searchParams;
+                foreach (['limit', 'filter', 'hiddenFilters', 'shard'] as $param) {
+                    $currentSearchParams[$param] = isset($settings[$param])
+                        ? (array)$settings[$param] : null;
+                }
+                $resultsTotal += $this->getResultsTotal($current, $currentSearchParams);
+            }
+        } else {
+            $resultsTotal = $this->getResultsTotal($backend, $searchParams);
+        }
+
+        return $this->formatResponse(['total' => $resultsTotal]);
+    }
+
+    /**
+     * Get results count for a specific backend and search params.
+     *
+     * @param string $backend      Search Backend
+     * @param array  $searchParams Search Params
+     *
+     * @return int
+     */
+    protected function getResultsTotal($backend, $searchParams)
+    {
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->getOptions()->setLimitOptions([0]);
         $paramsObj->initFromRequest(new Parameters($searchParams));
-
-        return $this->formatResponse(['total' => $results->getResultTotal()]);
+        return $results->getResultTotal();
     }
 }

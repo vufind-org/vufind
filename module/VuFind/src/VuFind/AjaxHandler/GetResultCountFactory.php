@@ -68,6 +68,7 @@ class GetResultCountFactory implements \Laminas\ServiceManager\Factory\FactoryIn
         }
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Search\Options\PluginManager::class),
             $container->get(\VuFind\Session\Settings::class)
         );
     }
