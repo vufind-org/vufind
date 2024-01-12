@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GetRecordCover AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,15 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
-use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\ILS\Driver\CacheTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
+
+use function in_array;
 
 /**
  * GetRecordCover AJAX handler.
@@ -88,7 +91,9 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      * @param bool            $useCoverFallbacksOnFail If true we will render a
      * fallback html template in case no image could be loaded
      */
-    public function __construct(SessionSettings $ss, RecordLoader $recordLoader,
+    public function __construct(
+        SessionSettings $ss,
+        RecordLoader $recordLoader,
         CoverRouter $coverRouter,
         ?PhpRenderer $renderer = null,
         $useCoverFallbacksOnFail = false
@@ -115,34 +120,26 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
         $recordId = $params->fromQuery('recordId');
         $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $size = $params->fromQuery('size', 'small');
-        try {
-            $record = $this->recordLoader->load($recordId, $recordSource);
-        } catch (RecordMissingException $exception) {
-            return $this->formatResponse(
-                'Could not load record: ' . $exception->getMessage(),
-                self::STATUS_HTTP_BAD_REQUEST
-            );
-        }
-
         if (!in_array($size, ['small', 'medium', 'large'])) {
-            return $this->formatResponse(
-                'Not valid size: ' . $size,
-                self::STATUS_HTTP_BAD_REQUEST
-            );
+            $size = 'small';
         }
-
-        $url = $this->coverRouter->getUrl(
-            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail
+        $record = $this->recordLoader->load($recordId, $recordSource, true);
+        $metadata = $this->coverRouter->getMetadata(
+            $record,
+            $size ?? 'small',
+            true,
+            $this->useCoverFallbacksOnFail,
+            true
         );
 
-        return ($url || !$this->renderer || !$this->useCoverFallbacksOnFail)
-            ? $this->formatResponse(compact('url', 'size'))
+        return ($metadata || !$this->renderer || !$this->useCoverFallbacksOnFail)
+            ? $this->formatResponse(array_merge($metadata, compact('size')))
             : $this->formatResponse(
                 [
                     'html' => $this->renderer->render(
                         'record/coverReplacement',
                         ['driver' => $record]
-                    )
+                    ),
                 ]
             );
     }

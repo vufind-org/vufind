@@ -36,8 +36,6 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.VariableField;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Reading program logic courtesy of Chanel Wheeler
@@ -51,15 +49,11 @@ public class ReadingProgramTools
      * @return AR level
      */
      public String getARLevel(Record record) {
-        List readingprograms = record.getVariableFields("526");
-        if (readingprograms != null) {
-            Iterator<VariableField> rpIter = readingprograms.iterator();
-            while(rpIter.hasNext()) {
-                DataField rp = (DataField) rpIter.next();
-                if (rp.getSubfield('a') != null){
-                    if (rp.getSubfield('a').getData().toLowerCase().contains("accelerated reader")) {
-                        return rp.getSubfield('c').getData();
-                    }
+        for (VariableField variableField : record.getVariableFields("526")) {
+            DataField rp = (DataField) variableField;
+            if (rp.getSubfield('a') != null){
+                if (rp.getSubfield('a').getData().toLowerCase().contains("accelerated reader")) {
+                    return rp.getSubfield('c').getData();
                 }
             }
         }
@@ -73,15 +67,11 @@ public class ReadingProgramTools
      * @return RC level
      */
      public String getRCLevel(Record record) {
-        List readingprograms = record.getVariableFields("526");
-        if (readingprograms != null) {
-            Iterator<VariableField> rpIter = readingprograms.iterator();
-            while(rpIter.hasNext()) {
-                DataField rp = (DataField) rpIter.next();
-                if (rp.getSubfield('a') != null){
-                    if (rp.getSubfield('a').getData().toLowerCase().contains("reading counts")) {
-                        return rp.getSubfield('c').getData();
-                    }
+        for (VariableField variableField : record.getVariableFields("526")) {
+            DataField rp = (DataField) variableField;
+            if (rp.getSubfield('a') != null){
+                if (rp.getSubfield('a').getData().toLowerCase().contains("reading counts")) {
+                    return rp.getSubfield('c').getData();
                 }
             }
         }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Base class to enable sharing of common methods between SMS subclasses
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
 /**
@@ -48,12 +50,9 @@ abstract class AbstractBase implements SMSInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param \Laminas\Config\Config $config SMS configuration
      */
-    public function __construct(\Laminas\Config\Config $config, $options = [])
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->smsConfig = $config;
     }

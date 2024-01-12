@@ -3,7 +3,7 @@
 /**
  * Unit tests for Summon Backend class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,16 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Summon;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\Query;
 
 /**
@@ -257,7 +255,7 @@ class BackendTest extends TestCase
     protected function getConnectorMock(array $mock = [])
     {
         return $this->getMockBuilder(\SerialsSolutions\Summon\Laminas::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['id', 'key'])
             ->getMock();
     }

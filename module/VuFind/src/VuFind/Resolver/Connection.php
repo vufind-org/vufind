@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Link Resolver Driver Wrapper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -28,7 +29,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver;
+
+use function call_user_func_array;
+use function is_callable;
 
 /**
  * Resolver Connection Class
@@ -94,7 +99,7 @@ class Connection
     {
         if (is_dir($cacheDir) && is_writable($cacheDir)) {
             $this->cachePath = $cacheDir;
-            if (!(substr($this->cachePath, -1) == '/')) {
+            if (!str_ends_with($this->cachePath, '/')) {
                 $this->cachePath .= '/';
             }
         }
@@ -131,7 +136,7 @@ class Connection
 
     /**
      * Default method -- pass along calls to the driver if available; return
-     * false otherwise.  This allows custom functions to be implemented in
+     * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
      * @param string $methodName The name of the called method.

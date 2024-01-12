@@ -1,8 +1,9 @@
 <?php
+
 /**
  * KeepAlive test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use Laminas\Session\SessionManager;
@@ -40,7 +42,7 @@ use VuFind\AjaxHandler\KeepAliveFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
+class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Test the AJAX handler's basic response.

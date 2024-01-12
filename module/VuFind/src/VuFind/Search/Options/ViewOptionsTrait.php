@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Trait for setting up view options. Designed to be included in a subclass of
  * \VuFind\Search\Base\Options.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Options;
+
+use Laminas\Config\Config;
 
 /**
  * Trait for setting up view options. Designed to be included in a subclass of
@@ -43,11 +47,11 @@ trait ViewOptionsTrait
     /**
      * Set up the view options.
      *
-     * @param \Laminas\Config\Config $searchSettings Search settings.
+     * @param ?Config $searchSettings Search settings.
      *
      * @return void
      */
-    public function initViewOptions(\Laminas\Config\Config $searchSettings)
+    public function initViewOptions(?Config $searchSettings)
     {
         if (isset($searchSettings->General->default_view)) {
             $this->defaultView = $searchSettings->General->default_view;

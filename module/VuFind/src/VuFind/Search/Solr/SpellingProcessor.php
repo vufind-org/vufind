@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr spelling processor.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,11 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Solr spelling processor.
@@ -72,16 +79,25 @@ class SpellingProcessor
     protected $phrase;
 
     /**
+     * Callback for normalizing text.
+     *
+     * @var callable
+     */
+    protected $normalizer;
+
+    /**
      * Constructor
      *
-     * @param Config $config Spelling configuration (optional)
+     * @param Config   $config     Spelling configuration (optional)
+     * @param callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct($config = null)
+    public function __construct($config = null, $normalizer = null)
     {
         $this->spellingLimit = $config->limit ?? 3;
         $this->spellSkipNumeric = $config->skip_numeric ?? true;
         $this->expand = $config->expand ?? true;
         $this->phrase = $config->phrase ?? false;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -119,10 +135,10 @@ class SpellingProcessor
     public function tokenize($input)
     {
         // Exclusion list of useless tokens:
-        $joins = ["AND", "OR", "NOT"];
+        $joins = ['AND', 'OR', 'NOT'];
 
         // Strip out parentheses -- irrelevant for tokenization:
-        $paren = ["(" => " ", ")" => " "];
+        $paren = ['(' => ' ', ')' => ' '];
         $input = trim(strtr($input, $paren));
 
         // Base of this algorithm comes straight from PHP doc example by
@@ -131,7 +147,7 @@ class SpellingProcessor
         $token = strtok($input, " \t");
         while ($token !== false) {
             // find double quoted tokens
-            if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
+            if (str_starts_with($token, '"') && !str_ends_with($token, '"')) {
                 $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
@@ -143,9 +159,9 @@ class SpellingProcessor
 
         // If the last token ends in a double quote but the input string does not,
         // the tokenization process added the quote, which will break spelling
-        // replacements.  We need to strip it back off again:
+        // replacements. We need to strip it back off again:
         $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
-        if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
+        if ($last && str_ends_with($last, '"') && !str_ends_with($input, '"')) {
             $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
         }
         return $tokens;
@@ -164,12 +180,13 @@ class SpellingProcessor
     {
         $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
-            if (!$this->shouldSkipTerm($query, $term, false)
+            if (
+                !$this->shouldSkipTerm($query, $term, false)
                 && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
             ) {
                 $allSuggestions[$term] = [
                     'freq' => $info['origFreq'],
-                    'suggestions' => $suggestions
+                    'suggestions' => $suggestions,
                 ];
             }
         }
@@ -230,7 +247,7 @@ class SpellingProcessor
             return true;
         }
         // We should also skip terms already contained within the query:
-        return $queryContains == $query->containsNormalizedTerm($term);
+        return $queryContains == $query->containsTerm($term, $this->normalizer);
     }
 
     /**
@@ -248,24 +265,34 @@ class SpellingProcessor
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
-            $targetTerm = "";
+            $targetTerm = '';
             foreach ($this->tokenize($query) as $token) {
                 // Is the term part of the current token?
-                if (strpos($token, (string)$term) !== false) {
+                if (str_contains($token, (string)$term)) {
                     $inToken = true;
                     // We need to replace the whole token
                     $targetTerm = $token;
                     // Go and replace this token
                     $returnArray = $this->doSingleReplace(
-                        $term, $targetTerm, $inToken, $details, $returnArray, $params
+                        $term,
+                        $targetTerm,
+                        $inToken,
+                        $details,
+                        $returnArray,
+                        $params
                     );
                 }
             }
             // If no tokens were found, just look for the suggestion 'as is'
-            if ($targetTerm == "") {
+            if ($targetTerm == '') {
                 $targetTerm = $term;
                 $returnArray = $this->doSingleReplace(
-                    $term, $targetTerm, $inToken, $details, $returnArray, $params
+                    $term,
+                    $targetTerm,
+                    $inToken,
+                    $details,
+                    $returnArray,
+                    $params
                 );
             }
         }
@@ -285,8 +312,13 @@ class SpellingProcessor
      *
      * @return array              $returnArray modified
      */
-    protected function doSingleReplace($term, $targetTerm, $inToken, $details,
-        $returnArray, Params $params
+    protected function doSingleReplace(
+        $term,
+        $targetTerm,
+        $inToken,
+        $details,
+        $returnArray,
+        Params $params
     ) {
         $returnArray[$targetTerm]['freq'] = $details['freq'];
         foreach ($details['suggestions'] as $word => $freq) {
@@ -297,19 +329,20 @@ class SpellingProcessor
             //  Do we need to show the whole, modified query?
             $label = $this->phrase
                 ? $params->getDisplayQueryWithReplacedTerm(
-                    $targetTerm, $replacement
+                    $targetTerm,
+                    $replacement
                 ) : $replacement;
 
             // Basic spelling suggestion data
             $returnArray[$targetTerm]['suggestions'][$label] = [
                 'freq' => $freq,
-                'new_term' => $replacement
+                'new_term' => $replacement,
             ];
 
             // Only generate expansions if enabled in config
             if ($this->expand) {
                 // Parentheses differ for shingles
-                $replacement = (strstr($targetTerm, " ") !== false)
+                $replacement = (strstr($targetTerm, ' ') !== false)
                     ? "(($targetTerm) OR ($replacement))"
                     : "($targetTerm OR $replacement)";
                 $returnArray[$targetTerm]['suggestions'][$label]['expand_term']

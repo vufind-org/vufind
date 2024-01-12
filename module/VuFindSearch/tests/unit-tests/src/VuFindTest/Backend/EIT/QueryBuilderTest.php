@@ -3,7 +3,7 @@
 /**
  * Unit tests for EIT query builder
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EIT;
 
 use PHPUnit\Framework\TestCase;
@@ -53,15 +54,13 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
-            ['advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))']
+            ['advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))'],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
+            [$input, $output] = $test;
             $q = unserialize(
                 $this->getFixture("eit/query/$input", 'VuFindSearch')
             );

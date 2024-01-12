@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Caching Proxy for Cover Images
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use Laminas\Http\Client;
 use Laminas\Http\Response;
+
+use function dirname;
 
 /**
  * Caching Proxy for Cover Images

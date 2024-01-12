@@ -6,7 +6,7 @@
  *
  * Inspired by discussion here at https://stackoverflow.com/questions/7705169
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -29,10 +29,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Util\Test;
+
+use function call_user_func;
+use function get_class;
+use function is_callable;
 
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
@@ -61,7 +66,7 @@ trait AutoRetryTrait
      *
      * @var int
      */
-    protected $retriesLeft;
+    protected $retriesLeft = 0;
 
     /**
      * Override PHPUnit's main run method, introducing annotation-based retry
@@ -79,7 +84,8 @@ trait AutoRetryTrait
         // the cause of the initial error. We only really want to retry if it
         // will prevent ANY failures from occurring.
         $annotations = Test::parseTestMethodAnnotations(
-            static::class, $this->getName(false)
+            static::class,
+            $this->getName(false)
         );
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
@@ -100,12 +106,26 @@ trait AutoRetryTrait
                 return;
             } catch (\Exception $e) {
                 // Don't retry skipped tests!
-                if (get_class($e) == SkippedTestError::class) {
+                if ($e::class == SkippedTestError::class) {
                     throw $e;
                 }
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
                 if ($this->retriesLeft > 0) {
+                    $logMethod = [
+                        $this,
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning',
+                    ];
+                    if (is_callable($logMethod)) {
+                        $method = get_class($this) . '::' . $this->getName(false);
+                        $msg = "RETRY TEST $method ({$this->retriesLeft} left)"
+                            . ' after exception: ' . $e->getMessage() . '.';
+                        call_user_func(
+                            $logMethod,
+                            $msg . ' See PHP error log for details.',
+                            $msg . ' Full exception: ' . (string)$e
+                        );
+                    }
                     foreach ($retryCallbacks as $callback) {
                         if (is_callable([$this, $callback])) {
                             $this->{$callback}();

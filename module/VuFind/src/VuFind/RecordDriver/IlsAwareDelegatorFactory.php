@@ -1,10 +1,11 @@
 <?php
+
 /**
  * ILS aware delegator factory
  *
  * Copyright (C) Villanova University 2018.
  *
- * PHP version 7
+ * PHP version 8
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
+use Psr\Container\ContainerInterface;
+
+use function call_user_func;
+use function is_array;
 
 /**
  * ILS aware delegator factory
@@ -53,8 +58,11 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $name,
-        callable $callback, array $options = null
+    public function __invoke(
+        ContainerInterface $container,
+        $name,
+        callable $callback,
+        array $options = null
     ) {
         $driver = call_user_func($callback);
 

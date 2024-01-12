@@ -1,8 +1,9 @@
 <?php
+
 /**
  * MultiAuth authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,9 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\Auth\MultiAuth;
+
+use function get_class;
 
 /**
  * LDAP authentication test class.
@@ -45,33 +52,31 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @param Config $config Configuration to use (null for default)
      *
-     * @return LDAP
+     * @return MultiAuth
      */
-    public function getAuthObject($config = null)
+    public function getAuthObject(Config $config = null): MultiAuth
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
         $manager = new \VuFind\Auth\PluginManager(
             new \VuFindTest\Container\MockContainer($this)
         );
         $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);
-        $obj->setConfig($config);
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the auth object
      *
      * @return Config
      */
-    public function getAuthConfig()
+    public function getAuthConfig(): Config
     {
         $config = new Config(
             [
-                'method_order' => 'Database,ILS'
-            ], true
+                'method_order' => 'Database,ILS',
+            ],
+            true
         );
         return new Config(['MultiAuth' => $config], true);
     }
@@ -81,9 +86,12 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingMethodOrder()
+    public function testWithMissingMethodOrder(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage(
+            'One or more MultiAuth parameters are missing. Check your config.ini!'
+        );
 
         $config = $this->getAuthConfig();
         unset($config->MultiAuth->method_order);
@@ -98,10 +106,10 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = []): \Laminas\Http\Request
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
@@ -113,9 +121,13 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBadService()
+    public function testLoginWithBadService(): void
     {
-        $this->expectException(\Laminas\ServiceManager\Exception\ServiceNotFoundException::class);
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(
+            'A plugin by the name "InappropriateService" was not found in '
+            . 'the plugin manager VuFind\Auth\PluginManager'
+        );
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
@@ -126,14 +138,18 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test login with handler configured to load a class which does not conform
-     * to the appropriate authentication interface.  (We'll use this test class
+     * to the appropriate authentication interface. (We'll use this test class
      * as an arbitrary inappropriate class).
      *
      * @return void
      */
-    public function testLoginWithBadClass()
+    public function testLoginWithBadClass(): void
     {
-        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectException(InvalidServiceException::class);
+        $this->expectExceptionMessage(
+            'Plugin VuFindTest\Auth\MultiAuthTest does not belong to '
+            . 'VuFind\Auth\AbstractBase'
+        );
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';
@@ -147,9 +163,10 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_blank');
 
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
@@ -160,9 +177,10 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_blank');
 
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);

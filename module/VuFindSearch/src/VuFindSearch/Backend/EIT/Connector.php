@@ -3,7 +3,7 @@
 /**
  * Central class for connecting to EIT resources used by VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -26,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
+
 namespace VuFindSearch\Backend\EIT;
 
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
+
+use function is_array;
 
 /**
  * Central class for connecting to EIT resources used by VuFind.
@@ -116,16 +118,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $params->set('numrec', $limit);
         $params->set('prof', $this->prof);
         $params->set('pwd', $this->pwd);
-        $response = $this->call('GET', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $params->getArrayCopy());
         $xml = simplexml_load_string($response);
         $finalDocs = [];
-        foreach ($xml->SearchResults->records->rec as $doc) {
+        foreach ($xml->SearchResults->records->rec ?? [] as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
         }
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 
@@ -154,6 +156,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function call($method = 'GET', $params = null)
     {
+        $queryString = null;
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {
@@ -173,7 +176,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $dbs = explode(',', $this->dbs);
         $dblist = '';
         foreach ($dbs as $db) {
-            $dblist .= "&db=" . $db;
+            $dblist .= '&db=' . $db;
         }
 
         $this->debug(
@@ -201,22 +204,22 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord($id, ParamBag $params = null)
     {
-        $query = "AN " . $id;
+        $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();
         $params->set('prof', $this->prof);
         $params->set('pwd', $this->pwd);
         $params->set('query', $query);
         $this->client->resetParameters();
-        $response = $this->call('GET', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $params->getArrayCopy());
         $xml = simplexml_load_string($response);
         $finalDocs = [];
-        foreach ($xml->SearchResults->records->rec as $doc) {
+        foreach ($xml->SearchResults->records->rec ?? [] as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
         }
         return [
             'docs' => $finalDocs,
             'offset' => 0,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 }

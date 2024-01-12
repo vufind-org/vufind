@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Eds Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function in_array;
 
 /**
  * EDS Controller
@@ -61,8 +65,7 @@ class EdsController extends AbstractSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('EDS');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 
     /**
@@ -76,23 +79,13 @@ class EdsController extends AbstractSearch
         $view = parent::advancedAction();
         // Set up facet information:
         $view->limiterList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets(), $view->saved
+            $this->getAdvancedFacets(),
+            $view->saved
         );
         $view->expanderList = $this->processAdvancedExpanders($view->saved);
         $view->searchModes = $this->processAdvancedSearchModes($view->saved);
         $view->dateRangeLimit = $this->processPublicationDateRange($view->saved);
         return $view;
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        $this->setUp();
-        return parent::homeAction();
     }
 
     /**
@@ -106,7 +99,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Return a Search Results object containing advanced facet information.  This
+     * Return a Search Results object containing advanced facet information. This
      * data may come from the cache.
      *
      * @return array
@@ -123,13 +116,7 @@ class EdsController extends AbstractSearch
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
-        $availableLimiters = $options->getAvailableLimiters();
-        if (!$availableLimiters) {
-            //execute a call to search just to pull in the limiters
-            $this->setUp();
-        }
-
-        return $availableLimiters;
+        return $options->getAdvancedLimiters();
     }
 
     /**
@@ -269,41 +256,5 @@ class EdsController extends AbstractSearch
         }
 
         return $searchModes;
-    }
-
-    /**
-     * Make the initial calls to the EDS API to obtain/generate authentication and
-     * session tokens as well as calling the info method to cache search criteria
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $results = $this->getResultsManager()->get($this->searchClassId);
-        $params = $results->getParams();
-        $params->isSetupOnly = true;
-
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        try {
-            // Explicitly execute search within controller -- this allows us to
-            // catch exceptions more reliably:
-            $results->performAndProcessSearch();
-        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
-                // If it's a parse error or the user specified an invalid field, we
-                // should display an appropriate message:
-                $view->parseError = true;
-
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getResultsManager()->get('EmptySet');
-                $view->results->setParams($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                throw $e;
-            }
-        }
     }
 }

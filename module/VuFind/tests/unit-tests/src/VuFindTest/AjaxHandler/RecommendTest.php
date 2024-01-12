@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Recommend test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\Recommend;
@@ -36,6 +38,8 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 
+use function count;
+
 /**
  * Recommend test class.
  *
@@ -45,8 +49,46 @@ use VuFind\View\Helper\Root\Recommend as RecommendHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
+class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
+    /**
+     * Get a mock params object.
+     *
+     * @param \VuFindSearch\Query\Query $query Query to include in container.
+     *
+     * @return \VuFind\Search\Solr\Params
+     */
+    protected function getMockParams($query = null)
+    {
+        if (null === $query) {
+            $query = new \VuFindSearch\Query\Query('foo', 'bar');
+        }
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
+            ->disableOriginalConstructor()->getMock();
+        $params->expects($this->any())->method('getQuery')
+            ->will($this->returnValue($query));
+        return $params;
+    }
+
+    /**
+     * Get a mock results object.
+     *
+     * @param \VuFind\Search\Solr\Params $params Params to include in container.
+     *
+     * @return Results
+     */
+    protected function getMockResults($params = null): Results
+    {
+        if (null === $params) {
+            $params = $this->getMockParams();
+        }
+        $results = $this->getMockBuilder(Results::class)
+            ->disableOriginalConstructor()->getMock();
+        $results->expects($this->any())->method('getParams')
+            ->will($this->returnValue($params));
+        return $results;
+    }
+
     /**
      * Test the AJAX handler's basic response.
      *
@@ -66,12 +108,24 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->will($this->returnValue($mockPlugin));
         $this->container->set(PluginManager::class, $rm);
 
-        // Set up results plugin manager:
+        // Set up results object, including expectation to confirm that
+        // Params is initialized with the correct request.
+        $results = $this->getMockResults();
+        $testRequestInitialization = function ($request) {
+            // exactly one parameter: mod = foo
+            return $request->get('mod') === 'foo'
+                && count($request) === 1;
+        };
+        $results->getParams()->expects($this->once())
+            ->method('initFromRequest')
+            ->with($this->callback($testRequestInitialization));
+
+        // Set up results manager:
         $resultsManager = $this->container
             ->createMock(ResultsManager::class, ['get']);
         $resultsManager->expects($this->once())->method('get')
             ->with($this->equalTo('Solr'))
-            ->will($this->returnValue($this->container->createMock(Results::class)));
+            ->will($this->returnValue($results));
         $this->container->set(ResultsManager::class, $resultsManager);
 
         // Set up view helper and renderer:

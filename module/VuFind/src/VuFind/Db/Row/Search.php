@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Row Definition for search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Row;
 
 use VuFind\Crypt\HMAC;
+
+use function is_resource;
 
 /**
  * Row Definition for search
@@ -37,6 +41,18 @@ use VuFind\Crypt\HMAC;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property int     $user_id
+ * @property ?string $session_id
+ * @property string  $created
+ * @property ?string $title
+ * @property int     $saved
+ * @property string  $search_object
+ * @property ?int    $checksum
+ * @property int     $notification_frequency
+ * @property string  $last_notification_sent
+ * @property string  $notification_base_url
  */
 class Search extends RowGateway
 {
@@ -139,7 +155,7 @@ class Search extends RowGateway
         $data = [
             'id' => $this->id,
             'user_id' => $user->id,
-            'created' => $user->created
+            'created' => $user->created,
         ];
         return $hmac->generate(array_keys($data), $data);
     }

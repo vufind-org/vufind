@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink bulk action test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
 /**
  * Mink bulk action test class.
+ *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
  * @category VuFind
  * @package  Tests
@@ -39,9 +43,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class BulkTest extends \VuFindTest\Integration\MinkTestCase
+final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -52,7 +55,7 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -60,12 +63,13 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function getSearchResultsPage()
+    protected function getSearchResultsPage(): Element
     {
         $session = $this->getMinkSession();
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
+        $this->waitForPageLoad($page);
         // Hide autocomplete menu
         $this->clickCss($page, '#side-panel-format .title');
         return $page;
@@ -77,7 +81,7 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericBulkTest($checkBoxes = true)
+    protected function setUpGenericBulkTest(): Element
     {
         // Activate the bulk options:
         $this->changeConfigs(
@@ -100,7 +104,7 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForNonSelectedMessage(Element $page)
+    protected function checkForNonSelectedMessage(Element $page): void
     {
         $warning = $this->findCss($page, '.modal-body .alert-danger');
         $this->assertEquals(
@@ -117,10 +121,10 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForLoginMessage(Element $page)
+    protected function checkForLoginMessage(Element $page): void
     {
-        $warning = $page->find('css', '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $warning = $this->findCss($page, '.modal-body .alert-danger');
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()
@@ -134,46 +138,40 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkEmail()
+    public function testBulkEmail(): void
     {
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-email');
 
         // First try clicking without selecting anything:
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-email');
         $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
+        $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
-        $this->snooze();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, '#ribbon-email');
         $this->checkForLoginMessage($page);
 
         // Create an account.
         $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->snooze();
+        $this->waitForPageLoad($page);
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         $this->findCssAndSetValue(
-            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+            $page,
+            '.modal #email_to',
+            'demian.katz@villanova.edu'
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->snooze();
-        /* TODO: add back this check when everything is working (as of this
-         * writing, the pop-up message is inexplicably missing... but we should
-         * fix this soon!
-        // Check for confirmation message
+        $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your item(s) were emailed',
             $this->findCss($page, '.modal-body .alert-success')->getText()
         );
-         */
     }
 
     /**
@@ -183,22 +181,19 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkSave()
+    public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-save');
 
         // First try clicking without selecting anything:
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-save');
         $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
+        $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
-        $this->snooze();
+        $this->clickCss($page, '#ribbon-save');
+        $this->waitForPageLoad($page);
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
@@ -206,11 +201,12 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
+        $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submit]');
-        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
-            'Your item(s) were saved successfully. Go to List.', $result->getText()
+            'Your item(s) were saved successfully. Go to List.',
+            $result->getText()
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
@@ -220,9 +216,56 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Click the close button.
-        $submit = $this->findCss($page, '.modal-body .btn');
-        $this->assertEquals('close', $submit->getText());
-        $submit->click();
+        $this->closeLightbox($page, true);
+    }
+
+    /**
+     * Test that we can bulk-delete records from a favorites list.
+     *
+     * @return void
+     *
+     * @depends testBulkSave
+     */
+    public function testBulkDeleteFromList(): void
+    {
+        // Log in to account that owns the list:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Go to the list:
+        $this->clickCss($page, 'a.user-list-link');
+        $this->waitForPageLoad($page);
+
+        // First try clicking without selecting anything:
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->checkForNonSelectedMessage($page);
+        $this->closeLightbox($page, true);
+
+        // Now do it for real:
+        $page->find('css', '#myresearchCheckAll')->check();
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->waitForPageLoad($page);
+
+        // Confirm contents of confirmation box:
+        $this->assertEquals(
+            'Title: Journal of rational emotive therapy : Title: Rational living.',
+            $page->find('css', '#modal ul.record-list')->getText()
+        );
+        $this->clickCss($page, '#modal input[type="submit"]');
+        $this->waitForPageLoad($page);
+
+        // If all records were deleted, success message should be visible in
+        // lightbox, and delete button should be gone after lightbox is closed.
+        $this->assertEquals(
+            'Your saved item(s) were deleted.',
+            $this->findCss($page, '.modal .alert-success')->getText()
+        );
+        $this->closeLightbox($page, true);
+        $this->unfindCss($page, 'button[name="delete"]');
     }
 
     /**
@@ -230,22 +273,19 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkExport()
+    public function testBulkExport(): void
     {
         $page = $this->setUpGenericBulkTest();
         $button = $this->findCss($page, '#ribbon-export');
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
+        $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
-        $this->snooze();
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
@@ -254,7 +294,6 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
-        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
     }
@@ -264,7 +303,7 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkPrint()
+    public function testBulkPrint(): void
     {
         $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
@@ -272,16 +311,13 @@ class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
-        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
-        $this->snooze();
 
         // Now do it for real -- we should get redirected.
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
-        $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)

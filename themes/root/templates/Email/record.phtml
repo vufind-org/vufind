@@ -4,9 +4,9 @@
 ------------------------------------------------------------
   <?=$this->driver->getBreadcrumb()?>
 
-  <?=$this->translate('email_link')?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
+  <?=$this->translate('email_link')?>: <?=$this->serverUrl($this->recordLinker()->getUrl($this->driver))?>
 
 ------------------------------------------------------------
-<?php if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
+<?php if (!empty($this->message)): ?><?=$this->translate('Message From Sender')?>:
 <?=$this->message?>
 <?php endif; ?>

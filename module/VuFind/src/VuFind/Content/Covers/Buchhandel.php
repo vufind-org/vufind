@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Buchhandel cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 /**
@@ -87,14 +89,14 @@ class Buchhandel extends \VuFind\Content\AbstractCover
         }
         $isbn = $ids['isbn']->get13();
         switch ($size) {
-        case 'small':
-        case 'medium':
-        case 'large':
-            $lsize = substr($size, 0, 1);
-            break;
-        default:
-            $lsize = "s";
-            break;
+            case 'small':
+            case 'medium':
+            case 'large':
+                $lsize = substr($size, 0, 1);
+                break;
+            default:
+                $lsize = 's';
+                break;
         }
 
         return "{$this->url}{$isbn}/{$lsize}?access_token={$this->apiToken}";

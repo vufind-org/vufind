@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
  * retrieved from an external source.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2014.
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
@@ -47,7 +49,8 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/configuration:remote_marc_records
  */
 class SolrMarcRemote extends SolrMarc implements
-    HttpServiceAwareInterface, LoggerAwareInterface
+    HttpServiceAwareInterface,
+    LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -71,7 +74,9 @@ class SolrMarcRemote extends SolrMarc implements
      *
      * @throws \Exception
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
@@ -92,20 +97,6 @@ class SolrMarcRemote extends SolrMarc implements
     {
         $this->verifyFullRecordIsAvailable();
         return parent::getMarcReader();
-    }
-
-    /**
-     * Get access to the raw File_MARC object.
-     *
-     * @return     \File_MARCBASE
-     * @throws     \Exception
-     * @throws     \File_MARC_Exception
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        $this->verifyFullRecordIsAvailable();
-        return parent::getMarcRecord();
     }
 
     /**

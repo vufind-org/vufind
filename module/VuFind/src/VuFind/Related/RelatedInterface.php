@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Related Records Interface
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
+
 namespace VuFind\Related;
 
 /**
@@ -35,8 +37,8 @@ namespace VuFind\Related;
  *
  * Note that every class implementing this interface needs to be accompanied by
  * a template file in the Related subdirectory of every theme's template
- * directory.  For example, \VuFind\Related\Similar needs a corresponding
- * Related/Similar.phtml template.  The template will be rendered as a
+ * directory. For example, \VuFind\Related\Similar needs a corresponding
+ * Related/Similar.phtml template. The template will be rendered as a
  * partial with two available variables: related (the related records object)
  * and driver (the record driver representing the source record).
  *

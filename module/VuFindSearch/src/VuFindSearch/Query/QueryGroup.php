@@ -3,7 +3,7 @@
 /**
  * A group of single/simples queries, joined by boolean operator.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Query;
 
 use VuFindSearch\Exception\InvalidArgumentException;
+
+use function in_array;
 
 /**
  * A group of single/simples queries, joined by boolean operator.
@@ -89,7 +92,9 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function __construct($operator, array $queries = [],
+    public function __construct(
+        $operator,
+        array $queries = [],
         $reducedHandler = null
     ) {
         $this->setOperator($operator);
@@ -237,33 +242,19 @@ class QueryGroup extends AbstractQuery
     }
 
     /**
-     * Does the query contain the specified term?
+     * Does the query contain the specified term? An optional normalizer can be
+     * provided to allow for fuzzier matching.
      *
-     * @param string $needle Term to check
-     *
-     * @return bool
-     */
-    public function containsTerm($needle)
-    {
-        foreach ($this->getQueries() as $q) {
-            if ($q->containsTerm($needle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Does the query contain the specified term when comparing normalized strings?
-     *
-     * @param string $needle Term to check
+     * @param string   $needle     Term to check
+     * @param callable $normalizer Function to normalize text strings (null for
+     * no normalization)
      *
      * @return bool
      */
-    public function containsNormalizedTerm($needle)
+    public function containsTerm($needle, $normalizer = null)
     {
         foreach ($this->getQueries() as $q) {
-            if ($q->containsNormalizedTerm($needle)) {
+            if ($q->containsTerm($needle, $normalizer)) {
                 return true;
             }
         }
@@ -287,16 +278,17 @@ class QueryGroup extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string  $from      Search term to find
-     * @param string  $to        Search term to insert
-     * @param boolean $normalize If we should apply text normalization when replacing
+     * @param string   $from       Search term to find
+     * @param string   $to         Search term to insert
+     * @param callable $normalizer Function to normalize text strings (null for
+     * no normalization)
      *
      * @return void
      */
-    public function replaceTerm($from, $to, $normalize = false)
+    public function replaceTerm($from, $to, $normalizer = null)
     {
         foreach ($this->getQueries() as $q) {
-            $q->replaceTerm($from, $to, $normalize);
+            $q->replaceTerm($from, $to, $normalizer);
         }
     }
 }

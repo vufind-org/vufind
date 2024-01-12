@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy interface.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
 use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager;
@@ -88,8 +90,10 @@ abstract class AbstractBase
      * @param RendererManager        $rendererManager Tree renderer plugin manager
      * @param array                  $options         Extra options (if any)
      */
-    public function __construct(\Laminas\Config\Config $config,
-        DataManager $dataManager, RendererManager $rendererManager,
+    public function __construct(
+        \Laminas\Config\Config $config,
+        DataManager $dataManager,
+        RendererManager $rendererManager,
         $options = []
     ) {
         $this->config = $config;
@@ -138,8 +142,11 @@ abstract class AbstractBase
      *
      * @return string
      */
-    public function render(\VuFind\RecordDriver\AbstractBase $driver, $context,
-        $mode, $hierarchyID
+    public function render(
+        \VuFind\RecordDriver\AbstractBase $driver,
+        $context,
+        $mode,
+        $hierarchyID
     ) {
         if (!$this->showTree()) {
             return false;

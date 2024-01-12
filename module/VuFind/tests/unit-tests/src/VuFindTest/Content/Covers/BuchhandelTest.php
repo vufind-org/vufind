@@ -3,7 +3,7 @@
 /**
  * Unit tests for Buchhandel cover loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -21,22 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Content\Covers;
 
 use VuFind\Content\Covers\Buchhandel;
 use VuFindCode\ISBN;
 
 /**
- * Unit tests for Booksite cover loader.
+ * Unit tests for Buchhandel cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -49,13 +50,15 @@ class BuchhandelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $loader = new Buchhandel('http://base/', 'mytoken');
         $this->assertEquals(
             'http://base/9780739313121/s?access_token=mytoken',
             $loader->getUrl(
-                'mytoken', 'small', ['isbn' => new ISBN('0739313126')]
+                'mytoken',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -65,9 +68,9 @@ class BuchhandelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $loader = new Buchhandel('http://base', 'mytoken');
-        $this->assertEquals(false, $loader->getUrl('mytoken', 'small', []));
+        $this->assertFalse($loader->getUrl('mytoken', 'small', []));
     }
 }

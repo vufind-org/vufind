@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for instantiating SMS objects
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for instantiating SMS objects
@@ -54,7 +56,9 @@ class Factory implements FactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $name,
+    public function __invoke(
+        ContainerInterface $container,
+        $name,
         array $options = null
     ) {
         // Load configurations:
@@ -67,18 +71,20 @@ class Factory implements FactoryInterface
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {
-        case 'clickatell':
-            $client = $container->get(\VuFindHttp\HttpService::class)
-                ->createClient();
-            return new Clickatell($smsConfig, ['client' => $client]);
-        case 'mailer':
-            $options = ['mailer' => $container->get(\VuFind\Mailer\Mailer::class)];
-            if (isset($mainConfig->Site->email)) {
-                $options['defaultFrom'] = $mainConfig->Site->email;
-            }
-            return new Mailer($smsConfig, $options);
-        default:
-            throw new \Exception('Unrecognized SMS type: ' . $type);
+            case 'clickatell':
+                $client = $container->get(\VuFindHttp\HttpService::class)
+                    ->createClient();
+                return new Clickatell($smsConfig, ['client' => $client]);
+            case 'mailer':
+                $options = [
+                    'mailer' => $container->get(\VuFind\Mailer\Mailer::class),
+                ];
+                if (isset($mainConfig->Site->email)) {
+                    $options['defaultFrom'] = $mainConfig->Site->email;
+                }
+                return new Mailer($smsConfig, $options);
+            default:
+                throw new \Exception('Unrecognized SMS type: ' . $type);
         }
     }
 }

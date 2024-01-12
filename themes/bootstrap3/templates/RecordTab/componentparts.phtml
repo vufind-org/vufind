@@ -1,4 +1,7 @@
-<?php $max = $this->tab->getMaxResults(); $showMore = false; ?>
+<?php
+  $max = $this->tab->getMaxResults();
+  $showMore = false;
+?>
 <?php foreach ($this->tab->getResults() as $i => $current): ?>
   <?php
     if ($max == $i) {
@@ -8,13 +11,13 @@
   ?>
   <div>
     <?=($i + 1)?>.
-    <a href="<?=$this->recordLink()->getUrl($current)?>">
+    <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($current))?>">
       <?=$this->record($current)->getTitleHtml()?>
     </a>
   </div>
 <?php endforeach; ?>
 <?php if ($showMore): ?>
-  <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>">
+  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getChildRecordSearchUrl($this->driver))?>">
     <?=$this->transEsc('see all')?>
   </a>
 <?php endif; ?>

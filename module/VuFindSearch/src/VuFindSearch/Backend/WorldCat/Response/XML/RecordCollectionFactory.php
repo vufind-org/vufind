@@ -3,7 +3,7 @@
 /**
  * Simple XML-based factory for record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
-use File_MARCXML;
+use VuFind\Marc\MarcReader;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
 
 /**
  * Simple XML-based factory for record collection.
@@ -46,7 +52,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Factory to turn data into a record object.
      *
-     * @var Callable
+     * @var callable
      */
     protected $recordFactory;
 
@@ -69,16 +75,13 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     {
         if (null === $recordFactory) {
             $recordFactory = function ($i) {
-                $marc = new File_MARCXML($i, File_MARCXML::SOURCE_STRING);
-                return new Record($marc->next());
+                return new Record(new MarcReader($i));
             };
         } elseif (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
-        $this->collectionClass = (null === $collectionClass)
-            ? 'VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection'
-            : $collectionClass;
+        $this->collectionClass = $collectionClass ?? RecordCollection::class;
     }
 
     /**

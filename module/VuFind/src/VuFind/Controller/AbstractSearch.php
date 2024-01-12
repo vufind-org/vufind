@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Search Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -22,15 +23,24 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller;
 
+use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
+use Laminas\Stdlib\ResponseInterface as Response;
+use Laminas\View\Model\ViewModel;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
 
 /**
  * VuFind Search Controller
@@ -38,6 +48,7 @@ use VuFind\Solr\Utils as SolrUtils;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -81,14 +92,12 @@ class AbstractSearch extends AbstractBase
     /**
      * Handle an advanced search
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     public function advancedAction()
     {
         $view = $this->createViewModel();
-        $view->options = $this->serviceLocator
-            ->get(\VuFind\Search\Options\PluginManager::class)
-            ->get($this->searchClassId);
+        $view->options = $this->getOptionsForClass();
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -127,7 +136,7 @@ class AbstractSearch extends AbstractBase
         if (empty($search)) {
             // User is trying to view a saved search from another session
             // (deliberate or expired) or associated with another user.
-            throw new \Exception("Attempt to access invalid search ID");
+            throw new \Exception('Attempt to access invalid search ID');
         }
 
         // If we got this far, the user is allowed to view the search, so we can
@@ -171,7 +180,8 @@ class AbstractSearch extends AbstractBase
             $searchUrl = $this->url()->fromRoute(
                 $results->getOptions()->getSearchAction()
             ) . $results->getUrlQuery()->getParams(false);
-            $this->getSearchMemory()->rememberSearch($searchUrl);
+            $this->getSearchMemory()
+                ->rememberSearch($searchUrl, $results->getSearchId());
         }
 
         // Always save search parameters, since these are namespaced by search
@@ -189,17 +199,20 @@ class AbstractSearch extends AbstractBase
         // Enable recommendations unless explicitly told to disable them:
         $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
-        if ($noRecommend === 1 || $noRecommend === '1'
+        if (
+            $noRecommend === 1 || $noRecommend === '1'
             || $noRecommend === 'true' || $noRecommend === true
         ) {
             return [];
-        } elseif ($noRecommend === 0 || $noRecommend === '0'
+        } elseif (
+            $noRecommend === 0 || $noRecommend === '0'
             || $noRecommend === 'false' || $noRecommend === false
         ) {
             return $all;
         }
         return array_diff(
-            $all, array_map('trim', explode(',', strtolower($noRecommend)))
+            $all,
+            array_map('trim', explode(',', strtolower($noRecommend)))
         );
     }
 
@@ -219,18 +232,10 @@ class AbstractSearch extends AbstractBase
         $rManager = $this->serviceLocator
             ->get(\VuFind\Recommend\PluginManager::class);
 
-        // Special case: override recommend settings through parameter (used by
-        // combined search)
-        if ($override = $this->params()->fromQuery('recommendOverride')) {
-            return function ($runner, $p, $searchId) use ($rManager, $override) {
-                $listener = new RecommendListener($rManager, $searchId);
-                $listener->setConfig($override);
-                $listener->attach($runner->getEventManager()->getSharedManager());
-            };
-        }
+        $override = $this->params()->fromQuery('recommendOverride');
 
-        // Standard case: retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
+        // Retrieve recommend settings from params object:
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()
@@ -240,6 +245,13 @@ class AbstractSearch extends AbstractBase
                     $config[$key] = $value;
                 }
             }
+
+            // Special case: override recommend settings through parameter (used by
+            // combined search)
+            if (is_array($override)) {
+                $config = array_merge($config, $override);
+            }
+
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
@@ -284,11 +296,49 @@ class AbstractSearch extends AbstractBase
     /**
      * Send search results to results view
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return Response|ViewModel
      */
     public function resultsAction()
     {
         return $this->getSearchResultsView();
+    }
+
+    /**
+     * Support method for getSearchResultsView() -- return the search results
+     * reformatted as an RSS feed.
+     *
+     * @param $view ViewModel View model
+     *
+     * @return Response
+     */
+    protected function getRssSearchResponse(ViewModel $view): Response
+    {
+        // Build the RSS feed:
+        $feedHelper = $this->getViewRenderer()->plugin('resultfeed');
+        $feed = $feedHelper($view->results);
+        $writer = new \Laminas\Feed\Writer\Renderer\Feed\Rss($feed);
+        $writer->render();
+
+        // Apply XSLT if we can find a relevant file:
+        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+        $themeHits = $themeInfo->findInThemes('assets/xsl/rss.xsl');
+        if ($themeHits) {
+            $xsl = $this->url()->fromRoute('home') . 'themes/'
+                . $themeHits[0]['theme'] . '/' . $themeHits[0]['relativeFile'];
+            $writer->getElement()->parentNode->insertBefore(
+                $writer->getDomDocument()->createProcessingInstruction(
+                    'xml-stylesheet',
+                    'type="text/xsl" href="' . $xsl . '"'
+                ),
+                $writer->getElement()
+            );
+        }
+
+        // Format the response:
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+        $response->setContent($writer->saveXml());
+        return $response;
     }
 
     /**
@@ -297,7 +347,7 @@ class AbstractSearch extends AbstractBase
      * @param callable $setupCallback Optional setup callback that overrides the
      * default one
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return Response|ViewModel
      */
     protected function getSearchResultsView($setupCallback = null)
     {
@@ -319,14 +369,26 @@ class AbstractSearch extends AbstractBase
             ->retrieveLastSetting($this->searchClassId, 'view');
         try {
             $view->results = $results = $runner->run(
-                $request, $this->searchClassId,
+                $request,
+                $this->searchClassId,
                 $setupCallback ?: $this->getSearchSetupCallback(),
                 $lastView
             );
         } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
             return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
         }
-        $view->params = $results->getParams();
+        $view->params = $params = $results->getParams();
+
+        // For page parameter being out of results list, we want to redirect to correct page
+        $page = $params->getPage();
+        $totalResults = $results->getResultTotal();
+        $limit = $params->getLimit();
+        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
+        if ($totalResults > 0 && $page > $lastPage) {
+            $queryParams = $request;
+            $queryParams['page'] = $lastPage;
+            return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
+        }
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
@@ -348,6 +410,11 @@ class AbstractSearch extends AbstractBase
                 $this->saveSearchToHistory($results);
             }
 
+            // Jump to only result, if configured:
+            if ($jump = $this->processJumpToOnlyResult($results)) {
+                return $jump;
+            }
+
             // Set up results scroller:
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
@@ -360,19 +427,14 @@ class AbstractSearch extends AbstractBase
 
         // Special case: If we're in RSS view, we need to render differently:
         if (isset($view->params) && $view->params->getView() == 'rss') {
-            $response = $this->getResponse();
-            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
-            $feed = $this->getViewRenderer()->plugin('resultfeed');
-            $response->setContent($feed($view->results)->export('rss'));
-            return $response;
+            return $this->getRssSearchResponse($view);
         }
 
-        // Search toolbar
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $view->showBulkOptions = isset($config->Site->showBulkOptions)
-          && $config->Site->showBulkOptions;
-
+        // Schedule options for footer tools
+        $view->scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        $view->saveToHistory = $this->saveToHistory;
         return $view;
     }
 
@@ -382,37 +444,66 @@ class AbstractSearch extends AbstractBase
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
      *
-     * @return bool|\Laminas\View\Model\ViewModel
+     * @return bool|HttpResponse
      */
     protected function processJumpTo($results)
     {
-        // Jump to only result, if configured
-        $default = null;
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        if (isset($config->Record->jump_to_single_search_result)
-            && $config->Record->jump_to_single_search_result
-            && $results->getResultTotal() == 1
-        ) {
-            $default = 1;
-        }
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->params()->fromQuery('jumpto', $default);
+        $jumpto = $this->params()->fromQuery('jumpto');
         if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
 
-        // Parameter out of range?  Ignore it:
         $recordList = $results->getResults();
-        if (!isset($recordList[$jumpto - 1])) {
-            return false;
+        return isset($recordList[$jumpto - 1])
+            ? $this->getRedirectForRecord($recordList[$jumpto - 1]) : false;
+    }
+
+    /**
+     * Process jump to record if there is only one result.
+     *
+     * @param \VuFind\Search\Base\Results $results Search results object.
+     *
+     * @return bool|HttpResponse
+     */
+    protected function processJumpToOnlyResult($results)
+    {
+        // If jumpto is explicitly disabled (set to false, e.g. by combined search),
+        // we should NEVER jump to a result regardless of other factors.
+        $jumpto = $this->params()->fromQuery('jumpto', true);
+        if (
+            $jumpto
+            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            && $results->getResultTotal() == 1
+            && $recordList = $results->getResults()
+        ) {
+            return $this->getRedirectForRecord(
+                reset($recordList),
+                ['sid' => $results->getSearchId()]
+            );
         }
 
-        // If we got this far, we have a valid parameter so we should redirect
-        // and report success:
-        $details = $this->getRecordRouter()
-            ->getTabRouteDetails($recordList[$jumpto - 1]);
-        return $this->redirect()->toRoute($details['route'], $details['params']);
+        return false;
+    }
+
+    /**
+     * Get a redirection response to a single record
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
+     * @param array                             $queryParams Any query parameters
+     *
+     * @return ViewModel
+     */
+    protected function getRedirectForRecord(
+        \VuFind\RecordDriver\AbstractBase $record,
+        array $queryParams = []
+    ): HttpResponse {
+        $details = $this->getRecordRouter()->getTabRouteDetails($record);
+        return $this->redirect()->toRoute(
+            $details['route'],
+            $details['params'],
+            ['query' => $queryParams]
+        );
     }
 
     /**
@@ -421,7 +512,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     protected function retrieveSearchSecurely($searchId)
     {
@@ -445,7 +536,9 @@ class AbstractSearch extends AbstractBase
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
-            $this->getResultsManager(), $results, $sessId,
+            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
+            $results,
+            $sessId,
             $user->id ?? null
         );
     }
@@ -517,15 +610,13 @@ class AbstractSearch extends AbstractBase
             // Check to see if there is an existing range in the search object:
             if ($savedSearch) {
                 $filters = $savedSearch->getParams()->getRawFilters();
-                if (isset($filters[$field])) {
-                    foreach ($filters[$field] as $current) {
-                        if ($range = SolrUtils::parseRange($current)) {
-                            $from = $range['from'] == '*' ? '' : $range['from'];
-                            $to = $range['to'] == '*' ? '' : $range['to'];
-                            $savedSearch->getParams()
-                                ->removeFilter($field . ':' . $current);
-                            break;
-                        }
+                foreach ($filters[$field] ?? [] as $current) {
+                    if ($range = SolrUtils::parseRange($current)) {
+                        $from = $range['from'] == '*' ? '' : $range['from'];
+                        $to = $range['to'] == '*' ? '' : $range['to'];
+                        $savedSearch->getParams()
+                            ->removeFilter($field . ':' . $current);
+                        break;
                     }
                 }
             }
@@ -534,7 +625,7 @@ class AbstractSearch extends AbstractBase
             $parts[] = [
                 'field' => $field,
                 'type' => $type,
-                'values' => [$from, $to]
+                'values' => [$from, $to],
             ];
         }
 
@@ -576,7 +667,9 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getDateRangeSettings($savedSearch = false, $config = 'facets',
+    protected function getDateRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
         $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'dateRange', $filter);
@@ -593,8 +686,10 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getFullDateRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = []
+    protected function getFullDateRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'fullDateRange', $filter);
         return $this->getRangeSettings($fields, 'fulldate', $savedSearch);
@@ -610,8 +705,10 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getGenericRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = []
+    protected function getGenericRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'genericRange', $filter);
         return $this->getRangeSettings($fields, 'generic', $savedSearch);
@@ -627,8 +724,10 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getNumericRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = []
+    protected function getNumericRangeSettings(
+        $savedSearch = false,
+        $config = 'facets',
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'numericRange', $filter);
         return $this->getRangeSettings($fields, 'numeric', $savedSearch);
@@ -643,31 +742,41 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getAllRangeSettings($specialFacets, $savedSearch = false,
+    protected function getAllRangeSettings(
+        $specialFacets,
+        $savedSearch = false,
         $config = 'facets'
     ) {
         $result = [];
         if (isset($specialFacets['daterange'])) {
             $dates = $this->getDateRangeSettings(
-                $savedSearch, $config, $specialFacets['daterange']
+                $savedSearch,
+                $config,
+                $specialFacets['daterange']
             );
             $result = array_merge($result, $dates);
         }
         if (isset($specialFacets['fulldaterange'])) {
             $fulldates = $this->getFullDateRangeSettings(
-                $savedSearch, $config, $specialFacets['fulldaterange']
+                $savedSearch,
+                $config,
+                $specialFacets['fulldaterange']
             );
             $result = array_merge($result, $fulldates);
         }
         if (isset($specialFacets['genericrange'])) {
             $generic = $this->getGenericRangeSettings(
-                $savedSearch, $config, $specialFacets['genericrange']
+                $savedSearch,
+                $config,
+                $specialFacets['genericrange']
             );
             $result = array_merge($result, $generic);
         }
         if (isset($specialFacets['numericrange'])) {
             $numeric = $this->getNumericRangeSettings(
-                $savedSearch, $config, $specialFacets['numericrange']
+                $savedSearch,
+                $config,
+                $specialFacets['numericrange']
             );
             $result = array_merge($result, $numeric);
         }
@@ -712,13 +821,14 @@ class AbstractSearch extends AbstractBase
             ->get($config);
 
         // Process checkbox settings in config:
-        if (substr($section, 0, 1) == '~') {        // reverse flag
+        $flipCheckboxes = false;
+        if (str_starts_with($section, '~')) {        // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
         $checkboxFacets = ($section && isset($config->$section))
             ? $config->$section->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
 
@@ -772,7 +882,11 @@ class AbstractSearch extends AbstractBase
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getPartialFieldFacets(
-            [$facet], false, $limit, $sort, $page,
+            [$facet],
+            false,
+            $limit,
+            $sort,
+            $page,
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
         $list = $facets[$facet]['data']['list'] ?? [];
@@ -781,7 +895,7 @@ class AbstractSearch extends AbstractBase
         $view = $this->createViewModel(
             [
                 'data' => $list,
-                'exclude' => $this->params()->fromQuery('facetexclude', 0),
+                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
                 'facet' => $facet,
                 'facetLabel' => $facetLabel,
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
@@ -795,5 +909,17 @@ class AbstractSearch extends AbstractBase
         );
         $view->setTemplate('search/facet-list');
         return $view;
+    }
+
+    /**
+     * Get proper options file for search class
+     *
+     * @return \VuFind\Search\Base\Options
+     */
+    public function getOptionsForClass(): \VuFind\Search\Base\Options
+    {
+        return $this->serviceLocator
+            ->get(\VuFind\Search\Options\PluginManager::class)
+            ->get($this->searchClassId);
     }
 }

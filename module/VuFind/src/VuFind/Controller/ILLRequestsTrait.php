@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILL trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
+
+use function in_array;
+use function is_array;
 
 /**
  * ILL trait (for subclasses of AbstractRecord)
@@ -58,7 +63,7 @@ trait ILLRequestsTrait
             'ILLRequests',
             [
                 'id' => $driver->getUniqueID(),
-                'patron' => $patron
+                'patron' => $patron,
             ]
         );
         if (!$checkRequests) {
@@ -76,7 +81,9 @@ trait ILLRequestsTrait
 
         // Block invalid requests:
         $validRequest = $catalog->checkILLRequestIsValid(
-            $driver->getUniqueID(), $gatheredDetails, $patron
+            $driver->getUniqueID(),
+            $gatheredDetails,
+            $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             $this->flashMessenger()->addErrorMessage(
@@ -89,7 +96,7 @@ trait ILLRequestsTrait
         // Send various values to the view so we can build the form:
 
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : [];
+            ? explode(':', $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeILLRequest')) {
@@ -110,11 +117,12 @@ trait ILLRequestsTrait
                     'msg' => 'ill_request_place_success_html',
                     'tokens' => [
                         '%%url%%' => $this->url()
-                            ->fromRoute('myresearch-illrequests')
+                            ->fromRoute('myresearch-illrequests'),
                     ],
                 ];
                 $this->flashMessenger()->addMessage($msg, 'success');
-                return $this->redirectToRecord('#top');
+                $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+                return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
             } else {
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.
@@ -130,14 +138,17 @@ trait ILLRequestsTrait
         }
 
         // Find and format the default required date:
-        $defaultRequired = $this->ILLRequests()
+        $defaultRequiredDate = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequired);
+        $defaultRequiredDate
+            = $this->serviceLocator->get(\VuFind\Date\Converter::class)
+            ->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
         $pickupLibraries = $catalog->getILLPickUpLibraries(
-            $driver->getUniqueID(), $patron, $gatheredDetails
+            $driver->getUniqueID(),
+            $patron,
+            $gatheredDetails
         );
 
         // Get pickup locations. Note that these are independent of pickup library,
@@ -145,19 +156,31 @@ trait ILLRequestsTrait
         // selected.
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
+        // Check that there are pick up locations to choose from if the field is
+        // required:
+        if (in_array('pickUpLocation', $extraFields) && !$pickupLocations) {
+            $this->flashMessenger()
+                ->addErrorMessage('No pickup locations available');
+            return $this->redirectToRecord('#top');
+        }
+
         $config = $this->getConfig();
-        $allowHomeLibrary = $config->Account->set_home_library ?? true;
+        $homeLibrary = ($config->Account->set_home_library ?? true)
+            ? $this->getUser()->home_library : '';
+        // helpText is only for backward compatibility:
+        $helpText = $helpTextHtml = $checkRequests['helpText'];
+
         $view = $this->createViewModel(
-            [
-                'gatheredDetails' => $gatheredDetails,
-                'pickupLibraries' => $pickupLibraries,
-                'pickupLocations' => $pickupLocations,
-                'homeLibrary' => $allowHomeLibrary
-                    ? $this->getUser()->home_library : '',
-                'extraFields' => $extraFields,
-                'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText'] ?? null
-            ]
+            compact(
+                'gatheredDetails',
+                'pickupLibraries',
+                'pickupLocations',
+                'homeLibrary',
+                'extraFields',
+                'defaultRequiredDate',
+                'helpText',
+                'helpTextHtml'
+            )
         );
         $view->setTemplate('record/illrequest');
         return $view;

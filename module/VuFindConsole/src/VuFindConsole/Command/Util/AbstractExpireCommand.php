@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic base class for expiration commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Command\Command;
@@ -33,6 +35,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Db\Table\Gateway;
+
+use function floatval;
 
 /**
  * Generic base class for expiration commands.
@@ -91,7 +95,7 @@ class AbstractExpireCommand extends Command
     public function __construct(Gateway $table, $name = null)
     {
         if (!method_exists($table, 'deleteExpired')) {
-            $tableName = get_class($table);
+            $tableName = $table::class;
             throw new \Exception("$tableName does not support deleteExpired()");
         }
         $this->table = $table;
@@ -161,12 +165,17 @@ class AbstractExpireCommand extends Command
         if ($daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
-                    '%%age%%', number_format($this->minAge, 1, '.', ''),
+                    '%%age%%',
+                    number_format($this->minAge, 1, '.', ''),
                     'Expiration age must be at least %%age%% days.'
                 )
             );
             return 1;
         }
+
+        // Calculate date threshold once to avoid creeping a few seconds in each loop
+        // iteration:
+        $dateLimit = $this->getDateThreshold($daysOld);
 
         // Delete the expired rows--this cleans up any junk left in the database
         // e.g. from old searches or sessions that were not caught by the session
@@ -174,7 +183,7 @@ class AbstractExpireCommand extends Command
         // delete are found.
         $total = 0;
         do {
-            $count = $this->table->deleteExpired($daysOld, $batchSize);
+            $count = $this->table->deleteExpired($dateLimit, $batchSize);
             if ($count > 0) {
                 $output->writeln(
                     $this->getTimestampedMessage("$count {$this->rowLabel} deleted.")
@@ -189,5 +198,17 @@ class AbstractExpireCommand extends Command
             $this->getTimestampedMessage("Total $total {$this->rowLabel} deleted.")
         );
         return 0;
+    }
+
+    /**
+     * Convert days to a date threshold
+     *
+     * @param float $daysOld Days before now
+     *
+     * @return string
+     */
+    protected function getDateThreshold(float $daysOld): string
+    {
+        return date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
     }
 }

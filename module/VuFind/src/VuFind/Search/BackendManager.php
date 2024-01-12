@@ -3,7 +3,7 @@
 /**
  * Manager for search backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,17 +26,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-
 use SplObjectStorage;
-
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
+
+use function gettype;
+use function is_object;
 
 /**
  * Manager for search backends.
@@ -112,7 +114,7 @@ class BackendManager
             throw new UnexpectedValueException(
                 sprintf(
                     'Object of class %s does not implement the expected interface',
-                    get_class($backend)
+                    $backend::class
                 )
             );
         }
@@ -141,7 +143,7 @@ class BackendManager
      */
     public function onResolve(EventInterface $e)
     {
-        $name = $e->getParam('backend');
+        $name = $e->getParam('command')->getTargetIdentifier();
         if ($name && $this->has($name)) {
             return $this->get($name);
         }
@@ -159,7 +161,7 @@ class BackendManager
     {
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
-            $events->attach('VuFind\Search', 'resolve', $listener);
+            $events->attach('VuFind\Search', Service::EVENT_RESOLVE, $listener);
             $this->listeners->attach($events, $listener);
         }
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Permission view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\Permission;
@@ -40,7 +42,7 @@ use VuFind\View\Helper\Root\Permission;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PermissionTest  extends \PHPUnit\Framework\TestCase
+class PermissionTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ViewTrait;
 
@@ -51,25 +53,25 @@ class PermissionTest  extends \PHPUnit\Framework\TestCase
      */
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
-            'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest:param1=noValue",
-            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue"
+            'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest:param1=noValue',
+            'deniedControllerBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
         ],
         'permissionDeniedTemplateNoParams' => [
-            'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest",
-            'deniedControllerBehavior' => "showTemplate:record/ActionTest"
+            'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest',
+            'deniedControllerBehavior' => 'showTemplate:record/ActionTest',
         ],
         'permissionDeniedMessage' => [
-            'deniedTemplateBehavior' => "showMessage:dl_translatable_test",
-            'deniedControllerBehavior' => "showTemplate:action_translatable_test"
+            'deniedTemplateBehavior' => 'showMessage:dl_translatable_test',
+            'deniedControllerBehavior' => 'showTemplate:action_translatable_test',
         ],
         'permissionDeniedLogin' => [
-            'deniedControllerBehavior' => "promptLogin"
+            'deniedControllerBehavior' => 'promptLogin',
         ],
         'permissionDeniedException' => [
-            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message"
+            'deniedControllerBehavior' => 'exception:ForbiddenException:exception_message',
         ],
         'permissionDeniedNonExistentException' => [
-            'deniedControllerBehavior' => "exception:NonExistentException:exception_message"
+            'deniedControllerBehavior' => 'exception:NonExistentException:exception_message',
         ],
         'permissionDeniedNothing' => [
         ],

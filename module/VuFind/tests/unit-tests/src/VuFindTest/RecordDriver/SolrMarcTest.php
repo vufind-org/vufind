@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SolrMarc Record Driver Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
+
+use function count;
+use function in_array;
 
 /**
  * SolrMarc Record Driver Test Class
@@ -61,9 +66,21 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
-            ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
-            ['title' => 'B', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
-            ['title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000394898']],
+            [
+                'title' => 'A',
+                'value' => 'Bollettino della Unione matematica italiana',
+                'link' => ['type' => 'bib', 'value' => '000343528'],
+            ],
+            [
+                'title' => 'B',
+                'value' => 'Bollettino della Unione matematica',
+                'link' => ['type' => 'bib', 'value' => '000343529'],
+            ],
+            [
+                'title' => 'note_785_8',
+                'value' => 'Bollettino della Unione matematica italiana',
+                'link' => ['type' => 'bib', 'value' => '000394898'],
+            ],
         ];
         $this->assertEquals($expected, $record->getAllRecordLinks());
     }
@@ -90,7 +107,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $series = $record->getSeries();
         $this->assertEquals(count($series), 1);
         $this->assertEquals(
-            'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
+            'Vico, Giambattista, 1668-1744. Works. 1982 ;',
+            $series[0]['name']
         );
         $this->assertEquals('2, pt. 1.', $series[0]['number']);
     }
@@ -115,7 +133,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 [
                     'heading' => ['Matematica', 'Periodici.'],
                     'type' => '',
-                    'source' => ''
+                    'source' => '',
+                    'id' => '',
                 ],
             ],
             $record->getAllSubjectHeadings(true)
@@ -141,17 +160,23 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 'Plenary Papers',
                 'Teaching missiology in and for world Christianity content and method / Peter C. Phan',
                 'The bodies we teach by: (en) gendering mission for global Christianities / Mai-Ahn Le',
-                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress / Philip Wingeier-Rayo',
+                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the '
+                . '1916 Panama Congress / Philip Wingeier-Rayo',
                 'Conference Papers',
-                'Theological metaphors of teaching mission in an age of world Christianity in the North American context / David Thang Moe',
+                'Theological metaphors of teaching mission in an age of world Christianity in the North American '
+                . 'context / David Thang Moe',
                 'Mission shifts from Pope Benedict XVI to Pope Francis / William P. Gregory',
                 'The elephant in the room: towards a paradigm shift in missiological education / Sarita D. Gallagher',
-                'Historic models of teaching Christian mission: case studies informing an age of world Christianity / Robert L. Gallagher',
+                'Historic models of teaching Christian mission: case studies informing an age of world Christianity '
+                . '/ Robert L. Gallagher',
                 'How the West was won: world Christianity as historic reality / Matt Friedman',
-                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s Christian universities / Janice Horsager Rasmussen',
-                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
+                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s '
+                . 'Christian universities / Janice Horsager Rasmussen',
+                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian'
+                . ' Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
                 'Mary McLeod Bethune: Christ did not designate any particular color to go / Mary Cloutier',
-                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom / Angel Santiago-Vendrell',
+                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the '
+                . 'classroom / Angel Santiago-Vendrell',
                 'Conference Proceedings',
                 'First Fruits report for the APM',
                 'Minutes of 2016 meeting',
@@ -207,113 +232,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'default' => 'Bollettino della Unione matematica italiana.',
                     'emptySubfield' => '',
                     'pub' => 'Bologna : Zanichelli, 1922-1975.',
-                ]
+                ],
             ],
             $record->getFormattedMarcDetails('245', $input)
-        );
-    }
-
-    /**
-     * Test methods in MarcAdvancedTrait.
-     *
-     * Note that some methods are covered by the other tests.
-     *
-     * @return void
-     */
-    public function testMarcAdvancedTrait()
-    {
-        $xml = $this->getFixture('marc/marctraits.xml');
-        $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
-
-        $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
-        $this->assertEquals(['VuFind Golden Award, 2020'], $obj->getAwards());
-        $this->assertEquals(['Bibliography: p. 122'], $obj->getBibliographyNotes());
-        $this->assertMatchesRegularExpression(
-            '/<collection.*?>.*<record>.*<\/record>.*<\/collection>/s',
-            $obj->getFilteredXML()
-        );
-        $this->assertEquals(['Finding aid available'], $obj->getFindingAids());
-        $this->assertEquals(
-            ['General notes here.', 'Translation.'], $obj->getGeneralNotes()
-        );
-        $this->assertEquals(
-            ['2020', '2020'], $obj->getHumanReadablePublicationDates()
-        );
-        $this->assertEquals(
-            ['Place :', 'Location :'], $obj->getPlacesOfPublication()
-        );
-        $this->assertEquals(['00:20:10', '01:30:55'], $obj->getPlayingTimes());
-        $this->assertEquals(['Producer: VuFind'], $obj->getProductionCredits());
-        $this->assertEquals(
-            ['Frequency varies, 2020-'], $obj->getPublicationFrequency()
-        );
-        $this->assertEquals(
-            ['Merged with several branches'], $obj->getRelationshipNotes()
-        );
-        $this->assertEquals(
-            [
-                ['name' => 'Development Series &\'><"'],
-                ['name' => 'Development', 'number' => 'no. 2']
-            ],
-            $obj->getSeries()
-        );
-        $this->assertEquals(['Summary.'], $obj->getSummary());
-        $this->assertEquals(['Data in UTF-8'], $obj->getSystemDetails());
-        $this->assertEquals(['Developers'], $obj->getTargetAudienceNotes());
-        $this->assertEquals('2. Return', $obj->getTitleSection());
-        $this->assertEquals('Test Author.', $obj->getTitleStatement());
-        $this->assertEquals(
-            ['Zoolandia -- City.', 'Funland -- Funtown.'],
-            $obj->getHierarchicalPlaceNames()
-        );
-        $this->assertEquals(
-            [
-                [
-                    'url' => 'https://vufind.org/vufind/',
-                    'desc' => 'VuFind Home Page'
-                ]
-            ],
-            $obj->getURLs()
-        );
-        $this->assertEquals(['(FOO)123', '(Baz)456'], $obj->getConsortialIDs());
-        $this->assertEquals('ismn', $obj->getCleanISMN());
-        $this->assertEquals(
-            ['nbn' => 'NBN12', 'source' => 'NB'], $obj->getCleanNBN()
-        );
-        $marc21Xml = $obj->getXML('marc21');
-        $this->assertStringStartsWith(
-            '<record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-            . ' xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="'
-            . 'http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml'
-            . '/schema/MARC21slim.xsd" type="Bibliographic">',
-            $marc21Xml
-        );
-        $this->assertStringContainsString('<leader>', $marc21Xml);
-        $this->assertEquals(
-            1, substr_count($marc21Xml, '<leader>00000cam a22000004i 4500</leader>')
-        );
-        $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
-        $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));
-        $this->assertEquals(87, substr_count($marc21Xml, '<subfield '));
-        $rdfXml = $obj->getRDFXML();
-        $this->assertStringContainsString(
-            '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
-            . ' xmlns="http://www.loc.gov/mods/v3">',
-            $rdfXml
-        );
-        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
-        $this->assertStringContainsString(
-            '<namePart>Author, Test</namePart>',
-            $rdfXml
-        );
-        $this->assertStringContainsString(
-            '<identifier type="isbn">978-3-16-148410-0</identifier>',
-            $rdfXml
         );
     }
 

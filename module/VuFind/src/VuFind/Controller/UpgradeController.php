@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Upgrade Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -27,16 +28,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use ArrayObject;
+use Composer\Semver\Comparator;
 use Exception;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
 use VuFind\Config\Writer;
@@ -47,6 +51,13 @@ use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
+use function dirname;
+use function in_array;
+use function is_object;
+use function is_string;
+use function strlen;
 
 /**
  * Class controls VuFind upgrading.
@@ -60,6 +71,9 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  */
 class UpgradeController extends AbstractBase
 {
+    use Feature\ConfigPathTrait;
+    use Feature\SecureDatabaseTrait;
+
     /**
      * Cookie container
      *
@@ -102,7 +116,7 @@ class UpgradeController extends AbstractBase
         $this->cookie = new CookieContainer('vfup', $cookieManager);
 
         // ...however, once the configuration piece of the upgrade is done, we can
-        // safely use the session for storing some values.  We'll use this for the
+        // safely use the session for storing some values. We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
         $this->session = $sessionContainer;
@@ -126,7 +140,8 @@ class UpgradeController extends AbstractBase
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
         $config = $this->getConfig();
-        if (!isset($config->System->autoConfigure)
+        if (
+            !isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
             $routeMatch = $e->getRouteMatch();
@@ -217,8 +232,7 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        $localConfig
-            = dirname(ConfigLocator::getLocalConfigPath('config.ini', null, true));
+        $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
             ? $this->cookie->sourceDir . '/web/conf'
             : $localConfig;
@@ -226,7 +240,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->oldVersion,
             $this->cookie->newVersion,
             $confDir,
-            dirname(ConfigLocator::getBaseConfigPath('config.ini')),
+            dirname($this->getBaseConfigFilePath('config.ini')),
             $localConfig
         );
         try {
@@ -286,7 +300,7 @@ class UpgradeController extends AbstractBase
      */
     protected function setDbEncodingConfiguration($charset)
     {
-        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $config = $this->getForcedLocalConfigPath('config.ini');
         $writer = new Writer($config);
         $writer->set('Database', 'charset', $charset);
         if (!$writer->save()) {
@@ -359,7 +373,32 @@ class UpgradeController extends AbstractBase
             ->setAdapter($adapter)
             ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
 
-        // Check for missing tables.  Note that we need to finish dealing with
+        // Check for deprecated columns. We prompt the user for action on this, so
+        // let's get that settled before doing further work.
+        $deprecatedColumns = $this->dbUpgrade()->getDeprecatedColumns();
+        if (!empty($deprecatedColumns)) {
+            if (!empty($this->session->deprecatedColumnsAction)) {
+                if ($this->session->deprecatedColumnsAction === 'delete') {
+                    // Only manipulate DB if we're not in logging mode:
+                    if (!$this->logsql) {
+                        if (!$this->hasDatabaseRootCredentials()) {
+                            return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                        }
+                        $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                        $this->session->warnings->append(
+                            'Removed deprecated column(s) from table(s): '
+                            . implode(', ', array_keys($deprecatedColumns))
+                        );
+                    }
+                    $sql .= $this->dbUpgrade()
+                        ->removeDeprecatedColumns($deprecatedColumns, $this->logsql);
+                }
+            } else {
+                return $this->forwardTo('Upgrade', 'ConfirmDeprecatedColumns');
+            }
+        }
+
+        // Check for missing tables. Note that we need to finish dealing with
         // missing tables before we proceed to the missing columns check, or else
         // the missing tables will cause fatal errors during the column test.
         $missingTables = $this->dbUpgrade()->getMissingTables();
@@ -371,7 +410,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Created missing table(s): " . implode(', ', $missingTables)
+                    'Created missing table(s): ' . implode(', ', $missingTables)
                 );
             }
             $sql .= $this->dbUpgrade()
@@ -389,7 +428,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Added column(s) to table(s): "
+                    'Added column(s) to table(s): '
                     . implode(', ', array_keys($missingCols))
                 );
             }
@@ -408,7 +447,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified column(s) in table(s): "
+                    'Modified column(s) in table(s): '
                     . implode(', ', array_keys($modifiedCols))
                 );
             }
@@ -426,7 +465,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Added constraint(s) to table(s): "
+                    'Added constraint(s) to table(s): '
                     . implode(', ', array_keys($missingConstraints))
                 );
             }
@@ -445,7 +484,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified constraint(s) in table(s): "
+                    'Modified constraint(s) in table(s): '
                     . implode(', ', array_keys($modifiedConstraints))
                 );
             }
@@ -453,49 +492,40 @@ class UpgradeController extends AbstractBase
                 ->updateModifiedConstraints($modifiedConstraints, $this->logsql);
         }
 
-        // Check for encoding problems.
-        $encProblems = $this->dbUpgrade()->getEncodingProblems();
-        if (!empty($encProblems)) {
-            if (!isset($this->session->dbChangeEncoding)) {
-                return $this->forwardTo('Upgrade', 'GetDbEncodingPreference');
-            }
-
-            if ($this->session->dbChangeEncoding) {
-                // Only manipulate DB if we're not in logging mode:
-                if (!$this->logsql) {
-                    if (!$this->hasDatabaseRootCredentials()) {
-                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
-                    }
-                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
-                    $this->session->warnings->append(
-                        "Modified encoding settings in table(s): "
-                        . implode(', ', array_keys($encProblems))
-                    );
+        // Check for modified keys.
+        $modifiedKeys = $this->dbUpgrade()->getModifiedKeys($mT);
+        if (!empty($modifiedKeys)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
-                $sql .= $this->dbUpgrade()
-                    ->fixEncodingProblems($encProblems, $this->logsql);
-                $this->setDbEncodingConfiguration('utf8');
-            } else {
-                // User has requested that we skip encoding conversion:
-                $this->setDbEncodingConfiguration('latin1');
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    'Modified key(s) in table(s): '
+                    . implode(', ', array_keys($modifiedKeys))
+                );
             }
+            $sql .= $this->dbUpgrade()
+                ->updateModifiedKeys($modifiedKeys, $this->logsql);
         }
 
-        // Check for collation problems.
-        $colProblems = $this->dbUpgrade()->getCollationProblems();
+        // Check for character set and collation problems.
+        $colProblems = $this->dbUpgrade()->getCharsetAndCollationProblems();
         if (!empty($colProblems)) {
             if (!$this->logsql) {
                 if (!$this->hasDatabaseRootCredentials()) {
                     return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    'Modified character set(s)/collation(s) in table(s): '
+                    . implode(', ', array_keys($colProblems))
+                );
             }
             $sql .= $this->dbUpgrade()
-                ->fixCollationProblems($colProblems, $this->logsql);
-            $this->session->warnings->append(
-                "Modified collation(s) in table(s): "
-                . implode(', ', array_keys($colProblems))
-            );
+                ->fixCharsetAndCollationProblems($colProblems, $this->logsql);
+            $this->setDbEncodingConfiguration('utf8mb4');
         }
 
         // Don't keep DB credentials in session longer than necessary:
@@ -601,6 +631,23 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Prompt the user to confirm removal of deprecated columns.
+     *
+     * @return mixed
+     */
+    public function confirmdeprecatedcolumnsAction()
+    {
+        if ($action = $this->params()->fromQuery('action')) {
+            if ($action === 'keep' || $action === 'delete') {
+                $this->session->deprecatedColumnsAction = $action;
+                return $this->redirect()->toRoute('upgrade-fixdatabase');
+            }
+        }
+        $deprecated = $this->dbUpgrade()->getDeprecatedColumns();
+        return $this->createViewModel(compact('deprecated'));
+    }
+
+    /**
      * Prompt the user for database credentials.
      *
      * @return mixed
@@ -624,7 +671,7 @@ class UpgradeController extends AbstractBase
                     $factory = $this->serviceLocator
                         ->get(AdapterFactory::class);
                     $db = $factory->getAdapter($dbrootuser, $pass);
-                    $db->query("SELECT * FROM user;");
+                    $db->query('SELECT * FROM user;');
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
@@ -638,24 +685,6 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(['dbrootuser' => $dbrootuser]);
-    }
-
-    /**
-     * Prompt the user for action on encoding problems.
-     *
-     * @return mixed
-     */
-    public function getdbencodingpreferenceAction()
-    {
-        $action = $this->params()->fromPost('encodingaction', '');
-        if ($action == 'Change') {
-            $this->session->dbChangeEncoding = true;
-            return $this->forwardTo('Upgrade', 'FixDatabase');
-        } elseif ($action == 'Keep') {
-            $this->session->dbChangeEncoding = false;
-            return $this->forwardTo('Upgrade', 'FixDatabase');
-        }
-        return $this->createViewModel();
     }
 
     /**
@@ -696,7 +725,7 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
+                'anonymousTags' => $this->params()->fromQuery('anonymousCnt'),
             ]
         );
     }
@@ -760,7 +789,7 @@ class UpgradeController extends AbstractBase
                     $problem->assignMetadata($driver, $converter)->save();
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
-                        "Unable to load metadata for record "
+                        'Unable to load metadata for record '
                         . "{$problem->source}:{$problem->record_id}"
                     );
                 }
@@ -824,13 +853,13 @@ class UpgradeController extends AbstractBase
         // Process form submission:
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
-            $this->cookie->newVersion = Version::getBuildVersion();
-            if (floor($version) < 2) {
+            $this->cookie->newVersion = $newVersion = Version::getBuildVersion();
+            if (Comparator::lessThan($version, '2.0')) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');
-            } elseif ($version >= $this->cookie->newVersion) {
+            } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
-                    "Source version must be less than {$this->cookie->newVersion}.",
+                    "Source version must be less than {$newVersion}.",
                     'error'
                 );
             } else {
@@ -848,6 +877,19 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Organize and run critical, blocking checks
+     *
+     * @return string|null
+     */
+    protected function performCriticalChecks()
+    {
+        // Run through a series of checks to be sure there are no critical issues.
+        return $this->criticalCheckForInsecureDatabase()
+            ?? $this->criticalCheckForBlowfishEncryption()
+            ?? null;
+    }
+
+    /**
      * Display summary of installation status
      *
      * @return mixed
@@ -862,17 +904,25 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!isset($this->cookie->sourceDir)
+        if (
+            !isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 
         // Next figure out which version(s) are involved:
-        if (!isset($this->cookie->oldVersion)
+        if (
+            !isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');
+        }
+
+        // Check for critical upgrades
+        $criticalFixForward = $this->performCriticalChecks() ?? null;
+        if ($criticalFixForward !== null) {
+            return $this->forwardTo('Upgrade', $criticalFixForward);
         }
 
         // Now make sure we have a configuration file ready:
@@ -904,11 +954,10 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'configDir' => dirname(
-                    ConfigLocator::getLocalConfigPath('config.ini', null, true)
-                ),
+                'configDir'
+                    => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion
+                'oldVersion' => $this->cookie->oldVersion,
             ]
         );
     }
@@ -952,9 +1001,11 @@ class UpgradeController extends AbstractBase
                 );
             }
 
-            $this->session->warnings->append(
-                'Added hash value(s) to ' . count($results) . ' short links.'
-            );
+            if (count($results) > 0) {
+                $this->session->warnings->append(
+                    'Added hash value(s) to ' . count($results) . ' short links.'
+                );
+            }
         } catch (Exception $e) {
             $this->session->warnings->append(
                 'Could not fix hashes in table shortlinks - maybe column ' .
@@ -962,5 +1013,70 @@ class UpgradeController extends AbstractBase
                 'message: ' . $e->getMessage()
             );
         }
+    }
+
+    /**
+     * Check for insecure database settings
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForInsecureDatabase()
+    {
+        if (!empty($this->cookie->ignoreInsecureDb)) {
+            return null;
+        }
+        return $this->hasSecureDatabase() ? null : 'CriticalFixInsecureDatabase';
+    }
+
+    /**
+     * Check for deprecated and insecure use of blowfish encryption
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForBlowfishEncryption()
+    {
+        $config = $this->getConfig();
+        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
+        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish')
+            ? 'CriticalFixBlowfish' : null;
+    }
+
+    /**
+     * Lead users through the steps required to fix an insecure database
+     *
+     * @return mixed
+     */
+    public function criticalFixInsecureDatabaseAction()
+    {
+        if ($this->params()->fromQuery('ignore')) {
+            $this->cookie->ignoreInsecureDb = 1;
+            return $this->redirect()->toRoute('upgrade-home');
+        }
+        return $this->createViewModel();
+    }
+
+    /**
+     * Lead users through the steps required to replace blowfish quickly and easily
+     *
+     * @return mixed
+     */
+    public function criticalFixBlowfishAction()
+    {
+        // Test that blowfish is still working
+        $blowfishIsWorking = true;
+        try {
+            $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+            $newcipher->setKey('akeyforatest');
+            $newcipher->encrypt('youfoundtheeasteregg!');
+        } catch (Exception $e) {
+            $blowfishIsWorking = false;
+        }
+
+        // Get new settings
+        [$newAlgorithm, $exampleKey] = $this->getSecureAlgorithmAndKey();
+        return $this->createViewModel(
+            compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
+        );
     }
 }

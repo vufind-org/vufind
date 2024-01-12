@@ -3,7 +3,7 @@
 /**
  * Class MarkdownTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
@@ -73,6 +74,6 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
     {
         $markdown = "# Main heading\n## Second heading";
         $html = "<h1>Main heading</h1>\n<h2>Second heading</h2>\n";
-        $this->assertEquals($html, $this->getHelper()->__invoke($markdown));
+        $this->assertEquals($html, ($this->getHelper())($markdown));
     }
 }

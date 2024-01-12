@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record Cache
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Freiburg 2014.
  * Copyright (C) The National Library of Finland 2015.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Record;
 
 use Laminas\Config\Config as Config;
@@ -47,9 +49,9 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
-    const CONTEXT_DISABLED = '';
-    const CONTEXT_DEFAULT = 'Default';
-    const CONTEXT_FAVORITE = 'Favorite';
+    public const CONTEXT_DISABLED = '';
+    public const CONTEXT_DEFAULT = 'Default';
+    public const CONTEXT_FAVORITE = 'Favorite';
 
     /**
      * RecordCache.ini contents
@@ -131,7 +133,15 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
             "Cached record {$source}|{$id} "
             . ($record !== false ? 'found' : 'not found')
         );
-        return $record !== false ? [$this->getVuFindRecord($record)] : [];
+        try {
+            return $record !== false ? [$this->getVuFindRecord($record)] : [];
+        } catch (\Exception $e) {
+            $this->logError(
+                'Could not load record {$source}|{$id} from the record cache: '
+                . $e->getMessage()
+            );
+        }
+        return [];
     }
 
     /**
@@ -153,7 +163,15 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
         $vufindRecords = [];
         $cachedRecords = $this->recordTable->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
-            $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
+            try {
+                $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
+            } catch (\Exception $e) {
+                $this->logError(
+                    'Could not load record ' . $cachedRecord['source'] . '|'
+                    . $cachedRecord['record_id'] . ' from the record cache: '
+                    . $e->getMessage()
+                );
+            }
         }
 
         $extractIdCallback = function ($record) {
@@ -188,7 +206,8 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
         }
         $this->cachableSources = isset($this->cacheConfig->$context)
             ? $this->cacheConfig->$context->toArray() : [];
-        if ($context != Cache::CONTEXT_DEFAULT
+        if (
+            $context != Cache::CONTEXT_DEFAULT
             && isset($this->cacheConfig->{Cache::CONTEXT_DEFAULT})
         ) {
             // Inherit settings from Default section
@@ -267,7 +286,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
             $driver->setRawData($doc);
         }
 
-        $driver->setSourceIdentifier($source);
+        $driver->setSourceIdentifiers($source);
 
         return $driver;
     }

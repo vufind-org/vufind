@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for Summon records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use function count;
+use function intval;
+use function is_array;
+use function strlen;
 
 /**
  * Model for Summon records.
@@ -36,8 +43,10 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Summon extends DefaultRecord
+class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
 {
+    use Feature\PreviousUniqueIdTrait;
+
     /**
      * Fields that may contain subject headings, and their descriptions
      *
@@ -58,36 +67,7 @@ class Summon extends DefaultRecord
     protected $dateConverter = null;
 
     /**
-     * Previous unique ID (if applicable).
-     *
-     * @var string
-     */
-    protected $previousUniqueId = null;
-
-    /**
-     * Get previous unique ID (or null if not applicable).
-     *
-     * @return string
-     */
-    public function getPreviousUniqueId()
-    {
-        return $this->previousUniqueId;
-    }
-
-    /**
-     * Set previous unique ID
-     *
-     * @param string $id ID to set
-     *
-     * @return void
-     */
-    public function setPreviousUniqueId($id)
-    {
-        $this->previousUniqueId = $id;
-    }
-
-    /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -113,7 +93,7 @@ class Summon extends DefaultRecord
                     ? [
                         'heading' => [$topic],
                         'type' => $fieldType,
-                        'source' => ''
+                        'source' => '',
                     ] : [$topic];
             }
         }
@@ -211,7 +191,7 @@ class Summon extends DefaultRecord
         return isset($this->fields['Snippet'][0])
             ? [
                 'snippet' => trim($this->fields['Snippet'][0], '.'),
-                'caption' => ''
+                'caption' => '',
             ]
             : false;
     }
@@ -356,7 +336,8 @@ class Summon extends DefaultRecord
      */
     public function getPublicationDates()
     {
-        if (isset($this->fields['PublicationDate_xml'])
+        if (
+            isset($this->fields['PublicationDate_xml'])
             && is_array($this->fields['PublicationDate_xml'])
         ) {
             $dates = [];
@@ -410,7 +391,7 @@ class Summon extends DefaultRecord
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -471,7 +452,8 @@ class Summon extends DefaultRecord
         // Support thumbnails embedded in the Summon record when no unique identifier
         // is found... (We don't use them in cases where we have an identifier, since
         // we want to allow these to be passed to configured external services).
-        if (!isset($params['oclc']) && !isset($params['issn'])
+        if (
+            !isset($params['oclc']) && !isset($params['issn'])
             && !isset($params['isbn']) && !isset($params['upc'])
         ) {
             if ($size === 'small' && isset($this->fields['thumbnail_s'][0])) {
@@ -499,7 +481,9 @@ class Summon extends DefaultRecord
         $sub = $this->getSubtitle();
         $title = empty($sub) ? $title : "{$title}: {$sub}";
         return str_replace(
-            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $title
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            '',
+            $title
         );
     }
 
@@ -532,7 +516,7 @@ class Summon extends DefaultRecord
         if (isset($this->fields['link'])) {
             $msg = $this->hasFullText() ? 'Get full text' : 'Get more information';
             return [
-                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)]
+                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)],
             ];
         }
         $retVal = [];
@@ -611,7 +595,8 @@ class Summon extends DefaultRecord
     {
         if (isset($this->fields['EndPage'])) {
             return $this->fields['EndPage'][0];
-        } elseif (isset($this->fields['PageCount'])
+        } elseif (
+            isset($this->fields['PageCount'])
             && $this->fields['PageCount'] > 1
             && intval($this->fields['StartPage'][0]) > 0
         ) {

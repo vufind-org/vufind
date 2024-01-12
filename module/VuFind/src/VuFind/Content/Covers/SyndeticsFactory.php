@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics cover loader factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Content\Covers;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Syndetics cover loader factory
@@ -55,11 +57,13 @@ class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -67,6 +71,9 @@ class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return new $requestedName($config->Syndetics->use_ssl ?? false);
+        $syndetics = new $requestedName($config->Syndetics ?? null);
+        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
+        $syndetics->setCachingDownloader($cachingDownloader);
+        return $syndetics;
     }
 }

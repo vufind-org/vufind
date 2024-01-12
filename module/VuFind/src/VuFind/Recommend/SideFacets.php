@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SideFacets Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -22,13 +23,20 @@
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
 
 /**
  * SideFacets Recommendations Module
@@ -38,6 +46,7 @@ use VuFind\Solr\Utils as SolrUtils;
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
@@ -84,6 +93,14 @@ class SideFacets extends AbstractFacets
      * @var array
      */
     protected $checkboxFacets = [];
+
+    /**
+     * Should we display dynamically-generated checkbox facets that are not
+     * explicitly configured in $checkboxFacets?
+     *
+     * @var bool
+     */
+    protected $showDynamicCheckboxFacets = true;
 
     /**
      * Settings controlling how lightbox is used for facet display.
@@ -156,6 +173,7 @@ class SideFacets extends AbstractFacets
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
         $checkboxSection = $settings[1] ?? false;
         $iniName = $settings[2] ?? 'facets';
+        $showDynamicCheckboxFacets = $settings[3] ?? true;
 
         // Load the desired facet information...
         $config = $this->configLoader->get($iniName);
@@ -185,15 +203,22 @@ class SideFacets extends AbstractFacets
         }
 
         // Checkbox facets:
-        if (substr($checkboxSection, 0, 1) == '~') {
+        $flipCheckboxes = false;
+        if (str_starts_with($checkboxSection, '~')) {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }
         $this->checkboxFacets
             = ($checkboxSection && isset($config->$checkboxSection))
             ? $config->$checkboxSection->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+        if (
+            !$showDynamicCheckboxFacets
+            || strtolower(trim($showDynamicCheckboxFacets)) === 'false'
+        ) {
+            $this->showDynamicCheckboxFacets = false;
         }
 
         // Show more settings:
@@ -225,7 +250,8 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -238,8 +264,12 @@ class SideFacets extends AbstractFacets
      */
     public function init($params, $request)
     {
+        $mainFacets = $this->mainFacets;
+        if ($request != null && ($enabledFacets = $request->get('enabledFacets', null)) !== null) {
+            $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
+        }
         // Turn on side facets in the search results:
-        foreach ($this->mainFacets as $name => $desc) {
+        foreach ($mainFacets as $name => $desc) {
             $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {
@@ -254,8 +284,10 @@ class SideFacets extends AbstractFacets
      */
     public function getCheckboxFacetSet()
     {
-        return $this->results->getParams()
-            ->getCheckboxFacets(array_keys($this->checkboxFacets));
+        return $this->results->getParams()->getCheckboxFacets(
+            array_keys($this->checkboxFacets),
+            $this->showDynamicCheckboxFacets
+        );
     }
 
     /**
@@ -276,12 +308,11 @@ class SideFacets extends AbstractFacets
                     );
                 }
 
-                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
-                    $hierarchicalFacet, $facetSet[$hierarchicalFacet]['list']
+                $facetSet[$hierarchicalFacet]['list'] = $this->hierarchicalFacetHelper->filterFacets(
+                    $hierarchicalFacet,
+                    $facetSet[$hierarchicalFacet]['list'],
+                    $this->results->getOptions()
                 );
-                $facetSet[$hierarchicalFacet]['list'] = $this
-                    ->hierarchicalFacetHelper
-                    ->flattenFacetHierarchy($facetArray);
             }
         }
 
@@ -343,7 +374,7 @@ class SideFacets extends AbstractFacets
             'date' => $this->getDateFacets(),
             'fulldate' => $this->getFullDateFacets(),
             'generic' => $this->getGenericRangeFacets(),
-            'numeric' => $this->getNumericRangeFacets()
+            'numeric' => $this->getNumericRangeFacets(),
         ];
         $processed = [];
         foreach ($raw as $type => $values) {
@@ -374,21 +405,23 @@ class SideFacets extends AbstractFacets
      * defaults to 6
      *
      * @param string $facetName Name of the facet to get
+     * @param int    $default   Value to use if configuration is absent/invalid
      *
      * @return int
      */
-    public function getShowMoreSetting($facetName)
+    public function getShowMoreSetting($facetName, $default = 6)
     {
         // Look for either facet-specific configuration or else a configured
-        // default. If neither is found, initialize return value to 0.
+        // default. If neither is found, initialize return value to null.
+        $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
             $val = intval($this->showMoreSettings[$facetName]);
         } elseif (isset($this->showMoreSettings['*'])) {
             $val = intval($this->showMoreSettings['*']);
         }
 
-        // Validate the return value, defaulting to 6 if missing/invalid
-        return (isset($val) && $val > 0) ? $val : 6;
+        // Validate the return value, using default if missing/invalid
+        return (isset($val) && $val > 0) ? $val : $default;
     }
 
     /**

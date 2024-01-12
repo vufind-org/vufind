@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo Permission Handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Primo;
 
 use LmcRbacMvc\Service\AuthorizationService;
@@ -57,9 +58,9 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     protected $primoConfig = [
         'onCampusRule' => [
             'MEMBER' => 'primo.MEMBER',
-            'DEFAULT' => 'primo.defaultRule'
+            'DEFAULT' => 'primo.defaultRule',
         ],
-        'defaultCode' => 'DEFAULT'
+        'defaultCode' => 'DEFAULT',
     ];
 
     /**
@@ -69,8 +70,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     protected $primoConfigWithoutDefault = [
         'onCampusRule' => [
-            'MEMBER' => 'primo.MEMBER'
-        ]
+            'MEMBER' => 'primo.MEMBER',
+        ],
     ];
 
     /**
@@ -81,8 +82,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     protected $primoConfigDefaultOnly = [
         'defaultCode' => 'DEFAULT',
         'onCampusRule' => [
-            'DEFAULT' => 'primo.defaultRule'
-        ]
+            'DEFAULT' => 'primo.defaultRule',
+        ],
     ];
 
     /**
@@ -94,11 +95,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         'defaultCode' => 'DEFAULT',
         'onCampusRule' => [
             'DEFAULT' => 'primo.defaultRule',
-            'MEMBER' => 'primo.isOnCampusAtMEMBER'
+            'MEMBER' => 'primo.isOnCampusAtMEMBER',
         ],
         'institutionCode' => [
-            'MEMBER' => 'primo.isAtMEMBER'
-        ]
+            'MEMBER' => 'primo.isAtMEMBER',
+        ],
     ];
 
     /**
@@ -108,11 +109,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     protected $primoConfigWithoutDefaultWithInstCode = [
         'onCampusRule' => [
-            'MEMBER' => 'primo.isOnCampusAtMEMBER'
+            'MEMBER' => 'primo.isOnCampusAtMEMBER',
         ],
         'institutionCode' => [
-            'MEMBER' => 'primo.isAtMEMBER'
-        ]
+            'MEMBER' => 'primo.isAtMEMBER',
+        ],
     ];
 
     /**
@@ -121,7 +122,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected $primoConfigDefaultOnlyNoOnCampusRule = [
-        'defaultCode' => 'DEFAULT'
+        'defaultCode' => 'DEFAULT',
     ];
 
     /**
@@ -936,9 +937,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerMemberAuthNotSuccessfullCallback($param)
+    public function handlerMemberAuthNotSuccessfullCallback($param): bool
     {
         if ($param == 'primo.MEMBER') {
             return false;
@@ -950,9 +953,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerMemberAuthSuccessfullCallback($param)
+    public function handlerMemberAuthSuccessfullCallback($param): bool
     {
         if ($param == 'primo.MEMBER') {
             return true;
@@ -964,9 +969,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerDefaultAuthSuccessfullCallback($param)
+    public function handlerDefaultAuthSuccessfullCallback($param): bool
     {
         if ($param == 'primo.defaultRule') {
             return true;
@@ -978,9 +985,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerDefaultAuthNotSuccessfullCallback($param)
+    public function handlerDefaultAuthNotSuccessfullCallback($param): bool
     {
         if ($param == 'primo.defaultRule') {
             return false;
@@ -992,9 +1001,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerMemberIsOnCampusCallback($param)
+    public function handlerMemberIsOnCampusCallback($param): bool
     {
         if ($param == 'primo.defaultRule') {
             return false;
@@ -1012,9 +1023,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerMemberIsNotOnCampusCallback($param)
+    public function handlerMemberIsNotOnCampusCallback($param): bool
     {
         if ($param == 'primo.defaultRule') {
             return false;
@@ -1032,9 +1045,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerIsNotAMemberCallback($param)
+    public function handlerIsNotAMemberCallback($param): bool
     {
         if ($param == 'primo.defaultRule') {
             return false;
@@ -1049,9 +1064,11 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
-     * @return void
+     * @param string $param Parameter name
+     *
+     * @return bool
      */
-    public function handlerIsOnDefaultCampusCallback($param)
+    public function handlerIsOnDefaultCampusCallback($param): bool
     {
         if ($param == 'primo.defaultRule') {
             return true;

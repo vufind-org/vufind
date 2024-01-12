@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for Shibboleth authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
@@ -45,7 +47,7 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
  */
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-    const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+    public const SHIBBOLETH_CONFIG_FILE_NAME = 'Shibboleth';
 
     /**
      * Create an object
@@ -59,9 +61,11 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -71,7 +75,8 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $request = $container->get('Request');
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
-            $loader, $request
+            $loader,
+            $request
         );
     }
 
@@ -84,14 +89,12 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      */
     public function getConfigurationLoader(ContainerInterface $container)
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configManager->get('config');
         $override = $config->Shibboleth->allow_configuration_override ?? false;
         $loader = null;
         if ($override) {
-            $shibConfig = $container->get('VuFind\Config')->get(
-                self::SHIBBOLETH_CONFIG_FILE_NAME
-            );
+            $shibConfig = $configManager->get(self::SHIBBOLETH_CONFIG_FILE_NAME);
             $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
         } else {
             $loader = new SingleIdPConfigurationLoader($config);

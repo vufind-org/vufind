@@ -3,7 +3,7 @@
 /**
  * OAI-PMH server unit test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTest\OAI;
 
 use VuFind\OAI\Server;
@@ -49,7 +50,9 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     public function testEmptyInput()
     {
         $server = $this->getServer();
-        $this->assertTrue(false !== strpos($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>'));
+        $this->assertTrue(
+            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+        );
     }
 
     /**
@@ -61,7 +64,9 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      *
      * @return Server
      */
-    protected function getServer($config = [], $baseURL = 'http://foo',
+    protected function getServer(
+        $config = [],
+        $baseURL = 'http://foo',
         $params = []
     ) {
         // Force an email into the configuration if missing; this is required by the
@@ -73,10 +78,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager(),
-            new \Laminas\Config\Config($config),
-            $baseURL,
-            $params
+            $this->getMockTableManager()
         );
         $server->setRecordFormatter($this->getMockRecordFormatter());
         return $server;

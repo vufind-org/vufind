@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -28,11 +29,14 @@
  *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\DigitalContent\OverdriveConnector;
+
+use function in_array;
 
 /**
  * VuFind Record Driver for SolrOverdrive Records
@@ -73,7 +77,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        Config $mainConfig = null, $recordConfig = null,
+        Config $mainConfig = null,
+        $recordConfig = null,
         OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
@@ -122,8 +127,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     $formatType = $format->formatType;
                     $formats[$formatType] = $formatNames[$formatType];
                 }
-                // If we aren't locked in, we can show all formats
             } else {
+                // Not locked in, we can show all formats
                 foreach ($this->getDigitalFormats() as $format) {
                     $formats[$format->id] = $formatNames[$format->id];
                 }
@@ -172,33 +177,33 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getFormattedDigitalFormats()
     {
         $results = [];
-        foreach ($this->getDigitalFormats() as $key=>$format) {
+        foreach ($this->getDigitalFormats() as $key => $format) {
             $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
                     $size = round($format->fileSize / 1000000);
-                    $size .= " GB";
+                    $size .= ' GB';
                 } elseif ($format->fileSize > 1000) {
                     $size = round($format->fileSize / 1000);
-                    $size .= " MB";
+                    $size .= ' MB';
                 } else {
                     $size = $format->fileSize;
-                    $size .= " KB";
+                    $size .= ' KB';
                 }
-                $tmpresults["File Size"] = $size;
+                $tmpresults['File Size'] = $size;
             }
             if ($format->partCount) {
-                $tmpresults["Parts"] = $format->partCount;
+                $tmpresults['Parts'] = $format->partCount;
             }
             if ($format->identifiers) {
                 foreach ($format->identifiers as $id) {
-                    if (in_array($id->type, ["ISBN", "ASIN"])) {
+                    if (in_array($id->type, ['ISBN', 'ASIN'])) {
                         $tmpresults[$id->type] = $id->value;
                     }
                 }
             }
             if ($format->onSaleDate) {
-                $tmpresults["Release Date"] = $format->onSaleDate;
+                $tmpresults['Release Date'] = $format->onSaleDate;
             }
             $results[$format->name] = $tmpresults;
         }
@@ -226,14 +231,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if (isset($data->formats[0]->samples[0])) {
             foreach ($data->formats[0]->samples as $format) {
-                if ($format->formatType == 'audiobook-overdrive'
+                if (
+                    $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
                 ) {
                     $results = $format;
                 }
             }
         }
-        $this->debug("previewlinks:" . print_r($results, true));
+        $this->debug('previewlinks:' . print_r($results, true));
         return $results;
     }
 
@@ -325,7 +331,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isCheckedOut()
     {
-        $this->debug(" ischeckout", [], true);
+        $this->debug(' ischeckout', [], true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
         if ($result->status) {
@@ -396,48 +402,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Marc Record
-     *
-     * Override the base marc trait to return a fake marc object
-     *
-     * @return     \File_MARCBASE
-     * @throws     \File_MARC_Exception
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        if ($this->getIsMarc()) {
-            return parent::getMarcRecord();
-        }
-        // No MARC support? Return new fake MARC class.
-        return new class {
-            /**
-             * Get the field
-             *
-             * @param string $f Fieldname
-             *
-             * @return string
-             */
-            public function getField($f)
-            {
-                return "";
-            }
-
-            /**
-             * Get the fields
-             *
-             * @param array $f Fieldnames
-             *
-             * @return array
-             */
-            public function getFields($f)
-            {
-                return [];
-            }
-        };
-    }
-
-    /**
      * Get Title Section
      *
      * @return string
@@ -477,7 +441,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $coverMap = [
             'large' => 'cover300Wide',
             'medium' => 'cover150Wide',
-            'small' => 'thumbnail'
+            'small' => 'thumbnail',
         ];
         $cover = $coverMap[$size] ?? 'cover';
 
@@ -504,11 +468,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             return parent::getSummary();
         }
         // Non-MARC case:
-        $desc = $this->fields["description"] ?? '';
+        $desc = $this->fields['description'] ?? '';
 
-        $newDesc = preg_replace("/&#8217;/i", "", $desc);
+        $newDesc = preg_replace('/&#8217;/i', '', $desc);
         $newDesc = strip_tags($newDesc);
-        return ["Summary" => $newDesc];
+        return ['Summary' => $newDesc];
     }
 
     /**
@@ -537,7 +501,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -573,12 +537,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $data = json_decode($jsonData, true);
         $c_arr = [];
         foreach ($data['creators'] as $creator) {
-            $c_arr[] = "<strong>{$creator["role"]}<strong>: "
-                . $creator["name"];
+            $c_arr[] = "<strong>{$creator['role']}<strong>: "
+                . $creator['name'];
         }
-        $data['creators'] = implode("<br/>", $c_arr);
+        $data['creators'] = implode('<br>', $c_arr);
 
-        $this->debug("raw data:" . print_r($data, true));
+        $this->debug('raw data:' . print_r($data, true));
         return $data;
     }
 
@@ -595,7 +559,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             'action' => 'Hold',
             'record' => $rec_id,
             'query' => "od_id=$od_id&rec_id=$rec_id",
-            'anchor' => ''
+            'anchor' => '',
         ];
         return $urlDetails;
     }

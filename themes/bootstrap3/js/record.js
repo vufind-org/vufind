@@ -1,10 +1,10 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
-/*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, escapeHtmlAttr */
+/*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestType) {
+function checkRequestIsValid(element, requestType, icon = 'place-hold') {
   var recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
   var vars = deparam(element.href);
   vars.id = recordId;
@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType) {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + response.data.msg);
+          .html(VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + "</span>");
       } else {
         $(element).remove();
       }
@@ -36,13 +36,13 @@ function checkRequestIsValid(element, requestType) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function checkRequest() {
-    checkRequestIsValid(this, 'Hold');
+    checkRequestIsValid(this, 'Hold', 'place-hold');
   });
   $('.checkStorageRetrievalRequest').each(function checkStorageRetrievalRequest() {
-    checkRequestIsValid(this, 'StorageRetrievalRequest');
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'place-storage-retrieval');
   });
   $('.checkILLRequest').each(function checkILLRequest() {
-    checkRequestIsValid(this, 'ILLRequest');
+    checkRequestIsValid(this, 'ILLRequest', 'place-ill-request');
   });
 }
 
@@ -71,9 +71,9 @@ function refreshCommentList($target, recordId, recordSource) {
       // Update HTML
       var $commentList = $target.find('.comment-list');
       $commentList.empty();
-      $commentList.append(response.data.html);
-      $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
-        var commentId = $(this).attr('id').substr('recordComment'.length);
+      $commentList.append(VuFind.updateCspNonce(response.data.html));
+      $commentList.find('.delete').off("click").on("click", function commentRefreshDeleteClick() {
+        var commentId = $(this).attr('id').substring('recordComment'.length);
         deleteRecordComment(this, recordId, recordSource, commentId);
         return false;
       });
@@ -82,10 +82,28 @@ function refreshCommentList($target, recordId, recordSource) {
     });
 }
 
+function refreshRecordRating(recordId, recordSource) {
+  let rating = document.querySelector('.media-left .rating');
+  if (!rating) {
+    return;
+  }
+  fetch(VuFind.path + '/AJAX/JSON?' + new URLSearchParams({
+    method: 'getRecordRating',
+    id: recordId,
+    source: recordSource
+  }))
+    .then(response => response.json())
+    .then(result => {
+      rating.outerHTML = result.data.html;
+      // Bind lightbox to the new content:
+      VuFind.lightbox.bind(document.querySelector('.media-left .rating'));
+    });
+}
+
 function registerAjaxCommentRecord(_context) {
   var context = typeof _context === "undefined" ? document : _context;
   // Form submission
-  $(context).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
+  $(context).find('form.comment-form').off("submit").on("submit", function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -93,6 +111,9 @@ function registerAjaxCommentRecord(_context) {
     var data = {};
     $(form).find("input,textarea").each(function appendCaptchaData() {
       var input = $(this);
+      if (input.attr('type') === 'radio' && !input.prop('checked')) {
+        return true;
+      }
       data[input.attr('name')] = input.val();
     });
     $.ajax({
@@ -108,8 +129,12 @@ function registerAjaxCommentRecord(_context) {
           $tab = $form.closest('.tab-pane');
         }
         refreshCommentList($tab, id, recordSource);
+        refreshRecordRating(id, recordSource);
         $form.find('textarea[name="comment"]').val('');
         $form.find('input[type="submit"]').button('loading');
+        if ($form.data('ratingRemoval') === false && Object.prototype.hasOwnProperty.call(data, 'rating') && '' !== data.rating) {
+          $form.find('a[data-click-set-checked]').remove();
+        }
         resetCaptcha($form);
       })
       .fail(function addCommentFail(response, textStatus) {
@@ -119,7 +144,7 @@ function registerAjaxCommentRecord(_context) {
     return false;
   });
   // Delete links
-  $('.delete').click(function commentDeleteClick() {
+  $('.delete').on("click", function commentDeleteClick() {
     var commentId = this.id.substr('recordComment'.length);
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
     return false;
@@ -139,10 +164,10 @@ function handleAjaxTabLinks(_context) {
     var $a = $(this);
     var href = $a.attr('href');
     if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
-      $a.unbind('click').click(function linkClick() {
+      $a.off("click").on("click", function linkClick() {
         var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
         var $tab = $('.' + tabid + '-tab');
-        $tab.html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+        $tab.html('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
         ajaxLoadTab($tab, '', false, href);
         return false;
       });
@@ -186,6 +211,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   } else {
     url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
     postData.tab = tabid;
+    postData.sid = VuFind.getCurrentSearchId();
   }
   $.ajax({
     url: url,
@@ -194,9 +220,9 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   })
     .always(function ajaxLoadTabDone(data) {
       if (typeof data === 'object') {
-        $newTab.html(data.responseText ? data.responseText : VuFind.translate('error_occurred'));
+        $newTab.html(data.responseText ? VuFind.updateCspNonce(data.responseText) : VuFind.translate('error_occurred'));
       } else {
-        $newTab.html(data);
+        $newTab.html(VuFind.updateCspNonce(data));
       }
       registerTabEvents();
       if (typeof syn_get_widget === "function") {
@@ -230,7 +256,7 @@ function refreshTagList(_target, _loggedin) {
     })
       .done(function getRecordTagsDone(response) {
         $tagList.empty();
-        $tagList.replaceWith(response.data.html);
+        $tagList.replaceWith(VuFind.updateCspNonce(response.data.html));
         if (loggedin) {
           $tagList.addClass('loggedin');
         } else {
@@ -265,7 +291,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabid) {
-  return $('<div class="tab-pane ' + tabid + '-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+  return $('<div class="tab-pane ' + escapeHtmlAttr(tabid) + '-tab" aria-labelledby="record-tab-' + escapeHtmlAttr(tabid) + '">' + VuFind.loading() + '</div>');
 }
 
 function backgroundLoadTab(tabid) {
@@ -285,11 +311,11 @@ function applyRecordTabHash(scrollToTabs) {
 
   // Open tab in url hash
   if (newTab.length <= 1 || newTab === '#tabnav') {
-    $initiallyActiveTab.click();
+    $initiallyActiveTab.trigger("click");
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
     var $tabLink = $('.record-tabs .' + newTab.substr(1) + ' a');
     if ($tabLink.length > 0) {
-      $tabLink.click();
+      $tabLink.trigger("click");
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
         $('html, body').animate({
           scrollTop: $('.record-tabs').offset().top
@@ -312,7 +338,14 @@ function removeCheckRouteParam() {
 
 function recordDocReady() {
   removeCheckRouteParam();
-  $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
+  $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
+  $('.record-tabs .nav-tabs .initiallyActive').attr('aria-selected', 'true');
+  // update aria-selected attributes after a tab has been shown
+  $('.record-tabs .nav-tabs a').on('shown.bs.tab', function shownTab(e) {
+    $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
+    $(e.target).parent().attr('aria-selected', 'true');
+  });
+  $('.record-tabs .nav-tabs a').on('click', function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
     if ($li.hasClass('active')) {
@@ -355,6 +388,12 @@ function recordDocReady() {
     backgroundLoadTab(el.dataset.tab);
   });
 
+  VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
+  VuFind.truncate.initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
   applyRecordTabHash(false);
+}
+
+function addRecordRating() {
+  document.querySelector('.rating-average a').click();
 }

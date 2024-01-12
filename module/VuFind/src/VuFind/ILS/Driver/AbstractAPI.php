@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract Driver for API-based ILS drivers
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,15 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
-use VuFind\Exception\BadRequest;
-use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
+
+use function in_array;
+use function is_string;
 
 /**
  * Abstract Driver for API-based ILS drivers
@@ -44,7 +46,8 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInterface,
+abstract class AbstractAPI extends AbstractBase implements
+    HttpServiceAwareInterface,
     LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
@@ -93,17 +96,48 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     }
 
     /**
+     * Does $code match the setting for allowed failure codes?
+     *
+     * @param int               $code                Code to check.
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
+     *
+     * @return bool
+     */
+    protected function failureCodeIsAllowed(int $code, $allowedFailureCodes): bool
+    {
+        if ($allowedFailureCodes === true) {    // "allow everything" case
+            return true;
+        }
+        return is_string($allowedFailureCodes)
+            ? preg_match($allowedFailureCodes, (string)$code)
+            : in_array($code, (array)$allowedFailureCodes);
+    }
+
+    /**
      * Make requests
      *
-     * @param string $method  GET/POST/PUT/DELETE/etc
-     * @param string $path    API path (with a leading /)
-     * @param array  $params  Parameters object to be sent as data
-     * @param array  $headers Additional headers
+     * @param string            $method              GET/POST/PUT/DELETE/etc
+     * @param string            $path                API path (with a leading /)
+     * @param string|array      $params              Query parameters
+     * @param array             $headers             Additional headers
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
+     * @param string|array      $debugParams         Value to use in place of $params
+     * in debug messages (useful for concealing sensitive data, etc.)
      *
      * @return \Laminas\Http\Response
+     * @throws ILSException
      */
-    public function makeRequest($method = "GET", $path = "/", $params = [],
-        $headers = []
+    public function makeRequest(
+        $method = 'GET',
+        $path = '/',
+        $params = [],
+        $headers = [],
+        $allowedFailureCodes = [],
+        $debugParams = null
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -114,10 +148,10 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
         $req_headers->addHeaders($headers);
-        list($req_headers, $params) = $this->preRequest($req_headers, $params);
+        [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
-            $this->debugRequest($method, $path, $params, $req_headers);
+            $this->debugRequest($method, $path, $debugParams ?? $params, $req_headers);
         }
 
         // Add params
@@ -130,17 +164,42 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
                 $client->setParameterPost($params);
             }
         }
-        $response = $client->send();
-        switch ($response->getStatusCode()) {
-        case 400:
-            throw new BadRequest($response->getBody());
-        case 401:
-        case 403:
-            throw new Forbidden($response->getBody());
-        case 404:
-            throw new RecordMissing($response->getBody());
-        case 500:
-            throw new ILSException("500: Internal Server Error");
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . $e::class . ': ' . (string)$e);
+            throw new ILSException('Error during send operation.');
+        }
+        $code = $response->getStatusCode();
+        if (
+            !$response->isSuccess()
+            && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
+        ) {
+            $this->logError(
+                "Unexpected error response; code: $code, body: "
+                . $response->getBody()
+            );
+            throw new ILSException('Unexpected error code.');
+        }
+        if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
+            if (APPLICATION_ENV !== 'development') {
+                throw new \Exception(
+                    'SECURITY: json_log_file enabled outside of development mode'
+                );
+            }
+            $body = $response->getBody();
+            $jsonBody = @json_decode($body);
+            $json = file_exists($jsonLog)
+                ? json_decode(file_get_contents($jsonLog)) : [];
+            $json[] = [
+                'expectedMethod' => $method,
+                'expectedPath' => $path,
+                'expectedParams' => $params,
+                'body' => $jsonBody ? $jsonBody : $body,
+                'bodyType' => $jsonBody ? 'json' : 'string',
+                'code' => $code,
+            ];
+            file_put_contents($jsonLog, json_encode($json));
         }
         return $response;
     }

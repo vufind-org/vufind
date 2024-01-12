@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Minified Search Object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -22,9 +23,11 @@
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search;
 
 /**
@@ -47,6 +50,7 @@ namespace VuFind\Search;
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -74,14 +78,60 @@ class Minified
     public $hf = [];
 
     /**
-     * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
+     * Search ID
+     *
+     * @var int
      */
     public $id;
+
+    /**
+     * Search start time
+     *
+     * @var float
+     */
     public $i;
+
+    /**
+     * Search duration
+     *
+     * @var float
+     */
     public $s;
+
+    /**
+     * Total result count
+     *
+     * @var int
+     */
     public $r;
+
+    /**
+     * Search type
+     *
+     * @var string
+     */
     public $ty;
+
+    /**
+     * Search class
+     *
+     * @var string
+     */
     public $cl;
+
+    /**
+     * Extra data (not used by default)
+     *
+     * @var array
+     */
+    public $ex = [];
+
+    /**
+     * Search context parameters
+     *
+     * @var array
+     */
+    public $scp = [];
 
     /**
      * Constructor. Building minified object from the
@@ -109,6 +159,10 @@ class Minified
         //      it would be a nightmare to maintain.
         $this->f = $searchObject->getParams()->getRawFilters();
         $this->hf = $searchObject->getParams()->getHiddenFilters();
+
+        // Extra data has implementation-specific contents, store as is
+        $this->ex = $searchObject->getExtraData();
+        $this->setSearchContextParameters($searchObject);
     }
 
     /**
@@ -144,29 +198,44 @@ class Minified
         if (!isset($this->cl)) {
             $fixType = true;    // by default, assume we need to fix type
             switch ($this->ty) {
-            case 'Summon':
-            case 'SummonAdvanced':
-                $this->cl = 'Summon';
-                break;
-            case 'WorldCat':
-            case 'WorldCatAdvanced':
-                $this->cl = 'WorldCat';
-                break;
-            case 'Authority':
-            case 'AuthorityAdvanced':
-                $this->cl = 'SolrAuth';
-                break;
-            default:
-                $this->cl = 'Solr';
-                $fixType = false;
-                break;
+                case 'Summon':
+                case 'SummonAdvanced':
+                    $this->cl = 'Summon';
+                    break;
+                case 'WorldCat':
+                case 'WorldCatAdvanced':
+                    $this->cl = 'WorldCat';
+                    break;
+                case 'Authority':
+                case 'AuthorityAdvanced':
+                    $this->cl = 'SolrAuth';
+                    break;
+                default:
+                    $this->cl = 'Solr';
+                    $fixType = false;
+                    break;
             }
 
             // Now rewrite the type if necessary (only needed for legacy objects):
             if ($fixType) {
-                $this->ty = (substr($this->ty, -8) == 'Advanced')
-                    ? 'advanced' : 'basic';
+                $this->ty = str_ends_with($this->ty, 'Advanced') ? 'advanced' : 'basic';
             }
         }
+    }
+
+    /**
+     * Set search context parameters from the search object.
+     * Search context parameters contains i.e page number and results limit per page.
+     *
+     * @param object $searchObject Search Object to minify
+     *
+     * @return void
+     */
+    protected function setSearchContextParameters($searchObject): void
+    {
+        $this->scp = [
+            'page' => $searchObject->getParams()->getPage(),
+            'limit' => $searchObject->getParams()->getLimit(),
+        ];
     }
 }

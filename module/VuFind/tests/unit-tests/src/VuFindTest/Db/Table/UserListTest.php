@@ -1,8 +1,9 @@
 <?php
+
 /**
  * UserList Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Db\Table;
 
 use VuFind\Db\Row\User;
@@ -49,11 +51,11 @@ class UserListTest extends \PHPUnit\Framework\TestCase
     protected function getMockTable()
     {
         $table = $this->getMockBuilder(UserList::class)
-            ->setMethods(['createRow'])
+            ->onlyMethods(['createRow'])
             ->disableOriginalConstructor()->getMock();
-        $rowCallback = function () {
+        $rowCallback = function (): \VuFind\Db\Row\UserList {
             return $this->getMockBuilder(\VuFind\Db\Row\UserList::class)
-                ->setMethods(null)
+                ->onlyMethods([])
                 ->disableOriginalConstructor()->getMock();
         };
         $table->expects($this->any())->method('createRow')
@@ -69,7 +71,7 @@ class UserListTest extends \PHPUnit\Framework\TestCase
     protected function getMockUser()
     {
         $user = $this->getMockBuilder(User::class)
-            ->setMethods(null)
+            ->onlyMethods([])
             ->disableOriginalConstructor()->getMock();
         $user->id = '1234';
         return $user;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EuropeanaResults Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,9 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use Laminas\Feed\Reader\Reader as FeedReader;
+
+use function count;
+use function intval;
+use function is_object;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -42,8 +48,10 @@ use Laminas\Feed\Reader\Reader as FeedReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EuropeanaResults implements RecommendInterface,
-    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
+class EuropeanaResults implements
+    RecommendInterface,
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -151,7 +159,7 @@ class EuropeanaResults implements RecommendInterface,
         if (!empty($this->excludeProviders)) {
             $this->excludeProviders = explode(',', $this->excludeProviders);
         }
-        $this->searchSite = "Europeana.eu";
+        $this->searchSite = 'Europeana.eu';
     }
 
     /**
@@ -167,7 +175,7 @@ class EuropeanaResults implements RecommendInterface,
     protected function getURL($targetUrl, $requestParam, $excludeProviders)
     {
         // build url
-        $url = $targetUrl . "?" . $requestParam . "=" . $this->lookfor;
+        $url = $targetUrl . '?' . $requestParam . '=' . $this->lookfor;
         // add providers to ignore
         foreach ($excludeProviders as $provider) {
             $provider = trim($provider);
@@ -182,7 +190,8 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -204,12 +213,14 @@ class EuropeanaResults implements RecommendInterface,
         $this->sitePath = 'http://www.europeana.eu/portal/search.html?query=' .
             $this->lookfor;
         $this->targetUrl = $this->getURL(
-            'http://' . $this->baseUrl, $this->requestParam, $this->excludeProviders
+            'http://' . $this->baseUrl,
+            $this->requestParam,
+            $this->excludeProviders
         );
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -233,7 +244,7 @@ class EuropeanaResults implements RecommendInterface,
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
                     'link' => $link,
-                    'enclosure' => $value->getEnclosure()['url'] ?? null
+                    'enclosure' => $value->getEnclosure()['url'] ?? null,
                 ];
             }
             if (count($resultsProcessed) == $this->limit) {
@@ -245,7 +256,7 @@ class EuropeanaResults implements RecommendInterface,
             $this->results = [
                 'worksArray' => $resultsProcessed,
                 'feedTitle' => $this->searchSite,
-                'sourceLink' => $this->sitePath
+                'sourceLink' => $this->sitePath,
             ];
         } else {
             $this->results = false;

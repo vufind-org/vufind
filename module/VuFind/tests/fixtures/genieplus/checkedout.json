@@ -1,0 +1,41 @@
+{
+  "total": 2,
+  "records": [
+    {
+      "Inventory.Barcode": [
+        {
+          "display": "barcode1"
+        }
+      ],
+      "Inventory.Inventory@Catalog.UniqRecNum": [
+        {
+          "display": "id1"
+        }
+      ],
+      "ClaimDate": [
+        {
+          "display": "3/4/2022 11:59:59 PM"
+        }
+      ],
+      "_uri": "https://fakeuri1"
+    },
+    {
+      "Inventory.Barcode": [
+        {
+          "display": "barcode2"
+        }
+      ],
+      "Inventory.Inventory@Catalog.UniqRecNum": [
+        {
+          "display": "id2"
+        }
+      ],
+      "ClaimDate": [
+        {
+          "display": "3/4/2022 11:59:59 PM"
+        }
+      ],
+      "_uri": "https://fakeuri2"
+    }
+  ]
+}

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * PHP profiling support
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012-2017.
  * Copyright (C) The National Library of Finland 2017-2021.
@@ -58,7 +59,10 @@ function enableVuFindProfiling($profilerBaseUrl)
         header("X-VuFind-Profiler-Results: $profileUrl");
 
         // Handle final profiling details:
-        $shutdownFunc = function () use ($profileUrl, $xhprofRunId, $suffix,
+        $shutdownFunc = function () use (
+            $profileUrl,
+            $xhprofRunId,
+            $suffix,
             $profilerDisableFunc
         ) {
             $xhprofData = $profilerDisableFunc();
@@ -80,7 +84,7 @@ function enableVuFindProfiling($profilerBaseUrl)
             foreach (headers_list() as $header) {
                 $parts = explode(': ', $header, 2);
                 if (isset($parts[1]) && strtolower($parts[0]) === 'content-type') {
-                    list($contentType) = explode('; ', $parts[1]);
+                    [$contentType] = explode('; ', $parts[1]);
                     break;
                 }
             }

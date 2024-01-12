@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
+
+use function get_class;
 
 /**
  * ILS authentication module.
@@ -68,9 +72,9 @@ class ILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection    $connection    ILS connection to set
-     * @param \VuFind\ILS\Authenticator $authenticator ILS authenticator
-     * @param EmailAuthenticator        $emailAuth     Email authenticator
+     * @param \VuFind\ILS\Connection        $connection    ILS connection to set
+     * @param \VuFind\Auth\ILSAuthenticator $authenticator ILS authenticator
+     * @param EmailAuthenticator            $emailAuth     Email authenticator
      */
     public function __construct(
         \VuFind\ILS\Connection $connection,
@@ -106,7 +110,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -151,7 +155,10 @@ class ILS extends AbstractBase
             return parent::getPasswordPolicy();
         }
         if (isset($policy['pattern']) && empty($policy['hint'])) {
-            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+            $policy['hint'] = $this->getCannedPolicyHint(
+                'password',
+                $policy['pattern']
+            );
         }
         return $policy;
     }
@@ -185,7 +192,7 @@ class ILS extends AbstractBase
             [
                 'patron' => $patron,
                 'oldPassword' => $params['oldpwd'],
-                'newPassword' => $params['password']
+                'newPassword' => $params['password'],
             ]
         );
         if (!$result['success']) {
@@ -209,7 +216,8 @@ class ILS extends AbstractBase
     public function getILSLoginMethod($target = '')
     {
         $config = $this->getCatalog()->checkFunction(
-            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
+            'patronLogin',
+            ['patron' => ['cat_username' => "$target.login"]]
         );
         return $config['loginMethod'] ?? 'password';
     }

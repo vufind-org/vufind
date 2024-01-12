@@ -18,6 +18,10 @@ rem
 rem SOLR_PORT
 rem   Network port for Solr. Defaults to 8983.
 rem
+rem SOLR_SECURITY_MANAGER_ENABLED
+rem   Whether or not to enable the Java security manager (incompatible with
+rem   AlphaBrowse handler). Defaults to false.
+rem
 rem JAVA_HOME
 rem   Home of Java installation (not directly used by this script, but passed along to
 rem   the standard Solr control script).
@@ -82,6 +86,11 @@ rem Set SOLR_PORT
 if not "!%SOLR_PORT%!"=="!!" goto solrportset
 set SOLR_PORT=8983
 :solrportset
+
+rem Set SOLR_SECURITY_MANAGER_ENABLED
+if not "!%SOLR_SECURITY_MANAGER_ENABLED%!"=="!!" goto solrsecmanset
+set SOLR_SECURITY_MANAGER_ENABLED=false
+:solrsecmanset
 
 call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Ddisable.configEdit=true -Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
 goto end

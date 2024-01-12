@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Trait for view helpers that render a template based on a class name.
  *
  * Note: This trait is for view helpers only. It expects $this->getView() method to
  * be available.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  * Copyright (C) The National Library of Finland 2020.
@@ -30,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
@@ -67,8 +69,11 @@ trait ClassBasedTemplateRendererTrait
      *
      * @return string
      */
-    protected function resolveClassTemplate($template, $className,
-        ResolverInterface $resolver, $topClassName = null
+    protected function resolveClassTemplate(
+        $template,
+        $className,
+        ResolverInterface $resolver,
+        $topClassName = null
     ) {
         // If the template resolves, return it:
         $templateWithClass = $this->getTemplateWithClass($template, $className);
@@ -85,7 +90,10 @@ trait ClassBasedTemplateRendererTrait
 
         // Recurse until we find a template or run out of parents...
         return $this->resolveClassTemplate(
-            $template, $parentClass, $resolver, $topClassName ?? $className
+            $template,
+            $parentClass,
+            $resolver,
+            $topClassName ?? $className
         );
     }
 
@@ -102,7 +110,10 @@ trait ClassBasedTemplateRendererTrait
      * @return string
      * @throws RuntimeException
      */
-    protected function renderClassTemplate($template, $className, $context = [],
+    protected function renderClassTemplate(
+        $template,
+        $className,
+        $context = [],
         $throw = true
     ) {
         // Set up the needed context in the view:
@@ -141,7 +152,9 @@ trait ClassBasedTemplateRendererTrait
         if (!isset($this->templateCache[$className][$template])) {
             $this->templateCache[$className][$template]
                 = $this->resolveClassTemplate(
-                    $template, $className, $this->getView()->resolver()
+                    $template,
+                    $className,
+                    $this->getView()->resolver()
                 );
         }
         return $this->templateCache[$className][$template];
@@ -168,7 +181,9 @@ trait ClassBasedTemplateRendererTrait
      *
      * @return string
      */
-    protected function getTemplateWithClass(string $template, string $className
+    protected function getTemplateWithClass(
+        string $template,
+        string $className
     ): string {
         return sprintf($template, $this->getBriefClass($className));
     }

@@ -1,4 +1,5 @@
 <?php
+
 return [
     'extends' => false,
     'js' => ['hello.js'],
@@ -6,6 +7,7 @@ return [
         'factories' => [
             'foo' => 'fooFactory',
             'bar' => 'barFactory',
-        ]
+        ],
     ],
+    'doctype' => 'HTML5',
 ];

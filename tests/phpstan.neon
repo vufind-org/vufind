@@ -1,0 +1,17 @@
+parameters:
+    paths:
+        - %currentWorkingDirectory%/module
+    excludePaths:
+        analyse:
+              # Analysis would crash on PHP 8 due to a signature change in PDO
+            - %currentWorkingDirectory%/module/VuFind/src/VuFind/ILS/Driver/Voyager.php
+    tmpDir: %currentWorkingDirectory%/.phpstan_cache
+    ignoreErrors:
+        - '#Class VuFind\\Hierarchy\\Driver\\Hierarchy[a-zA-Z0-9]+ not found#'
+        - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\SyndeticsPlus not found#'
+        - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\Amazon[a-zA-Z0-9]* not found#'
+    bootstrapFiles:
+        - phpstan-constants.php
+    level: 1
+    parallel:
+        processTimeout: 600.0

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr autocomplete test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Autocomplete;
 
 use VuFind\Autocomplete\Solr;
@@ -62,7 +64,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getOptions'])
+            ->onlyMethods(['getOptions'])
             ->getMock();
         $results->expects($this->any())->method('getOptions')
             ->will($this->returnValue($this->getMockOptions()));
@@ -78,7 +80,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $rpm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->onlyMethods(['get'])
             ->getMock();
         $rpm->expects($this->any())->method('get')
             ->will($this->returnValue($this->getMockResults()));

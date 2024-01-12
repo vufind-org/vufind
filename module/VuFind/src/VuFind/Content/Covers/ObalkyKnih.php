@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class ObalkyKnih
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\Content\Covers;
 
 use VuFind\Content\ObalkyKnihService;
@@ -63,8 +65,11 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
         $this->supportsOclc = true;
         $this->supportsUpc = true;
         $this->supportsNbn = true;
+        $this->supportsRecordid = true;
+        $this->supportsUuid = true;
         $this->cacheAllowed = false;
         $this->directUrls = true;
+        $this->mandatoryBacklinkLocations = ['core'];
 
         $this->service = $service;
     }
@@ -88,19 +93,44 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
             return false;
         }
         switch ($size) {
-        case 'small':
-            $imageUrl = $data->cover_icon_url ?? false;
-            break;
-        case 'medium':
-            $imageUrl = $data->cover_medium_url ?? false;
-            break;
-        case 'large':
-            $imageUrl = $data->cover_preview510_url ?? false;
-            break;
-        default:
-            $imageUrl = $data->cover_medium_url ?? false;
-            break;
+            case 'small':
+                $imageUrl = $data->cover_icon_url ?? false;
+                break;
+            case 'medium':
+                $imageUrl = $data->cover_medium_url ?? false;
+                break;
+            case 'large':
+                $imageUrl = $data->cover_preview510_url ?? false;
+                break;
+            default:
+                $imageUrl = $data->cover_medium_url ?? false;
+                break;
         }
         return $imageUrl;
+    }
+
+    /**
+     * Get cover metadata for a particular API key and set of IDs (or empty array).
+     *
+     * @param string $key  API key
+     * @param string $size Size of image to load (small/medium/large)
+     * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object, 'issn' pointing to a string and 'oclc' pointing
+     * to an OCLC number string)
+     *
+     * @return array Array with keys: url, backlink_url, backlink_text
+     */
+    public function getMetadata(?string $key, string $size, array $ids)
+    {
+        $url = $this->getUrl($key, $size, $ids);
+        if ($url) {
+            $data = $this->service->getData($ids);
+            return [
+                'url' => $url,
+                'backlink_url' => $data->backlink_url ?? '',
+                'backlink_text' => 'ObálkyKnih.cz',
+            ];
+        }
+        return [];
     }
 }

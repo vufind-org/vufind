@@ -3,7 +3,7 @@
 /**
  * Unit tests for BrowZine backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\BrowZine;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -172,7 +173,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\BrowZine\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs([$client, 'faketoken', 'fakeid'])
             ->getMock();
     }

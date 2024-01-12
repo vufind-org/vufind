@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Class to represent currently-selected theme and related information.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
+
+use Laminas\Cache\Storage\StorageInterface;
+
+use function array_key_exists;
+use function is_array;
+use function is_string;
+use function strlen;
 
 /**
  * Class to represent currently-selected theme and related information.
@@ -61,14 +70,21 @@ class ThemeInfo
     protected $safeTheme;
 
     /**
-     * Theme configuration
+     * Theme configuration cache
      *
      * @var array
      */
     protected $allThemeInfo = null;
 
+    /**
+     * Cache for merged configs
+     *
+     * @var StorageInterface
+     */
+    protected $cache = null;
+
     // Constant for use with findContainingTheme:
-    const RETURN_ALL_DETAILS = 'all';
+    public const RETURN_ALL_DETAILS = 'all';
 
     /**
      * Constructor
@@ -80,6 +96,18 @@ class ThemeInfo
     {
         $this->baseDir = $baseDir;
         $this->currentTheme = $this->safeTheme = $safeTheme;
+    }
+
+    /**
+     * Provide cache and activate info caching
+     *
+     * @param StorageInterface $cache cache object
+     *
+     * @return void
+     */
+    public function setCache(StorageInterface $cache)
+    {
+        $this->cache = $cache;
     }
 
     /**
@@ -176,7 +204,7 @@ class ThemeInfo
     public function getThemeInfo()
     {
         // Fill in the theme info cache if it is not already populated:
-        if (null === $this->allThemeInfo) {
+        if ($this->allThemeInfo === null) {
             // Build an array of theme information by inheriting up the theme tree:
             $this->allThemeInfo = [];
             $currentTheme = $this->getTheme();
@@ -190,14 +218,138 @@ class ThemeInfo
     }
 
     /**
-     * Search the themes for a particular file.  If it exists, return the
+     * Determine if a variable is a string-keyed array
+     *
+     * @param mixed $op Variable to test
+     *
+     * @return boolean
+     */
+    protected function isStringKeyedArray($op)
+    {
+        if (!is_array($op)) {
+            return false;
+        }
+
+        reset($op);
+        return is_string(key($op));
+    }
+
+    /**
+     * Add parent theme information to a collection of merged theme info.
+     * Using the string-keyed array format of theme config info,
+     * recursively walk the array, capturing unique or missing values.
+     *
+     * @param array|string $children Merged theme info, overrides parent theme
+     * @param array|string $parent   Theme info to be merged
+     *
+     * @return array|string merged theme info, favoring child themes (merged)
+     */
+    protected function mergeWithoutOverride($children, $parent)
+    {
+        if (empty($children)) {
+            return $parent;
+        }
+
+        // Early escape for string, number, etc. values
+        if (!is_array($children) && !is_array($parent)) {
+            return $children;
+        }
+
+        if ($this->isStringKeyedArray($children)) {
+            if (!$this->isStringKeyedArray($parent)) {
+                // don't override if incompatible
+                return $children;
+            }
+
+            foreach ($parent as $key => $val) {
+                if (!array_key_exists($key, $children)) {
+                    // capture missing string keys
+                    $children[$key] = $val;
+                } elseif ($this->isStringKeyedArray($val)) {
+                    // recurse
+                    $children[$key]
+                        = $this->mergeWithoutOverride($children[$key], $val);
+                } elseif (is_array($val)) {
+                    // capture unique or missing array items
+                    $children[$key] = array_merge($val, (array)$children[$key]);
+                } elseif (is_array($children[$key])) {
+                    // string -> array
+                    $children[$key] = array_merge((array)$val, $children[$key]);
+                }
+            }
+
+            return $children;
+        }
+
+        // capture unique or missing array items
+        return array_merge((array)$parent, (array)$children);
+    }
+
+    /**
+     * Get a configuration element, merged to reflect theme inheritance.
+     *
+     * @param string $key Configuration key to retrieve (or empty string to
+     * retrieve full configuration)
+     *
+     * @return array|string
+     */
+    public function getMergedConfig(string $key = '')
+    {
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
+
+        $cacheKey = $currentTheme . '_' . $key;
+
+        if ($this->cache !== null) {
+            $cached = $this->cache->getItem($cacheKey);
+
+            if ($cached !== null) {
+                return $cached;
+            }
+        }
+
+        $merged = [];
+
+        while (!empty($currentTheme)) {
+            $currentThemeSet = array_merge(
+                (array)$currentTheme,
+                $allThemeInfo[$currentTheme]['mixins'] ?? [],
+            );
+
+            // from child to parent
+            foreach ($currentThemeSet as $theme) {
+                if (
+                    isset($allThemeInfo[$theme])
+                    && (empty($key) || isset($allThemeInfo[$theme][$key]))
+                ) {
+                    $current = empty($key)
+                        ? $allThemeInfo[$theme]
+                        : $allThemeInfo[$theme][$key];
+
+                    $merged = $this->mergeWithoutOverride($merged, $current);
+                }
+            }
+
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
+        }
+
+        if ($this->cache !== null) {
+            $this->cache->setItem($cacheKey, $merged);
+        }
+
+        return $merged;
+    }
+
+    /**
+     * Search the themes for a particular file. If it exists, return the
      * first matching theme name; otherwise, return null.
      *
      * @param string|array $relativePath Relative path (or array of paths) to
      * search within themes
      * @param string|bool  $returnType   If boolean true, return full file path;
      * if boolean false, return containing theme name; if self::RETURN_ALL_DETAILS,
-     * return an array containing both values (keyed with 'path' and 'theme').
+     * return an array containing both values (keyed with 'path', 'theme' and
+     * 'relativePath').
      *
      * @return string|array|null
      */
@@ -221,7 +373,8 @@ class ThemeInfo
                     if (file_exists($path)) {
                         // Depending on return type, send back the requested data:
                         if (self::RETURN_ALL_DETAILS === $returnType) {
-                            return compact('path', 'theme');
+                            $relativePath = $currentPath;
+                            return compact('path', 'theme', 'relativePath');
                         }
                         return $returnType ? $path : $theme;
                     }
@@ -231,5 +384,57 @@ class ThemeInfo
         }
 
         return null;
+    }
+
+    /**
+     * Search the themes for a file pattern. Returns all matching files.
+     *
+     * Note that for any matching file the last match in the theme hierarchy is
+     * returned.
+     *
+     * @param string|array $relativePathPattern Relative path pattern (or array of
+     * patterns) to search within themes
+     *
+     * @return array
+     */
+    public function findInThemes($relativePathPattern)
+    {
+        $basePath = $this->getBaseDir();
+        $allPaths = (array)$relativePathPattern;
+
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
+
+        $allThemes = [];
+        while (!empty($currentTheme)) {
+            $allThemes = array_merge(
+                $allThemes,
+                (array)$currentTheme,
+                $allThemeInfo[$currentTheme]['mixins'] ?? []
+            );
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
+        }
+
+        // Start from the base theme so that we can find any overrides properly
+        $allThemes = array_reverse($allThemes);
+        $results = [];
+        foreach ($allThemes as $theme) {
+            $themePath = "$basePath/$theme/";
+            foreach ($allPaths as $currentPath) {
+                $path = $themePath . $currentPath;
+                foreach (glob($path) as $file) {
+                    if (filetype($file) === 'dir') {
+                        continue;
+                    }
+                    $relativeFile = substr($file, strlen($themePath));
+                    $results[$relativeFile] = [
+                        'theme' => $theme,
+                        'file' => $file,
+                        'relativeFile' => $relativeFile,
+                    ];
+                }
+            }
+        }
+        return array_values($results);
     }
 }

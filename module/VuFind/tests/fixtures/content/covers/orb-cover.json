@@ -1,0 +1,17 @@
+{
+    "data": [
+        {
+            "ean13": "9781612917986",
+            "images": {
+                "front": {
+                    "thumbnail": {
+                        "src": "http://bar/small"
+                    },
+                    "original": {
+                        "src": "http://bar/big"
+                    }
+                }
+            }
+        }
+    ]
+}

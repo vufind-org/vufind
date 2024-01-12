@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Autocomplete handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
+
 namespace VuFind\Autocomplete;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -48,7 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'none' => None::class,
         'eds' => Eds::class,
-        'oclcidentities' => OCLCIdentities::class,
+        'oclcidentities' => None::class,
         'search2' => Search2::class,
         'search2cn' => Search2CN::class,
         'solr' => Solr::class,
@@ -56,9 +58,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrcn' => SolrCN::class,
         'solrreserves' => SolrReserves::class,
         'tag' => Tag::class,
+        'solrprefix' => SolrPrefix::class,
         // for legacy 1.x compatibility
         'noautocomplete' => 'None',
-        'oclcidentitiesautocomplete' => 'OCLCIdentities',
+        'oclcidentitiesautocomplete' => 'None',
         'solrautocomplete' => 'Solr',
         'solrauthautocomplete' => 'SolrAuth',
         'solrcnautocomplete' => 'SolrCN',
@@ -74,7 +77,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         None::class => InvokableFactory::class,
         Eds::class => EdsFactory::class,
-        OCLCIdentities::class => InvokableFactory::class,
         Search2::class => SolrFactory::class,
         Search2CN::class => SolrFactory::class,
         Solr::class => SolrFactory::class,
@@ -82,6 +84,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrCN::class => SolrFactory::class,
         SolrReserves::class => SolrFactory::class,
         Tag::class => InvokableFactory::class,
+        SolrPrefix::class => SolrFactory::class,
     ];
 
     /**
@@ -93,7 +96,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

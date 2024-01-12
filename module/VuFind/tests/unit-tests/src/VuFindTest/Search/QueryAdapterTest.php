@@ -3,7 +3,7 @@
 /**
  * QueryAdapter unit tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
 use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * QueryAdapter unit tests.
@@ -45,23 +48,45 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Data provider for testConversions
+     *
+     * @return array
+     */
+    public function conversionsProvider(): array
+    {
+        return [
+            ['basic', true],
+            ['advanced', true],
+            ['workkeys', false],
+        ];
+    }
+
+    /**
      * Test various conversions.
+     *
+     * @param string $type   Search type
+     * @param bool   $legacy Whether to test legacy version deminification
+     *
+     * @dataProvider conversionsProvider
      *
      * @return void
      */
-    public function testConversions()
+    public function testConversions(string $type, bool $legacy)
     {
-        $cases = ['basic', 'advanced'];
-        foreach ($cases as $case) {
-            // Load minified, unminified, and Query object data:
-            $min = unserialize($this->getFixture('searches/' . $case . '/min'));
-            $q = unserialize($this->getFixture('searches/' . $case . '/query'));
+        // Load minified, unminified, and Query object data:
+        $min = unserialize($this->getFixture('searches/' . $type . '/min'));
+        $q = unserialize($this->getFixture('searches/' . $type . '/query'));
 
-            // Test conversion of minified data:
-            $this->assertEquals($q, QueryAdapter::deminify($min));
+        // Test conversion of minified data:
+        $this->assertEquals($q, QueryAdapter::deminify($min));
 
-            // Test minification of a Query:
-            $this->assertEquals($min, QueryAdapter::minify($q));
+        // Test minification of a Query:
+        $this->assertEquals($min, QueryAdapter::minify($q));
+
+        if ($legacy) {
+            // Test conversion of legacy minified data:
+            $legacyMin = unserialize($this->getFixture('searches/' . $type . '/min-legacy'));
+            $this->assertEquals($q, QueryAdapter::deminify($legacyMin));
         }
     }
 
@@ -127,7 +152,8 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
         // Array of fixture directory => expected display query
         $cases = [
             'basic' => 'john smith',
-            'advanced' => '(CallNumber:oranges AND toc:bananas AND ISN:pears) OR (Title:cars OR Subject:trucks) NOT ((AllFields:squid))'
+            'advanced' => '(CallNumber:oranges AND toc:bananas AND ISN:pears) OR '
+                . '(Title:cars OR Subject:trucks) NOT ((AllFields:squid))',
         ];
 
         // Create simple closure to fill in for translation callbacks:

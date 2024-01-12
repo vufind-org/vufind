@@ -3,7 +3,7 @@
 /**
  * Unit tests for spelling processor.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\Config\Config;
@@ -180,7 +181,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -241,7 +244,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery6Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery6Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -297,7 +302,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $sp->processSuggestions(
-                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+                $this->getExpectedQuery1Suggestions(),
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -357,8 +364,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                             'freq' => 5735,
                             'new_term' => 'make',
                             'expand_term' => '(lake OR make)',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'geneve' => [
                     'freq' => 662,
@@ -367,9 +374,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                             'freq' => 1170,
                             'new_term' => 'geneva',
                             'expand_term' => '(geneve OR geneva)',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]
         );
     }
@@ -419,18 +426,18 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                     'suggestions' => [
                         '12345678' => [
                             'freq' => 1,
-                            'new_term' => '12345678'
-                        ]
-                    ]
+                            'new_term' => '12345678',
+                        ],
+                    ],
                 ],
                 'sqid' => [
                     'freq' => 0,
                     'suggestions' => [
                         'squid' => [
                             'freq' => 34,
-                            'new_term' => 'squid'
-                        ]
-                    ]
+                            'new_term' => 'squid',
+                        ],
+                    ],
                 ],
             ],
             ['limit' => 1, 'skip_numeric' => false, 'expand' => false]
@@ -452,9 +459,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                     'suggestions' => [
                         'squid' => [
                             'freq' => 34,
-                            'new_term' => 'squid'
-                        ]
-                    ]
+                            'new_term' => 'squid',
+                        ],
+                    ],
                 ],
             ],
             ['limit' => 1, 'skip_numeric' => true, 'expand' => false]
@@ -497,7 +504,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             $expected,
             $sp->processSuggestions(
-                $suggestions, $spelling->getQuery(), $params
+                $suggestions,
+                $spelling->getQuery(),
+                $params
             )
         );
     }
@@ -523,7 +532,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
-                    'grimsley' => 24
+                    'grimsley' => 24,
                 ],
             ],
         ];
@@ -550,7 +559,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
-                    'grimsley' => 24
+                    'grimsley' => 24,
                 ],
             ],
         ];
@@ -558,6 +567,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a fixture object
+     *
+     * @param string $file Name of fixture file
      *
      * @return mixed
      */

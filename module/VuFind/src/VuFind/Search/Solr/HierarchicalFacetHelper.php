@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Facet Helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014.
  *
@@ -22,15 +23,27 @@
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\I18n\HasSorterInterface;
+use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Search\Base\HierarchicalFacetHelperInterface;
+use VuFind\Search\Base\Options;
 use VuFind\Search\UrlQueryHelper;
+
+use function array_slice;
+use function count;
+use function is_string;
+use function strlen;
 
 /**
  * Functions for manipulating facets
@@ -38,12 +51,36 @@ use VuFind\Search\UrlQueryHelper;
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HierarchicalFacetHelper implements TranslatorAwareInterface
+class HierarchicalFacetHelper implements
+    HierarchicalFacetHelperInterface,
+    TranslatorAwareInterface,
+    HasSorterInterface
 {
     use TranslatorAwareTrait;
+    use HasSorterTrait;
+
+    /**
+     * View renderer
+     *
+     * @var RendererInterface
+     */
+    protected $viewRenderer = null;
+
+    /**
+     * Set view renderer
+     *
+     * @param RendererInterface $renderer View renderer
+     *
+     * @return void
+     */
+    public function setViewRenderer(RendererInterface $renderer): void
+    {
+        $this->viewRenderer = $renderer;
+    }
 
     /**
      * Helper method for building hierarchical facets:
@@ -66,26 +103,26 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
         $topLevel = $order ?? 'count';
         if (is_string($topLevel)) {
             switch (strtolower(trim($topLevel))) {
-            case 'top':
-                $topLevel = true;
-                break;
-            case 'all':
-                $topLevel = false;
-                break;
-            case '':
-            case 'count':
-                // At present, we assume the incoming list is already sorted by
-                // count, so no further action is needed. If in future we need
-                // to support re-sorting an arbitrary list, rather than simply
-                // operating on raw Solr values, we may need to implement logic.
-                return;
+                case 'top':
+                    $topLevel = true;
+                    break;
+                case 'all':
+                    $topLevel = false;
+                    break;
+                case '':
+                case 'count':
+                    // At present, we assume the incoming list is already sorted by
+                    // count, so no further action is needed. If in future we need
+                    // to support re-sorting an arbitrary list, rather than simply
+                    // operating on raw Solr values, we may need to implement logic.
+                    return;
             }
         }
 
         // Parse level from each facet value so that the sort function
         // can run faster
         foreach ($facetList as &$facetItem) {
-            list($facetItem['level']) = explode('/', $facetItem['value'], 2);
+            [$facetItem['level']] = explode('/', $facetItem['value'], 2);
             if (!is_numeric($facetItem['level'])) {
                 $facetItem['level'] = 0;
             }
@@ -100,7 +137,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
                 $bText = $b['displayText'] == $b['value']
                     ? $this->formatDisplayText($b['displayText'])
                     : $b['displayText'];
-                return strcasecmp($aText, $bText);
+                return $this->getSorter()->compare($aText, $bText);
             }
             return $a['level'] == $b['level']
                 ? $b['count'] - $a['count']
@@ -124,14 +161,20 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
      * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
      * Based on this example
      */
-    public function buildFacetArray($facet, $facetList, $urlHelper = false,
+    public function buildFacetArray(
+        $facet,
+        $facetList,
+        $urlHelper = false,
         $escape = true
     ) {
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $escape
+                $facet,
+                $item,
+                $urlHelper,
+                $escape
             );
         }
 
@@ -169,7 +212,8 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
             $results[] = $facetItem;
             if ($children) {
                 $results = array_merge(
-                    $results, $this->flattenFacetHierarchy($children)
+                    $results,
+                    $this->flattenFacetHierarchy($children)
                 );
             }
         }
@@ -189,7 +233,9 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
      * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
-        $displayText, $allLevels = false, $separator = '/',
+        $displayText,
+        $allLevels = false,
+        $separator = '/',
         $domain = false
     ) {
         $originalText = $displayText;
@@ -290,11 +336,15 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
         if ($urlHelper !== false) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
-                    $facet, $item['value'], $item['operator']
+                    $facet,
+                    $item['value'],
+                    $item['operator']
                 )->getParams($escape);
             } else {
                 $href = $urlHelper->addFacet(
-                    $facet, $item['value'], $item['operator']
+                    $facet,
+                    $item['value'],
+                    $item['operator']
                 )->getParams($escape);
             }
             $exclude = $urlHelper->addFacet($facet, $item['value'], 'NOT')
@@ -356,5 +406,73 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
             }
         }
         return $result;
+    }
+
+    /**
+     * Filter hierarchical facets
+     *
+     * @param string  $name    Facet name
+     * @param array   $facets  Facet list
+     * @param Options $options Options
+     *
+     * @return array
+     */
+    public function filterFacets($name, $facets, $options): array
+    {
+        $filters = $options->getHierarchicalFacetFilters($name);
+        $excludeFilters = $options->getHierarchicalExcludeFilters($name);
+
+        if (!$filters && !$excludeFilters) {
+            return $facets;
+        }
+
+        if ($filters) {
+            foreach ($facets as $key => &$facet) {
+                $value = $facet['value'];
+                [$level] = explode('/', $value);
+                $match = false;
+                $levelSpecified = false;
+                foreach ($filters as $filterItem) {
+                    [$filterLevel] = explode('/', $filterItem);
+                    if ($level === $filterLevel) {
+                        $levelSpecified = true;
+                    }
+                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                        $match = true;
+                    }
+                }
+                if (!$match && $levelSpecified) {
+                    unset($facets[$key]);
+                } elseif (!empty($facet['children'])) {
+                    $facet['children'] = $this->filterFacets(
+                        $name,
+                        $facet['children'],
+                        $options
+                    );
+                }
+            }
+        }
+
+        if ($excludeFilters) {
+            foreach ($facets as $key => &$facet) {
+                $value = $facet['value'];
+                $match = false;
+                foreach ($excludeFilters as $filterItem) {
+                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                        unset($facets[$key]);
+                        continue 2;
+                    }
+                }
+                if (!empty($facet['children'])) {
+                    $facet['children'] = $this->filterFacets(
+                        $name,
+                        $facet['children'],
+                        $options
+                    );
+                }
+            }
+        }
+
+        return array_values($facets);
     }
 }

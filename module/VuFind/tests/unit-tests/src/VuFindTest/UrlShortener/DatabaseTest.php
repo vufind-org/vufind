@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Database" URL shortener test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\UrlShortener;
 
 use Exception;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Laminas\Db\Adapter\Driver\DriverInterface;
-use Laminas\Db\ResultSet;
+use Laminas\Db\ResultSet\ResultSet;
 use PHPUnit\Framework\TestCase;
 use VuFind\Db\Table\Shortlinks;
 use VuFind\UrlShortener\Database;
@@ -51,7 +53,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the object to test.
      *
-     * @param  object $table Database table object/mock
+     * @param object $table Database table object/mock
      *
      * @return Database
      */
@@ -63,7 +65,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the mock table object.
      *
-     * @param  array $methods Methods to mock.
+     * @param array $methods Methods to mock.
      *
      * @return object
      */
@@ -71,7 +73,7 @@ class DatabaseTest extends TestCase
     {
         return $this->getMockBuilder(Shortlinks::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -85,29 +87,29 @@ class DatabaseTest extends TestCase
     public function testShortener()
     {
         $connection = $this->getMockBuilder(ConnectionInterface::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'beginTransaction', 'commit', 'connect', 'getResource',
                     'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
-                    'execute', 'getLastGeneratedValue'
+                    'execute', 'getLastGeneratedValue',
                 ]
             )->disableOriginalConstructor()
             ->getMock();
         $connection->expects($this->once())->method('beginTransaction');
         $connection->expects($this->once())->method('commit');
         $driver = $this->getMockBuilder(DriverInterface::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
                     'createStatement', 'createResult', 'getPrepareType',
-                    'formatParameterName', 'getLastGeneratedValue'
+                    'formatParameterName', 'getLastGeneratedValue',
                 ]
             )->disableOriginalConstructor()
             ->getMock();
         $driver->expects($this->once())->method('getConnection')
             ->will($this->returnValue($connection));
         $adapter = $this->getMockBuilder(Adapter::class)
-            ->setMethods(['getDriver'])
+            ->onlyMethods(['getDriver'])
             ->disableOriginalConstructor()
             ->getMock();
         $adapter->expects($this->once())->method('getDriver')
@@ -118,7 +120,7 @@ class DatabaseTest extends TestCase
         $table->expects($this->once())->method('getAdapter')
             ->will($this->returnValue($adapter));
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count', 'current'])
+            ->onlyMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
@@ -141,7 +143,7 @@ class DatabaseTest extends TestCase
     {
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count', 'current'])
+            ->onlyMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
@@ -168,7 +170,7 @@ class DatabaseTest extends TestCase
 
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count'])
+            ->onlyMethods(['count'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
@@ -191,7 +193,7 @@ class DatabaseTest extends TestCase
     {
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->setMethods(['count', 'current'])
+            ->onlyMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')

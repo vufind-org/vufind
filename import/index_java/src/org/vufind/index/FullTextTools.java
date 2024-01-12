@@ -20,8 +20,6 @@ package org.vufind.index;
 
 import org.marc4j.marc.Record;
 import java.io.*;
-import java.util.Iterator;
-import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -100,17 +98,13 @@ public class FullTextTools
         }
 
         // Loop through the specified MARC fields:
-        Set<String> fields = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> fieldsIter = fields.iterator();
-        if (fields != null) {
-            while(fieldsIter.hasNext()) {
-                // Get the current string to work on (and sanitize spaces):
-                String current = fieldsIter.next().replaceAll(" ", "%20");
-                // Filter by file extension
-                if (extension == null || current.endsWith(extension)) {
-                    // Load the parser output for each tag into a string
-                    result = result + harvestWithParser(current, parserSettings);
-                }
+        for (String raw : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
+            // Get the current string to work on (and sanitize spaces):
+            String current = raw.replaceAll(" ", "%20");
+            // Filter by file extension
+            if (extension == null || current.endsWith(extension)) {
+                // Load the parser output for each tag into a string
+                result = result + harvestWithParser(current, parserSettings);
             }
         }
         // return string to SolrMarc

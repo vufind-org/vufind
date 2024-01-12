@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Redis Session Handler Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Session;
 
 use VuFind\Session\Redis;
@@ -48,7 +50,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testRead()
     {
         $client = $this->getMockBuilder(\Credis_Client::class)
-            ->setMethods(['get'])
+            ->addMethods(['get'])   // mocking __call
             ->getMock();
         $client->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
@@ -65,7 +67,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testWrite()
     {
         $client = $this->getMockBuilder(\Credis_Client::class)
-            ->setMethods(['setex'])
+            ->addMethods(['setex']) // mocking __call
             ->getMock();
         $client->expects($this->once())->method('setex')
             ->with(
@@ -86,7 +88,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testDestroyDefault()
     {
         $client = $this->getMockBuilder(\Credis_Client::class)
-            ->setMethods(['del'])
+            ->addMethods(['del'])   // mocking __call
             ->getMock();
         $client->expects($this->once())->method('del')
             ->with($this->equalTo('vufind_sessions/foo'))
@@ -105,7 +107,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testDestroyNewRedis()
     {
         $client = $this->getMockBuilder(\Credis_Client::class)
-            ->setMethods(['unlink'])
+            ->addMethods(['unlink']) // mocking __call
             ->getMock();
         $client->expects($this->once())->method('unlink')
             ->with($this->equalTo('vufind_sessions/foo'))

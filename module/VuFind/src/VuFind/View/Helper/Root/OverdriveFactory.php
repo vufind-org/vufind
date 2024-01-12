@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Overdrive helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -27,13 +28,14 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Overdrive helper factory.
@@ -59,25 +61,26 @@ class OverdriveFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
-        ContainerInterface $container, $requestedName,
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
         // Only load the connector if we need to show
-        $config = $container->get('VuFind\Config\PluginManager')->get(
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get(
             'Overdrive'
         );
         $connector = null;
         $showMyContent = $config->Overdrive->showMyContent;
         $showAdmin = $config->Overdrive->showOverdriveAdminMenu;
-        if ($showAdmin || $showMyContent != "never") {
+        if ($showAdmin || $showMyContent != 'never') {
             $connector = $container->get(
-                'VuFind\DigitalContent\OverdriveConnector'
+                \VuFind\DigitalContent\OverdriveConnector::class
             );
         }
         return new $requestedName($connector);

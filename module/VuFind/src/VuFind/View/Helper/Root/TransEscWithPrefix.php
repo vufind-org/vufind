@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Translate with prefix + escape view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2019.
@@ -27,7 +28,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
+
+use Laminas\View\Helper\AbstractHelper;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Translate with prefix + escape view helper
@@ -41,27 +46,29 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscWithPrefix extends \Laminas\View\Helper\AbstractHelper
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Translate and escape a location
+     * Translate and escape a value while applying a prefix
      *
-     * @param string        $prefix  Translation key prefix
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param string              $prefix          Translation key prefix
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
      *
      * @return string
      */
-    public function __invoke($prefix, $str, $tokens = [], $default = null)
+    public function __invoke($prefix, $str, $tokens = [], $default = null, $useIcuFormatter = false)
     {
         $escaper = $this->getView()->plugin('escapeHtml');
         return $escaper(
-            $this->translateWithPrefix($prefix, $str, $tokens, $default)
+            $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter)
         );
     }
 }

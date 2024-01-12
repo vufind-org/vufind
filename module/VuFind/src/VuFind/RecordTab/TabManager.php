@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record tab manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+
+use function in_array;
 
 /**
  * Record tab manager
@@ -101,7 +105,9 @@ class TabManager
      * @param array         $legacyConfig Overall framework configuration (only
      * used for legacy config loading; optional)
      */
-    public function __construct(PluginManager $pm, ConfigManager $cm,
+    public function __construct(
+        PluginManager $pm,
+        ConfigManager $cm,
         $legacyConfig = []
     ) {
         $this->pluginManager = $pm;
@@ -158,13 +164,15 @@ class TabManager
      *
      * @return mixed
      */
-    protected function getConfigByClass(AbstractRecordDriver $driver,
-        $setting, $default
+    protected function getConfigByClass(
+        AbstractRecordDriver $driver,
+        $setting,
+        $default
     ) {
         // Get the current record driver's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // setting.
-        $className = get_class($driver);
+        $className = $driver::class;
         do {
             if (isset($this->config[$this->context][$className][$setting])) {
                 return $this->config[$this->context][$className][$setting];
@@ -222,8 +230,10 @@ class TabManager
      *
      * @return string
      */
-    public function getDefaultTabForRecord(AbstractRecordDriver $driver,
-        array $tabs, $fallback = null
+    public function getDefaultTabForRecord(
+        AbstractRecordDriver $driver,
+        array $tabs,
+        $fallback = null
     ) {
         // Load default from module configuration:
         $default = $this->getConfigByClass($driver, 'defaultTab', null);
@@ -254,8 +264,10 @@ class TabManager
      *
      * @return array
      */
-    public function getTabDetailsForRecord(AbstractRecordDriver $driver,
-        $request = null, $fallback = null
+    public function getTabDetailsForRecord(
+        AbstractRecordDriver $driver,
+        $request = null,
+        $fallback = null
     ) {
         $tabs = $this->getTabsForRecord($driver, $request);
         $default = $this->getDefaultTabForRecord($driver, $tabs, $fallback);
@@ -270,7 +282,8 @@ class TabManager
      *
      * @return array               service name => tab object
      */
-    public function getTabsForRecord(AbstractRecordDriver $driver,
+    public function getTabsForRecord(
+        AbstractRecordDriver $driver,
         $request = null
     ) {
         $tabs = [];
@@ -282,7 +295,8 @@ class TabManager
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
-            if ($request instanceof \Laminas\Http\Request
+            if (
+                $request instanceof \Laminas\Http\Request
                 && method_exists($newTab, 'setRequest')
             ) {
                 $newTab->setRequest($request);

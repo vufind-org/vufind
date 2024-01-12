@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ChangeTracker Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Db\Table;
 
 use VuFind\Db\Table\ChangeTracker;
@@ -32,13 +34,15 @@ use VuFind\Db\Table\ChangeTracker;
 /**
  * ChangeTracker Test Class
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
+final class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
@@ -65,21 +69,21 @@ class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
     public function testChangeTracker()
     {
         $core = 'testCore';
-        $tracker = $this->getTable('ChangeTracker');
+        $tracker = $this->getTable(ChangeTracker::class);
 
         // Create a new row:
         $tracker->index($core, 'test1', 1326833170);
         $row = $tracker->retrieve($core, 'test1');
-        $this->assertTrue(is_object($row));
-        $this->assertTrue(empty($row->deleted));
+        $this->assertIsObject($row);
+        $this->assertEmpty($row->deleted);
         $this->assertEquals($row->first_indexed, $row->last_indexed);
         $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
 
         // Try to index an earlier record version -- changes should be ignored:
         $tracker->index($core, 'test1', 1326830000);
         $row = $tracker->retrieve($core, 'test1');
-        $this->assertTrue(is_object($row));
-        $this->assertTrue(empty($row->deleted));
+        $this->assertIsObject($row);
+        $this->assertEmpty($row->deleted);
         $this->assertEquals($row->first_indexed, $row->last_indexed);
         $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
         $previousFirstIndexed = $row->first_indexed;
@@ -90,8 +94,8 @@ class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
         // Index a later record version -- this should lead to changes:
         $tracker->index($core, 'test1', 1326833176);
         $row = $tracker->retrieve($core, 'test1');
-        $this->assertTrue(is_object($row));
-        $this->assertTrue(empty($row->deleted));
+        $this->assertIsObject($row);
+        $this->assertEmpty($row->deleted);
         $this->assertTrue(
             // use <= in case test runs too fast for values to become unequal:
             strtotime($row->first_indexed) <= strtotime($row->last_indexed)
@@ -104,20 +108,20 @@ class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
         // Delete the record:
         $tracker->markDeleted($core, 'test1');
         $row = $tracker->retrieve($core, 'test1');
-        $this->assertTrue(is_object($row));
+        $this->assertIsObject($row);
         $this->assertTrue(!empty($row->deleted));
 
         // Delete a record that hasn't previously been encountered:
         $tracker->markDeleted($core, 'test2');
         $row = $tracker->retrieve($core, 'test2');
-        $this->assertTrue(is_object($row));
+        $this->assertIsObject($row);
         $this->assertTrue(!empty($row->deleted));
 
         // Index the previously-deleted record and make sure it undeletes properly:
         $tracker->index($core, 'test2', 1326833170);
         $row = $tracker->retrieve($core, 'test2');
-        $this->assertTrue(is_object($row));
-        $this->assertTrue(empty($row->deleted));
+        $this->assertIsObject($row);
+        $this->assertEmpty($row->deleted);
         $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
 
         // Clean up after ourselves:

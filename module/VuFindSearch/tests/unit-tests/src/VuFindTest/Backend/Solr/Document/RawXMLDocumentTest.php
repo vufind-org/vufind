@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR raw XML document class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,13 +23,14 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Document;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
 /**
@@ -38,6 +39,7 @@ use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -48,9 +50,13 @@ class RawXMLDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXML()
+    public function testBasicBehavior()
     {
         $document = new RawXMLDocument('<empty />');
-        $this->assertXmlStringEqualsXmlString('<empty />', $document->asXML());
+        $this->assertEquals(
+            'text/xml; charset=UTF-8',
+            $document->getContentType()
+        );
+        $this->assertXmlStringEqualsXmlString('<empty />', $document->getContent());
     }
 }

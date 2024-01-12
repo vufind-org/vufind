@@ -3,7 +3,7 @@
 /**
  * SearchTabsHelper unit tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
 use VuFind\Search\SearchTabsHelper;
@@ -46,17 +47,17 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             'Solr' => 'Local Index',
             'Solr:video' => 'Local Videos',
             'Primo' => 'Primo Central',
-            'Primo:dissertation' => 'Dissertations in Primo Central'
+            'Primo:dissertation' => 'Dissertations in Primo Central',
         ],
         'default_filtered' => [
             'Solr:main' => 'Main Library',
             'Solr:mainvideo' => 'Main Library Videos',
             'Solr:branch' => 'Branch Library',
             'Primo' => 'Primo Central',
-            'Primo:dissertation' => 'Dissertations in Primo Central'
+            'Primo:dissertation' => 'Dissertations in Primo Central',
         ],
         'no_tabs' => [
-        ]
+        ],
     ];
 
     protected $filterConfig = [
@@ -64,7 +65,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         'Solr:main' => ['building:main'],
         'Solr:mainvideo' => ['building:main', 'format:video'],
         'Solr:branch' => ['building:branch'],
-        'Primo:dissertation' => ['rtype:Dissertations']
+        'Primo:dissertation' => ['rtype:Dissertations'],
     ];
 
     /**
@@ -82,7 +83,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         // Non-default tab with filters
         $helper = $this->getSearchTabsHelper('default_unfiltered', ['format:video']);
         $this->assertEquals(
-            ['format' => ['video']], $helper->getHiddenFilters('Solr')
+            ['format' => ['video']],
+            $helper->getHiddenFilters('Solr')
         );
         $this->assertEquals(
             ['format' => ['video']],
@@ -92,12 +94,14 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         // Default tab with filters
         $helper = $this->getSearchTabsHelper('default_filtered');
         $this->assertEquals(
-            ['building' => ['main']], $helper->getHiddenFilters('Solr')
+            ['building' => ['main']],
+            $helper->getHiddenFilters('Solr')
         );
         $this->assertEmpty($helper->getHiddenFilters('Solr', false));
 
         $helper = $this->getSearchTabsHelper(
-            'default_unfiltered', ['building:main', 'format:video']
+            'default_unfiltered',
+            ['building:main', 'format:video']
         );
         $this->assertEquals(
             ['building' => ['main'], 'format' => ['video']],
@@ -110,7 +114,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
 
         // Non-default tab with filters
         $helper = $this->getSearchTabsHelper(
-            'default_unfiltered', ['rtype:Dissertation']
+            'default_unfiltered',
+            ['rtype:Dissertation']
         );
         $this->assertEquals(
             ['rtype' => ['Dissertation']],
@@ -131,7 +136,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
-            $this->tabConfig['default_unfiltered'], $helper->getTabConfig()
+            $this->tabConfig['default_unfiltered'],
+            $helper->getTabConfig()
         );
         $this->assertEquals($this->filterConfig, $helper->getTabFilterConfig());
     }
@@ -199,12 +205,13 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a SearchTabsHelper
      *
-     * @param string $config   Which config set to use
-     * @param array  $filters  Active filters for a simulated request
+     * @param string $config  Which config set to use
+     * @param array  $filters Active filters for a simulated request
      *
      * @return \VuFind\Search\SearchTabsHelper
      */
-    protected function getSearchTabsHelper($config = 'default_unfiltered',
+    protected function getSearchTabsHelper(
+        $config = 'default_unfiltered',
         $filters = null
     ) {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);
@@ -242,11 +249,14 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
                 $this->returnCallback(
                     function ($backend) use ($mockSolr, $mockPrimo) {
                         switch ($backend) {
-                            case 'Solr': return $mockSolr;
-                            case 'Primo': return $mockPrimo;
-                            default: throw new \Exception(
-                                "Unsupported backend $backend"
-                            );
+                            case 'Solr':
+                                return $mockSolr;
+                            case 'Primo':
+                                return $mockPrimo;
+                            default:
+                                throw new \Exception(
+                                    "Unsupported backend $backend"
+                                );
                         }
                     }
                 )

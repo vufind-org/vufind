@@ -1,8 +1,9 @@
 <?php
+
 /**
  * View helper for formatting dates and times.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
+
+use function call_user_func_array;
 
 /**
  * View helper for formatting dates and times
@@ -56,7 +60,7 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Extract a year from a human-readable date.  Return false if no year can
+     * Extract a year from a human-readable date. Return false if no year can
      * be found.
      *
      * @param string $date Date to reformat
@@ -81,12 +85,12 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
     public function getDisplayDateFormat()
     {
         $dueDateHelpString
-            = $this->converter->convertToDisplayDate("m-d-y", "11-22-3333");
-        $search = ["1", "2", "3"];
+            = $this->converter->convertToDisplayDate('m-d-y', '11-22-3333');
+        $search = ['1', '2', '3'];
         $replace = [
-            $this->view->translate("date_month_placeholder"),
-            $this->view->translate("date_day_placeholder"),
-            $this->view->translate("date_year_placeholder")
+            $this->view->translate('date_month_placeholder'),
+            $this->view->translate('date_day_placeholder'),
+            $this->view->translate('date_year_placeholder'),
         ];
 
         return str_replace($search, $replace, $dueDateHelpString);

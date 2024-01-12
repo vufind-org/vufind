@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "7.1.0",
+  "version": "9.1.0",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -9,15 +9,42 @@
   "bugs": {
     "url": "https://vufind.org/jira"
   },
+  "scripts": {
+    "build": "npm run build:css",
+    "watch": "npm run watch:css",
+    "build-dev": "npm run build-dev:css",
+    "watch-dev": "npm run watch-dev:css",
+
+    "build:css": "npm run build:less",
+    "watch:css": "npm run watch:less",
+    "build-dev:css": "npm run build-dev:less",
+    "watch-dev:css": "npm run watch-dev:less",
+
+    "build:less": "grunt less && npm run lessToSass",
+    "watch:less": "grunt watch:less",
+    "build-dev:less": "grunt lessdev && npm run lessToSass",
+    "watch-dev:less": "grunt watch:lessdev",
+
+    "build:scss": "grunt scss",
+    "check:scss": "grunt check:scss",
+    "watch:scss": "grunt watch:scss",
+
+    "lessToSass": "grunt lessToSass",
+    "watch:lessToSass": "grunt watch:lessToSass"
+  },
   "dependencies": {
     "grunt": "^1.0.4",
     "grunt-contrib-less": "^2.0.0",
     "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",
-    "grunt-sass": "^2.0.0",
-    "jit-grunt": "^0.9.1",
-    "node-sass": "^4.11.0"
+    "grunt-dart-sass": "^2.0.1",
+    "jit-grunt": "^0.10.0",
+    "sass": "^1.69.5"
   },
   "devDependencies": {
-    "grunt-contrib-watch": "^1.1.0"
+    "all-iso-language-codes": "^1.0.13",
+    "eslint": "^8.15.0",
+    "eslint-plugin-no-jquery": "^2.7.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "jshint": "^2.13.4"
   }
 }

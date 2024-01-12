@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CreateHierarchyTreesCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -83,7 +85,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         $record->setRawData(
             [
                 'HierarchyType' => 'foo',
-                'HierarchyDriver' => $driver ?? $this->getMockHierarchyDriver()
+                'HierarchyDriver' => $driver ?? $this->getMockHierarchyDriver(),
             ]
         );
         return $record;
@@ -124,10 +126,10 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
                         [
                             'value' => 'recordid',
                             'count' => 5,
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ];
         $results->expects($this->once())->method('getFullFieldFacets')
             ->with($this->equalTo(['hierarchy_top_id']))
@@ -161,7 +163,8 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return SuppressedCommand
      */
-    protected function getCommand(Loader $loader = null,
+    protected function getCommand(
+        Loader $loader = null,
         PluginManager $results = null
     ) {
         return new CreateHierarchyTreesCommand(

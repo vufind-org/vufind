@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Office 365 Log Writer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Log\Writer;
 
 use Laminas\Http\Client;
@@ -44,8 +46,10 @@ class Office365Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test writer functionality
+     *
+     * @return void
      */
-    public function testWriter()
+    public function testWriter(): void
     {
         // Set up data and expectations:
         $fakeUri = 'http://fake';

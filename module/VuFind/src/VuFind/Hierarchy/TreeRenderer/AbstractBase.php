@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Tree Renderer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeRenderer;
+
+use function is_object;
 
 /**
  * Hierarchy Tree Renderer
@@ -127,7 +131,10 @@ abstract class AbstractBase
      * @return mixed The desired hierarchy tree output (or false on error)
      */
     abstract public function render(
-        $context, $mode, $hierarchyID, $recordID = false
+        $context,
+        $mode,
+        $hierarchyID,
+        $recordID = false
     );
 
     /**
@@ -140,7 +147,9 @@ abstract class AbstractBase
      * @return string A hierarchy title
      */
     public function getHierarchyName(
-        $hierarchyID, $inHierarchies, $inHierarchiesTitle
+        $hierarchyID,
+        $inHierarchies,
+        $inHierarchiesTitle
     ) {
         $keys = array_flip($inHierarchies);
         $key = $keys[$hierarchyID];

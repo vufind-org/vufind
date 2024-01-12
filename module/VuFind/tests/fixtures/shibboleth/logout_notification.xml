@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <LogoutNotification xmlns="urn:mace:shibboleth:2.0:sp:notify" type="global">
+      <SessionID>EXTERNAL_SESSION_ID</SessionID>
+    </LogoutNotification>
+  </s:Body>
+</s:Envelope>

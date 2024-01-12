@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Language/CopyString command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Language;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -140,7 +142,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'source' => 'foo::bar',
                 'target' => 'foo::xyzzy',
-                '--replace' => 'baz/transformed'
+                '--replace' => 'baz/transformed',
             ]
         );
         $this->assertEquals(
@@ -203,8 +205,10 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return CopyStringCommand
      */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
+    protected function getMockCommand(
+        ExtendedIniNormalizer $normalizer = null,
+        ExtendedIniReader $reader = null,
+        $languageDir = null,
         array $methods = ['addLineToFile']
     ) {
         return $this->getMockBuilder(CopyStringCommand::class)
@@ -214,7 +218,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                     $reader ?? $this->getMockReader(),
                     $languageDir ?? $this->languageFixtureDir,
                 ]
-            )->setMethods($methods)
+            )->onlyMethods($methods)
             ->getMock();
     }
 
@@ -227,10 +231,12 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -242,9 +248,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockReader($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniReader::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

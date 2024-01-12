@@ -7,10 +7,78 @@
 
   // More link should use default limit, not custom limit:
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
+
+  // Advanced search link
+  $advancedSearchAction = ($currentSearch['advanced_link_bottom'] ?? false)
+    ? $params->getOptions()->getAdvancedSearchAction() : false;
+  $advancedSearchUrl = $advancedSearchAction
+    ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
+    : false;
+
+  // Generate JS code that will move a given recommendation module over to the sidebar
+  $generateMoveRecommendationToSidebarJavascript = function ($recommendationClass) {
+    return <<<JS
+        function addRecommendation_$recommendationClass() {
+          const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
+          if (!recommendationContainer) {
+            console.error("Cannot find recommendation container for $recommendationClass");
+            return;
+          }
+
+          const recommendation = document.getElementById('recommendation__$recommendationClass');
+          if (!recommendation) {
+            console.error("Cannot find recommendation for $recommendationClass");
+            return;
+          }
+
+          recommendationContainer.append(recommendation);
+          recommendation.style.display = 'inherit';
+        }
+
+        if (document.readyState != 'loading') {
+          addRecommendation_$recommendationClass();
+        } else {
+          document.addEventListener('DOMContentLoaded', addRecommendation_$recommendationClass);
+        }
+        JS;
+  };
+
+  // Update result counts in jump links
+  $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+  $countsJs = <<<JS
+      function updateJumpLink_$classId() {
+        let count = $recordTotal;
+        count = count.toLocaleString();
+
+        const template = document.createElement('template');
+        template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
+        const span = template.content.children[0];
+
+        const combinedJumpLinks = document.querySelector('.combined-jump-links');
+        const link = combinedJumpLinks?.querySelector('.$classId');
+        if (link) {
+          link.append(span);
+          link.style.display = "inline";
+          combinedJumpLinks.style.visibility = "inherit";
+        }
+      }
+
+      if (document.readyState != 'loading') {
+        updateJumpLink_$classId();
+      }
+      else {
+        document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
+      }
+      JS;
 ?>
-<?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
+
+<?php if ($currentSearch['more_link'] ?? false): ?>
   <div class="pull-right flip">
-    <a href="<?=$moreUrl?>" class="btn btn-link"><i class="fa fa-gears" aria-hidden="true"></i> <?=$this->transEsc('More options')?></a>
+    <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
+      <?=$this->icon('options', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc('More options')?></span>
+    </a>
   </div>
   <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
 <?php else: ?>
@@ -34,9 +102,21 @@
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
-      <?=$this->context()->renderInContext('search/controls/showing.phtml',
-                                          ['lookfor' => $lookfor, 'recordTotal' => $recordTotal,
-                                           'params' => $params, 'results' => $results]) ?>
+      <?php foreach (($results->getRecommendations('side')) as $current):
+        $recommendationClass = str_replace('\\', '_', $current::class);
+        $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
+        ?>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+        <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
+          <?=$this->recommend($current)?>
+        </div>
+      <?php endforeach; ?>
+      <?=
+        $this->context()->renderInContext(
+            'search/controls/showing.phtml',
+            compact('lookfor', 'recordTotal', 'params', 'results')
+        );
+      ?>
     <?php else: ?>
       <h3><?=$this->transEsc('nohit_heading')?></h3>
     <?php endif; ?>
@@ -59,6 +139,17 @@
       <?=$this->recommend($current)?>
     <?php endif; ?>
   <?php endforeach; ?>
+  <?php foreach ($results->getRecommendations('noresults_side') as $current): ?>
+    <?php if (!in_array($current, $top)):
+      $recommendationClass = str_replace('\\', '_', $current::class);
+      $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
+      ?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+      <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
+        <?=$this->recommend($current)?>
+      </div>
+    <?php endif; ?>
+  <?php endforeach; ?>
 <?php else: ?>
   <?php
     $viewType = in_array('list', array_keys($params->getViewList()))
@@ -66,11 +157,25 @@
     $viewParams = [
       'results' => $results,
       'params' => $params,
-      'showCheckboxes' => $this->showCartControls || $this->showBulkOptions
+      'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
+      'combined' => true, // Flag that we're in combined mode; may be useful to customize template behavior
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-    <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a></p>
+  <?php if ($currentSearch['more_link'] ?? false): ?>
+    <p class="more_link_bottom">
+      <a class="icon-link" href="<?=$moreUrl?>">
+        <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
+        <?=$this->icon('more', 'icon-link__icon') ?>
+      </a>
+    </p>
+  <?php endif; ?>
+  <?php if ($advancedSearchUrl): ?>
+    <p class="advanced_link_bottom">
+      <a class="icon-link" href="<?=$advancedSearchUrl?>">
+        <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link_bottom'])?></span>
+        <?=$this->icon('more', 'icon-link__icon') ?>
+      </a>
+    </p>
   <?php endif; ?>
 <?php endif; ?>
