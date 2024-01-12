@@ -84,7 +84,7 @@ class SimilarItemsCarousel extends AbstractBase
      */
     public function supportsAjax()
     {
-        // Assume we can load by AJAX; subclasses may add rules.
+        // We cannot load this tab with AJAX because of the carousel library.
         return false;
     }
 
