@@ -29,11 +29,6 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
-use Psr\Container\ContainerInterface;
-
 /**
  * Factory for Search2Default record drivers.
  *
@@ -43,35 +38,12 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Search2DefaultFactory extends AbstractBaseFactory
+class Search2DefaultFactory extends SolrDefaultFactory
 {
     /**
-     * Create an object
+     * Configuration file to read search settings from
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
+     * @var string
      */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        array $options = null
-    ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('Search2');
-        $finalOptions = [null, $config];
-        $driver = parent::__invoke($container, $requestedName, $finalOptions);
-        $driver->attachSearchService($container->get(\VuFindSearch\Service::class));
-        return $driver;
-    }
+    protected $searchIni = 'Search2';
 }
