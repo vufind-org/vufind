@@ -18,7 +18,7 @@
       } else {
         $description = '';
       }
-      $exactMatchClass = ($exactMatch ?? 'unkown') . '-match';
+      $exactMatchClass = ($exactMatch ?? 'unknown') . '-match';
       echo '<span class="' . $exactMatchClass . '">"' . $this->escapeHtml($value) . '"</span> ' . $this->transEsc('in');
       echo ' <span class="field-name" title="' . $this->escapeHtmlAttr($description) . '">' . $this->escapeHtml($name) . '</span>';
       echo ($i < count($fieldName) - 1) ? ', ' : '';

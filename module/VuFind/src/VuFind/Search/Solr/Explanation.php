@@ -101,7 +101,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
     protected $rest = null;
 
     /**
-     * Contains the fields that where removed from the main explanation.
+     * Contains the fields that were removed from the main explanation.
      *
      * @var array
      */
@@ -138,7 +138,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
     }
 
     /**
-     * Get value of the boost used is Solr query.
+     * Get value of the boost used in Solr query.
      *
      * @return float
      */
@@ -401,7 +401,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
             }
         }
 
-        // summery of lower children
+        // summary of lower children
         if (
             (
                 (str_contains($description, 'product of:') || str_contains($description, 'sum of') || $isMaxPlusOthers)

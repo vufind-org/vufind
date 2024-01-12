@@ -79,7 +79,7 @@ abstract class Explanation implements LoggerAwareInterface
     protected $lookfor;
 
     /**
-     * RecordId of title the explanation is build for.
+     * RecordId of title the explanation is built for.
      *
      * @var string
      */
