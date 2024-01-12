@@ -11,7 +11,7 @@
           }
         ?>
         <li<?=$tab['selected'] ? ' class="active"' : ''?><?=$this->showCounts ? ' data-show-counts' : ''?>>
-          <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?> data-source="<?=$this->escapeHtmlAttr($tab['class'])?>"><?=$this->transEsc($tab['label']); ?></a>
+          <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '" '?><?=$this->showCounts && $tab['selected'] ? 'data-search-url="' . $tab['url'] . '" ' : ''?>data-source="<?=$this->escapeHtmlAttr($tab['class'])?>"><?=$this->transEsc($tab['label']); ?></a>
         </li>
       <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
         <?=$block?>
