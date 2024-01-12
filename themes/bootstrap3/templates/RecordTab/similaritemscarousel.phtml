@@ -1,7 +1,8 @@
 <?php
   // Add carousel library for Similar Items
-  $this->headScript()->appendFile('vendor/splide.min.js');
   $this->headLink()->appendStylesheet('vendor/splide.min.css');
+  $this->headScript()->appendFile('vendor/splide.min.js');
+  $this->headScript()->appendFile('carousels.js');
 ?>
 
 <h2><?=$this->transEsc('Similar Items')?></h2>
