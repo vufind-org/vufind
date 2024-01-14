@@ -66,10 +66,19 @@ class Record extends \VuFind\View\Helper\Root\Record
                 }
             }
 
-            $issnSubField = $issnParent[0]->getSubField("a") ?
-                $issnParent[0]->getSubField("a") : $issnParent[0]->getSubField("y");
+            $fieldCount = count($issnParent);
+            if ($fieldCount > 0) {
+				foreach ($issnParent[$fieldCount - 1] as $subfield) {
+					foreach ($subfield as $subfield1) {
+						if ( $subfield1['code'] == 'y') {
+							$issnSubField = $subfield1['data'];
+						}
+					}
+				}
+            }
+				
             if ($issnSubField) {
-                $fullTextData->issn = $issnSubField->getData();
+                $fullTextData->issn = $issnSubField;
                 $escapeHtml = $this->getView()->plugin('escapeHtml');
                 $fullTextData->title = $escapeHtml(
                     $this->driver->getShortTitle() . ' ' .
