@@ -2007,6 +2007,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $duedate = null;
             }
 
+            if (isset($avail['unavailabilities']['Item::Held']['status'])) {
+                if ($avail['unavailabilities']['Item::Held']['status'] == 'Waiting') {
+                    $libraries           = $this->getLibraries();
+                    $waitingAtCode       = $item['holding_library_id'];
+                    $waitingAtLocation   = isset($libraries[$waitingAtCode]) ?
+                    $libraries[$waitingAtCode]['name'] : $waitingAtCode;
+                    $status              = 'On Reserves Shelf' . ' at ' . $waitingAtLocation;
+                }
+            }
+
             $entry = [
                 'id' => $id,
                 'item_id' => $item['item_id'],
