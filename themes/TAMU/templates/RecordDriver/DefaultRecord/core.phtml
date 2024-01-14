@@ -77,7 +77,7 @@
         <?php foreach ($coreFields as $current): ?>
           <?php
           if ($current['label'] == 'Format') {
-            $sfxData = $this->record($this->driver)->getFullTextButton($this->driver->getMarcReader()->getFields("22"), $current['value']);
+            $sfxData = $this->record($this->driver)->getFullTextButton($this->driver->getMarcReader()->getFields("022"), $current['value']);
           }
           ?>
           <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
