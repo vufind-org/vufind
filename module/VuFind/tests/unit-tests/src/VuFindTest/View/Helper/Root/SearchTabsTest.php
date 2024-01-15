@@ -58,7 +58,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getCurrentHiddenFilterParamsProvider(): array
+    public static function getCurrentHiddenFilterParamsProvider(): array
     {
         return [
             [

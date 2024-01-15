@@ -46,7 +46,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function titleSearchNormalizationProvider(): array
+    public static function titleSearchNormalizationProvider(): array
     {
         return [
             'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],

@@ -42,7 +42,7 @@ use Laminas\Stdlib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
+abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Mock container
