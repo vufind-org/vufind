@@ -304,7 +304,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Create information representing a tab linking to "search home."
+     * Get an url to "search home".
      *
      * @param string $class   Search class ID
      * @param array  $filters Tab filters
@@ -322,7 +322,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Create information representing an advanced search tab.
+     * Get url for an advanced search tab.
      *
      * @param string $class   Search class ID
      * @param array  $filters Tab filters
