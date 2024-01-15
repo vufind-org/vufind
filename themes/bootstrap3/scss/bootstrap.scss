@@ -462,7 +462,7 @@ ul.list-group {
 @media screen and (max-width: 768px) {
   .table-responsive {
     border: none;
-    thead {
+    thead, tfoot > tr > th {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -472,14 +472,14 @@ ul.list-group {
       clip: rect(0, 0, 0, 0);
       border: 0;
     }
-    tr {
+    tbody > tr {
       display: block;
       margin-bottom: $line-height-computed;
       border-left: 1px solid $table-border-color;
       border-right: 1px solid $table-border-color;
       border-bottom: 4px solid $table-border-color;
     }
-    td {
+    td, tbody > tr > th {
       display: flex;
       align-items: first baseline;
       background: #fff;
@@ -491,8 +491,11 @@ ul.list-group {
         content: attr(data-label);
       }
     }
-    td:nth-child(even) {
+    tbody > tr > td:nth-child(even) {
       background-color: $table-bg-accent;
+    }
+    tfoot > tr > td {
+      border-top: none;
     }
   }
 }
