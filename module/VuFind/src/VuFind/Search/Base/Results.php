@@ -309,7 +309,7 @@ abstract class Results
     {
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
-        $this->resultTotal = 0;
+        $this->resultTotal = -1;
         $this->results = [];
         $this->suggestions = [];
         $this->errors = [];

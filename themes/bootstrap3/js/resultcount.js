@@ -3,6 +3,11 @@
 VuFind.register('resultcount', function resultCount() {
   function init() {
     document.querySelectorAll('ul.nav-tabs [data-show-counts] a').forEach((tab) => {
+      function setCount(count) {
+        if (count >= 0) {
+          tab.textContent += ' (' + count.toLocaleString() + ')';
+        }
+      }
       function loadCount(url) {
         if (url == null) {
           return;
@@ -15,9 +20,14 @@ VuFind.register('resultcount', function resultCount() {
         });
         fetch(VuFind.path + '/AJAX/JSON?' + params.toString())
           .then(response => response.json())
-          .then(response => tab.textContent += ' (' + response.data.total.toLocaleString() + ')');
+          .then(response => setCount(response.data.total));
       }
-      loadCount(tab.getAttribute('href') || tab.dataset.searchUrl);
+
+      if (tab.dataset.resultTotal) {
+        setCount(parseInt(tab.dataset.resultTotal));
+      } else {
+        loadCount(tab.getAttribute('href') || tab.dataset.searchUrl);
+      }
     });
   }
   return {
