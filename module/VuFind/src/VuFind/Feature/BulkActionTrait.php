@@ -2,7 +2,7 @@
 
 /**
  * VuFind Action Feature Trait - Bulk action helper methods
- * Depends on access to the config loader.
+ * Depends on access to the config loader and service locator.
  *
  * PHP version 8
  *
@@ -44,6 +44,66 @@ namespace VuFind\Feature;
 trait BulkActionTrait
 {
     /**
+     * Export Service
+     *
+     * @var \VuFind\Export
+     */
+    protected $bulkActionExport;
+
+    /**
+     * Config
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $bulkActionConfig;
+
+    /**
+     * Export Config
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $bulkActionExportConfig;
+
+    /**
+     * Get Export Service.
+     *
+     * @return \VuFind\Export
+     */
+    protected function getBulkActionExport()
+    {
+        if ($this->bulkActionExport === null) {
+            $this->bulkActionExport = $this->serviceLocator->get(\VuFind\Export::class);
+        }
+        return $this->bulkActionExport;
+    }
+
+    /**
+     * Get Config.
+     *
+     * @return \Laminas\Config\Config
+     */
+    protected function getBulkActionConfig()
+    {
+        if ($this->bulkActionConfig === null) {
+            $this->bulkActionConfig = $this->configLoader->get('config');
+        }
+        return $this->bulkActionConfig;
+    }
+
+    /**
+     * Get Export Config.
+     *
+     * @return \Laminas\Config\Config
+     */
+    protected function getBulkActionExportConfig()
+    {
+        if ($this->bulkActionExportConfig === null) {
+            $this->bulkActionExportConfig = $this->configLoader->get('export');
+        }
+        return $this->bulkActionExportConfig;
+    }
+
+    /**
      * Get the limit of a bulk action.
      *
      * @param string $action Name of the bulk action
@@ -52,7 +112,11 @@ trait BulkActionTrait
      */
     public function getBulkActionLimit($action)
     {
-        $bulkActionConfig = $this->configLoader->get('config')?->BulkActions;
+        if ($action == 'export') {
+            $formats = $this->getBulkActionExport()->getActiveFormats('bulk');
+            return max(array_map([$this, 'getExportActionLimit'], $formats));
+        }
+        $bulkActionConfig = $this->getBulkActionConfig()?->BulkActions;
         return $bulkActionConfig?->limits?->$action
             ?? $bulkActionConfig?->limits?->default
             ?? 100;
@@ -67,7 +131,10 @@ trait BulkActionTrait
      */
     public function getExportActionLimit($format)
     {
-        return $this->configLoader->get('export')?->$format?->limit
-            ?? $this->getBulkActionLimit('export');
+        $bulkActionConfig = $this->getBulkActionConfig()?->BulkActions;
+        return $this->getBulkActionExportConfig()?->$format?->limit
+            ?? $bulkActionConfig?->limits?->export
+            ?? $bulkActionConfig?->limits?->default
+            ?? 100;
     }
 }

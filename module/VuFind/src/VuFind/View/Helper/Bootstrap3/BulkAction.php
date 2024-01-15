@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Bootstrap3;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+
 /**
  * Bulk action view helper
  *
@@ -43,6 +45,13 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     use \VuFind\Feature\BulkActionTrait;
 
     /**
+     * Service manager
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Configuration loader
      *
      * @var \VuFind\Config\PluginManager
@@ -52,10 +61,12 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
+     * @param ServiceLocatorInterface      $sm           Service Locator
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ServiceLocatorInterface $sm, \VuFind\Config\PluginManager $configLoader)
     {
+        $this->serviceLocator = $sm;
         $this->configLoader = $configLoader;
     }
 

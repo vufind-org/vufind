@@ -387,7 +387,7 @@ class CartController extends AbstractBase
 
         // Get id limit
         $format = $this->params()->fromPost('format');
-        $actionLimit = $this->getExportActionLimit($format);
+        $actionLimit = $format ? $this->getExportActionLimit($format) : $this->getBulkActionLimit('export');
 
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {

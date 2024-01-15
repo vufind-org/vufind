@@ -69,6 +69,6 @@ class BulkActionFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        return new $requestedName($configLoader);
+        return new $requestedName($container, $configLoader);
     }
 }
