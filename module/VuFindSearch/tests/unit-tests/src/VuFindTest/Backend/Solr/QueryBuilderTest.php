@@ -594,7 +594,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function globalExtraParamsIndividualQueryDataProvider(): array
+    public static function globalExtraParamsIndividualQueryDataProvider(): array
     {
         return [
             'Single value, no extra params' => [
@@ -776,7 +776,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function globalExtraParamsGroupedQueryDataProvider(): array
+    public static function globalExtraParamsGroupedQueryDataProvider(): array
     {
         return [
             'Search type in [test]' => [

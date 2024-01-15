@@ -530,7 +530,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function hierarchicalFacetSortProvider(): array
+    public static function hierarchicalFacetSortProvider(): array
     {
         return [
             [
