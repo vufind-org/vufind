@@ -156,6 +156,7 @@
       ? 'list' : $params->getView();
     $viewParams = [
       'results' => $results,
+      'request' => $view->request,
       'params' => $params,
       'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
       'combined' => true, // Flag that we're in combined mode; may be useful to customize template behavior

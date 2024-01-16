@@ -743,6 +743,34 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Show explanation for why a record was found and how its relevancy is computed
+     *
+     * @return mixed
+     */
+    public function explainAction()
+    {
+        $record = $this->loadRecord();
+
+        $view = $this->createViewModel();
+        $view->setTemplate('record/explain');
+        if (!$record->tryMethod('explainEnabled')) {
+            $view->disabled = true;
+            return $view;
+        }
+
+        $explanation = $this->serviceLocator
+            ->get(\VuFind\Search\Explanation\PluginManager::class)
+            ->get($record->getSourceIdentifier());
+
+        $params = $explanation->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $explanation->performRequest($record->getUniqueID());
+
+        $view->explanation = $explanation;
+        return $view;
+    }
+
+    /**
      * Load the record requested by the user; note that this is not done in the
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
