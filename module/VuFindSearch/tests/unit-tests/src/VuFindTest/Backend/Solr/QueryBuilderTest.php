@@ -53,11 +53,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         // Set up an array of expected inputs and outputs:
         $tests = [
-            ["", "*:*"],                         // empty query
-            ["()", "*:*"],                       // empty parens
-            ["((()))", "*:*"],                   // nested empty parens
-            ["((())", "*:*"],                    // mismatched parens
-            ["this that ()", "this that"],       // text mixed w/ empty parens
+            ['', '*:*'],                         // empty query
+            ['()', '*:*'],                       // empty parens
+            ['((()))', '*:*'],                   // nested empty parens
+            ['((())', '*:*'],                    // mismatched parens
+            ['this that ()', 'this that'],       // text mixed w/ empty parens
             ['"()"', '"()"'],                    // empty parens in quotes
             ['title - sub', 'title sub'],        // freestanding hyphen
             ['"title - sub"', '"title - sub"'],  // freestanding hyphen in quotes
@@ -594,7 +594,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function globalExtraParamsIndividualQueryDataProvider(): array
+    public static function globalExtraParamsIndividualQueryDataProvider(): array
     {
         return [
             'Single value, no extra params' => [
@@ -776,7 +776,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function globalExtraParamsGroupedQueryDataProvider(): array
+    public static function globalExtraParamsGroupedQueryDataProvider(): array
     {
         return [
             'Search type in [test]' => [

@@ -36,6 +36,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function count;
+
 /**
  * Factory for record driver data formatting view helper
  *
@@ -72,7 +74,10 @@ class RecordDataFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $helper = new $requestedName();
+        $config = $container
+            ->get(\VuFind\Config\PluginManager::class)
+            ->get('RecordDataFormatter');
+        $helper = new $requestedName($config);
         $helper->setDefaults(
             'collection-info',
             [$this, 'getDefaultCollectionInfoSpecs']
@@ -158,9 +163,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                           . '<span property="name">',
-             'itemSuffix' => '</span></span>']
+            [
+                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                    . '<span property="name">',
+                'itemSuffix' => '</span></span>',
+                'translate' => true,
+                'translationTextDomain' => 'ISO639-3::',
+            ]
         );
         $spec->setTemplateLine(
             'Published',
@@ -221,9 +230,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                           . '<span property="name">',
-             'itemSuffix' => '</span></span>']
+            [
+                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                    . '<span property="name">',
+                'itemSuffix' => '</span></span>',
+                'translate' => true,
+                'translationTextDomain' => 'ISO639-3::',
+            ]
         );
         $spec->setLine(
             'Format',
@@ -276,9 +289,13 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                           . '<span property="name">',
-             'itemSuffix' => '</span></span>']
+            [
+                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                    . '<span property="name">',
+                'itemSuffix' => '</span></span>',
+                'translate' => true,
+                'translationTextDomain' => 'ISO639-3::',
+            ]
         );
         $spec->setTemplateLine(
             'Published',

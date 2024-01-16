@@ -29,6 +29,9 @@
 
 namespace VuFind\Sitemap;
 
+use function count;
+use function dirname;
+
 /**
  * Abstract class for representing XML sitemaps
  *
@@ -119,7 +122,7 @@ abstract class AbstractFile
         // if a subfolder was specified that does not exist, make one
         $dirname = dirname($file);
         if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
+            mkdir($dirname, 0o755, true);
         }
         return file_put_contents($file, $this->toString());
     }

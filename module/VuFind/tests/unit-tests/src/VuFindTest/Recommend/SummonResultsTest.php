@@ -55,7 +55,10 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $obj = new SummonResults($runner);
+        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $obj = new SummonResults($runner, $configManager);
         $this->assertSame('Summon', $method->invoke($obj));
     }
 }

@@ -9,7 +9,7 @@ if (is_array($formats) && !empty($formats)) {
     echo "RT Generic\n";
 }
 
-$title = rtrim($this->driver->getTitle(), " /");
+$title = rtrim($this->driver->getTitle(), ' /');
 echo "T1 $title\n";
 
 $series = $this->driver->tryMethod('getSeries');
@@ -66,10 +66,10 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "PP " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
+            echo 'PP ' . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
         }
         if (isset($pubNames[$i])) {
-            echo "PB " . rtrim($pubNames[$i], ", ") . "\n";
+            echo 'PB ' . rtrim($pubNames[$i], ', ') . "\n";
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
@@ -86,7 +86,7 @@ if (!empty($edition)) {
     echo "ED $edition\n";
 }
 
-echo "UL " . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
+echo 'UL ' . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
 
 $summary = $this->driver->tryMethod('getSummary');
 if (is_array($summary)) {

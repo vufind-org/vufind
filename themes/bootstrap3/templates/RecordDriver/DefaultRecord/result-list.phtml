@@ -65,7 +65,7 @@
           <?php if (!empty($summInCollection)): ?>
             <?php foreach ($summInCollection as $collId => $collText): ?>
               <div>
-                <b><?=$this->transEsc("in_collection_label")?></b>
+                <b><?=$this->transEsc('in_collection_label')?></b>
                 <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
@@ -196,8 +196,18 @@
         <?php endif; ?>
         <?php /* Saved lists */ ?>
         <div class="savedLists">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
+      <?php endif; ?>
+
+      <?php if ($this->driver->tryMethod('explainEnabled')): ?>
+        <?=
+          $this->record($this->driver)->renderTemplate('result-list-explain.phtml', [
+            'driver' => $this->driver,
+            'request' => $this->request,
+            'result' => $this->result,
+          ]);
+        ?>
       <?php endif; ?>
 
       <?php /* Hierarchy tree link */ ?>
@@ -214,7 +224,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

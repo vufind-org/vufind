@@ -1,5 +1,17 @@
 <?=$this->doctype()?>
-
+<?php
+  // Set up the search box -- there are three possible cases:
+  // 1. No search box was set; we should default to the normal box
+  // 2. It was set to false; we should display nothing
+  // 3. It is set to a custom string; we should display the provided version
+  // Set up default search box if no data was provided from the template;
+  // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+  // Note: The searchbox needs to be rendered before the HTML header is build.
+  // Otherwise, the Javascript will not be loaded correctly.
+  if (!isset($this->layout()->searchbox)) {
+    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
+  }
+?>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
@@ -53,8 +65,8 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/js.cookie.js");
-          $this->headScript()->appendFile("cart.js");
+          $this->headScript()->appendFile('vendor/js.cookie.js');
+          $this->headScript()->appendFile('cart.js');
           if ($domain = $cart->getCookieDomain()) {
             $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
@@ -73,13 +85,13 @@
       // Session keep-alive
       if ($this->keepAlive()) {
           $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
-          $this->headScript()->appendFile("keep_alive.js");
+          $this->headScript()->appendFile('keep_alive.js');
       }
 
       // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
-        $this->headScript()->appendFile("account_ajax.js");
+        $this->headScript()->appendFile('account_ajax.js');
         if ($this->session()->put('reset_account_status', null)) {
           $this->headScript()->setAllowArbitraryAttributes(true);
           $this->headScript()->appendScript('VuFind.account.clearAllCaches();', 'text/javascript', ['data-lightbox-run' => 'always']);
@@ -99,26 +111,27 @@
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
           JS;
+
+      if (!empty($lightboxParent)) {
+        $lightboxParent = json_encode((string)$lightboxParent);
+        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent;
+      }
+
+      if (!empty($lightboxChild)) {
+        $lightboxChild = json_encode((string)$lightboxChild);
+        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild;
+      }
+
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
       if ($this->config()->ajaxCoversEnabled()) {
-          $this->headScript()->appendFile("covers.js");
+          $this->headScript()->appendFile('covers.js');
       }
     ?>
     <?=$this->cookieConsent()->render()?>
     <?=$this->headScript() ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
-    <?php // Set up the search box -- there are three possible cases:
-      // 1. No search box was set; we should default to the normal box
-      // 2. It was set to false; we should display nothing
-      // 3. It is set to a custom string; we should display the provided version
-      // Set up default search box if no data was provided from the template;
-      // this covers case 1.  Cases 2 and 3 are then covered by logic below.
-      if (!isset($this->layout()->searchbox)) {
-        $this->layout()->searchbox = $this->render('search/searchbox.phtml');
-      }
-    ?>
     <header class="hidden-print">
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
         <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
@@ -151,10 +164,7 @@
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
-    <?=$this->googleTagManager()->getBodyCode()?>
-    <?=$this->googleanalytics()?>
-    <?=$this->piwik()?>
-    <?=$this->matomo()?>
+    <?=$this->render('Helpers/analytics.phtml')?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>

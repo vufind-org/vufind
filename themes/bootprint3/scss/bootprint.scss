@@ -62,6 +62,7 @@ header .navbar {
   .navbar-nav > li .dropdown-toggle  {
     position: relative;
     padding: 12px 6px;
+    color: $link-color;
 
     &:hover,
     &:focus {
@@ -154,6 +155,9 @@ ul.random.image li img { margin: 0 auto; }
   .facet-group label.list-group-item input[type=checkbox] { margin-top: 2px; }
 
   .facet { padding: 7px 10px 6px; }
+  .facet-tree .facet {
+    padding-left: 2px;
+  }
   .facet.active,
   .facet.active:hover,
   .active-filters .facet {

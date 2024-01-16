@@ -34,6 +34,8 @@ use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
+use function is_callable;
+
 /**
  * VuFind Bootstrapper
  *
@@ -98,7 +100,7 @@ class Bootstrapper
         // automatically call all methods starting with "init":
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
-            if (substr($method, 0, 4) == 'init') {
+            if (str_starts_with($method, 'init')) {
                 $this->$method();
             }
         }

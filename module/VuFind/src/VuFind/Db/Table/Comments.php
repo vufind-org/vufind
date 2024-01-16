@@ -34,6 +34,9 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
+use function count;
+use function is_object;
+
 /**
  * Table Definition for comments
  *

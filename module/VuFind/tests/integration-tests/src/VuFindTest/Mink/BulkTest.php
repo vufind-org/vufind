@@ -63,7 +63,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function getSearchResultsPage()
+    protected function getSearchResultsPage(): Element
     {
         $session = $this->getMinkSession();
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
@@ -81,7 +81,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericBulkTest()
+    protected function setUpGenericBulkTest(): Element
     {
         // Activate the bulk options:
         $this->changeConfigs(
@@ -104,7 +104,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForNonSelectedMessage(Element $page)
+    protected function checkForNonSelectedMessage(Element $page): void
     {
         $warning = $this->findCss($page, '.modal-body .alert-danger');
         $this->assertEquals(
@@ -121,7 +121,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForLoginMessage(Element $page)
+    protected function checkForLoginMessage(Element $page): void
     {
         $warning = $this->findCss($page, '.modal-body .alert-danger');
         $this->assertIsObject($warning);
@@ -138,7 +138,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkEmail()
+    public function testBulkEmail(): void
     {
         $page = $this->setUpGenericBulkTest();
 
@@ -181,7 +181,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkSave()
+    public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
 
@@ -220,11 +220,60 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that we can bulk-delete records from a favorites list.
+     *
+     * @return void
+     *
+     * @depends testBulkSave
+     */
+    public function testBulkDeleteFromList(): void
+    {
+        // Log in to account that owns the list:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Go to the list:
+        $this->clickCss($page, 'a.user-list-link');
+        $this->waitForPageLoad($page);
+
+        // First try clicking without selecting anything:
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->checkForNonSelectedMessage($page);
+        $this->closeLightbox($page, true);
+
+        // Now do it for real:
+        $page->find('css', '#myresearchCheckAll')->check();
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->waitForPageLoad($page);
+
+        // Confirm contents of confirmation box:
+        $this->assertEquals(
+            'Title: Journal of rational emotive therapy : Title: Rational living.',
+            $page->find('css', '#modal ul.record-list')->getText()
+        );
+        $this->clickCss($page, '#modal input[type="submit"]');
+        $this->waitForPageLoad($page);
+
+        // If all records were deleted, success message should be visible in
+        // lightbox, and delete button should be gone after lightbox is closed.
+        $this->assertEquals(
+            'Your saved item(s) were deleted.',
+            $this->findCss($page, '.modal .alert-success')->getText()
+        );
+        $this->closeLightbox($page, true);
+        $this->unfindCss($page, 'button[name="delete"]');
+    }
+
+    /**
      * Test that the export control works.
      *
      * @return void
      */
-    public function testBulkExport()
+    public function testBulkExport(): void
     {
         $page = $this->setUpGenericBulkTest();
         $button = $this->findCss($page, '#ribbon-export');
@@ -254,7 +303,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkPrint()
+    public function testBulkPrint(): void
     {
         $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();

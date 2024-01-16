@@ -33,6 +33,11 @@ use Laminas\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Solr spelling processor.
  *
@@ -130,10 +135,10 @@ class SpellingProcessor
     public function tokenize($input)
     {
         // Exclusion list of useless tokens:
-        $joins = ["AND", "OR", "NOT"];
+        $joins = ['AND', 'OR', 'NOT'];
 
         // Strip out parentheses -- irrelevant for tokenization:
-        $paren = ["(" => " ", ")" => " "];
+        $paren = ['(' => ' ', ')' => ' '];
         $input = trim(strtr($input, $paren));
 
         // Base of this algorithm comes straight from PHP doc example by
@@ -142,7 +147,7 @@ class SpellingProcessor
         $token = strtok($input, " \t");
         while ($token !== false) {
             // find double quoted tokens
-            if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
+            if (str_starts_with($token, '"') && !str_ends_with($token, '"')) {
                 $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
@@ -156,7 +161,7 @@ class SpellingProcessor
         // the tokenization process added the quote, which will break spelling
         // replacements. We need to strip it back off again:
         $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
-        if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
+        if ($last && str_ends_with($last, '"') && !str_ends_with($input, '"')) {
             $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
         }
         return $tokens;
@@ -260,7 +265,7 @@ class SpellingProcessor
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
-            $targetTerm = "";
+            $targetTerm = '';
             foreach ($this->tokenize($query) as $token) {
                 // Is the term part of the current token?
                 if (str_contains($token, (string)$term)) {
@@ -279,7 +284,7 @@ class SpellingProcessor
                 }
             }
             // If no tokens were found, just look for the suggestion 'as is'
-            if ($targetTerm == "") {
+            if ($targetTerm == '') {
                 $targetTerm = $term;
                 $returnArray = $this->doSingleReplace(
                     $term,
@@ -337,7 +342,7 @@ class SpellingProcessor
             // Only generate expansions if enabled in config
             if ($this->expand) {
                 // Parentheses differ for shingles
-                $replacement = (strstr($targetTerm, " ") !== false)
+                $replacement = (strstr($targetTerm, ' ') !== false)
                     ? "(($targetTerm) OR ($replacement))"
                     : "($targetTerm OR $replacement)";
                 $returnArray[$targetTerm]['suggestions'][$label]['expand_term']

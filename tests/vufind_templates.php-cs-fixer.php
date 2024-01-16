@@ -5,7 +5,7 @@ $finder->in(__DIR__ . '/../themes')
     ->name('*.phtml');
 
 $rules = [
-    '@PHP80Migration' => true,
+    '@PHP81Migration' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
     'binary_operator_spaces' => [
@@ -17,11 +17,19 @@ $rules = [
     'concat_space' => ['spacing' => 'one'],
     'ereg_to_preg' => true,
     'get_class_to_class_keyword' => true,
+    'global_namespace_import' => [
+        'import_functions' => true,
+        'import_classes' => null,
+    ],
     'is_null' => true,
     'lowercase_cast' => true,
     'magic_constant_casing' => true,
     'modernize_strpos' => true,
     'native_function_casing' => true,
+    'native_function_invocation' => [
+        'strict' => true,
+        'scope' => 'namespaced',
+    ],
     'no_alias_functions' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_empty_comment' => true,
@@ -35,18 +43,22 @@ $rules = [
     'no_singleline_whitespace_before_semicolons' => true,
     'no_spaces_around_offset' => true,
     'no_trailing_whitespace_in_comment' => false, // disabled for readability; we want < ?php // comment ? > not < ?php //comment? >
+    'no_unneeded_braces' => true,
     'no_unneeded_control_parentheses' => true,
-    'no_unneeded_curly_braces' => true,
     'no_unneeded_final_method' => true,
     'no_unreachable_default_argument_value' => true,
     'no_unused_imports' => true,
     'no_useless_return' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
-    'ordered_imports' => true,
+    'ordered_imports' => [
+        'imports_order' => ['class', 'function', 'const'],
+        'sort_algorithm' => 'alpha',
+    ],
     'phpdoc_no_access' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,
+    'single_quote' => true,
     'standardize_not_equals' => true,
     'statement_indentation' => false, // disabled because it messes up indentation of php tags
     'ternary_operator_spaces' => true,

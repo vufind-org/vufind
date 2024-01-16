@@ -69,6 +69,16 @@ $config = [
                     ],
                 ],
             ],
+            'legacy-blender-results' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/Search/Blended',
+                    'defaults' => [
+                        'controller' => 'Blender',
+                        'action'     => 'Results',
+                    ],
+                ],
+            ],
             'legacy-bookcover' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -139,6 +149,7 @@ $config = [
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\BlenderController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\BrowZineController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
@@ -210,6 +221,8 @@ $config = [
             'authority' => 'VuFind\Controller\AuthorityController',
             'AuthorityRecord' => 'VuFind\Controller\AuthorityRecordController',
             'authorityrecord' => 'VuFind\Controller\AuthorityRecordController',
+            'Blender' => 'VuFind\Controller\BlenderController',
+            'blender' => 'VuFind\Controller\BlenderController',
             'Browse' => 'VuFind\Controller\BrowseController',
             'browse' => 'VuFind\Controller\BrowseController',
             'BrowZine' => 'VuFind\Controller\BrowZineController',
@@ -380,6 +393,7 @@ $config = [
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
+            'VuFind\Connection\ExternalVuFind' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Connection\LibGuides' => 'VuFind\Connection\LibGuidesFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
@@ -453,6 +467,7 @@ $config = [
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Search\BackendManager' => 'VuFind\Search\BackendManagerFactory',
+            'VuFind\Search\Explanation\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
@@ -644,6 +659,7 @@ $config = [
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
             'resolver_driver' => [ /* See VuFind\Resolver\Driver\PluginManager for defaults */ ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
+            'search_explanation' => [ /* See VuFind\Search\Explanation\PluginManager for defaults */ ],
             'search_facetcache' => [ /* See VuFind\Search\FacetCache\PluginManager for defaults */ ],
             'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
@@ -699,7 +715,7 @@ $recordRoutes = [
 // Define non tab record actions
 $nonTabRecordActions = [
     'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
-    'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+    'Cite', 'Explain', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
     'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating',
 ];
 
@@ -714,6 +730,7 @@ $dynamicRoutes = [
 $staticRoutes = [
     'Alphabrowse/Home', 'Author/FacetList', 'Author/Home', 'Author/Search',
     'Authority/FacetList', 'Authority/Home', 'Authority/Search',
+    'Blender/Advanced', 'Blender/Home', 'Blender/Results',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'BrowZine/Home', 'BrowZine/Search',
@@ -756,8 +773,8 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
-    'Search/Advanced', 'Search/Blended', 'Search/CollectionFacetList',
-    'Search/EditMemory', 'Search/Email',
+    'Search/Advanced',
+    'Search/CollectionFacetList', 'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',
     'Search/Results', 'Search/Suggest', 'Search/Versions',
