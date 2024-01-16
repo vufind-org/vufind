@@ -250,19 +250,19 @@ var VuFind = (function VuFind() {
       method: 'GET',
       body: data
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(VuFind.translate('error_occurred'));
-      }
-      return response.text();
-    })
-    .then(htmlContent => {
-      element.innerHTML = updateCspNonce(htmlContent);
-    })
-    .catch(error => {
-      console.error('Request failed:', error);
-      element.innerHTML = VuFind.translate('error_occurred');
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(VuFind.translate('error_occurred'));
+        }
+        return response.text();
+      })
+      .then(htmlContent => {
+        element.innerHTML = updateCspNonce(htmlContent);
+      })
+      .catch(error => {
+        console.error('Request failed:', error);
+        element.innerHTML = VuFind.translate('error_occurred');
+      });
   };      
 
   var isPrinting = function() {
