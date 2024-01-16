@@ -40,7 +40,7 @@ use VuFind\OAuth2\Repository\AuthCodeRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AuthCodeRepositoryTest extends AbstractTokenRepositoryTest
+class AuthCodeRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Test auth code repository

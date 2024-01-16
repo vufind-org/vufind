@@ -117,29 +117,29 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getTestPathStackData(): array
+    public static function getTestPathStackData(): array
     {
-        $fixtureDir = $this->getStackedFixtureDir();
         return [
             [
                 // A file that exists only in the primary path:
                 'only-primary.ini',
-                $fixtureDir . 'primary/config/vufind/only-primary.ini',
+                'primary/config/vufind/only-primary.ini',
             ],
             [
                 // A file that exists both in the primary and secondary paths:
                 'both.ini',
-                $fixtureDir . 'primary/config/vufind/both.ini',
+                'primary/config/vufind/both.ini',
             ],
             [
                 // A file that exists in the secondary path as well as base path:
                 'facets.ini',
-                $fixtureDir . 'secondary/config/custom/facets.ini',
+                'secondary/config/custom/facets.ini',
             ],
             [
                 // A file that exists only in the base path:
                 'config.ini',
-                APPLICATION_PATH . '/config/vufind/config.ini',
+                'config/vufind/config.ini',
+                APPLICATION_PATH . '/',
             ],
         ];
     }
@@ -147,17 +147,18 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     /**
      * Test stacked path resolution
      *
-     * @param string $filename     Filename to check
-     * @param string $expectedPath Expected result
+     * @param string  $filename         Filename to check
+     * @param string  $expectedFilePath Expected result (minus base path)
+     * @param ?string $expectedBasePath Expected base path in result (null = use default fixture path)
      *
      * @dataProvider getTestPathStackData
      *
      * @return void
      */
-    public function testPathStack($filename, $expectedPath): void
+    public function testPathStack(string $filename, string $expectedFilePath, ?string $expectedBasePath = null): void
     {
         $this->assertEquals(
-            $expectedPath,
+            ($expectedBasePath ?? $this->getStackedFixtureDir()) . $expectedFilePath,
             $this->stackedResolver->getConfigPath($filename)
         );
     }

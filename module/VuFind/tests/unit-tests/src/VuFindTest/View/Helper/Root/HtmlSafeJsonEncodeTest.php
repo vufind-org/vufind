@@ -79,7 +79,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getJsonTests(): array
+    public static function getJsonTests(): array
     {
         return [
             'string with special characters'
