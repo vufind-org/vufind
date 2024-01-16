@@ -5,6 +5,9 @@ console.log('Copying dependencies...');
 // autocomplete.js
 await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autocomplete.js');
 
+// chart.js
+await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
+
 // jstree
 await copyFile('node_modules/jstree/dist/jstree.min.js', 'js/vendor/jsTree/jstree.min.js');
 

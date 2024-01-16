@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for SolrDefault-based record drivers that do not need a search service.
+ * Generic factory for explanation objects.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Hebis Verbundzentrale 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,37 +21,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\RecordDriver;
+namespace VuFind\Search\Explanation;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for SolrDefault-based record drivers that do not need a search service.
+ * Generic factory for explanation objects.
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
+class ExplanationFactory implements FactoryInterface
 {
-    /**
-     * Configuration file to read search settings from
-     *
-     * @var string
-     */
-    protected $searchIni = 'searches';
-
     /**
      * Create an object
      *
@@ -71,12 +69,21 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+        // Replace trailing "Explanation" with "Params" to get the params service:
+        $paramsService = preg_replace('/Explanation$/', 'Params', $requestedName);
+        // Replace leading namespace with "VuFind" if service is not available:
+        $paramsServiceAvailable = $container
+            ->get(\VuFind\Search\Params\PluginManager::class)->has($paramsService);
+        if (!$paramsServiceAvailable) {
+            $paramsService = preg_replace('/^[^\\\]+/', 'VuFind', $paramsService);
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get($this->searchIni);
-        $finalOptions = [null, $config];
-        return parent::__invoke($container, $requestedName, $finalOptions);
+        $params = $container->get(\VuFind\Search\Params\PluginManager::class)
+            ->get($paramsService);
+        return new $requestedName(
+            $params,
+            $container->get(\VuFindSearch\Service::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            ...($options ?: [])
+        );
     }
 }

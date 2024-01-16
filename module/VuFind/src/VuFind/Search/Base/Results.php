@@ -609,6 +609,28 @@ abstract class Results
     }
 
     /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        // Not implemented in the base class
+        return [];
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return ?float
+     */
+    public function getMaxScore()
+    {
+        // Not implemented in the base class
+        return null;
+    }
+
+    /**
      * Get extra data for the search.
      *
      * Extra data can be used to store local implementation-specific information.
