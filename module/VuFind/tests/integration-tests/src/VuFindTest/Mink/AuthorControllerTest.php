@@ -77,7 +77,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function authorPathsProvider(): array
+    public static function authorPathsProvider(): array
     {
         return [
             'home page' => ['/Author/Home'],

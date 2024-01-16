@@ -207,7 +207,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getPcAvailabilityData(): array
+    public static function getPcAvailabilityData(): array
     {
         return [
             [

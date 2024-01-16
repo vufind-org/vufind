@@ -66,7 +66,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function topPaginationProvider(): array
+    public static function topPaginationProvider(): array
     {
         return [
             [false],

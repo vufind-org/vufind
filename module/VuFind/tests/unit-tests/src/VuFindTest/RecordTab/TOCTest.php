@@ -59,7 +59,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
     }
