@@ -239,32 +239,30 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url, data, success) {
+  var loadHtml = async function loadHtml(_element, url, data) {
     var element = document.querySelector(_element);
   
     if (!element) {
       return;
     }
   
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        body: data
+      });
   
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
-        element.innerHTML = updateCspNonce(xhr.responseText);
-  
-        if (typeof success !== 'undefined') {
-          success(xhr.responseText, xhr.statusText, xhr);
-        }
+      if (!response.ok) {
+        throw new Error(VuFind.translate('error_occurred'));
       }
-    };
   
-    xhr.onerror = () => {
-      console.error('Request failed');
-    };
-  
-    xhr.send(data);
-  };  
+      const htmlContent = await response.text();
+      element.innerHTML = updateCspNonce(htmlContent);
+    } catch (error) {
+      console.error('Request failed:', error);
+      element.innerHTML = VuFind.translate('error_occurred');
+    }
+  };     
 
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
