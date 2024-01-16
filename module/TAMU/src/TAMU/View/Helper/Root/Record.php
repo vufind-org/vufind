@@ -70,12 +70,18 @@ class Record extends \VuFind\View\Helper\Root\Record
             if ($fieldCount > 0) {
 				foreach ($issnParent[$fieldCount - 1] as $subfield) {
 					foreach ($subfield as $subfield1) {
-						if ( $subfield1['code'] == 'y') {
+						if ( $subfield1['code'] == 'a') {
 							$issnSubField = $subfield1['data'];
+							break;
+						} elseif ( $subfield1['code'] == 'y') {
+							$issnSubField = $subfield1['data'];
+							break;
 						}
 					}
 				}
             }
+				
+				
 				
             if ($issnSubField) {
                 $fullTextData->issn = $issnSubField;
