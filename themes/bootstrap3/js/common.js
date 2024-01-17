@@ -239,31 +239,37 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url, data) {
-    var element = document.querySelector(_element);
-  
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);  
     if (!element) {
       return;
     }
   
     fetch(url, {
-      method: 'GET',
-      body: data
+      method: 'GET', 
+      body: data ? JSON.stringify(data) : null 
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(VuFind.translate('error_occurred'));
+          throw new Error(VuFind.translate('error_occurred')); 
         }
         return response.text();
       })
       .then(htmlContent => {
         element.innerHTML = updateCspNonce(htmlContent);
+        if (typeof success === 'function') {
+          success(htmlContent); 
+        }
       })
       .catch(error => {
         console.error('Request failed:', error);
         element.innerHTML = VuFind.translate('error_occurred');
+        if (typeof success === 'function') {
+          success(null, error); 
+        }
       });
-  };      
+  };
+  
 
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
