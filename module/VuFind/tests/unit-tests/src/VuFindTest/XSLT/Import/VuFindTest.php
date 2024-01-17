@@ -257,7 +257,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function nameProvider(): array
+    public static function nameProvider(): array
     {
         return [
             'single name' => ['foo', 'foo'],
@@ -271,7 +271,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isInvertedNameProvider(): array
+    public static function isInvertedNameProvider(): array
     {
         return [
             ['foo bar', false],
@@ -337,7 +337,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function titleSortLowerProvider(): array
+    public static function titleSortLowerProvider(): array
     {
         return [
             'basic lowercasing' => ['ABCDEF', 'abcdef'],

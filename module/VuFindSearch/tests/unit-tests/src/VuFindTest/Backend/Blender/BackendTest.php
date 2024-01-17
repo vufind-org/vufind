@@ -68,7 +68,7 @@ class BackendTest extends TestCase
      *
      * @var array
      */
-    protected $config = [
+    protected static $config = [
         'Backends' => [
             'Solr' => 'Local',
             'EDS' => 'Electronic Stuff',
@@ -239,7 +239,7 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    public function getSearchTestData(): array
+    public static function getSearchTestData(): array
     {
         $solrRecords = [
             [
@@ -317,7 +317,7 @@ class BackendTest extends TestCase
             array_slice($solrRecords, 13, 5),
             array_slice($edsRecords, 17, 5)
         );
-        $adaptiveConfig = $this->config;
+        $adaptiveConfig = static::$config;
         $adaptiveConfig['Blending']['adaptiveBlockSizes'] = [
             '5000-100000:5',
         ];
@@ -333,7 +333,7 @@ class BackendTest extends TestCase
             array_slice($solrRecords, 14, 7),
             array_slice($edsRecords, 14, 5)
         );
-        $noBoostConfig = $this->config;
+        $noBoostConfig = static::$config;
         unset($noBoostConfig['Blending']['initialResults']);
 
         $expectedRecordsTitleSearch = array_merge(
@@ -618,7 +618,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config($this->config),
+            new Config(static::$config),
             $this->mappings,
             $eventManager
         );
@@ -642,7 +642,7 @@ class BackendTest extends TestCase
      */
     public function testNonDelimitedBlenderBackendFacet(): void
     {
-        $config = $this->config;
+        $config = static::$config;
         unset($config['Advanced_Settings']);
         $backend = $this->getBackend($config);
         $expectedSolr = 240;
@@ -831,7 +831,7 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    public function getInvalidBlockSizes(): array
+    public static function getInvalidBlockSizes(): array
     {
         return [
             [
@@ -857,7 +857,7 @@ class BackendTest extends TestCase
      */
     public function testInvalidAdaptiveBlockSize($blockSizes): void
     {
-        $config = $this->config;
+        $config = static::$config;
         $config['Blending']['adaptiveBlockSizes'] = $blockSizes;
         $backend = $this->getBackend($config);
         $params = $this->getSearchParams([]);
@@ -1085,7 +1085,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config($config ?? $this->config),
+            new Config($config ?? static::$config),
             $mappings ?? $this->mappings,
             $eventManager
         );

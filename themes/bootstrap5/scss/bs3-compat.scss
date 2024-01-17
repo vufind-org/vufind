@@ -223,6 +223,10 @@ h6, .h6 {
   border: 0;
 }
 
+.fade.show {
+  @extend .fade, .in;
+}
+
 // See .nav > li > a in bootstrap.scss
 .nav.navbar-nav button.dropdown-toggle {
   color: inherit;

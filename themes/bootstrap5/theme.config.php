@@ -44,7 +44,8 @@ return [
         ['file' => 'truncate.js', 'priority' => 340],
         ['file' => 'trigger_print.js', 'priority' => 350],
         ['file' => 'observer_manager.js', 'priority' => 360],
-        ['file' => 'bs3-compat.js', 'priority' => 370],
+        ['file' => 'openurl.js', 'priority' => 370],
+        ['file' => 'bs3-compat.js', 'priority' => 380],
     ],
     /**
      * Configuration for a single or multiple favicons.

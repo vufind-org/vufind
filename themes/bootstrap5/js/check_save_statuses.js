@@ -1,4 +1,4 @@
-/*global escapeHtmlAttr, htmlEncode, userIsLoggedIn, AjaxRequestQueue, VuFind, unwrapJQuery */
+/*global userIsLoggedIn, AjaxRequestQueue, VuFind, unwrapJQuery */
 
 VuFind.register("saveStatuses", function ItemStatuses() {
   function displaySaveStatus(itemLists, el) {
@@ -6,13 +6,19 @@ VuFind.register("saveStatuses", function ItemStatuses() {
 
     if (itemLists.length > 0) {
       // If we got lists back, display them!
-      var html = '<ul>' + itemLists.map(function convertToLi(l) {
-        return '<li><a href="' + escapeHtmlAttr(l.list_url) + '">' +
-          htmlEncode(l.list_title) +
-          '</a></li>';
-      }).join('') + '</ul>';
+      var listEl = document.createElement("ul");
+      listEl.append(...itemLists.map(function convertToLi(l) {
+        const aEl = document.createElement("a");
+        aEl.setAttribute("href", l.list_url);
+        aEl.textContent = l.list_title;
+
+        const liEl = document.createElement("li");
+        liEl.append(aEl);
+        return liEl;
+      }));
+
       $item.find('.savedLists').addClass('loaded');
-      $item.find('.js-load').replaceWith(html);
+      $item.find('.js-load').replaceWith(listEl);
     } else {
       // If we got nothing back, remove the pending status:
       $item.find('.js-load').remove();

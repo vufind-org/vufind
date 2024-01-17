@@ -64,6 +64,10 @@ input[type=checkbox] {
 }
 .pagination {
   margin: 18px auto;
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .pagination > li > a,
 .pagination > li > span { padding: 4px 12px 3px; }

@@ -7,51 +7,51 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "vendor/font-awesome/v4-shims";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
-@import "twbs/bootstrap/scss/functions";
+@import "bootstrap/scss/functions";
 
 // Include any variable overrides here
 @import "bootstrap-variable-overrides";
 
 // Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
-@import "twbs/bootstrap/scss/variables";
-@import "twbs/bootstrap/scss/variables-dark";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
 
 // Include any map overrides here
 @import "bootstrap-map-overrides";
 
 // Include remainder of required parts
-@import "twbs/bootstrap/scss/maps";
-@import "twbs/bootstrap/scss/mixins";
-@import "twbs/bootstrap/scss/root";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/root";
 
 // Optionally include any other parts as needed
-@import "twbs/bootstrap/scss/alert";
-@import "twbs/bootstrap/scss/utilities";
-@import "twbs/bootstrap/scss/reboot";
-@import "twbs/bootstrap/scss/type";
-@import "twbs/bootstrap/scss/images";
-@import "twbs/bootstrap/scss/containers";
-@import "twbs/bootstrap/scss/grid";
-@import "twbs/bootstrap/scss/helpers";
-@import "twbs/bootstrap/scss/buttons";
-@import "twbs/bootstrap/scss/tables";
-@import "twbs/bootstrap/scss/nav";
-@import "twbs/bootstrap/scss/navbar";
-@import "twbs/bootstrap/scss/accordion";
-@import "twbs/bootstrap/scss/offcanvas";
-@import "twbs/bootstrap/scss/dropdown";
-@import "twbs/bootstrap/scss/transitions";
-@import "twbs/bootstrap/scss/modal";
-@import "twbs/bootstrap/scss/forms";
-@import "twbs/bootstrap/scss/badge";
-@import "twbs/bootstrap/scss/breadcrumb";
-@import "twbs/bootstrap/scss/pagination";
-@import "twbs/bootstrap/scss/tooltip";
-@import "twbs/bootstrap/scss/card";
-@import "twbs/bootstrap/scss/popover";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/utilities";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/accordion";
+@import "bootstrap/scss/offcanvas";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/popover";
 
 // Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
-@import "twbs/bootstrap/scss/utilities/api";
+@import "bootstrap/scss/utilities/api";
 
 // Include variables
 @import "variables";
@@ -502,7 +502,7 @@ ul.list-group {
 @media screen and (max-width: 768px) {
   .table-responsive {
     border: none;
-    thead {
+    thead, tfoot > tr > th {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -512,14 +512,14 @@ ul.list-group {
       clip: rect(0, 0, 0, 0);
       border: 0;
     }
-    tr {
+    tbody > tr {
       display: block;
       margin-bottom: $line-height-computed;
       border-left: 1px solid $table-border-color;
       border-right: 1px solid $table-border-color;
       border-bottom: 4px solid $table-border-color;
     }
-    td {
+    td, tbody > tr > th {
       display: flex;
       align-items: first baseline;
       background: #fff;
@@ -531,8 +531,11 @@ ul.list-group {
         content: attr(data-label);
       }
     }
-    td:nth-child(even) {
+    tbody > tr > td:nth-child(even) {
       background-color: $table-bg-accent;
+    }
+    tfoot > tr > td {
+      border-top: none;
     }
   }
 }

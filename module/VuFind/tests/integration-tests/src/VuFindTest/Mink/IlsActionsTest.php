@@ -653,7 +653,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function loanHistoryWithPurgeDisabledProvider(): array
+    public static function loanHistoryWithPurgeDisabledProvider(): array
     {
         return [
             [false, false],

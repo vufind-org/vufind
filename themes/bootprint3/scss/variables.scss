@@ -1,6 +1,4 @@
-$primary: #619144;
-
-//$font-size-base: 13px;
+$brand-primary: #619144;
 
 $padding-base-vertical   : 3px;
 $padding-base-horizontal : 5px;
@@ -14,7 +12,7 @@ $border-radius-base : 3px;
 $border-radius-large: 5px;
 $border-radius-small: 2px;
 
-$input-border-focus: $primary;
+$input-border-focus: $brand-primary;
 
 $legend-border-color: #777; // $gray-light
 

@@ -297,7 +297,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getLinkProvider(): array
+    public static function getLinkProvider(): array
     {
         return [
             'no hidden filters' => ['http://foo', '?', '', 'http://foo'],

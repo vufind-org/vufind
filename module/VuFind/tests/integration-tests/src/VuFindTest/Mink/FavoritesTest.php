@@ -660,7 +660,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getListTagData(): array
+    public static function getListTagData(): array
     {
         $defaultChannelConfig = ['tags' => ['channel'], 'displayPublicLists' => false];
         return [

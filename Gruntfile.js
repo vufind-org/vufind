@@ -16,9 +16,13 @@ module.exports = function(grunt) {
     var parts = file.split('/');
     parts.pop(); // eliminate filename
 
-    // initialize search path with directory containing LESS file
+    // initialize search path with directory containing the LESS or SCSS file
     var retVal = [];
     retVal.push(parts.join('/'));
+    retVal.push(parts.join('/') + '/vendor/');
+
+    var themeBase = parts.slice(0, -1);
+    retVal.push(themeBase.join('/') + '/node_modules/');
 
     // Iterate through theme.config.php files collecting parent themes in search path:
     while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
@@ -42,6 +46,10 @@ module.exports = function(grunt) {
 
       parts[1] = matches[1];
       retVal.push(parts.join('/') + '/');
+      retVal.push(parts.join('/') + '/vendor/');
+
+      var parentThemeBase = parts.slice(0, -1);
+      retVal.push(parentThemeBase.join('/') + '/node_modules/');
     }
     return retVal;
   }
@@ -78,7 +86,8 @@ module.exports = function(grunt) {
     'scss': {
       'dart-sass': {
         options: {
-          outputStyle: 'compressed'
+          outputStyle: 'compressed',
+          quietDeps: true
         }
       }
     },
@@ -258,6 +267,7 @@ module.exports = function(grunt) {
           }
         }
         config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+        // This allows loading of styles from composer dependencies:
         config.options.includePaths.push('vendor/');
 
         sassConfig[themeList[i]] = config;
