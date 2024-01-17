@@ -279,6 +279,10 @@ VuFind.register('search', function search() {
       showError('ERROR: data-backend not set for record list');
       return;
     }
+    if (recordList.classList.contains('loading')) {
+      return;
+    }
+    recordList.classList.add('loading');
     const history = recordList.dataset.history;
 
     const loadingOverlay = document.createElement('div');
@@ -351,9 +355,11 @@ VuFind.register('search', function search() {
         VuFind.initResultScripts(jsRecordListSelector);
         initPagination();
         VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
+        recordList.classList.remove('loading');
       })
       .catch((error) => {
         showError(VuFind.translate('error_occurred') + ' - ' + error);
+        recordList.classList.remove('loading');
       });
   };
 

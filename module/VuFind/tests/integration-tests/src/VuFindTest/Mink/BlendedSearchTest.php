@@ -109,27 +109,23 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getSearchData(): array
+    public static function getSearchData(): array
     {
         return [
             [
                 ['page' => 1],
-                $this->getExpectedLabels(1),
                 'Blender/Results',
             ],
             [
                 ['page' => 2],
-                $this->getExpectedLabels(2),
                 'Blender/Results',
             ],
             [
                 ['page' => 1],
-                $this->getExpectedLabels(1),
                 'Search/Blended', // legacy path
             ],
             [
                 ['page' => 2],
-                $this->getExpectedLabels(2),
                 'Search/Blended', // legacy path
             ],
         ];
@@ -138,16 +134,16 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test blended search
      *
-     * @param array  $queryParams    Query parameters
-     * @param array  $expectedLabels Expected labels
-     * @param string $path           URL path
+     * @param array  $queryParams Query parameters
+     * @param string $path        URL path
      *
      * @dataProvider getSearchData
      *
      * @return void
      */
-    public function testSearch(array $queryParams, array $expectedLabels, string $path): void
+    public function testSearch(array $queryParams, string $path): void
     {
+        $expectedLabels = $this->getExpectedLabels($queryParams['page']);
         $this->changeConfigs(
             [
                 'config' => [

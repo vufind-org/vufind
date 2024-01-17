@@ -466,6 +466,7 @@ $config = [
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Search\BackendManager' => 'VuFind\Search\BackendManagerFactory',
+            'VuFind\Search\Explanation\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
@@ -656,6 +657,7 @@ $config = [
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
             'resolver_driver' => [ /* See VuFind\Resolver\Driver\PluginManager for defaults */ ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
+            'search_explanation' => [ /* See VuFind\Search\Explanation\PluginManager for defaults */ ],
             'search_facetcache' => [ /* See VuFind\Search\FacetCache\PluginManager for defaults */ ],
             'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
@@ -711,7 +713,7 @@ $recordRoutes = [
 // Define non tab record actions
 $nonTabRecordActions = [
     'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
-    'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+    'Cite', 'Explain', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
     'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating',
 ];
 
