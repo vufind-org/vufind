@@ -34,6 +34,10 @@ namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
@@ -119,6 +123,13 @@ class SolrDefault extends DefaultRecord implements
     protected $searchService = null;
 
     /**
+     * If the explain feature is enabled
+     *
+     * @var bool
+     */
+    protected $explainEnabled = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
@@ -149,6 +160,8 @@ class SolrDefault extends DefaultRecord implements
         $this->containerLinking
             = !isset($mainConfig->Hierarchy->simpleContainerLinks)
             ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+
+        $this->explainEnabled = $searchSettings->Explain->enabled ?? false;
 
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
@@ -324,5 +337,15 @@ class SolrDefault extends DefaultRecord implements
     public function getWorkKeys()
     {
         return $this->fields['work_keys_str_mv'] ?? [];
+    }
+
+    /**
+     * Get if the explain features is enabled.
+     *
+     * @return bool
+     */
+    public function explainEnabled()
+    {
+        return $this->explainEnabled;
     }
 }

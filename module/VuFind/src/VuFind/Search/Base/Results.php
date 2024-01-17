@@ -34,6 +34,14 @@ use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
 
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function get_class;
+use function in_array;
+use function is_callable;
+use function is_object;
+
 /**
  * Abstract results search model.
  *
@@ -520,7 +528,7 @@ abstract class Results
     protected function startQueryTimer()
     {
         // Get time before the query
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryStartTime = $time[1] + $time[0];
     }
 
@@ -532,7 +540,7 @@ abstract class Results
      */
     protected function stopQueryTimer()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryEndTime = $time[1] + $time[0];
         $this->queryTime = $this->queryEndTime - $this->queryStartTime;
     }
@@ -598,6 +606,28 @@ abstract class Results
             $this->performAndProcessSearch();
         }
         return $this->suggestions;
+    }
+
+    /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        // Not implemented in the base class
+        return [];
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return ?float
+     */
+    public function getMaxScore()
+    {
+        // Not implemented in the base class
+        return null;
     }
 
     /**
@@ -829,6 +859,11 @@ abstract class Results
             = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
             ? $this->getOptions()->getHierarchicalFacets()
             : [];
+        $hierarchicalFacetSortSettings
+            = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
+            ? $this->getOptions()->getHierarchicalFacetSortSettings()
+            : [];
+
         foreach (array_keys($filter) as $field) {
             $data = $facetList[$field] ?? [];
             // Skip empty arrays:
@@ -844,6 +879,7 @@ abstract class Results
             $translate = in_array($field, $translatedFacets);
             $hierarchical = in_array($field, $hierarchicalFacets);
             $operator = $this->getParams()->getFacetOperator($field);
+            $resultList = [];
             // Loop through values:
             foreach ($data as $value => $count) {
                 $displayText = $this->getParams()
@@ -865,7 +901,7 @@ abstract class Results
                     || $this->getParams()->hasFilter("~$field:" . $value);
 
                 // Store the collected values:
-                $result[$field]['list'][] = compact(
+                $resultList[] = compact(
                     'value',
                     'displayText',
                     'count',
@@ -873,6 +909,17 @@ abstract class Results
                     'isApplied'
                 );
             }
+
+            if ($hierarchical) {
+                $sort = $hierarchicalFacetSortSettings[$field]
+                    ?? $hierarchicalFacetSortSettings['*'] ?? 'count';
+                $this->hierarchicalFacetHelper->sortFacetList($resultList, $sort);
+
+                $resultList
+                    = $this->hierarchicalFacetHelper->buildFacetArray($field, $resultList);
+            }
+
+            $result[$field]['list'] = $resultList;
         }
         return $result;
     }

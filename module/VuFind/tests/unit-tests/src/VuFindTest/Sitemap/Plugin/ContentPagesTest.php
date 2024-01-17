@@ -35,6 +35,8 @@ use VuFind\Sitemap\Plugin\ContentPagesFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\ThemeInfo;
 
+use function func_get_args;
+
 /**
  * ContentPages Plugin Test Class
  *

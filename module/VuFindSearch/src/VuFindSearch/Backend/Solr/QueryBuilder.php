@@ -36,6 +36,10 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * SOLR QueryBuilder.
  *
@@ -418,8 +422,8 @@ class QueryBuilder implements QueryBuilderInterface
                 $searchString = trim($searchString);
                 if (
                     strlen($searchString) > 1
-                    && substr($searchString, 0, 1) == '"'
-                    && substr($searchString, -1, 1) == '"'
+                    && str_starts_with($searchString, '"')
+                    && str_ends_with($searchString, '"')
                 ) {
                     return $this->exactSpecs[$handler];
                 }

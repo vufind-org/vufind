@@ -34,6 +34,9 @@ use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
+use function is_array;
+use function strlen;
+
 /**
  * Book Bag / Bulk Action Controller
  *
@@ -110,7 +113,7 @@ class CartController extends AbstractBase
         // ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (substr($referer, -strlen($bulk)) != $bulk) {
+        if (!str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -170,9 +173,9 @@ class CartController extends AbstractBase
             } else {
                 $addItems = $this->getCart()->addItems($ids);
                 if (!$addItems['success']) {
-                    $msg = $this->translate('bookbag_full_msg') . ". "
-                        . $addItems['notAdded'] . " "
-                        . $this->translate('items_already_in_bookbag') . ".";
+                    $msg = $this->translate('bookbag_full_msg') . '. '
+                        . $addItems['notAdded'] . ' '
+                        . $this->translate('items_already_in_bookbag') . '.';
                     $this->flashMessenger()->addMessage($msg, 'info');
                 }
             }

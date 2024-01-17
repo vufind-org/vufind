@@ -35,6 +35,8 @@ use VuFind\Cover\Loader;
 use VuFind\View\Helper\Root\Record;
 use VuFindTheme\ThemeInfo;
 
+use function is_array;
+
 /**
  * Record view helper Test Class
  *
@@ -295,7 +297,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getLinkProvider(): array
+    public static function getLinkProvider(): array
     {
         return [
             'no hidden filters' => ['http://foo', '?', '', 'http://foo'],

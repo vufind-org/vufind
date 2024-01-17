@@ -53,6 +53,9 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
+use function count;
+use function is_object;
+
 /**
  * Abstract factory for SOLR backends.
  *
@@ -476,6 +479,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $timeout = $this->getIndexConfig('timeout', 30);
         $searchConfig = $this->config->get($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
+
+        if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
+            $defaultFields .= ',score';
+        }
 
         $handlers = [
             'select' => [

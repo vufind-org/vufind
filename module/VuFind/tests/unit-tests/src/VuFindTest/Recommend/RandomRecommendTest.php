@@ -75,32 +75,32 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     public function testCanSetSettings()
     {
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
-        $this->recommend->setConfig("SolrWeb:5:mixed:disregard:20:facet1:value1:facet2:value2");
+        $this->recommend->setConfig('SolrWeb:5:mixed:disregard:20:facet1:value1:facet2:value2');
         $this->assertEquals(
-            "SolrWeb",
+            'SolrWeb',
             $this->getProperty($this->recommend, 'backend')
         );
         $this->assertEquals(
-            "5",
+            '5',
             $this->getProperty($this->recommend, 'limit')
         );
         $this->assertEquals(
-            "mixed",
+            'mixed',
             $this->getProperty($this->recommend, 'displayMode')
         );
         $this->assertEquals(
-            "disregard",
+            'disregard',
             $this->getProperty($this->recommend, 'mode')
         );
         $this->assertEquals(
-            "20",
+            '20',
             $this->getProperty($this->recommend, 'minimum')
         );
         $filters = $this->getProperty($this->recommend, 'filters');
         $this->assertIsArray($filters);
         $this->assertCount(2, $filters);
-        $this->assertEquals("facet1:value1", $filters[0]);
-        $this->assertEquals("facet2:value2", $filters[1]);
+        $this->assertEquals('facet1:value1', $filters[0]);
+        $this->assertEquals('facet2:value2', $filters[1]);
     }
 
     /**
@@ -113,23 +113,23 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
         $this->recommend->setConfig('');
         $this->assertEquals(
-            "Solr",
+            'Solr',
             $this->getProperty($this->recommend, 'backend')
         );
         $this->assertEquals(
-            "10",
+            '10',
             $this->getProperty($this->recommend, 'limit')
         );
         $this->assertEquals(
-            "standard",
+            'standard',
             $this->getProperty($this->recommend, 'displayMode')
         );
         $this->assertEquals(
-            "retain",
+            'retain',
             $this->getProperty($this->recommend, 'mode')
         );
         $this->assertEquals(
-            "0",
+            '0',
             $this->getProperty($this->recommend, 'minimum')
         );
         $this->assertEquals(
@@ -164,19 +164,19 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\RandomCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0]->getAllTerms() === "john smith"
+                && $command->getTargetIdentifier() === 'Solr'
+                && $command->getArguments()[0]->getAllTerms() === 'john smith'
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
                     ['spellcheck' => ['true'],
                     'fq' => ['facet1:"value1"', 'facet2:"value2"'],
-                    'hl' => ["false"]];
+                    'hl' => ['false']];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->will($this->returnValue($commandObj));
 
-        $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
+        $recommend->setConfig('Solr:10:mixed:retain:20:facet1:value1:facet2:value2');
         $recommend->init($params, $request);
     }
 
@@ -196,7 +196,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
 
         $paramManager->expects($this->once())->method('get')
-            ->with($this->equalTo("Solr"))
+            ->with($this->equalTo('Solr'))
             ->will($this->returnValue($params));
 
         // Use Solr since some Base components are abstract:
@@ -212,19 +212,19 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\RandomCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0]->getAllTerms() === "john smith"
+                && $command->getTargetIdentifier() === 'Solr'
+                && $command->getArguments()[0]->getAllTerms() === 'john smith'
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
                     ['spellcheck' => ['true'],
                     'fq' => ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl' => ["false"]];
+                    'facet2:"value2"'], 'hl' => ['false']];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->will($this->returnValue($commandObj));
 
-        $recommend->setConfig("Solr:10:mixed:disregard:20:facet1:value1:facet2:value2");
+        $recommend->setConfig('Solr:10:mixed:disregard:20:facet1:value1:facet2:value2');
         $recommend->init($params, $request);
     }
 
@@ -241,7 +241,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
-        $records = ["1", "2", "3", "4", "5"];
+        $records = ['1', '2', '3', '4', '5'];
 
         // Use Solr since some Base components are abstract:
         $results = $this->getSolrResults();
@@ -263,13 +263,13 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\RandomCommand::class
-                && $command->getTargetIdentifier() === "Solr"
-                && $command->getArguments()[0]->getAllTerms() === "john smith"
+                && $command->getTargetIdentifier() === 'Solr'
+                && $command->getArguments()[0]->getAllTerms() === 'john smith'
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
                     ['spellcheck' => ['true'],
                     'fq' => ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl' => ["false"]];
+                    'facet2:"value2"'], 'hl' => ['false']];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -288,7 +288,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      */
     public function testWillReturnEmptyForMinimumResultLimit()
     {
-        $recommend = $this->getConfiguredModule("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
+        $recommend = $this->getConfiguredModule('Solr:10:mixed:retain:20:facet1:value1:facet2:value2');
         $output = $recommend->getResults();
         $this->assertEmpty($output);
     }
@@ -300,9 +300,9 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      */
     public function testWillReturnResults()
     {
-        $recommend = $this->getConfiguredModule("Solr:10:mixed:retain:0:facet1:value1:facet2:value2");
+        $recommend = $this->getConfiguredModule('Solr:10:mixed:retain:0:facet1:value1:facet2:value2');
         $output = $recommend->getResults();
-        $this->assertEquals(["1", "2", "3", "4", "5"], $output);
+        $this->assertEquals(['1', '2', '3', '4', '5'], $output);
     }
 
     /**
@@ -312,8 +312,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      */
     public function testCanSetDisplayMode()
     {
-        $this->recommend->setConfig("Solr:10:mixed");
-        $this->assertEquals("mixed", $this->recommend->getDisplayMode());
+        $this->recommend->setConfig('Solr:10:mixed');
+        $this->assertEquals('mixed', $this->recommend->getDisplayMode());
     }
 
     /**

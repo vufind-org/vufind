@@ -1,8 +1,5 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
-
-// IE 9< console polyfill
-window.console = window.console || { log: function polyfillLog() {} };
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -14,6 +11,9 @@ var VuFind = (function VuFind() {
 
   var _icons = {};
   var _translations = {};
+
+  var _elementBase;
+  var _iconsCache = {};
 
   // Emit a custom event
   // Recommendation: prefix with vf-
@@ -68,32 +68,42 @@ var VuFind = (function VuFind() {
     return null;
   };
 
-  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
-    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
-      var $form = $(this);
-      // Disable submit elements via setTimeout so that the submit button value gets
-      // included in the submitted data before being disabled:
-      setTimeout(
-        function disableSubmit() {
-          $form.find('[type=submit]').prop('disabled', true);
-        },
-        0
-      );
-    });
+  var initDisableSubmitOnClick = () => {
+    var forms = document.querySelectorAll("[data-disable-on-submit]");
+    forms.forEach(form =>
+      form.addEventListener("submit", () => {
+        var submitButtons = form.querySelectorAll('[type="submit"]');
+        // Disable submit elements via setTimeout so that the submit button value gets
+        // included in the submitted data before being disabled:
+        setTimeout(() => {
+          submitButtons.forEach(button => button.disabled = true);
+        }, 0);
+      }));
   };
 
   var initClickHandlers = function initClickHandlers() {
+    let checkClickHandlers = function (event, elem) {
+      if (elem.hasAttribute('data-click-callback')) {
+        return evalCallback(elem.dataset.clickCallback, event, {});
+      }
+      if (elem.hasAttribute('data-click-set-checked')) {
+        document.getElementById(elem.dataset.clickSetChecked).checked = true;
+        event.preventDefault();
+      }
+      if (elem.hasAttribute('data-toggle-aria-expanded')) {
+        elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+        event.preventDefault();
+      }
+      // Check also parent node for spans (e.g. a button with icon)
+      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+        checkClickHandlers(event, elem.parentNode);
+      }
+    };
+
     window.addEventListener(
       'click',
       function handleClick(event) {
-        let elem = event.target;
-        if (elem.hasAttribute('data-click-callback')) {
-          return evalCallback(elem.dataset.clickCallback, event, {});
-        }
-        if (elem.hasAttribute('data-click-set-checked')) {
-          document.getElementById(elem.dataset.clickSetChecked).checked = true;
-          event.preventDefault();
-        }
+        checkClickHandlers(event, event.target);
       }
     );
     window.addEventListener(
@@ -105,18 +115,6 @@ var VuFind = (function VuFind() {
         }
       }
     );
-  };
-
-  var init = function init() {
-    for (var i = 0; i < _submodules.length; i++) {
-      if (this[_submodules[i]].init) {
-        this[_submodules[i]].init();
-      }
-    }
-    _initialized = true;
-
-    initDisableSubmitOnClick();
-    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -146,46 +144,60 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name, attrs = {}) {
+
+  /**
+   * Get an icon identified by a name.
+   *
+   * @param {String} name          Name of the icon to create
+   * @param {Object} attrs         Object containing attributes,
+   *                               key is the attribute of an HTMLElement,
+   *                               value is the values to add for the attribute.
+   * @param {Boolean}   returnElement [Optional] Should the function return an HTMLElement.
+   *                               Default is false.
+   *
+   * @returns {String|HTMLElement}
+   */
+  var icon = function icon(name, attrs = {}, returnElement = false) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
+    // Create a template element for icon function
+    if (!_elementBase) {
+      _elementBase = document.createElement('div');
+    }
+    const cacheKey = `${name}||${JSON.stringify(attrs)}`;
+    if (_iconsCache[cacheKey]) {
+      return returnElement
+        ? _iconsCache[cacheKey].cloneNode(true)
+        : _iconsCache[cacheKey].outerHTML;
+    }
 
-    var html = _icons[name];
+    const clone = _elementBase.cloneNode();
+    clone.insertAdjacentHTML('afterbegin', _icons[name]);
+    let element = clone.firstChild;
 
     // Add additional attributes
-    function addAttrs(_html, _attrs = {}) {
-      var mod = String(_html);
-      for (var attr in _attrs) {
-        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
-          var sliceStart = html.indexOf(" ");
-          var sliceEnd = sliceStart;
-          var value = _attrs[attr];
-          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = html.match(regex);
-          if (existing) {
-            sliceStart = existing.index;
-            sliceEnd = sliceStart + existing[0].length;
-            value = existing[2] + " " + value;
-          }
-          mod = mod.slice(0, sliceStart) +
-              " " + attr + '="' + value + '"' +
-              mod.slice(sliceEnd);
+    function addAttrs(_element, _attrs = {}) {
+      Object.keys(_attrs).forEach(key => {
+        if (key !== 'class') {
+          _element.setAttribute(key, _attrs[key]);
+          return;
         }
-      }
-      return mod;
+        let newAttrs = _attrs[key].split(" ");
+        const oldAttrs = _element.getAttribute(key) || [];
+        const newAttrsSet = new Set([...newAttrs, ...oldAttrs.split(" ")]);
+        _element.className = Array.from(newAttrsSet).join(" ");
+      });
     }
 
     if (typeof attrs == "string") {
-      return addAttrs(html, { class: attrs });
+      addAttrs(element, { class: attrs });
+    } else if (Object.keys(attrs).length > 0) {
+      addAttrs(element, attrs);
     }
-
-    if (Object.keys(attrs).length > 0) {
-      return addAttrs(html, attrs);
-    }
-
-    return html;
+    _iconsCache[cacheKey] = element;
+    return returnElement ? element.cloneNode(true) : element.outerHTML;
   };
   // Icon shortcut methods
   var spinner = function spinner(extraClass = "") {
@@ -258,6 +270,67 @@ var VuFind = (function VuFind() {
     _searchId = searchId;
   };
 
+  function setupQRCodeLinks(_container) {
+    var container = _container || document.body;
+    var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
+    qrcodeLinks.forEach((link) => {
+      link.addEventListener('click', function toggleQRCode() {
+        var holder = this.nextElementSibling;
+        if (holder.querySelectorAll('img').length === 0) {
+          // We need to insert the QRCode image
+          var template = holder.querySelector('.qrCodeImgTag').innerHTML;
+          holder.innerHTML = template;
+        }
+      });
+    });
+  }
+
+  /**
+   * Initialize result page scripts.
+   *
+   * @param {string|JQuery} container
+   */
+  var initResultScripts = function initResultScripts(container) {
+    let jqContainer = typeof container === 'string' ? $(container) : container;
+    if (typeof this.openurl !== 'undefined') {
+      this.openurl.init(jqContainer);
+    }
+    if (typeof this.itemStatuses !== 'undefined') {
+      this.itemStatuses.init(jqContainer);
+    }
+    if (typeof this.saveStatuses !== 'undefined') {
+      this.saveStatuses.init(jqContainer);
+    }
+    if (typeof this.recordVersions !== 'undefined') {
+      this.recordVersions.init(jqContainer);
+    }
+    if (typeof this.cart !== 'undefined') {
+      this.cart.registerToggles(jqContainer);
+    }
+    if (typeof this.embedded !== 'undefined') {
+      this.embedded.init(jqContainer);
+    }
+    this.lightbox.bind(jqContainer);
+    setupQRCodeLinks(jqContainer[0]);
+    if (typeof loadCovers === 'function') {
+      loadCovers();
+    }
+  };
+
+  var init = function init() {
+    for (var i = 0; i < _submodules.length; i++) {
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
+    }
+    _initialized = true;
+
+    initDisableSubmitOnClick();
+    initClickHandlers();
+    // handle QR code links
+    setupQRCodeLinks();
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -281,17 +354,20 @@ var VuFind = (function VuFind() {
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
-    setCurrentSearchId: setCurrentSearchId
+    setCurrentSearchId: setCurrentSearchId,
+    initResultScripts: initResultScripts,
+    setupQRCodeLinks: setupQRCodeLinks
   };
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
-  if (value) {
-    return $('<div />').text(value).html();
-  } else {
-    return '';
-  }
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**
@@ -382,7 +458,7 @@ function deparam(url) {
     if (name.length === 0) {
       continue;
     }
-    if (name.substring(name.length - 2) === '[]') {
+    if (name.endsWith('[]')) {
       name = name.substring(0, name.length - 2);
       if (!request[name]) {
         request[name] = [];
@@ -442,12 +518,16 @@ function phoneNumberFormHandler(numID, regionCode) {
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = $('.g-recaptcha:empty');
+    var captchas = document.querySelectorAll('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
+      var captchaElement = captchas[i];
+      var captchaData = captchaElement.dataset;
+      var captchaId = grecaptcha.render(captchaElement, captchaData);
+      captchaElement.dataset.captchaId = captchaId;
     }
   }
 }
+
 function resetCaptcha($form) {
   if (typeof grecaptcha !== 'undefined') {
     var captcha = $form.find('.g-recaptcha');
@@ -481,75 +561,112 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var $searchbox = $('#searchForm_lookfor.autocomplete');
-  if ($searchbox.length === 0) {
-    return;
-  }
-
-  const typeahead = new Autocomplete({
-    rtl: $(document.body).hasClass("rtl"),
-    maxResults: 10,
-    loadingString: VuFind.translate('loading_ellipsis'),
-  });
-
-  let cache = {};
-  const input = $searchbox[0];
-  typeahead(input, function vufindACHandler(query, callback) {
-    const classParams = extractClassParams(input);
-    const searcher = classParams.searcher;
-    const type = classParams.type ? classParams.type : $('#searchForm_type').val();
-
-    const cacheKey = searcher + "|" + type;
-    if (typeof cache[cacheKey] === "undefined") {
-      cache[cacheKey] = {};
-    }
-
-    if (typeof cache[cacheKey][query] !== "undefined") {
-      callback(cache[cacheKey][query]);
-      return;
-    }
-
-    var hiddenFilters = [];
-    $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-      hiddenFilters.push($(this).val());
-    });
-
-    $.ajax({
-      url: VuFind.path + '/AJAX/JSON',
-      data: {
-        q: query,
-        method: 'getACSuggestions',
-        searcher: searcher,
-        type: type,
-        hiddenFilters,
-      },
-      dataType: 'json',
-      success: function autocompleteJSON(json) {
-        const highlighted = json.data.suggestions.map(
-          (item) => ({
-            text: item.replaceAll("&", "&amp;")
-              .replaceAll("<", "&lt;")
-              .replaceAll(">", "&gt;")
-              .replaceAll(query, `<b>${query}</b>`),
-            value: item,
-          })
-        );
-        cache[cacheKey][query] = highlighted;
-        callback(highlighted);
+  var $searchboxes = $('input.autocomplete');
+  $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
+    const $searchbox = $(searchboxElement);
+    const formattingRules = $searchbox.data('autocompleteFormattingRules');
+    const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
+    const typePrefix = $searchbox.data('autocompleteTypePrefix');
+    const getFormattingRule = function getAutocompleteFormattingRule(type) {
+      if (typeof(formattingRules) !== "undefined") {
+        if (typeof(formattingRules[type]) !== "undefined") {
+          return formattingRules[type];
+        }
+        // If we're using combined handlers, we may need to use a backend-specific wildcard:
+        const typeParts = type.split("|");
+        if (typeParts.length > 1) {
+          const backendWildcard = typeParts[0] + "|*";
+          if (typeof(formattingRules[backendWildcard]) !== "undefined") {
+            return formattingRules[backendWildcard];
+          }
+        }
+        // Special case: alphabrowse options in combined handlers:
+        const alphabrowseRegex = /^External:.*\/Alphabrowse.*\?source=([^&]*)/;
+        const alphabrowseMatches = alphabrowseRegex.exec(type);
+        if (alphabrowseMatches && alphabrowseMatches.length > 1) {
+          const alphabrowseKey = "VuFind:Solr|alphabrowse_" + alphabrowseMatches[1];
+          if (typeof(formattingRules[alphabrowseKey]) !== "undefined") {
+            return formattingRules[alphabrowseKey];
+          }
+        }
+        // Global wildcard fallback:
+        if (typeof(formattingRules["*"]) !== "undefined") {
+          return formattingRules["*"];
+        }
       }
+      return "none";
+    };
+    const typeahead = new Autocomplete({
+      rtl: $(document.body).hasClass("rtl"),
+      maxResults: 10,
+      loadingString: VuFind.translate('loading_ellipsis'),
     });
-  });
 
-  // Bind autocomplete auto submit
-  if ($searchbox.hasClass("ac-auto-submit")) {
-    input.addEventListener("ac-select", (event) => {
-      const value = typeof event.detail === "string"
-        ? event.detail
-        : event.detail.value;
-      input.value = value;
-      $("#searchForm").trigger("submit");
+    let cache = {};
+    const input = $searchbox[0];
+    typeahead(input, function vufindACHandler(query, callback) {
+      const classParams = extractClassParams(input);
+      const searcher = classParams.searcher;
+      const selectedType = classParams.type
+        ? classParams.type
+        : $(typeFieldSelector ? typeFieldSelector : '#searchForm_type').val();
+      const type = (typePrefix ? typePrefix : "") + selectedType;
+      const formattingRule = getFormattingRule(type);
+
+      const cacheKey = searcher + "|" + type;
+      if (typeof cache[cacheKey] === "undefined") {
+        cache[cacheKey] = {};
+      }
+
+      if (typeof cache[cacheKey][query] !== "undefined") {
+        callback(cache[cacheKey][query]);
+        return;
+      }
+
+      var hiddenFilters = [];
+      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
+        hiddenFilters.push($(this).val());
+      });
+
+      $.ajax({
+        url: VuFind.path + '/AJAX/JSON',
+        data: {
+          q: query,
+          method: 'getACSuggestions',
+          searcher: searcher,
+          type: type,
+          hiddenFilters,
+        },
+        dataType: 'json',
+        success: function autocompleteJSON(json) {
+          const highlighted = json.data.suggestions.map(
+            (item) => ({
+              text: item.replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll(query, `<b>${query}</b>`),
+              value: formattingRule === 'phrase'
+                ? '"' + item.replaceAll('"', '\\"') + '"'
+                : item,
+            })
+          );
+          cache[cacheKey][query] = highlighted;
+          callback(highlighted);
+        }
+      });
     });
-  }
+
+    // Bind autocomplete auto submit
+    if ($searchbox.hasClass("ac-auto-submit")) {
+      input.addEventListener("ac-select", (event) => {
+        const value = typeof event.detail === "string"
+          ? event.detail
+          : event.detail.value;
+        input.value = value;
+        input.form.submit();
+      });
+    }
+  });
 }
 
 /**
@@ -593,23 +710,18 @@ function keyboardShortcuts() {
   }
 }
 
-function setupIeSupport() {
-  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
-  // Cannot use conditional comments since IE 11 doesn't support them but still has
-  // the issue
-  var ua = window.navigator.userAgent;
-  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
-    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
-  }
-}
-
 function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
 
 function setupJumpMenus(_container) {
   var container = _container || $('body');
-  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').trigger("submit"); });
+  container.find('select.jumpMenu').on("change", function jumpMenu() {
+    // Check if jumpMenu is still enabled (search.js may have disabled it):
+    if ($(this).hasClass('jumpMenu')) {
+      $(this).parent('form').trigger("submit");
+    }
+  });
 }
 
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
@@ -639,19 +751,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-function setupQRCodeLinks(_container) {
-  var container = _container || $('body');
-
-  container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    var holder = $(this).next('.qrcode');
-    if (holder.find('img').length === 0) {
-      // We need to insert the QRCode image
-      var template = holder.find('.qrCodeImgTag').html();
-      holder.html(template);
-    }
-  });
-}
-
 $(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -664,9 +763,6 @@ $(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // handle QR code links
-  setupQRCodeLinks();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
@@ -696,28 +792,4 @@ $(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
-
-  setupIeSupport();
-});
-
-$(function searchFormResetHandler() {
-  const queryInput = $('#searchForm_lookfor');
-  const resetButton = $('#searchForm-reset');
-
-  let query = queryInput.val();
-  if (query !== '') {
-    resetButton.show();
-    queryInput.focus().val('').val(query);
-  }
-  queryInput.on('input', function onInput() {
-    if ($(this).val() === '') {
-      resetButton.hide();
-    } else {
-      resetButton.show();
-    }
-  });
-  resetButton.on('click', function onClick() {
-    queryInput.attr('value', '').focus();
-    resetButton.hide();
-  });
 });

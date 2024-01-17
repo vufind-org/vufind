@@ -31,6 +31,9 @@ namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 
+use function call_user_func;
+use function strlen;
+
 /**
  * MultiAuth Authentication plugin
  *
@@ -113,8 +116,8 @@ class MultiAuth extends AbstractBase
     {
         if (empty($this->config->MultiAuth->method_order)) {
             throw new AuthException(
-                "One or more MultiAuth parameters are missing. " .
-                "Check your config.ini!"
+                'One or more MultiAuth parameters are missing. ' .
+                'Check your config.ini!'
             );
         }
     }

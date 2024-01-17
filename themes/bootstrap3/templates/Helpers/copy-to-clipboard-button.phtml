@@ -2,9 +2,9 @@
   $buttonNumber ??= bin2hex(random_bytes(5));
 ?>
 <p>
-    <button type="button" id="copyToClipboard<?=$buttonNumber?>" class="btn btn-primary hidden" role="button" tabindex="0"><?=$this->translate("copy_to_clipboard_button_label")?></button>
-    <span id="copySuccessMessage<?=$buttonNumber?>" class="copyMessage hidden text-success"><small><?=$this->translate("copy_to_clipboard_success_message");?></small></span>
-    <span id="copyFailureMessage<?=$buttonNumber?>" class="copyMessage hidden text-danger"><small><?=$this->translate("copy_to_clipboard_failure_message");?></small></span>
+    <button type="button" id="copyToClipboard<?=$buttonNumber?>" class="btn btn-primary hidden" role="button" tabindex="0"><?=$this->translate('copy_to_clipboard_button_label')?></button>
+    <span id="copySuccessMessage<?=$buttonNumber?>" class="copyMessage hidden text-success"><small><?=$this->translate('copy_to_clipboard_success_message');?></small></span>
+    <span id="copyFailureMessage<?=$buttonNumber?>" class="copyMessage hidden text-danger"><small><?=$this->translate('copy_to_clipboard_failure_message');?></small></span>
 </p>
 <?php
 $script = <<<JS

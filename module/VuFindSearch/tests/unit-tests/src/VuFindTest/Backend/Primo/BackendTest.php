@@ -207,7 +207,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getPcAvailabilityData(): array
+    public static function getPcAvailabilityData(): array
     {
         return [
             [
@@ -264,7 +264,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $params = new ParamBag(
             [
                 'filterList' => [
-                    'pcAvailability' => [
+                    [
+                        'field' => 'pcAvailability',
                         'values' => [
                             $value,
                         ],

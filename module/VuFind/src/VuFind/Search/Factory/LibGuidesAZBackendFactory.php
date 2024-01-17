@@ -3,7 +3,7 @@
 /**
  * Factory for LibGuides A-Z Databases backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -64,7 +64,7 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
         $builder = new QueryBuilder();
 
         // Widget type 2 = Databases A-Z
-        $builder->setDefaultWidgetType("2");
+        $builder->setDefaultWidgetType('2');
 
         return $builder;
     }
