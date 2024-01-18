@@ -8,9 +8,6 @@ await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autoco
 // chart.js
 await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 
-// jstree
-await copyFile('node_modules/jstree/dist/jstree.min.js', 'js/vendor/jsTree/jstree.min.js');
-
 // simple-keyboard
 await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');
 await copyFile('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');
