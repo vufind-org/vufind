@@ -196,7 +196,7 @@ class LanguageHelper
         if (!$domains) {
             $filter = $includeOptional
                 ? []
-                : ['CallNumberFirst', 'CreatorRoles', 'DDC23'];
+                : ['CallNumberFirst', 'CreatorRoles', 'DDC23', 'ISO639-3'];
             $base = APPLICATION_PATH . '/languages';
             $dir = opendir($base);
             $domains = [];
