@@ -399,6 +399,7 @@ CREATE TABLE login_token (
   PRIMARY KEY (id),
   UNIQUE (user_id, series)
 );
+CREATE INDEX login_token_user_id_idx ON login_token (user_id);
 
 -- --------------------------------------------------------
 
