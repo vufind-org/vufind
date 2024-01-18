@@ -1,14 +1,9 @@
 /*global VuFind */
 VuFind.register('hierarchyTree', function HierarchyTree() {
   /* Utility functions */
-  function htmlEncodeId(id) {
-    return id.replace(/\W/g, "-"); // Also change hierarchy/tree-level.phtml
-  }
-
-  function selectRecord(treeEl, _id) {
+  function selectRecord(treeEl, id) {
     treeEl.querySelectorAll('.hierarchy-tree__selected').forEach(el => el.classList.remove('hierarchy-tree__selected'));
-    const id = htmlEncodeId(_id);
-    const selectedEl = treeEl.querySelector('[name=' + id + ']');
+    const selectedEl = treeEl.querySelector('[data-record-id=' + CSS.escape(id) + ']');
     if (!selectedEl) {
       console.error('Could not find tree node for ' + id);
       return;
@@ -18,7 +13,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
   }
 
   function showRecord(treeEl, id) {
-    selectRecord(treeEl, 'tree-' + id);
+    selectRecord(treeEl, id);
     if (!treeEl.dataset.previewElement) {
       return;
     }
@@ -44,9 +39,8 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     treeEl.querySelectorAll('.js-toggle-expanded').forEach(el => el.setAttribute('aria-expanded', 'false'));
   }
 
-  function selectSearchMatch(treeEl, _id) {
-    const id = htmlEncodeId(_id);
-    const selectedEl = treeEl.querySelector('[name=' + id + ']');
+  function selectSearchMatch(treeEl, id) {
+    const selectedEl = treeEl.querySelector('[data-record-id=' + CSS.escape(id) + ']');
     if (!selectedEl) {
       console.error('Could not find node for ' + id);
       return;
@@ -131,7 +125,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
           resetTree(treeEl);
           closeTree(treeEl);
           for (var i = data.results.length; i--;) {
-            selectSearchMatch(treeEl, 'tree-' + data.results[i]);
+            selectSearchMatch(treeEl, data.results[i]);
           }
 
           if (data.limitReached && limitMsgEl) {

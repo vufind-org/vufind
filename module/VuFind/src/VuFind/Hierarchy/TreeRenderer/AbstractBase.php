@@ -115,7 +115,7 @@ abstract class AbstractBase
      *
      * @param string $hierarchyID Optional filter: specific hierarchy ID to retrieve
      *
-     * @return mixed An array of hierarchy IDS if an archive tree exists,
+     * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
     abstract public function getTreeList($hierarchyID = false);

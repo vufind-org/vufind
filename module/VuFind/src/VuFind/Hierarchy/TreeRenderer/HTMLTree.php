@@ -93,7 +93,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      *
      * @param string $hierarchyID Optional filter: specific hierarchy ID to retrieve
      *
-     * @return mixed An array of hierarchy IDS if an archive tree exists,
+     * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
     public function getTreeList($hierarchyID = false)

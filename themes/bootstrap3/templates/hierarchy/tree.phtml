@@ -51,7 +51,6 @@
       $itemHtml = '<span class="hierarchy-tree__item-container">'
         . $icons[$icon]
         . ' <a class="js-record-link"'
-        . ' name="' . $escapeAttr('tree-' . preg_replace('/\W/', '-', $node->id)) . '"'
         . ' href="' . $escapeAttr($node->href) . '"'
         . ' title="' . $escapeAttr($node->title) . '"'
         . ' data-lightbox-ignore'
