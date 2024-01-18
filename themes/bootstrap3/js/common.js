@@ -268,8 +268,7 @@ var VuFind = (function VuFind() {
           success(null, error); 
         }
       });
-  };
-  
+  };  
 
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
