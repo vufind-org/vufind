@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JSTree hierarchy tree renderer plugin factory.
+ * HTMLTree hierarchy tree renderer plugin factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * JSTree hierarchy tree renderer plugin factory.
+ * HTMLTree hierarchy tree renderer plugin factory.
  *
  * @category VuFind
  * @package  HierarchyTree_Renderer
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class JSTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class HTMLTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -71,7 +71,8 @@ class JSTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             ->get('config');
         return new $requestedName(
             $container->get('ControllerPluginManager')->get('Url'),
-            !empty($config->Collections->collections)
+            !empty($config->Collections->collections),
+            $container->get('ViewRenderer')
         );
     }
 }
