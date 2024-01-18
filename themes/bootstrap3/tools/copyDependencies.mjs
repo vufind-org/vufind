@@ -5,6 +5,9 @@ console.log('Copying dependencies...');
 // autocomplete.js
 await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autocomplete.js');
 
+// chart.js
+await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
+
 // simple-keyboard
 await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');
 await copyFile('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');

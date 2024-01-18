@@ -100,7 +100,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function escapingProvider(): array
+    public static function escapingProvider(): array
     {
         return [
             ['foo = "This is a backslash: \\\\"'],

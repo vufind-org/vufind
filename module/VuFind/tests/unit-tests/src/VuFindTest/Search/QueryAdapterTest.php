@@ -52,7 +52,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function conversionsProvider(): array
+    public static function conversionsProvider(): array
     {
         return [
             ['basic', true],

@@ -160,7 +160,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return array
      */
-    public function getTestSingleLookupData(): array
+    public static function getTestSingleLookupData(): array
     {
         return [
             [

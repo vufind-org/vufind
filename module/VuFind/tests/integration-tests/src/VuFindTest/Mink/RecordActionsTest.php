@@ -342,7 +342,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getTagSearchSortData(): array
+    public static function getTagSearchSortData(): array
     {
         return [
             [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
@@ -618,7 +618,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getTestRatingData(): array
+    public static function getTestRatingData(): array
     {
         return [
             [true],
