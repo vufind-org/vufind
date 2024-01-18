@@ -216,7 +216,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
 
     /**
      * Delete all login tokens for a user. Also destroys
-     * sesisons associated with the tokens.
+     * sessions associated with the tokens.
      *
      * @param int $userId User identifier
      *
