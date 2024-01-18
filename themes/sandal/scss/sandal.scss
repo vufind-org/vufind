@@ -37,6 +37,7 @@ body {
 .banner .navbar-brand {
   width: calc((170 / 65) * #{$banner-height-sm});
   height: $banner-height-sm;
+  display: inline-block;
 }
 @media (min-width: 768px) {
   .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
