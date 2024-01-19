@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Bootstrap3;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -69,6 +69,7 @@ class BulkActionFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        return new $requestedName($container, $configLoader);
+        $export = $container->get(\VuFind\Export::class);
+        return new $requestedName($export, $configLoader);
     }
 }

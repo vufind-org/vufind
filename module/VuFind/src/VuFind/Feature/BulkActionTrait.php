@@ -2,11 +2,11 @@
 
 /**
  * VuFind Action Feature Trait - Bulk action helper methods
- * Depends on access to the config loader and service locator.
+ * Depends on access to the config loader and export support class.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023
+ * Copyright (C) Villanova University 2024
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -44,13 +44,6 @@ namespace VuFind\Feature;
 trait BulkActionTrait
 {
     /**
-     * Export Service
-     *
-     * @var \VuFind\Export
-     */
-    protected $bulkActionExport;
-
-    /**
      * Config
      *
      * @var \Laminas\Config\Config
@@ -63,19 +56,6 @@ trait BulkActionTrait
      * @var \Laminas\Config\Config
      */
     protected $bulkActionExportConfig;
-
-    /**
-     * Get Export Service.
-     *
-     * @return \VuFind\Export
-     */
-    protected function getBulkActionExport()
-    {
-        if ($this->bulkActionExport === null) {
-            $this->bulkActionExport = $this->serviceLocator->get(\VuFind\Export::class);
-        }
-        return $this->bulkActionExport;
-    }
 
     /**
      * Get Config.
@@ -113,7 +93,7 @@ trait BulkActionTrait
     public function getBulkActionLimit($action)
     {
         if ($action == 'export') {
-            $formats = $this->getBulkActionExport()->getActiveFormats('bulk');
+            $formats = $this->export->getActiveFormats('bulk');
             return max(array_map([$this, 'getExportActionLimit'], $formats));
         }
         $bulkActionConfig = $this->getBulkActionConfig()?->BulkActions;

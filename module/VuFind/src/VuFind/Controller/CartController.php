@@ -66,6 +66,13 @@ class CartController extends AbstractBase
     protected $configLoader;
 
     /**
+     * Export support class
+     *
+     * @var \VuFind\Export
+     */
+    protected $export;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface      $sm           Service manager
@@ -80,6 +87,7 @@ class CartController extends AbstractBase
         parent::__construct($sm);
         $this->session = $container;
         $this->configLoader = $configLoader;
+        $this->export = $sm->get(\VuFind\Export::class);
     }
 
     /**

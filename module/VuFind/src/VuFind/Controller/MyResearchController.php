@@ -91,6 +91,13 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
+     * Export support class
+     *
+     * @var \VuFind\Export
+     */
+    protected $export;
+
+    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
@@ -119,6 +126,7 @@ class MyResearchController extends AbstractBase
         parent::__construct($sm);
         $this->session = $container;
         $this->configLoader = $configLoader;
+        $this->export = $sm->get(\VuFind\Export::class);
     }
 
     /**

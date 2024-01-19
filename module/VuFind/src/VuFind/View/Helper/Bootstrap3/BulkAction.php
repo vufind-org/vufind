@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2023.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Bootstrap3;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Bulk action view helper
  *
@@ -40,60 +38,12 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BulkAction extends \Laminas\View\Helper\AbstractHelper
+class BulkAction extends \VuFind\View\Helper\Root\BulkAction
 {
-    use \VuFind\Feature\BulkActionTrait;
-
     /**
-     * Service manager
+     * CSS class for button
      *
-     * @var ServiceLocatorInterface
+     * @var ?string
      */
-    protected $serviceLocator;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface      $sm           Service Locator
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(ServiceLocatorInterface $sm, \VuFind\Config\PluginManager $configLoader)
-    {
-        $this->serviceLocator = $sm;
-        $this->configLoader = $configLoader;
-    }
-
-    /**
-     * Get a bulk action button
-     *
-     * @param string $action     Action name
-     * @param string $icon       Icon identifier
-     * @param string $content    Content of the button
-     * @param array  $attributes Button element attributes
-     *
-     * @return string
-     */
-    public function button($action, $icon, $content, $attributes = [])
-    {
-        $limit = $this->getBulkActionLimit($action);
-        if ($limit == 0) {
-            return '';
-        }
-        $attributes['class'] = 'toolbar-btn';
-        $attributes['value'] = '1';
-        $attributes['type'] = 'submit';
-        $attributes['name'] = $action;
-        $attributes['data-item-limit'] = $limit;
-        return $this->getView()->render(
-            'Helpers/bulk-action-button.phtml',
-            compact('action', 'icon', 'content', 'limit', 'attributes')
-        );
-    }
+    protected $buttonClass = 'toolbar-btn';
 }
