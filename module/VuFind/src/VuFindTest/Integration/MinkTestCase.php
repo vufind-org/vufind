@@ -37,6 +37,7 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
+use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
@@ -599,6 +600,37 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait for a callback to return the expected value
      *
+     * @param mixed    $expected    Expected value
+     * @param callable $callback    Callback used to get the results
+     * @param callable $compareFunc Callback used to compare the results
+     * @param callable $assertion   Assertion to make
+     * @param int      $timeout     Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertWithTimeout(
+        $expected,
+        callable $callback,
+        callable $compareFunc,
+        callable $assertion,
+        int $timeout = null
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+        $result = null;
+        $startTime = microtime(true);
+        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
+            $result = $callback();
+            if (call_user_func($compareFunc, $expected, $result)) {
+                break;
+            }
+            usleep(100000);
+        }
+        call_user_func($assertion, $expected, $result);
+    }
+
+    /**
+     * Wait for a callback to return the expected value
+     *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
      * @param int      $timeout  Wait timeout (in ms)
@@ -610,17 +642,40 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         int $timeout = null
     ) {
-        $timeout ??= $this->getDefaultTimeout();
-        $result = null;
-        $startTime = microtime(true);
-        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
-            $result = $callback();
-            if ($result === $expected) {
-                break;
-            }
-            usleep(100000);
-        }
-        $this->assertEquals($expected, $result);
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === $result;
+            },
+            [$this, 'assertEquals'],
+            $timeout
+        );
+    }
+
+    /**
+     * Wait for a callback to return a string containing the expected value
+     *
+     * @param string   $expected Expected value
+     * @param callable $callback Callback
+     * @param int      $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertStringContainsStringWithTimeout(
+        string $expected,
+        callable $callback,
+        int $timeout = null
+    ) {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function (string $expected, string $result): bool {
+                return str_contains($result, $expected);
+            },
+            [$this, 'assertStringContainsString'],
+            $timeout
+        );
     }
 
     /**

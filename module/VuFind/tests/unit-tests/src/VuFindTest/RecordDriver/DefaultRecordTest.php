@@ -488,7 +488,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getCleanISBNsProvider(): array
+    public static function getCleanISBNsProvider(): array
     {
         return [
             [

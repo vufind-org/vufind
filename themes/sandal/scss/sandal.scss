@@ -35,13 +35,14 @@ body {
 }
 .banner .navbar-right { margin-top: calc((#{$banner-height-sm} - 50px) / 2); } // Put right nav in the middle
 .banner .navbar-brand {
-  width: (170 / 65) * $banner-height-sm;
+  width: calc((170 / 65) * #{$banner-height-sm});
   height: $banner-height-sm;
+  display: inline-block;
 }
 @media (min-width: 768px) {
   .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
   .banner .navbar-brand {
-    width: (170 / 65) * $banner-height;
+    width: calc((170 / 65) * #{$banner-height});
     height: $banner-height;
   }
 }
@@ -70,7 +71,7 @@ header {
     border-color: $black;
   }
   .nav > li > a,
-  .navbar-nav button.dropdown-toggle {
+  .nav.navbar-nav button.dropdown-toggle {
     &:hover,
     &:focus {
       color: $black;
@@ -221,9 +222,7 @@ a:hover .login-dropdown-caret {
   .facet.active,
   .facet.active:hover,
   .active-filters .facet,
-  .active-filters .facet:hover,
-  .active .jstree-anchor,
-  .jstree-facet .jstree-container-ul > .active {
+  .active-filters .facet:hover {
     border-color: $sidebar-active-bg;
     background-color: $sidebar-active-bg;
     color: $sidebar-active-color;
@@ -250,11 +249,6 @@ a:hover .login-dropdown-caret {
   max-height: 19px;
   line-height: .8;
   background-color: $sidebar-item-badge;
-}
-
-.jstree-facet {
-  .main .fa-check { margin-top: 3px; }
-  .jstree-icon::before { margin-top: 2px; }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {

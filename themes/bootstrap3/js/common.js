@@ -362,11 +362,12 @@ var VuFind = (function VuFind() {
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
-  if (value) {
-    return $('<div />').text(value).html();
-  } else {
-    return '';
-  }
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**
@@ -716,7 +717,10 @@ function unwrapJQuery(node) {
 function setupJumpMenus(_container) {
   var container = _container || $('body');
   container.find('select.jumpMenu').on("change", function jumpMenu() {
-    $(this).parent('form').trigger("submit");
+    // Check if jumpMenu is still enabled (search.js may have disabled it):
+    if ($(this).hasClass('jumpMenu')) {
+      $(this).parent('form').trigger("submit");
+    }
   });
 }
 

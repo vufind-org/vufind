@@ -16,11 +16,10 @@
 <?php else: ?>
   <?php
     // Set some variables so we can figure out which sub-template(s) to
-    // render. If we have a hierarchical facet, we will need to render a
-    // jsTree Javascript-based template. If we also support non-JS browsers,
-    // we will also need to render the basic default template. If we
-    // do NOT support non-JS browsers, we should instead display an error
-    // message.
+    // render. If we have a hierarchical facet, we will need some JavaScript support.
+    // If we also support non-JS browsers, we will also need to render the basic
+    // default template. If we do NOT support non-JS browsers, we should instead
+    // display an error message.
     $isHierarchical = in_array($facet, $hierarchicalFacets);
     $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
   ?>
