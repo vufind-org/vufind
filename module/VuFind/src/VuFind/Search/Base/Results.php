@@ -309,6 +309,7 @@ abstract class Results
     {
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
+        // The value of -1 indicates that resultTotal is not available.
         $this->resultTotal = -1;
         $this->results = [];
         $this->suggestions = [];
