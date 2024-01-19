@@ -137,7 +137,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function pageProvider(): array
+    public static function pageProvider(): array
     {
         return ['Test1' => [1],
                 'Test2' => [null],

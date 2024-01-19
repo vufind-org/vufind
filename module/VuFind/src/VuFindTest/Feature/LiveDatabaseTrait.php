@@ -109,7 +109,7 @@ trait LiveDatabaseTrait
         $options['cache_dir']
             = LOCAL_CACHE_DIR . '/' . $options['cache_dir'] . '_testmode';
         if (!is_dir($options['cache_dir'])) {
-            mkdir($options['cache_dir'], 0777, true);
+            mkdir($options['cache_dir'], 0o777, true);
         }
         $cacheAdapter = new \Laminas\Cache\Storage\Adapter\Filesystem($options);
         $cacheAdapter->addPlugin(new \Laminas\Cache\Storage\Plugin\Serializer());
