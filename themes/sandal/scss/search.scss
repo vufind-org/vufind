@@ -21,7 +21,6 @@
   padding: 1rem;
   padding-right: 0;
   border-bottom: 1px solid $moon-gray;
-  font-size: $reduced-font-size;
 
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
@@ -126,13 +125,10 @@
   .result .cart-link-label { display: inline; }
 }
 
-.top-facets,
-.search-header { font-size: $reduced-font-size; }
 .search-header {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-#searchForm { font-size: $reduced-font-size; }
 #searchForm_lookfor,
 #searchForm_type { margin-bottom: 4px; }
 

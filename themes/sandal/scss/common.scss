@@ -12,7 +12,6 @@ $border-radius-large: 0; // modal
 
 .highlight,
 mark { background-color: $highlighter-color; }
-table { font-size: $reduced-font-size; }
 
 /* ------ Bootstrap class overrides ------ */
 .badge {
@@ -118,7 +117,7 @@ $pagination-hover-border: transparent;
 .pagination > li > span {
   padding-left: 1rem;
   padding-right: 1rem;
-  font-size: 13px;
+  font-size: $reduced-font-size;
   font-weight: 500;
   line-height: 1rem;
 
