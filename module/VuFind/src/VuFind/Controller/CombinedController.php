@@ -115,7 +115,7 @@ class CombinedController extends AbstractSearch
         // Should we suppress content due to emptiness?
         if (
             ($settings['hide_if_empty'] ?? false)
-            && $settings['view']->results->getResultTotal() == 0
+            && $settings['view']->results->getResultTotal() <= 0
         ) {
             $html = '';
         } else {

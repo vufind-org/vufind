@@ -378,6 +378,7 @@ $config = [
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
+            'VuFind\Auth\LoginTokenManager' => 'VuFind\Auth\LoginTokenManagerFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -622,6 +623,7 @@ $config = [
             'user_card'        => ['id', 'user_card_id_seq'],
             'user_list'        => ['id', 'user_list_id_seq'],
             'user_resource'    => ['id', 'user_resource_id_seq'],
+            'login_token'      => ['id', 'login_token_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -756,8 +758,9 @@ $staticRoutes = [
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
-    'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
+    'MyResearch/DeleteList', 'MyResearch/DeleteUserLoginTokens',
+    'MyResearch/DeleteLoginToken', 'MyResearch/Edit',
+    'MyResearch/Email', 'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
     'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
     'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',

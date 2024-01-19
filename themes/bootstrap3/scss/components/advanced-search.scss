@@ -46,6 +46,9 @@
   line-height: 1.7;
   text-align: center;
   opacity: .4;
+  .icon--image {
+    vertical-align: middle;
+  }
 }
 .adv-submit { @include clearfix(); }
 .adv-submit .clear-btn { float: right; }
