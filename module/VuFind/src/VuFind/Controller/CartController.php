@@ -78,16 +78,18 @@ class CartController extends AbstractBase
      * @param ServiceLocatorInterface      $sm           Service manager
      * @param Container                    $container    Session container
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \Vufind\Export               $export       Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
         Container $container,
-        \VuFind\Config\PluginManager $configLoader
+        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Export $export
     ) {
         parent::__construct($sm);
         $this->session = $container;
         $this->configLoader = $configLoader;
-        $this->export = $sm->get(\VuFind\Export::class);
+        $this->export = $export;
     }
 
     /**
@@ -369,16 +371,6 @@ class CartController extends AbstractBase
     }
 
     /**
-     * Access export tools.
-     *
-     * @return \VuFind\Export
-     */
-    protected function getExport()
-    {
-        return $this->serviceLocator->get(\VuFind\Export::class);
-    }
-
-    /**
      * Set up export of a batch of records.
      *
      * @return mixed
@@ -391,7 +383,7 @@ class CartController extends AbstractBase
             : $this->params()->fromPost('idsAll', []);
 
         // Get export tools:
-        $export = $this->getExport();
+        $export = $this->export;
 
         // Get id limit
         $format = $this->params()->fromPost('format');
@@ -485,7 +477,7 @@ class CartController extends AbstractBase
 
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
-        $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
+        $response->getHeaders()->addHeaders($this->export->getHeaders($format));
 
         // Actually export the records
         $records = $this->getRecordLoader()->loadBatch($ids);
@@ -496,7 +488,7 @@ class CartController extends AbstractBase
         }
 
         // Process and display the exported records
-        $response->setContent($this->getExport()->processGroup($format, $parts));
+        $response->setContent($this->export->processGroup($format, $parts));
         return $response;
     }
 

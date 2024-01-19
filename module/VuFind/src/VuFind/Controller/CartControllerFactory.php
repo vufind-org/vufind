@@ -72,6 +72,7 @@ class CartControllerFactory extends AbstractBaseFactory
             $container->get(\Laminas\Session\SessionManager::class)
         );
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        return parent::__invoke($container, $requestedName, [$session, $configLoader]);
+        $export = $container->get(\VuFind\Export::class);
+        return parent::__invoke($container, $requestedName, [$session, $configLoader, $export]);
     }
 }

@@ -117,16 +117,18 @@ class MyResearchController extends AbstractBase
      * @param ServiceLocatorInterface      $sm           Service locator
      * @param Container                    $container    Session container
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \Vufind\Export               $export       Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
         Container $container,
-        \VuFind\Config\PluginManager $configLoader
+        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Export $export
     ) {
         parent::__construct($sm);
         $this->session = $container;
         $this->configLoader = $configLoader;
-        $this->export = $sm->get(\VuFind\Export::class);
+        $this->export = $export;
     }
 
     /**
