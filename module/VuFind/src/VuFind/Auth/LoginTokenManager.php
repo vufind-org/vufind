@@ -162,7 +162,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      * @param \VuFind\Db\Row\User $user      user
      * @param string              $series    login token series
      * @param string              $sessionId Session identifier
-     * @param int                 $expires   Token expiration date
+     * @param int                 $expires   Token expiration timestamp
      *
      * @throws AuthException
      * @return void
@@ -278,7 +278,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      * @param int    $userId  User identifier
      * @param string $token   Login token
      * @param string $series  Series the token belongs to
-     * @param int    $expires Token expiration date
+     * @param int    $expires Token expiration timestamp
      *
      * @return void
      */

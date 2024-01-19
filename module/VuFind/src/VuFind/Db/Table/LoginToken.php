@@ -71,7 +71,7 @@ class LoginToken extends Gateway
      * @param string $series    Series the token belongs to
      * @param string $browser   User browser
      * @param string $platform  User platform
-     * @param int    $expires   Token lifetime in days
+     * @param int    $expires   Token expiration timestamp
      * @param string $sessionId Session associated with the token
      *
      * @return LoginToken

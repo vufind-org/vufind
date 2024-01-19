@@ -285,11 +285,9 @@ class Manager implements
     /**
      * Is persistent login supported?
      *
-     * @param User $user optional; check user auth method in database
-     *
      * @return bool
      */
-    public function supportsPersistentLogin($user = null)
+    public function supportsPersistentLogin()
     {
         if (!empty($this->config->Authentication->persistent_login)) {
             $method = $this->getAuth() instanceof ChoiceAuth
