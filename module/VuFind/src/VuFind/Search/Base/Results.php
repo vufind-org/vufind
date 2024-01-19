@@ -309,7 +309,8 @@ abstract class Results
     {
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
-        $this->resultTotal = 0;
+        // The value of -1 indicates that resultTotal is not available.
+        $this->resultTotal = -1;
         $this->results = [];
         $this->suggestions = [];
         $this->errors = [];
@@ -606,6 +607,28 @@ abstract class Results
             $this->performAndProcessSearch();
         }
         return $this->suggestions;
+    }
+
+    /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        // Not implemented in the base class
+        return [];
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return ?float
+     */
+    public function getMaxScore()
+    {
+        // Not implemented in the base class
+        return null;
     }
 
     /**

@@ -58,7 +58,7 @@ abstract class AbstractBase implements
     /**
      * Record driver associated with the tab
      *
-     * @var \VuFind\RecordDriver\AbstractBase
+     * @var ?\VuFind\RecordDriver\AbstractBase
      */
     protected $driver = null;
 

@@ -45,7 +45,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function barcodeVisibilityBehaviorProvider(): array
+    public static function barcodeVisibilityBehaviorProvider(): array
     {
         return [
             'default' => [[], true, true],

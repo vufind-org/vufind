@@ -32,6 +32,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\SearchSortTrait;
 
 use function count;
 
@@ -48,6 +49,8 @@ use function count;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchSortTrait;
+
     /**
      * CSS selector for finding the active filter values
      *
@@ -119,10 +122,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function facetApplyProcedure(Element $page): void
     {
         // Confirm that we have 9 results and no filters to begin with:
-        $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals(
-            "Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(),
+        $this->assertStringStartsWith(
+            'Showing 1 - 9 results of 9',
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -135,10 +137,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that when the page reloads, we have fewer results and a filter:
         $this->waitForPageLoad($page);
-        $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals(
-            "Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(),
+        $this->assertStringStartsWith(
+            'Showing 1 - 7 results of 7',
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -247,6 +248,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public function testApplyFacet(): void
     {
         $page = $this->performSearch('building:weird_ids.mrc');
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
 
         // Confirm that we are NOT using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
@@ -254,6 +257,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
+
+        // Verify that sort order is still correct:
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -273,6 +279,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
 
         // Confirm that we ARE using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
@@ -280,6 +288,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
+
+        // Verify that sort order is still correct:
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -421,7 +432,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickHierarchyFacet(Element $page): void
+    protected function clickHierarchicalFacet(Element $page): void
     {
         // Open second level:
         $this->clickCss($page, $this->facetExpandSelector);
@@ -439,7 +450,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that hierarchy facets work properly.
+     * Test that hierarchical facets work properly.
      *
      * @return void
      */
@@ -457,8 +468,16 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+        // Do a search and verify that sort order is maintained:
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        $this->clickHierarchyFacet($page);
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
+        $this->clickHierarchicalFacet($page);
+        $this->assertSelectedSort($page, 'title');
+        // Remove the filter:
+        $this->clickCss($page, $this->activeFilterSelector);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -490,7 +509,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:"hierarchy.mrc"');
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
-            'Showing 1 - 10 results of 10 for search \'building:"hierarchy.mrc"\'',
+            'Showing 1 - 10 results of 10',
             $extractCount($stats->getText())
         );
         $this->clickCss($page, $this->facetExpandSelector);
@@ -501,7 +520,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
-            'Showing 1 - 7 results of 7 for search \'building:"hierarchy.mrc"\'',
+            'Showing 1 - 7 results of 7',
             $extractCount($stats->getText())
         );
     }
@@ -511,7 +530,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function hierarchicalFacetSortProvider(): array
+    public static function hierarchicalFacetSortProvider(): array
     {
         return [
             [
@@ -653,7 +672,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-panel-format .collapsed');
         // Uncollapse hierarchical facet so we can click it:
         $this->clickCss($page, '#side-panel-hierarchical_facet_str_mv .collapsed');
-        $this->clickHierarchyFacet($page);
+        $this->clickHierarchicalFacet($page);
 
         // We have now reloaded the page. Let's toggle format off and on to confirm
         // that it was opened, and let's also toggle building on to confirm that

@@ -46,6 +46,7 @@ return [
         ['file' => 'truncate.js', 'priority' => 340],
         ['file' => 'trigger_print.js', 'priority' => 350],
         ['file' => 'observer_manager.js', 'priority' => 360],
+        ['file' => 'openurl.js', 'priority' => 370],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -216,6 +217,11 @@ return [
             'format-videocassette' => 'FontAwesome:video-camera',
             'format-videodisc' => 'FontAwesome:laptop',
             'format-videoreel' => 'FontAwesome:video-camera',
+            'hierarchy-collapse' => 'Alias:facet-collapse',
+            'hierarchy-collection' => 'FontAwesome:folder-open-o',
+            'hierarchy-expand' => 'Alias:facet-expand',
+            'hierarchy-noncollapsible' => 'Alias:facet-noncollapsible',
+            'hierarchy-record' => 'FontAwesome:file-o',
             'hierarchy-tree' => 'FontAwesome:sitemap',
             'lightbox-close' => 'FontAwesome:times',
             'more' => 'FontAwesome:chevron-circle-right',

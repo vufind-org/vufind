@@ -57,7 +57,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // We should have some results:
         $this->assertMatchesRegularExpression(
-            "/Showing 1 - \d+ results for search 'shakespeare', query time: .*/",
+            "/Showing 1 - \d+ results/",
             trim($this->findCss($page, '.search-stats')->getText())
         );
         // We should be on the author results page:
@@ -77,7 +77,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function authorPathsProvider(): array
+    public static function authorPathsProvider(): array
     {
         return [
             'home page' => ['/Author/Home'],

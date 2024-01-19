@@ -51,7 +51,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function basicOperationProvider(): array
+    public static function basicOperationProvider(): array
     {
         return [
             ['Solr', '123', false, true, null],

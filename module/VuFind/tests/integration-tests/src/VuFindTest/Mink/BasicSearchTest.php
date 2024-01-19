@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
+
 /**
  * Test basic search functionality.
  *
@@ -53,61 +55,105 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($baseUrl . '&page=1000');
         $this->assertEquals($baseUrl . '&page=1', $session->getCurrentUrl());
         $page = $session->getPage();
-        $this->assertMatchesRegularExpression(
-            "/Showing 1 - 1 results of 1 for search 'id:testbug1', query time: .*/",
+        $this->assertStringStartsWith(
+            'Showing 1 - 1 results of 1',
             trim($this->findCss($page, '.search-stats')->getText())
         );
     }
 
     /**
-     * Test simple top pagination
+     * Data provider for testDefaultTopPagination
+     *
+     * @return array
+     */
+    public static function topPaginationProvider(): array
+    {
+        return [
+            [false],
+            [true],
+        ];
+    }
+
+    /**
+     * Test default top pagination
+     *
+     * @param bool $jsResults Whether to update search results with JS
+     *
+     * @dataProvider topPaginationProvider
      *
      * @return void
      */
-    public function testSimpleTopPagination(): void
+    public function testDefaultTopPagination(bool $jsResults): void
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results');
-        $page = $session->getPage();
-
-        // No paginator unless configured:
-        $this->unFindCss($page, '.search-header .pagination');
-        $this->unFindCss($page, '.search-header .pagination-simple');
-
-        // Enable pagination:
+        // Change configuration:
         $this->changeConfigs(
             [
                 'searches' => [
                     'General' => [
-                        'top_paginator' => 'simple',
+                        'load_results_with_js' => $jsResults,
                     ],
                 ],
             ]
         );
 
+        $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results');
-        $this->assertStringContainsString(
-            'Showing 1 - 20 results',
-            $this->findCss($page, '.search-stats')->getText()
+        $page = $session->getPage();
+
+        // Should never have full top pagination:
+        $this->unFindCss($page, '.pagination-top');
+
+        if ($jsResults) {
+            // Simple paginator by default with JS results:
+            $this->findCss($page, '.search-header .pagination-simple');
+        } else {
+            // No paginator by default without JS results:
+            $this->unFindCss($page, '.search-header .pagination-simple');
+        }
+    }
+
+    /**
+     * Test simple top pagination
+     *
+     * @param bool $jsResults Whether to update search results with JS
+     *
+     * @dataProvider topPaginationProvider
+     *
+     * @return void
+     */
+    public function testSimpleTopPagination(bool $jsResults): void
+    {
+        $config = [
+            'load_results_with_js' => $jsResults,
+        ];
+        if (!$jsResults) {
+            // Enable top paginator:
+            $config['top_paginator'] = 'simple';
+        }
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => $config,
+                ],
+            ]
         );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results');
+        $page = $session->getPage();
+        $this->assertShowingResults($page, '1 - 20');
 
         // No prev page on first page:
         $this->unFindCss($page, '.search-header .pagination-simple .page-prev');
 
         $secondPage = $this->findCss($page, '.search-header .pagination-simple .page-next');
         $secondPage->click();
-        $this->waitForPageLoad($page);
-        $this->assertStringContainsString(
-            'Showing 21 - 40 results',
-            $this->findCss($page, '.search-stats')->getText()
-        );
+        $this->assertShowingResults($page, '21 - 40');
+        $this->scrollToResults();
+
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
-        $this->waitForPageLoad($page);
-        $this->assertStringContainsString(
-            'Showing 1 - 20 results',
-            $this->findCss($page, '.search-stats')->getText()
-        );
+        $this->assertShowingResults($page, '1 - 20');
     }
 
     /**
@@ -117,13 +163,6 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFullTopPagination(): void
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results');
-        $page = $session->getPage();
-
-        // No paginator unless configured:
-        $this->unFindCss($page, '.pagination-top');
-
         // Enable pagination:
         $this->changeConfigs(
             [
@@ -135,29 +174,25 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
+        $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results');
-        $this->assertStringContainsString(
-            'Showing 1 - 20 results',
-            $this->findCss($page, '.search-stats')->getText()
-        );
+        $page = $session->getPage();
+
+        $session->visit($this->getVuFindUrl() . '/Search/Results');
+        $this->assertShowingResults($page, '1 - 20');
 
         $this->assertEquals('1', $this->findCss($page, '.pagination-top li.active')->getText());
         $secondPage = $this->findCss($page, '.pagination-top li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
-        $this->assertStringContainsString(
-            'Showing 21 - 40 results',
-            $this->findCss($page, '.search-stats')->getText()
-        );
+        $this->assertShowingResults($page, '21 - 40');
         $this->assertEquals('2', $this->findCss($page, '.pagination-top li.active')->getText());
+
         // First page now present, click it:
-        $firstPage = $this->findCss($page, '.pagination-top li');
-        $firstPage->find('css', 'a')->click();
-        $this->assertStringContainsString(
-            'Showing 1 - 20 results',
-            $this->findCss($page, '.search-stats')->getText()
-        );
+        $this->scrollToResults();
+        $this->clickCss($page, '.pagination-top li a');
+        $this->assertShowingResults($page, '1 - 20');
         $this->assertEquals('1', $this->findCss($page, '.pagination-top li.active')->getText());
     }
 
@@ -178,5 +213,35 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         $this->assertEquals('2', $this->findCss($page, '.pagination li.active')->getText());
+    }
+
+    /**
+     * Check that correct result range is being displayed
+     *
+     * @param Element $page    Page
+     * @param string  $results Result range (e.g. '1 - 20')
+     *
+     * @return void
+     */
+    protected function assertShowingResults(Element $page, string $results): void
+    {
+        $this->assertStringContainsStringWithTimeout(
+            "Showing $results results",
+            function () use ($page): string {
+                return $this->findCss($page, '.search-stats')->getText();
+            }
+        );
+    }
+
+    /**
+     * Scroll to results immediately to avoid elements from moving around while we click them
+     *
+     * @return void
+     */
+    protected function scrollToResults(): void
+    {
+        $this->getMinkSession()->executeScript(
+            'typeof VuFind.search !== "undefined" && VuFind.search.scrollToResults("instant")'
+        );
     }
 }

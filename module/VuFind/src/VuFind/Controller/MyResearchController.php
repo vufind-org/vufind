@@ -2101,6 +2101,47 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Delete a login token
+     *
+     * @return mixed
+     */
+    public function deleteLoginTokenAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        $csrf = $this->serviceLocator->get(CsrfInterface::class);
+        if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+            throw new \VuFind\Exception\BadRequest(
+                'error_inconsistent_parameters'
+            );
+        }
+        $series = $this->params()->fromPost('series', '');
+        $this->getAuthManager()->deleteToken($series, $this->getUser()->id);
+        return $this->redirect()->toRoute('myresearch-profile');
+    }
+
+    /**
+     * Delete all login tokens for a user
+     *
+     * @return mixed
+     */
+    public function deleteUserLoginTokensAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        $csrf = $this->serviceLocator->get(CsrfInterface::class);
+        if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+            throw new \VuFind\Exception\BadRequest(
+                'error_inconsistent_parameters'
+            );
+        }
+        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+        return $this->redirect()->toRoute('myresearch-profile');
+    }
+
+    /**
      * Helper function for verification hashes
      *
      * @param string $hash User-unique hash string from request

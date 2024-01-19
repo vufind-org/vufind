@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'accesstoken' => AccessToken::class,
         'externalsession' => ExternalSession::class,
+        'logintoken' => LoginToken::class,
         'ratings' => Ratings::class,
         'search' => Search::class,
         'session' => Session::class,
@@ -64,6 +65,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AccessToken::class => RowGatewayFactory::class,
         AuthHash::class => RowGatewayFactory::class,
         ExternalSession::class => RowGatewayFactory::class,
+        LoginToken::class => RowGatewayFactory::class,
         Ratings::class => RowGatewayFactory::class,
         Search::class => RowGatewayFactory::class,
         Session::class => RowGatewayFactory::class,

@@ -47,7 +47,7 @@ use VuFind\RecordDriver\DefaultRecord;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
+class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CommentRecord handler for testing.

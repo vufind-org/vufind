@@ -364,6 +364,7 @@ class AbstractSearch extends AbstractBase
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
+        $view->request = $request;
 
         $lastView = $this->getSearchMemory()
             ->retrieveLastSetting($this->searchClassId, 'view');
@@ -434,6 +435,7 @@ class AbstractSearch extends AbstractBase
         $view->scheduleOptions = $this->serviceLocator
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
+        $view->saveToHistory = $this->saveToHistory;
         return $view;
     }
 

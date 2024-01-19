@@ -575,13 +575,17 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
                 'salt' => 'csrftest',
             ]
         );
+        $loginTokenManager = $this->getMockBuilder(\VuFind\Auth\LoginTokenManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         return new Manager(
             $config,
             $userTable,
             $sessionManager,
             $pm,
             $cookies,
-            $csrf
+            $csrf,
+            $loginTokenManager
         );
     }
 

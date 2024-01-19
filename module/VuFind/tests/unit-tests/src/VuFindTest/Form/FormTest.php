@@ -801,7 +801,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getEmailSubjectsData(): array
+    public static function getEmailSubjectsData(): array
     {
         return [
             'with placeholders' => [

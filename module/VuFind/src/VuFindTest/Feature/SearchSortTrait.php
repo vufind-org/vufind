@@ -83,6 +83,19 @@ trait SearchSortTrait
     }
 
     /**
+     * Change sort order of search results
+     *
+     * @param Element $page  Current page
+     * @param string  $value Sort option
+     *
+     * @return void
+     */
+    protected function sortResults(Element $page, string $value): void
+    {
+        $this->findCssAndSetValue($page, $this->sortControlSelector, $value);
+    }
+
+    /**
      * Assert the selected sort option.
      *
      * @param Element $page   Current page
