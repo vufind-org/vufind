@@ -558,8 +558,12 @@ class Manager implements
                     if ($this->getAuth() instanceof ChoiceAuth) {
                         $this->getAuth()->setStrategy($user->auth_method);
                     }
-                    $this->updateUser($user);
-                    $this->updateSession($user);
+                    if ($this->supportsPersistentLogin()) {
+                        $this->updateUser($user);
+                        $this->updateSession($user);
+                    } else {
+                        $this->currentUser = false;
+                    }
                 }
             } else {
                 // not logged in
