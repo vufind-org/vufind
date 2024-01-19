@@ -47,7 +47,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function newHandlerNameProvider(): array
+    public static function newHandlerNameProvider(): array
     {
         return ['Test1' => ['foo:bar', 'bar'],
                 'Test2' => ['foo', 'All Fields'],
@@ -76,7 +76,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function newHandlerProvider(): array
+    public static function newHandlerProvider(): array
     {
         return ['Test1' => ['foo:bar', 'foo', false],
                 'Test2' => ['', 'foo', 'AllFields'],

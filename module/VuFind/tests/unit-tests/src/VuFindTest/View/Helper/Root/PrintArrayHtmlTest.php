@@ -65,7 +65,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
      *
      * @return array
      */
-    public function getPrintArrayHtmlData(): array
+    public static function getPrintArrayHtmlData(): array
     {
         return [
             [ // Set 0

@@ -62,7 +62,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Enabed' => ['foo', true], 'Not Enabled' => ['', false]];
     }

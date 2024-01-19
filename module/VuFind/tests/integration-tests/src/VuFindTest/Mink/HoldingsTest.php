@@ -51,7 +51,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function itemStatusAndHoldingsProvider(): array
+    public static function itemStatusAndHoldingsProvider(): array
     {
         $set = [
             [true, 'On Shelf', 'Available', 'success'],

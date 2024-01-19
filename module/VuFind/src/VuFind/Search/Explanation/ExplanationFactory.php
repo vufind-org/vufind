@@ -1,11 +1,11 @@
 <?php
 
 /**
- * JSTree hierarchy tree renderer plugin factory.
+ * Generic factory for explanation objects.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Hebis Verbundzentrale 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  HierarchyTree_Renderer
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Hierarchy\TreeRenderer;
+namespace VuFind\Search\Explanation;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * JSTree hierarchy tree renderer plugin factory.
+ * Generic factory for explanation objects.
  *
  * @category VuFind
- * @package  HierarchyTree_Renderer
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class JSTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class ExplanationFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,14 +69,21 @@ class JSTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
+        // Replace trailing "Explanation" with "Params" to get the params service:
+        $paramsService = preg_replace('/Explanation$/', 'Params', $requestedName);
+        // Replace leading namespace with "VuFind" if service is not available:
+        $paramsServiceAvailable = $container
+            ->get(\VuFind\Search\Params\PluginManager::class)->has($paramsService);
+        if (!$paramsServiceAvailable) {
+            $paramsService = preg_replace('/^[^\\\]+/', 'VuFind', $paramsService);
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $params = $container->get(\VuFind\Search\Params\PluginManager::class)
+            ->get($paramsService);
         return new $requestedName(
-            $container->get('ControllerPluginManager')->get('Url'),
-            !empty($config->Collections->collections)
+            $params,
+            $container->get(\VuFindSearch\Service::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            ...($options ?: [])
         );
     }
 }

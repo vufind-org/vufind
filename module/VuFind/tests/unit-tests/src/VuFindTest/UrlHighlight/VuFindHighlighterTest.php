@@ -107,7 +107,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array[]
      */
-    public function getHighlightDataProvider(): array
+    public static function getHighlightDataProvider(): array
     {
         return [
             'http' => [
