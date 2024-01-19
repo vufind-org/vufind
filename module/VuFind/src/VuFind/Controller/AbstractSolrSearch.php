@@ -178,14 +178,6 @@ class AbstractSolrSearch extends AbstractSearch
                 }
 
                 $tmpList = $list['list'];
-                $sort = $hierarchicalFacetsSortOptions[$facet]
-                    ?? $hierarchicalFacetsSortOptions['*'] ?? 'top';
-
-                $facetHelper->sortFacetList($tmpList, $sort);
-                $tmpList = $facetHelper->buildFacetArray(
-                    $facet,
-                    $tmpList
-                );
                 if ($options->getFilterHierarchicalFacetsInAdvanced()) {
                     $tmpList = $facetHelper->filterFacets(
                         $facet,
