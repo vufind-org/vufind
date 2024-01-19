@@ -99,11 +99,11 @@ class Manager implements
     protected $userTable;
 
     /**
-     * Login token
+     * Login token manager
      *
-     * @var LoginToken
+     * @var LoginTokenManager
      */
-    protected $loginToken;
+    protected $loginTokenManager;
 
     /**
      * Session manager
@@ -143,27 +143,27 @@ class Manager implements
     /**
      * Constructor
      *
-     * @param Config         $config         VuFind configuration
-     * @param UserTable      $userTable      User table gateway
-     * @param LoginToken     $loginToken     Login Token
-     * @param SessionManager $sessionManager Session manager
-     * @param PluginManager  $pm             Authentication plugin manager
-     * @param CookieManager  $cookieManager  Cookie manager
-     * @param CsrfInterface  $csrf           CSRF validator
+     * @param Config            $config            VuFind configuration
+     * @param UserTable         $userTable         User table gateway
+     * @param SessionManager    $sessionManager    Session manager
+     * @param PluginManager     $pm                Authentication plugin manager
+     * @param CookieManager     $cookieManager     Cookie manager
+     * @param CsrfInterface     $csrf              CSRF validator
+     * @param LoginTokenManager $loginTokenManager Login Token manager
      */
     public function __construct(
         Config $config,
         UserTable $userTable,
-        LoginToken $loginToken,
         SessionManager $sessionManager,
         PluginManager $pm,
         CookieManager $cookieManager,
-        CsrfInterface $csrf
+        CsrfInterface $csrf,
+        LoginTokenManager $loginTokenManager
     ) {
         // Store dependencies:
         $this->config = $config;
         $this->userTable = $userTable;
-        $this->loginToken = $loginToken;
+        $this->loginTokenManager = $loginTokenManager;
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
@@ -505,7 +505,7 @@ class Manager implements
         unset($this->session->userId);
         unset($this->session->userDetails);
         $this->cookieManager->set('loggedOut', 1);
-        $this->loginToken->deleteActiveToken();
+        $this->loginTokenManager->deleteActiveToken();
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
@@ -556,7 +556,7 @@ class Manager implements
                 $results->exchangeArray($this->session->userDetails);
                 $this->currentUser = $results;
             } elseif ($this->cookieManager->get('loginToken')) {
-                if ($user = $this->loginToken->tokenLogin($this->sessionManager->getId())) {
+                if ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                     if ($this->getAuth() instanceof ChoiceAuth) {
                         $this->getAuth()->setStrategy($user->auth_method);
                     }
@@ -761,7 +761,7 @@ class Manager implements
 
         if ($request->getPost()->get('remember_me') && $this->supportsPersistentLogin()) {
             try {
-                $this->loginToken->createToken($user, '', $this->sessionManager->getId());
+                $this->loginTokenManager->createToken($user, '', $this->sessionManager->getId());
             } catch (\Exception $e) {
                 $this->logError((string)$e);
                 throw new AuthException('authentication_error_technical', 0, $e);
@@ -782,7 +782,7 @@ class Manager implements
      */
     public function deleteToken(string $series, int $userId)
     {
-        $this->loginToken->deleteTokenSeries($series, $userId);
+        $this->loginTokenManager->deleteTokenSeries($series, $userId);
     }
 
     /**
@@ -794,7 +794,7 @@ class Manager implements
      */
     public function deleteUserLoginTokens(int $userId)
     {
-        $this->loginToken->deleteUserLoginTokens($userId);
+        $this->loginTokenManager->deleteUserLoginTokens($userId);
     }
 
     /**

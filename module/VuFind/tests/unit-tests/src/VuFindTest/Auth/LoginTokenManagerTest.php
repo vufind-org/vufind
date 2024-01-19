@@ -33,13 +33,13 @@ namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
-use VuFind\Auth\LoginToken;
+use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
- * Class AuthTokenTest
+ * Class LoginTokenManagerTest
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -47,7 +47,7 @@ use VuFind\Exception\LoginToken as LoginTokenException;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LoginTokenTest extends \PHPUnit\Framework\TestCase
+class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test login exception
@@ -218,9 +218,9 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
      *
      * @param CookieManager $cookieManager cookie manager
      * @param LoginToken    $tokenTable    Login token table
-     * @param USer          $userTable     User table
+     * @param User          $userTable     User table
      *
-     * @return LoginToken
+     * @return LoginTokenManager
      */
     protected function getLoginToken($cookieManager, $tokenTable, $userTable)
     {
@@ -232,7 +232,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        return new LoginToken(
+        return new LoginTokenManager(
             $config,
             $userTable,
             $tokenTable,

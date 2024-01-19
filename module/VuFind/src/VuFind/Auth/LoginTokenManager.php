@@ -36,7 +36,7 @@ use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
- * Class LoginToken
+ * Class LoginTokenManager
  *
  * @category VuFind
  * @package  VuFind\Auth
@@ -44,7 +44,7 @@ use VuFind\Exception\LoginToken as LoginTokenException;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
