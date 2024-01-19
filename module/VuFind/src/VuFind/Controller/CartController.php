@@ -78,7 +78,7 @@ class CartController extends AbstractBase
      * @param ServiceLocatorInterface      $sm           Service manager
      * @param Container                    $container    Session container
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \Vufind\Export               $export       Export support class
+     * @param \VuFind\Export               $export       Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
