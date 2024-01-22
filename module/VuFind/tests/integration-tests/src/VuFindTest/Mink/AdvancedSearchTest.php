@@ -362,17 +362,24 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $expected = [
             '~hierarchical_facet_str_mv:"0/level1a/"' => 'level1a',
             '~hierarchical_facet_str_mv:"1/level1a/level2a/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2a',
-            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3a/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3a',
-            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3b/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3b',
-            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3d/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3d',
+            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3a/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3a',
+            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3b/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3b',
+            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3d/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3d',
             '~hierarchical_facet_str_mv:"1/level1a/level2b/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2b',
-            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3c/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3c',
-            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3e/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3e',
+            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3c/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3c',
+            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3e/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3e',
             '~hierarchical_facet_str_mv:"0/level1z/"' => 'level1z',
             '~hierarchical_facet_str_mv:"1/level1z/level2y/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2y',
-            '~hierarchical_facet_str_mv:"2/level1z/level2y/level3g/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3g',
+            '~hierarchical_facet_str_mv:"2/level1z/level2y/level3g/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3g',
             '~hierarchical_facet_str_mv:"1/level1z/level2z/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2z',
-            '~hierarchical_facet_str_mv:"2/level1z/level2z/level3z/"' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3z',
+            '~hierarchical_facet_str_mv:"2/level1z/level2z/level3z/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3z',
         ];
 
         $this->assertEquals($expected, $options);
