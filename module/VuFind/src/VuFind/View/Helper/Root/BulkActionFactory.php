@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Cart controller factory.
+ * BulkAction helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Cart controller factory.
+ * BulkAction helper factory.
  *
  * @category VuFind
- * @package  Controller
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CartControllerFactory extends AbstractBaseFactory
+class BulkActionFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -67,12 +68,8 @@ class CartControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Laminas\Session\Container(
-            'cart_followup',
-            $container->get(\Laminas\Session\SessionManager::class)
-        );
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         $export = $container->get(\VuFind\Export::class);
-        return parent::__invoke($container, $requestedName, [$session, $configLoader, $export]);
+        return new $requestedName($export, $configLoader);
     }
 }
