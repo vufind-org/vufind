@@ -50,7 +50,8 @@ use function strlen;
  */
 class CartController extends AbstractBase
 {
-    use Feature\BulkActionControllerTrait, ListItemSelectionTrait;
+    use Feature\BulkActionControllerTrait;
+    use ListItemSelectionTrait;
 
     /**
      * Session container

@@ -538,7 +538,8 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  if (VuFind.listItemSelection.getAllSelected(event.target).length === 0) {
+  let numberOfSelected = VuFind.listItemSelection.getAllSelected(event.target).length;
+  if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
@@ -774,9 +775,6 @@ $(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // handle QR code links
-  setupQRCodeLinks();
 
   // Print
   var url = window.location.href;
