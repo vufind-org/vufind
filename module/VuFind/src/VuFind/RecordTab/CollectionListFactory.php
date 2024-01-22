@@ -69,10 +69,14 @@ class CollectionListFactory implements \Laminas\ServiceManager\Factory\FactoryIn
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         return new $requestedName(
             $container->get(\VuFind\Search\SearchRunner::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
-            $container->get(\VuFind\Search\Memory::class)
+            $container->get(\VuFind\Search\Memory::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $config->Collections->showFullHierarchyTree,
         );
     }
 }

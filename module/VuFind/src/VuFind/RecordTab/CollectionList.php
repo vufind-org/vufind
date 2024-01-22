@@ -31,6 +31,7 @@ namespace VuFind\RecordTab;
 
 use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Memory as SearchMemory;
+use \VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 
@@ -74,6 +75,20 @@ class CollectionList extends AbstractBase
     protected $searchMemory;
 
     /**
+     * Recordloader to fetch the current record
+     *
+     * @var VuFind\RecordLoader
+     */
+    protected $recordLoader = null;
+
+    /**
+     * Config
+     * 
+     * @var bool
+     */
+    protected $showFullHierarchy = false;
+
+    /**
      * Search class id
      *
      * @var string
@@ -90,11 +105,15 @@ class CollectionList extends AbstractBase
     public function __construct(
         SearchRunner $runner,
         RecommendManager $recMan,
-        SearchMemory $sm
+        SearchMemory $sm,
+        RecordLoader $recordLoader,
+        $showFullHierarchy,
     ) {
         $this->runner = $runner;
         $this->recommendManager = $recMan;
         $this->searchMemory = $sm;
+        $this->recordLoader = $recordLoader;
+        $this->showFullHierarchy = $showFullHierarchy;
     }
 
     /**
@@ -126,6 +145,12 @@ class CollectionList extends AbstractBase
     {
         if (null === $this->results) {
             $driver = $this->getRecordDriver();
+            if ($this->showFullHierarchy) {
+                $topID = $driver->tryMethod('getHierarchyTopID')[0];
+                if ($topID && $driver->getUniqueID() !== $topID) {
+                    $driver = $this->getRecord($topID);
+                }
+            }
             $request = $this->getRequest()->getQuery()->toArray()
                 + $this->getRequest()->getPost()->toArray();
             $rManager = $this->recommendManager;
@@ -158,5 +183,17 @@ class CollectionList extends AbstractBase
     {
         // No, search parameters from the URL are needed.
         return false;
+    }
+
+    /**
+     * Get record by id
+     *
+     * @param string $id Id for the record to load.
+     *
+     * @return \VuFind\RecordDriver\AbstractBase
+     */
+    protected function getRecord($id)
+    {
+        return $this->recordLoader->load($id);
     }
 }
