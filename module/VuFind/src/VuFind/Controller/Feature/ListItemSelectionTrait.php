@@ -63,7 +63,7 @@ trait ListItemSelectionTrait
             ));
         }
         return null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+            ? $this->params()->fromPost('ids', [])
+            : $this->params()->fromPost('idsAll', []);
     }
 }

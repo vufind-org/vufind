@@ -10,11 +10,12 @@ $doiActive = $doi->isActive();
 // Account for replace_other_urls setting
 $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 $recordLinker = $this->recordLinker($this->results);
+$showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
 ?>
 
 <div class="grid-result<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
-  <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+  <?php if ($showCheckboxes): ?>
     <label class="grid-checkbox">
       <?=$this->record($this->driver)->getCheckbox('', 'search-cart-form') ?>
     </label>

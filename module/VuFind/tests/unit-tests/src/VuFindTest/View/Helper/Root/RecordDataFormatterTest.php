@@ -30,10 +30,12 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Psr\Container\ContainerInterface;
+use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
 use function count;
+use function func_get_args;
 
 /**
  * RecordDataFormatter Test Class
@@ -46,6 +48,7 @@ use function count;
  */
 class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\PathResolverTrait;
@@ -121,11 +124,17 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [])
     {
         // "Mock out" tag functionality to avoid database access:
-        $methods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags',
+        $onlyMethods = [
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary', 'getNewerTitles',
+        ];
+        $addMethods = [
+            'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
+            'getNotExistingAltScript', 'getSummaryAltScript', 'getNewerTitlesAltScript',
+            'getPublicationDetailsAltScript', 'getFunctionWithParams',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->onlyMethods($methods)
+            ->onlyMethods($onlyMethods)
+            ->addMethods($addMethods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));
@@ -145,6 +154,35 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $record->expects($this->once())->method('getDeduplicatedAuthors')
             ->will($this->returnValue($authors));
 
+        // Functions for testing combine alt
+        $record->expects($this->any())->method('getFullTitle')
+            ->will($this->returnValue(['Standard Title']));
+        $record->expects($this->any())->method('getFullTitleAltScript')
+            ->will($this->returnValue('Alternative Title'));
+        $record->expects($this->any())->method('getAltFullTitle')
+            ->will($this->returnValue('Other Alternative Title'));
+        $record->expects($this->any())->method('getBuildingsAltScript')
+            ->will($this->returnValue(null));
+        $record->expects($this->any())->method('getNotExistingAltScript')
+            ->will($this->returnValue('Alternative Value'));
+        $record->expects($this->any())->method('getSummary')
+        ->will($this->returnValue(null));
+        $record->expects($this->any())->method('getSummaryAltScript')
+            ->will($this->returnValue('Alternative Summary'));
+        $record->expects($this->any())->method('getPublicationDetailsAltScript')
+            ->will($this->returnValue([
+                new PublicationDetails('Alt Place', 'Alt Name', 'Alt Date'),
+            ]));
+        $record->expects($this->any())->method('getNewerTitles')
+            ->will($this->returnValue(['New Title', 'Second New Title']));
+        $record->expects($this->any())->method('getNewerTitlesAltScript')
+            ->will($this->returnValue(['Alt New Title', 'Second Alt New Title']));
+        $record->expects($this->any())->method('getFunctionWithParams')
+            ->will($this->returnCallback(function () {
+                $args = func_get_args();
+                return implode(' ', $args);
+            }));
+
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
@@ -154,16 +192,48 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Build a formatter, including necessary mock view w/ helpers.
      *
+     * @param array $additionalConfig Additional RecordDataFormatter config
+     *
      * @return RecordDataFormatter
      */
-    protected function getFormatter()
+    protected function getFormatter($additionalConfig = [])
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
+        $recordDataFormatterConfig = array_merge($additionalConfig, [
+            'Defaults' => [
+                'core' => ['Extra'],
+            ],
+            'Field_ConfiguredOptions' => [
+                'separator' => ';',
+            ],
+            'Field_ConfiguredOverwriteOptions' => [
+                'separator' => ';',
+            ],
+            'Field_Extra' => [
+                'dataMethod' => 'getContainerTitle',
+                'pos' => 6000,
+                'enabled' => true,
+            ],
+            'Field_ContextSensitive' => [
+                'enabled' => false,
+                'overrideContext' => [
+                    'core' => 'Core_ContextSensitive',
+                ],
+            ],
+            'Core_ContextSensitive' => [
+                'enabled' => true,
+            ],
+        ]);
         $container->set(
             \VuFind\Config\PluginManager::class,
-            new \VuFind\Config\PluginManager($container)
+            $this->getMockConfigPluginManager([
+                'config' => [
+                    'Record' => [],
+                ],
+                'RecordDataFormatter' => $recordDataFormatterConfig,
+            ])
         );
         $this->addPathResolverToContainer($container);
         $formatter = $factory($container, RecordDataFormatter::class);
@@ -226,7 +296,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getFormattingData(): array
+    public static function getFormattingData(): array
     {
         return [
             [
@@ -349,9 +419,93 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 ];
             },
         ];
+        $spec['CombineAlt'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4000,
+        ];
+        $spec['CombineAltPrioritizeAlt'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4001,
+            'prioritizeAlt' => true,
+        ];
+        $spec['CombineAltDataMethod'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4002,
+            'altDataMethod' => 'getAltFullTitle',
+        ];
+        $spec['CombineAltNoAltFunction'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'CombineAlt',
+            'pos' => 4003,
+        ];
+        $spec['CombineAltNoAltValue'] = [
+            'dataMethod' => 'getBuildings',
+            'renderType' => 'CombineAlt',
+            'pos' => 4004,
+        ];
+        $spec['CombineAltNoStdFunction'] = [
+            'dataMethod' => 'getNotExisting',
+            'renderType' => 'CombineAlt',
+            'pos' => 4005,
+        ];
+        $spec['CombineAltNoStdValue'] = [
+            'dataMethod' => 'getSummary',
+            'renderType' => 'CombineAlt',
+            'pos' => 4006,
+        ];
+        $spec['CombineAltArray'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'CombineAlt',
+            'pos' => 4007,
+        ];
+        $spec['CombineAltRenderTemplate'] = [
+            'dataMethod' => 'getPublicationDetails',
+            'renderType' => 'CombineAlt',
+            'combineAltRenderType' => 'RecordDriverTemplate',
+            'template' => 'data-publicationDetails.phtml',
+            'pos' => 4008,
+        ];
+        $spec['EnabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 5000,
+        ];
+        $spec['DisabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => false,
+            'pos' => 5001,
+        ];
+        $spec['FunctionWithParams'] = [
+            'dataMethod' => 'getFunctionWithParams',
+            'renderType' => 'Simple',
+            'dataMethodParams' => ['test', 'test2'],
+            'pos' => 5002,
+        ];
+        $spec['ConfiguredOptions'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'pos' => 6003,
+        ];
+        $spec['ConfiguredOverwriteOptions'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'separator' => '/',
+            'pos' => 6004,
+        ];
+        $spec['ContextSensitive'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'pos' => 7000,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
+            'New Title' => 'New TitleSecond New Title',
             'Main Author' => 'Vico, Giambattista, 1668-1744.',
             'Other Authors' => 'Pandolfi, Claudia.',
             'Format' => 'Book',
@@ -369,7 +523,26 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'c' => 'c',
             'a' => 'a',
             'b' => 'b',
+            'CombineAlt' => 'Standard Title Alternative Title',
+            'CombineAltPrioritizeAlt' => 'Alternative Title Standard Title',
+            'CombineAltDataMethod' => 'Standard Title Other Alternative Title',
+            'CombineAltNoAltFunction' => 'Book',
+            'CombineAltNoAltValue' => '0',
+            'CombineAltNoStdFunction' => 'Alternative Value',
+            'CombineAltNoStdValue' => 'Alternative Summary',
+            'CombineAltArray' => 'New TitleSecond New Title Alt New TitleSecond Alt New Title',
+            'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
+            'EnabledField' => '0',
+            'FunctionWithParams' => 'test test2',
+            'Extra' => '0',
+            'ConfiguredOptions' => 'New Title;Second New Title',
+            'ConfiguredOverwriteOptions' => 'New Title;Second New Title',
+            'ContextSensitive' => '0',
         ];
+
+        // Calling getDefaults again to apply changes from config
+        $formatter->setDefaults('core', $spec);
+        $spec = $formatter->getDefaults('core');
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys
@@ -403,30 +576,196 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data Provider for testFormattingWithGlobalOptions().
+     *
+     * @return array
+     */
+    public static function getFormattingDataWithGlobalOptions(): array
+    {
+        return [
+            [
+                'getInvokedSpecsWithGlobalOptions',
+            ],
+            [
+                'getOldSpecsWithGlobalOptions',
+            ],
+        ];
+    }
+
+    /**
+     * Get global options for testFormattingWithGlobalOptions.
+     *
+     * @return array
+     */
+    public function getGlobalTestConfig()
+    {
+        return [
+            'Global' => [
+                'enabled' => false,
+                'separator' => '-',
+            ],
+            'Field_EnabledFieldByConfig' => [
+                'enabled' => true,
+            ],
+            'Field_DisabledFieldByConfig' => [
+                'enabled' => false,
+            ],
+            'Field_SeparatorByConfig' => [
+                'separator' => ';',
+                'enabled' => true,
+            ],
+        ];
+    }
+
+    /**
+     * Test formatting with global options.
+     *
+     * @param string $function Function to test the formatting with.
+     *
+     * @return void
+     *
+     * @dataProvider getFormattingDataWithGlobalOptions
+     */
+    public function testFormattingWithGlobalOptions(string $function): void
+    {
+        $driver = $this->getDriver();
+        $formatter = $this->getFormatter($this->getGlobalTestConfig());
+        $spec = $formatter->getDefaults('core');
+
+        $spec['NormalField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'pos' => 1000,
+        ];
+        $spec['EnabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 1001,
+        ];
+        $spec['DisabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => false,
+            'pos' => 1002,
+        ];
+        $spec['EnabledFieldByConfig'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'pos' => 1003,
+        ];
+        $spec['DisabledFieldByConfig'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 1004,
+        ];
+        $spec['SeparatorGlobal'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 2000,
+        ];
+        $spec['SeparatorFactory'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'separator' => '/',
+            'enabled' => true,
+            'pos' => 2001,
+        ];
+        $spec['SeparatorByConfig'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'separator' => '/',
+            'enabled' => true,
+            'pos' => 2002,
+        ];
+
+        $expected = [
+            'EnabledField' => '0',
+            'EnabledFieldByConfig' => '0',
+            'SeparatorGlobal' => 'New Title-Second New Title',
+            'SeparatorFactory' => 'New Title/Second New Title',
+            'SeparatorByConfig' => 'New Title;Second New Title',
+            'Extra' => '0',
+        ];
+
+        // Calling getDefaults again to apply changes from config
+        $formatter->setDefaults('core', $spec);
+        $spec = $formatter->getDefaults('core');
+        // Call the method specified by the data provider
+        $results = $this->$function($driver, $spec);
+        // Check for expected array keys
+        $this->assertEquals(array_keys($expected), $this->getLabels($results));
+
+        // Check for expected text (with markup stripped)
+        foreach ($expected as $key => $value) {
+            $this->assertEquals(
+                $value,
+                trim(
+                    preg_replace(
+                        '/\s+/',
+                        ' ',
+                        strip_tags($this->findResult($key, $results)['value'])
+                    )
+                )
+            );
+        }
+    }
+
+    /**
      * Invokes a RecordDataFormatter with a driver and returns getData results.
      *
-     * @param SolrDefault $driver Driver to invoke with.
-     * @param array       $spec   Specifications to test with.
+     * @param SolrDefault $driver        Driver to invoke with.
+     * @param array       $spec          Specifications to test with.
+     * @param array       $globalOptions Optional global options.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecs($driver, array $spec): array
+    protected function getInvokedSpecs($driver, array $spec, $globalOptions = []): array
     {
-        $formatter = ($this->getFormatter())($driver);
+        $formatter = ($this->getFormatter($globalOptions))($driver);
         return $formatter->getData($spec);
     }
 
     /**
      * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
      *
+     * @param SolrDefault $driver        Driver to call with.
+     * @param array       $spec          Specifications to test with.
+     * @param array       $globalOptions Optional global options.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getOldSpecs($driver, array $spec, $globalOptions = []): array
+    {
+        $formatter = $this->getFormatter($globalOptions);
+        return $formatter->getData($driver, $spec);
+    }
+
+    /**
+     * Invokes a RecordDataFormatter with global options and with a driver and returns getData results.
+     *
+     * @param SolrDefault $driver Driver to invoke with.
+     * @param array       $spec   Specifications to test with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getInvokedSpecsWithGlobalOptions($driver, array $spec): array
+    {
+        return $this->getInvokedSpecs($driver, $spec, $this->getGlobalTestConfig());
+    }
+
+    /**
+     * Calls RecordDataFormatter::getData with global options with a driver as parameter and returns the results.
+     *
      * @param SolrDefault $driver Driver to call with.
      * @param array       $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecs($driver, array $spec): array
+    protected function getOldSpecsWithGlobalOptions($driver, array $spec): array
     {
-        $formatter = $this->getFormatter();
-        return $formatter->getData($driver, $spec);
+        return $this->getOldSpecs($driver, $spec, $this->getGlobalTestConfig());
     }
 }

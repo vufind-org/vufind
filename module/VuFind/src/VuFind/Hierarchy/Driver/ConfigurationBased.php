@@ -45,7 +45,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @var string
      */
-    protected $defaultTreeRenderer = 'JSTree';
+    protected $defaultTreeRenderer = 'HTMLTree';
 
     /**
      * Show Tree
@@ -130,5 +130,23 @@ class ConfigurationBased extends AbstractBase
     {
         return isset($this->config->Collections->link_type)
             ? ucwords(strtolower($this->config->Collections->link_type)) : 'All';
+    }
+
+    /**
+     * Get the Solr field name used for grouping together collection contents
+     *
+     * @param bool $hasSearch Is the user performing a search?
+     *
+     * @return string
+     */
+    public function getCollectionField(bool $hasSearch): string
+    {
+        if ($hasSearch && null !== ($field = $this->config->Collections->search_container_id_field ?? null)) {
+            return $field;
+        }
+        return match ($this->getCollectionLinkType()) {
+            'All' => 'hierarchy_parent_id',
+            'Top' => 'hierarchy_top_id',
+        };
     }
 }

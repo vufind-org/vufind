@@ -1,17 +1,28 @@
 <?php if (count($searchTabs) > 0): ?>
   <?php
     $hasSelectedTab = false;
+    $resultTotal = $this->results?->getResultTotal() ?? -1;
   ?>
   <ul class="nav nav-tabs">
     <?php foreach ($searchTabs as $tab): ?>
       <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
         <?php
+          $linkAttributes = [
+            'data-source' => $this->escapeHtmlAttr($tab['class']),
+          ];
           if ($tab['selected']) {
             $hasSelectedTab = true;
+            if ($this->showCounts && $resultTotal >= 0) {
+              $linkAttributes['data-result-total'] = $resultTotal;
+            } elseif ($this->showCounts) {
+              $linkAttributes['data-search-url'] = $tab['url'];
+            }
+          } else {
+            $linkAttributes['href'] = $tab['url'];
           }
         ?>
         <li<?=$tab['selected'] ? ' class="active"' : ''?><?=$this->showCounts ? ' data-show-counts' : ''?>>
-          <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?> data-source="<?=$this->escapeHtmlAttr($tab['class'])?>"><?=$this->transEsc($tab['label']); ?></a>
+          <a <?=$this->htmlAttributes($linkAttributes)?>><?=$this->transEsc($tab['label']); ?></a>
         </li>
       <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
         <?=$block?>

@@ -28,6 +28,7 @@
     }
 
     // Load search actions and settings (if any):
+    $keyboardLayouts = $this->searchbox()->getKeyboardLayouts();
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
         $this->searchIndex ?? null
@@ -75,6 +76,9 @@
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
+  <div class="keyboard-box">
+    <div class="simple-keyboard"></div>
+  </div>
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
     <?php
@@ -87,17 +91,46 @@
         'aria-label' => $this->translate('search_terms'),
       ];
       if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
-        $searchboxAttributes['placeholder'] = $placeholder;
+        $searchboxAttributes['placeholder'] = $this->translate($placeholder);
       }
       if ($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
         $searchboxAttributes['class'] .= " autocomplete searcher:{$this->searchClassId}"
           . ($this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '');
         $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
       }
+      if (!empty($keyboardLayouts)) {
+        $searchboxAttributes['class'] .= ' with-keyboard-selection';
+      }
     ?>
     <div class="searchForm-query">
       <input<?=$this->htmlAttributes($searchboxAttributes)?>>
-      <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+      <div id="searchForm_controls">
+        <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+        <?php if (!empty($keyboardLayouts)): ?>
+          <?php
+          $this->headScript()->appendFile('vendor/js.cookie.js');
+          $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
+          $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
+          $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
+          ?>
+          <div class="keyboard-selection dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <?=$this->icon('keyboard-o') ?>
+              <?=$this->icon('caret-down') ?>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
+              <li>
+                <a class="keyboard-selection-item" href="#" data-value="none"><?= $this->transEsc('None') ?></a>
+              </li>
+              <?php foreach ($keyboardLayouts as $keyboardLayout): ?>
+                <li>
+                  <a class="keyboard-selection-item" href="#" data-value="<?= $this->escapeHtmlAttr($keyboardLayout) ?>"><?= $this->transEsc("KeyboardLayout::$keyboardLayout") ?></a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+      </div>
     </div>
     <?php if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">

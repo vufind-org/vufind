@@ -445,6 +445,19 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Set the active strategy
+     *
+     * @param string $strategy New strategy
+     *
+     * @return void
+     */
+    public function setStrategy($strategy)
+    {
+        $this->strategy = $strategy;
+        $this->session->auth_method = $strategy;
+    }
+
+    /**
      * Validate the credentials in the provided request, but do not change the state
      * of the current logged-in user. Return true for valid credentials, false
      * otherwise.

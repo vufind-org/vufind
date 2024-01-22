@@ -6,17 +6,13 @@
         $viewParams = [
           'searchClassId' => $searchClassId,
           'currentSearch' => $currentSearch,
-          // Enable cart if appropriate:
-          'showCartControls' => $this->supportsCartOptions[$columnIndex] && $this->showCartControls,
-          // Enable bulk options if appropriate:
-          'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
         ];
       ?>
       <?php
         if (
           !($currentSearch['ajax'] ?? false)                        // AJAX column
           && ($currentSearch['hide_if_empty'] ?? false)             // set to hide when empty
-          && $currentSearch['view']->results->getResultTotal() == 0 // and empty
+          && $currentSearch['view']->results->getResultTotal() <= 0 // and empty
         ) {
           continue;
         }
@@ -25,7 +21,7 @@
         <?php $templateSuffix = ($currentSearch['ajax'] ?? false) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
-      <?php $columnIndex ++; ?>
+      <?php $columnIndex++; ?>
       <?php if ($columnIndex < $columns): ?>
     </div>
     <div class="combined-column">

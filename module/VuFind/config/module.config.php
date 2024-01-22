@@ -182,7 +182,7 @@ $config = [
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MissingrecordController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OaiController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OAuth2Controller' => 'VuFind\Controller\OAuth2ControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -378,6 +378,7 @@ $config = [
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
+            'VuFind\Auth\LoginTokenManager' => 'VuFind\Auth\LoginTokenManagerFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -392,6 +393,7 @@ $config = [
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
+            'VuFind\Connection\ExternalVuFind' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Connection\LibGuides' => 'VuFind\Connection\LibGuidesFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
@@ -465,6 +467,7 @@ $config = [
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Search\BackendManager' => 'VuFind\Search\BackendManagerFactory',
+            'VuFind\Search\Explanation\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
@@ -620,6 +623,7 @@ $config = [
             'user_card'        => ['id', 'user_card_id_seq'],
             'user_list'        => ['id', 'user_list_id_seq'],
             'user_resource'    => ['id', 'user_resource_id_seq'],
+            'login_token'      => ['id', 'login_token_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -655,6 +659,7 @@ $config = [
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
             'resolver_driver' => [ /* See VuFind\Resolver\Driver\PluginManager for defaults */ ],
             'search_backend' => [ /* See VuFind\Search\BackendRegistry for defaults */ ],
+            'search_explanation' => [ /* See VuFind\Search\Explanation\PluginManager for defaults */ ],
             'search_facetcache' => [ /* See VuFind\Search\FacetCache\PluginManager for defaults */ ],
             'search_options' => [ /* See VuFind\Search\Options\PluginManager for defaults */ ],
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
@@ -710,7 +715,7 @@ $recordRoutes = [
 // Define non tab record actions
 $nonTabRecordActions = [
     'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
-    'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+    'Cite', 'Explain', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
     'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating',
 ];
 
@@ -753,8 +758,9 @@ $staticRoutes = [
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
-    'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
+    'MyResearch/DeleteList', 'MyResearch/DeleteUserLoginTokens',
+    'MyResearch/DeleteLoginToken', 'MyResearch/Edit',
+    'MyResearch/Email', 'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
     'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
     'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',

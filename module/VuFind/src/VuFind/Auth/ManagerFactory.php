@@ -94,6 +94,7 @@ class ManagerFactory implements FactoryInterface
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
         $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
+        $loginTokenManager = $container->get(\VuFind\Auth\LoginTokenManager::class);
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
@@ -102,7 +103,8 @@ class ManagerFactory implements FactoryInterface
             $sessionManager,
             $pm,
             $cookies,
-            $csrf
+            $csrf,
+            $loginTokenManager
         );
         $manager->checkForExpiredCredentials();
         return $manager;

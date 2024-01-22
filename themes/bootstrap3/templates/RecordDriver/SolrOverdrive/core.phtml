@@ -12,15 +12,16 @@ $message = false;
 $alert_level = '';
 $button = false;
 $button2 = false;
+$availCode = $avail->code ?? '';
 
 //if we didn't get availability, we can't show the proper action buttons
-if ($avail->code == 'od_code_login_for_avail') {
+if ($availCode == 'od_code_login_for_avail') {
     $message = $this->transEsc('od_code_login_for_avail');
     $alert_level = 'info';
-} elseif ($avail->code == 'od_account_noaccess') {
+} elseif ($availCode == 'od_account_noaccess') {
     $message = $this->transEsc('od_code_contentnotavail');
     $alert_level = 'info';
-} elseif ($avail->data) {
+} elseif (!empty($avail->data)) {
     $checkedOut = $isOnHold = false;
     $checkedOutResult = $this->driver->isCheckedOut();
     if (!$checkedOutResult->status && $user) {
@@ -164,7 +165,7 @@ if ($avail->code == 'od_code_login_for_avail') {
     $this->extraControls = $extraControls;
 } //end if avail
 
-if ($previews->url) {
+if (!empty($previews->url)) {
     $this->previewOverride = "<a href=\"{$previews->url}\" target=\"_blank\" class=\"btn btn-primary\">Sample</a>";
 }
 echo $this->render('RecordDriver/DefaultRecord/core.phtml');

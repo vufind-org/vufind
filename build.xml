@@ -30,6 +30,7 @@
   <property name="vufinddbpass" value="vufindtestpass" />
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
+  <property name="mysqlport" value="3306" />
   <property name="mysqlrootuser" value="root" />
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
@@ -57,7 +58,7 @@
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
-  <property name="version" value="9.0.3" />
+  <property name="version" value="9.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -181,10 +182,10 @@
 
   <!-- JSHint -->
   <target name="jshint">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
+    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules ${srcdir}/themes" checkreturn="true" passthru="true" />
   </target>
   <target name="jshint-report">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
   <!-- Run Sass build, error if it fails -->
@@ -371,22 +372,6 @@
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
-  <!-- Copy files from node modules to themes -->
-  <target name="copynodemodules">
-    <!-- autocomplete.js -->
-    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-    <!-- jstree -->
-    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
-      <fileset dir="${srcdir}/node_modules/jstree/dist/" >
-        <include name="**/**" />
-        <exclude name="jstree.js" />
-        <exclude name="themes/default-dark/" />
-      </fileset>
-    </copy>
-    <!-- vanilla-cookieconsent -->
-    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
-  </target>
-
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
     <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
@@ -494,7 +479,7 @@
         <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
-        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
+        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}:${mysqlport}/${vufinddb}" />
       </else>
     </if>
 
@@ -531,7 +516,7 @@
       </then>
     </if>
 
-    <!-- Add a local translation for tests -->
+    <!-- Add local translations for tests -->
     <if>
       <not>
         <available file="${localdir}/languages" type="dir" />
@@ -540,7 +525,19 @@
         <mkdir dir="${localdir}/languages" />
       </then>
     </if>
+    <if>
+      <not>
+        <available file="${localdir}/languages/Facets" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages/Facets" />
+      </then>
+    </if>
     <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1a/ = Top Level, Sorted Last${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="0/level1z/ = Top Level, Sorted First${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2y/ = Second Level, Sorted Last${line.separator}" />
+    <append destFile="${localdir}/languages/Facets/en.ini" text="1/level1z/level2z/ = Second Level, Sorted First${line.separator}" />
   </target>
 
   <target name="setup_database" description="setup demo database">
@@ -558,13 +555,13 @@
       </then>
       <else>
         <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
       </else>
     </if>
   </target>
@@ -650,8 +647,8 @@ ${git_status}
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>
 
@@ -763,7 +760,7 @@ ${git_status}
     </delete>
     <delete>
       <fileset dir="${localdir}/languages">
-        <include name="*" />
+        <include name="**/*" />
       </fileset>
     </delete>
     <delete file="${srcdir}/env.bat" />
