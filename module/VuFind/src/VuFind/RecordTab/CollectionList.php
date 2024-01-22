@@ -30,8 +30,8 @@
 namespace VuFind\RecordTab;
 
 use VuFind\Recommend\PluginManager as RecommendManager;
+use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Memory as SearchMemory;
-use \VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 
@@ -83,7 +83,7 @@ class CollectionList extends AbstractBase
 
     /**
      * Config
-     * 
+     *
      * @var bool
      */
     protected $showFullHierarchy = false;
@@ -98,9 +98,11 @@ class CollectionList extends AbstractBase
     /**
      * Constructor
      *
-     * @param SearchRunner     $runner Search runner
-     * @param RecommendManager $recMan Recommendation manager
-     * @param SearchMemory     $sm     Search memory
+     * @param SearchRunner     $runner            Search runner
+     * @param RecommendManager $recMan            Recommendation manager
+     * @param SearchMemory     $sm                Search memory
+     * @param RecordLoader     $recordLoader      Record loader
+     * @param bool             $showFullHierarchy Display all collection items on all archive levels?
      */
     public function __construct(
         SearchRunner $runner,
