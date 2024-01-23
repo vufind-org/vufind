@@ -342,7 +342,6 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
             if (strtolower($rawField) != 'title') {
                 $extraSelect = 'CASE WHEN ' . $alias . '.' . $rawField . ' IS NULL THEN 1 ELSE 0 END';
                 $order[] = $extraSelect;
-
             }
 
             // Apply the user-specified sort:
