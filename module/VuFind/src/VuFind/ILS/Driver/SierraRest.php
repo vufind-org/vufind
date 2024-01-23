@@ -523,18 +523,21 @@ class SierraRest extends AbstractBase implements
     /**
      * Establish INN-Reach database connection
      *
-     * @return PgSql\Connection|void
+     * @return resource|void
      */
     protected function getInnReachDb()
     {
         try {
             if (!isset($this->innReachDb)) {
                 $conn_string = $this->config['InnReach']['sierra_db'];
-                $this->innReachDb = pg_connect($conn_string);
+                $connection = pg_connect($conn_string);
+                $this->innReachDb = $connection;
             }
-            return $this->innReachDb;
         } catch (\Exception $e) {
-            $this->config['InnReach']['enabled'] = false;
+            $this->logWarning("INN-Reach: Could not connect to the Sierra database: {$e}");
+            $this->innReachDb = null;
+        } finally {
+            return $this->innReachDb;
         }
     }
 
@@ -3571,8 +3574,9 @@ class SierraRest extends AbstractBase implements
         $this->getInnReachDb();
 
         $titleInfo = [];
-        try {
-            $query = 'SELECT 
+        if (!empty($this->innReachDb)) {
+            try {
+                $query = 'SELECT 
                         bib_record_property.best_title as title,
                         bib_record_property.best_author as author,
                         --hold.status, -- this shows sierra hold status not inn-reach status
@@ -3586,15 +3590,20 @@ class SierraRest extends AbstractBase implements
                     AND hold.is_ir=true
                     AND hold.record_id = bib_record_item_record_link.item_record_id
                     AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
-            pg_prepare($this->innReachDb, 'prep_query', $query);
-            $results = pg_execute($this->innReachDb, 'prep_query', [$holdId]);
-            if ($result = pg_fetch_array($results, 0)) {
-                $titleInfo['id'] = $bibId;
-                $titleInfo['title'] = $result[0];
-                $titleInfo['author'] = $result[1];
+                pg_prepare($this->innReachDb, 'prep_query', $query);
+                $results = pg_execute($this->innReachDb, 'prep_query', [$holdId]);
+                if ($result = pg_fetch_array($results, 0)) {
+                    $titleInfo['id'] = $bibId;
+                    $titleInfo['title'] = $result[0];
+                    $titleInfo['author'] = $result[1];
+                }
+            } catch (\Exception $e) {
+                $this->throwAsIlsException($e);
             }
-        } catch (\Exception $e) {
-            $this->throwAsIlsException($e);
+        } else {
+            $titleInfo['id'] = '';
+            $titleInfo['title'] = 'Unknown Title';
+            $titleInfo['author'] = 'Unknown Author';
         }
 
         return $titleInfo;
@@ -3616,9 +3625,9 @@ class SierraRest extends AbstractBase implements
         $this->getInnReachDb();
 
         $titleInfo = [];
-
-        try {
-            $query = 'SELECT 
+        if (!empty($this->innReachDb)) {
+            try {
+                $query = 'SELECT 
   bib_record_property.best_title as title,
   bib_record_property.best_author as author,
   bib_record_property.best_title_norm as sort_title
@@ -3630,15 +3639,20 @@ WHERE
   checkout.id = $1
   AND checkout.item_record_id = bib_record_item_record_link.item_record_id
   AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
-            pg_prepare($this->innReachDb, 'prep_query', $query);
-            $results = pg_execute($this->innReachDb, 'prep_query', [$checkOutId]);
-            if ($result = pg_fetch_array($results, 0)) {
-                $titleInfo['id'] = $bibId;
-                $titleInfo['title'] = $result[0];
-                $titleInfo['author'] = $result[1];
+                pg_prepare($this->innReachDb, 'prep_query', $query);
+                $results = pg_execute($this->innReachDb, 'prep_query', [$checkOutId]);
+                if ($result = pg_fetch_array($results, 0)) {
+                    $titleInfo['id'] = $bibId;
+                    $titleInfo['title'] = $result[0];
+                    $titleInfo['author'] = $result[1];
+                }
+            } catch (\Exception $e) {
+                $this->throwAsIlsException($e);
             }
-        } catch (\Exception $e) {
-            $this->throwAsIlsException($e);
+        } else {
+            $titleInfo['id'] = '';
+            $titleInfo['title'] = 'Unknown Title';
+            $titleInfo['author'] = 'Unknown Author';
         }
         return $titleInfo;
     }
