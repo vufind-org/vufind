@@ -111,11 +111,7 @@
           <?php endif; ?>
 
           <?php
-          if (!empty($resource->getExtraDetail('ils_details')['id'])) {
-              $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
-          } else {
-              $coverDetails['html'] = "<img src='" . $this->imageLink('InnReachCover.png') . "' alt='book cover -" . $resource->getTitle() . "' />";
-          }
+            $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
             $thumbnail = false;
             $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
