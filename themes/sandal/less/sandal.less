@@ -29,9 +29,12 @@ body {
 .navbar { border-radius: 0; }
 .banner {
   width: auto;
-  color: #fff;
+  color: @white;
 
   a { color: #fff; }
+  .dropdown-menu {
+    color: @black;
+  }
 }
 .banner .navbar-right { margin-top: calc((@banner-height-sm - 50px) / 2); } // Put right nav in the middle
 .banner .navbar-brand {
@@ -115,9 +118,7 @@ header {
   }
 }
 
-#account-icon.text-success,
-#account-icon.text-warning,
-#account-icon.text-danger {
+#account-icon:not(.notification-level-0) {
   margin-left: -.25rem;
   margin-top: -0.5rem;
   margin-bottom: -.5rem;

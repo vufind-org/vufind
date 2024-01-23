@@ -35,11 +35,7 @@ VuFind.register('account', function Account() {
   // Clearing save forces AJAX update next page load
   var clearCache = function clearCache(name) {
     if (typeof name === "undefined" || name === '') {
-      for (var sub in _submodules) {
-        if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
-          clearCache(sub);
-        }
-      }
+      clearAllCaches();
     } else {
       sessionStorage.removeItem(_sessionDataPrefix + name);
     }
@@ -78,15 +74,21 @@ VuFind.register('account', function Account() {
         }
       }
     }
-    $("#account-icon").html(VuFind.icon(..._accountIcons[accountStatus]));
-    if (accountStatus > ICON_LEVELS.NONE) {
-      $("#account-icon")
-        .attr("data-toggle", "tooltip")
-        .attr("data-placement", "bottom")
-        .attr("title", VuFind.translate("account_has_alerts"))
-        .tooltip();
-    } else {
-      $("#account-icon").tooltip("destroy");
+    const accountIconEl = document.querySelector('#account-icon');
+    if (accountIconEl) {
+      accountIconEl.innerHTML = VuFind.icon(..._accountIcons[accountStatus]);
+      if (accountStatus > ICON_LEVELS.NONE) {
+        accountIconEl.dataset.toggle = 'tooltip';
+        accountIconEl.dataset.placement = 'bottom';
+        accountIconEl.title = VuFind.translate('account_has_alerts');
+        $(accountIconEl).tooltip();
+      } else {
+        $(accountIconEl).tooltip('destroy');
+      }
+      Object.entries(ICON_LEVELS).forEach(([, level]) => {
+        accountIconEl.classList.remove('notification-level-' + level);
+      });
+      accountIconEl.classList.add('notification-level-' + accountStatus);
     }
   };
   var _ajaxLookup = function _ajaxLookup(module) {
