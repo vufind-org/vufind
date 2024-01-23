@@ -283,7 +283,7 @@ class SierraRest extends AbstractBase implements
      *
      * @var int
      */
-    protected $apiVersion = 5.0;
+    protected $apiVersion = 5;
 
     /**
      * API base path
