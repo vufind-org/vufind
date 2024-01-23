@@ -1191,7 +1191,7 @@ class TagService extends AbstractService implements LoggerAwareInterface
      *
      * @return void
      */
-    public function deleteTag($resource, $tagText, $user, $list_id = null)
+    public function deleteTag(Resource $resource, $tagText, $user, $list_id = null)
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
@@ -1201,7 +1201,7 @@ class TagService extends AbstractService implements LoggerAwareInterface
             }
             if (!empty($tagIds)) {
                 $this->destroyResourceLinks(
-                    $resource,
+                    $resource->getId(),
                     $user,
                     $list_id,
                     $tagIds

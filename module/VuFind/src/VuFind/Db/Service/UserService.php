@@ -215,7 +215,8 @@ class UserService extends AbstractService implements LoggerAwareInterface, Servi
         // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
             $unlinker = $this->getDbService(\VuFind\Db\Service\TagService::class);
-            $unlinker->destroyResourceLinks($resource, $user, $list);
+            $resourceId = $resource instanceof Resource ? $resource->getId() : $resource;
+            $unlinker->destroyResourceLinks($resourceId, $user, $list);
         }
 
         // Add the new tags:

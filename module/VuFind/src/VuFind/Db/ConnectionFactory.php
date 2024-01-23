@@ -148,8 +148,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
                 // TODO: fix/test
                 return 'Oracle';
             case 'pgsql':
-                // TODO: fix/test
-                return 'Pdo_Pgsql';
+                return 'pdo_pgsql';
         }
         return $type;
     }
