@@ -118,7 +118,7 @@ header {
   }
 }
 
-#account-icon {
+#account-icon:not(.notification-level-0) {
   margin-left: -.25rem;
   margin-top: -0.5rem;
   margin-bottom: -.5rem;
