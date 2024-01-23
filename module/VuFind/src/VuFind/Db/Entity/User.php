@@ -41,7 +41,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="user",
+ * @ORM\Table(name="`user`",
  *          uniqueConstraints={@ORM\UniqueConstraint(name="cat_id",
  *                          columns={"cat_id"}),
  * @ORM\UniqueConstraint(name="username", columns={"username"})})
