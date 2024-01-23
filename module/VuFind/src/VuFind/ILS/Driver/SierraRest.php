@@ -283,7 +283,7 @@ class SierraRest extends AbstractBase implements
      *
      * @var int
      */
-    protected $apiVersion = 5.1;
+    protected $apiVersion = 5.0;
 
     /**
      * API base path
@@ -520,11 +520,19 @@ class SierraRest extends AbstractBase implements
         $this->sessionCache = $factory($namespace);
     }
 
+    /**
+     * Establish INN-Reach database connection
+     *
+     * @return PgSql\Connection|void
+     */
     protected function getInnReachDb()
     {
         try {
-            $conn_string = $this->config['InnReach']['sierra_db'];
-            $this->innReachDb = pg_connect($conn_string);
+            if (!isset($this->innReachDb)) {
+                $conn_string = $this->config['InnReach']['sierra_db'];
+                $this->innReachDb = pg_connect($conn_string);
+            }
+            return $this->innReachDb;
         } catch (\Exception $e) {
             $this->config['InnReach']['enabled'] = false;
         }
@@ -859,8 +867,7 @@ class SierraRest extends AbstractBase implements
             $transactions[] = $transaction;
         }
         if ($this->config['InnReach']['enabled'] ?? false) {
-            $n = 0;
-            foreach ($transactions as $transaction) {
+            foreach ($transactions as $n => $transaction) {
                 $irIdentifier = $this->config['InnReach']['identifier'];
                 if ($transaction['item_id'] && strstr($transaction['item_id'], $irIdentifier)) {
                     $irCheckoutId = $transaction['checkout_id'];
@@ -872,7 +879,6 @@ class SierraRest extends AbstractBase implements
                         $transactions[$n]['author'] = $innReach['author'];
                     }
                 }
-                $n++;
             }
         }
 
@@ -1219,8 +1225,7 @@ class SierraRest extends AbstractBase implements
         }
 
         if ($this->config['InnReach']['enabled'] ?? false) {
-            $n = 0;
-            foreach ($holds as $hold) {
+            foreach ($holds as $n => $hold) {
                 if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
                     $id = $hold['id'];
                     $volume = $hold['volume'];
@@ -1232,7 +1237,6 @@ class SierraRest extends AbstractBase implements
                         $holds[$n]['author'] = $innReach['author'];
                     }
                 }
-                $n++;
             }
         }
         return $holds;
@@ -3461,7 +3465,6 @@ class SierraRest extends AbstractBase implements
         }
         // Fetch items and collect bib id mappings if available:
         $itemIds = [];
-        $innReachIndices = [];
         $bibIdsToItems = [];
         foreach ($transactions as $transaction) {
             $itemId = $this->extractId($transaction['item']);
@@ -3475,7 +3478,6 @@ class SierraRest extends AbstractBase implements
         if ($this->config['InnReach']['enabled'] ?? false) {
             foreach ($itemIds as $key => $iRId) {
                 if (strstr($iRId, $this->config['InnReach']['identifier'])) {
-                    $innReachIndices[$key] = $iRId;
                     unset($itemIds[$key]);
                 }
             }
@@ -3565,9 +3567,8 @@ class SierraRest extends AbstractBase implements
      */
     protected function getInnReachHoldTitleInfoFromId($holdId, $bibId)
     {
-        if (!isset($this->innReachDb)) {
-            $this->getInnReachDb();
-        }
+
+        $this->getInnReachDb();
         try {
             $query = 'SELECT 
                         bib_record_property.best_title as title,
@@ -3601,7 +3602,7 @@ class SierraRest extends AbstractBase implements
      * Gets title information for checked out items from INN-Reach systems
      *
      * @param $checkOutId the id of the checkout from Sierra
-     * @param $bibId      the id bib from Sierra
+     * @param $bibId      the id of the bib from Sierra
      *
      * @return array|void
      *
@@ -3609,9 +3610,9 @@ class SierraRest extends AbstractBase implements
      */
     protected function getInnReachCheckoutTitleInfoFromId($checkOutId, $bibId)
     {
-        if (!isset($this->innReachDb)) {
-            $this->getInnReachDb();
-        }
+
+        $this->getInnReachDb();
+
         $titleInfo = [];
 
         try {
