@@ -3561,14 +3561,16 @@ class SierraRest extends AbstractBase implements
      * @param $holdId the id of the hold from Sierra
      * @param $bibId  the id of the bib from Sierra
      *
-     * @return array|void
+     * @return array
      *
      * @throws ILSException
      */
-    protected function getInnReachHoldTitleInfoFromId($holdId, $bibId)
+    protected function getInnReachHoldTitleInfoFromId($holdId, $bibId): array
     {
 
         $this->getInnReachDb();
+
+        $titleInfo = [];
         try {
             $query = 'SELECT 
                         bib_record_property.best_title as title,
@@ -3587,15 +3589,15 @@ class SierraRest extends AbstractBase implements
             pg_prepare($this->innReachDb, 'prep_query', $query);
             $results = pg_execute($this->innReachDb, 'prep_query', [$holdId]);
             if ($result = pg_fetch_array($results, 0)) {
-                return [
-                    'id' => $bibId,
-                    'title' => $result[0],
-                    'author' => $result[1],
-                ];
+                $titleInfo['id'] = $bibId;
+                $titleInfo['title'] = $result[0];
+                $titleInfo['author'] = $result[1];
             }
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+
+        return $titleInfo;
     }
 
     /**
@@ -3604,11 +3606,11 @@ class SierraRest extends AbstractBase implements
      * @param $checkOutId the id of the checkout from Sierra
      * @param $bibId      the id of the bib from Sierra
      *
-     * @return array|void
+     * @return array
      *
      * @throws ILSException
      */
-    protected function getInnReachCheckoutTitleInfoFromId($checkOutId, $bibId)
+    protected function getInnReachCheckoutTitleInfoFromId($checkOutId, $bibId): array
     {
 
         $this->getInnReachDb();
@@ -3634,10 +3636,10 @@ WHERE
                 $titleInfo['id'] = $bibId;
                 $titleInfo['title'] = $result[0];
                 $titleInfo['author'] = $result[1];
-                return $titleInfo;
             }
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
+        return $titleInfo;
     }
 }
