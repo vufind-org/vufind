@@ -32,6 +32,16 @@ VuFind.register('account', function Account() {
     );
   };
 
+  var clearAllCaches = function clearAllCaches() {
+    // Set a flag so that any modules yet to be loaded are cleared as well
+    _clearCaches = true;
+    for (var sub in _submodules) {
+      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
+        _load(sub);
+      }
+    }
+  };
+
   // Clearing save forces AJAX update next page load
   var clearCache = function clearCache(name) {
     if (typeof name === "undefined" || name === '') {
@@ -173,16 +183,6 @@ VuFind.register('account', function Account() {
       var status = _pendingNotifications[name];
       _pendingNotifications[name] = null;
       notify(name, status);
-    }
-  };
-
-  var clearAllCaches = function clearAllCaches() {
-    // Set a flag so that any modules yet to be loaded are cleared as well
-    _clearCaches = true;
-    for (var sub in _submodules) {
-      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
-        _load(sub);
-      }
     }
   };
 
