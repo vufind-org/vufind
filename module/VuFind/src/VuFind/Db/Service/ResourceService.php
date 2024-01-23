@@ -311,21 +311,23 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
     }
 
     /**
-     * Apply a sort parameter to a query on the resource table.
+     * Apply a sort parameter to a query on the resource table. Returns an
+     * array with two keys: 'orderByClause' (the actual ORDER BY) and
+     * 'extraSelect' (extra values to add to SELECT, if necessary)
      *
      * @param string $sort  Field to use for sorting (may include
      *                      'desc' qualifier)
      * @param string $alias Alias to the resource table (defaults to 'r')
      *
-     * @return string
+     * @return array
      */
-    public static function getOrderByClause($sort, $alias = 'r')
+    public static function getOrderByClause(string $sort, string $alias = 'r'): array
     {
         // Apply sorting, if necessary:
         $legalSorts = [
             'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
         ];
-        $orderByClause = '';
+        $orderByClause = $extraSelect = '';
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             // Strip off 'desc' to obtain the raw field name -- we'll need it
             // to sort null values to the bottom:
@@ -338,7 +340,9 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
-                $order[] = ' CASE WHEN ' . $alias . '.' . $rawField . ' IS NULL THEN 1 ELSE 0 END';
+                $extraSelect = 'CASE WHEN ' . $alias . '.' . $rawField . ' IS NULL THEN 1 ELSE 0 END';
+                $order[] = $extraSelect;
+
             }
 
             // Apply the user-specified sort:
@@ -346,7 +350,7 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
             // Inject the sort preferences into the query object:
             $orderByClause = ' ORDER BY ' . implode(', ', $order);
         }
-        return $orderByClause;
+        return compact('orderByClause', 'extraSelect');
     }
 
     /**
@@ -442,8 +446,12 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
         $offset = 0,
         $limit = null
     ) {
-        $dql = 'SELECT DISTINCT(r.id), r '
-            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
+        $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
+        $dql = 'SELECT DISTINCT(r.id), r';
+        if (!empty($orderByDetails['extraSelect'])) {
+            $dql .= ', ' . $orderByDetails['extraSelect'];
+        }
+        $dql .= ' FROM ' . $this->getEntityClass(Resource::class) . ' r '
             . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH r.id = ur.resource ';
         $dqlWhere = [];
         $dqlWhere[] = 'ur.user = :user';
@@ -465,8 +473,8 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
             $parameters['ids'] = $matches;
         }
         $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
-        if (!empty($sort)) {
-            $dql .= ResourceService::getOrderByClause($sort);
+        if (!empty($orderByDetails['orderByClause'])) {
+            $dql .= $orderByDetails['orderByClause'];
         }
 
         $query = $this->entityManager->createQuery($dql);

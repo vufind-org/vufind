@@ -908,8 +908,12 @@ class TagService extends AbstractService implements LoggerAwareInterface
         $limit = null,
         $fuzzy = true
     ) {
-        $dql = 'SELECT DISTINCT(r.id) AS resource, r '
-            . 'FROM ' . $this->getEntityClass(Tags::class) . ' t '
+        $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
+        $dql = 'SELECT DISTINCT(r.id) AS resource, r';
+        if (!empty($orderByDetails['extraSelect'])) {
+            $dql .= ', ' . $orderByDetails['extraSelect'];
+        }
+        $dql .= ' FROM ' . $this->getEntityClass(Tags::class) . ' t '
             . 'JOIN ' . $this->getEntityClass(ResourceTags::class) . ' rt WITH t.id = rt.tag '
             . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = rt.resource '
             . 'WHERE rt.resource IS NOT NULL ';
@@ -927,8 +931,8 @@ class TagService extends AbstractService implements LoggerAwareInterface
             $parameters['source'] = $source;
         }
 
-        if (!empty($sort)) {
-            $dql .= ResourceService::getOrderByClause($sort);
+        if (!empty($orderByDetails['orderByClause'])) {
+            $dql .= $orderByDetails['orderByClause'];
         }
 
         $query = $this->entityManager->createQuery($dql);
