@@ -174,12 +174,14 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $browser = '';
         $platform = '';
         try {
-            $userInfo = get_browser(null, true) ?? [];
-            $browser = $userInfo['browser'];
-            $platform = $userInfo['platform'];
+            $userInfo = get_browser(null, true);
         } catch (\Exception $e) {
+        }
+        if (!is_array($userInfo ?? null)) {
             throw new AuthException('Problem with browscap.ini');
         }
+        $browser = $userInfo['browser'] ?? '';
+        $platform = $userInfo['platform'] ?? '';
         if ($expires === 0) {
             $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
             $expires = time() + $lifetime * 60 * 60 * 24;
