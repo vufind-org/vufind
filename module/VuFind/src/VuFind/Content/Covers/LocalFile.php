@@ -176,7 +176,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
     protected function replaceImageSizeTokens($fileName, $size)
     {
         if (strstr($fileName, '%size%') && in_array($size, $this->imageSizes)) {
-                $fileName = str_replace('%size%', $size, $fileName);
+            $fileName = str_replace('%size%', $size, $fileName);
         }
         return $fileName;
     }
