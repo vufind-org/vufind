@@ -253,6 +253,111 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test placing a hold using SSO
+     *
+     * @retryCallback removeFakeuser1
+     *
+     * @return void
+     */
+    public function testPlaceHoldWithSSO(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides() + [
+                    'Authentication' => [
+                        'method' => 'SimulatedSSO',
+                    ],
+                ],
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+        // Use search to find a record to simulate a typical use case:
+        $page = $this->gotoRecordWithSearch();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+
+        // Log in:
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.modal-body .btn');
+        $this->assertEquals('Institutional Login', $element->getText());
+        $element->click();
+
+        // Start establishing library catalog profile
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Library Catalog Profile', $element->getText());
+        $element->click();
+
+        // Test valid patron login
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Create the hold and go to the holds screen:
+        $this->placeHoldAndGoToHoldsScreen($page);
+
+        // Verify the hold is correct:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+        $pageContent = $page->getContent();
+        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
+        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
+        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+    }
+
+    /**
+     * Test placing a hold using SSO and an existing catalog account
+     *
+     * @depends testPlaceHoldWithSSO
+     *
+     * @return void
+     */
+    public function testPlaceSecondHoldWithSSO(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides() + [
+                    'Authentication' => [
+                        'method' => 'SimulatedSSO',
+                    ],
+                ],
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+        // Use search to find a record to simulate a typical use case:
+        $page = $this->gotoRecordWithSearch('testsample2');
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+
+        // Log in:
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.modal-body .btn');
+        $this->assertEquals('Institutional Login', $element->getText());
+        $element->click();
+        $this->waitForPageLoad($page);
+
+        // Check to be sure we don't have a garbled lightbox at this stage; past bugs
+        // could cause the whole record to open in the lightbox here.
+        $this->unFindCss($page, '.modal-body nav');
+
+        // Create the hold and go to the holds screen:
+        $this->placeHoldAndGoToHoldsScreen($page);
+
+        // Verify the hold is correct:
+        $this->assertEquals(
+            'Rational living.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+        $pageContent = $page->getContent();
+        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
+        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
+        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+    }
+
+    /**
      * Test placing a hold with an optional "required by" date
      *
      * @retryCallback removeUsername4
@@ -807,6 +912,16 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Retry cleanup method in case of failure during testPlaceHoldWithSSO.
+     *
+     * @return void
+     */
+    protected function removeFakeuser1(): void
+    {
+        static::removeUsers(['fakeuser1']);
+    }
+
+    /**
      * Retry cleanup method in case of failure during
      * testPlaceHoldWithoutPickUpLocations.
      *
@@ -835,6 +950,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2', 'username3', 'username4']);
+        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'fakeuser1']);
     }
 }
