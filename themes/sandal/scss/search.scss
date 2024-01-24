@@ -93,7 +93,6 @@
 .result-links {
   width: 15%;
   text-align: center;
-  font-size: $reduced-font-size;
 }
 @media (max-width: 767px) {
   .result-link-icon,
@@ -169,7 +168,7 @@
   width: 100%;
   padding: .25rem .5rem;
   padding-left: 1rem;
-  font-size: ceil(($reduced-font-size * .65)); // ~10px
+  font-size: $min-font-size;
   color: #fff;
   background-color: rgba(0,0,0,.3);
   content: "Photo by Paul Gilmore on Unsplash";

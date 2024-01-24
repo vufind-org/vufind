@@ -16,7 +16,7 @@ mark { background-color: $highlighter-color; }
 /* ------ Bootstrap class overrides ------ */
 .badge {
   margin-bottom: 1px;
-  font-size: ceil(($reduced-font-size * .65)); // ~10px
+  font-size: $min-font-size;
 }
 .btn {
   height: 34px;
