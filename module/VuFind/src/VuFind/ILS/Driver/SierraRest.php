@@ -523,11 +523,11 @@ class SierraRest extends AbstractBase implements
     /**
      * Establish INN-Reach database connection
      *
-     * @return resource|void
+     * @return ?resource
      */
     protected function getInnReachDb()
     {
-        if (!isset($this->innReachDb)) {
+        if (null === $this->innReachDb) {
             try {
                 $conn_string = $this->config['InnReach']['sierra_db'];
                 $connection = pg_connect($conn_string);
@@ -535,10 +535,9 @@ class SierraRest extends AbstractBase implements
             } catch (\Exception $e) {
                 $this->logWarning("INN-Reach: Could not connect to the Sierra database: {$e}");
                 $this->innReachDb = null;
-            } finally {
-                return $this->innReachDb;
             }
         }
+        return $this->innReachDb;
     }
 
     /**
