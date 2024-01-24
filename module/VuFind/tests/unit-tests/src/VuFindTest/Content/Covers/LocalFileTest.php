@@ -88,6 +88,30 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Run a single test.
+     *
+     * @param string $keyPattern         Match pattern to use in key
+     * @param array  $imageParams        Image parameters
+     * @param string $size               Size value to use
+     * @param bool   $includeFixturePath Include fixture path in key pattern?
+     *
+     * @return string|false
+     */
+    protected function runSingleLoaderTest(
+        string $keyPattern,
+        array $imageParams,
+        string $size = 'small',
+        bool $includeFixturePath = true
+    ) {
+        $loader = new LocalFile();
+        return $loader->getUrl(
+            ($includeFixturePath ? "$this->fixtureBase/" : '') . $keyPattern,
+            $size,
+            $imageParams
+        );
+    }
+
+    /**
      * Test cover loading
      *
      * @param string $expectedFilename   Fixture file matching key
@@ -107,14 +131,9 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
         string $size = 'small',
         bool $includeFixturePath = true
     ): void {
-        $loader = new LocalFile();
         $this->assertEquals(
             "file://$this->fixtureBase/$expectedFilename",
-            $loader->getUrl(
-                ($includeFixturePath ? "$this->fixtureBase/" : '') . $keyPattern,
-                $size,
-                $imageParams
-            )
+            $this->runSingleLoaderTest($keyPattern, $imageParams, $size, $includeFixturePath)
         );
     }
 
@@ -126,25 +145,32 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     public static function invalidCoverProvider(): array
     {
         return [
-            'missing ISBN' => ['%isbn10%.%anyimage%', []],
+            'missing ISBN' => ['%isbn10%.%anyimage%'],
             'invalid size' => ['%size%/%source%.gif', ['source' => 'x'], 'invalidsize'],
+            'non-image file' => ['%vufind-home%/README.md'],
         ];
     }
 
     /**
      * Test bad parameter/key combinations.
      *
-     * @param string $keyPattern       Match pattern to use in key
-     * @param array  $imageParams      Image parameters
-     * @param string $size             Size value to use
+     * @param string $keyPattern         Match pattern to use in key
+     * @param array  $imageParams        Image parameters
+     * @param string $size               Size value to use
+     * @param bool   $includeFixturePath Include fixture path in key pattern?
      *
      * @return void
      *
      * @dataProvider invalidCoverProvider
      */
-    public function testInvalidCover(string $keyPattern, array $imageParams, string $size = 'small'): void
-    {
-        $loader = new LocalFile();
-        $this->assertFalse($loader->getUrl("$this->fixtureBase/$keyPattern", $size, $imageParams));
+    public function testInvalidCover(
+        string $keyPattern,
+        array $imageParams = [],
+        string $size = 'small',
+        bool $includeFixturePath = true
+    ): void {
+        $this->assertFalse(
+            $this->runSingleLoaderTest($keyPattern, $imageParams, $size, $includeFixturePath)
+        );
     }
 }
