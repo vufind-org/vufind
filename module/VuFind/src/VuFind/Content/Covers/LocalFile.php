@@ -51,6 +51,13 @@ class LocalFile extends \VuFind\Content\AbstractCover
     protected $imageExtensions = ['gif', 'jpg', 'jpeg', 'png', 'tif', 'tiff'];
 
     /**
+     * Image sizes to look for when using %size% token.
+     *
+     * @var array
+     */
+    protected $imageSizes = ["small", "medium", "large"];
+
+    /**
      * MIME types allowed to be loaded from disk.
      *
      * @var array
@@ -87,7 +94,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
     {
         // convert all of the tokens:
         $fileName = $this->replaceImageTypeTokens(
-            $this->replaceEnvironmentAndIdTokens($key, $ids)
+            $this->replaceImageSizeTokens( $this->replaceEnvironmentAndIdTokens($key, $ids), $size)
         );
         // Validate MIME type if we have a valid file path.
         if ($fileName && file_exists($fileName)) {
@@ -157,4 +164,13 @@ class LocalFile extends \VuFind\Content\AbstractCover
         // Default behavior: do not modify filename:
         return $fileName;
     }
+
+    protected function replaceImageSizeTokens($fileName,$size)
+    {
+        if (strstr($fileName, '%size%') && in_array($size, $this->imageSizes)) {
+                $fileName = str_replace('%size%',$size,$fileName);
+        }
+        return $fileName;
+    }
+
 }
