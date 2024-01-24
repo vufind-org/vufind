@@ -59,7 +59,7 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Active' => [false, false], 'InActive' => [true, true]];
     }

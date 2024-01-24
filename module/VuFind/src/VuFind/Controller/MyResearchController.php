@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -46,6 +48,7 @@ use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
 use VuFind\Validator\CsrfInterface;
 
+use function count;
 use function in_array;
 use function intval;
 use function is_array;
@@ -63,8 +66,16 @@ use function is_object;
  */
 class MyResearchController extends AbstractBase
 {
+    use Feature\BulkActionControllerTrait;
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
+
+    /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -80,11 +91,45 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
+     * Export support class
+     *
+     * @var \VuFind\Export
+     */
+    protected $export;
+
+    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
      */
     protected $paginationHelper = null;
+
+    /**
+     * Session container
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface      $sm           Service locator
+     * @param Container                    $container    Session container
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Export               $export       Export support class
+     */
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        Container $container,
+        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Export $export
+    ) {
+        parent::__construct($sm);
+        $this->session = $container;
+        $this->configLoader = $configLoader;
+        $this->export = $export;
+    }
 
     /**
      * Process an authentication error.
@@ -160,7 +205,7 @@ class MyResearchController extends AbstractBase
                     if (
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
-                        && empty($this->getFollowupUrl())
+                        && !$this->hasFollowupUrl()
                     ) {
                         return $this->getRefreshResponse();
                     }
@@ -172,6 +217,13 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
+            if (
+                $this->followup()->retrieve('lightboxParent')
+                && $url = $this->getAndClearFollowupUrl(true)
+            ) {
+                return $this->redirect()->toUrl($url);
+            }
+
             // Allow bypassing of post-login redirect
             if ($this->params()->fromQuery('redirect', true)) {
                 $this->setFollowupUrlToReferer();
@@ -180,14 +232,8 @@ class MyResearchController extends AbstractBase
         }
         // Logged in?  Forward user to followup action
         // or default action (if no followup provided):
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
-            // If a user clicks on the "Your Account" link, we want to be sure
-            // they get to their account rather than being redirected to an old
-            // followup URL. We'll use a redirect=0 GET flag to indicate this:
-            if ($this->params()->fromQuery('redirect', true)) {
-                return $this->redirect()->toUrl($url);
-            }
+        if ($url = $this->getAndClearFollowupUrl(true)) {
+            return $this->redirect()->toUrl($url);
         }
 
         $config = $this->getConfig();
@@ -219,7 +265,7 @@ class MyResearchController extends AbstractBase
         }
 
         // If there's already a followup url, keep it; otherwise set one.
-        if (!$this->getFollowupUrl()) {
+        if (!$this->hasFollowupUrl()) {
             $this->setFollowupUrlToReferer();
         }
 
@@ -788,15 +834,23 @@ class MyResearchController extends AbstractBase
 
         // Fail if we have nothing to delete:
         $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
-            $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
-            return $this->redirect()->toUrl($newUrl);
-        }
+            ? $this->params()->fromPost('ids', [])
+            : $this->params()->fromPost('idsAll', []);
 
-        // Process the deletes if necessary:
-        if ($this->formWasSubmitted('submit')) {
+        $actionLimit = $this->getBulkActionLimit('delete');
+        if (!is_array($ids) || empty($ids)) {
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
+            }
+        } elseif (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
+            }
+        } elseif ($this->formWasSubmitted()) {
             $this->favorites()->delete($ids, $listID, $user);
             $this->flashMessenger()->addMessage('fav_delete_success', 'success');
             return $this->redirect()->toUrl($newUrl);
@@ -2097,6 +2151,47 @@ class MyResearchController extends AbstractBase
         $view->setTemplate('myresearch/newpassword');
         $view->useCaptcha = $this->captcha()->active('changePassword');
         return $view;
+    }
+
+    /**
+     * Delete a login token
+     *
+     * @return mixed
+     */
+    public function deleteLoginTokenAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        $csrf = $this->serviceLocator->get(CsrfInterface::class);
+        if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+            throw new \VuFind\Exception\BadRequest(
+                'error_inconsistent_parameters'
+            );
+        }
+        $series = $this->params()->fromPost('series', '');
+        $this->getAuthManager()->deleteToken($series, $this->getUser()->id);
+        return $this->redirect()->toRoute('myresearch-profile');
+    }
+
+    /**
+     * Delete all login tokens for a user
+     *
+     * @return mixed
+     */
+    public function deleteUserLoginTokensAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        $csrf = $this->serviceLocator->get(CsrfInterface::class);
+        if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+            throw new \VuFind\Exception\BadRequest(
+                'error_inconsistent_parameters'
+            );
+        }
+        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+        return $this->redirect()->toRoute('myresearch-profile');
     }
 
     /**

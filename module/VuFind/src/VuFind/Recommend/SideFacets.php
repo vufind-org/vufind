@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
@@ -45,6 +46,7 @@ use function is_array;
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
@@ -202,7 +204,7 @@ class SideFacets extends AbstractFacets
 
         // Checkbox facets:
         $flipCheckboxes = false;
-        if (substr($checkboxSection, 0, 1) == '~') {
+        if (str_starts_with($checkboxSection, '~')) {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }
@@ -306,13 +308,11 @@ class SideFacets extends AbstractFacets
                     );
                 }
 
-                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
+                $facetSet[$hierarchicalFacet]['list'] = $this->hierarchicalFacetHelper->filterFacets(
                     $hierarchicalFacet,
-                    $facetSet[$hierarchicalFacet]['list']
+                    $facetSet[$hierarchicalFacet]['list'],
+                    $this->results->getOptions()
                 );
-                $facetSet[$hierarchicalFacet]['list'] = $this
-                    ->hierarchicalFacetHelper
-                    ->flattenFacetHierarchy($facetArray);
             }
         }
 

@@ -38,13 +38,17 @@
   max-width: 80%;
 }
 .adv-term-remove {
-  &:extend(.close); // borrow the X from bootstrap close
+  color: #000;
+  font-size: 1.2rem;
   float: left;
   width: 20%;
   height: 30px;
   line-height: 1.7;
   text-align: center;
   opacity: .4;
+  .icon--image {
+    vertical-align: middle;
+  }
 }
 .adv-submit { .clearfix(); }
 .adv-submit .clear-btn { float: right; }
@@ -135,19 +139,25 @@
 }
 
 /* --- Primo --- */
-.primo-adv-search .search { margin-bottom: .5rem; }
+.primo-adv-search .search {
+  margin-bottom: .5rem;
+
+  .adv-term-type {
+    margin-bottom: .25rem;
+  }
+}
 .primo-adv-search .search-container { width: 100%; }
 .primo-adv-label {
   line-height: @input-height-base;
   padding-right: 1rem;
 }
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .primo.adv-group,
   .primo-adv-search .search {
     display: flex;
 
     select {
-      flex-shrink: 2;
+      flex-shrink: 1.5;
       margin-right: .5rem;
     }
     .primo-adv-input { flex-grow: 1; }

@@ -296,6 +296,14 @@ class XCNCIP2 extends AbstractBase implements
     protected $maxNumberOfPages;
 
     /**
+     * Some ItemUseRestrictionType values could be useful as status. This property controls which values from
+     * ItemRestrictionType should replace the status value in response of getHolding method.
+     *
+     * @var array
+     */
+    protected $itemUseRestrictionTypesForStatus = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -320,20 +328,24 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new ILSException('Configuration needs to be set.');
+        // Validate config
+        $required = ['url', 'agency'];
+        foreach ($required as $current) {
+            if (!isset($this->config['Catalog'][$current])) {
+                throw new ILSException("Missing Catalog/{$current} config setting.");
+            }
         }
 
         $this->url = $this->config['Catalog']['url'];
         $this->fromAgency = $this->config['Catalog']['fromAgency'] ?? null;
-        if ($this->config['Catalog']['consortium']) {
+        if ($this->config['Catalog']['consortium'] ?? false) {
             $this->consortium = true;
-            foreach ($this->config['Catalog']['agency'] as $agency) {
+            foreach ($this->config['Catalog']['agency'] ?? [] as $agency) {
                 $this->agency[$agency] = 1;
             }
         } else {
             $this->consortium = false;
-            if (is_array($this->config['Catalog']['agency'])) {
+            if (is_array($this->config['Catalog']['agency'] ?? null)) {
                 $this->agency[$this->config['Catalog']['agency'][0]] = 1;
             } else {
                 $this->agency[$this->config['Catalog']['agency']] = 1;
@@ -379,6 +391,8 @@ class XCNCIP2 extends AbstractBase implements
                 );
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
+
+        $this->itemUseRestrictionTypesForStatus = $this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? [];
     }
 
     /**
@@ -648,6 +662,13 @@ class XCNCIP2 extends AbstractBase implements
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = (string)($status[0] ?? '');
+
+        $itemUseRestrictionType = $current->xpath('ns1:ItemOptionalFields/ns1:ItemUseRestrictionType');
+        $itemUseRestrictionType = (string)($itemUseRestrictionType[0] ?? '');
+
+        if (in_array($itemUseRestrictionType, $this->itemUseRestrictionTypesForStatus)) {
+            $status = $itemUseRestrictionType;
+        }
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
         $itemId = (string)($itemId[0] ?? '');

@@ -1,10 +1,11 @@
 <?php $searchObject = $this->recommend->getResults(); ?>
 <?php $results = $searchObject->getResults(); ?>
+<?php $heading = $this->recommend->getHeading(); ?>
 <?php if (!empty($results)): ?>
-  <h4><?=$this->transEsc('Summon Results')?></h4>
-  <div class="list-group">
+  <h2><?=$this->transEsc($heading)?></h2>
+  <ul class="list-group">
     <?php foreach ($results as $driver): ?>
-      <div class="list-group-item">
+      <li class="list-group-item">
         <span>
           <?php
             $formats = $driver->getFormats();
@@ -21,8 +22,8 @@
           </span>
           <?php endif; ?>
         </span>
-      </div>
+      </li>
     <?php endforeach; ?>
     <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?></a>
-  </div>
+  </ul>
 <?php endif ?>

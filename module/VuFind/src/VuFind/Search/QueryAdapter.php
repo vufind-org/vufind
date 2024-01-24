@@ -58,12 +58,18 @@ abstract class QueryAdapter
      *
      * @param array $search Minified search arguments
      *
-     * @return Query|QueryGroup
+     * @return Query|QueryGroup|WorkKeysQuery
      */
     public static function deminify(array $search)
     {
+        $type = $search['s'] ?? null;
+        if ('w' === $type) {
+            // WorkKeysQuery
+            return new WorkKeysQuery($search['l'], $search['i'], $search['k'] ?? []);
+        }
         // Use array_key_exists since null is also valid
-        if (array_key_exists('l', $search)) {
+        if ('b' === $type || array_key_exists('l', $search)) {
+            // Basic search
             $handler = $search['i'] ?? $search['f'];
             return new Query(
                 $search['l'],
@@ -109,7 +115,7 @@ abstract class QueryAdapter
 
         // Work keys query:
         if ($query instanceof WorkKeysQuery) {
-            return $query->getId() ?? '';
+            return $translate('Versions') . ' - ' . ($query->getId() ?? '');
         }
 
         // Complex case -- advanced query:
@@ -179,15 +185,25 @@ abstract class QueryAdapter
 
     /**
      * Convert user request parameters into a query (currently for advanced searches
-     * only).
+     * and work keys searches only).
      *
      * @param Parameters $request        User-submitted parameters
      * @param string     $defaultHandler Default search handler
      *
-     * @return Query|QueryGroup
+     * @return Query|QueryGroup|WorkKeysQuery
      */
     public static function fromRequest(Parameters $request, $defaultHandler)
     {
+        // Check for a work keys query first (id and keys included for back-compatibility):
+        if (
+            $request->get('search') === 'versions'
+            || ($request->offsetExists('id') && $request->offsetExists('keys'))
+        ) {
+            if (null !== ($id = $request->offsetGet('id'))) {
+                return new WorkKeysQuery($id, true);
+            }
+        }
+
         $groups = [];
         // Loop through all parameters and look for 'lookforX'
         foreach ($request as $key => $value) {
@@ -245,7 +261,18 @@ abstract class QueryAdapter
                 [
                     'l' => $query->getString(),
                     'i' => $query->getHandler(),
+                    's' => 'b',
                 ],
+            ];
+        }
+
+        // WorkKeys query:
+        if ($query instanceof WorkKeysQuery) {
+            return [
+                'l' => $query->getId(),
+                'i' => $query->getIncludeSelf(),
+                'k' => $query->getWorkKeys(),
+                's' => 'w',
             ];
         }
 
@@ -257,6 +284,7 @@ abstract class QueryAdapter
                 $retVal[] = [
                     'g' => self::minify($current, false),
                     'j' => $operator,
+                    's' => 'a',
                 ];
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');

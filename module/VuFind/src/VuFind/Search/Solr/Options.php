@@ -115,10 +115,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_handler)) {
             $this->defaultHandler = $searchSettings->General->default_handler;
         }
-        if (isset($searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
-        }
         if (isset($searchSettings->General->default_filters)) {
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
@@ -194,11 +190,12 @@ class Options extends \VuFind\Search\Base\Options
             $this->hierarchicalFacets
                 = $facetSettings->SpecialFacets->hierarchical->toArray();
         }
-
         if (isset($facetSettings->SpecialFacets->hierarchicalFacetSeparators)) {
             $this->hierarchicalFacetSeparators = $facetSettings->SpecialFacets
                 ->hierarchicalFacetSeparators->toArray();
         }
+        $this->hierarchicalFacetSortSettings
+            = $facetSettings?->SpecialFacets?->hierarchicalFacetSortOptions?->toArray() ?? [];
 
         // Load Spelling preferences
         $config = $configLoader->get($this->mainIni);

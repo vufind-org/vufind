@@ -2,7 +2,7 @@
 
 /**
  * VuFind Action Feature Trait - Record Versions Search
- * Depends on method getSearchResultsView and record driver's method getWorkKeys.
+ * Depends on method getSearchResultsView.
  *
  * PHP version 8
  *
@@ -52,30 +52,15 @@ trait RecordVersionsSearchTrait
      */
     public function versionsAction()
     {
-        $id = $this->params()->fromQuery('id');
-        $keys = $queryKeys = $this->params()->fromQuery('keys', []);
-        $record = null;
-        if ($id) {
-            $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-            $record = $loader->load($id, $this->searchClassId, true);
-            if ($record instanceof \VuFind\RecordDriver\Missing) {
-                $record = null;
-            } else {
-                $keys = $record->tryMethod('getWorkKeys');
-            }
-        }
-
-        if (empty($keys)) {
-            return $this->forwardTo('Search', 'Home');
-        }
-
-        $query = new WorkKeysQuery(null, (array)$keys);
-
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
 
-        $callback = function ($runner, $params, $searchId) use ($query) {
-            $params->setQuery($query);
+        $id = null;
+        $callback = function ($runner, $params, $searchId) use (&$id) {
+            $query = $params->getQuery();
+            if ($query instanceof WorkKeysQuery) {
+                $id = $query->getId();
+            }
             $defaultCallback = is_callable([$this, 'getSearchSetupCallback'])
                 ? $this->getSearchSetupCallback() : null;
             if (is_callable($defaultCallback)) {
@@ -87,18 +72,10 @@ trait RecordVersionsSearchTrait
         };
 
         $view = $this->getSearchResultsView($callback);
-
-        // Customize the URL helper to make sure it builds proper versions URLs
-        // (but only do this if we have access to a results object, which we
-        // won't in RSS mode):
-        if (isset($view->results)) {
-            $view->results->getUrlQuery()
-                ->setDefaultParameter('id', $id)
-                ->setDefaultParameter('keys', $queryKeys) // original keys from the query, if it had any
-                ->setSuppressQuery(true);
-            $view->driver = $record;
+        if (null !== $id) {
+            $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+            $view->driver = $loader->load($id, $this->searchClassId);
         }
-
         return $view;
     }
 }

@@ -480,6 +480,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $searchConfig = $this->config->get($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
 
+        if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
+            $defaultFields .= ',score';
+        }
+
         $handlers = [
             'select' => [
                 'fallback' => true,

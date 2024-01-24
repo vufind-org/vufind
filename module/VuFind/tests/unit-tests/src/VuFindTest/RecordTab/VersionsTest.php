@@ -80,7 +80,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Test1' => [true, 1, true],
                 'Test2' => [true, 0, false],

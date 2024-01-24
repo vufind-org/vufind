@@ -100,7 +100,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function escapingProvider(): array
+    public static function escapingProvider(): array
     {
         return [
             ['foo = "This is a backslash: \\\\"'],
@@ -143,7 +143,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->checkDirectory($normalizer, $full);
-            } elseif (substr($file, -4) == '.ini') {
+            } elseif (str_ends_with($file, '.ini')) {
                 $this->assertEquals(
                     $normalizer->normalizeFileToString($full),
                     file_get_contents($full),
