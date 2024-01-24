@@ -76,11 +76,11 @@ class IndexTest extends \PHPUnit\Framework\TestCase
             'getIdsFromBackend',
             [
                 [$backendId, '*', $countPerPage, $fq],
-                [$backendId, 'offset', $countPerPage, $fq]
+                [$backendId, 'offset', $countPerPage, $fq],
             ],
             [
                 ['ids' => [1, 2], 'nextOffset' => 'offset'],
-                ['ids' => [3]]
+                ['ids' => [3]],
             ]
         );
         $config = [

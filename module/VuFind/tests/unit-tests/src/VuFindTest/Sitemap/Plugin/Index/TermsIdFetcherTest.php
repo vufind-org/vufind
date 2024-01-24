@@ -193,7 +193,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
                 $this->getMockKeyCommand(),
                 $this->getMockTermsCommand($expectedResponse1),
                 $this->getMockKeyCommand(),
-                $this->getMockTermsCommand($expectedResponse2)
+                $this->getMockTermsCommand($expectedResponse2),
             ]
         );
         $fetcher = new TermsIdFetcher($service);

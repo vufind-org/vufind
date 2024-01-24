@@ -240,7 +240,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
                 [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
-                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))]
+                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))],
             ],
             $commandObj
         );
@@ -294,7 +294,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             'invoke',
             [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
-                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))]
+                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
             ],
             $commandObj
         );

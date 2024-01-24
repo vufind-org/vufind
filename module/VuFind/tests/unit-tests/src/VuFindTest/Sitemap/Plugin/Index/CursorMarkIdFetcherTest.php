@@ -205,7 +205,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
                 $this->getMockKeyCommand(),
                 $commandObj,
                 $this->getMockKeyCommand(),
-                $commandObj
+                $commandObj,
             ]
         );
 
@@ -264,11 +264,11 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             'invoke',
             [
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
-                [$this->callback($this->getIdsExpectation('*', $fq))]
+                [$this->callback($this->getIdsExpectation('*', $fq))],
             ],
             [
                 $this->getMockKeyCommand(),
-                $commandObj
+                $commandObj,
             ]
         );
 
