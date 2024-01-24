@@ -260,7 +260,7 @@ class TagService extends AbstractService implements LoggerAwareInterface
             $parameters['listId'] = $listId;
         }
         if ($publicOnly) {
-            $dql .= 'AND l.public = 1 ';
+            $dql .= "AND l.public = '1' ";
         }
         if ($tag) {
             if ($this->caseSensitive) {

@@ -305,7 +305,7 @@ class UserListService extends AbstractService implements LoggerAwareInterface, S
         $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul ';
 
         $parameters = [];
-        $where = ['ul.public = 1'];
+        $where = ["ul.public = '1'"];
         if (!empty($includeFilter)) {
             $where[] = 'ul.id IN (:includeFilter)';
             $parameters['includeFilter'] = $includeFilter;
