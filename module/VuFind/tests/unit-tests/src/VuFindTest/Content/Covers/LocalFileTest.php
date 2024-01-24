@@ -70,6 +70,14 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     public static function validCoverProvider(): array
     {
         return [
+            'source gif in size folder' => ['small/x.gif', '%size%/%source%.gif', ['source' => 'x']],
+            'hard-coded path in vufind-home' => [
+                'invalidsize/x.gif',
+                '%vufind-home%/module/VuFind/tests/fixtures/content/covers/localfile/invalidsize/x.gif',
+                [],
+                'small',
+                false,
+            ],
             'isbn10 gif via anyimage' => ['0739313126.gif', '%isbn10%.%anyimage%', ['isbn' => new ISBN('0739313126')]],
             'isbn13 jpg via anyimage' => [
                 '9780739313121.jpg',
@@ -82,22 +90,29 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     /**
      * Test cover loading
      *
-     * @param string $expectedFilename Fixture file matching key
-     * @param string $keyPattern       Match pattern to use in key
-     * @param array  $imageParams      Image parameters
+     * @param string $expectedFilename   Fixture file matching key
+     * @param string $keyPattern         Match pattern to use in key
+     * @param array  $imageParams        Image parameters
+     * @param string $size               Size value to use
+     * @param bool   $includeFixturePath Include fixture path in key pattern?
      *
      * @return void
      *
      * @dataProvider validCoverProvider
      */
-    public function testValidCoverLoading(string $expectedFilename, string $keyPattern, array $imageParams): void
-    {
+    public function testValidCoverLoading(
+        string $expectedFilename,
+        string $keyPattern,
+        array $imageParams,
+        string $size = 'small',
+        bool $includeFixturePath = true
+    ): void {
         $loader = new LocalFile();
         $this->assertEquals(
             "file://$this->fixtureBase/$expectedFilename",
             $loader->getUrl(
-                "$this->fixtureBase/$keyPattern",
-                'small',
+                ($includeFixturePath ? "$this->fixtureBase/" : '') . $keyPattern,
+                $size,
                 $imageParams
             )
         );
@@ -112,6 +127,7 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'missing ISBN' => ['%isbn10%.%anyimage%', []],
+            'invalid size' => ['%size%/%source%.gif', ['source' => 'x'], 'invalidsize'],
         ];
     }
 
@@ -120,14 +136,15 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $keyPattern       Match pattern to use in key
      * @param array  $imageParams      Image parameters
+     * @param string $size             Size value to use
      *
      * @return void
      *
      * @dataProvider invalidCoverProvider
      */
-    public function testInvalidCover(string $keyPattern, array $imageParams): void
+    public function testInvalidCover(string $keyPattern, array $imageParams, string $size = 'small'): void
     {
         $loader = new LocalFile();
-        $this->assertFalse($loader->getUrl("$this->fixtureBase/$keyPattern", 'small', $imageParams));
+        $this->assertFalse($loader->getUrl("$this->fixtureBase/$keyPattern", $size, $imageParams));
     }
 }
