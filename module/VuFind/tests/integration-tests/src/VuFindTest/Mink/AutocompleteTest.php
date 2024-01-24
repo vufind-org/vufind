@@ -64,9 +64,9 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         if ($type) {
-            $this->findCss($page, '#searchForm_type')->setValue($type);
+            $this->findCssAndSetValue($page, '#searchForm_type', $type);
         }
-        $this->findCss($page, '#searchForm_lookfor')->setValue($search);
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $search);
         $acItem = $this->getAndAssertFirstAutocompleteValue($page, $expected);
         return $acItem;
     }
@@ -144,10 +144,8 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         // Now repeat the same search in Author
         $session = $this->getMinkSession();
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_type')
-            ->setValue('Author');
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('jsto');
+        $this->findCssAndSetValue($page, '#searchForm_type', 'Author');
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', 'jsto');
         // Make sure we get the right author match, and not a cached All Fields value!
         $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'JSTOR (Organization)');
         $acItem->click();

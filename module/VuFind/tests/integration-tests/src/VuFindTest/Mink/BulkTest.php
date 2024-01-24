@@ -79,19 +79,16 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Set up a generic bulk test by configuring VuFind to include bulk options
      * and then running a search.
      *
+     * @param array $extraConfig Extra config settings
+     *
      * @return Element
      */
-    protected function setUpGenericBulkTest(): Element
+    protected function setUpGenericBulkTest($extraConfig = []): Element
     {
+        $extraConfig['config']['Site'] = ['showBulkOptions' => true];
+        $extraConfig['config']['Mail'] = ['testOnly' => 1];
         // Activate the bulk options:
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Site' => ['showBulkOptions' => true],
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
+        $this->changeConfigs($extraConfig);
 
         return $this->getSearchResultsPage();
     }
@@ -110,6 +107,26 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
+            $warning->getText()
+        );
+    }
+
+    /**
+     * Assert that the "Selection of %%count%% items exceeds the limit of %%limit%% for this action.
+     * Please select fewer items." message is visible in the lightbox.
+     *
+     * @param Element $page  Page element
+     * @param int     $count Number of selected items
+     * @param int     $limit Action limit
+     *
+     * @return void
+     */
+    protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
+    {
+        $warning = $this->findCss($page, '.modal-body .alert-danger');
+        $this->assertEquals(
+            'Selection of ' . $count . ' items exceeds the limit of '
+            . $limit . ' for this action. Please select fewer items.',
             $warning->getText()
         );
     }
@@ -322,6 +339,111 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
+    }
+
+    /**
+     * Test that the print control works.
+     *
+     * @return void
+     */
+    public function testBulkActionLimits(): void
+    {
+        $session = $this->getMinkSession();
+        $page = $this->setUpGenericBulkTest([
+            'config' => [
+                'BulkActions' => [
+                    'limits' => [
+                        'default' => 1,
+                        'email' => 1,
+                        'export' => 2,
+                        'print' => 1,
+                        'saveCart' => 2,
+                        'delete' => 1,
+                    ],
+                ],
+                'Export' => [
+                    'EndNote' => 'record,bulk',
+                    'MARC' => 'record,bulk',
+                ],
+            ],
+            'export' => [
+                'EndNote' => [
+                    'requiredMethods' => ['getTitle'],
+                    'limit' => 1,
+                ],
+                'MARC' => [
+                    'requiredMethods' => ['getMarcReader'],
+                    'limit' => 2,
+                ],
+            ],
+        ]);
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+
+        // check email limit
+        $this->clickCss($page, '#ribbon-email');
+        $this->waitForPageLoad($page);
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
+
+        // check print limit
+        $this->clickCss($page, '#ribbon-print');
+        $this->waitForPageLoad($page);
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
+
+        // check saveCart limit without exceeding limit
+        $this->clickCss($page, '#ribbon-save');
+        $this->waitForPageLoad($page);
+        $this->checkForLoginMessage($page);
+
+        // Log in to account created in previous test.
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+
+        // Save the favorites.
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.modal-body input[name=submit]');
+        $result = $this->findCss($page, '.modal-body .alert-success');
+        $this->assertEquals(
+            'Your item(s) were saved successfully. Go to List.',
+            $result->getText()
+        );
+
+        // check export limit exceeded
+        $this->clickCss($page, '#ribbon-export');
+        $this->waitForPageLoad($page);
+        $select = $this->findCss($page, '#format');
+        $select->selectOption('EndNote');
+        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit->click();
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page);
+
+        // check export limit not exceeded
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->clickCss($page, '#ribbon-export');
+        $this->waitForPageLoad($page);
+        $select = $this->findCss($page, '#format');
+        $select->selectOption('MARC');
+        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit->click();
+        $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
+        $this->assertEquals('Download File', $result->getText());
+
+        // check delete limit exceeded
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // go to the list:
+        $this->clickCss($page, 'a.user-list-link');
+        $this->waitForPageLoad($page);
+
+        // try deleting to many items
+        $page->find('css', '#myresearchCheckAll')->check();
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
     }
 
     /**
