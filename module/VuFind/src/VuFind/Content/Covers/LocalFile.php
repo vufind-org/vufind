@@ -94,7 +94,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
     {
         // convert all of the tokens:
         $fileName = $this->replaceImageTypeTokens(
-            $this->replaceImageSizeTokens( $this->replaceEnvironmentAndIdTokens($key, $ids), $size)
+            $this->replaceImageSizeTokens($this->replaceEnvironmentAndIdTokens($key, $ids), $size)
         );
         // Validate MIME type if we have a valid file path.
         if ($fileName && file_exists($fileName)) {
@@ -169,11 +169,11 @@ class LocalFile extends \VuFind\Content\AbstractCover
      * Convert size token to one of the allowed image sizes.
      *
      * @param string $fileName file path of image file
-	 * @param string $size size of image (small/medium/large)
+	 * @param string $size     size of image (small/medium/large)
      *
      * @return bool|string
      */
-    protected function replaceImageSizeTokens($fileName,$size)
+    protected function replaceImageSizeTokens($fileName, $size)
     {
         if (strstr($fileName, '%size%') && in_array($size, $this->imageSizes)) {
                 $fileName = str_replace('%size%', $size, $fileName);
