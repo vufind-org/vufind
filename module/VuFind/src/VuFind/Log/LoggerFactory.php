@@ -429,7 +429,7 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
-     * Get class to instantiate from the requested class name
+     * Get proxy class to instantiate from the requested class name
      *
      * @param string $requestedName Service being created
      *
@@ -437,7 +437,12 @@ class LoggerFactory implements FactoryInterface
      */
     protected function getProxyClassName(string $requestedName): string
     {
-        return $requestedName . 'Proxy';
+        $className = $requestedName . 'Proxy';
+        // Fall back to default if the class doesn't exist:
+        if (!class_exists($className)) {
+            return LoggerProxy::class;
+        }
+        return $className;
     }
 
     /**
