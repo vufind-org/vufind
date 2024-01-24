@@ -35,6 +35,8 @@ use Laminas\Session\SessionManager;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
+use function is_array;
+
 /**
  * Class LoginTokenManager
  *
