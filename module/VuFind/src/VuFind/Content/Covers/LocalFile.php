@@ -51,6 +51,13 @@ class LocalFile extends \VuFind\Content\AbstractCover
     protected $imageExtensions = ['gif', 'jpg', 'jpeg', 'png', 'tif', 'tiff'];
 
     /**
+     * Image sizes to look for when using %size% token.
+     *
+     * @var array
+     */
+    protected $imageSizes = ['small', 'medium', 'large'];
+
+    /**
      * MIME types allowed to be loaded from disk.
      *
      * @var array
@@ -87,7 +94,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
     {
         // convert all of the tokens:
         $fileName = $this->replaceImageTypeTokens(
-            $this->replaceEnvironmentAndIdTokens($key, $ids)
+            $this->replaceEnvironmentSizeAndIdTokens($key, $ids, $size)
         );
         // Validate MIME type if we have a valid file path.
         if ($fileName && file_exists($fileName)) {
@@ -100,16 +107,17 @@ class LocalFile extends \VuFind\Content\AbstractCover
     }
 
     /**
-     * Convert tokens to ids array values.
+     * Convert tokens to appropriate values from environment, size parameter and ID array values.
      *
      * @param string $filePath file path of image file
      * @param array  $ids      Associative array of identifiers
      * (keys may include 'isbn' pointing to an ISBN object and
      * 'issn' pointing to a string)
+     * @param string $size     size of image (small/medium/large)
      *
      * @return string
      */
-    protected function replaceEnvironmentAndIdTokens($filePath, $ids)
+    protected function replaceEnvironmentSizeAndIdTokens(string $filePath, array $ids, string $size): string
     {
         // Seed the token array with standard environment variables:
         $tokens = ['%vufind-home%', '%vufind-local-dir%'];
@@ -122,6 +130,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
                 $replacements[] = $val;
             }
         }
+
         // Special-case handling for ISBN object:
         if (isset($ids['isbn'])) {
             $tokens[] = '%isbn10%';
@@ -130,6 +139,13 @@ class LocalFile extends \VuFind\Content\AbstractCover
             $tokens[] = '%isbn13%';
             $replacements[] = $ids['isbn']->get13();
         }
+
+        // Size handling:
+        if (in_array($size, $this->imageSizes)) {
+            $tokens[] = '%size%';
+            $replacements[] = $size;
+        }
+
         return str_replace($tokens, $replacements, $filePath);
     }
 
@@ -138,13 +154,13 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @param string $fileName file path of image file
      *
-     * @return bool|string
+     * @return string
      */
-    protected function replaceImageTypeTokens($fileName)
+    protected function replaceImageTypeTokens(string $fileName): string
     {
         // If anyimage is specified, then we loop through all
         // image extensions to find the right filename
-        if (strstr($fileName, '%anyimage%')) {
+        if (str_contains($fileName, '%anyimage%')) {
             foreach ($this->imageExtensions as $val) {
                 foreach ([$val, strtoupper($val), ucwords($val)] as $finalVal) {
                     $checkFile = str_replace('%anyimage%', $finalVal, $fileName);
