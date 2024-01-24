@@ -322,7 +322,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $fields = $fixture['response']['docs'][0];
         $mock = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
-            ->setMethods(['getBookOpenUrlParams'])
+            ->onlyMethods(['getBookOpenUrlParams'])
             ->getMock();
         $mock->setRawData($fields);
         $mock->expects($this->any())
