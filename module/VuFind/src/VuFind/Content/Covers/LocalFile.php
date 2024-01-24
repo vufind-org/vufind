@@ -169,7 +169,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      * Convert size token to one of the allowed image sizes.
      *
      * @param string $fileName file path of image file
-	 * @param string $size     size of image (small/medium/large)
+     * @param string $size     size of image (small/medium/large)
      *
      * @return bool|string
      */
@@ -180,5 +180,4 @@ class LocalFile extends \VuFind\Content\AbstractCover
         }
         return $fileName;
     }
-
 }
