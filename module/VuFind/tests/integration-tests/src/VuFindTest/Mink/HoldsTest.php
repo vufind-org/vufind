@@ -196,9 +196,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Start establishing library catalog profile
         $this->waitForPageLoad($page);
-        $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Library Catalog Profile', $element->getText());
-        $element->click();
 
         // Test invalid patron login
         $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
@@ -277,19 +274,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
 
-        // Log in:
-        $this->waitForPageLoad($page);
-        $element = $this->findCss($page, '.modal-body .btn');
-        $this->assertEquals('Institutional Login', $element->getText());
-        $element->click();
-
         // Start establishing library catalog profile
         $this->waitForPageLoad($page);
-        $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Library Catalog Profile', $element->getText());
-        $element->click();
-
-        // Test valid patron login
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Create the hold and go to the holds screen:
@@ -332,15 +318,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
 
-        // Log in:
-        $this->waitForPageLoad($page);
-        $element = $this->findCss($page, '.modal-body .btn');
-        $this->assertEquals('Institutional Login', $element->getText());
-        $element->click();
-        $this->waitForPageLoad($page);
-
         // Check to be sure we don't have a garbled lightbox at this stage; past bugs
         // could cause the whole record to open in the lightbox here.
+        $this->waitForPageLoad($page);
         $this->unFindCss($page, '.modal-body nav');
 
         // Create the hold and go to the holds screen:
@@ -399,9 +379,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Start establishing library catalog profile
         $this->waitForPageLoad($page);
-        $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Library Catalog Profile', $element->getText());
-        $element->click();
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Test placing a hold with an invalid "required by" date:
@@ -846,10 +823,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Start establishing library catalog profile
         $this->waitForPageLoad($page);
-        $element = $this->findCss($page, '.alert.alert-info a');
-        $this->assertEquals('Library Catalog Profile', $element->getText());
-        $element->click();
-
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Open the "place hold" dialog and check for error message:

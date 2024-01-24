@@ -361,6 +361,29 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Complete login - perform a user login followed by a catalog login.
+     *
+     * @return mixed
+     */
+    public function completeLoginAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            $this->clearFollowupUrl();
+            $this->followup()->store();
+            if ($si = $this->getSessionInitiator()) {
+                return $this->redirect()->toUrl($si);
+            }
+            return $this->forwardTo('MyResearch', 'Login');
+        }
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+        return $this->inLightbox()
+            ? $this->getRefreshResponse()
+            : $this->redirect()->toRoute('home');
+    }
+
+    /**
      * Logout Action
      *
      * @return mixed
