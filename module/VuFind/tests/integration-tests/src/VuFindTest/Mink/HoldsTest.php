@@ -196,6 +196,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Start establishing library catalog profile
         $this->waitForPageLoad($page);
+
+        // Test invalid patron login
         $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
         $this->assertEquals(
             'Invalid Patron Login',
