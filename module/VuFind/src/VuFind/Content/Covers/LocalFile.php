@@ -55,7 +55,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @var array
      */
-    protected $imageSizes = ["small", "medium", "large"];
+    protected $imageSizes = ['small', 'medium', 'large'];
 
     /**
      * MIME types allowed to be loaded from disk.
@@ -165,10 +165,18 @@ class LocalFile extends \VuFind\Content\AbstractCover
         return $fileName;
     }
 
+    /**
+     * Convert size token to one of the allowed image sizes.
+     *
+     * @param string $fileName file path of image file
+	 * @param string $size size of image (small/medium/large)
+     *
+     * @return bool|string
+     */
     protected function replaceImageSizeTokens($fileName,$size)
     {
         if (strstr($fileName, '%size%') && in_array($size, $this->imageSizes)) {
-                $fileName = str_replace('%size%',$size,$fileName);
+                $fileName = str_replace('%size%', $size, $fileName);
         }
         return $fileName;
     }
