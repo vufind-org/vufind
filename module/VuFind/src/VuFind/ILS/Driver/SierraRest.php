@@ -78,11 +78,11 @@ class SierraRest extends AbstractBase implements
     public const HOLDINGS_LOCATION_FIELD = '40';
 
     /**
-     * Database connection
+     * Sierra INN-Reach Database connection
      *
-     * @var resource
+     * @var ?resource
      */
-    protected $innReachDb;
+    protected $innReachDb = null;
 
     /**
      * Fixed field number for item code 2 (ICODE2) in item records
@@ -527,17 +527,17 @@ class SierraRest extends AbstractBase implements
      */
     protected function getInnReachDb()
     {
-        try {
-            if (!isset($this->innReachDb)) {
+        if (!isset($this->innReachDb)) {
+            try {
                 $conn_string = $this->config['InnReach']['sierra_db'];
                 $connection = pg_connect($conn_string);
                 $this->innReachDb = $connection;
+            } catch (\Exception $e) {
+                $this->logWarning("INN-Reach: Could not connect to the Sierra database: {$e}");
+                $this->innReachDb = null;
+            } finally {
+                return $this->innReachDb;
             }
-        } catch (\Exception $e) {
-            $this->logWarning("INN-Reach: Could not connect to the Sierra database: {$e}");
-            $this->innReachDb = null;
-        } finally {
-            return $this->innReachDb;
         }
     }
 
@@ -3570,11 +3570,9 @@ class SierraRest extends AbstractBase implements
      */
     protected function getInnReachHoldTitleInfoFromId($holdId, $bibId): array
     {
-
-        $this->getInnReachDb();
-
+        $db = $this->getInnReachDb();
         $titleInfo = [];
-        if (!empty($this->innReachDb)) {
+        if ($db) {
             try {
                 $query = 'SELECT 
                         bib_record_property.best_title as title,
@@ -3605,7 +3603,6 @@ class SierraRest extends AbstractBase implements
             $titleInfo['title'] = 'Unknown Title';
             $titleInfo['author'] = 'Unknown Author';
         }
-
         return $titleInfo;
     }
 
@@ -3621,11 +3618,9 @@ class SierraRest extends AbstractBase implements
      */
     protected function getInnReachCheckoutTitleInfoFromId($checkOutId, $bibId): array
     {
-
-        $this->getInnReachDb();
-
+        $db = $this->getInnReachDb();
         $titleInfo = [];
-        if (!empty($this->innReachDb)) {
+        if ($db) {
             try {
                 $query = 'SELECT 
   bib_record_property.best_title as title,
