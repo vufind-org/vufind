@@ -193,7 +193,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             [[$expectedParams0, 0, 10], [$expectedParams1, 0, 10]],
             [
                 ['recordCount' => 0, 'documents' => []],
-                ['recordCount' => 0, 'documents' => []]
+                ['recordCount' => 0, 'documents' => []],
             ]
         );
         $back = new Backend($conn, null, 'fallback');
