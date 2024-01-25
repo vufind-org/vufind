@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Compile CSS files from LESS.
+ * Bulk action view helper
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,13 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Utilities
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-// Manipulate command line to load correct route, then run the main index page:
-array_unshift($_SERVER['argv'], array_shift($_SERVER['argv']), 'util', 'cssBuilder');
-$_SERVER['argc'] += 2;
-require_once __DIR__ . '/../public/index.php';
+namespace VuFind\View\Helper\Bootstrap3;
+
+/**
+ * Bulk action view helper
+ *
+ * @category VuFind
+ * @package  View_Helpers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class BulkAction extends \VuFind\View\Helper\Root\BulkAction
+{
+    /**
+     * CSS class for button
+     *
+     * @var ?string
+     */
+    protected $buttonClass = 'toolbar-btn';
+}

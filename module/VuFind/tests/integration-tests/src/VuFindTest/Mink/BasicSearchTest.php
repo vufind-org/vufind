@@ -148,11 +148,13 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $secondPage = $this->findCss($page, '.search-header .pagination-simple .page-next');
         $secondPage->click();
+        $this->waitForPageLoad($page);
         $this->assertShowingResults($page, '21 - 40');
         $this->scrollToResults();
 
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
+        $this->waitForPageLoad($page);
         $this->assertShowingResults($page, '1 - 20');
     }
 

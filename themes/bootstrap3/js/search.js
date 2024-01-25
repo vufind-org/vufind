@@ -10,6 +10,7 @@ VuFind.register('search', function search() {
   let sortFormSelector = resultsControlFormSelector + '.search-sort';
   let limitFormSelector = resultsControlFormSelector + '.search-result-limit';
   let viewTypeSelector = '.view-buttons a';
+  let selectAllSelector = '.checkbox-select-all';
 
   // Forward declaration
   let loadResults = function loadResultsForward() {};
@@ -201,6 +202,9 @@ VuFind.register('search', function search() {
       }
       element.setAttribute('href', urlParts[0] + '?' + urlParams.toString());
     });
+
+    // Reset "select all" checkbox:
+    document.querySelectorAll(selectAllSelector).forEach((el) => el.checked = false);
   }
 
   /**
