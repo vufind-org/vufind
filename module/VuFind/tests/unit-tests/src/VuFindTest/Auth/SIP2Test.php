@@ -30,7 +30,7 @@
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
-use \Laminas\Http\Request;
+use Laminas\Http\Request;
 use VuFind\Auth\SIP2;
 
 /**
