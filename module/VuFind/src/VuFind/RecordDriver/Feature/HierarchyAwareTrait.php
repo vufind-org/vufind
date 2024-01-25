@@ -100,7 +100,7 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyTopID()
     {
-        return $this->fields['hierarchy_top_id'] ?? [];
+        return (array)$this->fields['hierarchy_top_id'] ?? [];
     }
 
     /**
@@ -110,7 +110,7 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyTopTitle()
     {
-        return $this->fields['hierarchy_top_title'] ?? [];
+        return (array)$this->fields['hierarchy_top_title'] ?? [];
     }
 
     /**
@@ -147,10 +147,10 @@ trait HierarchyAwareTrait
                 break;
             case 'Top':
                 if (
-                    isset($this->fields['hierarchy_top_title'])
-                    && isset($this->fields['hierarchy_top_id'])
+                    !empty($this->getHierarchyTopTitle())
+                    && !empty($this->getHierarchyTopID())
                 ) {
-                    foreach ($this->fields['hierarchy_top_id'] as $i => $topId) {
+                    foreach ($this->getHierarchyTopID() as $i => $topId) {
                         // Don't mark an item as its own parent -- filter out parent
                         // collections whose IDs match the current collection's ID.
                         if (
@@ -194,12 +194,11 @@ trait HierarchyAwareTrait
             case 'All':
                 return isset($this->fields['is_hierarchy_id']);
             case 'Top':
-                return isset($this->fields['is_hierarchy_title'])
+                return $this->getHierarchyTopTitle()
                     && isset($this->fields['is_hierarchy_id'])
-                    && isset($this->fields['hierarchy_top_id'])
                     && in_array(
                         $this->fields['is_hierarchy_id'],
-                        $this->fields['hierarchy_top_id']
+                        $this->getHierarchyTopID()
                     );
             default:
                 // Default to not be a collection level record
