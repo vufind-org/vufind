@@ -35,6 +35,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -99,6 +100,13 @@ class Manager implements
     protected $userTable;
 
     /**
+     * Login token manager
+     *
+     * @var LoginTokenManager
+     */
+    protected $loginTokenManager;
+
+    /**
      * Session manager
      *
      * @var SessionManager
@@ -134,14 +142,30 @@ class Manager implements
     protected $csrf;
 
     /**
+     * Cache for hideLogin setting
+     *
+     * @var ?bool
+     */
+    protected $hideLogin = null;
+
+    /**
+     * ILS connection
+     *
+     * @var Connection
+     */
+    protected $ils;
+
+    /**
      * Constructor
      *
-     * @param Config         $config         VuFind configuration
-     * @param UserTable      $userTable      User table gateway
-     * @param SessionManager $sessionManager Session manager
-     * @param PluginManager  $pm             Authentication plugin manager
-     * @param CookieManager  $cookieManager  Cookie manager
-     * @param CsrfInterface  $csrf           CSRF validator
+     * @param Config            $config            VuFind configuration
+     * @param UserTable         $userTable         User table gateway
+     * @param SessionManager    $sessionManager    Session manager
+     * @param PluginManager     $pm                Authentication plugin manager
+     * @param CookieManager     $cookieManager     Cookie manager
+     * @param CsrfInterface     $csrf              CSRF validator
+     * @param LoginTokenManager $loginTokenManager Login Token manager
+     * @param Connection        $ils               ILS connection
      */
     public function __construct(
         Config $config,
@@ -149,15 +173,19 @@ class Manager implements
         SessionManager $sessionManager,
         PluginManager $pm,
         CookieManager $cookieManager,
-        CsrfInterface $csrf
+        CsrfInterface $csrf,
+        LoginTokenManager $loginTokenManager,
+        Connection $ils
     ) {
         // Store dependencies:
         $this->config = $config;
         $this->userTable = $userTable;
+        $this->loginTokenManager = $loginTokenManager;
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
         $this->csrf = $csrf;
+        $this->ils = $ils;
 
         // Set up session:
         $this->session = new \Laminas\Session\Container('Account', $sessionManager);
@@ -194,8 +222,9 @@ class Manager implements
      */
     protected function makeAuth($method)
     {
+        $legalAuthList = array_map('strtolower', $this->legalAuthOptions);
         // If an illegal option was passed in, don't allow the object to load:
-        if (!in_array($method, $this->legalAuthOptions)) {
+        if (!in_array(strtolower($method), $legalAuthList)) {
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
@@ -269,6 +298,35 @@ class Manager implements
     {
         return ($this->config->Catalog->auth_based_library_cards ?? false)
             && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
+    }
+
+    /**
+     * Is persistent login supported?
+     *
+     * @return bool
+     */
+    public function supportsPersistentLogin()
+    {
+        if (!empty($this->config->Authentication->persistent_login)) {
+            $method = $this->getAuth() instanceof ChoiceAuth
+                ? $this->getAuth()->getSelectedAuthOption() : $this->getAuthMethod();
+
+            return in_array(
+                strtolower($method),
+                explode(',', strtolower($this->config->Authentication->persistent_login))
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Get persistent login lifetime in days
+     *
+     * @return int
+     */
+    public function getPersistentLoginLifetime()
+    {
+        return $this->config->Authentication->persistent_login_lifetime ?? 14;
     }
 
     /**
@@ -413,8 +471,26 @@ class Manager implements
      */
     public function loginEnabled()
     {
-        // Assume login is enabled unless explicitly turned off:
-        return !($this->config->Authentication->hideLogin ?? false);
+        if (null === $this->hideLogin) {
+            // Assume login is enabled unless explicitly turned off:
+            $this->hideLogin = ($this->config->Authentication->hideLogin ?? false);
+
+            if (!$this->hideLogin) {
+                try {
+                    // Check if the catalog wants to hide the login link, and override
+                    // the configuration if necessary.
+                    if ($this->ils->loginIsHidden()) {
+                        $this->hideLogin = true;
+                    }
+                } catch (\Exception $e) {
+                    // Ignore exceptions; if the catalog is broken, throwing an exception
+                    // here may interfere with UI rendering. If we ignore it now, it will
+                    // still get handled appropriately later in processing.
+                    $this->logError('Could not check loginIsHidden:' . (string)$e);
+                }
+            }
+        }
+        return !$this->hideLogin;
     }
 
     /**
@@ -463,6 +539,7 @@ class Manager implements
         unset($this->session->userId);
         unset($this->session->userDetails);
         $this->cookieManager->set('loggedOut', 1);
+        $this->loginTokenManager->deleteActiveToken();
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
@@ -512,6 +589,18 @@ class Manager implements
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);
                 $this->currentUser = $results;
+            } elseif ($this->cookieManager->get('loginToken')) {
+                if ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
+                    if ($this->getAuth() instanceof ChoiceAuth) {
+                        $this->getAuth()->setStrategy($user->auth_method);
+                    }
+                    if ($this->supportsPersistentLogin()) {
+                        $this->updateUser($user);
+                        $this->updateSession($user);
+                    } else {
+                        $this->currentUser = false;
+                    }
+                }
             } else {
                 // not logged in
                 $this->currentUser = false;
@@ -708,9 +797,42 @@ class Manager implements
         // Update user object
         $this->updateUser($user);
 
+        if ($request->getPost()->get('remember_me') && $this->supportsPersistentLogin()) {
+            try {
+                $this->loginTokenManager->createToken($user, '', $this->sessionManager->getId());
+            } catch (\Exception $e) {
+                $this->logError((string)$e);
+                throw new AuthException('authentication_error_technical', 0, $e);
+            }
+        }
         // Store the user in the session and send it back to the caller:
         $this->updateSession($user);
         return $user;
+    }
+
+    /**
+     * Delete a login token
+     *
+     * @param string $series Series to identify the token
+     * @param int    $userId User identifier
+     *
+     * @return void
+     */
+    public function deleteToken(string $series, int $userId)
+    {
+        $this->loginTokenManager->deleteTokenSeries($series, $userId);
+    }
+
+    /**
+     * Delete all login tokens for a user
+     *
+     * @param int $userId User identifier
+     *
+     * @return void
+     */
+    public function deleteUserLoginTokens(int $userId)
+    {
+        $this->loginTokenManager->deleteUserLoginTokens($userId);
     }
 
     /**
