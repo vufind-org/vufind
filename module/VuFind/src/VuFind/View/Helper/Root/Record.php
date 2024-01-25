@@ -419,8 +419,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
     {
-        $id = $this->driver->getSourceIdentifier() . '|'
-            . $this->driver->getUniqueId();
+        $id = $this->getUniqueHtmlElementId($idPrefix);
         $context
             = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
         if ($formAttr) {
@@ -710,5 +709,34 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     protected function deduplicateLinks($links)
     {
         return array_values(array_unique($links, SORT_REGULAR));
+    }
+
+    /**
+     * Get the source identifier + unique id of the record without spaces
+     *
+     * @param string $idPrefix Prefix for HTML ids
+     *
+     * @return string
+     */
+    public function getUniqueHtmlElementId($idPrefix = "")
+    {
+        return preg_replace(
+            "/\s+/",
+            "_",
+            ($idPrefix ? $idPrefix . '-' : '') . $this->getUniqueIdWithSourcePrefix()
+        );
+    }
+
+    /**
+     * Get the source identifier + unique id of the record
+     *
+     * @return string
+     */
+    public function getUniqueIdWithSourcePrefix()
+    {
+        if ($this->driver) {
+            return "{$this->driver->tryMethod('getSourceIdentifier')}"
+                . "|{$this->driver->tryMethod('getUniqueId')}";
+        }
     }
 }
