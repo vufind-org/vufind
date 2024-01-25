@@ -35,7 +35,6 @@
         "doctrine/doctrine-orm-module": "^6.0",
         "doctrine/orm": "^2.10.2",
         "endroid/qr-code": "4.8.2",
-        "friendsofphp/proxy-manager-lts": "1.0.16",
         "laminas/laminas-cache": "3.10.1",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
         "laminas/laminas-cache-storage-adapter-filesystem": "^2.0",
