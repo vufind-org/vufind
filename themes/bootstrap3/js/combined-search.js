@@ -4,10 +4,9 @@ VuFind.combinedSearch = (function CombinedSearch() {
   function init(container, url) {
     VuFind.loadHtml(container, url, '', function containerLoad(responseText) {
       if (responseText.length === 0) {
-        const $container = $(container);
-        $container.hide();
-        let parent = $container.parent();
-        while (parent.hasClass('js-hide-if-empty')) {
+        container.style.display = "none";
+        let parent = container.parentNode;
+        while (parent.classList.contains('js-hide-if-empty')) {
           parent.hide();
           parent = parent.parent();
         }
