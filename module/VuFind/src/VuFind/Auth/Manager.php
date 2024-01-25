@@ -35,6 +35,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -141,6 +142,20 @@ class Manager implements
     protected $csrf;
 
     /**
+     * Cache for hideLogin setting
+     *
+     * @var ?bool
+     */
+    protected $hideLogin = null;
+
+    /**
+     * ILS connection
+     *
+     * @var Connection
+     */
+    protected $ils;
+
+    /**
      * Constructor
      *
      * @param Config            $config            VuFind configuration
@@ -150,6 +165,7 @@ class Manager implements
      * @param CookieManager     $cookieManager     Cookie manager
      * @param CsrfInterface     $csrf              CSRF validator
      * @param LoginTokenManager $loginTokenManager Login Token manager
+     * @param Connection        $ils               ILS connection
      */
     public function __construct(
         Config $config,
@@ -158,7 +174,8 @@ class Manager implements
         PluginManager $pm,
         CookieManager $cookieManager,
         CsrfInterface $csrf,
-        LoginTokenManager $loginTokenManager
+        LoginTokenManager $loginTokenManager,
+        Connection $ils
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -168,6 +185,7 @@ class Manager implements
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
         $this->csrf = $csrf;
+        $this->ils = $ils;
 
         // Set up session:
         $this->session = new \Laminas\Session\Container('Account', $sessionManager);
@@ -453,8 +471,26 @@ class Manager implements
      */
     public function loginEnabled()
     {
-        // Assume login is enabled unless explicitly turned off:
-        return !($this->config->Authentication->hideLogin ?? false);
+        if (null === $this->hideLogin) {
+            // Assume login is enabled unless explicitly turned off:
+            $this->hideLogin = ($this->config->Authentication->hideLogin ?? false);
+
+            if (!$this->hideLogin) {
+                try {
+                    // Check if the catalog wants to hide the login link, and override
+                    // the configuration if necessary.
+                    if ($this->ils->loginIsHidden()) {
+                        $this->hideLogin = true;
+                    }
+                } catch (\Exception $e) {
+                    // Ignore exceptions; if the catalog is broken, throwing an exception
+                    // here may interfere with UI rendering. If we ignore it now, it will
+                    // still get handled appropriately later in processing.
+                    $this->logError('Could not check loginIsHidden:' . (string)$e);
+                }
+            }
+        }
+        return !$this->hideLogin;
     }
 
     /**
