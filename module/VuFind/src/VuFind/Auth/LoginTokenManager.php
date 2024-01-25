@@ -164,6 +164,8 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
                 $this->deleteUserLoginTokens($user->id);
+                // We can't send an email until after the theme has initialized;
+                // if it's not ready yet, save the user for later.
                 if ($this->themeInitialized) {
                     $this->sendLoginTokenWarningEmail($user);
                 } else {
@@ -183,6 +185,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     public function themeIsReady(): void
     {
         $this->themeInitialized = true;
+        // If we have queued a user warning, we can send it now!
         if ($this->userToWarn) {
             $this->sendLoginTokenWarningEmail($this->userToWarn);
             $this->userToWarn = null;
