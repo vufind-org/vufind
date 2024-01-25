@@ -149,7 +149,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ImportLokaliseCommand::class)
             ->setConstructorArgs([new ExtendedIniNormalizer()])
-            ->setMethods(['writeToDisk'])
+            ->onlyMethods(['writeToDisk'])
             ->getMock();
     }
 }
