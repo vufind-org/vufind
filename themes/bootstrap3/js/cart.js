@@ -288,16 +288,26 @@ VuFind.register('cart', function Cart() {
 // Building an array and checking indexes prevents a race situation
 // We want to prioritize empty over printing
 function cartFormHandler(event, data) {
-  var keys = [];
-  for (var i in data) {
+  let numberOfItems = 0;
+  let isPrint = false;
+  for (let i in data) {
     if (Object.prototype.hasOwnProperty.call(data, i)) {
-      keys.push(data[i].name);
+      if (data[i].name === 'ids[]') {
+        numberOfItems++;
+      }
+      if (data[i].name === 'print') {
+        isPrint = true;
+      }
     }
   }
-  if (keys.indexOf('ids[]') === -1) {
-    return null;
+  if (event.originalEvent !== undefined) {
+    let itemLimit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfItems < 1 || numberOfItems > itemLimit) {
+      return null;
+    }
   }
-  if (keys.indexOf('print') > -1) {
+
+  if (isPrint) {
     return true;
   }
 }

@@ -82,10 +82,12 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     {
         $authManager = $this->container->createMock(
             \VuFind\Auth\Manager::class,
-            ['isLoggedIn']
+            ['isLoggedIn', 'loginEnabled']
         );
         $authManager->expects($this->any())->method('isLoggedIn')
             ->will($this->returnValue($user));
+        $authManager->expects($this->any())->method('loginEnabled')
+            ->willReturn(true);
         return $authManager;
     }
 

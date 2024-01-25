@@ -9,18 +9,64 @@
     <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
   </div>
   <ul class="action-toolbar">
-    <li><button class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('email_selected')?>"><?=$this->icon('send-email') ?> <?=$this->transEsc('Email') ?></button>
-    </li>
+    <?=
+      $this->bulkAction()->button(
+          'email',
+          'send-email',
+          'Email',
+          [
+            'title' => $this->translate('bulk_email_myresearch'),
+          ]
+      )
+    ?>
     <?php if ((null !== $this->list && $this->list->editAllowed($user)) || null === $this->list && $user): ?>
-      <li><button class="toolbar-btn" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="1" title="<?=$this->transEscAttr('delete_selected')?>"><?=$this->icon('ui-delete') ?> <?=$this->transEsc('Delete') ?></button></li>
+      <?=
+        $this->bulkAction()->button(
+            'delete',
+            'ui-delete',
+            'Delete',
+            [
+              'id' => $this->idPrefix . 'delete_list_items_' . (null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''),
+              'title' => $this->translate('bulk_delete_myresearch'),
+            ]
+        )
+      ?>
     <?php endif; ?>
     <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
     <?php if (count($exportOptions) > 0): ?>
-      <li><button class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('export_selected')?>"><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
+      <?=
+        $this->bulkAction()->button(
+            'export',
+            'export',
+            'Export',
+            [
+              'title' => $this->translate('bulk_export_myresearch'),
+            ]
+        )
+      ?>
     <?php endif; ?>
-    <li><button class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('print_selected')?>" data-lightbox-ignore><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>
+    <?=
+      $this->bulkAction()->button(
+          'print',
+          'print',
+          'Print',
+          [
+            'title' => $this->translate('bulk_print_myresearch'),
+            'data-lightbox-ignore' => '',
+          ]
+      )
+    ?>
     <?php if ($this->cart()->isActive()): ?>
-      <li><button class="toolbar-btn" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="1"><?=$this->icon('cart-add') ?> <?=$this->transEsc('Add to Book Bag')?></button></li>
+      <?=
+        $this->bulkAction()->button(
+            'add',
+            'cart-add',
+            'Add to Book Bag',
+            [
+              'id' => $this->idPrefix . 'updateCart',
+            ]
+        )
+      ?>
     <?php endif; ?>
   </ul>
 </nav>

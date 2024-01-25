@@ -71,7 +71,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testChangePassword()
+    public function testChangePassword(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -134,13 +134,38 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test username case-insensitivity.
+     *
+     * @depends testChangePassword
+     *
+     * @return void
+     */
+    public function testCaseInsensitiveUsername(): void
+    {
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+
+        // Go to profile page:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Log back in using UPPERCASE version of username (it was created in lowercase above).
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'USERNAME1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm that we logged in based on the presence of a "change password" link.
+        $this->findAndAssertLink($page, 'Change Password');
+    }
+
+    /**
      * Test that changing email is disabled by default.
      *
      * @depends testChangePassword
      *
      * @return void
      */
-    public function testChangeEmailDisabledByDefault()
+    public function testChangeEmailDisabledByDefault(): void
     {
         // Go to profile page:
         $session = $this->getMinkSession();
@@ -165,7 +190,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testChangeEmail()
+    public function testChangeEmail(): void
     {
         // Turn on email change option:
         $this->changeConfigs(
