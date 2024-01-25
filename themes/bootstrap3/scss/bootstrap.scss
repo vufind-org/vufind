@@ -425,14 +425,25 @@ ul.list-group {
 }
 
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
-#login-dropdown a {
-  margin-right: .5rem;
-  padding-left: .5rem;
-  padding-right: .5rem;
+#login-dropdown {
+  a {
+    margin-right: .5rem;
+  }
+
+  .dropdown-menu {
+    width: 250px;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+
+    .account-menu {
+      display: block;
+    }
+
+    h3 {
+      margin-left: 0.5rem;
+    }
+  }
 }
-#login-dropdown .dropdown-menu { width: 250px; }
-#login-dropdown .dropdown-menu h4 { display: none; }
-#login-dropdown .dropdown-menu .myresearch-menu { display: none; }
+#login-dropdown
 #login-dropdown .dropdown-menu .account-menu { display: block; }
 
 /* --- PubDateVis --- */
