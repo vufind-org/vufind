@@ -176,13 +176,16 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can log in successfully using various session settings.
      *
+     * @param string $type   Session handler to use
+     * @param bool   $secure Should we enable secure session mode?
+     *
      * @return void
      *
      * @depends testChangePassword
      *
      * @dataProvider sessionSettingsProvider
      */
-    public function testLoginWithSessionSettings($type, $secure): void
+    public function testLoginWithSessionSettings(string $type, bool $secure): void
     {
         // Adjust session settings:
         $this->changeConfigs(
