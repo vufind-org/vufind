@@ -159,6 +159,56 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testLoginWithSessionSettings().
+     *
+     * @return array
+     */
+    public static function sessionSettingsProvider(): array
+    {
+        return [
+            'unencrypted file' => ['File', false],
+            'encrypted file' => ['File', true],
+            'unencrypted database' => ['Database', false],
+            'encrypted database' => ['Database', true],
+        ];
+    }
+
+    /**
+     * Test that we can log in successfully using various session settings.
+     *
+     * @return void
+     *
+     * @depends testChangePassword
+     *
+     * @dataProvider sessionSettingsProvider
+     */
+    public function testLoginWithSessionSettings($type, $secure): void
+    {
+        // Adjust session settings:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Session' => compact('type', 'secure'),
+                ],
+            ]
+        );
+
+        // Go to profile page:
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Log in
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'username1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm that we logged in based on the presence of a "change password" link.
+        $this->findAndAssertLink($page, 'Change Password');
+    }
+
+    /**
      * Test that changing email is disabled by default.
      *
      * @depends testChangePassword
