@@ -246,7 +246,8 @@ class Bootstrapper
     }
 
     /**
-     * Send login token warnings after the theme is initialized, if necessary.
+     * The login token manager needs to be informed after the theme has been initialized,
+     * so that it can send warning emails if necessary.
      *
      * @return void
      */
