@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use Laminas\Session\SessionManager;
+use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
@@ -98,6 +99,20 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $viewRenderer = null;
 
     /**
+     * Has the theme been initialized yet?
+     *
+     * @var bool
+     */
+    protected $themeInitialized = false;
+
+    /**
+     * User that needs to receive a warning (or null for no warning needed)
+     *
+     * @var ?User
+     */
+    protected $userToWarn = null;
+
+    /**
      * LoginToken constructor.
      *
      * @param Config                                   $config          Configuration
@@ -149,11 +164,29 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
                 $this->deleteUserLoginTokens($user->id);
-                $this->sendLoginTokenWarningEmail($user);
+                if ($this->themeInitialized) {
+                    $this->sendLoginTokenWarningEmail($user);
+                } else {
+                    $this->userToWarn = $user;
+                }
                 return null;
             }
         }
         return $user;
+    }
+
+    /**
+     * Event hook -- called after the theme has initialized.
+     *
+     * @return void
+     */
+    public function themeIsReady(): void
+    {
+        $this->themeInitialized = true;
+        if ($this->userToWarn) {
+            $this->sendLoginTokenWarningEmail($this->userToWarn);
+            $this->userToWarn = null;
+        }
     }
 
     /**

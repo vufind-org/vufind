@@ -246,6 +246,20 @@ class Bootstrapper
     }
 
     /**
+     * Send login token warnings after the theme is initialized, if necessary.
+     *
+     * @return void
+     */
+    protected function initLoginTokenManager(): void
+    {
+        $callback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->themeIsReady();
+        };
+        $this->events->attach('dispatch.error', $callback, 8000);
+        $this->events->attach('dispatch', $callback, 8000);
+    }
+
+    /**
      * Set up custom HTTP status based on exception information.
      *
      * @return void
