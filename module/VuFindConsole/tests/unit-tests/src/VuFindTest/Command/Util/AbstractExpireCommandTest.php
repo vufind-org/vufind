@@ -44,6 +44,8 @@ use VuFindConsole\Command\Util\AbstractExpireCommand;
  */
 class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Name of class being tested
      *
@@ -128,9 +130,12 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockBuilder($this->validTableClass)
             ->disableOriginalConstructor()
             ->getMock();
-        $table->expects($this->exactly(3))->method('deleteExpired')
-            ->withConsecutive([$date, 1000], [$date, 1000], [$date, 1000])
-            ->willReturnOnConsecutiveCalls(1000, 7, false);
+        $this->expectConsecutiveCalls(
+            $table,
+            'deleteExpired',
+            [[$date, 1000], [$date, 1000], [$date, 1000]],
+            [1000, 7, false]
+        );
         $command = $this->getCommand($table, $date);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--sleep' => 1]);
