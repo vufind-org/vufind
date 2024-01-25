@@ -158,7 +158,7 @@ trait HierarchyAwareTrait
                             || $topId !== $this->fields['is_hierarchy_id']
                         ) {
                             $ids[] = $topId;
-                            $titles[] = $this->fields['hierarchy_top_title'][$i];
+                            $titles[] = $this->getHierarchyTopTitle()[$i];
                         }
                     }
                 }
