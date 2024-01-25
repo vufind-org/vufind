@@ -134,7 +134,7 @@ class RandomCommandTest extends TestCase
                     $this->equalTo(0),
                     $this->equalTo(10),
                     $this->equalTo($params),
-                ]
+                ],
             ],
             $rci
         );
