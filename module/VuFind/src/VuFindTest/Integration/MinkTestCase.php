@@ -516,11 +516,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Set a value within an element selected via CSS; retry if set fails
      * due to browser bugs.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param string  $value    Value to set
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page        Page element
+     * @param string  $selector    CSS selector
+     * @param string  $value       Value to set
+     * @param int     $timeout     Wait timeout for CSS selection (in ms)
+     * @param int     $retries     Retry count for set loop
+     * @param bool    $verifyValue Whether to verify that the value was written
      *
      * @return mixed
      */
@@ -529,7 +530,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $selector,
         $value,
         $timeout = null,
-        $retries = 6
+        $retries = 6,
+        $verifyValue = true
     ) {
         $timeout ??= $this->getDefaultTimeout();
 
@@ -539,6 +541,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
+                if (!$verifyValue) {
+                    return;
+                }
 
                 // Did it work? If so, we're done and can leave....
                 if ($field->getValue() === $value) {
