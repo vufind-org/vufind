@@ -66,10 +66,10 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $userTable = $this->getMockUserTable();
         $userTable->expects($this->once())->method('getById')
             ->with($this->equalTo(0))
-            ->will($this->returnValue($this->getMockUser()));
+            ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->returnValue($mockToken));
+            ->willReturn($mockToken);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
 
         // Expect exception due to browscap.ini requirements
@@ -94,12 +94,12 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $userTable = $this->getMockUserTable();
         $userTable->expects($this->once())->method('getById')
             ->with($this->equalTo(0))
-            ->will($this->returnValue($this->getMockUser()));
+            ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
             ->will($this->throwException(new LoginTokenException()));
         $tokenTable->expects($this->once())->method('getByUserId')
-            ->will($this->returnValue($mockToken));
+            ->willReturn($mockToken);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
@@ -121,7 +121,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $token = $this->getMockLoginToken();
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
@@ -153,9 +153,9 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $user->method('__get')
-            ->will($this->returnValueMap($userData));
+            ->willReturnMap($userData);
         $user->method('offsetGet')
-            ->will($this->returnValueMap($userData));
+            ->willReturnMap($userData);
         return $user;
     }
 
@@ -176,9 +176,9 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $token->method('__get')
-            ->will($this->returnValueMap($tokenData));
+            ->willReturnMap($tokenData);
         $token->method('offsetGet')
-            ->will($this->returnValueMap($tokenData));
+            ->willReturnMap($tokenData);
         return $token;
     }
 
