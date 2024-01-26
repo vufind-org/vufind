@@ -319,11 +319,13 @@ class Resource extends Gateway
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
-                $order[] = new Expression(
-                    'isnull(?)',
+                $expression = new Expression(
+                    'case when ? is null then 1 else 0 end',
                     [$alias . '.' . $rawField],
                     [Expression::TYPE_IDENTIFIER]
                 );
+                $query->columns([$expression]);
+                $order[] = $expression;
             }
 
             // Apply the user-specified sort:

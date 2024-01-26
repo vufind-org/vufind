@@ -179,6 +179,6 @@ class VuFindWorkKeys
         if (!empty($excludeRegEx)) {
             $normalized = preg_replace($excludeRegEx, '', $normalized);
         }
-        return substr(strtolower($normalized), 0, 255);
+        return mb_substr(mb_strtolower($normalized, 'UTF-8'), 0, 255, 'UTF-8');
     }
 }

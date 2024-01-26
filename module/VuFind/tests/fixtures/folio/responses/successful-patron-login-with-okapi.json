@@ -5,7 +5,7 @@
     {
         "comment": "login attempt",
         "expectedMethod": "POST",
-        "expectedPath": "/authn/login",
+        "expectedPath": "/authn/login-with-expiry",
         "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"foo\",\"password\":\"bar\"}"
     },
     {

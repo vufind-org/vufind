@@ -941,17 +941,12 @@ trait MarcAdvancedTrait
     {
         // Special case for MARC:
         if ($format == 'marc21') {
-            $sanitizeXmlRegEx
-                = '[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+';
-            $xml = simplexml_load_string(
-                trim(
-                    preg_replace(
-                        "/$sanitizeXmlRegEx/u",
-                        ' ',
-                        $this->getMarcReader()->toFormat('MARCXML')
-                    )
-                )
-            );
+            try {
+                $xml = $this->getMarcReader()->toFormat('MARCXML');
+            } catch (\Exception) {
+                return false;
+            }
+            $xml = simplexml_load_string($xml);
             if (!$xml || !isset($xml->record)) {
                 return false;
             }
@@ -985,9 +980,14 @@ trait MarcAdvancedTrait
      */
     public function getRDFXML()
     {
+        try {
+            $xml = $this->getMarcReader()->toFormat('MARCXML');
+        } catch (\Exception $e) {
+            return '';
+        }
         return XSLTProcessor::process(
             'record-rdf-mods.xsl',
-            trim($this->getMarcReader()->toFormat('MARCXML'))
+            trim($xml)
         );
     }
 
