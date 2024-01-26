@@ -621,12 +621,23 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout ??= $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
+        $exception = null;
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
-            $result = $callback();
-            if (call_user_func($compareFunc, $expected, $result)) {
-                break;
+            try {
+                $result = $callback();
+                if (call_user_func($compareFunc, $expected, $result)) {
+                    // Ignore any previous exception since the callback succeeded eventually:
+                    $exception = null;
+                    break;
+                }
+            } catch (\Exception $e) {
+                // Defer throwing the exception:
+                $exception = $e;
             }
             usleep(100000);
+        }
+        if ($exception) {
+            throw $exception;
         }
         call_user_func($assertion, $expected, $result);
     }
