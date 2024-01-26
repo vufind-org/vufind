@@ -1655,7 +1655,7 @@ class Folio extends AbstractAPI implements
                 break;
             }
         }
-        return $result;
+        return $result ?? ['success' => false, 'status' => 'Unexpected failure'];
     }
 
     /**
