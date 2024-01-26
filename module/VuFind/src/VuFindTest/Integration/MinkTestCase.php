@@ -532,30 +532,28 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $retries = 6
     ) {
         $timeout ??= $this->getDefaultTimeout();
-        $field = $this->findCss($page, $selector, $timeout, 0);
-
-        $session = $this->getMinkSession();
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
-        );
-        $results = $page->findAll('css', $selector);
-        $this->assertIsArray($results, "Selector not found: $selector");
-        $field = $results[0];
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
         for ($i = 1; $i <= $retries; $i++) {
-            $field->setValue($value);
+            try {
+                $field = $this->findCss($page, $selector, $timeout, 0);
+                $field->setValue($value);
 
-            // Did it work? If so, we're done and can leave....
-            if ($field->getValue() === $value) {
-                return;
+                // Did it work? If so, we're done and can leave....
+                if ($field->getValue() === $value) {
+                    return;
+                }
+                $this->logWarning(
+                    'RETRY setValue after failure in ' . $this->getTestName()
+                    . " (try $i)."
+                );
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY setValue after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
             }
-            $this->logWarning(
-                'RETRY setValue after failure in ' . $this->getTestName()
-                . " (try $i)."
-            );
 
             $this->snooze();
         }
@@ -692,9 +690,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         if ($handler) {
-            $this->findCss($page, '#searchForm_type')->setValue($handler);
+            $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);

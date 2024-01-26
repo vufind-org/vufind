@@ -224,7 +224,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Switch to the second card; we can't currently use findCssAndSetValue() here because
         // it conflicts with the behavior of jumpMenu.
-        $this->findCss($page, '#library_card')->setValue($card2Value);
+        $this->findCssAndSetValue($page, '#library_card', $card2Value);
         $this->waitForPageLoad($page);
 
         // Check that the appropriate username is reflected in the output:

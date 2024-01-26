@@ -138,7 +138,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Add extra form field values:
         $this->waitForPageLoad($page);
         foreach ($extras as $selector => $value) {
-            $this->findCss($page, $selector)->setValue($value);
+            $this->findCssAndSetValue($page, $selector, $value);
         }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
     }
@@ -597,8 +597,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.hold-edit');
 
         // Release the hold and change the pickup location
-        $this->findCss($page, '#frozen')->setValue('0');
-        $this->findCss($page, '#pickup_location')->setValue('A');
+        $this->findCssAndSetValue($page, '#frozen', '0');
+        $this->findCssAndSetValue($page, '#pickup_location', 'A');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
 
         // Confirm that the values have changed
@@ -652,7 +652,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the first hold to location C so it matches the second one:
         $this->clickCss($page, '.hold-edit');
-        $this->findCss($page, '#pickup_location')->setValue('C');
+        $this->findCssAndSetValue($page, '#pickup_location', 'C');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
 
         // Locations should now match:
@@ -669,7 +669,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.checkbox-select-item', 1000, 0);
         $this->clickCss($page, '.checkbox-select-item', 1000, 2);
         $this->clickCss($page, '#update_selected');
-        $this->findCss($page, '#pickup_location')->setValue('C');
+        $this->findCssAndSetValue($page, '#pickup_location', 'C');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
 
         // Confirm that it worked:
@@ -703,8 +703,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Revise the freeze date:
         $futureDate = date('m-d-Y', strtotime('+3 days'));
-        $this->findCss($page, '#frozen')->setValue('1');
-        $this->findCss($page, '#frozen_through')->setValue($futureDate);
+        $this->findCssAndSetValue($page, '#frozen', '1');
+        $this->findCssAndSetValue($page, '#frozen_through', $futureDate);
         $this->findCss($page, '#modal .btn.btn-primary')->click();
 
         // Confirm that the values have changed
@@ -771,7 +771,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->waitForPageLoad($page);
-        $this->findCss($page, '#pickUpLocation')->setValue('B');
+        $this->findCssAndSetValue($page, '#pickUpLocation', 'B');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         // If successful, we should now have a link to review the hold:
