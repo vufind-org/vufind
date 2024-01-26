@@ -13,7 +13,7 @@
     {
         "expectedMethod": "POST",
         "expectedPath": "/circulation/requests",
-        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":null,\"pickupServicePointId\":\"desk1\"}/",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":null,\"pickupServicePointId\":\"desk1\",\"requestType\":\"Page\"}/",
         "body": "{ \"status\": \"success\" }"
     }
 ]
