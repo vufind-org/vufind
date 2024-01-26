@@ -78,6 +78,13 @@ class SierraRest extends AbstractBase implements
     public const HOLDINGS_LOCATION_FIELD = '40';
 
     /**
+     * Sierra INN-Reach Database connection
+     *
+     * @var ?resource
+     */
+    protected $innReachDb = null;
+
+    /**
      * Fixed field number for item code 2 (ICODE2) in item records
      *
      * @var string
@@ -429,6 +436,10 @@ class SierraRest extends AbstractBase implements
      */
     public function init()
     {
+        if (empty($this->config)) {
+            throw new ILSException('Configuration needs to be set.');
+        }
+
         // Validate config
         $required = ['host', 'client_key', 'client_secret'];
         foreach ($required as $current) {
@@ -507,6 +518,26 @@ class SierraRest extends AbstractBase implements
         );
         $factory = $this->sessionFactory;
         $this->sessionCache = $factory($namespace);
+    }
+
+    /**
+     * Establish INN-Reach database connection
+     *
+     * @return ?resource
+     */
+    protected function getInnReachDb()
+    {
+        if (null === $this->innReachDb) {
+            try {
+                $conn_string = $this->config['InnReach']['sierra_db'];
+                $connection = pg_connect($conn_string);
+                $this->innReachDb = $connection;
+            } catch (\Exception $e) {
+                $this->logWarning("INN-Reach: Could not connect to the Sierra database: {$e}");
+                $this->innReachDb = null;
+            }
+        }
+        return $this->innReachDb;
     }
 
     /**
@@ -836,6 +867,21 @@ class SierraRest extends AbstractBase implements
                 }
             }
             $transactions[] = $transaction;
+        }
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            foreach ($transactions as $n => $transaction) {
+                $irIdentifier = $this->config['InnReach']['identifier'];
+                if ($transaction['item_id'] && strstr($transaction['item_id'], $irIdentifier)) {
+                    $irCheckoutId = $transaction['checkout_id'];
+                    $irItemId = $transaction['item_id'];
+                    $innReach = $this->getInnReachCheckoutTitleInfoFromId($irCheckoutId, $irItemId);
+
+                    if (!empty($innReach)) {
+                        $transactions[$n]['title'] = $innReach['title'];
+                        $transactions[$n]['author'] = $innReach['author'];
+                    }
+                }
+            }
         }
 
         return [
@@ -1178,6 +1224,22 @@ class SierraRest extends AbstractBase implements
                 'cancel_details' => $cancelDetails,
                 'updateDetails' => $updateDetails,
             ];
+        }
+
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            foreach ($holds as $n => $hold) {
+                if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
+                    $id = $hold['id'];
+                    $volume = $hold['volume'];
+
+                    $innReach = $this->getInnReachHoldTitleInfoFromId($hold['reqnum'], $hold['id']);
+                    if (!empty($innReach)) {
+                        $holds[$n]['id'] = $innReach['id'];
+                        $holds[$n]['title'] = $innReach['title'];
+                        $holds[$n]['author'] = $innReach['author'];
+                    }
+                }
+            }
         }
         return $holds;
     }
@@ -3415,6 +3477,13 @@ class SierraRest extends AbstractBase implements
                 $bibIdsToItems[$this->extractId($bibId)][$itemId] = true;
             }
         }
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            foreach ($itemIds as $key => $iRId) {
+                if (strstr($iRId, $this->config['InnReach']['identifier'])) {
+                    unset($itemIds[$key]);
+                }
+            }
+        }
         // Get items and collect further bib id mappings:
         $items = $this->getItemRecords($itemIds, null, $patron);
         foreach ($items as $itemId => $item) {
@@ -3486,5 +3555,99 @@ class SierraRest extends AbstractBase implements
             }
         }
         return false;
+    }
+
+    /**
+     * Gets title information for holds placed in an INN-Reach system
+     *
+     * @param $holdId the id of the hold from Sierra
+     * @param $bibId  the id of the bib from Sierra
+     *
+     * @return array
+     *
+     * @throws ILSException
+     */
+    protected function getInnReachHoldTitleInfoFromId($holdId, $bibId): array
+    {
+        $db = $this->getInnReachDb();
+        $titleInfo = [];
+        if ($db) {
+            try {
+                $query = 'SELECT 
+                        bib_record_property.best_title as title,
+                        bib_record_property.best_author as author,
+                        --hold.status, -- this shows sierra hold status not inn-reach status
+                        bib_record_property.best_title_norm as sort_title
+                    FROM
+                        sierra_view.hold,
+                        sierra_view.bib_record_item_record_link,
+                        sierra_view.bib_record_property
+                    WHERE
+                        hold.id = $1
+                    AND hold.is_ir=true
+                    AND hold.record_id = bib_record_item_record_link.item_record_id
+                    AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
+                pg_prepare($this->innReachDb, 'prep_query', $query);
+                $results = pg_execute($this->innReachDb, 'prep_query', [$holdId]);
+                if ($result = pg_fetch_array($results, 0)) {
+                    $titleInfo['id'] = $bibId;
+                    $titleInfo['title'] = $result[0];
+                    $titleInfo['author'] = $result[1];
+                }
+            } catch (\Exception $e) {
+                $this->throwAsIlsException($e);
+            }
+        } else {
+            $titleInfo['id'] = '';
+            $titleInfo['title'] = 'Unknown Title';
+            $titleInfo['author'] = 'Unknown Author';
+        }
+        return $titleInfo;
+    }
+
+    /**
+     * Gets title information for checked out items from INN-Reach systems
+     *
+     * @param $checkOutId the id of the checkout from Sierra
+     * @param $bibId      the id of the bib from Sierra
+     *
+     * @return array
+     *
+     * @throws ILSException
+     */
+    protected function getInnReachCheckoutTitleInfoFromId($checkOutId, $bibId): array
+    {
+        $db = $this->getInnReachDb();
+        $titleInfo = [];
+        if ($db) {
+            try {
+                $query = 'SELECT 
+  bib_record_property.best_title as title,
+  bib_record_property.best_author as author,
+  bib_record_property.best_title_norm as sort_title
+FROM 
+  sierra_view.checkout,
+  sierra_view.bib_record_item_record_link,
+  sierra_view.bib_record_property
+WHERE 
+  checkout.id = $1
+  AND checkout.item_record_id = bib_record_item_record_link.item_record_id
+  AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
+                pg_prepare($this->innReachDb, 'prep_query', $query);
+                $results = pg_execute($this->innReachDb, 'prep_query', [$checkOutId]);
+                if ($result = pg_fetch_array($results, 0)) {
+                    $titleInfo['id'] = $bibId;
+                    $titleInfo['title'] = $result[0];
+                    $titleInfo['author'] = $result[1];
+                }
+            } catch (\Exception $e) {
+                $this->throwAsIlsException($e);
+            }
+        } else {
+            $titleInfo['id'] = '';
+            $titleInfo['title'] = 'Unknown Title';
+            $titleInfo['author'] = 'Unknown Author';
+        }
+        return $titleInfo;
     }
 }
