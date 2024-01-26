@@ -100,7 +100,7 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyTopID()
     {
-        return (array)$this->fields['hierarchy_top_id'] ?? [];
+        return (array)($this->fields['hierarchy_top_id'] ?? []);
     }
 
     /**
@@ -110,7 +110,7 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyTopTitle()
     {
-        return (array)$this->fields['hierarchy_top_title'] ?? [];
+        return (array)($this->fields['hierarchy_top_title'] ?? []);
     }
 
     /**
@@ -146,11 +146,10 @@ trait HierarchyAwareTrait
                 }
                 break;
             case 'Top':
-                if (
-                    !empty($this->getHierarchyTopTitle())
-                    && !empty($this->getHierarchyTopID())
-                ) {
-                    foreach ($this->getHierarchyTopID() as $i => $topId) {
+                $topTitles = $this->getHierarchyTopTitle();
+                $topIDs = $this->getHierarchyTopID();
+                if ($topTitles && $topIDs) {
+                    foreach ($topIDs as $i => $topId) {
                         // Don't mark an item as its own parent -- filter out parent
                         // collections whose IDs match the current collection's ID.
                         if (
@@ -158,7 +157,7 @@ trait HierarchyAwareTrait
                             || $topId !== $this->fields['is_hierarchy_id']
                         ) {
                             $ids[] = $topId;
-                            $titles[] = $this->getHierarchyTopTitle()[$i];
+                            $titles[] = $topTitles[$i];
                         }
                     }
                 }
@@ -194,8 +193,7 @@ trait HierarchyAwareTrait
             case 'All':
                 return isset($this->fields['is_hierarchy_id']);
             case 'Top':
-                return $this->getHierarchyTopTitle()
-                    && isset($this->fields['is_hierarchy_id'])
+                return isset($this->fields['is_hierarchy_id'])
                     && in_array(
                         $this->fields['is_hierarchy_id'],
                         $this->getHierarchyTopID()
