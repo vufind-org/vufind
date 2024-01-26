@@ -68,7 +68,7 @@ trait WithConsecutiveTrait
         $matcher = $this->exactly(count($expectedCalls));
         $callback = function () use ($matcher, $expectedCalls, $returnValues) {
             $index = $matcher->getInvocationCount() - 1;
-            $expectedArgs = $expectedCalls[$index];
+            $expectedArgs = $expectedCalls[$index] ?? [];
             $actualArgs = func_get_args();
             foreach ($expectedArgs as $i => $expected) {
                 if ($expected instanceof Constraint) {
