@@ -212,7 +212,8 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $browser = '';
         $platform = '';
         try {
-            $userInfo = get_browser(null, true);
+            // Suppress warnings here; we'll throw an exception below if browscap.ini is not set up correctly.
+            $userInfo = @get_browser(null, true);
         } catch (\Exception $e) {
         }
         if (!is_array($userInfo ?? null)) {
