@@ -330,14 +330,14 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function isCheckedOut()
     {
         $result = $this->connector->getResultObject();
-        if($this->isLoggedIn()){
+        if ($this->isLoggedIn()) {
             $overdriveID = $this->getOverdriveID();
             $result = $this->connector->getCheckouts(true);
             if ($result->status) {
                 $checkedout = false;
                 $checkouts = $result->data;
-                //In case of a magazine issue, we have to get all the checkouts to see if the 
-                //current title is the parentID of one of the user's checkouts. Return data as 
+                //In case of a magazine issue, we have to get all the checkouts to see if the
+                //current title is the parentID of one of the user's checkouts. Return data as
                 //array in case there are multiple issues checked out to the user.
                 $result->data = [];
                 $result->isMagazine = false;
@@ -374,7 +374,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isHeld()
     {
-        if($this->isLoggedIn()){
+        if ($this->isLoggedIn()) {
             $overDriveId = $this->getOverdriveID();
             $result = $this->connector->getHolds(true);
             if ($result->status) {

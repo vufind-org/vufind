@@ -387,7 +387,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $result = $this->connector->suspendHold($od_id, $holdEmail, $suspensionType, $suspendValue);
 
             if ($result->status) {
-                if($suspensionType=='indefinite'){
+                if ($suspensionType == 'indefinite') {
                     $result->code = 'od_hold_susp_indef';
                 } else {
                     $result->code = 'od_hold_redelivery';
