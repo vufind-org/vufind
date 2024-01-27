@@ -336,19 +336,25 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             if ($result->status) {
                 $checkedout = false;
                 $checkouts = $result->data;
+                //In case of a magazine issue, we have to get all the checkouts to see if the 
+                //current title is the parentID of one of the user's checkouts. Return data as 
+                //array in case there are multiple issues checked out to the user.
                 $result->data = [];
+                $result->isMagazine = false;
                 foreach ($checkouts as $checkout) {
                     if ($checkout->metadata->mediaType == 'Magazine') {
                         $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
                     } else {
-                        ($idToCheck = $checkout->reserveId);
+                        $idToCheck = $checkout->reserveId;
                     }
-
                     if (strtolower($idToCheck) == $overdriveID) {
                         $checkedout = true;
                         $result->status = true;
-                        $result->isMagazine = true;
                         $result->data[] = $checkout;
+                        //this checkout is a magazine issue of the current title
+                        if ($checkout->metadata->mediaType == 'Magazine') {
+                            $result->isMagazine =  true;
+                        }
                     }
                 }
                 if (!$checkedout) {

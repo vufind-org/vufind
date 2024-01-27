@@ -600,7 +600,7 @@ class OverdriveConnector implements
     public function suspendHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
     {
         $holdResult = $this->getResultObject();
-        $this->debug('OverdriveConnector: suspendHold: OverdriveID: $overDriveId, Email: $email');
+        $this->debug("suspendHold: OverdriveID:$overDriveId|Email:$email|suspensionType:$suspensionType");
 
         if (!$user = $this->getUser()) {
             $this->error('user is not logged in (susp hold)', [], true);

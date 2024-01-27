@@ -152,6 +152,15 @@
 
                 <?=$this->transEsc('od_hold_placed_on', ['%%holdPlacedDate%%' => $resource['hold']->holdPlacedDate]);?>
                 <?=$this->transEsc('od_hold_queue', ['%%holdPosition%%' => $resource['hold']->holdListPosition, '%%numberOfHolds%%' => $resource['hold']->numberOfHolds]);?>
+
+                <?php if (isset($resource['hold']->holdSuspension)): ?>
+                  <?php if ($resource['hold']->holdSuspension->suspensionType == 'limited'): ?>
+                    <?= $this->transEsc('od_hold_redelivery', ['%%days%%' => $resource['hold']->holdSuspension->numberOfDays]) ?>
+                  <?php else: ?>
+                    <?= $this->transEsc('od_hold_susp_indef') ?>
+                  <?php endif; ?>
+                <?php endif; ?>
+
                 <?php if(!empty($resource['hold']->emailAddress)): ?>
                   <?=$this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
                 <?php endif; ?>
@@ -180,7 +189,7 @@
                       </li>
 
                       <?php //user already has a hold suspension.  allow them to edit the suspension
-                      if(isset($hold->holdSuspension)): ?>
+                      if(isset($resource['hold']->holdSuspension)): ?>
                       <li><a class="edithold"
                             data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
                               href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldConfirm"?>">
