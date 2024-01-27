@@ -251,7 +251,7 @@
     <?php else: ?>
         <?php if ($result->status):?>
             <div class="alert alert-success">
-                <?=$this->transEsc($result->code, $result->codeParams??null);?>
+                <?=$this->transEsc($result->code, $result->codeParams ?? null);?>
             </div>
         <?php else: ?>
             <div class="alert alert-danger">

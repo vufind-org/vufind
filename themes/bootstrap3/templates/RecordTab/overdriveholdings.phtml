@@ -14,7 +14,6 @@
   $rec_id = $this->driver->getUniqueID();
   $hold_url = $this->url('overdrive-hold');
   $avail = $this->driver->getOverdriveAvailability();
-  
   $checkedOutResult = $this->driver->isCheckedOut();
   $checkedOut = $checkedOutResult->data;
   if (!$checkedOut):
@@ -82,7 +81,7 @@
               $od_id = $title->reserveId; ?>
               <div class="panel-heading">
                 <h3 class="panel-title">
-                  <?=$this->translate('Issue').": ".$title->metadata->edition ?>
+                  <?=$this->translate('Issue') . ": " . $title->metadata->edition ?>
                 </h3>
               </div>
             <?php endif; ?>
