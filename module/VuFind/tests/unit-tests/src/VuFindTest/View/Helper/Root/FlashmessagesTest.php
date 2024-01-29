@@ -53,7 +53,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getTestFlashmessageData(): array
+    public static function getTestFlashmessageData(): array
     {
         return [
             [

@@ -70,6 +70,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'hierarchical' => [
                     'building',
                 ],
+                'hierarchicalFacetSortOptions' => [
+                    'building' => 'top',
+                ],
             ],
         ],
     ];

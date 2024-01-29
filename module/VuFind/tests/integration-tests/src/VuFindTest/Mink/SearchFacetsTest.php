@@ -32,6 +32,8 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\SearchFacetFilterTrait;
+use VuFindTest\Feature\SearchSortTrait;
 
 use function count;
 
@@ -48,54 +50,8 @@ use function count;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    /**
-     * CSS selector for finding the active filter values
-     *
-     * @var string
-     */
-    protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
-
-    /**
-     * CSS selector for finding the active filter labels
-     *
-     * @var string
-     */
-    protected $activeFilterLabelSelector = '.active-filters.hidden-xs .filters .filters-title';
-
-    /**
-     * CSS selector for finding the first hierarchical facet expand button
-     *
-     * @var string
-     */
-    protected $facetExpandSelector = '.facet-tree .facet-tree__toggle-expanded .facet-tree__expand';
-
-    /**
-     * CSS selector for finding the first expanded hierarchical facet
-     *
-     * @var string
-     */
-    protected $facetExpandedSelector = '.facet-tree button[aria-expanded=true] ~ ul';
-
-    /**
-     * CSS selector for finding the first second level hierarchical facet
-     *
-     * @var string
-     */
-    protected $facetSecondLevelLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a';
-
-    /**
-     * CSS selector for finding the first active second level hierarchical facet
-     *
-     * @var string
-     */
-    protected $facetSecondLevelActiveLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.active';
-
-    /**
-     * CSS selector for finding the first second level hierarchical facet
-     *
-     * @var string
-     */
-    protected $facetSecondLevelExcludeLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.exclude';
+    use SearchSortTrait;
+    use SearchFacetFilterTrait;
 
     /**
      * Get filtered search
@@ -119,10 +75,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function facetApplyProcedure(Element $page): void
     {
         // Confirm that we have 9 results and no filters to begin with:
-        $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals(
-            "Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(),
+        $this->assertStringStartsWith(
+            'Showing 1 - 9 results of 9',
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -135,10 +90,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that when the page reloads, we have fewer results and a filter:
         $this->waitForPageLoad($page);
-        $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals(
-            "Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(),
+        $this->assertStringStartsWith(
+            'Showing 1 - 7 results of 7',
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -247,6 +201,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public function testApplyFacet(): void
     {
         $page = $this->performSearch('building:weird_ids.mrc');
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
 
         // Confirm that we are NOT using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
@@ -254,6 +210,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
+
+        // Verify that sort order is still correct:
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -273,6 +232,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
 
         // Confirm that we ARE using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
@@ -280,6 +241,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
+
+        // Verify that sort order is still correct:
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -421,7 +385,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickHierarchyFacet(Element $page): void
+    protected function clickHierarchicalFacet(Element $page): void
     {
         // Open second level:
         $this->clickCss($page, $this->facetExpandSelector);
@@ -430,16 +394,13 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Click second level facet:
         $this->clickCss($page, $this->facetSecondLevelLinkSelector);
         // Check the active filter:
-        $filter = $this->findCss($page, $this->activeFilterSelector);
-        $label = $this->findCss($page, $this->activeFilterLabelSelector);
-        $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
+        $this->assertAppliedFilter($page, 'level1a/level2a');
         // Check that the applied facet is displayed properly:
         $this->findCss($page, $this->facetSecondLevelActiveLinkSelector);
     }
 
     /**
-     * Test that hierarchy facets work properly.
+     * Test that hierarchical facets work properly.
      *
      * @return void
      */
@@ -457,8 +418,16 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+        // Do a search and verify that sort order is maintained:
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        $this->clickHierarchyFacet($page);
+        $this->sortResults($page, 'title');
+        $this->waitForPageLoad($page);
+        $this->clickHierarchicalFacet($page);
+        $this->assertSelectedSort($page, 'title');
+        // Remove the filter:
+        $this->clickCss($page, $this->activeFilterSelector);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'title');
     }
 
     /**
@@ -490,7 +459,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:"hierarchy.mrc"');
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
-            'Showing 1 - 10 results of 10 for search \'building:"hierarchy.mrc"\'',
+            'Showing 1 - 10 results of 10',
             $extractCount($stats->getText())
         );
         $this->clickCss($page, $this->facetExpandSelector);
@@ -501,9 +470,129 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
-            'Showing 1 - 7 results of 7 for search \'building:"hierarchy.mrc"\'',
+            'Showing 1 - 7 results of 7',
             $extractCount($stats->getText())
         );
+    }
+
+    /**
+     * Data provider for testHierarchicalFacetSort
+     *
+     * @return array
+     */
+    public static function hierarchicalFacetSortProvider(): array
+    {
+        return [
+            [
+                null,
+                [
+                    [
+                        'value' => 'Top Level, Sorted Last',
+                        'children' => [
+                            'level2a',
+                            'level2b',
+                        ],
+                    ],
+                    [
+                        'value' => 'Top Level, Sorted First',
+                        'children' => [
+                            'Second Level, Sorted Last',
+                            'Second Level, Sorted First',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'top',
+                [
+                    [
+                        'value' => 'Top Level, Sorted First',
+                        'children' => [
+                            'Second Level, Sorted Last',
+                            'Second Level, Sorted First',
+                        ],
+                    ],
+                    [
+                        'value' => 'Top Level, Sorted Last',
+                        'children' => [
+                            'level2a',
+                            'level2b',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'all',
+                [
+                    [
+                        'value' => 'Top Level, Sorted First',
+                        'children' => [
+                            'Second Level, Sorted First',
+                            'Second Level, Sorted Last',
+                        ],
+                    ],
+                    [
+                        'value' => 'Top Level, Sorted Last',
+                        'children' => [
+                            'level2a',
+                            'level2b',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test that hierarchical facet sort options work properly.
+     *
+     * @param ?string $sort     Sort option
+     * @param array   $expected Expected facet values in order
+     *
+     * @dataProvider hierarchicalFacetSortProvider
+     *
+     * @return void
+     */
+    public function testHierarchicalFacetSort(?string $sort, array $expected): void
+    {
+        $facetConfig = [
+            'Results' => [
+                'hierarchical_facet_str_mv' => 'hierarchy',
+            ],
+            'SpecialFacets' => [
+                'hierarchical[]' => 'hierarchical_facet_str_mv',
+            ],
+            'Advanced_Settings' => [
+                'translated_facets[]' => 'hierarchical_facet_str_mv:Facets',
+            ],
+        ];
+        if (null !== $sort) {
+            $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions[hierarchical_facet_str_mv]'] = $sort;
+        }
+        $this->changeConfigs(
+            [
+                'facets' => $facetConfig,
+            ]
+        );
+        $page = $this->performSearch('building:"hierarchy.mrc"');
+        foreach ($expected as $index => $facet) {
+            $topLi = $this->findCss($page, '#side-collapse-hierarchical_facet_str_mv ul.facet-tree > li', null, $index);
+            $item = $this->findCss($topLi, '.facet-value');
+            $this->assertEquals(
+                $facet['value'],
+                $item->getText(),
+                "Hierarchical facet item $index"
+            );
+            foreach ($facet['children'] as $childIndex => $childFacet) {
+                $childLi = $this->findCss($topLi, 'ul > li.facet-tree__parent', null, $childIndex);
+                $childItem = $this->findCss($childLi, '.facet-value');
+                $this->assertEquals(
+                    $childFacet,
+                    $childItem->getText(),
+                    "Hierarchical facet item $index child $childIndex"
+                );
+            }
+        }
     }
 
     /**
@@ -533,7 +622,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-panel-format .collapsed');
         // Uncollapse hierarchical facet so we can click it:
         $this->clickCss($page, '#side-panel-hierarchical_facet_str_mv .collapsed');
-        $this->clickHierarchyFacet($page);
+        $this->clickHierarchicalFacet($page);
 
         // We have now reloaded the page. Let's toggle format off and on to confirm
         // that it was opened, and let's also toggle building on to confirm that

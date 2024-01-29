@@ -58,7 +58,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Enabled' => [true, true], 'Not Enabled' => [false, false]];
     }
@@ -84,7 +84,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isCaptchaActiveProvider(): array
+    public static function isCaptchaActiveProvider(): array
     {
         return ['Active' => [true, true], 'InActive' => [false, false]];
     }

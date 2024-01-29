@@ -190,11 +190,12 @@ class Options extends \VuFind\Search\Base\Options
             $this->hierarchicalFacets
                 = $facetSettings->SpecialFacets->hierarchical->toArray();
         }
-
         if (isset($facetSettings->SpecialFacets->hierarchicalFacetSeparators)) {
             $this->hierarchicalFacetSeparators = $facetSettings->SpecialFacets
                 ->hierarchicalFacetSeparators->toArray();
         }
+        $this->hierarchicalFacetSortSettings
+            = $facetSettings?->SpecialFacets?->hierarchicalFacetSortOptions?->toArray() ?? [];
 
         // Load Spelling preferences
         $config = $configLoader->get($this->mainIni);

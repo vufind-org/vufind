@@ -429,6 +429,23 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
+     * Get proxy class to instantiate from the requested class name
+     *
+     * @param string $requestedName Service being created
+     *
+     * @return string
+     */
+    protected function getProxyClassName(string $requestedName): string
+    {
+        $className = $requestedName . 'Proxy';
+        // Fall back to default if the class doesn't exist:
+        if (!class_exists($className)) {
+            return LoggerProxy::class;
+        }
+        return $className;
+    }
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -450,21 +467,19 @@ class LoggerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        // Construct the logger as a lazy loading value holder so that
-        // the object is not instantiated until it is called. This helps break
-        // potential circular dependencies with other services.
-        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
-            // Indicate that initialization is complete to avoid reinitialization:
-            $proxy->setProxyInitializer(null);
 
+        // Construct the logger as a lazy loading proxy so that the object is not
+        // instantiated until it is called. This helps break potential circular
+        // dependencies with other services.
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Now build the actual service:
             $wrapped = new $requestedName(
                 $container->get(\VuFind\Net\UserIpReader::class)
             );
             $this->configureLogger($container, $wrapped);
         };
-        $cfg = $container->get(\ProxyManager\Configuration::class);
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy($requestedName, $callback);
+
+        $proxyClass = $this->getProxyClassName($requestedName);
+        return new $proxyClass($callback);
     }
 }

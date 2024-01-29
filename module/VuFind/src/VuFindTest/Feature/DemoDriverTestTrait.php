@@ -204,8 +204,8 @@ trait DemoDriverTestTrait
         string $username,
         string $password
     ): void {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
+        $this->findCssAndSetValue($page, '#profile_cat_username', $username);
+        $this->findCssAndSetValue($page, '#profile_cat_password', $password);
         $this->clickCss($page, 'input.btn.btn-primary');
     }
 }
