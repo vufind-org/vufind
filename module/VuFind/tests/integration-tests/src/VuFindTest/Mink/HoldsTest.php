@@ -274,6 +274,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
 
+        // Log in:
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.modal-body .btn');
+        $this->assertEquals('Institutional Login', $element->getText());
+        $element->click();
+
         // Start establishing library catalog profile
         $this->waitForPageLoad($page);
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
@@ -317,6 +323,13 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
+
+        // Log in:
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.modal-body .btn');
+        $this->assertEquals('Institutional Login', $element->getText());
+        $element->click();
+        $this->waitForPageLoad($page);
 
         // Check to be sure we don't have a garbled lightbox at this stage; past bugs
         // could cause the whole record to open in the lightbox here.
