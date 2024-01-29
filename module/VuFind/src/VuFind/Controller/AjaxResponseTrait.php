@@ -32,8 +32,6 @@ namespace VuFind\Controller;
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
 use VuFind\AjaxHandler\PluginManager;
 
-use function count;
-
 /**
  * Trait to allow AJAX response generation.
  *
