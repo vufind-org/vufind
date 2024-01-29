@@ -32,22 +32,6 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modal.modal('handleUpdate');
   }
-  function _emit(msg, _details) {
-    var details = _details || {};
-    var event;
-    try {
-      event = new CustomEvent(msg, {
-        detail: details,
-        bubbles: true,
-        cancelable: true
-      });
-    } catch (e) {
-      // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
-      event = document.createEvent('CustomEvent');
-      event.initCustomEvent(msg, true, true, details);
-    }
-    return document.dispatchEvent(event);
-  }
 
   function _addQueryParameters(url, params) {
     let fragmentSplit = url.split('#');
@@ -220,7 +204,7 @@ VuFind.register('lightbox', function Lightbox() {
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
           ) && flashMessages.length === 0
         ) {
-          var eventResult = _emit('VuFind.lightbox.login', {
+          var eventResult = VuFind.emit('lightbox.login', {
             originalUrl: _originalUrl,
             formUrl: obj.url
           });
@@ -338,10 +322,10 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
-        this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
-        VuFind.evalCallback($(form).data('lightboxOnclose'), e, form);
-      }, false);
+      VuFind.listen('lightbox.closed', function lightboxClosed() {
+        VuFind.unlisten('lightbox.closed', arguments.callee); // only once
+        VuFind.evalCallback($(form).data('lightboxOnclose'), null, form);
+      });
     }
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
@@ -523,12 +507,12 @@ VuFind.register('lightbox', function Lightbox() {
         }
         unbindFocus();
         this.setAttribute('aria-hidden', true);
-        _emit('VuFind.lightbox.closing');
+        VuFind.emit('lightbox.closing');
       }
     });
     _modal.on('hidden.bs.modal', function lightboxHidden() {
       VuFind.lightbox.reset();
-      _emit('VuFind.lightbox.closed');
+      VuFind.emit('lightbox.closed');
     });
     _modal.on("shown.bs.modal", function lightboxShown() {
       bindFocus();

@@ -15,21 +15,35 @@ var VuFind = (function VuFind() {
   var _elementBase;
   var _iconsCache = {};
 
-  // Emit a custom event
-  // Recommendation: prefix with vf-
-  var emit = function emit(name, detail) {
-    if (typeof detail === 'undefined') {
-      document.dispatchEvent(new Event(name));
-    } else {
-      var event = document.createEvent('CustomEvent');
-      event.initCustomEvent(name, true, true, detail); // name, canBubble, cancelable, detail
-      document.dispatchEvent(event);
+  // Event controls
+
+  let listeners = {};
+  function unlisten(event, fn) {
+    const index = listeners[event].indexOf(fn);
+
+    if (index > -1) {
+      listeners[event].splice(index, 1);
     }
-  };
-  // Listen shortcut to put everyone on the same element
-  var listen = function listen(name, func) {
-    document.addEventListener(name, func, false);
-  };
+  }
+
+  function listen(event, fn, { once = false } = {}) {
+    if (typeof listeners[event] === "undefined") {
+      listeners[event] = [];
+    }
+
+    listeners[event].push(fn);
+    return () => unlisten(event, fn);
+  }
+
+  function emit(event, ...args) {
+    if (typeof listeners[event] === "undefined") {
+      return;
+    }
+
+    listeners[event].forEach((fn) => fn(...args));
+  }
+
+  // Module control
 
   var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
@@ -340,11 +354,12 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    listen: listen,
+    unlisten: unlisten,
     evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
     isPrinting: isPrinting,
-    listen: listen,
     refreshPage: refreshPage,
     register: register,
     setCspNonce: setCspNonce,
