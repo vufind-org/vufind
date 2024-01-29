@@ -205,8 +205,10 @@ class MyResearchController extends AbstractBase
                     if (
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
-                        && !$this->hasFollowupUrl()
+                        && (!$this->hasFollowupUrl()
+                        || $this->followup()->retrieve('lightbox') === false)
                     ) {
+                        $this->clearFollowupUrl();
                         return $this->getRefreshResponse();
                     }
                 }
@@ -349,11 +351,10 @@ class MyResearchController extends AbstractBase
                 : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
-        // Set followup only if we're not in lightbox since it has the short-circuit
-        // for reloading current page:
-        if (!$this->inLightbox()) {
-            $this->setFollowupUrlToReferer();
-        }
+        // Set followup with the lightbox=false flag so that the post-login process
+        // can decide whether to use it:
+        $this->setFollowupUrlToReferer(true, ['lightbox' => false]);
+
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
