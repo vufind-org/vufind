@@ -31,7 +31,7 @@ var VuFind = (function VuFind() {
       listeners[event] = [];
     }
 
-    const listenFn = !once : fn : (...args) => {
+    const listenFn = !once ? fn : (...args) => {
       fn(...args);
       // Automatically remove a listener we only want to run once
       unlisten(arguments.callee);
