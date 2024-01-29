@@ -62,6 +62,7 @@ use function in_array;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Blender config
@@ -604,14 +605,16 @@ class BackendTest extends TestCase
         $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $eds->expects($this->exactly(3))
-            ->method('search')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $eds,
+            'search',
+            [
                 [$query, 0, 20, $edsParams],
                 [$query, 0, 20, $edsParams],
                 [$query, 0, 0, $edsParams],
-            )->will($this->returnValue($collection));
-
+            ],
+            $collection
+        );
         $backends = [
             'EDS' => $eds,
         ];

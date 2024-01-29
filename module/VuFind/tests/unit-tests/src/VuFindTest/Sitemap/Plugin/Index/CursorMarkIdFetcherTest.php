@@ -47,6 +47,8 @@ use VuFindSearch\Service;
  */
 class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Backend ID to use in tests
      *
@@ -190,18 +192,22 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             );
 
         // Set up all the expected commands...
-        $service->expects($this->exactly(4))->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation('*'))],
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation('nextCursor'))],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $this->getMockKeyCommand(),
                 $commandObj,
                 $this->getMockKeyCommand(),
-                $commandObj
-            );
+                $commandObj,
+            ]
+        );
 
         $fetcher = new CursorMarkIdFetcher($service);
         // Initial iteration
@@ -253,15 +259,18 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($records));
         // Set up all the expected commands...
-        $service->expects($this->exactly(2))->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
-                [$this->callback($this->getIdsExpectation('*', $fq))]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $this->returnValue($this->getMockKeyCommand()),
-                $this->returnValue($commandObj)
-            );
+                [$this->callback($this->getIdsExpectation('*', $fq))],
+            ],
+            [
+                $this->getMockKeyCommand(),
+                $commandObj,
+            ]
+        );
 
         $fetcher = new CursorMarkIdFetcher($service);
         // Initial iteration

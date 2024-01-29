@@ -32,7 +32,9 @@
 namespace VuFind\Search\Base;
 
 use VuFind\I18n\TranslatableString;
+use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
+use VuFind\Search\QueryAdapterInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Query\AbstractQuery;
@@ -228,6 +230,20 @@ class Params
     protected $configLoader;
 
     /**
+     * Query adapter
+     *
+     * @var ?QueryAdapterInterface
+     */
+    protected $queryAdapter = null;
+
+    /**
+     * Default query adapter class
+     *
+     * @var string
+     */
+    protected $queryAdapterClass = QueryAdapter::class;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -281,6 +297,31 @@ class Params
     public function setOptions(Options $options)
     {
         $this->options = $options;
+    }
+
+    /**
+     * Get query adapter
+     *
+     * @return QueryAdapterInterface
+     */
+    public function getQueryAdapter(): QueryAdapterInterface
+    {
+        if (null === $this->queryAdapter) {
+            $this->queryAdapter = new ($this->queryAdapterClass)();
+        }
+        return $this->queryAdapter;
+    }
+
+    /**
+     * Set query adapter
+     *
+     * @param QueryAdapterInterface $queryAdapter Query adapter
+     *
+     * @return void
+     */
+    public function setQueryAdapter(QueryAdapterInterface $queryAdapter)
+    {
+        $this->queryAdapter = $queryAdapter;
     }
 
     /**
@@ -524,7 +565,7 @@ class Params
      */
     protected function initAdvancedSearch($request)
     {
-        $this->query = QueryAdapter::fromRequest(
+        $this->query = $this->getQueryAdapter()->fromRequest(
             $request,
             $this->getOptions()->getDefaultHandler()
         );
@@ -769,7 +810,7 @@ class Params
         $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
-        return QueryAdapter::display($this->getQuery(), $translate, $showField);
+        return $this->getQueryAdapter()->display($this->getQuery(), $translate, $showField);
     }
 
     /**
@@ -1804,6 +1845,33 @@ class Params
     }
 
     /**
+     * Store settings to a minified object
+     *
+     * @param Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function minify(Minified &$minified): void
+    {
+        $minified->ty = $this->getSearchType();
+        $minified->cl = $this->getSearchClassId();
+
+        // Search terms, we'll shorten keys
+        $query = $this->getQuery();
+        $minified->t = $this->getQueryAdapter()->minify($query);
+
+        // It would be nice to shorten filter fields too, but
+        //      it would be a nightmare to maintain.
+        $minified->f = $this->getRawFilters();
+        $minified->hf = $this->getHiddenFilters();
+
+        $minified->scp = [
+            'page' => $this->getPage(),
+            'limit' => $this->getLimit(),
+        ];
+    }
+
+    /**
      * Restore settings from a minified object found in the database.
      *
      * @param \VuFind\Search\Minified $minified Minified Search Object
@@ -1826,7 +1894,7 @@ class Params
         }
 
         // Search terms, we need to expand keys
-        $this->query = QueryAdapter::deminify($minified->t);
+        $this->query = $this->getQueryAdapter()->deminify($minified->t);
     }
 
     /**

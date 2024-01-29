@@ -119,7 +119,7 @@ trait AutoRetryTrait
                     if (is_callable($logMethod)) {
                         $method = get_class($this) . '::' . $this->getName(false);
                         $msg = "RETRY TEST $method ({$this->retriesLeft} left)"
-                            . ' after exception: ' . $e->getMessage() . '.';
+                            . ' after exception: ' . (string)$e . '.';
                         call_user_func(
                             $logMethod,
                             $msg . ' See PHP error log for details.',

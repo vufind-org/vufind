@@ -152,8 +152,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
         // Make list
         $this->clickCss($page, '#make-list');
-        $this->findCss($page, '#list_title')->setValue('Test List');
-        $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
+        $this->findCssAndSetValue($page, '#list_title', 'Test List');
+        $this->findCssAndSetValue($page, '#list_desc', 'Just. THE BEST.');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
