@@ -323,9 +323,8 @@ VuFind.register('lightbox', function Lightbox() {
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
       VuFind.listen('lightbox.closed', function lightboxClosed() {
-        VuFind.unlisten('lightbox.closed', arguments.callee); // only once
         VuFind.evalCallback($(form).data('lightboxOnclose'), null, form);
-      });
+      }, { once: true });
     }
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
