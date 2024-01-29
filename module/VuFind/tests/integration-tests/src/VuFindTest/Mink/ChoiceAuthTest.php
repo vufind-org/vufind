@@ -251,6 +251,6 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser']);
+        static::removeUsers(['username1', 'catuser', 'ssofakeuser1']);
     }
 }
