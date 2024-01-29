@@ -207,7 +207,7 @@ class MyResearchController extends AbstractBase
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
                         && (!$this->hasFollowupUrl()
-                        || $this->followup()->retrieve('is_referrer') === true)
+                        || $this->followup()->retrieve('isReferrer') === true)
                     ) {
                         $this->clearFollowupUrl();
                         return $this->getRefreshResponse();
@@ -352,9 +352,9 @@ class MyResearchController extends AbstractBase
                 : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
-        // Set followup with the is_referrer flag so that the post-login process
+        // Set followup with the isReferrer flag so that the post-login process
         // can decide whether to use it:
-        $this->setFollowupUrlToReferer(true, ['is_referrer' => true]);
+        $this->setFollowupUrlToReferer(true, ['isReferrer' => true]);
 
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
