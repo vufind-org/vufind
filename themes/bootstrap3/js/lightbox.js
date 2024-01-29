@@ -204,12 +204,18 @@ VuFind.register('lightbox', function Lightbox() {
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
           ) && flashMessages.length === 0
         ) {
-          var eventResult = VuFind.emit('lightbox.login', {
-            originalUrl: _originalUrl,
-            formUrl: obj.url
-          });
+          let doRefresh = true;
+          const cancelRefresh = () => doRefresh = false;
+
+          VuFind.emit(
+            'lightbox.login',
+            obj.url,
+            _originalUrl,
+            cancelRefresh // call this function to cancel refresh
+          );
+
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
-            if (eventResult) {
+            if (doRefresh) {
               VuFind.refreshPage();
             }
             return false;
