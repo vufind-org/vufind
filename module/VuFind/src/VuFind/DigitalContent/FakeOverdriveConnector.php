@@ -325,7 +325,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Returns
+     * Returns all the issues for an overdrive magazine title
      *
      * @param string $overDriveId Overdrive Identifier for magazine title
      * @param bool   $checkouts   Whether to add checkout information to each issue
