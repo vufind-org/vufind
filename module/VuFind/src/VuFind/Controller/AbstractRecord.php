@@ -378,6 +378,7 @@ class AbstractRecord extends AbstractBase
      */
     public function ajaxtabAction()
     {
+        $this->disableSessionWrites();
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
@@ -421,8 +422,7 @@ class AbstractRecord extends AbstractBase
         $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($url);
         }
 
@@ -740,6 +740,34 @@ class AbstractRecord extends AbstractBase
     {
         $this->getRequest()->getQuery()->set('style', 'RDF');
         return $this->exportAction();
+    }
+
+    /**
+     * Show explanation for why a record was found and how its relevancy is computed
+     *
+     * @return mixed
+     */
+    public function explainAction()
+    {
+        $record = $this->loadRecord();
+
+        $view = $this->createViewModel();
+        $view->setTemplate('record/explain');
+        if (!$record->tryMethod('explainEnabled')) {
+            $view->disabled = true;
+            return $view;
+        }
+
+        $explanation = $this->serviceLocator
+            ->get(\VuFind\Search\Explanation\PluginManager::class)
+            ->get($record->getSourceIdentifier());
+
+        $params = $explanation->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $explanation->performRequest($record->getUniqueID());
+
+        $view->explanation = $explanation;
+        return $view;
     }
 
     /**

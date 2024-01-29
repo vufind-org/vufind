@@ -78,6 +78,19 @@
             </ul>
           </div>
         <?php endif; ?>
+        <?php if (!empty($holding['bound_with_records'])): ?>
+          <?=
+            $this->render(
+                'RecordTab/holdingsils/boundwith.phtml',
+                [
+                  'boundWithRecords' => $holding['bound_with_records'],
+                  'callNumber' => $holding['callnumber'],
+                  'callNumberCount' => count($callNos),
+                  'driver' => $driver,
+                ]
+            );
+          ?>
+        <?php endif; ?>
       <?php endif; ?>
       <?php /* Embed item structured data: library, barcode, call number */ ?>
       <?php if ($holding['location'] ?? false): ?>

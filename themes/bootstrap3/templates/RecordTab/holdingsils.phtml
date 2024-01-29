@@ -39,7 +39,7 @@
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
       <div class="alert alert-info">
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true']))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
+        <a id="hold-login" href="<?=$this->serverUrl($this->url('myresearch-completelogin'))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
       </div>
     <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
@@ -89,7 +89,7 @@
     'rows' => $this->config()->getHoldingsItemLimit(),
   ];
 ?>
-<table class="table table-striped truncate-field" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
+<table class="table table-striped truncate-field holdings-table" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); ?>
   <?php if (!empty($callNos)): ?>
@@ -123,12 +123,12 @@
         try {
             echo $this->context($this)->renderInContext(
                 'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
-                ['holding' => $row]
+                ['holding' => $row, 'callNos' => $callNos]
             );
         } catch (Exception $e) {
             echo $this->context($this)->renderInContext(
                 'RecordTab/holdingsils/standard.phtml',
-                ['holding' => $row]
+                ['holding' => $row, 'callNos' => $callNos]
             );
         }
     ?>

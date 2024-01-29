@@ -200,6 +200,16 @@
         </div>
       <?php endif; ?>
 
+      <?php if ($this->driver->tryMethod('explainEnabled')): ?>
+        <?=
+          $this->record($this->driver)->renderTemplate('result-list-explain.phtml', [
+            'driver' => $this->driver,
+            'request' => $this->request,
+            'result' => $this->result,
+          ]);
+        ?>
+      <?php endif; ?>
+
       <?php /* Hierarchy tree link */ ?>
       <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
       <?php if (!empty($trees)): ?>

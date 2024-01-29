@@ -69,8 +69,8 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
 
         $databases = $module->getResults();
         $this->assertCount(3, $databases);
-        $this->assertArrayHasKey('History DB', $databases);
-        $this->assertArrayNotHasKey('Art DB', $databases);
+        $this->assertArrayHasKey('http://thepast.com', $databases);
+        $this->assertArrayNotHasKey('http://fridakahlo.com', $databases);
     }
 
     /**
@@ -86,7 +86,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
 
         $databases = $module->getResults();
         $this->assertCount(2, $databases);
-        $this->assertArrayNotHasKey('History DB', $databases);
+        $this->assertArrayNotHasKey('http://thepast.com', $databases);
     }
 
     /**
@@ -102,17 +102,52 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
 
         $databases = $module->getResults();
         $this->assertCount(4, $databases);
-        $this->assertArrayHasKey('Art DB', $databases);
+        $this->assertArrayHasKey('http://fridakahlo.com', $databases);
+    }
+
+    /**
+     * Test using LibGuides with a query that matches an alternate name.
+     *
+     * @return void
+     */
+    public function testUseLibGuidesWithAlternateName()
+    {
+        $configData = $this->mockConfigData();
+        $configData['Databases']['useLibGuides'] = true;
+        $module = $this->buildModuleAndProcessResults($configData, 'Geometry');
+
+        $databases = $module->getResults();
+        $this->assertCount(4, $databases);
+        $this->assertArrayHasKey('http://primenumbers.com', $databases);
+    }
+
+    /**
+     * Test using LibGuides with a query that matches an alternate name,
+     * but that config disabled.
+     *
+     * @return void
+     */
+    public function testUseLibGuidesWithAlternateNameDisabled()
+    {
+        $configData = $this->mockConfigData();
+        $configData['Databases']['useLibGuides'] = true;
+        $configData['Databases']['useLibGuidesAlternateNames'] = false;
+        $module = $this->buildModuleAndProcessResults($configData, 'Geometry');
+
+        $databases = $module->getResults();
+        $this->assertCount(3, $databases);
+        $this->assertArrayNotHasKey('http://primenumbers.com', $databases);
     }
 
     /**
      * Build a Databases module, set config and process results.
      *
-     * @param $configData array A Databases config section
+     * @param $configData  array  A Databases config section
+     * @param $queryString string Query string
      *
      * @return object
      */
-    protected function buildModuleAndProcessResults($configData)
+    protected function buildModuleAndProcessResults($configData, $queryString = 'History')
     {
         $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $configManager->expects($this->any())->method('get')
@@ -137,7 +172,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
         $module->setConfig($settings);
 
         $facetList = $this->mockFacetList();
-        $results = $this->mockResults($facetList);
+        $results = $this->mockResults($facetList, $queryString);
         $module->process($results);
 
         return $module;
@@ -151,7 +186,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return object
      */
-    protected function mockResults($facetList, $queryString = 'History')
+    protected function mockResults($facetList, $queryString)
     {
         $results = $this->getMockBuilder(\VuFind\Search\EDS\Results::class)
             ->disableOriginalConstructor()
@@ -169,30 +204,6 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
         $query->method('getString')->willReturn($queryString);
 
         return $results;
-    }
-
-    /**
-     * Mock up a standard Databases config section.
-     *
-     * @return array
-     */
-    protected function mockConfigData()
-    {
-        return [
-            'Databases' => [
-                'resultFacet' => [
-                    'ContentProvider',
-                    'list',
-                ],
-                'resultFacetNameKey' => 'value',
-                'useQuery' => true,
-                'url' => [
-                    'Sociology DB' => 'http://people.com',
-                    'Biology DB' => 'http://cells.com',
-                    'History DB' => 'http://thepast.com',
-                ],
-            ],
-        ];
     }
 
     /**
@@ -220,6 +231,30 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Mock up a standard Databases config section.
+     *
+     * @return array
+     */
+    protected function mockConfigData()
+    {
+        return [
+            'Databases' => [
+                'resultFacet' => [
+                    'ContentProvider',
+                    'list',
+                ],
+                'resultFacetNameKey' => 'value',
+                'useQuery' => true,
+                'url' => [
+                    'Sociology DB' => 'http://people.com',
+                    'Biology DB' => 'http://cells.com',
+                    'History DB' => 'http://thepast.com',
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Mock up LibGuides API databases data.
      *
      * @return array
@@ -229,7 +264,13 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
         return [
             'db_4' => (object)[
                 'name' => 'Art DB',
-                'url' => 'fridakahlo.com',
+                'url' => 'http://fridakahlo.com',
+                'alt_names' => '',
+            ],
+            'db_5' => (object)[
+                'name' => 'Math DB',
+                'url' => 'http://primenumbers.com',
+                'alt_names' => 'Geometry DB',
             ],
         ];
     }

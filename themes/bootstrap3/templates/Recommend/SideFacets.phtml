@@ -18,15 +18,6 @@
       }
     }
   }
-
-  $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
-  if ($hierarchicalFacets) {
-    // jstree.min.js used to be injected by hierarchical-facet.js, but with deferred
-    // processing it's called too late to append anything to the headers.
-    $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
-    $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
-
-  }
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <?php
@@ -52,8 +43,6 @@
 <?php endif; ?>
 <?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
-<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
-<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
     <?php $collapsed = in_array($title, $collapsedFacets); ?>

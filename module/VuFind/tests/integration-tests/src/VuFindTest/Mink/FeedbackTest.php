@@ -92,7 +92,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     protected function fillInAndSubmitFeedbackForm($page)
     {
         $this->clickCss($page, '#feedbackLink');
-        $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
+        $this->findCssAndSetValue($page, '#modal .form-control[name="name"]', 'Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
         $this->findCss($page, '#modal #form_FeedbackSite_message')

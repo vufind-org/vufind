@@ -107,9 +107,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '#pickupLibrary')->setValue('2');
+        $this->findCssAndSetValue($page, '#pickupLibrary', '2');
         $this->waitForPageLoad($page);
-        $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
+        $this->findCssAndSetValue($page, '#pickupLibraryLocation', '3');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         // If successful, we should now have a link to review the request:
@@ -143,7 +143,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '.modal-body select')->setValue('C');
+        $this->findCssAndSetValue($page, '.modal-body select', 'C');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         // If successful, we should now have a link to review the request:
@@ -653,7 +653,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function loanHistoryWithPurgeDisabledProvider(): array
+    public static function loanHistoryWithPurgeDisabledProvider(): array
     {
         return [
             [false, false],

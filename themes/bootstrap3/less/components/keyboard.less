@@ -30,7 +30,7 @@
   }
 
   #keyboard-selection-button {
-    padding: 0 2px 0 4px !important;
+    padding: 0 2px 0 4px;
     .icon {
       margin: 0;
     }
@@ -61,37 +61,28 @@
   display: none;
   position: absolute;
   z-index: 1;
-  background-color: #dddddd !important;
+  &.hg-theme-default {
+    background-color: #dddddd;
+  }
 
-
-  .hg-functionBtn {
+  .hg-button.hg-functionBtn {
     font-weight: bold;
     font-size: 30px;
-    background-color: #f4f4f4 !important;
+    background-color: #f4f4f4;
     span {
       padding-top: 5px;
+    }
+
+    &.hg-button-space {
+      background-color: white;
     }
   }
 
   .hg-standardBtn {
     font-size: 18px;
   }
-
-  .hg-button-space {
-    background-color: white !important;
-  }
 }
 
 .show-keyboard {
   display: block;
-}
-
-@media (max-width: 400px) {
-  .keyboard-selection {
-    display: none;
-  }
-
-  .show-keyboard {
-    display: none;
-  }
 }

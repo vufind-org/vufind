@@ -88,6 +88,9 @@ class Flashmessages extends AbstractHelper
      */
     public function __invoke()
     {
+        if (!empty($this->getView()->layout()->lightboxChild)) {
+            return '';
+        }
         $html = '';
         foreach ($this->namespaces as $ns) {
             $messages = array_merge(

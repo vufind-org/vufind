@@ -46,6 +46,7 @@ return [
         ['file' => 'truncate.js', 'priority' => 340],
         ['file' => 'trigger_print.js', 'priority' => 350],
         ['file' => 'observer_manager.js', 'priority' => 360],
+        ['file' => 'openurl.js', 'priority' => 370],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -74,6 +75,7 @@ return [
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
+            'VuFind\View\Helper\Bootstrap3\BulkAction' => 'VuFind\View\Helper\Root\BulkActionFactory',
             'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -81,6 +83,7 @@ return [
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
+            'bulkAction' => 'VuFind\View\Helper\Bootstrap3\BulkAction',
             'copyToClipboardButton' => 'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton',
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
@@ -160,9 +163,9 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
-            'facet-collapse' => 'Unicode:25BD',
+            'facet-collapse' => 'FontAwesome:caret-down',
             'facet-exclude' => 'FontAwesome:times',
-            'facet-expand' => 'Unicode:25B6',
+            'facet-expand' => 'FontAwesome:caret-right',
             'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',
@@ -216,6 +219,11 @@ return [
             'format-videocassette' => 'FontAwesome:video-camera',
             'format-videodisc' => 'FontAwesome:laptop',
             'format-videoreel' => 'FontAwesome:video-camera',
+            'hierarchy-collapse' => 'Alias:facet-collapse',
+            'hierarchy-collection' => 'FontAwesome:folder-open-o',
+            'hierarchy-expand' => 'Alias:facet-expand',
+            'hierarchy-noncollapsible' => 'Alias:facet-noncollapsible',
+            'hierarchy-record' => 'FontAwesome:file-o',
             'hierarchy-tree' => 'FontAwesome:sitemap',
             'lightbox-close' => 'FontAwesome:times',
             'more' => 'FontAwesome:chevron-circle-right',

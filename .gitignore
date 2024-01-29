@@ -20,7 +20,7 @@ env.bat
 env.sh
 import/solrmarc.log*
 lessphp_*.list
-module/VuFind/tests/.phpunit.result.cache
+module/VuFind/tests/.phpunit*
 node_modules
 package-lock.json
 public/swagger-ui

@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -31,6 +33,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
+use VuFindTest\Feature\SearchFacetFilterTrait;
 
 /**
  * Mink test class to test advanced search.
@@ -38,12 +41,15 @@ use Behat\Mink\Session;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
  */
 class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchFacetFilterTrait;
+
     /**
      * Go to the advanced search page.
      *
@@ -133,13 +139,13 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#search1_0 .adv-term-remove:not(.hidden)');
 
         // Enter search for bride of the tomb
-        $this->findCss($page, '#search_lookfor0_0')->setValue('bride');
-        $this->findCss($page, '#search_lookfor0_1')->setValue('tomb');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'bride');
+        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'tomb');
         $this->findCss($page, '#search_type0_1')->selectOption('Title');
-        $this->findCss($page, '#search_lookfor0_2')->setValue('garbage');
-        $this->findCss($page, '#search_lookfor0_3')->setValue('1883');
+        $this->findCssAndSetValue($page, '#search_lookfor0_2', 'garbage');
+        $this->findCssAndSetValue($page, '#search_lookfor0_3', '1883');
         $this->findCss($page, '#search_type0_3')->selectOption('year');
-        $this->findCss($page, '#search_lookfor1_0')->setValue('miller');
+        $this->findCssAndSetValue($page, '#search_lookfor1_0', 'miller');
 
         // Submit search form
         $this->findCss($page, '[type=submit]')->press();
@@ -211,9 +217,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#group1');
 
         // Enter search criteria
-        $this->findCss($page, '#search_lookfor0_0')->setValue('building:"journals.mrc"');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'building:"journals.mrc"');
         $this->findCss($page, '#search_type1_0')->selectOption('Title');
-        $this->findCss($page, '#search_lookfor1_0')->setValue('rational');
+        $this->findCssAndSetValue($page, '#search_lookfor1_0', 'rational');
         $this->findCss($page, '#search_bool1')->selectOption('NOT');
 
         // Submit search form
@@ -225,7 +231,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
         $this->assertMatchesRegularExpression(
-            '/Showing 1 - 7 results of 7, query time: .*/',
+            '/Showing 1 - 7 results of 7/',
             trim($this->findCss($page, '.search-stats')->getText())
         );
     }
@@ -242,7 +248,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Enter search criteria
         $this->findCss($page, '#search_type0_0')->selectOption('Title');
-        $this->findCss($page, '#search_lookfor0_0')->setValue('rational');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'rational');
         $this->findCss($page, '#search_bool0')->selectOption('NOT');
 
         // Submit search form
@@ -254,7 +260,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
         preg_match(
-            '/Showing \d+ - \d+ results of (\d+), query time: .*/',
+            '/Showing \d+ - \d+ results of (\d+)/',
             trim($this->findCss($page, '.search-stats')->getText()),
             $matches
         );
@@ -320,5 +326,68 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
             $this->findCss($page, '#limit_format')->getText()
         );
+    }
+
+    /**
+     * Test that hierarchical facet filters work properly.
+     *
+     * @return void
+     */
+    public function testHierarchicalFacetsFilters(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results' => [
+                        'hierarchical_facet_str_mv' => 'hierarchy',
+                    ],
+                    'SpecialFacets' => [
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                    'Advanced' => [
+                        'hierarchical_facet_str_mv' => 'Hierarchy',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Check hierarchy filter:
+        $filter = $this->findCss($page, '#limit_hierarchical_facet_str_mv');
+        $options = [];
+        foreach ($filter->findAll('css', 'option') as $option) {
+            $options[$option->getValue()] = $option->getHtml();
+        }
+        $expected = [
+            '~hierarchical_facet_str_mv:"0/level1a/"' => 'level1a',
+            '~hierarchical_facet_str_mv:"1/level1a/level2a/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2a',
+            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3a/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3a',
+            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3b/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3b',
+            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3d/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3d',
+            '~hierarchical_facet_str_mv:"1/level1a/level2b/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2b',
+            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3c/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3c',
+            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3e/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3e',
+            '~hierarchical_facet_str_mv:"0/level1z/"' => 'level1z',
+            '~hierarchical_facet_str_mv:"1/level1z/level2y/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2y',
+            '~hierarchical_facet_str_mv:"2/level1z/level2y/level3g/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3g',
+            '~hierarchical_facet_str_mv:"1/level1z/level2z/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2z',
+            '~hierarchical_facet_str_mv:"2/level1z/level2z/level3z/"'
+                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3z',
+        ];
+
+        $this->assertEquals($expected, $options);
+
+        // Select second options, do a search and verify that the filter is active:
+        $this->clickCss($page, '#limit_hierarchical_facet_str_mv option', null, 1);
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertAppliedFilter($page, 'level1a/level2a');
     }
 }

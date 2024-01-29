@@ -37,6 +37,7 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
+use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
@@ -515,11 +516,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Set a value within an element selected via CSS; retry if set fails
      * due to browser bugs.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param string  $value    Value to set
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page        Page element
+     * @param string  $selector    CSS selector
+     * @param string  $value       Value to set
+     * @param int     $timeout     Wait timeout for CSS selection (in ms)
+     * @param int     $retries     Retry count for set loop
+     * @param bool    $verifyValue Whether to verify that the value was written
      *
      * @return mixed
      */
@@ -528,33 +530,35 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $selector,
         $value,
         $timeout = null,
-        $retries = 6
+        $retries = 6,
+        $verifyValue = true
     ) {
         $timeout ??= $this->getDefaultTimeout();
-        $field = $this->findCss($page, $selector, $timeout, 0);
-
-        $session = $this->getMinkSession();
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
-        );
-        $results = $page->findAll('css', $selector);
-        $this->assertIsArray($results, "Selector not found: $selector");
-        $field = $results[0];
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
         for ($i = 1; $i <= $retries; $i++) {
-            $field->setValue($value);
+            try {
+                $field = $this->findCss($page, $selector, $timeout, 0);
+                $field->setValue($value);
+                if (!$verifyValue) {
+                    return;
+                }
 
-            // Did it work? If so, we're done and can leave....
-            if ($field->getValue() === $value) {
-                return;
+                // Did it work? If so, we're done and can leave....
+                if ($field->getValue() === $value) {
+                    return;
+                }
+                $this->logWarning(
+                    'RETRY setValue after failure in ' . $this->getTestName()
+                    . " (try $i)."
+                );
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY setValue after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
             }
-            $this->logWarning(
-                'RETRY setValue after failure in ' . $this->getTestName()
-                . " (try $i)."
-            );
 
             $this->snooze();
         }
@@ -599,6 +603,48 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait for a callback to return the expected value
      *
+     * @param mixed    $expected    Expected value
+     * @param callable $callback    Callback used to get the results
+     * @param callable $compareFunc Callback used to compare the results
+     * @param callable $assertion   Assertion to make
+     * @param int      $timeout     Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertWithTimeout(
+        $expected,
+        callable $callback,
+        callable $compareFunc,
+        callable $assertion,
+        int $timeout = null
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+        $result = null;
+        $startTime = microtime(true);
+        $exception = null;
+        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
+            try {
+                $result = $callback();
+                if (call_user_func($compareFunc, $expected, $result)) {
+                    // Ignore any previous exception since the callback succeeded eventually:
+                    $exception = null;
+                    break;
+                }
+            } catch (\Exception $e) {
+                // Defer throwing the exception:
+                $exception = $e;
+            }
+            usleep(100000);
+        }
+        if ($exception) {
+            throw $exception;
+        }
+        call_user_func($assertion, $expected, $result);
+    }
+
+    /**
+     * Wait for a callback to return the expected value
+     *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
      * @param int      $timeout  Wait timeout (in ms)
@@ -610,17 +656,40 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         int $timeout = null
     ) {
-        $timeout ??= $this->getDefaultTimeout();
-        $result = null;
-        $startTime = microtime(true);
-        while ((microtime(true) - $startTime) * 1000 <= $timeout) {
-            $result = $callback();
-            if ($result === $expected) {
-                break;
-            }
-            usleep(100000);
-        }
-        $this->assertEquals($expected, $result);
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === $result;
+            },
+            [$this, 'assertEquals'],
+            $timeout
+        );
+    }
+
+    /**
+     * Wait for a callback to return a string containing the expected value
+     *
+     * @param string   $expected Expected value
+     * @param callable $callback Callback
+     * @param int      $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertStringContainsStringWithTimeout(
+        string $expected,
+        callable $callback,
+        int $timeout = null
+    ) {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function (string $expected, string $result): bool {
+                return str_contains($result, $expected);
+            },
+            [$this, 'assertStringContainsString'],
+            $timeout
+        );
     }
 
     /**
@@ -637,9 +706,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         if ($handler) {
-            $this->findCss($page, '#searchForm_type')->setValue($handler);
+            $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);

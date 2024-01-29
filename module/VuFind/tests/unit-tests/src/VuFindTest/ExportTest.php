@@ -43,6 +43,8 @@ use VuFind\Export;
  */
 class ExportTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test options using legacy (deprecated) configuration.
      *
@@ -311,9 +313,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $view->expects($this->exactly(2))->method('plugin')
-            ->withConsecutive(['serverurl'], ['url'])
-            ->willReturnOnConsecutiveCalls($serverUrl, $url);
+        $this->expectConsecutiveCalls($view, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
         $this->assertEquals(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
             $this->getExport()->getBulkUrl($view, 'foo', [1, 2, 3])

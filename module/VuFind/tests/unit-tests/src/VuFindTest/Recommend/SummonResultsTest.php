@@ -56,6 +56,7 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
+            ->disableOriginalConstructor()
             ->getMock();
         $obj = new SummonResults($runner, $configManager);
         $this->assertSame('Summon', $method->invoke($obj));
