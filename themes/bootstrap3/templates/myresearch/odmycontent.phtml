@@ -17,7 +17,7 @@
     <p class="od_help"><?=$this->icon('overdrive-help') ?>
       <?=$this->translate('od_mycontent_help', ['%%url%%' => $this->config()->get('Overdrive')->Overdrive->ODHelpLink]); ?></p>
   <?php endif;?>
-      
+
   <?=$this->flashmessages()?>
 
   <h3><?=$this->transEsc('od_loans')?></h3>
@@ -39,7 +39,8 @@
           if ($resource['checkout']->isMagazine):
               $od_id = $resource['checkout']->reserveId;
               $edition = $resource['checkout']->metadata->edition;
-              $cover = "<a href='{$this->recordLinker()->getUrl($resource['record'])}'><img alt='Cover Image' data-linkpreview='true' class='recordcover' src='{$resource['checkout']->metadata->images->thumbnail->href}'></a>";
+              $coverAlt = $this->transEscAttr('Cover Image');
+              $cover = "<a href='{$this->recordLinker()->getUrl($resource['record'])}'><img alt='$coverAlt' data-linkpreview='true' class='recordcover' src='{$resource['checkout']->metadata->images->thumbnail->href}'></a>";
 
           else:
             $edition = '';
@@ -68,7 +69,7 @@
           </h4>
 
           <div class="od_edition"><?=$edition?></div>
-          
+
           <?php $listAuthors = $resource['record']->getPrimaryAuthors() ?>
           <?php if (!empty($listAuthors)): ?>
             <?=$this->transEsc('by')?>:
@@ -170,24 +171,24 @@
 
                 <div class="pull-right">
                   <div class="btn-group">
-                    <button class="btn btn-primary " 
-                            type="button" id="dropdownMenu1" 
-                            data-toggle="dropdown" 
+                    <button class="btn btn-primary "
+                            type="button" id="dropdownMenu1"
+                            data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="true">
                                 <?=$this->transEsc('od_but_edit_hold')?> <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                      <li><a class="cancelhold" 
-                            data-lightbox title="<?=$this->transEsc('request_place_text')?>" 
+                      <li><a class="cancelhold"
+                            data-lightbox title="<?=$this->transEsc('request_place_text')?>"
                             href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"?>">
-                              <i class="fa fa-minus-circle" aria-hidden="true"></i> 
+                              <i class="fa fa-minus-circle" aria-hidden="true"></i>
                               <?=$this->transEsc('od_but_cancel_hold')?></a>
                       </li>
 
-                      <li><a class="editEmail" 
-                            data-lightbox title="{$this->transEsc('edit_hold_email')}" 
+                      <li><a class="editEmail"
+                            data-lightbox title="{$this->transEsc('edit_hold_email')}"
                             href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldEmailConfirm"?>">
-                              <i class="fa fa-edit" aria-hidden="true"></i> 
+                              <i class="fa fa-edit" aria-hidden="true"></i>
                               <?= $this->transEsc('od_edit_hold_email')?></a>
                       </li>
 
