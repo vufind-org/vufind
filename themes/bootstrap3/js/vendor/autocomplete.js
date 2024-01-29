@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.8) (2023-08-31) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.8) (2024-01-29) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
