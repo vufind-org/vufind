@@ -368,12 +368,7 @@ class MyResearchController extends AbstractBase
     public function completeLoginAction()
     {
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->clearFollowupUrl();
-            $this->followup()->store();
-            if ($si = $this->getSessionInitiator()) {
-                return $this->redirect()->toUrl($si);
-            }
-            return $this->forwardTo('MyResearch', 'Login');
+            return $this->forceLogin('');
         }
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
