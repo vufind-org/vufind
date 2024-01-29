@@ -21,7 +21,6 @@
   padding: 1rem;
   padding-right: 0;
   border-bottom: 1px solid @moon-gray;
-  font-size: @reduced-font-size;
 
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
@@ -36,13 +35,12 @@
   .callnumAndLocation {
     margin-top: .25rem;
     margin-bottom: .25rem;
-    font-size: 12px;
+    font-size: @reduced-font-size;
   }
   .format,
   .label {
     display: inline-block;
     padding: 4px .75rem;
-    font-size: 11px;
   }
   .savedLists {
     margin-bottom: 0;
@@ -126,13 +124,10 @@
   .result .cart-link-label { display: inline; }
 }
 
-.top-facets,
-.search-header { font-size: @reduced-font-size; }
 .search-header {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-#searchForm { font-size: @reduced-font-size; }
 #searchForm_lookfor,
 #searchForm_type { margin-bottom: 4px; }
 
@@ -173,7 +168,7 @@
   width: 100%;
   padding: .25rem .5rem;
   padding-left: 1rem;
-  font-size: 10px;
+  font-size: @min-font-size;
   color: #fff;
   background-color: rgba(0,0,0,.3);
   content: "Photo by Paul Gilmore on Unsplash";

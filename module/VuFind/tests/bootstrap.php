@@ -56,5 +56,5 @@ if (!defined('LOCAL_OVERRIDE_DIR')) {
     throw new \Exception('LOCAL_OVERRIDE_DIR must be defined');
 }
 if (!file_exists(LOCAL_OVERRIDE_DIR)) {
-    mkdir(LOCAL_OVERRIDE_DIR, 0777, true);
+    mkdir(LOCAL_OVERRIDE_DIR, 0o777, true);
 }

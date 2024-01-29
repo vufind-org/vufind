@@ -50,6 +50,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Test retrieving a record (not supported).
@@ -186,13 +187,15 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $expectedParams0 = ['search' => 'baz', 'widget_type' => '1'];
         $expectedParams1 = ['search' => 'fallback', 'widget_type' => '1'];
-        $conn->expects($this->exactly(2))
-            ->method('query')
-            ->withConsecutive([$expectedParams0, 0, 10], [$expectedParams1, 0, 10])
-            ->willReturnOnConsecutiveCalls(
+        $this->expectConsecutiveCalls(
+            $conn,
+            'query',
+            [[$expectedParams0, 0, 10], [$expectedParams1, 0, 10]],
+            [
                 ['recordCount' => 0, 'documents' => []],
-                ['recordCount' => 0, 'documents' => []]
-            );
+                ['recordCount' => 0, 'documents' => []],
+            ]
+        );
         $back = new Backend($conn, null, 'fallback');
         $back->search(new Query('baz'), 0, 10);
     }

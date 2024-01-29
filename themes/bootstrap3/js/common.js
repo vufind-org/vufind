@@ -362,11 +362,12 @@ var VuFind = (function VuFind() {
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
-  if (value) {
-    return $('<div />').text(value).html();
-  } else {
-    return '';
-  }
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**
@@ -538,10 +539,23 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
+  let numberOfSelected = document.querySelectorAll('.checkbox-select-item:checked').length;
+
+  if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
+  if (event.originalEvent !== undefined) {
+    let limit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfSelected > limit) {
+      VuFind.lightbox.alert(
+        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
+        'danger'
+      );
+      return false;
+    }
+  }
+
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;

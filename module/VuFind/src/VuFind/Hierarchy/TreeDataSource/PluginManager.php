@@ -29,8 +29,6 @@
 
 namespace VuFind\Hierarchy\TreeDataSource;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Hierarchy tree data source plugin manager
  *
@@ -50,7 +48,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'solr' => Solr::class,
         'search2' => Search2::class,
-        'xmlfile' => XMLFile::class,
     ];
 
     /**
@@ -61,7 +58,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         Solr::class => SolrFactory::class,
         Search2::class => Search2Factory::class,
-        XMLFile::class => InvokableFactory::class,
     ];
 
     /**

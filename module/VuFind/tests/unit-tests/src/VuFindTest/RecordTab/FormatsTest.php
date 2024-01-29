@@ -60,7 +60,7 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Not Enabed' => [false, false], 'Enabled' => [true, true]];
     }

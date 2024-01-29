@@ -296,7 +296,7 @@ class Manager
                 // convert umask from string
                 $umask = octdec($opts['umask']);
                 // validate
-                if ($umask & 0700) {
+                if ($umask & 0o700) {
                     throw new \Exception(
                         'Invalid umask: ' . $opts['umask']
                         . '; need permission to execute, read and write by owner'
@@ -308,7 +308,7 @@ class Manager
                 $dir_perm = octdec($opts['dir_permission']);
             } else {
                 // 0777 is chmod default, use if dir_permission is not explicitly set
-                $dir_perm = 0777;
+                $dir_perm = 0o777;
             }
             // Make sure cache parent directory and directory itself exist:
             $parentDir = dirname($dirName);
