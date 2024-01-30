@@ -54,8 +54,11 @@ class AjaxController extends AbstractActionController implements TranslatorAware
      */
     public function __construct(PluginManager $am)
     {
-        // Add notices to a key in the output
-        set_error_handler([static::class, 'storeError']);
+        // Prevent errors, notices etc. from being displayed so that they don't mess
+        // with the output (only in production mode):
+        if ('production' === APPLICATION_ENV) {
+            ini_set('display_errors', '0');
+        }
         $this->ajaxManager = $am;
     }
 
