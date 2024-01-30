@@ -219,11 +219,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        $snoozeMultiplier = $this->getSnoozeMultiplier();
         if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
         usleep(1000000 * $secs * $snoozeMultiplier);
+    }
+
+    /**
+     * Get the snooze multiplier.
+     *
+     * @return float
+     */
+    protected function getSnoozeMultiplier(): float
+    {
+        return floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
     }
 
     /**

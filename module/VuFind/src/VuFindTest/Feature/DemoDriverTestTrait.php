@@ -158,7 +158,10 @@ trait DemoDriverTestTrait
                 'updateHolds' => 0,
                 'purgeTransactionHistory' => 0,
             ],
-            'StaticHoldings' => [$bibId => json_encode([$this->getFakeItem()])],
+            'StaticHoldings' => [
+                $bibId => json_encode([$this->getFakeItem()]),
+                $bibId2 => json_encode([$this->getFakeItem()]),
+            ],
             'Users' => ['catuser' => 'catpass'],
             'TransactionHistory' => [
                 'enabled' => true,

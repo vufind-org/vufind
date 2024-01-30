@@ -201,12 +201,15 @@ class MyResearchController extends AbstractBase
                 if (!$this->getAuthManager()->isLoggedIn()) {
                     $this->getAuthManager()->login($this->getRequest());
                     // Return early to avoid unnecessary processing if we are being
-                    // called from login lightbox and don't have a followup action.
+                    // called from login lightbox and don't have a followup action or
+                    // followup is set to referrer.
                     if (
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
-                        && !$this->hasFollowupUrl()
+                        && (!$this->hasFollowupUrl()
+                        || $this->followup()->retrieve('isReferrer') === true)
                     ) {
+                        $this->clearFollowupUrl();
                         return $this->getRefreshResponse();
                     }
                 }
@@ -349,11 +352,10 @@ class MyResearchController extends AbstractBase
                 : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
-        // Set followup only if we're not in lightbox since it has the short-circuit
-        // for reloading current page:
-        if (!$this->inLightbox()) {
-            $this->setFollowupUrlToReferer();
-        }
+        // Set followup with the isReferrer flag so that the post-login process
+        // can decide whether to use it:
+        $this->setFollowupUrlToReferer(true, ['isReferrer' => true]);
+
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }

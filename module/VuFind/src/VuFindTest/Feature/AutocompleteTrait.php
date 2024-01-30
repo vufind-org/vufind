@@ -53,18 +53,21 @@ trait AutocompleteTrait
     public function getAndAssertFirstAutocompleteValue(Element $page, string $text): Element
     {
         $tries = 0;
+        $snoozeTime = 0;
         $loadMsg = 'Loading…';
         do {
             $acItem = $this->findCss($page, '.autocomplete-results .ac-item');
             $acItemText = $acItem->getText();
             if (strcasecmp($acItemText, $loadMsg) === 0) {
                 $this->snooze(0.5);
+                $snoozeTime += 0.5 * $this->getSnoozeMultiplier();
             }
             $tries++;
         } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
         $this->assertEquals(
             $text,
-            $this->findCss($page, '.autocomplete-results .ac-item')->getText()
+            $this->findCss($page, '.autocomplete-results .ac-item')->getText(),
+            "Failed after $tries tries, with $snoozeTime seconds snooze time."
         );
         return $acItem;
     }
