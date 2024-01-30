@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ProxyManager configuration factory.
+ * MyResearch controller factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Service;
+namespace VuFind\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * ProxyManager configuration factory.
+ * MyResearch controller factory.
  *
  * @category VuFind
- * @package  Service
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ProxyConfigFactory implements FactoryInterface
+class MyResearchControllerFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -66,15 +65,14 @@ class ProxyConfigFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = new $requestedName();
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $dir = $cacheManager->getCacheDir() . 'objects';
-        $config->setProxiesTargetDir($dir);
-        if (APPLICATION_ENV != 'development') {
-            spl_autoload_register($config->getProxyAutoloader());
-        }
-        return $config;
+        $session = new \Laminas\Session\Container(
+            'cart_followup',
+            $container->get(\Laminas\Session\SessionManager::class)
+        );
+        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $export = $container->get(\VuFind\Export::class);
+        return parent::__invoke($container, $requestedName, [$session, $configLoader, $export]);
     }
 }

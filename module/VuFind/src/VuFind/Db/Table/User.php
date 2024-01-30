@@ -139,7 +139,10 @@ class User extends Gateway
      */
     public function getByUsername($username, $create = true)
     {
-        $row = $this->select(['username' => $username])->current();
+        $callback = function ($select) use ($username) {
+            $select->where->literal('lower(username) = lower(?)', [$username]);
+        };
+        $row = $this->select($callback)->current();
         return ($create && empty($row))
             ? $this->createRowForUsername($username) : $row;
     }
