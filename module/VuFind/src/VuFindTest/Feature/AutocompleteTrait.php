@@ -64,7 +64,8 @@ trait AutocompleteTrait
         } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
         $this->assertEquals(
             $text,
-            $this->findCss($page, '.autocomplete-results .ac-item')->getText()
+            $this->findCss($page, '.autocomplete-results .ac-item')->getText(),
+            "Failed after $tries tries."
         );
         return $acItem;
     }
