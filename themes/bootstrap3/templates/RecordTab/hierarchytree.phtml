@@ -6,7 +6,7 @@
 ?>
 <div class="hierarchy-tree-container js-hierarchy-tree-container">
   <?php if (count($hierarchyTreeList) > 0): ?>
-    <div class="hierarchy-tree-selector">
+    <div class="hierarchy-tree-selector<?=count($hierarchyTreeList) === 1 ? ' hierarchy-tree-selector__single' : ''?>">
       <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
         <?php if ($activeTree == $hierarchy): ?>
           <?=$this->icon('hierarchy-tree') ?>

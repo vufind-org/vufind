@@ -1,4 +1,3 @@
-@reduced-font-size: 14px;
 @img-path: "../../sandal/images/";
 
 @banner-height: 60px;
@@ -8,6 +7,14 @@
 @result-checkbox-width: 28px;
 @result-checkbox-height: 80px;
 @result-sm-icon-size: 1.5rem;
+
+@font-size-base: 16px;
+
+@reduced-font-size: (@font-size-base - 2);
+@min-font-size: (@font-size-base - 6);
+
+// Increase base line height to accommodate 16px font (affect at least Chrome on Windows):
+@line-height-base: 1.5;
 
 /* ------ Mixins ------ */
 .full-width() { // Break out of the container

@@ -30,6 +30,7 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use VuFind\Db\Row\LoginToken as LoginTokenRow;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
@@ -84,7 +85,7 @@ class LoginToken extends Gateway
         string $platform = '',
         int $expires = 0,
         string $sessionId = ''
-    ) {
+    ): LoginTokenRow {
         $row = $this->createRow();
         $row->token = hash('sha256', $token);
         $row->series = $series;
@@ -106,21 +107,20 @@ class LoginToken extends Gateway
      * @return mixed
      * @throws LoginTokenException
      */
-    public function matchToken(array $token)
+    public function matchToken(array $token): ?LoginTokenRow
     {
         $row = $this->getBySeries($token['series'], $token['user_id']);
         if ($row && hash_equals($row['token'], hash('sha256', $token['token']))) {
             if (time() > $row['expires']) {
                 $row->delete();
-                return false;
+                return null;
             }
             return $row;
         } elseif ($row) {
-            // Matching series and user id found, but token does not match
-            // throw exception
+            // Matching series and user id found, but token does not match - throw exception
             throw new LoginTokenException('Token does not match');
         }
-        return false;
+        return null;
     }
 
     /**
@@ -131,7 +131,7 @@ class LoginToken extends Gateway
      *
      * @return void
      */
-    public function deleteBySeries(string $series, int $userId)
+    public function deleteBySeries(string $series, int $userId): void
     {
         $this->delete(['user_id' => $userId, 'series' => $series]);
     }
@@ -143,7 +143,7 @@ class LoginToken extends Gateway
      *
      * @return void
      */
-    public function deleteByUserId(int $userId)
+    public function deleteByUserId(int $userId): void
     {
         $this->delete(['user_id' => $userId]);
     }
@@ -153,15 +153,15 @@ class LoginToken extends Gateway
      *
      * @param int $userId User identifier
      *
-     * @return \VuFind\Db\Row\LoginToken
+     * @return array
      */
-    public function getByUserId(int $userId)
+    public function getByUserId(int $userId): array
     {
         $callback = function ($select) use ($userId) {
             $select->where->equalTo('user_id', $userId);
             $select->order('last_login DESC');
         };
-        return $this->select($callback);
+        return iterator_to_array($this->select($callback));
     }
 
     /**
@@ -170,9 +170,9 @@ class LoginToken extends Gateway
      * @param string $series Series identifier
      * @param int    $userId User identifier
      *
-     * @return LoginToken
+     * @return ?LoginTokenRow
      */
-    public function getBySeries(string $series, int $userId)
+    public function getBySeries(string $series, int $userId): ?LoginTokenRow
     {
         return $this->select(['user_id' => $userId, 'series' => $series])->current();
     }
@@ -182,7 +182,7 @@ class LoginToken extends Gateway
      *
      * @return void
      */
-    public function deleteExpired()
+    public function deleteExpired(): void
     {
         $callback = function ($select) {
             $select->where->lessThanOrEqualTo('expires', time());
