@@ -852,7 +852,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function logWarning(string $consoleMsg, string $logMsg = ''): void
     {
-        echo PHP_EOL . $consoleMsg . PHP_EOL;
+        file_put_contents('php://stderr', PHP_EOL . $consoleMsg . PHP_EOL);
         if ($logMsg) {
             error_log($logMsg);
         }
