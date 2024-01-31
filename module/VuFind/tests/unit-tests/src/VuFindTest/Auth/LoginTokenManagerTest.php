@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
+use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use Laminas\Session\SessionManager;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
@@ -84,7 +85,6 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testTokenLoginInvalidToken()
     {
-        $user = $this->getMockUser();
         $cookieManager = $this->getCookieManager(
             [
               'loginToken' => '222;0;111',
@@ -99,7 +99,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable->expects($this->once())->method('matchToken')
             ->will($this->throwException(new LoginTokenException()));
         $tokenTable->expects($this->once())->method('getByUserId')
-            ->willReturn($mockToken);
+            ->willReturn([$mockToken]);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
@@ -111,17 +111,15 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testTokenLoginFail()
     {
-        $user = $this->getMockUser();
         $userTable = $this->getMockUserTable();
         $cookieManager = $this->getCookieManager(
             [
               'loginToken' => '222;0;111',
             ]
         );
-        $token = $this->getMockLoginToken();
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->willReturn(false);
+            ->willReturn(null);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
@@ -171,6 +169,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ['user_id', 0],
             ['series', '222'],
             ['expires', 2],
+            ['last_session_id', '333'],
         ];
         $token = $this->getMockBuilder(\VuFind\Db\Row\LoginToken::class)
             ->disableOriginalConstructor()
@@ -225,7 +224,11 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     protected function getLoginToken($cookieManager, $tokenTable, $userTable)
     {
         $config = new Config([]);
-        $sessionManager = new SessionManager();
+        $saveHandler = $this->createMock(SaveHandlerInterface::class);
+        $sessionManager = $this->getMockBuilder(SessionManager::class)->getMock();
+        $sessionManager->expects($this->any())
+            ->method('getSaveHandler')
+            ->willReturn($saveHandler);
         $mailer = $this->getMockBuilder(\VuFind\Mailer\Mailer::class)
             ->disableOriginalConstructor()
             ->getMock();
