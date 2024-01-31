@@ -1033,7 +1033,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // and we have run out of retries ($this->retriesLeft is set by the
         // AutoRetryTrait):
         if (
-            $this->hasFailed()
+            $this->status()->isFailure()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
             $filename = $this->getName() . '-' . $this->retriesLeft . '-'
@@ -1061,7 +1061,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
 
         $htmlValidationException = null;
-        if (!$this->hasFailed()) {
+        if (!$this->status()->isFailure()) {
             try {
                 $this->validateHtml();
             } catch (\Exception $e) {
