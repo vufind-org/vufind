@@ -31,7 +31,7 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Exception;
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
 use VuFindSearch\Backend\AbstractBackend;
