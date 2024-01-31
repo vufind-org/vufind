@@ -209,6 +209,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $itemStatusMappings = [
         'Item::Held' => 'On Hold',
         'Item::Waiting' => 'On Holdshelf',
+        'Item::Recalled' => 'Recalled',
     ];
 
     /**
