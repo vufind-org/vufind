@@ -1023,19 +1023,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Standard teardown method.
+     * Hook for unsuccessful test runs.
+     *
+     * @param \Throwable $t Exception caused by test failure.
      *
      * @return void
+     * @throws \Throwable
      */
-    public function tearDown(): void
+    protected function onNotSuccessfulTest(\Throwable $t): void
     {
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
         // AutoRetryTrait):
-        if (
-            $this->hasFailed()
-            && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
-        ) {
+        if ($imageDir = getenv('VUFIND_SCREENSHOT_DIR')) {
             $filename = $this->getName() . '-' . $this->retriesLeft . '-'
                 . hrtime(true);
 
@@ -1059,7 +1059,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 file_put_contents($imageDir . '/' . $filename . '.png', $imageData);
             }
         }
+        parent::onNotSuccessfulTest($t);
+    }
 
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
         $htmlValidationException = null;
         if (!$this->hasFailed()) {
             try {
