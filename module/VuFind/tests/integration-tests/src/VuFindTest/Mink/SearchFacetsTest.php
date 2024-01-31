@@ -156,7 +156,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit * 2, $items); // maintain number of items
+        $this->assertCount($limit, $items); // reload, resetting to just one page of results
         // now back to title, to see if loading a second page works
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
