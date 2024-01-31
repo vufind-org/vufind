@@ -159,6 +159,59 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testLoginWithSessionSettings().
+     *
+     * @return array
+     */
+    public static function sessionSettingsProvider(): array
+    {
+        return [
+            'unencrypted file' => ['File', false],
+            'encrypted file' => ['File', true],
+            'unencrypted database' => ['Database', false],
+            'encrypted database' => ['Database', true],
+        ];
+    }
+
+    /**
+     * Test that we can log in successfully using various session settings.
+     *
+     * @param string $type   Session handler to use
+     * @param bool   $secure Should we enable secure session mode?
+     *
+     * @return void
+     *
+     * @depends testChangePassword
+     *
+     * @dataProvider sessionSettingsProvider
+     */
+    public function testLoginWithSessionSettings(string $type, bool $secure): void
+    {
+        // Adjust session settings:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Session' => compact('type', 'secure'),
+                ],
+            ]
+        );
+
+        // Go to profile page:
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Log in
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'username1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm that we logged in based on the presence of a "change password" link.
+        $this->findAndAssertLink($page, 'Change Password');
+    }
+
+    /**
      * Test that changing email is disabled by default.
      *
      * @depends testChangePassword
@@ -302,7 +355,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Change the default and verify:
-        $this->findCss($page, '#home_library')->setValue('B');
+        $this->findCssAndSetValue($page, '#home_library', 'B');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
@@ -312,7 +365,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Change to "Always ask me":
-        $this->findCss($page, '#home_library')->setValue(' ** ');
+        $this->findCssAndSetValue($page, '#home_library', ' ** ');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -322,7 +375,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNull($userTable->getByUsername('username2')->home_library);
 
         // Back to default:
-        $this->findCss($page, '#home_library')->setValue('');
+        $this->findCssAndSetValue($page, '#home_library', '');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals(

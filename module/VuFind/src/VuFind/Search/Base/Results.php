@@ -662,6 +662,24 @@ abstract class Results
     }
 
     /**
+     * Add settings to a minified object.
+     *
+     * @param \VuFind\Search\Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function minify(&$minified): void
+    {
+        $minified->id = $this->getSearchId();
+        $minified->i  = $this->getStartTime();
+        $minified->s  = $this->getQuerySpeed();
+        $minified->r  = $this->getResultTotal();
+        $minified->ex = $this->getExtraData();
+
+        $this->getParams()->minify($minified);
+    }
+
+    /**
      * Restore settings from a minified object found in the database.
      *
      * @param \VuFind\Search\Minified $minified Minified Search Object
@@ -675,6 +693,8 @@ abstract class Results
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
         $this->setExtraData($minified->ex);
+
+        $this->getParams()->deminify($minified);
     }
 
     /**

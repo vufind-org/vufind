@@ -46,6 +46,7 @@ use VuFindConsole\Command\Util\IndexReservesCommand;
 class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Get mock ILS connection.
@@ -204,13 +205,17 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     public function testMissingData()
     {
         $ils = $this->getMockIlsConnection();
-        $ils->expects($this->exactly(4))->method('__call')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
                 ['getInstructors'],
                 ['getCourses'],
                 ['getDepartments'],
-                ['findReserves']
-            )->willReturn([]);
+                ['findReserves'],
+            ],
+            []
+        );
         $command = $this->getCommand($this->getMockSolrWriter(), $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -255,18 +260,22 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst3',
             ],
         ];
-        $ils->expects($this->exactly(4))->method('__call')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
                 ['getInstructors'],
                 ['getCourses'],
                 ['getDepartments'],
-                ['findReserves']
-            )->willReturnOnConsecutiveCalls(
+                ['findReserves'],
+            ],
+            [
                 $instructors,
                 $courses,
                 $departments,
-                $reserves
-            );
+                $reserves,
+            ]
+        );
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
             ->with($this->equalTo('SolrReserves'));

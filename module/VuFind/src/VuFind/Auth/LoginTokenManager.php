@@ -32,8 +32,11 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use Laminas\Session\SessionManager;
+use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
+
+use function is_array;
 
 /**
  * Class LoginTokenManager
@@ -98,6 +101,20 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $viewRenderer = null;
 
     /**
+     * Has the theme been initialized yet?
+     *
+     * @var bool
+     */
+    protected $themeInitialized = false;
+
+    /**
+     * User that needs to receive a warning (or null for no warning needed)
+     *
+     * @var ?User
+     */
+    protected $userToWarn = null;
+
+    /**
      * LoginToken constructor.
      *
      * @param Config                                   $config          Configuration
@@ -149,11 +166,32 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
                 $this->deleteUserLoginTokens($user->id);
-                $this->sendLoginTokenWarningEmail($user);
+                // We can't send an email until after the theme has initialized;
+                // if it's not ready yet, save the user for later.
+                if ($this->themeInitialized) {
+                    $this->sendLoginTokenWarningEmail($user);
+                } else {
+                    $this->userToWarn = $user;
+                }
                 return null;
             }
         }
         return $user;
+    }
+
+    /**
+     * Event hook -- called after the theme has initialized.
+     *
+     * @return void
+     */
+    public function themeIsReady(): void
+    {
+        $this->themeInitialized = true;
+        // If we have queued a user warning, we can send it now!
+        if ($this->userToWarn) {
+            $this->sendLoginTokenWarningEmail($this->userToWarn);
+            $this->userToWarn = null;
+        }
     }
 
     /**
@@ -174,12 +212,15 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $browser = '';
         $platform = '';
         try {
-            $userInfo = get_browser(null, true) ?? [];
-            $browser = $userInfo['browser'];
-            $platform = $userInfo['platform'];
+            // Suppress warnings here; we'll throw an exception below if browscap.ini is not set up correctly.
+            $userInfo = @get_browser(null, true);
         } catch (\Exception $e) {
+        }
+        if (!is_array($userInfo ?? null)) {
             throw new AuthException('Problem with browscap.ini');
         }
+        $browser = $userInfo['browser'] ?? '';
+        $platform = $userInfo['platform'] ?? '';
         if ($expires === 0) {
             $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
             $expires = time() + $lifetime * 60 * 60 * 24;

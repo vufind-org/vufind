@@ -164,6 +164,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected $renewalBlockMappings = [
         'too_soon' => 'Cannot renew yet',
+        'auto_too_soon' => 'ILSMessages::will_auto_renew',
         'onsite_checkout' => 'Copy has special circulation',
         'on_reserve' => 'renew_item_requested',
         'too_many' => 'renew_item_limit',
