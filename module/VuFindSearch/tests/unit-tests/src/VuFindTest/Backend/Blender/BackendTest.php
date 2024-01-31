@@ -1245,9 +1245,7 @@ class BackendTest extends TestCase
             ->method('call')
             ->will($this->returnCallback($callback));
 
-        $cache = $this->getMockForAbstractClass(
-            \Laminas\Cache\Storage\Adapter\AbstractAdapter::class
-        );
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $container = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         $params = [
