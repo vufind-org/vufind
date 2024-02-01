@@ -238,7 +238,18 @@ var VuFind = (function VuFind() {
     // Fix any inline script nonces
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
-
+  
+  function setInnerHtml(elm, html) {
+    elm.innerHTML = html;
+    Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
+      const newScript = document.createElement("script");
+      Array.from(oldScript.attributes)
+        .forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
+  
   var loadHtml = function loadHtml(_element, url, data, success) {
     var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);  
     if (!element) {
@@ -269,16 +280,7 @@ var VuFind = (function VuFind() {
         }
       });
   };  
-  function setInnerHtml(elm, html) {
-    elm.innerHTML = html;
-    Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
-      const newScript = document.createElement("script");
-      Array.from(oldScript.attributes)
-        .forEach(attr => newScript.setAttribute(attr.name, attr.value));
-      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-      oldScript.parentNode.replaceChild(newScript, oldScript);
-    });
-  }
+  
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
