@@ -256,20 +256,29 @@ var VuFind = (function VuFind() {
         return response.text();
       })
       .then(htmlContent => {
-        element.innerHTML = updateCspNonce(htmlContent);
+        setInnerHtml(element, updateCspNonce(htmlContent));
         if (typeof success === 'function') {
           success(htmlContent); 
         }
       })
       .catch(error => {
         console.error('Request failed:', error);
-        element.innerHTML = VuFind.translate('error_occurred');
+        setInnerHtml(element, VuFind.translate('error_occurred'));
         if (typeof success === 'function') {
           success(null, error); 
         }
       });
   };  
-
+  function setInnerHtml(elm, html) {
+    elm.innerHTML = html;
+    Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
+        const newScript = document.createElement("script");
+        Array.from(oldScript.attributes)
+            .forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
