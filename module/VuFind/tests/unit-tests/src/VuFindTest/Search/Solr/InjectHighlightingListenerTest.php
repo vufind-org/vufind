@@ -31,8 +31,6 @@ namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectHighlightingListener;
-use VuFindSearch\Backend\Solr\Backend;
-use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -49,6 +47,7 @@ use VuFindSearch\Service;
 class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\MockSearchCommandTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Backend.
@@ -84,9 +83,13 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
     public function testAttach()
     {
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
-        $mock->expects($this->exactly(2))->method('attach')->withConsecutive(
-            ['VuFind\Search', 'pre', [$this->listener, 'onSearchPre']],
-            ['VuFind\Search', 'post', [$this->listener, 'onSearchPost']]
+        $this->expectConsecutiveCalls(
+            $mock,
+            'attach',
+            [
+                ['VuFind\Search', 'pre', [$this->listener, 'onSearchPre']],
+                ['VuFind\Search', 'post', [$this->listener, 'onSearchPost']],
+            ]
         );
         $this->listener->attach($mock);
     }

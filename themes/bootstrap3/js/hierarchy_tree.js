@@ -15,17 +15,18 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
   function showRecord(treeEl, id) {
     selectRecord(treeEl, id);
     if (!treeEl.dataset.previewElement) {
-      return;
+      return false;
     }
     const recordEl = document.querySelector(treeEl.dataset.previewElement);
     if (!recordEl) {
       console.error('Record preview element not found');
-      return;
+      return false;
     }
     const queryParams = new URLSearchParams({id: id, source: treeEl.dataset.source});
     fetch(VuFind.path + '/Hierarchy/GetRecord?' + queryParams.toString())
       .then((response) => response.text())
       .then((content) => recordEl.innerHTML = VuFind.updateCspNonce(content) );
+    return true;
   }
 
   function resetTree(treeEl) {
@@ -171,8 +172,9 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     // Setup link click handler on collection page
     if (!('lightbox' in treeEl.dataset) && 'Collection' === treeEl.dataset.context) {
       treeEl.querySelectorAll('.js-record-link').forEach(el => el.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        showRecord(treeEl, el.dataset.recordId);
+        if (showRecord(treeEl, el.dataset.recordId)) {
+          ev.preventDefault();
+        }
       }));
     }
 
