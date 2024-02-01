@@ -116,13 +116,15 @@ header {
   }
 }
 
-#account-icon:not(.notification-level-0) {
-  margin-left: -.25rem;
-  margin-top: -0.5rem;
-  margin-bottom: -.5rem;
-  padding: 0.5rem;
-  background-color: @header-light;
-  border-radius: 100%;
+#account-icon {
+  &.notification-level-1, &.notification-level-2, &.notification-level-3 {
+    margin-left: -.25rem;
+    margin-top: -0.5rem;
+    margin-bottom: -.5rem;
+    padding: 0.5rem;
+    background-color: @header-light;
+    border-radius: 100%;
+  }
 }
 #login-dropdown .login-dropdown-caret:hover,
 a:hover .login-dropdown-caret {
