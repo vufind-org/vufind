@@ -93,7 +93,8 @@
         "vufind-org/vufind-marc": "1.1.0",
         "webfontkit/open-sans": "^1.0",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.4.0"
+        "yajra/laravel-pdo-via-oci8": "3.4.0",
+        "browscap/browscap-php": "^7.2"
     },
     "require-dev": {
         "behat/mink": "1.10.0",

@@ -89,6 +89,43 @@ class Manager
     protected $factory;
 
     /**
+     * File caches and their configuration.
+     *
+     * Listed caches are created in the constructor to ensure that they are always
+     * available.
+     *
+     * @var array
+     */
+    protected $fileCaches = [
+        'browscap' => [
+            'cli' => false,
+            'directory' => 'browscap',
+            'options' => [
+                'ttl' => 0, // no expiration - cache is updated with console util/browscap
+                'keyPattern' => '/^[a-z0-9_\+\-\.]*$/Di',
+            ],
+        ],
+        'config' => [
+            'directory' => 'configs',
+        ],
+        'cover' => [
+            'directory' => 'covers',
+        ],
+        'language' => [
+            'directory' => 'languages',
+        ],
+        'object' => [
+            'directory' => 'objects',
+        ],
+        'public' => [
+            'directory' => 'public',
+        ],
+        'yaml' => [
+            'directory' => 'yamls',
+        ],
+    ];
+
+    /**
      * Constructor
      *
      * @param Config                $config       Main VuFind configuration
@@ -112,12 +149,15 @@ class Manager
 
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
+        $nonCliCacheBase = $this->getCacheDir(false);
 
         // Set up standard file-based caches:
-        foreach (['config', 'cover', 'language', 'object', 'yaml'] as $cache) {
-            $this->createFileCache($cache, $cacheBase . $cache . 's');
+        foreach ($this->fileCaches as $cache => $spec) {
+            $base = $spec['cli'] ?? true
+                ? $cacheBase
+                : $nonCliCacheBase;
+            $this->createFileCache($cache, $base . $spec['directory'], $spec['options'] ?? []);
         }
-        $this->createFileCache('public', $cacheBase . 'public');
 
         // Set up search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;

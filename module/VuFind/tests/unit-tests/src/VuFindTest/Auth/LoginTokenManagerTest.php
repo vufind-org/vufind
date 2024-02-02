@@ -235,6 +235,8 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $browscap = $this->createMock(\BrowscapPHP\BrowscapInterface::class);
+
         return new LoginTokenManager(
             $config,
             $userTable,
@@ -242,7 +244,8 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             $cookieManager,
             $sessionManager,
             $mailer,
-            $viewRenderer
+            $viewRenderer,
+            $browscap
         );
     }
 }

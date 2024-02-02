@@ -31,12 +31,11 @@ declare(strict_types=1);
 
 namespace VuFind\Auth;
 
+use BrowscapPHP\BrowscapInterface;
 use Laminas\Session\SessionManager;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
-
-use function is_array;
 
 /**
  * Class LoginTokenManager
@@ -101,6 +100,13 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $viewRenderer = null;
 
     /**
+     * Browscap
+     *
+     * @var BrowscapInterface
+     */
+    protected $browscap;
+
+    /**
      * Has the theme been initialized yet?
      *
      * @var bool
@@ -124,6 +130,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      * @param SessionManager                           $sessionManager  Session manager
      * @param \VuFind\Mailer\Mailer                    $mailer          Mailer
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
+     * @param BrowscapInterface                        $browscap        Browscap
      */
     public function __construct(
         \Laminas\Config\Config $config,
@@ -133,6 +140,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         SessionManager $sessionManager,
         \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
+        BrowscapInterface $browscap
     ) {
         $this->config = $config;
         $this->userTable = $userTable;
@@ -141,6 +149,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $this->sessionManager = $sessionManager;
         $this->mailer = $mailer;
         $this->viewRenderer = $viewRenderer;
+        $this->browscap = $browscap;
     }
 
     /**
@@ -212,22 +221,24 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $browser = '';
         $platform = '';
         try {
-            // Suppress warnings here; we'll throw an exception below if browscap.ini is not set up correctly.
-            $userInfo = @get_browser(null, true);
+            $browser = $this->browscap->getBrowser();
         } catch (\Exception $e) {
+            throw new AuthException('Problem with browscap: ' . (string)$e);
         }
-        if (!is_array($userInfo ?? null)) {
-            $error = error_get_last();
-            throw new AuthException('Problem with browscap.ini: ' . ($error['message'] ?? 'no message'));
-        }
-        $browser = $userInfo['browser'] ?? '';
-        $platform = $userInfo['platform'] ?? '';
         if ($expires === 0) {
             $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
         try {
-            $this->loginTokenTable->saveToken($user->id, $token, $series, $browser, $platform, $expires, $sessionId);
+            $this->loginTokenTable->saveToken(
+                $user->id,
+                $token,
+                $series,
+                $browser->browser,
+                $browser->platform,
+                $expires,
+                $sessionId
+            );
             $this->setLoginTokenCookie($user->id, $token, $series, $expires);
         } catch (\Exception $e) {
             throw new AuthException('Failed to save token');
