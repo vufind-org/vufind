@@ -826,7 +826,7 @@ class User extends RowGateway implements
      *
      * @return array
      */
-    public function getLoginTokens($userId)
+    public function getLoginTokens(string $userId): array
     {
         $tokenTable = $this->getDbTable('LoginToken');
         return $tokenTable->getByUserId($userId);
