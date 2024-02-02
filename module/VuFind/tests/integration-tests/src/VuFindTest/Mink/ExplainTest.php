@@ -39,7 +39,6 @@ use function count;
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class ExplainTest extends \VuFindTest\Integration\MinkTestCase
 {
