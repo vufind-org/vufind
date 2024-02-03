@@ -8,7 +8,7 @@ if ($code == 'od_code_login_for_avail') {
 } elseif ($code == 'od_account_noaccess') {
     $noshow = true;
 } elseif ($code == 'od_code_resource_not_found' || empty($this->result->status)) {
-    //we must have had a connection error.
+    // we must have had a connection error.
     $isError = true;
 }
 
@@ -21,7 +21,7 @@ foreach ($ids as $id) {
     $current['full_status'] = '';
 
     if ($noshow) {
-        //patron does not have access to overdrive. don't show avail
+        // patron does not have access to overdrive. don't show avail
     } elseif ((isset($avail->code) && $avail->code == 'od_code_resource_not_found') || $isError) {
         $current['error'] = $this->transEsc('status_unknown_message');
     } elseif ($loginForAvail) {
@@ -38,12 +38,10 @@ foreach ($ids as $id) {
             $current['full_status'] .= $this->icon('status-unavailable', 'icon-link__icon');
             $current['full_status'] .= '</span> ';
         }
-        if ($avail->availabilityType == 'AlwaysAvailable') {
-            $current['full_status'] .= $this->transEsc('od_unlimited');
-        } else {
-            $current['full_status'] .= $avail->copiesAvailable . ' / ' . $avail->copiesOwned;
-        }
-        $current['full_status'] .= ' ' . $this->transEsc('od_copies_available');
+        $copies = $avail->availabilityType == 'AlwaysAvailable'
+            ? $this->transEsc('od_unlimited');
+            : ($avail->copiesAvailable . ' / ' . $avail->copiesOwned);
+        $current['full_status'] .= ' ' . $this->transEsc('od_copies_available', ['%%copies%%' => $copies]);
         if ($avail->numberOfHolds > 0) {
             $current['full_status'] .= '; ' . $avail->numberOfHolds
               . ' ' . ($avail->numberOfHolds > 1 ? $this->transEsc('od_people') : $this->transEsc('od_person'))

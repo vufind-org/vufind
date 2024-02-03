@@ -47,7 +47,7 @@
         <?php endif; ?>
         <?= $this->transEsc('od_copies_available') ?>
         <?php if ($avail->data->numberOfHolds > 0): ?>
-          <?= '; ' . $avail->data->numberOfHolds . ' ' . ($avail->data->numberOfHolds > 1 ? $this->transEsc('od_people') : $this->transEsc('od_person')) . ' ' . $this->transEsc('od_waiting') ?>
+          <?= '; ' . $this->transEsc('od_waiting', ['holds' => $avail->data->numberOfHolds], null, true) ?>
         <?php endif; ?>
       </p>
 
