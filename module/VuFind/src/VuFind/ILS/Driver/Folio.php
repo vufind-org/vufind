@@ -1572,17 +1572,16 @@ class Folio extends AbstractAPI implements
             [],
             true
         );
-        if ($response->isSuccess()) {
-            $json = json_decode($response->getBody());
-            return [
-                'success' => true,
-                'status' => $json->status,
-            ];
-        }
         try {
             $json = json_decode($response->getBody());
         } catch (Exception $e) {
             $this->throwAsIlsException($e, $response->getBody());
+        }
+        if ($response->isSuccess() && isset($json->status)) {
+            return [
+                'success' => true,
+                'status' => $json->status,
+            ];
         }
         return [
             'success' => false,
