@@ -71,6 +71,17 @@ class BrowscapCommand extends Command
     protected $config;
 
     /**
+     * Mappings from VuFind HTTP settings to Guzzle
+     *
+     * @var array
+     */
+    protected $guzzleHttpSettingsMap = [
+        'sslcafile' => 'ssl_key',
+        'timeout' => 'timeout',
+        'curloptions' => 'curl',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Cache\Manager $cacheManager Cache manager
@@ -104,8 +115,8 @@ class BrowscapCommand extends Command
                 'file-type',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Browscap file type (default, lite or full)',
-                'normal'
+                'Browscap file type (standard, lite or full). See https://browscap.org/ for more information.',
+                'standard'
             );
     }
 
@@ -130,7 +141,7 @@ class BrowscapCommand extends Command
             case 'lite':
                 $type = \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_LITE;
                 break;
-            case 'normal':
+            case 'standard':
                 $type = \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI;
                 break;
             default:
@@ -169,25 +180,32 @@ class BrowscapCommand extends Command
      */
     protected function getGuzzleConfig(): array
     {
-        $proxyConfig = $this->config['Proxy'] ?? [];
-        if (empty($proxyConfig['proxy_host'])) {
-            return [];
+        $result = [];
+
+        $httpConfig = $this->config['Http'] ?? [];
+        foreach ($this->guzzleHttpSettingsMap as $src => $dst) {
+            if (null !== ($value = $httpConfig[$src] ?? null)) {
+                $result[$dst] = $value;
+            }
         }
-        $curl = [
-            CURLOPT_PROXY => $proxyConfig['proxy_host'],
-        ];
-        if (!empty($proxyConfig['proxy_port'])) {
-            $curl[CURLOPT_PROXYPORT] = $proxyConfig['proxy_port'];
+
+        // Proxy configuration
+        $proxyConfig = $this->config['Proxy'] ?? [];
+        if (!empty($proxyConfig['host'])) {
+            $result['curl'][CURLOPT_PROXY] = $proxyConfig['host'];
+        }
+        if (!empty($proxyConfig['port'])) {
+            $result['curl'][CURLOPT_PROXYPORT] = $proxyConfig['port'];
         }
         // HTTP is default, so handle only the SOCKS 5 proxy types
-        switch ($proxyConfig['proxy_type'] ?? '') {
+        switch ($proxyConfig['type'] ?? '') {
             case 'socks5':
-                $curl[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+                $result['curl'][CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
                 break;
             case 'socks5_hostname':
-                $curl[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5_HOSTNAME;
+                $result['curl'][CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5_HOSTNAME;
                 break;
         }
-        return compact('curl');
+        return $result;
     }
 }
