@@ -64,10 +64,9 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the API is disabled by default.
      *
-     * @skip_html_validation true
-     *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testApiDisabledByDefault(): void
     {
         $page = $this->makeRecordApiCall();
@@ -80,10 +79,9 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the API can be turned on and accessed via Swagger UI.
      *
-     * @skip_html_validation true
-     *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testEnabledRecordApi(): void
     {
         $this->changeConfigs(
