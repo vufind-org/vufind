@@ -64,6 +64,8 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the API is disabled by default.
      *
+     * @skip_html_validation true
+     *
      * @return void
      */
     public function testApiDisabledByDefault(): void
@@ -77,6 +79,8 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test that the API can be turned on and accessed via Swagger UI.
+     *
+     * @skip_html_validation true
      *
      * @return void
      */
