@@ -2,16 +2,34 @@
 
 VuFind.register("listItemSelection", function ListItemSelection() {
 
-  // clicks checkboxes and triggers click event
-  function _click(checkbox, checked) {
-    if (checkbox instanceof NodeList) {
-      checkbox.forEach((cb) => _click(cb, checked));
-    } else if (checkbox !== null && checkbox.checked !== checked) {
-      checkbox.click();
+  function _sessionSet(form, key, data) {
+    let formId = form.id;
+    let formStorage = JSON.parse(window.sessionStorage.getItem(formId) || "{}");
+    formStorage[key] = data;
+    window.sessionStorage.setItem(formId, JSON.stringify(formStorage));
+  }
+
+  function _sessionGet(form, key) {
+    let formId = form.id;
+    let formStorage = JSON.parse(window.sessionStorage.getItem(formId) || "{}");
+    return formStorage[key];
+  }
+
+  function _writeState(form) {
+    if (form.classList.contains('multi-page-selection')) {
+      let nonDefaultIdsInput = form.querySelector('.non_default_ids');
+      let checkedDefaultInput = form.querySelector('.checked_default');
+      if (nonDefaultIdsInput !== null && checkedDefaultInput !== null) {
+        _sessionSet(form, 'checkedDefault', checkedDefaultInput.checked);
+        _sessionSet(form, 'nonDefaultIds', JSON.parse(nonDefaultIdsInput.value));
+      }
     }
   }
 
-  // changes check state of checkboxes but does not trigger click event
+  function getItemCheckboxes(form) {
+    return document.querySelectorAll('#' + form.id + ' .checkbox-select-item, .checkbox-select-item[form="' + form.id + '"]');
+  }
+
   function _check(checkbox, checked) {
     if (checkbox instanceof NodeList) {
       checkbox.forEach((cb) => _check(cb, checked));
@@ -45,83 +63,62 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     return selected;
   }
 
-  function _isMultiPageSelectionForm(form) {
-    return form.classList.contains('multi-page-selection');
-  }
-
   function _allOnPageAreSelected(form) {
-    return form.querySelectorAll('.checkbox-select-item:not(:checked)').length === 0;
+    return form.querySelectorAll('.checkbox-select-item:not(:checked)').length === 0
+      && document.querySelectorAll('.checkbox-select-item[form="' + form.id + '"]:not(:checked)').length === 0;
   }
 
   function _allGlobalAreSelected(form) {
-    let compareArrays = (a, b) =>
-      a.length === b.length && a.every((element, index) => element === b[index]);
     let allIdsInput = form.querySelector('.all-ids-global');
-    return allIdsInput !== null && compareArrays(getAllSelected(form), JSON.parse(allIdsInput.value));
-  }
-
-  function _sessionSet(form, key, data) {
-    let formId = form.id;
-    let formStorage = JSON.parse(window.sessionStorage.getItem(formId) || "{}");
-    formStorage[key] = data;
-    window.sessionStorage.setItem(formId, JSON.stringify(formStorage));
-  }
-
-  function _sessionGet(form, key) {
-    let formId = form.id;
-    let formStorage = JSON.parse(window.sessionStorage.getItem(formId) || "{}");
-    return formStorage[key];
-  }
-
-  function _changeDefault(form, defaultValue) {
-    _sessionSet(form, 'checkedDefault', defaultValue);
-    _sessionSet(form, 'nonDefaultIds', []);
+    if (allIdsInput == null) return false;
+    let allIds = JSON.parse(allIdsInput.value);
+    let selectedIds = getAllSelected(form);
+    return selectedIds.length === allIds.length;
   }
 
   function _writeToForm(form, data = {}) {
-    if (data.ids !== undefined) {
-      form.querySelector('.non_default_ids').value = JSON.stringify(data.ids);
+    if (data.nonDefaultIds !== undefined) {
+      form.querySelector('.non_default_ids').value = JSON.stringify(data.nonDefaultIds);
     }
     if (data.checkedDefault !== undefined) {
-      form.querySelector('.checked_default').checked = data.checkedDefault;
+      _check(form.querySelector('.checked_default'), data.checkedDefault);
     }
-    if (_allOnPageAreSelected(form)) {
-      data.selectAllOnPageChecked = true;
-    }
-    if (data.selectAllOnPageChecked !== undefined) {
-      _check(document.querySelectorAll('[form="' + form.id + '"][type="checkbox"]'), data.selectAllOnPageChecked);
-      _check(form.querySelectorAll('.checkbox-select-all'), data.selectAllOnPageChecked);
-      _check(form.querySelectorAll('.checkbox-select-all[form="' + form.id + '"]'), data.selectAllOnPageChecked);
-    }
-    if (_allGlobalAreSelected(form)) {
-      data.selectAllGlobalChecked = true;
-    }
-    if (data.selectAllGlobalChecked !== undefined) {
-      _check(document.querySelectorAll('[form="' + form.id + '"][type="checkbox"]'), data.selectAllGlobalChecked);
-      _check(form.querySelectorAll('.checkbox-select-all-global'), data.selectAllGlobalChecked);
-      _check(form.querySelectorAll('.checkbox-select-all-global[form="' + form.id + '"]'), data.selectAllGlobalChecked);
+    if (data.selectAllOnPage !== undefined) {
+      _check(getItemCheckboxes(form), data.selectAllOnPage);
     }
   }
 
-  function _writeState(form) {
-    let checkedDefault = _sessionGet(form, 'checkedDefault') || false;
-    let nonDefaultIds = _sessionGet(form, 'nonDefaultIds') || [];
-    form.querySelectorAll('.checkbox-select-item').forEach(itemCheckbox => {
-      let id = itemCheckbox.value;
-      if (checkedDefault ^ itemCheckbox.checked) {
-        if (!nonDefaultIds.includes(id)) {
-          nonDefaultIds.push(id);
+  function _checkIfAllSelected(form) {
+    let nonDefaultIdsInput = form.querySelector('.non_default_ids');
+    let checkedDefaultInput = form.querySelector('.checked_default');
+
+    if (nonDefaultIdsInput !== null && checkedDefaultInput !== null) {
+      let nonDefaultIds = JSON.parse(nonDefaultIdsInput.value);
+      let checkedDefault = checkedDefaultInput.checked;
+      form.querySelectorAll('.checkbox-select-item').forEach(itemCheckbox => {
+        let id = itemCheckbox.value;
+        if (checkedDefault ^ itemCheckbox.checked) {
+          if (!nonDefaultIds.includes(id)) {
+            nonDefaultIds.push(id);
+          }
+        } else if (nonDefaultIds.includes(id)) {
+          delete nonDefaultIds[nonDefaultIds.indexOf(id)];
+          nonDefaultIds = nonDefaultIds.filter(n => n);
         }
-      } else if (nonDefaultIds.includes(id)) {
-        delete nonDefaultIds[nonDefaultIds.indexOf(id)];
-        nonDefaultIds = nonDefaultIds.filter(n => n);
-      }
-    });
-    _sessionSet(form, 'nonDefaultIds', nonDefaultIds);
-    _writeToForm(form, {
-      'ids': nonDefaultIds,
-      'checkedDefault': checkedDefault,
-    });
+      });
+      _writeToForm(form, {
+        'nonDefaultIds': nonDefaultIds,
+        'checkedDefault': checkedDefault,
+      });
+    }
+    document.querySelectorAll('#' + form.id + ' .checkbox-select-all, .checkbox-select-all[form="' + form.id + '"]')
+      .forEach((checkbox) => {
+        _check(checkbox, _allOnPageAreSelected(form));
+      });
+    document.querySelectorAll('#' + form.id + ' .checkbox-select-all-global, .checkbox-select-all-global[form="' + form.id + '"]')
+      .forEach((checkbox) => {
+        _check(checkbox, _allGlobalAreSelected(form));
+      });
   }
 
   function _selectAllCheckbox(checkbox) {
@@ -129,13 +126,29 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     if (form == null) {
       return;
     }
-    _click(form.querySelectorAll('.checkbox-select-item'), checkbox.checked);
-    if (_isMultiPageSelectionForm(form)) {
-      _writeState(form);
+    if (checkbox.checked || _allOnPageAreSelected(form)) {
+      _writeToForm(form, {
+        'selectAllOnPage': checkbox.checked
+      });
+      _checkIfAllSelected(form);
     }
-    _writeToForm(form, {
-      'selectAllOnPageChecked': checkbox.checked
-    });
+    _writeState(form);
+  }
+
+  function _selectAllGlobalCheckbox(checkbox) {
+    let form = checkbox.form ? checkbox.form : checkbox.closest('form');
+    if (form == null) {
+      return;
+    }
+    if (checkbox.checked || _allGlobalAreSelected(form)) {
+      _writeToForm(form, {
+        'nonDefaultIds': [],
+        'checkedDefault': checkbox.checked,
+        'selectAllOnPage': checkbox.checked
+      });
+      _checkIfAllSelected(form);
+    }
+    _writeState(form);
   }
 
   function _setupCheckboxes() {
@@ -143,7 +156,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       checkbox.addEventListener('change', () => _selectAllCheckbox(checkbox));
     });
     document.querySelectorAll('.checkbox-select-all-global').forEach((checkbox) => {
-      checkbox.addEventListener('change', () => _selectAllCheckbox(checkbox));
+      checkbox.addEventListener('change', () => _selectAllGlobalCheckbox(checkbox));
     });
     document.querySelectorAll('.checkbox-select-item').forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
@@ -151,16 +164,9 @@ VuFind.register("listItemSelection", function ListItemSelection() {
         if (form == null) {
           return;
         }
-        if (_isMultiPageSelectionForm(form)) {
-          _writeState(form);
-        }
-        if (!checkbox.checked) {
-          _writeToForm(form, {
-            'selectAllOnPageChecked': false,
-            'selectAllGlobalChecked': false
-          });
-        }
         _writeToForm(form);
+        _checkIfAllSelected(form);
+        _writeState(form);
       });
     });
   }
@@ -174,7 +180,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     form.appendChild(nonDefaultIdsInput);
 
     let checkedDefaultInput = document.createElement('input');
-    checkedDefaultInput.setAttribute('class', 'checked_default hidden');
+    checkedDefaultInput.setAttribute('class', 'checked_default');
     checkedDefaultInput.setAttribute('type', 'checkbox');
     checkedDefaultInput.setAttribute('name', 'checked_default');
     form.appendChild(checkedDefaultInput);
@@ -187,17 +193,10 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     });
 
     _writeToForm(form, {
-      'ids': nonDefaultIds,
+      'nonDefaultIds': nonDefaultIds,
       'checkedDefault': checkedDefault,
     });
-
-    let checkboxSelectAllGlobal = form.querySelector('.checkbox-select-all-global');
-    if (checkboxSelectAllGlobal != null) {
-      checkboxSelectAllGlobal.addEventListener('change', (event) => {
-        _changeDefault(form, event.currentTarget.checked);
-        _writeState(form);
-      });
-    }
+    _checkIfAllSelected(form);
 
     window.addEventListener('beforeunload', () => _writeState(form));
   }
