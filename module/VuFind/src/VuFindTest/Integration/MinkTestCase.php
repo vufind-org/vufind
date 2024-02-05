@@ -94,7 +94,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->getName(false);
+        return $this::class . '::' . $this->name();
     }
 
     /**
@@ -877,7 +877,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
         $annotations = Test::parseTestMethodAnnotations(
             static::class,
-            $this->getName(false)
+            $this->name()
         );
         if (
             ($annotations['method']['skip_html_validation'][0] ?? false)
@@ -1033,7 +1033,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->status()->isFailure()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
-            $filename = $this->getName() . '-' . hrtime(true);
+            $filename = $this->name() . '-' . hrtime(true);
 
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();
