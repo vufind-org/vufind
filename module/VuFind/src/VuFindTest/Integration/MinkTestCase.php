@@ -33,6 +33,7 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
 use PHPUnit\Util\Test;
+use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -865,6 +866,28 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Extract the first parameter of the first attribute matching the specified
+     * criteria.
+     *
+     * @param string $method    Method name to check for attributes
+     * @param string $attribute Attribute class name to look up
+     * @param mixed  $default   Default value to use if no match found
+     *
+     * @return mixed
+     * @throws ReflectionException
+     */
+    protected function getFirstMethodAttributeValue(
+        string $method,
+        string $attribute,
+        mixed $default = null
+    ): mixed {
+        $reflection = new \ReflectionObject($this);
+        $matches = $reflection->getMethod($method)->getAttributes($attribute);
+        $args = ($matches[0] ?? null)?->getArguments() ?? [];
+        return $args[0] ?? $default;
+    }
+
+    /**
      * Validate current page HTML if validation is enabled and a session exists
      *
      * @param ?Element $page Page to check (optional; uses the page from session by
@@ -876,19 +899,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function validateHtml(?Element $page = null): void
     {
-        if (
-            (!$this->session && !$page)
-            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
-        ) {
-            return;
-        }
-        $annotations = Test::parseTestMethodAnnotations(
-            static::class,
-            $this->getName(false)
+        $validatorEnabled = $this->getFirstMethodAttributeValue(
+            $this->getName(false),
+            \VuFindTest\Attribute\HtmlValidation::class,
+            true
         );
         if (
-            ($annotations['method']['skip_html_validation'][0] ?? false)
-            || ($annotations['class']['skip_html_validation'][0] ?? false)
+            !$validatorEnabled
+            || (!$this->session && !$page)
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
         }
