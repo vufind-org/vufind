@@ -6,8 +6,8 @@
 <nav class="bulkActionButtons">
   <?php
   $socialConfig = $this->config()->get('config')['Social'];
-  $multiPageSelection = $socialConfig['multi_page_selection'] ?? false;
-  $checkboxSelectAllType = $socialConfig['checkbox_select_all_type'] ?? 'none';
+  $multiPageSelection = $socialConfig['multi_page_favorites_selection'] ?? false;
+  $checkboxSelectAllType = $socialConfig['checkbox_select_all_favorites_type'] ?? 'none';
   ?>
   <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
     <div class="bulk-checkbox">

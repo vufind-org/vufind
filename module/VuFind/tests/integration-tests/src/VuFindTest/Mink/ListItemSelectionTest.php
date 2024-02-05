@@ -99,17 +99,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function setupTest($config)
     {
-        $this->changeConfigs(
-            [
-                'config' =>
-                    [
-                        'Social' => [
-                            'multi_page_selection' => $config['multi_page_selection'],
-                            'checkbox_select_all_type' => $config['checkbox_select_all_type'],
-                        ],
-                    ],
-            ]
-        );
+        $this->changeConfigs(['config' => ['Social' => $config]]);
         return $this->gotoUserAccount();
     }
 
@@ -385,8 +375,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => false,
-            'checkbox_select_all_type' => 'none',
+            'multi_page_favorites_selection' => false,
+            'checkbox_select_all_favorites_type' => 'none',
         ]);
         $this->checkStatus($page, self::NONE, self::NONE, 0, 0);
 
@@ -418,8 +408,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => false,
-            'checkbox_select_all_type' => 'on_page',
+            'multi_page_favorites_selection' => false,
+            'checkbox_select_all_favorites_type' => 'on_page',
         ]);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0);
 
@@ -469,8 +459,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => false,
-            'checkbox_select_all_type' => 'global',
+            'multi_page_favorites_selection' => false,
+            'checkbox_select_all_favorites_type' => 'global',
         ]);
         // the select all global checkbox should not be shown
         // if multi page selection is disabled
@@ -488,8 +478,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => false,
-            'checkbox_select_all_type' => 'both',
+            'multi_page_favorites_selection' => false,
+            'checkbox_select_all_favorites_type' => 'both',
         ]);
         // the select all global checkbox should not be shown
         // if multi page selection is disabled
@@ -507,8 +497,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => true,
-            'checkbox_select_all_type' => 'none',
+            'multi_page_favorites_selection' => true,
+            'checkbox_select_all_favorites_type' => 'none',
         ]);
         $this->checkStatus($page, self::NONE, self::NONE, 0, 0);
 
@@ -546,8 +536,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => true,
-            'checkbox_select_all_type' => 'on_page',
+            'multi_page_favorites_selection' => true,
+            'checkbox_select_all_favorites_type' => 'on_page',
         ]);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0);
 
@@ -597,8 +587,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => true,
-            'checkbox_select_all_type' => 'global',
+            'multi_page_favorites_selection' => true,
+            'checkbox_select_all_favorites_type' => 'global',
         ]);
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 0);
 
@@ -667,8 +657,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     {
 
         $page = $this->setupTest([
-            'multi_page_selection' => true,
-            'checkbox_select_all_type' => 'both',
+            'multi_page_favorites_selection' => true,
+            'checkbox_select_all_favorites_type' => 'both',
         ]);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 0);
 
