@@ -41,6 +41,7 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -82,6 +83,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test saving and clearing a search.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -222,7 +225,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
-     * @depends testSaveSearch
+     * @depends       testSaveSearch
+     * @retryCallback removeUsername2
      *
      * @return void
      */
@@ -473,6 +477,16 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
             $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
         $this->assertEquals(1, $this->findCss($page, $scheduleSelector)->getValue());
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testSavedSearchSecurity.
+     *
+     * @return void
+     */
+    protected function removeUsername2(): void
+    {
+        static::removeUsers(['username2']);
     }
 
     /**

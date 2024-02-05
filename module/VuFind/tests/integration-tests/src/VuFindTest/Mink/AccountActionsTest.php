@@ -46,6 +46,7 @@ use function count;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -65,6 +66,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test changing a password.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -287,6 +290,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test default pick up location
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

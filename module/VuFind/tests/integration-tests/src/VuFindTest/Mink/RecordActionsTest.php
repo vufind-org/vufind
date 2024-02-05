@@ -47,6 +47,7 @@ use function strlen;
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -99,6 +100,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding comments on records.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -236,6 +239,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding tags on records.
+     *
+     * @retryCallback removeUsername2
      *
      * @return void
      *
@@ -445,6 +450,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test record view email.
      *
+     * @retryCallback removeEmailManiac
+     *
      * @return void
      */
     public function testEmail(): void
@@ -626,6 +633,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @dataProvider getTestRatingData
      *
+     * @retryCallback removeUsername2And3And4
+     *
      * @return void
      */
     public function testRating($allowRemove): void
@@ -798,6 +807,16 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Retry cleanup method in case of failure during testAddTag.
+     *
+     * @return void
+     */
+    protected function removeUsername2(): void
+    {
+        static::removeUsers(['username2']);
+    }
+
+    /**
      * Retry cleanup method in case of failure during testRating.
      *
      * @return void
@@ -805,6 +824,16 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function removeUsername2And3And4(): void
     {
         static::removeUsers(['username2', 'username3', 'username4']);
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testEmail.
+     *
+     * @return void
+     */
+    protected function removeEmailManiac(): void
+    {
+        static::removeUsers(['emailmaniac']);
     }
 
     /**

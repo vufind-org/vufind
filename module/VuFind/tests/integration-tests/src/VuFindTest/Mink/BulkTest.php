@@ -41,6 +41,7 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -149,6 +150,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test that the email control works.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

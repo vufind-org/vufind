@@ -54,6 +54,7 @@ use function strlen;
  */
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\PathResolverTrait;
 
@@ -1028,12 +1029,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     public function tearDown(): void
     {
-        // Take screenshot of failed test, if we have a screenshot directory set:
+        // Take screenshot of failed test, if we have a screenshot directory set
+        // and we have run out of retries ($this->retriesLeft is set by the
+        // AutoRetryTrait):
         if (
             $this->hasFailed()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
-            $filename = $this->getName() . '-' . hrtime(true);
+            $filename = $this->getName() . '-' . $this->retriesLeft . '-'
+                . hrtime(true);
 
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();

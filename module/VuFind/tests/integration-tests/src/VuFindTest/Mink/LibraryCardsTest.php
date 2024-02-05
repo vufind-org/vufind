@@ -42,6 +42,7 @@ use Behat\Mink\Element\Element;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -116,6 +117,8 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding two library cards.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

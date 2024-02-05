@@ -41,6 +41,7 @@ use VuFindTest\Feature\LiveDatabaseTrait;
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class SsoTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -69,6 +70,8 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test changing a password.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

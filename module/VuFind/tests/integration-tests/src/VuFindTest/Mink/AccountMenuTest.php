@@ -39,6 +39,7 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -138,6 +139,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the menu is absent when enableAjax is true and enableDropdown
      * is false.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

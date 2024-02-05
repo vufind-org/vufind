@@ -46,6 +46,7 @@ use function count;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {

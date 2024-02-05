@@ -37,6 +37,7 @@ namespace VuFindTest\Mink;
  * @author   Conor Sheehan <csheehan@nli.ie>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
 {
