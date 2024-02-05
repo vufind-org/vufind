@@ -43,4 +43,20 @@ use Attribute;
 #[Attribute]
 class HtmlValidation
 {
+    /**
+     * Should HTML validation be applied to this test?
+     *
+     * @var bool
+     */
+    public $useValidation;
+
+    /**
+     * Constructor
+     *
+     * @param bool $useValidation Should HTML validation be applied to this test?
+     */
+    public function __construct($useValidation = true)
+    {
+        $this->useValidation = $useValidation;
+    }
 }
