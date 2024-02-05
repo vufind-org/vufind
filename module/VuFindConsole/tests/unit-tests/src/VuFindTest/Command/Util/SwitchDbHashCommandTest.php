@@ -49,6 +49,7 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Expected path to config.ini
@@ -223,16 +224,19 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessNoUsers()
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->exactly(3))->method('set')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
                 ['Authentication', 'encrypt_ils_password', true],
                 [
                     'Authentication',
                     'ils_encryption_algo',
                     $this->encryptionAlgorithm,
                 ],
-                ['Authentication', 'ils_encryption_key', 'foo']
-            );
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
         $table = $this->getMockTable();
@@ -301,16 +305,19 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessWithUser()
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->exactly(3))->method('set')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
                 ['Authentication', 'encrypt_ils_password', true],
                 [
                     'Authentication',
                     'ils_encryption_algo',
                     $this->encryptionAlgorithm,
                 ],
-                ['Authentication', 'ils_encryption_key', 'foo']
-            );
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
         $user = $this->getMockUserObject();

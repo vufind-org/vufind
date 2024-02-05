@@ -77,6 +77,20 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Get config.ini override settings for testing ChoiceAuth with SSO.
+     *
+     * @return array
+     */
+    public function getConfigIniSSOOverrides()
+    {
+        return [
+            'ChoiceAuth' => [
+                'choice_order' => 'ILS, SimulatedSSO',
+            ],
+        ];
+    }
+
+    /**
      * Get Demo.ini override settings for testing ILS functions.
      *
      * @param string $bibId Bibliographic record ID to create fake item info for.
@@ -87,6 +101,20 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     {
         return [
             'Users' => ['catuser' => 'catpass'],
+        ];
+    }
+
+    /**
+     * Get SimulatedSSO.ini override settings for testing ChoiceAuth with SSO.
+     *
+     * @return array
+     */
+    public function getSimulatedSSOIniOverrides()
+    {
+        return [
+            'General' => [
+                'username' => 'ssofakeuser1',
+            ],
         ];
     }
 
@@ -164,12 +192,65 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test login on record page with ILS and SSO authentication
+     *
+     * @return void
+     */
+    public function testRecordPageWithILSAndSSO()
+    {
+        // Set up configs and session
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniSSOOverrides() + $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+                'SimulatedSSO' => $this->getSimulatedSSOIniOverrides(),
+            ]
+        );
+        $recordUrl = $this->getVuFindUrl() . '/Record/testsample1';
+        $session = $this->getMinkSession();
+        $session->visit($recordUrl);
+        $page = $session->getPage();
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // login with ILS
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'catuser', 'catpass', false, '.authmethod0 ');
+        $this->submitLoginForm($page, false, '.authmethod0 ');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // Login with SSO
+        $this->assertEquals(
+            'Institutional Login',
+            $this->findCss($page, '.modal-body .authmethod1 .btn.btn-link')->getText()
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-link');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser']);
+        static::removeUsers(['username1', 'catuser', 'ssofakeuser1']);
     }
 }
