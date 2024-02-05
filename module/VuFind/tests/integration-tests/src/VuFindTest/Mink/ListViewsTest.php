@@ -91,11 +91,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can save a favorite from tab mode.
      *
-     * @skip_html_validation true
-     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
+     * @todo Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInTabMode()
     {
         // Change the theme:
@@ -127,11 +127,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testFavoritesInTabMode
      *
-     * @skip_html_validation true
-     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
+     * @todo Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInAccordionMode()
     {
         // Change the theme:
