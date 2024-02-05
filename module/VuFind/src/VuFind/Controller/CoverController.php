@@ -129,10 +129,13 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
         if (!empty($url)) {
             try {
                 $image = $this->proxy->fetch($url);
-                return $this->displayImage(
-                    $image->getHeaders()->get('content-type')->getFieldValue(),
-                    $image->getContent()
-                );
+                $contentType = $image?->getHeaders()?->get('content-type')?->getFieldValue() ?? '';
+                if (str_starts_with(strtolower($contentType), 'image/')) {
+                    return $this->displayImage(
+                        $contentType,
+                        $image->getContent()
+                    );
+                }
             } catch (\Exception $e) {
                 // If an exception occurs, drop through to the standard case
                 // to display an image unavailable graphic.
