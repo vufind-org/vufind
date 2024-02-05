@@ -64,7 +64,7 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
@@ -76,7 +76,7 @@
             }
         ],
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "POST",
@@ -109,7 +109,7 @@
             ]
         },
         "bodyType": "json",
-        "code": 422
+        "status": 422
     },
     {
         "expectedMethod": "POST",
@@ -169,6 +169,6 @@
             }
         },
         "bodyType": "json",
-        "code": 201
+        "status": 201
     }
 ]
