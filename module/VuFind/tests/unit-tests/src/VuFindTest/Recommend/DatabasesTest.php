@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Recommend;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use VuFind\Recommend\Databases;
 
 /**
@@ -162,7 +162,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
             return $libGuides;
         };
 
-        $cache = $this->getMockBuilder(CacheAdapter::class)->getMock();
+        $cache = $this->createMock(CacheAdapter::class);
         $module = $this->getMockBuilder(Databases::class)
             ->setConstructorArgs([$configManager, $libGuidesGetter, $cache])
             ->onlyMethods(['getCachedData', 'putCachedData'])

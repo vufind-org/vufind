@@ -44,7 +44,6 @@ use VuFindTest\Feature\SearchFacetFilterTrait;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -139,13 +138,13 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#search1_0 .adv-term-remove:not(.hidden)');
 
         // Enter search for bride of the tomb
-        $this->findCss($page, '#search_lookfor0_0')->setValue('bride');
-        $this->findCss($page, '#search_lookfor0_1')->setValue('tomb');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'bride');
+        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'tomb');
         $this->findCss($page, '#search_type0_1')->selectOption('Title');
-        $this->findCss($page, '#search_lookfor0_2')->setValue('garbage');
-        $this->findCss($page, '#search_lookfor0_3')->setValue('1883');
+        $this->findCssAndSetValue($page, '#search_lookfor0_2', 'garbage');
+        $this->findCssAndSetValue($page, '#search_lookfor0_3', '1883');
         $this->findCss($page, '#search_type0_3')->selectOption('year');
-        $this->findCss($page, '#search_lookfor1_0')->setValue('miller');
+        $this->findCssAndSetValue($page, '#search_lookfor1_0', 'miller');
 
         // Submit search form
         $this->findCss($page, '[type=submit]')->press();
@@ -217,9 +216,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#group1');
 
         // Enter search criteria
-        $this->findCss($page, '#search_lookfor0_0')->setValue('building:"journals.mrc"');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'building:"journals.mrc"');
         $this->findCss($page, '#search_type1_0')->selectOption('Title');
-        $this->findCss($page, '#search_lookfor1_0')->setValue('rational');
+        $this->findCssAndSetValue($page, '#search_lookfor1_0', 'rational');
         $this->findCss($page, '#search_bool1')->selectOption('NOT');
 
         // Submit search form
@@ -248,7 +247,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Enter search criteria
         $this->findCss($page, '#search_type0_0')->selectOption('Title');
-        $this->findCss($page, '#search_lookfor0_0')->setValue('rational');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'rational');
         $this->findCss($page, '#search_bool0')->selectOption('NOT');
 
         // Submit search form

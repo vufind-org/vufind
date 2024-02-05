@@ -436,7 +436,7 @@ class ChoiceAuth extends AbstractBase
         if (!$this->strategy) {
             $this->strategy = trim($request->getQuery()->get('auth_method', ''));
         }
-        if (!$this->strategy) {
+        if (!$this->strategy || !in_array($this->strategy, $this->strategies)) {
             $this->strategy = $defaultStrategy;
             if (empty($this->strategy)) {
                 throw new AuthException('authentication_error_technical');

@@ -46,7 +46,6 @@ use function count;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -66,8 +65,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test changing a password.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -291,8 +288,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test default pick up location
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
     public function testDefaultPickUpLocation(): void
@@ -355,7 +350,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Change the default and verify:
-        $this->findCss($page, '#home_library')->setValue('B');
+        $this->findCssAndSetValue($page, '#home_library', 'B');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
@@ -365,7 +360,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Change to "Always ask me":
-        $this->findCss($page, '#home_library')->setValue(' ** ');
+        $this->findCssAndSetValue($page, '#home_library', ' ** ');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -375,7 +370,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNull($userTable->getByUsername('username2')->home_library);
 
         // Back to default:
-        $this->findCss($page, '#home_library')->setValue('');
+        $this->findCssAndSetValue($page, '#home_library', '');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals(

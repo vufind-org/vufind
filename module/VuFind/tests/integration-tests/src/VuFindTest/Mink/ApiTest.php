@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class ApiTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -57,7 +56,7 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->clickCss($page, '#operations-Record-get_record button');
         $this->clickCss($page, '#operations-Record-get_record .try-out button');
-        $this->findCss($page, '#operations-Record-get_record input[type="text"]')->setValue($id);
+        $this->findCssAndSetValue($page, '#operations-Record-get_record input[type="text"]', $id);
         $this->clickCss($page, '#operations-Record-get_record .execute-wrapper button');
         return $page;
     }

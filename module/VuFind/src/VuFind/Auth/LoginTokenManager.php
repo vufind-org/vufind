@@ -217,7 +217,8 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         } catch (\Exception $e) {
         }
         if (!is_array($userInfo ?? null)) {
-            throw new AuthException('Problem with browscap.ini');
+            $error = error_get_last();
+            throw new AuthException('Problem with browscap.ini: ' . ($error['message'] ?? 'no message'));
         }
         $browser = $userInfo['browser'] ?? '';
         $platform = $userInfo['platform'] ?? '';

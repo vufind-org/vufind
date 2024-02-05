@@ -42,7 +42,6 @@ use Behat\Mink\Element\Element;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -117,8 +116,6 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding two library cards.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -222,9 +219,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')->getText()
         );
 
-        // Switch to the second card; we can't currently use findCssAndSetValue() here because
-        // it conflicts with the behavior of jumpMenu.
-        $this->findCss($page, '#library_card')->setValue($card2Value);
+        // Switch to the second card; don't try to verify the set value because it
+        // conflicts with the behavior of jumpMenu.
+        $this->findCssAndSetValue($page, '#library_card', $card2Value, null, 6, false);
         $this->waitForPageLoad($page);
 
         // Check that the appropriate username is reflected in the output:
