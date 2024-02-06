@@ -218,8 +218,6 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     {
         $token = bin2hex(random_bytes(32));
         $series = $series ? $series : bin2hex(random_bytes(32));
-        $browser = '';
-        $platform = '';
         try {
             $browser = $this->browscap->getBrowser();
         } catch (\Exception $e) {
