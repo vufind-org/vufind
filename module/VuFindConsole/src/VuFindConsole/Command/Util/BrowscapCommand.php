@@ -37,6 +37,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Http\GuzzleService;
 
 /**
@@ -60,7 +61,7 @@ class BrowscapCommand extends Command
     /**
      * Cache manager
      *
-     * @var \VuFind\Cache\Manager
+     * @var CacheManager
      */
     protected $cacheManager;
 
@@ -74,11 +75,11 @@ class BrowscapCommand extends Command
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager  Cache manager
-     * @param GuzzleService         $guzzleService Guzzle service
+     * @param CacheManager  $cacheManager  Cache manager
+     * @param GuzzleService $guzzleService Guzzle service
      */
     public function __construct(
-        \VuFind\Cache\Manager $cacheManager,
+        CacheManager $cacheManager,
         GuzzleService $guzzleService
     ) {
         parent::__construct();
