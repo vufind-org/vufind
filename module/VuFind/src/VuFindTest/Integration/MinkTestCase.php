@@ -741,32 +741,27 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Check for jQuery (if not loaded, some checks will be skipped):
-        $jQuery = $session->wait($timeout, "typeof $ !== 'undefined'");
-        if ($jQuery) {
-            // Wait for any AJAX requests to complete:
-            $session->wait(
-                $timeout,
-                '$.active === 0'
-            );
-        }
+        // Wait for any AJAX requests to complete (and that jQuery is loaded):
+        $session->wait(
+            $timeout,
+            "typeof $ !== 'undefined' && $.active === 0"
+        );
         // Wait for modal load to complete:
         $this->unFindCss($page, '.modal-loading-overlay', $timeout);
         // Wait for page load to complete again in case it was triggered by
         // lightbox refresh or similar:
         $session->wait($timeout, "document.readyState === 'complete'");
-
-        if ($jQuery) {
-            // Make sure any loading spinners are not visible:
-            $session->wait(
-                $timeout,
-                "$('.loading-spinner:visible').length === 0"
-            );
-            // Make sure nothing is being animated:
-            $session->wait(
-                $timeout,
-                "$(':animated').length === 0"
-            );
+        // Make sure any loading spinners are not visible (and jQuery is still loaded):
+        $session->wait(
+            $timeout,
+            "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
+        );
+        // Make sure nothing is being animated (and jQuery is still loaded):
+        $jqueryOk = $session->wait(
+            $timeout,
+            "typeof $ !== 'undefined' && $(':animated').length === 0"
+        );
+        if ($jqueryOk) {
             // Finally, make sure all jQuery ready handlers are done:
             $session->evaluateScript(
                 <<<EOS
