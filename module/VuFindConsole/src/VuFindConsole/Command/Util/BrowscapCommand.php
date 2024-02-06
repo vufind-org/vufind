@@ -37,6 +37,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Http\GuzzleService;
 
 /**
  * Console command: browscap
@@ -64,36 +65,25 @@ class BrowscapCommand extends Command
     protected $cacheManager;
 
     /**
-     * VuFind configuration
+     * Guzzle service
      *
-     * @var array
+     * @var GuzzleService
      */
-    protected $config;
-
-    /**
-     * Mappings from VuFind HTTP settings to Guzzle
-     *
-     * @var array
-     */
-    protected $guzzleHttpSettingsMap = [
-        'sslcafile' => 'ssl_key',
-        'timeout' => 'timeout',
-        'curloptions' => 'curl',
-    ];
+    protected $guzzleService;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager
-     * @param array                 $config       Configuration
+     * @param \VuFind\Cache\Manager $cacheManager  Cache manager
+     * @param GuzzleService         $guzzleService Guzzle service
      */
     public function __construct(
         \VuFind\Cache\Manager $cacheManager,
-        array $config
+        GuzzleService $guzzleService
     ) {
         parent::__construct();
         $this->cacheManager = $cacheManager;
-        $this->config = $config;
+        $this->guzzleService = $guzzleService;
     }
 
     /**
@@ -151,7 +141,7 @@ class BrowscapCommand extends Command
 
         $cache = new SimpleCacheDecorator($this->cacheManager->getCache('browscap'));
         $logger = new ConsoleLogger($output, [LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL]);
-        $client = new \GuzzleHttp\Client($this->getGuzzleConfig());
+        $client = $this->guzzleService->createClient();
 
         $bc = new \BrowscapPHP\BrowscapUpdater($cache, $logger, $client);
         $logger->info('Checking for update...');
@@ -171,41 +161,5 @@ class BrowscapCommand extends Command
         $logger->info('Update complete.');
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * Get Guzzle options
-     *
-     * @return array
-     */
-    protected function getGuzzleConfig(): array
-    {
-        $result = [];
-
-        $httpConfig = $this->config['Http'] ?? [];
-        foreach ($this->guzzleHttpSettingsMap as $src => $dst) {
-            if (null !== ($value = $httpConfig[$src] ?? null)) {
-                $result[$dst] = $value;
-            }
-        }
-
-        // Proxy configuration
-        $proxyConfig = $this->config['Proxy'] ?? [];
-        if (!empty($proxyConfig['host'])) {
-            $result['curl'][CURLOPT_PROXY] = $proxyConfig['host'];
-        }
-        if (!empty($proxyConfig['port'])) {
-            $result['curl'][CURLOPT_PROXYPORT] = $proxyConfig['port'];
-        }
-        // HTTP is default, so handle only the SOCKS 5 proxy types
-        switch ($proxyConfig['type'] ?? '') {
-            case 'socks5':
-                $result['curl'][CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
-                break;
-            case 'socks5_hostname':
-                $result['curl'][CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5_HOSTNAME;
-                break;
-        }
-        return $result;
     }
 }

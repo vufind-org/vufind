@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Util/BrowscapCommand.
+ * Guzzle Service factory.
  *
  * PHP version 8
  *
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindConsole\Command\Util;
+namespace VuFind\Http;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for Util/BrowscapCommand.
+ * Guzzle Service factory.
  *
  * @category VuFind
- * @package  Console
+ * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BrowscapCommandFactory implements FactoryInterface
+class GuzzleServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,10 +65,11 @@ class BrowscapCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         return new $requestedName(
-            $container->get(\VuFind\Cache\Manager::class),
-            $container->get(\VuFind\Http\GuzzleService::class),
-            ...($options ?? [])
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray()
         );
     }
 }
