@@ -14,7 +14,7 @@
     {
         "expectedMethod": "POST",
         "expectedPath": "/circulation/requests",
-        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2022-01-01\",\"pickupServicePointId\":\"desk1\"}/",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2022-01-01\",\"pickupServicePointId\":\"desk1\",\"requestType\":\"Page\"}/",
         "body": "{ \"status\": \"success\" }"
     }
 ]
