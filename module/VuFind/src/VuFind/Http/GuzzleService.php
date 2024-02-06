@@ -73,7 +73,6 @@ class GuzzleService
      * @var array
      */
     protected $guzzleHttpSettingsMap = [
-        'sslcafile' => 'ssl_key',
         'timeout' => 'timeout',
         'curloptions' => 'curl',
     ];
@@ -152,6 +151,18 @@ class GuzzleService
             $guzzleConfig['headers']['User-Agent'] = $guzzleConfig['useragent'];
             unset($guzzleConfig['useragent']);
         }
+
+        // Handle sslcapath, sslcafile and sslverifypeer:
+        if ($guzzleConfig['sslverifypeer'] ?? true) {
+            if ($verify = $guzzleConfig['sslcafile'] ?? $guzzleConfig['sslcapath'] ?? null) {
+                $guzzleConfig['verify'] = $verify;
+            }
+        } else {
+            $guzzleConfig['verify'] = false;
+        }
+        unset($guzzleConfig['sslverifypeer']);
+        unset($guzzleConfig['sslcapath']);
+        unset($guzzleConfig['sslcafile']);
 
         // Handle proxy configuration:
         if (!$this->isLocal($url)) {
