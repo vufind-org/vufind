@@ -42,6 +42,8 @@ use VuFind\Cookie\CookieManager;
  */
 class CartTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Mock record loader
      *
@@ -192,9 +194,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testCookieWrite()
     {
         $manager = $this->getMockCookieManager();
-        $manager->expects($this->exactly(2))
-            ->method('set')
-            ->withConsecutive(['vufind_cart', 'Aa'], ['vufind_cart_src', 'Solr']);
+        $this->expectConsecutiveCalls($manager, 'set', [['vufind_cart', 'Aa'], ['vufind_cart_src', 'Solr']]);
         $cart = $this->getCart(100, true, $manager);
         $cart->addItem('Solr|a');
     }

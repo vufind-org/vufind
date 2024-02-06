@@ -8,6 +8,7 @@ VuFind.register('search', function search() {
   let searchFormSelector = 'form.searchForm';
   let resultControlLinksSelector = '.js-search-sort a, .js-search-limit a';
   let viewTypeSelector = '.view-buttons a';
+  let selectAllSelector = '.checkbox-select-all';
 
   // Forward declaration
   let loadResults = function loadResultsForward() {};
@@ -144,6 +145,9 @@ VuFind.register('search', function search() {
       }
       element.setAttribute('href', urlParts[0] + '?' + urlParams.toString());
     });
+
+    // Reset "select all" checkbox:
+    document.querySelectorAll(selectAllSelector).forEach((el) => el.checked = false);
   }
 
   /**
@@ -222,6 +226,10 @@ VuFind.register('search', function search() {
       showError('ERROR: data-backend not set for record list');
       return;
     }
+    if (recordList.classList.contains('loading')) {
+      return;
+    }
+    recordList.classList.add('loading');
     const history = recordList.dataset.history;
 
     const loadingOverlay = document.createElement('div');
@@ -295,9 +303,11 @@ VuFind.register('search', function search() {
         initPagination();
         initResultControls();
         VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
+        recordList.classList.remove('loading');
       })
       .catch((error) => {
         showError(VuFind.translate('error_occurred') + ' - ' + error);
+        recordList.classList.remove('loading');
       });
   };
 

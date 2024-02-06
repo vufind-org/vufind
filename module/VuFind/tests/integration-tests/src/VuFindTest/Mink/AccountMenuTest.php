@@ -39,7 +39,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -139,8 +138,6 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the menu is absent when enableAjax is true and enableDropdown
      * is false.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -285,8 +282,11 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNotNull($storage['fines']);
         // Clear all cache
         $session->evaluateScript('VuFind.account.clearCache();');
+        // Wait for reload
+        $this->waitForPageLoad($this->getMinkSession()->getPage());
         $storage = $this->getJSStorage();
-        $this->assertNull($storage['fines']);
+        // Status code MISSING is -2 * Math.PI, but we just round it here to avoid trouble
+        $this->assertEquals(-6, ceil($storage['fines']));
     }
 
     /**

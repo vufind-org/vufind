@@ -655,7 +655,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getLinkUrlsProvider(): array
+    public static function getLinkUrlsProvider(): array
     {
         return [
             [

@@ -67,7 +67,7 @@
   <?php
     // We need an inner wrapper to keep the label out of the dropdown and from
     // affecting dropdown position
-    $menuContents = '<label for="' . $this->escapeHtmlAttr($toggleAttrs['id']) . '">'
+    $menuContents = '<label for="' . $this->escapeHtmlAttr($toggleAttrs['id']) . '" class="dropdown__label">'
       . $this->escapeHtml($label)
       . '</label>'
       . $this->makeTag(

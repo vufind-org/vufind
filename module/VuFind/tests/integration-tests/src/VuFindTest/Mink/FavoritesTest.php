@@ -43,7 +43,6 @@ use function count;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -110,8 +109,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test adding a record to favorites (from the record page) while creating a
      * new account.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -246,8 +243,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) while creating a
      * new account.
      *
-     * @depends       testAddRecordToFavoritesNewAccount
-     * @retryCallback removeUsername2
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -660,7 +656,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getListTagData(): array
+    public static function getListTagData(): array
     {
         $defaultChannelConfig = ['tags' => ['channel'], 'displayPublicLists' => false];
         return [
@@ -837,17 +833,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->closeLightbox($page);
         $this->unFindCss($page, '.result');
-    }
-
-    /**
-     * Retry cleanup method in case of failure during
-     * testAddSearchItemToFavoritesNewAccount.
-     *
-     * @return void
-     */
-    protected function removeUsername2()
-    {
-        static::removeUsers(['username2']);
     }
 
     /**
