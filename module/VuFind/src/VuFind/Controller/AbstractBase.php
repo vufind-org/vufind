@@ -72,7 +72,7 @@ use function is_object;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements Feature\AccessPermissionInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -146,7 +146,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     /**
      * Getter for access permission.
      *
-     * @param string $ap Permission to require for access to the controller (false
+     * @param string|false $ap Permission to require for access to the controller (false
      * for no requirement)
      *
      * @return void
