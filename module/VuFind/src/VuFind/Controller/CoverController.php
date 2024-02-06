@@ -31,6 +31,8 @@ use VuFind\Cover\CachingProxy;
 use VuFind\Cover\Loader;
 use VuFind\Session\Settings as SessionSettings;
 
+use function in_array;
+
 /**
  * Generates covers for book entries
  *
@@ -136,6 +138,20 @@ class CoverController extends \Zend\Mvc\Controller\AbstractActionController
     }
 
     /**
+     * Is the content type allowed by the cover proxy?
+     *
+     * @param string $contentType Type to check
+     *
+     * @return bool
+     */
+    protected function isValidProxyImageContentType(string $contentType): bool
+    {
+        $validTypes = $this->config['coverproxyAllowedTypes']
+            ?? ['image/gif', 'image/jpeg', 'image/png'];
+        return in_array(strtolower($contentType), array_map('strtolower', $validTypes));
+    }
+
+    /**
      * Send image data for display in the view
      *
      * @return \Zend\Http\Response
@@ -150,7 +166,7 @@ class CoverController extends \Zend\Mvc\Controller\AbstractActionController
             try {
                 $image = $this->proxy->fetch($url);
                 $contentType = $image?->getHeaders()?->get('content-type')?->getFieldValue() ?? '';
-                if (str_starts_with(strtolower($contentType), 'image/')) {
+                if ($this->isValidProxyImageContentType($contentType)) {
                     return $this->displayImage(
                         $contentType,
                         $image->getContent()
