@@ -35,6 +35,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -72,7 +73,7 @@ use function is_object;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements Feature\AccessPermissionInterface, TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
