@@ -9,7 +9,7 @@
         "expectedParams": [],
         "body": [ {"id":"mod-circulation-23.5.7"} ],
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "POST",
