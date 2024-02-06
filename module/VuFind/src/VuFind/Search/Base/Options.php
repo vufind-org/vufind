@@ -1186,7 +1186,7 @@ abstract class Options implements TranslatorAwareInterface
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
         if (count($class) !== 4) {
-            if (str_starts_with($className, 'Mock_')) {
+            if (str_starts_with($className, 'Mock_') || str_starts_with($className, 'MockObject_')) {
                 return 'Mock';
             }
             throw new \Exception("Unexpected class name: {$className}");

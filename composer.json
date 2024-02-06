@@ -104,9 +104,9 @@
         "friendsofphp/php-cs-fixer": "3.46.0",
         "phpmd/phpmd": "2.13.0",
         "phpstan/phpstan": "1.10.34",
-        "phpunit/php-code-coverage": "9.2.28",
-        "phpunit/phpcov": "^8.2",
-        "phpunit/phpunit": "9.6.12",
+        "phpunit/php-code-coverage": "10.1.11",
+        "phpunit/phpcov": "^9.0",
+        "phpunit/phpunit": "10.5.7",
         "pietercolpaert/hardf": "0.3.1",
         "squizlabs/php_codesniffer": "3.7.2"
     },
