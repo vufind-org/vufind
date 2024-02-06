@@ -747,7 +747,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             // Wait for any AJAX requests to complete:
             $session->wait(
                 $timeout,
-                "typeof $ !== 'undefined' && $.active === 0"
+                "$.active === 0"
             );
         }
         // Wait for modal load to complete:
