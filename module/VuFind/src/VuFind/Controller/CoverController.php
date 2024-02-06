@@ -135,7 +135,7 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     protected function proxyAllowedForUrl(string $url): bool
     {
         $host = parse_url($url, PHP_URL_HOST);
-        foreach ((array)($this->config['coverproxyAllowedHosts'] ?? $config) as $regEx) {
+        foreach ((array)($this->config['coverproxyAllowedHosts'] ?? []) as $regEx) {
             if (preg_match($regEx, $host)) {
                 return true;
             }
