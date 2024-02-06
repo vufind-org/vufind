@@ -155,11 +155,9 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
      */
     protected function isValidProxyImageContentType(string $contentType): bool
     {
-        // We only support image content, and we exclude SVG because that is not
-        // an appropriate format for cover images (and could be abused).
-        $lowerContentType = strtolower($contentType);
-        return str_starts_with($lowerContentType, 'image/')
-            && $lowerContentType !== 'image/svg+xml';
+        $validTypes = $this->config['coverproxyAllowedTypes']
+            ?? ['image/gif', 'image/jpeg', 'image/png'];
+        return in_array(strtolower($contentType), array_map('strtolower', $validTypes));
     }
 
     /**
