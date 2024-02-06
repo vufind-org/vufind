@@ -66,20 +66,30 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     protected $sessionSettings = null;
 
     /**
+     * Configuration settings ([Content] section of config.ini)
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
      * @param Loader          $loader Cover loader
      * @param CachingProxy    $proxy  Proxy loader
      * @param SessionSettings $ss     Session settings
+     * @param array           $config Configuration settings
      */
     public function __construct(
         Loader $loader,
         CachingProxy $proxy,
-        SessionSettings $ss
+        SessionSettings $ss,
+        array $config = []
     ) {
         $this->loader = $loader;
         $this->proxy = $proxy;
         $this->sessionSettings = $ss;
+        $this->config = $config;
     }
 
     /**
@@ -116,6 +126,27 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
+     * Is the provided URL included on the configured allow list?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function proxyAllowedForUrl(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!$host) {
+            return false;
+        }
+        foreach ((array)($this->config['coverproxyAllowedHosts'] ?? []) as $regEx) {
+            if (preg_match($regEx, $host)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Send image data for display in the view
      *
      * @return \Laminas\Http\Response
@@ -126,7 +157,7 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
 
         // Special case: proxy a full URL:
         $url = $this->params()->fromQuery('proxy');
-        if (!empty($url)) {
+        if (!empty($url) && $this->proxyAllowedForUrl($url)) {
             try {
                 $image = $this->proxy->fetch($url);
                 $contentType = $image?->getHeaders()?->get('content-type')?->getFieldValue() ?? '';

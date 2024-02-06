@@ -66,6 +66,7 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testApiDisabledByDefault(): void
     {
         $page = $this->makeRecordApiCall();
@@ -80,6 +81,7 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testEnabledRecordApi(): void
     {
         $this->changeConfigs(
