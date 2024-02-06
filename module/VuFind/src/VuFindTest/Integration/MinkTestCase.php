@@ -33,6 +33,7 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
 use PHPUnit\Util\Test;
+use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -94,7 +95,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->getName(false);
+        return $this::class . '::' . $this->name();
     }
 
     /**
@@ -740,38 +741,45 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Wait for any AJAX requests to complete:
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $.active === 0"
-        );
+        // Check for jQuery (if not loaded, some checks will be skipped):
+        $jQuery = $session->wait($timeout, "typeof $ !== 'undefined'");
+        if ($jQuery) {
+            // Wait for any AJAX requests to complete:
+            $session->wait(
+                $timeout,
+                '$.active === 0'
+            );
+        }
         // Wait for modal load to complete:
         $this->unFindCss($page, '.modal-loading-overlay', $timeout);
         // Wait for page load to complete again in case it was triggered by
         // lightbox refresh or similar:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Make sure any loading spinners are not visible:
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
-        );
-        // Make sure nothing is being animated:
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $(':animated').length === 0"
-        );
-        // Finally, make sure all jQuery ready handlers are done:
-        $session->evaluateScript(
-            <<<EOS
-                if (window.__documentIsReady !== true) {
-                    $(document).ready(function() { window.__documentIsReady = true; });
-                }
-                EOS
-        );
-        $session->wait(
-            $timeout,
-            'window.__documentIsReady === true'
-        );
+
+        if ($jQuery) {
+            // Make sure any loading spinners are not visible:
+            $session->wait(
+                $timeout,
+                "$('.loading-spinner:visible').length === 0"
+            );
+            // Make sure nothing is being animated:
+            $session->wait(
+                $timeout,
+                "$(':animated').length === 0"
+            );
+            // Finally, make sure all jQuery ready handlers are done:
+            $session->evaluateScript(
+                <<<EOS
+                    if (window.__documentIsReady !== true) {
+                        $(document).ready(function() { window.__documentIsReady = true; });
+                    }
+                    EOS
+            );
+            $session->wait(
+                $timeout,
+                'window.__documentIsReady === true'
+            );
+        }
     }
 
     /**
@@ -858,6 +866,28 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Extract the first parameter of the first attribute matching the specified
+     * criteria.
+     *
+     * @param string $method    Method name to check for attributes
+     * @param string $attribute Attribute class name to look up
+     * @param mixed  $default   Default value to use if no match found
+     *
+     * @return mixed
+     * @throws ReflectionException
+     */
+    protected function getFirstMethodAttributeValue(
+        string $method,
+        string $attribute,
+        mixed $default = null
+    ): mixed {
+        $reflection = new \ReflectionObject($this);
+        $matches = $reflection->getMethod($method)->getAttributes($attribute);
+        $args = ($matches[0] ?? null)?->getArguments() ?? [];
+        return $args[0] ?? $default;
+    }
+
+    /**
      * Validate current page HTML if validation is enabled and a session exists
      *
      * @param ?Element $page Page to check (optional; uses the page from session by
@@ -869,19 +899,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function validateHtml(?Element $page = null): void
     {
-        if (
-            (!$this->session && !$page)
-            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
-        ) {
-            return;
-        }
-        $annotations = Test::parseTestMethodAnnotations(
-            static::class,
-            $this->getName(false)
+        $validatorEnabled = $this->getFirstMethodAttributeValue(
+            $this->name(),
+            \VuFindTest\Attribute\HtmlValidation::class,
+            true
         );
         if (
-            ($annotations['method']['skip_html_validation'][0] ?? false)
-            || ($annotations['class']['skip_html_validation'][0] ?? false)
+            !$validatorEnabled
+            || (!$this->session && !$page)
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
         }
@@ -1030,10 +1056,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set:
         if (
-            $this->hasFailed()
+            $this->status()->isFailure()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
-            $filename = $this->getName() . '-' . hrtime(true);
+            $filename = $this->name() . '-' . hrtime(true);
 
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();
@@ -1057,7 +1083,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
 
         $htmlValidationException = null;
-        if (!$this->hasFailed()) {
+        if (!$this->status()->isFailure()) {
             try {
                 $this->validateHtml();
             } catch (\Exception $e) {
