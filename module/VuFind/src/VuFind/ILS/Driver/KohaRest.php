@@ -163,16 +163,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var array
      */
     protected $renewalBlockMappings = [
-        'too_soon' => 'Cannot renew yet',
-        'onsite_checkout' => 'Copy has special circulation',
+        'too_soon' => 'ILSMessages::renewal_too_soon',
+        'auto_too_soon' => 'ILSMessages::will_auto_renew',
+        'onsite_checkout' => 'ILSMessages::special_circulation',
         'on_reserve' => 'renew_item_requested',
         'too_many' => 'renew_item_limit',
-        'restriction' => 'Borrowing Block Message',
+        'restriction' => 'ILSMessages::renewal_block',
         'overdue' => 'renew_item_overdue',
-        'cardlost' => 'renew_card_lost',
+        'cardlost' => 'ILSMessages::lost_card',
         'gonenoaddress' => 'patron_status_address_missing',
         'debarred' => 'patron_status_card_blocked',
-        'debt' => 'renew_debt',
+        'debt' => 'ILSMessages::too_much_debt',
     ];
 
     /**
@@ -208,6 +209,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $itemStatusMappings = [
         'Item::Held' => 'On Hold',
         'Item::Waiting' => 'On Holdshelf',
+        'Item::Recalled' => 'Recalled',
     ];
 
     /**

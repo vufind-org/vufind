@@ -47,7 +47,6 @@ use function strlen;
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -101,8 +100,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test adding comments on records.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
     public function testAddComment(): void
@@ -134,7 +131,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->unFindCss($page, '.comment');
         // Add comment
-        $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->findCss($page, '.comment');
         // Remove comment
@@ -188,7 +185,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->unFindCss($page, '.comment');
         // Add comment without CAPTCHA
-        $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->assertEquals(
             'CAPTCHA not passed',
@@ -229,7 +226,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->submitLoginForm($page);
         }
         // Add tags
-        $this->findCss($page, '.modal #addtag_tag')->setValue($tags);
+        $this->findCssAndSetValue($page, '.modal #addtag_tag', $tags);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
         $success = $this->findCss($page, '.modal-body .alert-success');
@@ -239,8 +236,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding tags on records.
-     *
-     * @retryCallback removeUsername2
      *
      * @return void
      *
@@ -435,7 +430,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Add tags
-        $this->findCss($page, '.modal #addtag_tag')->setValue('one ONE "new tag" ONE "THREE 4"');
+        $this->findCssAndSetValue($page, '.modal #addtag_tag', 'one ONE "new tag" ONE "THREE 4"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
         $success = $this->findCss($page, '.modal-body .alert-success');
@@ -449,8 +444,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test record view email.
-     *
-     * @retryCallback removeEmailManiac
      *
      * @return void
      */
@@ -475,11 +468,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure Lightbox redirects to email view
         $this->findCss($page, '.modal #email_to');
         // Type invalid email
-        $this->findCss($page, '.modal #email_to')->setValue('blargarsaurus');
-        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
-        $this->findCss($page, '.modal #email_message')->setValue('message');
+        $this->findCssAndSetValue($page, '.modal #email_to', 'blargarsaurus');
+        $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
+        $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         // Send text to false email
-        $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
+        $this->findCssAndSetValue($page, '.modal #email_to', 'asdf@vufind.org');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-success');
@@ -503,8 +496,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.mail-record');
         $this->findCss($page, '.modal #email_to');
         // Send text to false email
-        $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
-        $this->findCss($page, '.modal #email_from')->setValue('asdf@vufind.org');
+        $this->findCssAndSetValue($page, '.modal #email_to', 'asdf@vufind.org');
+        $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@vufind.org');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message and close lightbox
         $this->findCss($page, '.modal .alert-success');
@@ -535,36 +528,36 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.sms-record');
         // Type invalid phone numbers
         // - too empty
-        $this->findCss($page, '.modal #sms_to')->setValue('');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - too short
-        $this->findCss($page, '.modal #sms_to')->setValue('123');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '123');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - too long
-        $this->findCss($page, '.modal #sms_to')->setValue('12345678912345678912345679');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '12345678912345678912345679');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - too lettery
-        $this->findCss($page, '.modal #sms_to')->setValue('123abc');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '123abc');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - just right
-        $this->findCss($page, '.modal #sms_to')->setValue('8005555555');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '8005555555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
         $this->assertNull($page->find('css', '.modal .sms-error'));
 
         $this->unFindCss($page, '.modal .sms-error');
         // - pretty just right
-        $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page); // wait for form submission to catch missing carrier
         $this->assertNull($page->find('css', '.modal .sms-error'));
         $this->unFindCss($page, '.modal .sms-error');
         // Send text to false number
-        $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');
+        $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
         $optionElement = $this->findCss($page, '.modal #sms_provider option');
         $page->selectFieldOption('sms_provider', 'verizon');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -583,7 +576,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', 'Dewey');
         $this->findCss($page, '.btn.btn-primary')->click();
         $this->clickCss($page, '.result a.title');
 
@@ -632,8 +625,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $allowRemove Value for remove_rating config
      *
      * @dataProvider getTestRatingData
-     *
-     * @retryCallback removeUsername2And3And4
      *
      * @return void
      */
@@ -752,7 +743,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->waitForPageLoad($page);
         $this->findCss($page, '.comment-form');
-        $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
         $this->clickCss($page, 'form.comment-form div.star-rating label', null, 10);
         // Check that "Clear" link is present before submitting:
         $this->findCss($page, 'form.comment-form a');
@@ -767,7 +758,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
         if ($allowRemove) {
             // Clear rating when adding another comment
-            $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('two');
+            $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
             $this->clickCss($page, 'form.comment-form a');
             $this->clickCss($page, 'form.comment-form .btn-primary');
             // Check result (wait for the value to update):
@@ -807,16 +798,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Retry cleanup method in case of failure during testAddTag.
-     *
-     * @return void
-     */
-    protected function removeUsername2(): void
-    {
-        static::removeUsers(['username2']);
-    }
-
-    /**
      * Retry cleanup method in case of failure during testRating.
      *
      * @return void
@@ -824,16 +805,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function removeUsername2And3And4(): void
     {
         static::removeUsers(['username2', 'username3', 'username4']);
-    }
-
-    /**
-     * Retry cleanup method in case of failure during testEmail.
-     *
-     * @return void
-     */
-    protected function removeEmailManiac(): void
-    {
-        static::removeUsers(['emailmaniac']);
     }
 
     /**

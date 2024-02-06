@@ -87,6 +87,9 @@ module.exports = function(grunt) {
     },
     'check:scss': {
       'dart-sass': {
+        options: {
+          quietDeps: true
+        }
       }
     },
 

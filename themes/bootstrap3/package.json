@@ -7,7 +7,7 @@
   "dependencies": {
     "@splidejs/splide": "^4.1.4",
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.7",
-    "jstree": "3.3.15",
+    "chart.js": "^4.4.0",
     "simple-keyboard": "^3.6.0",
     "simple-keyboard-layouts": "^3.0.0",
     "vanilla-cookieconsent": "3.0.0-rc.16"

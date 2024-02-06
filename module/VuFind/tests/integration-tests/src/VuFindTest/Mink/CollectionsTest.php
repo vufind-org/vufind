@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -158,7 +157,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
-        $this->clickCss($page, '[data-recordid="colitem2"] a');
+        $this->clickCss($page, 'a[data-record-id="colitem2"]');
 
         $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
 

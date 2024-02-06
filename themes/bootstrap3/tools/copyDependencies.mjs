@@ -5,8 +5,8 @@ console.log('Copying dependencies...');
 // autocomplete.js
 await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autocomplete.js');
 
-// jstree
-await copyFile('node_modules/jstree/dist/jstree.min.js', 'js/vendor/jsTree/jstree.min.js');
+// chart.js
+await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 
 // splide
 await copyFile('node_modules/@splidejs/splide/dist/js/splide.min.js', 'js/vendor/splide.min.js');

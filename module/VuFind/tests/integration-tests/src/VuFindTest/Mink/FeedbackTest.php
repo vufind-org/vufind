@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -92,7 +91,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     protected function fillInAndSubmitFeedbackForm($page)
     {
         $this->clickCss($page, '#feedbackLink');
-        $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
+        $this->findCssAndSetValue($page, '#modal .form-control[name="name"]', 'Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
         $this->findCss($page, '#modal #form_FeedbackSite_message')

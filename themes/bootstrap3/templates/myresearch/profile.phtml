@@ -84,6 +84,46 @@
     <?php endif; ?>
   </div>
 
+  <?php $user = $this->auth()->isLoggedIn(); ?>
+  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user)): ?>
+    <div class="myresearch-profile-header">
+      <h3><?=$this->transEsc('Saved Logins')?></h3>
+    </div>
+    <?php $tokens = $user->getLoginTokens($user->id); ?>
+    <?php if (!$tokens): ?>
+      <div class="my-profile-col"><?=$this->transEsc('No saved logins')?></div>
+    <?php else: ?>
+      <table class="login-tokens-table table table-responsive table-striped">
+        <thead>
+          <tr>
+            <th scope="col" class="login_token_browser"> <?=$this->transEsc('saved_login_platform_and_browser')?></th>
+            <th scope="col" class="login_token_last_login"><?=$this->transEsc('Last Login')?></th>
+            <th scope="col" class="login_token_delete"><?=$this->transEsc('saved_login_actions')?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($tokens as $i => $token): ?>
+            <tr>
+              <td data-label="<?=$this->transEsc('saved_login_platform_and_browser')?>" id="login_platform_<?=$i?>"><?=$this->transEsc($token->platform)?> / <?=$this->transEsc($token->browser)?></td>
+              <td data-label="<?=$this->transEsc('Last Login')?>" id="login_date_<?=$i?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $token->last_login)?></td>
+              <td data-label="<?=$this->transEsc('saved_login_actions')?>">
+                <form id="delete-login-token" method="post" action="<?=$this->url('myresearch-deletelogintoken')?>">
+                  <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+                  <input type="hidden" name="series" value="<?=$this->escapeHtmlAttr($token->series)?>">
+                  <input id="delete-login-token-submit" class="btn btn-danger" type="submit" name="submit" value="<?=$this->transEscAttr('Forget Login'); ?>" aria-labelledby="delete-login-token-submit login_platform_<?=$i?> login_date_<?=$i?>">
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+      <form id="delete-user-login-tokens" method="post" action="<?=$this->url('myresearch-deleteuserlogintokens')?>">
+        <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+        <input id="delete-user-login-tokens-submit" class="btn btn-danger" type="submit" name="submit" value="<?=$this->transEscAttr('Forget All')?>">
+      </form>
+    <?php endif; ?>
+  <?php endif; ?>
+
   <?php if (is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <p>

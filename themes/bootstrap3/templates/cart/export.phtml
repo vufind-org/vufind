@@ -11,7 +11,7 @@
 
 <?=$this->flashmessages()?>
 
-<?php if (!empty($this->exportOptions)): ?>
+<?php if (!empty($this->exportOptions) && count($this->records) > 0): ?>
   <form class="form-cart-export" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEscAttr('Export Items')?>">
     <?php foreach ($this->records as $current): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
