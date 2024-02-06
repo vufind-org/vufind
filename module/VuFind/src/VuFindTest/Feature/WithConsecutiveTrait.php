@@ -67,7 +67,7 @@ trait WithConsecutiveTrait
     ): InvocationStubber {
         $matcher = $this->exactly(count($expectedCalls));
         $callback = function () use ($matcher, $expectedCalls, $returnValues) {
-            $index = $matcher->getInvocationCount() - 1;
+            $index = $matcher->numberOfInvocations() - 1;
             $expectedArgs = $expectedCalls[$index] ?? [];
             $actualArgs = func_get_args();
             foreach ($expectedArgs as $i => $expected) {

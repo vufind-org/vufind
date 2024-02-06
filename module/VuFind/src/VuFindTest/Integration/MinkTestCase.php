@@ -95,7 +95,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->getName(false);
+        return $this::class . '::' . $this->name();
     }
 
     /**
@@ -900,7 +900,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function validateHtml(?Element $page = null): void
     {
         $validatorEnabled = $this->getFirstMethodAttributeValue(
-            $this->getName(false),
+            $this->name(),
             \VuFindTest\Attribute\HtmlValidation::class,
             true
         );
@@ -1056,10 +1056,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set:
         if (
-            $this->hasFailed()
+            $this->status()->isFailure()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
-            $filename = $this->getName() . '-' . hrtime(true);
+            $filename = $this->name() . '-' . hrtime(true);
 
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();
@@ -1083,7 +1083,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
 
         $htmlValidationException = null;
-        if (!$this->hasFailed()) {
+        if (!$this->status()->isFailure()) {
             try {
                 $this->validateHtml();
             } catch (\Exception $e) {
