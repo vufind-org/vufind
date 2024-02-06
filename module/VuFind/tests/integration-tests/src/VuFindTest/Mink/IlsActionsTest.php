@@ -42,7 +42,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -314,8 +313,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Note that we need to run this test FIRST, because after this, VuFind will
      * remember the credentials and won't display the login form again.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
     public function testDisabledUserLogin(): void
@@ -354,8 +351,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test user profile action.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
