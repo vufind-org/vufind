@@ -147,6 +147,22 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
+     * Is the content type allowed by the cover proxy?
+     *
+     * @param string $contentType Type to check
+     *
+     * @return bool
+     */
+    protected function isValidProxyImageContentType(string $contentType): bool
+    {
+        // We only support image content, and we exclude SVG because that is not
+        // an appropriate format for cover images (and could be abused).
+        $lowerContentType = strtolower($contentType);
+        return str_starts_with($lowerContentType, 'image/')
+            && $lowerContentType !== 'image/svg+xml';
+    }
+
+    /**
      * Send image data for display in the view
      *
      * @return \Laminas\Http\Response
@@ -161,7 +177,7 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
             try {
                 $image = $this->proxy->fetch($url);
                 $contentType = $image?->getHeaders()?->get('content-type')?->getFieldValue() ?? '';
-                if (str_starts_with(strtolower($contentType), 'image/')) {
+                if ($this->isValidProxyImageContentType($contentType)) {
                     return $this->displayImage(
                         $contentType,
                         $image->getContent()
