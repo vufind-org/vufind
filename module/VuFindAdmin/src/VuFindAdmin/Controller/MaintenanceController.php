@@ -265,6 +265,8 @@ class MaintenanceController extends AbstractAdmin
     /**
      * Update browscap cache.
      *
+     * Note that there's also similar functionality in BrowscapCommand CLI utility.
+     *
      * @return void
      */
     protected function updateBrowscapCache(): void

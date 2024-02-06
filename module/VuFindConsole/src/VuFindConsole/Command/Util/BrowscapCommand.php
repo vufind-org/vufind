@@ -114,6 +114,8 @@ class BrowscapCommand extends Command
     /**
      * Run the command.
      *
+     * Note that there's also similar functionality in MaintenanceController.
+     *
      * @param InputInterface  $input  Input object
      * @param OutputInterface $output Output object
      *
