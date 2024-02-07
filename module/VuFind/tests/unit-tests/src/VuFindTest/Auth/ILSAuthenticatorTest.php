@@ -208,7 +208,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         if (null === $connection) {
             $connection = $this->getMockConnection();
         }
-        return new ILSAuthenticator($manager, $connection);
+        return new ILSAuthenticator(function () use ($manager) { return $manager; }, $connection);
     }
 
     /**
