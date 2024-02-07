@@ -41,9 +41,10 @@ namespace VuFind\Controller\Feature;
 interface AccessPermissionInterface
 {
     /**
-     * Getter for access permission.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null for not determined yet).
      *
-     * @return string|bool
+     * @return string|bool|null
      */
     public function getAccessPermission();
 

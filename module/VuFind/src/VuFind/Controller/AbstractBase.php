@@ -82,7 +82,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * restriction, null to use configured default (which is usually the same
      * as false)).
      *
-     * @var string|bool
+     * @var string|bool|null
      */
     protected $accessPermission = null;
 
@@ -135,9 +135,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Getter for access permission.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null for not determined yet).
      *
-     * @return string|bool
+     * @return string|bool|null
      */
     public function getAccessPermission()
     {
