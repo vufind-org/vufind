@@ -42,7 +42,7 @@ interface AccessPermissionInterface
 {
     /**
      * Getter for access permission (string for required permission name, false
-     * for no permission required, null for not determined yet).
+     * for no permission required, null to use default permission).
      *
      * @return string|bool|null
      */
