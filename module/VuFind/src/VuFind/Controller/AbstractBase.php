@@ -35,6 +35,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -72,7 +73,7 @@ use function is_object;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -81,7 +82,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * restriction, null to use configured default (which is usually the same
      * as false)).
      *
-     * @var string|bool
+     * @var string|bool|null
      */
     protected $accessPermission = null;
 
@@ -134,9 +135,10 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
-     * Getter for access permission.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null to use default permission).
      *
-     * @return string|bool
+     * @return string|bool|null
      */
     public function getAccessPermission()
     {
@@ -146,7 +148,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     /**
      * Getter for access permission.
      *
-     * @param string $ap Permission to require for access to the controller (false
+     * @param string|false $ap Permission to require for access to the controller (false
      * for no requirement)
      *
      * @return void
