@@ -66,7 +66,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                 ],
                 'permissions' => [
-                    'enable-record-api' => [
+                    'access.VuFindInterface' => [
                         'permission' => 'access.VuFindInterface',
                         'require' => 'ANY',
                         'role' => 'loggedin',
