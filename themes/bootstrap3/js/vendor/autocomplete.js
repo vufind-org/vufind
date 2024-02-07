@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.7) (2023-06-21) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.8) (2024-01-29) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -36,6 +36,9 @@ function Autocomplete(_settings) {
   }
 
   function _align(input) {
+    if (input === false) {
+      return;
+    }
     const inputBox = input.getBoundingClientRect();
     list.style.minWidth = inputBox.width + "px";
     list.style.top = inputBox.bottom + window.scrollY + "px";
@@ -56,6 +59,7 @@ function Autocomplete(_settings) {
   }
 
   let lastInput = false;
+  let lastCB;
   function _show(input) {
     lastInput = input;
     list.style.left = "-100%"; // hide offscreen
@@ -73,6 +77,7 @@ function Autocomplete(_settings) {
     list.classList.remove("open");
     _currentIndex = -1;
     lastInput = false;
+    lastCB = false;
   }
 
   function _selectItem(item, input) {
@@ -168,7 +173,6 @@ function Autocomplete(_settings) {
     _currentIndex = -1;
   }
 
-  let lastCB;
   function _search(handler, input) {
     if (input.value.length < settings.minInputLength) {
       _hide();
@@ -252,6 +256,7 @@ function Autocomplete(_settings) {
     if (!input) {
       return false;
     }
+
     if (typeof handler === "undefined") {
       throw new Error(
         "Autocomplete needs handler to return items based on a query: function(query, callback) {}"
@@ -268,12 +273,12 @@ function Autocomplete(_settings) {
         document.body.appendChild(list);
         window.addEventListener(
           "resize",
-          function acresize() {
-            if (lastInput === false) {
-              return;
-            }
-            _align(lastInput);
-          },
+          () => _align(lastInput),
+          false
+        );
+        window.addEventListener(
+          "scroll",
+          () => _align(lastInput),
           false
         );
       }
@@ -291,7 +296,14 @@ function Autocomplete(_settings) {
     input.setAttribute("spellcheck", "false");    // ^
 
     // Activation / De-activation
-    input.addEventListener("focus", (_) => _search(handler, input), false);
+    if (input.getAttribute("autofocus") !== null) {
+      // ignore the first autofocus
+      input.addEventListener("focus", () => {
+        input.addEventListener("focus", () => _search(handler, input));
+      }, { once: true });
+    } else {
+      input.addEventListener("focus", () => _search(handler, input));
+    }
     input.addEventListener("blur", _hide, false);
 
     // Input typing
@@ -322,6 +334,11 @@ function Autocomplete(_settings) {
       (event) => _keydown(handler, input, event),
       false
     );
+
+    input.ac = {
+      show: _show,
+      hide: _hide,
+    }
 
     return input;
   };
