@@ -68,8 +68,11 @@ class ILSAuthenticatorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        // Use a callback to retrieve authentication manager to break a circular reference:
         return new $requestedName(
-            $container->get(\VuFind\Auth\Manager::class),
+            function () use ($container) {
+                return $container->get(\VuFind\Auth\Manager::class);
+            },
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\EmailAuthenticator::class)
         );
