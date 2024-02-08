@@ -1,11 +1,11 @@
 <?php
 
 /**
- * CSP nonce view helper
+ * Attribute to track HTML validation behavior in tests.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2021.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,53 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFindTest\Attribute;
+
+use Attribute;
 
 /**
- * CSP nonce view helper
+ * Attribute to track HTML validation behavior in tests.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org Main Page
  */
-class CspNonce extends \Laminas\View\Helper\AbstractHelper
+#[Attribute]
+class HtmlValidation
 {
     /**
-     * CSP nonce
+     * Should HTML validation be applied to this test?
      *
-     * @var string
+     * @var bool
      */
-    protected $cspNonce;
+    public $useValidation;
 
     /**
      * Constructor
      *
-     * @param string $nonce Nonce from nonce generator
+     * @param bool $useValidation Should HTML validation be applied to this test?
      */
-    public function __construct($nonce)
+    public function __construct($useValidation = true)
     {
-        $this->cspNonce = $nonce;
-    }
-
-    /**
-     * Return the current nonce
-     *
-     * Result is a base64 encoded string that does not need escaping.
-     *
-     * @deprecated Use Csp::getNonce() instead
-     *
-     * @return string
-     */
-    public function __invoke()
-    {
-        return $this->cspNonce;
+        $this->useValidation = $useValidation;
     }
 }

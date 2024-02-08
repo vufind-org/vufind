@@ -467,6 +467,39 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful place hold using request type fallback
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceTitleLevelHoldAfterRequestTypeFallback(): void
+    {
+        $config = [
+            'API' => $this->defaultDriverConfig['API'],
+            'Holds' => [
+                'default_request' => 'Recall',
+                'fallback_request_type' => ['Page'],
+            ],
+        ];
+        $this->createConnector('request-type-fallback', $config);
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
+            'patron' => ['id' => 'user1'],
+            'id' => 'record1',
+            'level' => 'title',
+            'pickUpLocation' => 'servicepoint1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'Open - Not yet filled',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test unsuccessful place hold
      *
      * @depends testTokens

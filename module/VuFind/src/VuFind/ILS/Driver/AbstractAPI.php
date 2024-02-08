@@ -197,7 +197,7 @@ abstract class AbstractAPI extends AbstractBase implements
                     'expectedParams' => $params,
                     'body' => $jsonBody ? $jsonBody : $body,
                     'bodyType' => $jsonBody ? 'json' : 'string',
-                    'code' => $code,
+                    'status' => $code,
                 ];
                 file_put_contents($jsonLog, json_encode($json));
             }
