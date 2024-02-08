@@ -31,8 +31,18 @@
           case 'multiselectvalue': ?>
             <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br>
             <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
-              <?php foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
-                <?php $value = $facetValue['Value']; ?>
+              <?php
+              // Sort the current facet list alphabetically; we'll use this data
+              // along with the foreach below to display facet options in the
+              // correct order.
+              $sorted = [];
+              foreach ($facet['LimiterValues'] as $i => $value) {
+                $sorted[$i] = $value['Value'];
+              }
+              $this->sorter()->natsort($sorted);
+              ?>
+              <?php foreach ($sorted as $i => $display): ?>
+                <?php $facetValue = $facet['LimiterValues'][$i]; ?>
                 <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
               <?php endforeach; ?>
             </select>
