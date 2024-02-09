@@ -42,7 +42,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -101,8 +100,10 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function placeIllRequestAndGoToIllScreen(Element $page): void
     {
-        // Open the "place ILL request" dialog
         $this->waitForPageLoad($page);
+        // Wait for request checks to complete (they may affect layout):
+        $this->unFindCss($page, '.request-check');
+        // Open the "place ILL request" dialog
         $this->clickCss($page, 'a.placeILLRequest');
 
         // Set pickup location to a non-default value so we can confirm that
@@ -137,8 +138,10 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function placeStorageRetrievalRequestAndGoToSRRScreen(
         Element $page
     ): void {
-        // Open the "place storage request" dialog
         $this->waitForPageLoad($page);
+        // Wait for request checks to complete (they may affect layout):
+        $this->unFindCss($page, '.request-check');
+        // Open the "place storage request" dialog
         $this->clickCss($page, 'a.placeStorageRetrievalRequest');
 
         // Set pickup location to a non-default value so we can confirm that
@@ -314,8 +317,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Note that we need to run this test FIRST, because after this, VuFind will
      * remember the credentials and won't display the login form again.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
     public function testDisabledUserLogin(): void
@@ -354,8 +355,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test user profile action.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

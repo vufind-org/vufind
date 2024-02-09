@@ -42,7 +42,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -126,8 +125,10 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         Element $page,
         array $extras = []
     ): void {
-        // Open the "place hold" dialog
         $this->waitForPageLoad($page);
+        // Wait for request checks to complete (they may affect layout):
+        $this->unFindCss($page, '.request-check');
+        // Open the "place hold" dialog
         $this->clickCss($page, 'a.placehold');
 
         // Set pickup location to a non-default value so we can confirm that
@@ -172,8 +173,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test placing a hold
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -251,8 +250,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test placing a hold using SSO
-     *
-     * @retryCallback removeFakeuser1
      *
      * @return void
      */
@@ -352,8 +349,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test placing a hold with an optional "required by" date
-     *
-     * @retryCallback removeUsername4
      *
      * @return void
      */
@@ -748,8 +743,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      * that Apache is configured with "AllowEncodedSlashes on" inside the
      * VirtualHost used for your VuFind test instance!
      *
-     * @retryCallback removeUsername2
-     *
      * @return void
      */
     public function testHoldsAll(): void
@@ -803,8 +796,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test placing a hold with no valid pick up locations
-     *
-     * @retryCallback removeUsername3
      *
      * @return void
      */
@@ -885,48 +876,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             'Proxy User 2',
             $this->findCss($page, '.hold-proxied-for')->getText()
         );
-    }
-
-    /**
-     * Retry cleanup method in case of failure during testHoldsAll.
-     *
-     * @return void
-     */
-    protected function removeUsername2(): void
-    {
-        static::removeUsers(['username2']);
-    }
-
-    /**
-     * Retry cleanup method in case of failure during testPlaceHoldWithSSO.
-     *
-     * @return void
-     */
-    protected function removeFakeuser1(): void
-    {
-        static::removeUsers(['fakeuser1']);
-    }
-
-    /**
-     * Retry cleanup method in case of failure during
-     * testPlaceHoldWithoutPickUpLocations.
-     *
-     * @return void
-     */
-    protected function removeUsername3(): void
-    {
-        static::removeUsers(['username3']);
-    }
-
-    /**
-     * Retry cleanup method in case of failure during
-     * testPlaceHoldWithOptionalRequiredBy.
-     *
-     * @return void
-     */
-    protected function removeUsername4(): void
-    {
-        static::removeUsers(['username4']);
     }
 
     /**

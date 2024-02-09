@@ -42,7 +42,7 @@ jobs:
         if: ${{ matrix.phing_tasks == 'qa-console' }}
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Cache NPM dependencies
         if: ${{ matrix.phing_tasks == 'qa-console' }}

@@ -41,7 +41,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
- * @retry    4
  */
 final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -92,13 +91,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can save a favorite from tab mode.
      *
-     * @retryCallback tearDownAfterClass
-     *
-     * @skip_html_validation true
-     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
+     * @todo Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInTabMode()
     {
         // Change the theme:
@@ -130,11 +127,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testFavoritesInTabMode
      *
-     * @skip_html_validation true
-     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
+     * @todo Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInAccordionMode()
     {
         // Change the theme:
