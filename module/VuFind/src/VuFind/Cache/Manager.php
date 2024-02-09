@@ -152,7 +152,7 @@ class Manager
         // downstream.
         $this->defaults = $config->Cache?->toArray() ?? [];
 
-        // Configure up search specs cache based on config settings:
+        // Configure search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
             case 'File':
