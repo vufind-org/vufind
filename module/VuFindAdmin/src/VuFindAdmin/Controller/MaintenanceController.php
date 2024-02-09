@@ -271,6 +271,7 @@ class MaintenanceController extends AbstractAdmin
      */
     protected function updateBrowscapCache(): void
     {
+        ini_set('memory_limit', '1024M');
         $type = $this->params()->fromQuery('cacheType', 'standard');
         switch ($type) {
             case 'full':
@@ -294,7 +295,8 @@ class MaintenanceController extends AbstractAdmin
         try {
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {
-            $this->flashMessenger()->addSuccessMessage('No newer browscap version available.');
+            $this->flashMessenger()
+                ->addSuccessMessage('No newer browscap version available. Clear the cache to force update.');
             return;
         } catch (\BrowscapPHP\Exception\FetcherException $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
@@ -308,7 +310,7 @@ class MaintenanceController extends AbstractAdmin
             $this->logger->warn((string)$e);
         }
         try {
-            $bc->update(\BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_FULL);
+            $bc->update($type);
             $this->logger->info('Browscap cache updated');
             $this->flashMessenger()->addSuccessMessage('Browscap cache successfully updated.');
         } catch (\Exception $e) {

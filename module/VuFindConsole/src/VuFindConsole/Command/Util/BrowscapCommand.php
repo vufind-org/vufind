@@ -123,6 +123,7 @@ class BrowscapCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        ini_set('memory_limit', '1024M');
         if ($input->getArgument('function') !== 'update') {
             $output->writeln('<error>Invalid function specified</error>');
             return Command::FAILURE;
@@ -160,7 +161,7 @@ class BrowscapCommand extends Command
             $logger->warning((string)$e);
         }
         $logger->info('Updating browscap cache...');
-        $bc->update(\BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_FULL);
+        $bc->update($type);
         $logger->info('Update complete.');
 
         return Command::SUCCESS;
