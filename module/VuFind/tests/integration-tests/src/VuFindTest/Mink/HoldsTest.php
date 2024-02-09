@@ -125,8 +125,10 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         Element $page,
         array $extras = []
     ): void {
-        // Open the "place hold" dialog
         $this->waitForPageLoad($page);
+        // Wait for request checks to complete (they may affect layout):
+        $this->unFindCss($page, '.request-check');
+        // Open the "place hold" dialog
         $this->clickCss($page, 'a.placehold');
 
         // Set pickup location to a non-default value so we can confirm that
