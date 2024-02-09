@@ -5,8 +5,9 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2007,
- *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Copyright (C) Villanova University 2007
+ * Copyright (C) Leipzig University Library <info@ub.uni-leipzig.de> 2018
+ * Copyright (C) The National Library of Finland 2024
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -48,6 +50,7 @@ use function strlen;
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -89,14 +92,18 @@ class Manager
     protected $factory;
 
     /**
-     * File caches and their configuration.
+     * Cache configuration.
      *
-     * Listed caches are created in the constructor to ensure that they are always
-     * available.
+     * Following settings are supported:
+     *
+     *   cli           Set to false to not use CLI-specific cache directory in CLI mode
+     *   directory     Cache directory
+     *   disabled      Set to true to disable the cache
+     *   options       Array of cache options (e.g. disabled, ttl)
      *
      * @var array
      */
-    protected $fileCaches = [
+    protected $cacheSpecs = [
         'browscap' => [
             'cli' => false,
             'directory' => 'browscap',
@@ -120,10 +127,20 @@ class Manager
         'public' => [
             'directory' => 'public',
         ],
+        'searchspecs' => [
+            'directory' => 'searchspecs',
+        ],
         'yaml' => [
             'directory' => 'yamls',
         ],
     ];
+
+    /**
+     * Cache of ensured caches
+     *
+     * @var array
+     */
+    protected $ensuredCached = [];
 
     /**
      * Constructor
@@ -142,34 +159,16 @@ class Manager
         // $config and $config->Cache are Laminas\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
-        // Laminas\Config\Config can be created mutable or cloned and merged, useful
-        // for future cache-specific overrides.
-        $cacheConfig = $config->Cache ?? false;
-        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : [];
+        $this->defaults = $config->Cache?->toArray() ?? [];
 
-        // Get base cache directory.
-        $cacheBase = $this->getCacheDir();
-        $nonCliCacheBase = $this->getCacheDir(false);
-
-        // Set up standard file-based caches:
-        foreach ($this->fileCaches as $cache => $spec) {
-            $base = $spec['cli'] ?? true
-                ? $cacheBase
-                : $nonCliCacheBase;
-            $this->createFileCache($cache, $base . $spec['directory'], $spec['options'] ?? []);
-        }
-
-        // Set up search specs cache based on config settings:
+        // Configure up search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
             case 'File':
-                $this->createFileCache(
-                    'searchspecs',
-                    $cacheBase . 'searchspecs'
-                );
+                // Default
                 break;
             case false:
-                $this->createNoCache('searchspecs');
+                $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
                 break;
             default:
                 throw new \Exception("Unsupported cache setting: $searchCacheType");
@@ -188,6 +187,7 @@ class Manager
      */
     public function getCache($name, $namespace = null)
     {
+        $this->ensureFileCache($name);
         $namespace ??= $name;
         $key = "$name:$namespace";
 
@@ -246,7 +246,12 @@ class Manager
      */
     public function getCacheList()
     {
-        return array_keys($this->cacheSettings);
+        return array_unique(
+            [
+                ...array_keys($this->cacheSpecs),
+                ...array_keys($this->cacheSettings),
+            ]
+        );
     }
 
     /**
@@ -294,6 +299,29 @@ class Manager
             $this->getCacheDir() . 'languages/' . $themeName
         );
         return $cacheName;
+    }
+
+    /**
+     * Ensure that a file cache is properly set up
+     *
+     * @param string $name Cache name
+     *
+     * @return void
+     */
+    protected function ensureFileCache(string $name): void
+    {
+        if ($this->ensuredCached[$name] ?? false) {
+            return;
+        }
+
+        if ($config = $this->cacheSpecs[$name] ?? null) {
+            $base = $config['cli'] ?? true
+                ? $this->getCacheDir()
+                : $this->getCacheDir(false);
+            $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
+        }
+
+        $this->ensuredCached[$name] = true;
     }
 
     /**

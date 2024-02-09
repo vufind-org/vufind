@@ -257,7 +257,9 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             $sessionManager,
             $mailer,
             $viewRenderer,
-            $browscap
+            function () use ($browscap) {
+                return $browscap;
+            }
         );
     }
 }

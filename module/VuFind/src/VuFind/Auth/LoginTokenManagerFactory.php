@@ -49,6 +49,13 @@ use Psr\Container\ContainerInterface;
 class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
+     * Service manager
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -70,6 +77,7 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $this->container = $container;
 
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)
@@ -82,21 +90,19 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $this->getBrowscap($container),
+            [$this, 'getBrowscap']
         );
     }
 
     /**
      * Create a Browscap instance
      *
-     * @param ContainerInterface $container Service manager
-     *
      * @return Browscap
      */
-    protected function getBrowscap(ContainerInterface $container): Browscap
+    public function getBrowscap(): Browscap
     {
-        $cache = new SimpleCacheDecorator($container->get(\VuFind\Cache\Manager::class)->getCache('browscap'));
-        $logger = new PsrLoggerAdapter($container->get(\VuFind\Log\Logger::class));
+        $cache = new SimpleCacheDecorator($this->container->get(\VuFind\Cache\Manager::class)->getCache('browscap'));
+        $logger = new PsrLoggerAdapter($this->container->get(\VuFind\Log\Logger::class));
         return new Browscap($cache, $logger);
     }
 }

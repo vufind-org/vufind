@@ -100,11 +100,19 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $viewRenderer = null;
 
     /**
+     * Callback for creating Browscap so that we can defer the cache access to when
+     * it's actually needed.
+     *
+     * @var callable
+     */
+    protected $browscapCallback;
+
+    /**
      * Browscap
      *
      * @var BrowscapInterface
      */
-    protected $browscap;
+    protected $browscap = null;
 
     /**
      * Has the theme been initialized yet?
@@ -130,7 +138,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      * @param SessionManager                           $sessionManager  Session manager
      * @param \VuFind\Mailer\Mailer                    $mailer          Mailer
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
-     * @param BrowscapInterface                        $browscap        Browscap
+     * @param callable                                 $browscapCB      Callback for creating Browscap
      */
     public function __construct(
         \Laminas\Config\Config $config,
@@ -140,7 +148,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         SessionManager $sessionManager,
         \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
-        BrowscapInterface $browscap
+        callable $browscapCB
     ) {
         $this->config = $config;
         $this->userTable = $userTable;
@@ -149,7 +157,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $this->sessionManager = $sessionManager;
         $this->mailer = $mailer;
         $this->viewRenderer = $viewRenderer;
-        $this->browscap = $browscap;
+        $this->browscapCallback = $browscapCB;
     }
 
     /**
@@ -219,7 +227,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $token = bin2hex(random_bytes(32));
         $series = $series ? $series : bin2hex(random_bytes(32));
         try {
-            $browser = $this->browscap->getBrowser();
+            $browser = $this->getBrowscap()->getBrowser();
         } catch (\Exception $e) {
             throw new AuthException('Problem with browscap: ' . (string)$e);
         }
@@ -361,5 +369,18 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             ];
         }
         return $result;
+    }
+
+    /**
+     * Get Browscap
+     *
+     * @return BrowscapInterface
+     */
+    protected function getBrowscap(): BrowscapInterface
+    {
+        if (null === $this->browscap) {
+            $this->browscap = ($this->browscapCallback)();
+        }
+        return $this->browscap;
     }
 }
