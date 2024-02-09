@@ -40,9 +40,18 @@
                 $sorted[$i] = $value['Value'];
               }
               $this->sorter()->natsort($sorted);
+              $lastDisplay = $lastValue = '';
               ?>
               <?php foreach ($sorted as $i => $display): ?>
-                <?php $facetValue = $facet['LimiterValues'][$i]; ?>
+                <?php
+                  $facetValue = $facet['LimiterValues'][$i];
+                  // Filter out duplicate values:
+                  if ($lastDisplay === $display && $lastValue === $facetValue) {
+                    continue;
+                  }
+                  $lastDisplay = $display;
+                  $lastValue = $facetValue;
+                ?>
                 <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
               <?php endforeach; ?>
             </select>
