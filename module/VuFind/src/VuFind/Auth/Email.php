@@ -75,7 +75,7 @@ class Email extends AbstractBase
         // a login link.
         // Second, log the user in with the hash from the login link.
 
-        $email = trim($request->getPost()->get('username'));
+        $email = trim($request->getPost()->get('username', ''));
         $hash = $request->getQuery('hash');
         if (!$email && !$hash) {
             throw new AuthException('authentication_error_blank');

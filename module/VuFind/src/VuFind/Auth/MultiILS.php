@@ -61,9 +61,9 @@ class MultiILS extends ILS
      */
     public function authenticate($request)
     {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
-        $target = trim($request->getPost()->get('target'));
+        $username = trim($request->getPost()->get('username', ''));
+        $password = trim($request->getPost()->get('password', ''));
+        $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
 
         // We should have target either separately or already embedded into username
