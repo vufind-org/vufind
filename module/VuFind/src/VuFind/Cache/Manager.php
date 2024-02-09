@@ -294,6 +294,7 @@ class Manager
      */
     protected function ensureFileCache(string $name): void
     {
+        // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
         if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
             $base = $this->getCacheDir($config['cliOverride'] ?? true);
             $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
