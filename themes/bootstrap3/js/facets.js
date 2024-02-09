@@ -254,6 +254,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       $('.full-facet-list').addClass('hidden');
       sortButtons.removeClass('active');
     }
+    sortButtons.off('click');
     sortButtons.on('click', function facetSortButton() {
       sortAjax(this);
       $(this).addClass('active');
