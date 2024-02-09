@@ -1051,7 +1051,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set:
         if (
-            $this->status()->isFailure()
+            ($this->status()->isError() || $this->status()->isFailure())
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
             $filename = $this->name() . '-' . hrtime(true);
