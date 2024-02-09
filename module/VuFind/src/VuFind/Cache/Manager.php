@@ -127,13 +127,6 @@ class Manager
     ];
 
     /**
-     * Cache of ensured caches
-     *
-     * @var array
-     */
-    protected $ensuredCached = [];
-
-    /**
      * Constructor
      *
      * @param Config                $config       Main VuFind configuration
@@ -301,16 +294,10 @@ class Manager
      */
     protected function ensureFileCache(string $name): void
     {
-        if ($this->ensuredCached[$name] ?? false) {
-            return;
-        }
-
-        if ($config = $this->cacheSpecs[$name] ?? null) {
+        if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
             $base = $this->getCacheDir($config['cliOverride'] ?? true);
             $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
         }
-
-        $this->ensuredCached[$name] = true;
     }
 
     /**
