@@ -1,32 +1,38 @@
 <?php if ($this->pageCount): ?>
+  <?php
+    $showFirstLast = $this->pageCount > 3;
+  ?>
   <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
     <ul class="pagination">
-      <?=
-        $this->render(
-            'Helpers/pagination-item.phtml',
-            [
-              'params' => $this->params,
-              'current' => $this->current,
-              'page' => $this->first ?? null,
-              'label' => $this->translate('page_first'),
-              'contentHtml' => '[1]',
-          ]
-        )
-      ?>
-
-      <?=
-        $this->render(
-            'Helpers/pagination-item.phtml',
-            [
-              'params' => $this->params,
-              'current' => $this->current,
-              'page' => $this->previous ?? null,
-              'liClasses' => ['page-prev'],
-              'label' => $this->translate('page_prev'),
-              'contentHtml' => $this->icon('page-prev') . ' ' . $this->transEsc('Prev'),
-          ]
-        )
-      ?>
+      <?php if ($this->current > 1): ?>
+        <?php if ($showFirstLast): ?>
+          <?=
+            $this->render(
+                'Helpers/pagination-item.phtml',
+                [
+                  'params' => $this->params,
+                  'current' => $this->current,
+                  'page' => $this->first ?? null,
+                  'label' => $this->translate('page_first'),
+                  'contentHtml' => '[1]',
+              ]
+            )
+          ?>
+        <?php endif; ?>
+        <?=
+          $this->render(
+              'Helpers/pagination-item.phtml',
+              [
+                'params' => $this->params,
+                'current' => $this->current,
+                'page' => $this->previous ?? null,
+                'liClasses' => ['page-prev'],
+                'label' => $this->translate('page_prev'),
+                'contentHtml' => $this->icon('page-prev') . ' ' . $this->transEsc('Prev'),
+            ]
+          )
+        ?>
+      <?php endif; ?>
 
       <?php foreach ($this->pagesInRange as $page): ?>
         <?=
@@ -44,32 +50,36 @@
         ?>
       <?php endforeach; ?>
 
-      <?=
-        $this->render(
-            'Helpers/pagination-item.phtml',
-            [
-              'params' => $this->params,
-              'current' => $this->current,
-              'page' => $this->next ?? null,
-              'liClasses' => ['page-next'],
-              'label' => $this->translate('page_next'),
-              'contentHtml' => $this->transEsc('Next') . ' ' . $this->icon('page-next'),
-          ]
-        )
-      ?>
+      <?php if ($this->current < $this->last): ?>
+        <?=
+          $this->render(
+              'Helpers/pagination-item.phtml',
+              [
+                'params' => $this->params,
+                'current' => $this->current,
+                'page' => $this->next ?? null,
+                'liClasses' => ['page-next'],
+                'label' => $this->translate('page_next'),
+                'contentHtml' => $this->transEsc('Next') . ' ' . $this->icon('page-next'),
+            ]
+          )
+        ?>
 
-      <?=
-        $this->render(
-            'Helpers/pagination-item.phtml',
-            [
-              'params' => $this->params,
-              'current' => $this->current,
-              'page' => $this->last ?? null,
-              'label' => $this->translate('page_last'),
-              'contentHtml' => $this->escapeHtml('[' . $this->pageCount . ']'),
-          ]
-        )
-      ?>
+        <?php if ($showFirstLast): ?>
+          <?=
+            $this->render(
+                'Helpers/pagination-item.phtml',
+                [
+                  'params' => $this->params,
+                  'current' => $this->current,
+                  'page' => $this->last ?? null,
+                  'label' => $this->translate('page_last'),
+                  'contentHtml' => $this->escapeHtml('[' . $this->pageCount . ']'),
+              ]
+            )
+          ?>
+        <?php endif; ?>
+      <?php endif; ?>
     </ul>
   </nav>
 <?php endif; ?>

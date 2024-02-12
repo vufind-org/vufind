@@ -183,3 +183,8 @@ ul.random.image li img { margin: 0 auto; }
   color: #fff;
   &:hover { color: $brand-danger; }
 }
+
+/* --- Pagination --- */
+.pagination {
+  justify-content: center;
+}

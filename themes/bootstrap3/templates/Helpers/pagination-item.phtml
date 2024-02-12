@@ -3,7 +3,7 @@
   if (null !== $this->page && ($this->currentActive || $this->page != $this->current)) {
     $newParams = $this->params;
     $newParams['page'] = $this->page;
-    $href = $this->escapeHtmlAttr($this->currentPath() . '?' . http_build_query($newParams, '', '&amp;'));
+    $href = $this->escapeHtmlAttr($this->currentPath() . '?' . http_build_query($newParams));
     if ($this->page == $this->current) {
         $classes[] = 'active';
     }
