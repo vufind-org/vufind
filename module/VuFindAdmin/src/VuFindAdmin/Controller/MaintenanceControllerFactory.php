@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for Login token authentication
+ * Maintenance controller factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,40 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
- * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Auth;
+namespace VuFindAdmin\Controller;
 
-use BrowscapPHP\Browscap;
-use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Log\PsrLoggerAdapter;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for login token authentication
+ * Maintenance controller factory.
  *
  * @category VuFind
- * @package  Authentication
- * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class MaintenanceControllerFactory extends \VuFind\Controller\AbstractBaseFactory
 {
-    /**
-     * Service manager
-     *
-     * @var ContainerInterface
-     */
-    protected $container;
-
     /**
      * Create an object
      *
@@ -74,35 +64,14 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $this->container = $container;
-
-        return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get('user'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get('logintoken'),
-            $container->get(\VuFind\Cookie\CookieManager::class),
-            $container->get(\Laminas\Session\SessionManager::class),
-            $container->get(\VuFind\Mailer\Mailer::class),
-            $container->get('ViewRenderer'),
-            [$this, 'getBrowscap']
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $container->get(\VuFind\Cache\Manager::class),
+                $container->get(\VuFind\Http\GuzzleService::class),
+                $container->get(\VuFind\Log\Logger::class),
+            ]
         );
-    }
-
-    /**
-     * Create a Browscap instance
-     *
-     * @return Browscap
-     */
-    public function getBrowscap(): Browscap
-    {
-        $cache = new SimpleCacheDecorator($this->container->get(\VuFind\Cache\Manager::class)->getCache('browscap'));
-        $logger = new PsrLoggerAdapter($this->container->get(\VuFind\Log\Logger::class));
-        return new Browscap($cache, $logger);
     }
 }

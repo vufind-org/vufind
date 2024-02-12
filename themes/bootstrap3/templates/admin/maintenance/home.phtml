@@ -23,11 +23,21 @@
     Clear cache(s):
     <?php foreach ($caches as $cache): ?>
       <label>
-        <input type="checkbox" checked="checked" name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>">
+        <input type="checkbox"<?='browscap' !== $cache ? ' checked="checked"' : ''?> name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>">
         <?=$this->escapeHtml($cache) ?>
       </label>
     <?php endforeach; ?>
     <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger">
+  </form>
+  <hr>
+  <form class="form-admin-maintenance browscap-cache" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'UpdateBrowscapCache'])?>">
+    <label for="update_browscap_cache_type">Update <a href="https://browscap.org/" target="_blank">browscap</a> cache using the </label>
+    <select id="update_browscap_cache_type" name="cacheType" class="form-control">
+      <option value="standard">standard</option>
+      <option value="full">full</option>
+      <option value="lite">lite</option>
+    </select> version (note: may use more memory than configured for PHP).
+    <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-primary">
   </form>
 
   <?php if (!empty($scripts)): ?>
