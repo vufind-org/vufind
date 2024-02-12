@@ -82,11 +82,11 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'test-error-message',
-            $this->findCss($page, '.alert-danger')->getText()
+            $this->findCssAndGetText($page, '.alert-danger')
         );
         $this->assertEquals(
             'Error',
-            $this->findCss($page, '.breadcrumb .active')->getText()
+            $this->findCssAndGetText($page, '.breadcrumb .active')
         );
 
         // Create an account:
@@ -101,7 +101,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Search Results',
-            $this->findCss($page, '.breadcrumb .active')->getText()
+            $this->findCssAndGetText($page, '.breadcrumb .active')
         );
     }
 

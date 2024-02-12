@@ -84,7 +84,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function assertResultSize(Element $page, int $size)
     {
-        $text = $this->findCss($page, '.search-stats strong')->getText();
+        $text = $this->findCssAndGetText($page, '.search-stats strong');
         [, $actualSize] = explode(' - ', $text);
         $this->assertEquals($size, intval($actualSize));
     }

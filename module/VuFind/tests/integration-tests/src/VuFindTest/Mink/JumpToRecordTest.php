@@ -55,7 +55,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
-            trim($this->findCss($page, 'h1')->getText())
+            trim($this->findCssAndGetText($page, 'h1'))
         );
     }
 
@@ -72,7 +72,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
         $expected = 'Showing 1 - 1 results of 1';
         $this->assertStringStartsWith(
             $expected,
-            $this->findCss($page, '.search-stats')->getText()
+            $this->findCssAndGetText($page, '.search-stats')
         );
     }
 }
