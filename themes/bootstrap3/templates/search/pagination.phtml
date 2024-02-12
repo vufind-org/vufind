@@ -1,6 +1,6 @@
 <?php if ($this->pageCount): ?>
   <?php
-    $showFirstLast = $this->pageCount > 3;
+    $showFirstLast = $this->pageCount > 3 && $this->results->getOptions()->firstLastNavigationSupported();
   ?>
   <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
     <?php
@@ -14,7 +14,7 @@
     ?>
     <ul<?=$ulAttrs?>>
       <?php if (isset($this->previous)): ?>
-        <?php if ($showFirstLast && !($this->options['disableFirst'] ?? false)): ?>
+        <?php if ($showFirstLast): ?>
           <?=
             $this->render(
                 'search/pagination-item.phtml',
@@ -22,6 +22,7 @@
                   'results' => $this->results,
                   'current' => $this->current,
                   'page' => 1,
+                  'liClasses' => ['page-first'],
                   'label' => $this->translate('page_first'),
                   'contentHtml' => '[1]',
               ]
@@ -75,7 +76,7 @@
             ]
           )
         ?>
-        <?php if ($showFirstLast && !($this->options['disableLast'] ?? false)): ?>
+        <?php if ($showFirstLast): ?>
           <?=
             $this->render(
                 'search/pagination-item.phtml',
@@ -83,6 +84,7 @@
                   'results' => $this->results,
                   'current' => $this->current,
                   'page' => $this->last,
+                  'liClasses' => ['page-last'],
                   'label' => $this->translate('page_last'),
                   'contentHtml' => '[' . $this->escapeHtml($this->pageCount) . ']',
               ]
