@@ -119,8 +119,8 @@ class ILS extends AbstractBase
      */
     public function authenticate($request)
     {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
+        $username = trim($request->getPost()->get('username', ''));
+        $password = trim($request->getPost()->get('password', ''));
         $loginMethod = $this->getILSLoginMethod();
 
         return $this->handleLogin($username, $password, $loginMethod);

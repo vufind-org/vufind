@@ -96,16 +96,15 @@ class Manager
      *
      * Following settings are supported:
      *
-     *   cli           Set to false to not use CLI-specific cache directory in CLI mode
-     *   directory     Cache directory
-     *   disabled      Set to true to disable the cache
-     *   options       Array of cache options (e.g. disabled, ttl)
+     *   cliOverride   Set to false to not allow cache directory override in CLI mode (optional, enabled by default)
+     *   directory     Cache directory (required)
+     *   options       Array of cache options (optional, e.g. disabled, ttl)
      *
      * @var array
      */
     protected $cacheSpecs = [
         'browscap' => [
-            'cli' => false,
+            'cliOverride' => false,
             'directory' => 'browscap',
             'options' => [
                 'ttl' => 0, // no expiration - cache is updated with console util/browscap
@@ -136,13 +135,6 @@ class Manager
     ];
 
     /**
-     * Cache of ensured caches
-     *
-     * @var array
-     */
-    protected $ensuredCached = [];
-
-    /**
      * Constructor
      *
      * @param Config                $config       Main VuFind configuration
@@ -161,7 +153,7 @@ class Manager
         // downstream.
         $this->defaults = $config->Cache?->toArray() ?? [];
 
-        // Configure up search specs cache based on config settings:
+        // Configure search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
             case 'File':
@@ -310,18 +302,11 @@ class Manager
      */
     protected function ensureFileCache(string $name): void
     {
-        if ($this->ensuredCached[$name] ?? false) {
-            return;
-        }
-
-        if ($config = $this->cacheSpecs[$name] ?? null) {
-            $base = $config['cli'] ?? true
-                ? $this->getCacheDir()
-                : $this->getCacheDir(false);
+        // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
+        if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
+            $base = $this->getCacheDir($config['cliOverride'] ?? true);
             $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
         }
-
-        $this->ensuredCached[$name] = true;
     }
 
     /**
