@@ -87,7 +87,7 @@
     <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
   <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
-    <?php $multiPageSelection = $this->config()->get('config')['Social']['multi_page_favorites_selection'] ? ' multi-page-selection' : ''; ?>
+    <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? false) ? ' multi-page-selection' : ''; ?>
     <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->id)) ? '-' . $list->id : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
       <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
