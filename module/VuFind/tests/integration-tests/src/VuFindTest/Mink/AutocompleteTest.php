@@ -173,7 +173,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             '"Fake DOI test 1"',
-            $this->findCss($page, '#searchForm_lookfor')->getValue()
+            $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
         $this->assertEquals(
             $this->getVuFindUrl() . '/Search/Home',

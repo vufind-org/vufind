@@ -193,8 +193,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedPermissions as $index => $permission) {
             $this->assertEquals(
                 $permission,
-                $this->findCss($page, 'div.oauth2-prompt li', null, $index)
-                    ->getText()
+                $this->findCssAndGetText($page, 'div.oauth2-prompt li', null, $index)
             );
         }
 
@@ -427,7 +426,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'An error has occurred',
-            $this->findCss($page, '.alert-danger p')->getText()
+            $this->findCssAndGetText($page, '.alert-danger p')
         );
     }
 
