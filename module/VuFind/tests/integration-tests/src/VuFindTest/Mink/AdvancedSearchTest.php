@@ -44,7 +44,6 @@ use VuFindTest\Feature\SearchFacetFilterTrait;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -154,25 +153,25 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883) AND '
             . '(All Fields:miller)',
-            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
 
         // Test edit search
         $this->editAdvancedSearch($page);
-        $this->assertEquals('bride', $this->findCss($page, '#search_lookfor0_0')->getValue());
-        $this->assertEquals('tomb', $this->findCss($page, '#search_lookfor0_1')->getValue());
-        $this->assertEquals('Title', $this->findCss($page, '#search_type0_1')->getValue());
-        $this->assertEquals('garbage', $this->findCss($page, '#search_lookfor0_2')->getValue());
-        $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_3')->getValue());
-        $this->assertEquals('year', $this->findCss($page, '#search_type0_3')->getValue());
-        $this->assertEquals('miller', $this->findCss($page, '#search_lookfor1_0')->getValue());
+        $this->assertEquals('bride', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
+        $this->assertEquals('tomb', $this->findCssAndGetValue($page, '#search_lookfor0_1'));
+        $this->assertEquals('Title', $this->findCssAndGetValue($page, '#search_type0_1'));
+        $this->assertEquals('garbage', $this->findCssAndGetValue($page, '#search_lookfor0_2'));
+        $this->assertEquals('1883', $this->findCssAndGetValue($page, '#search_lookfor0_3'));
+        $this->assertEquals('year', $this->findCssAndGetValue($page, '#search_type0_3'));
+        $this->assertEquals('miller', $this->findCssAndGetValue($page, '#search_lookfor1_0'));
 
         // Term removal
         $session->executeScript('deleteSearch(0, 2)'); // search0_2 x click
         $this->assertNull($page->findById('search0_3'));
         // Terms collapsing up
-        $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_2')->getValue());
-        $this->assertEquals('year', $this->findCss($page, '#search_type0_2')->getValue());
+        $this->assertEquals('1883', $this->findCssAndGetValue($page, '#search_lookfor0_2'));
+        $this->assertEquals('year', $this->findCssAndGetValue($page, '#search_type0_2'));
 
         // Group removal
         $session->executeScript('deleteGroup(0)');
@@ -183,12 +182,12 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Check for proper search (second group only)
         $this->assertEquals(
             '(All Fields:miller)',
-            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
 
         // Test edit search (modified search is restored properly)
         $this->editAdvancedSearch($page);
-        $this->assertEquals('miller', $this->findCss($page, '#search_lookfor0_0')->getValue());
+        $this->assertEquals('miller', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
 
         // Clear test
         $multiSel = $this->findCss($page, '#limit_callnumber-first');
@@ -197,7 +196,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount(2, $multiSel->getValue());
 
         $this->findCss($page, '.adv-submit .clear-btn')->press();
-        $this->assertEquals('', $this->findCss($page, '#search_lookfor0_0')->getValue());
+        $this->assertEquals('', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
         $this->assertCount(0, $multiSel->getValue());
     }
 
@@ -228,11 +227,11 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Check for proper search and result count
         $this->assertEquals(
             '(All Fields:building:"journals.mrc") NOT ((Title:rational))',
-            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
         $this->assertMatchesRegularExpression(
             '/Showing 1 - 7 results of 7/',
-            trim($this->findCss($page, '.search-stats')->getText())
+            trim($this->findCssAndGetText($page, '.search-stats'))
         );
     }
 
@@ -257,11 +256,11 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Check for proper search and result count
         $this->assertEquals(
             '() NOT ((Title:rational))',
-            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
         preg_match(
             '/Showing \d+ - \d+ results of (\d+)/',
-            trim($this->findCss($page, '.search-stats')->getText()),
+            trim($this->findCssAndGetText($page, '.search-stats')),
             $matches
         );
         $this->assertTrue($matches[1] > 0);
@@ -279,7 +278,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
             'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
-            $this->findCss($page, '#limit_format')->getText()
+            $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
@@ -288,7 +287,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
-            $this->findCss($page, '#limit_format')->getText()
+            $this->findCssAndGetText($page, '#limit_format')
         );
     }
 
@@ -315,7 +314,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
             'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
-            $this->findCss($page, '#limit_format')->getText()
+            $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
@@ -324,7 +323,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
-            $this->findCss($page, '#limit_format')->getText()
+            $this->findCssAndGetText($page, '#limit_format')
         );
     }
 

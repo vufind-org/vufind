@@ -57,7 +57,6 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testTokenLoginException()
     {
-        $user = $this->getMockUser();
         $cookieManager = $this->getCookieManager(
             [
               'loginToken' => '222;0;111',
@@ -71,7 +70,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
             ->willReturn($mockToken);
-        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, false);
 
         // Expect exception due to browscap.ini requirements
         $this->expectException(\VuFind\Exception\Auth::class);
@@ -100,7 +99,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->will($this->throwException(new LoginTokenException()));
         $tokenTable->expects($this->once())->method('getByUserId')
             ->willReturn([$mockToken]);
-        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, true);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
 
@@ -120,7 +119,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
             ->willReturn(null);
-        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, true);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
 
@@ -218,10 +217,11 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      * @param CookieManager $cookieManager cookie manager
      * @param LoginToken    $tokenTable    Login token table
      * @param User          $userTable     User table
+     * @param bool          $browscapOk    Whether to emulate working browscap
      *
      * @return LoginTokenManager
      */
-    protected function getLoginToken($cookieManager, $tokenTable, $userTable)
+    protected function getLoginToken($cookieManager, $tokenTable, $userTable, $browscapOk)
     {
         $config = new Config([]);
         $saveHandler = $this->createMock(SaveHandlerInterface::class);
@@ -235,6 +235,20 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $browscap = $this->getMockBuilder(\BrowscapPHP\BrowscapInterface::class)->getMock();
+        if ($browscapOk) {
+            $browser = new \stdClass();
+            $browser->browser = 'Test Browser';
+            $browser->platform = 'PHPUnit';
+            $browscap->expects($this->any())
+                ->method('getBrowser')
+                ->willReturn($browser);
+        } else {
+            $browscap->expects($this->any())
+                ->method('getBrowser')
+                ->willThrowException(new \BrowscapPHP\Exception('Simulated exception'));
+        }
+
         return new LoginTokenManager(
             $config,
             $userTable,
@@ -242,7 +256,10 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             $cookieManager,
             $sessionManager,
             $mailer,
-            $viewRenderer
+            $viewRenderer,
+            function () use ($browscap) {
+                return $browscap;
+            }
         );
     }
 }

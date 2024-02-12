@@ -39,7 +39,6 @@ use function count;
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class ExplainTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -132,8 +131,7 @@ class ExplainTest extends \VuFindTest\Integration\MinkTestCase
         $tableRows = $explainOutput->findAll('css', 'tr');
         $this->assertGreaterThan(0, count($tableRows));
         foreach ($tableRows as $tableRow) {
-            $percentage = $tableRow->find('css', '.percentage');
-            $this->assertNotEmpty($percentage->getText());
+            $this->assertNotEmpty($this->findCssAndGetText($tableRow, '.percentage'));
             $exactMatches = $tableRow->findAll('css', '.exact-match');
             $inexactMatches = $tableRow->findAll('css', '.inexact-match');
             $matches = array_merge($exactMatches, $inexactMatches);

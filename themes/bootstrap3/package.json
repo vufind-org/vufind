@@ -9,6 +9,6 @@
     "chart.js": "^4.4.0",
     "simple-keyboard": "^3.6.0",
     "simple-keyboard-layouts": "^3.0.0",
-    "vanilla-cookieconsent": "3.0.0-rc.16"
+    "vanilla-cookieconsent": "3.0.0"
   }
 }

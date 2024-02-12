@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -58,7 +57,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
         // We should have some results:
         $this->assertMatchesRegularExpression(
             "/Showing 1 - \d+ results/",
-            trim($this->findCss($page, '.search-stats')->getText())
+            trim($this->findCssAndGetText($page, '.search-stats'))
         );
         // We should be on the author results page:
         $this->assertStringEndsWith(

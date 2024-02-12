@@ -69,6 +69,7 @@ trait LiveSolrTrait
             $container,
             $config['vufind']['config_reader']
         );
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $this->addPathResolverToContainer($container);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();

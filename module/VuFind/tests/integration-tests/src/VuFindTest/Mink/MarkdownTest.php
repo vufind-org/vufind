@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -65,11 +64,11 @@ class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that the Markdown was converted into appropriate h1/a tags:
         $this->assertEquals(
             'Static Content Example',
-            $this->findCss($page, 'h1')->getText()
+            $this->findCssAndGetText($page, 'h1')
         );
         $this->assertEquals(
             'Static Pages documentation',
-            $this->findCss($page, '#content a')->getText()
+            $this->findCssAndGetText($page, '#content a')
         );
     }
 }
