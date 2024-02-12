@@ -381,12 +381,47 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test ILS authentication.
+     *
+     * @return void
+     */
+    public function testILSAuthentication(): void
+    {
+        // Setup config
+        $this->changeConfigs(
+            [
+                'Demo' => [
+                    'Users' => ['username3' => 'catpass'],
+                ],
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                    'Authentication' => ['method' => 'ILS'],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->findCssAndSetValue($page, '#login_ILS_username', 'username3');
+        $this->findCssAndSetValue($page, '#login_ILS_password', 'catpass');
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Check that profile page is displayed
+        $this->findCss($page, '#home_library');
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2']);
+        static::removeUsers(['username1', 'username2', 'username3']);
     }
 }
