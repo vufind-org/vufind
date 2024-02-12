@@ -1,11 +1,11 @@
 <?php
 
 /**
- * "Jump to record" test class.
+ * Access Permission Interface -- provides getters and setters for permission setting.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,58 +21,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Tests
+ * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\Mink;
+namespace VuFind\Controller\Feature;
 
 /**
- * "Jump to record" test class.
+ * Access Permission Interface -- provides getters and setters for permission setting.
  *
  * @category VuFind
- * @package  Tests
+ * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
+interface AccessPermissionInterface
 {
     /**
-     * Test that we can jump to the first record in a single-record result set.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null to use default permission).
      *
-     * @return void
+     * @return string|bool|null
      */
-    public function testJumpToFirst()
-    {
-        $this->changeConfigs(
-            ['config' => ['Record' => ['jump_to_single_search_result' => true]]]
-        );
-
-        $page = $this->performSearch('id:testbug2');
-
-        $this->assertEquals(
-            'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
-            trim($this->findCss($page, 'h1')->getText())
-        );
-    }
+    public function getAccessPermission();
 
     /**
-     * Same as the previous test, but without switching on the jump setting; this
-     * should result in a result list.
+     * Getter for access permission.
+     *
+     * @param string|false $ap Permission to require for access to the controller (false
+     * for no requirement)
      *
      * @return void
      */
-    public function testDoNotJumpToFirst()
-    {
-        $page = $this->performSearch('id:testbug2');
-
-        $expected = 'Showing 1 - 1 results of 1';
-        $this->assertStringStartsWith(
-            $expected,
-            $this->findCss($page, '.search-stats')->getText()
-        );
-    }
+    public function setAccessPermission($ap);
 }

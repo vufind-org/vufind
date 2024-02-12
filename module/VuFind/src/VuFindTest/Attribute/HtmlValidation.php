@@ -1,11 +1,11 @@
 <?php
 
 /**
- * "Jump to record" test class.
+ * Attribute to track HTML validation behavior in tests.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,12 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\Mink;
+namespace VuFindTest\Attribute;
+
+use Attribute;
 
 /**
- * "Jump to record" test class.
+ * Attribute to track HTML validation behavior in tests.
  *
  * @category VuFind
  * @package  Tests
@@ -38,41 +40,23 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
+#[Attribute]
+class HtmlValidation
 {
     /**
-     * Test that we can jump to the first record in a single-record result set.
+     * Should HTML validation be applied to this test?
      *
-     * @return void
+     * @var bool
      */
-    public function testJumpToFirst()
-    {
-        $this->changeConfigs(
-            ['config' => ['Record' => ['jump_to_single_search_result' => true]]]
-        );
-
-        $page = $this->performSearch('id:testbug2');
-
-        $this->assertEquals(
-            'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
-            trim($this->findCss($page, 'h1')->getText())
-        );
-    }
+    public $useValidation;
 
     /**
-     * Same as the previous test, but without switching on the jump setting; this
-     * should result in a result list.
+     * Constructor
      *
-     * @return void
+     * @param bool $useValidation Should HTML validation be applied to this test?
      */
-    public function testDoNotJumpToFirst()
+    public function __construct($useValidation = true)
     {
-        $page = $this->performSearch('id:testbug2');
-
-        $expected = 'Showing 1 - 1 results of 1';
-        $this->assertStringStartsWith(
-            $expected,
-            $this->findCss($page, '.search-stats')->getText()
-        );
+        $this->useValidation = $useValidation;
     }
 }

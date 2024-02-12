@@ -77,7 +77,7 @@ class PasswordAccess extends AbstractBase
     public function authenticate($request)
     {
         $config = $this->getConfig()->toArray();
-        $req_password = trim($request->getPost()->get('password'));
+        $req_password = trim($request->getPost()->get('password', ''));
 
         if (!in_array($req_password, $config['PasswordAccess']['access_user'])) {
             throw new AuthException('authentication_error_invalid');
