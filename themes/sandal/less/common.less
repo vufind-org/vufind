@@ -106,26 +106,21 @@ mark { background-color: @highlighter-color; }
 @pagination-border: transparent;
 @pagination-hover-border: transparent;
 .pagination {
-  .clearfix();
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
   border-radius: 0;
 }
-.pagination > li > a,
-.pagination > li > span {
+.pagination > li > a {
   padding-left: 1rem;
   padding-right: 1rem;
   font-size: @reduced-font-size;
   font-weight: 500;
   line-height: 1rem;
-
-  &.page-prev,
-  &.page-next {
+}
+.pagination > li {
+  &.page-prev a,
+  &.page-next a {
     font-size: 1rem;
     font-weight: bold;
     color: @brand-primary;
   }
 }
-.pagination > .active > a,
-.pagination > .active > span { border-radius: @border-radius-base; }
+.pagination > .active > a { border-radius: @border-radius-base; }
