@@ -56,7 +56,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->assertStringStartsWith(
             'Showing 1 - 1 results of 1',
-            trim($this->findCss($page, '.search-stats')->getText())
+            trim($this->findCssAndGetText($page, '.search-stats'))
         );
     }
 
@@ -182,19 +182,19 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->assertShowingResults($page, '1 - 20');
 
-        $this->assertEquals('1', $this->findCss($page, '.pagination-top li.active')->getText());
+        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li.active'));
         $secondPage = $this->findCss($page, '.pagination-top li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
         $this->assertShowingResults($page, '21 - 40');
-        $this->assertEquals('2', $this->findCss($page, '.pagination-top li.active')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination-top li.active'));
 
         // First page now present, click it:
         $this->scrollToResults();
         $this->clickCss($page, '.pagination-top li a');
         $this->assertShowingResults($page, '1 - 20');
-        $this->assertEquals('1', $this->findCss($page, '.pagination-top li.active')->getText());
+        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li.active'));
     }
 
     /**
@@ -210,14 +210,14 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->unFindCss($page, '.pagination .page-first');
         $this->findCss($page, '.pagination .page-last');
-        $this->assertEquals('1', $this->findCss($page, '.pagination li.active')->getText());
+        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination li.active'));
         $secondPage = $this->findCss($page, '.pagination li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
         $this->findCss($page, '.pagination .page-first');
         $this->findCss($page, '.pagination .page-last');
-        $this->assertEquals('2', $this->findCss($page, '.pagination li.active')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination li.active'));
     }
 
     /**
@@ -233,7 +233,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsStringWithTimeout(
             "Showing $results results",
             function () use ($page): string {
-                return $this->findCss($page, '.search-stats')->getText();
+                return $this->findCssAndGetText($page, '.search-stats');
             }
         );
     }

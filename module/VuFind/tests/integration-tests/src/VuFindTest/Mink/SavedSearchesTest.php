@@ -97,7 +97,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'Search saved successfully.',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
     }
 
@@ -384,8 +384,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Let's confirm that if we repeat the search, the alert will now be set:
         $page = $this->performSearch('employment');
-        $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals('Alert schedule: Weekly', $link->getText());
+        $this->assertEquals('Alert schedule: Weekly', $this->findCssAndGetText($page, '.searchtools .manageSchedule'));
     }
 
     /**
@@ -418,7 +417,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // setting we set in the previous test, and with login deduplication, we
         // should now see the "7" option already selected:
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertEquals(7, $this->findCss($page, $scheduleSelector)->getValue());
+        $this->assertEquals(7, $this->findCssAndGetValue($page, $scheduleSelector));
     }
 
     /**
@@ -472,7 +471,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
             2,
             $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(1, $this->findCss($page, $scheduleSelector)->getValue());
+        $this->assertEquals(1, $this->findCssAndGetValue($page, $scheduleSelector));
     }
 
     /**

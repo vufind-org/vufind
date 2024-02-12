@@ -131,8 +131,7 @@ class ExplainTest extends \VuFindTest\Integration\MinkTestCase
         $tableRows = $explainOutput->findAll('css', 'tr');
         $this->assertGreaterThan(0, count($tableRows));
         foreach ($tableRows as $tableRow) {
-            $percentage = $tableRow->find('css', '.percentage');
-            $this->assertNotEmpty($percentage->getText());
+            $this->assertNotEmpty($this->findCssAndGetText($tableRow, '.percentage'));
             $exactMatches = $tableRow->findAll('css', '.exact-match');
             $inexactMatches = $tableRow->findAll('css', '.inexact-match');
             $matches = array_merge($exactMatches, $inexactMatches);
