@@ -39,7 +39,7 @@ foreach ($ids as $id) {
             $current['full_status'] .= '</span> ';
         }
         $copies = $avail->availabilityType == 'AlwaysAvailable'
-            ? $this->transEsc('od_unlimited');
+            ? $this->transEsc('od_unlimited')
             : ($avail->copiesAvailable . ' / ' . $avail->copiesOwned);
         $current['full_status'] .= ' ' . $this->transEsc('od_copies_available', ['%%copies%%' => $copies]);
         if ($avail->numberOfHolds > 0) {
