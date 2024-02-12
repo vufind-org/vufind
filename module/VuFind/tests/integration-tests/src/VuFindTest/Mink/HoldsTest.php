@@ -646,18 +646,15 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Place the second hold:
         $page = $this->gotoRecordById('dollar$ign/slashcombo');
         $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'C']);
-        //        sleep(5);
 
         // Open the edit dialog box using the button:
         $this->clickCss($page, '.checkbox-select-all');
-        //        sleep(5);
         $this->clickCss($page, '#update_selected');
 
         // Confirm that the popup contains a warning message about mismatched
         // pickup locations:
         $expectedMsg = 'Selected holds have different options for pick up location. '
             . 'Edit a single hold to change its pick up location.';
-        //        sleep(5);
         $this->assertStringContainsString(
             $expectedMsg,
             $this->findCss($page, '#modal .hold-pickup-location')->getText()
