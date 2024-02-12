@@ -208,11 +208,15 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
 
+        $this->unFindCss($page, '.pagination .page-first');
+        $this->findCss($page, '.pagination .page-last');
         $this->assertEquals('1', $this->findCss($page, '.pagination li.active')->getText());
         $secondPage = $this->findCss($page, '.pagination li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
+        $this->findCss($page, '.pagination .page-first');
+        $this->findCss($page, '.pagination .page-last');
         $this->assertEquals('2', $this->findCss($page, '.pagination li.active')->getText());
     }
 
