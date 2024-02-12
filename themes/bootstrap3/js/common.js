@@ -238,48 +238,52 @@ var VuFind = (function VuFind() {
     // Fix any inline script nonces
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
-  
+
   function setInnerHtml(elm, html) {
     elm.innerHTML = html;
     Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
       const newScript = document.createElement("script");
-      Array.from(oldScript.attributes)
-        .forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      Array.from(oldScript.attributes).forEach(attr => {
+        if (attr.name !== 'nonce') {
+          newScript.setAttribute(attr.name, attr.value);
+        }
+      });
+      newScript.setAttribute('nonce', getCspNonce());
       newScript.appendChild(document.createTextNode(oldScript.innerHTML));
       oldScript.parentNode.replaceChild(newScript, oldScript);
     });
   }
-  
+
   var loadHtml = function loadHtml(_element, url, data, success) {
-    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);  
+    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);
     if (!element) {
       return;
     }
-  
+
     fetch(url, {
-      method: 'GET', 
-      body: data ? JSON.stringify(data) : null 
+      method: 'GET',
+      body: data ? JSON.stringify(data) : null
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(VuFind.translate('error_occurred')); 
+          throw new Error(VuFind.translate('error_occurred'));
         }
         return response.text();
       })
       .then(htmlContent => {
         setInnerHtml(element, updateCspNonce(htmlContent));
         if (typeof success === 'function') {
-          success(htmlContent); 
+          success(htmlContent);
         }
       })
       .catch(error => {
         console.error('Request failed:', error);
         setInnerHtml(element, VuFind.translate('error_occurred'));
         if (typeof success === 'function') {
-          success(null, error); 
+          success(null, error);
         }
       });
-  };  
+  };
   
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
