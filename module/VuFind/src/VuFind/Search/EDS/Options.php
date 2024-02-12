@@ -192,6 +192,8 @@ class Options extends \VuFind\Search\Base\Options
                 $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
             );
         }
+        // Make sure first-last navigation is never enabled since we cannot support:
+        $this->firstLastNavigationSupported = false;
     }
 
     /**

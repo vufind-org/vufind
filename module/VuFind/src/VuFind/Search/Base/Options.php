@@ -337,11 +337,18 @@ abstract class Options implements TranslatorAwareInterface
     protected $resultLimit = -1;
 
     /**
-     * Is the first/last navigation scroller enabled?
+     * Is first/last navigation supported by the backend?
      *
      * @var bool
      */
-    protected $firstlastNavigation = false;
+    protected $firstLastNavigationSupported = true;
+
+    /**
+     * Is the record page first/last navigation scroller enabled?
+     *
+     * @var bool
+     */
+    protected $recordPageFirstLastNavigation = false;
 
     /**
      * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
@@ -1209,13 +1216,35 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we include first/last options in result scroller navigation?
+     * Should we include first/last options in record page navigation?
      *
      * @return bool
+     *
+     * @deprecated Use recordFirstLastNavigationEnabled instead
      */
     public function supportsFirstLastNavigation()
     {
-        return $this->firstlastNavigation;
+        return $this->recordFirstLastNavigationEnabled();
+    }
+
+    /**
+     * Is first/last navigation supported by the backend
+     *
+     * @return bool
+     */
+    public function firstLastNavigationSupported()
+    {
+        return $this->firstLastNavigationSupported;
+    }
+
+    /**
+     * Should we include first/last options in record page navigation?
+     *
+     * @return bool
+     */
+    public function recordFirstLastNavigationEnabled()
+    {
+        return $this->firstLastNavigationSupported() && $this->recordPageFirstLastNavigation;
     }
 
     /**
