@@ -104,7 +104,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-nav .save-record');
 
         // Login in lightbox
-        $this->assertEquals('Institutional Login', $this->findCss($page, '.modal-body .btn.btn-link')->getText());
+        $this->assertEquals('Institutional Login', $this->findCssAndGetText($page, '.modal-body .btn.btn-link'));
         $this->clickCss($page, '.modal-body .btn.btn-link');
 
         // Check if save form is in lightbox
@@ -117,7 +117,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         // Check that we are still on the record page
         $this->assertEquals(
             'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, '.record .media-body h1')->getText()
+            $this->findCssAndGetText($page, '.record .media-body h1')
         );
 
         // Log out

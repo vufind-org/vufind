@@ -69,7 +69,7 @@ class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.ajax-availability');
         $this->assertEquals(
             'Available',
-            $this->findCss($page, '.grid-body .result-formats.status .label.label-success')->getText()
+            $this->findCssAndGetText($page, '.grid-body .result-formats.status .label.label-success')
         );
     }
 }

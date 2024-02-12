@@ -57,7 +57,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
         // We should have some results:
         $this->assertMatchesRegularExpression(
             "/Showing 1 - \d+ results/",
-            trim($this->findCss($page, '.search-stats')->getText())
+            trim($this->findCssAndGetText($page, '.search-stats'))
         );
         // We should be on the author results page:
         $this->assertStringEndsWith(

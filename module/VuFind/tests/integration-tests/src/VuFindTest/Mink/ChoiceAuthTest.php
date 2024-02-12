@@ -229,7 +229,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         // Login with SSO
         $this->assertEquals(
             'Institutional Login',
-            $this->findCss($page, '.modal-body .authmethod1 .btn.btn-link')->getText()
+            $this->findCssAndGetText($page, '.modal-body .authmethod1 .btn.btn-link')
         );
         $this->clickCss($page, '.modal-body .btn.btn-link');
 
