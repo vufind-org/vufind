@@ -208,7 +208,7 @@ class Options extends \VuFind\Search\Base\Options
             isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
-            $this->firstlastNavigation = true;
+            $this->recordPageFirstLastNavigation = true;
         }
 
         // Turn on highlighting if the user has requested highlighting or snippet
