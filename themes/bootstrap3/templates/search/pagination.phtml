@@ -1,5 +1,5 @@
 <?php
-  $firstLastSupported = $this->results->getOptions()->firstLastNavigationSupported();
+  $showFirstLast = $this->results->getOptions()->firstLastNavigationSupported();
 ?>
 <?php if ($this->pageCount): ?>
   <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
@@ -14,7 +14,7 @@
     ?>
     <ul<?=$ulAttrs?>>
       <?php if (isset($this->previous)): ?>
-        <?php if ($firstLastSupported): ?>
+        <?php if ($showFirstLast): ?>
           <li role="none" class="page-first">
             <a href="<?=$this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEscAttr('page_first')?>">[1]</a>
           </li>
@@ -46,7 +46,7 @@
             <?=$this->icon('page-next') ?>
           </a>
         </li>
-        <?php if ($firstLastSupported): ?>
+        <?php if ($showFirstLast): ?>
           <li role="none" class="page-last">
             <a href="<?=$this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEscAttr('page_last')?>">[<?=$this->pageCount?>]</a>
           </li>
