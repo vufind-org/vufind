@@ -47,6 +47,8 @@ use function is_callable;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
+
     /**
      * Default limit option
      *
@@ -475,8 +477,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $this->searchSettings->General->default_limit;
         }
         if (isset($this->searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(',', $this->searchSettings->General->limit_options);
+            $this->limitOptions = $this->explodeListSetting($this->searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference
@@ -508,10 +509,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->configureAutocomplete($this->searchSettings);
 
         if (isset($this->searchSettings->General->advanced_limiters)) {
-            $this->advancedLimiters = array_map(
-                'trim',
-                explode(',', $this->searchSettings->General->advanced_limiters)
-            );
+            $this->advancedLimiters = $this->explodeListSetting($this->searchSettings->General->advanced_limiters);
         }
     }
 
