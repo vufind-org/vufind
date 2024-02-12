@@ -665,11 +665,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
                 return call_user_func([$element, $method]);
-
-                $this->logWarning(
-                    'RETRY findCssAndGetText after failure in ' . $this->getTestName()
-                    . " (try $i)."
-                );
             } catch (\Exception $e) {
                 $this->logWarning(
                     'RETRY findCssAndGetText after exception in ' . $this->getTestName()
