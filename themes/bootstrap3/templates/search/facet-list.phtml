@@ -33,7 +33,7 @@
     <div class="btn-group facet-lightbox-filter hidden">
       <form>
         <fieldset>
-          <?php if (method_exists($this->results->getParams(), 'supportsFacetFiltering') && $this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
+          <?php if ($this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
             <legend><?=$this->transEsc('Filter') ?></legend>
             <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
             <button id="btn-reset-contains" <?=strlen($this->contains) < 1 ? 'class="hidden" ' : ''?>type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
