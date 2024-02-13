@@ -1,11 +1,11 @@
 <?php
 
 /**
- * CSP helper factory.
+ * Maintenance controller factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2021.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFindAdmin\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * CSP helper factory.
+ * Maintenance controller factory.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CspFactory implements FactoryInterface
+class MaintenanceControllerFactory extends \VuFind\Controller\AbstractBaseFactory
 {
     /**
      * Create an object
@@ -58,17 +57,21 @@ class CspFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
-        return new $requestedName($container->get('Response'), $nonceGenerator->getNonce());
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $container->get(\VuFind\Cache\Manager::class),
+                $container->get(\VuFind\Http\GuzzleService::class),
+                $container->get(\VuFind\Log\Logger::class),
+            ]
+        );
     }
 }

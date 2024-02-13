@@ -577,6 +577,108 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetText(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get value of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetValue(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetHtml(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $retries);
+    }
+
+    /**
+     * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element  $page     Page element
+     * @param string   $selector CSS selector
+     * @param callable $method   Method to call
+     * @param int      $timeout  Wait timeout for CSS selection (in ms)
+     * @param int      $index    Index of the element (0-based)
+     * @param int      $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndCallMethod(
+        Element $page,
+        $selector,
+        $method,
+        $timeout = null,
+        $index = 0,
+        $retries = 6,
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+
+        for ($i = 1; $i <= $retries; $i++) {
+            try {
+                $element = $this->findCss($page, $selector, $timeout, $index);
+                return call_user_func([$element, $method]);
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY findCssAndGetText after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
+            }
+
+            $this->snooze();
+        }
+
+        throw new \Exception('Failed to get text after ' . $retries . ' attempts.');
+    }
+
+    /**
      * Retrieve a link and assert that it exists before returning it.
      *
      * @param Element $page Page element
@@ -1051,7 +1153,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set:
         if (
-            $this->status()->isFailure()
+            ($this->status()->isError() || $this->status()->isFailure())
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
             $filename = $this->name() . '-' . hrtime(true);

@@ -112,7 +112,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.comment-form');
         $this->assertEquals(// Can Comment?
             'You must be logged in first',
-            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
+            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->findCss($page, '.modal.in'); // Lightbox open
@@ -125,7 +125,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(// Can Comment?
             'Add your comment',
-            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+            $this->findCssAndGetValue($page, 'form.comment-form .btn.btn-primary')
         );
         // "Add" empty comment
         $this->clickCss($page, 'form.comment-form .btn-primary');
@@ -166,7 +166,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.comment-form');
         $this->assertEquals(// Can Comment?
             'You must be logged in first',
-            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
+            $this->findCssAndGetText($page, 'form.comment-form .btn.btn-primary')
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->findCss($page, '.modal.in'); // Lightbox open
@@ -179,7 +179,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-tabs .usercomments a');
         $this->assertEquals(// Can Comment?
             'Add your comment',
-            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+            $this->findCssAndGetValue($page, 'form.comment-form .btn.btn-primary')
         );
         // "Add" empty comment
         $this->clickCss($page, 'form.comment-form .btn-primary');
@@ -189,7 +189,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->assertEquals(
             'CAPTCHA not passed',
-            $this->findCss($page, '.modal-body .alert-danger')->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
         $this->closeLightbox($page);
         // Now fix the CAPTCHA
@@ -229,8 +229,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '.modal #addtag_tag', $tags);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $success = $this->findCss($page, '.modal-body .alert-success');
-        $this->assertEquals('Tags Saved', $success->getText());
+        $this->assertEquals('Tags Saved', $this->findCssAndGetText($page, '.modal-body .alert-success'));
         $this->closeLightbox($page);
     }
 
@@ -262,8 +261,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount(4, $tags);
         $tvals = [];
         foreach ($tags as $t) {
-            $link = $t->find('css', 'a');
-            $tvals[] = $link->getText();
+            $tvals[] = $this->findCssAndGetText($t, 'a');
         }
         sort($tvals);
         $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
@@ -320,7 +318,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // First try an undefined tag:
         $page = $this->performSearch('tag-not-in-system', 'tag');
-        $this->assertEquals('No Results!', $this->findCss($page, 'h2')->getText());
+        $this->assertEquals('No Results!', $this->findCssAndGetText($page, 'h2'));
         // Now try a tag defined earlier, with a couple more instances added:
         $page = $this->goToRecord('id:"<angle>brackets&ampersands"');
         $this->addTagsToRecord($page, 'five', 'username2', 'test');
@@ -400,7 +398,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             $expected,
             substr(
-                $this->findCss($page, '.search-stats')->getText(),
+                $this->findCssAndGetText($page, '.search-stats'),
                 0,
                 strlen($expected)
             )
@@ -433,8 +431,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '.modal #addtag_tag', 'one ONE "new tag" ONE "THREE 4"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $success = $this->findCss($page, '.modal-body .alert-success');
-        $this->assertEquals('Tags Saved', $success->getText());
+        $this->assertEquals('Tags Saved', $this->findCssAndGetText($page, '.modal-body .alert-success'));
         $this->closeLightbox($page);
         // Count tags
         $this->waitForPageLoad($page);
@@ -672,8 +669,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Add rating
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
         $this->waitForPageLoad($page);
-        $success = $this->findCss($page, '.alert-success');
-        $this->assertEquals('Rating Saved', $success->getText());
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
         $this->waitForPageLoad($page);
         $inputs = $page->findAll('css', $checked);
@@ -684,8 +680,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
         $this->waitForPageLoad($page);
-        $success = $this->findCss($page, '.alert-success');
-        $this->assertEquals('Rating Saved', $success->getText());
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
         $inputs = $page->findAll('css', $checked);
         $this->assertCount(1, $inputs);
@@ -724,8 +719,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
         $this->waitForPageLoad($page);
-        $success = $this->findCss($page, '.alert-success');
-        $this->assertEquals('Rating Saved', $success->getText());
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
         $this->waitForPageLoad($page);
         $inputs = $page->findAll('css', $checked);
@@ -793,7 +787,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Send to RefWorks',
-            $this->findCss($page, '#export-form input.btn.btn-primary')->getValue()
+            $this->findCssAndGetValue($page, '#export-form input.btn.btn-primary')
         );
     }
 
