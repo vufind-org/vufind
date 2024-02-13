@@ -30,21 +30,21 @@
       <?php endforeach; ?>
     </div>
 
-    <?php if (method_exists($this->results->getParams(), 'supportsFacetFiltering') && $this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
-      <div class="btn-group facet-lightbox-filter hidden">
-        <form>
-          <fieldset>
+    <div class="btn-group facet-lightbox-filter hidden">
+      <form>
+        <fieldset>
+          <?php if (method_exists($this->results->getParams(), 'supportsFacetFiltering') && $this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
             <legend><?=$this->transEsc('Filter') ?></legend>
             <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
             <button id="btn-reset-contains" <?=strlen($this->contains) < 1 ? 'class="hidden" ' : ''?>type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
+          <?php endif; ?>
 
-            <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval($this->ajaxLightbox || $this->inLightbox)]; ?>
-            <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
-            <button type="submit" disabled style="display: none" aria-hidden="true"></button>
-          </fieldset>
-        </form>
-      </div>
-    <?php endif; ?>
+          <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval($this->ajaxLightbox || $this->inLightbox)]; ?>
+          <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
+          <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+        </fieldset>
+      </form>
+    </div>
   </div>
 <?php endif; ?>
 
