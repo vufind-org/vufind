@@ -285,6 +285,19 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Check whether a specific facet supports filtering
+     *
+     * @param string $facet The facet to check
+     *
+     * @return bool
+     */
+    public function supportsFacetFiltering($facet)
+    {
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        return !in_array($facet, $translatedFacets);
+    }
+
+    /**
      * Set Facet Contains
      *
      * @param string $p the new contains value

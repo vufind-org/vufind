@@ -30,7 +30,7 @@
       <?php endforeach; ?>
     </div>
 
-    <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
+    <?php if (method_exists($this->results->getParams(), 'supportsFacetFiltering') && $this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
       <div class="btn-group facet-lightbox-filter hidden">
         <form>
           <fieldset>
