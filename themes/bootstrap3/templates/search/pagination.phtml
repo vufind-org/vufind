@@ -5,11 +5,15 @@
     if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
       $navAttrs->add('class', 'js-pagination');
     }
+    $className = $this->options['className'] ?? '';
+    if ($className) {
+      $navAttrs->add('class', $className);
+    }
   ?>
   <nav<?=$navAttrs?>>
     <?php
       $ulAttrs = $this->htmlAttributes(['class' => 'pagination']);
-      if ($className = $this->options['className'] ?? '') {
+      if ($className) {
         $ulAttrs->add('class', $className);
       }
     ?>
