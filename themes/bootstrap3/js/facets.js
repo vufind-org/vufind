@@ -16,7 +16,7 @@ VuFind.register('facetList', function FacetList() {
 
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
-      let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
+      const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
       let url = new URL(dummyDomain + $(this).attr('href'));
       Object.entries(overrideParams).forEach(([key, value]) => {
         url.searchParams.set(key, value);
@@ -28,14 +28,14 @@ VuFind.register('facetList', function FacetList() {
   }
 
   function updateHrefContains() {
-    let overrideParams = { contains: getCurrentContainsValue() };
+    const overrideParams = { contains: getCurrentContainsValue() };
     overrideHref('.js-facet-sort', overrideParams);
     overrideHref('.js-facet-next-page', overrideParams);
     overrideHref('.js-facet-prev-page', overrideParams);
   }
 
   function getContent(overrideParams = {}) {
-    let ajaxParams = $('.ajax_params').data('params');
+    const ajaxParams = $('.ajax_params').data('params');
     let url = ajaxParams.urlBase;
 
     for (let [key, val] of Object.entries(ajaxParams)) {
@@ -45,13 +45,13 @@ VuFind.register('facetList', function FacetList() {
       url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
     }
 
-    let contains = getCurrentContainsValue();
+    const contains = getCurrentContainsValue();
     if (contains) {
       url += '&contains=' + encodeURIComponent(contains);
     }
 
     if (!("facetsort" in overrideParams)) {
-      let sort = $('.js-facet-sort.active').data('sort');
+      const sort = $('.js-facet-sort.active').data('sort');
       if (sort !== undefined) {
         url += '&facetsort=' + encodeURIComponent(sort);
       }
@@ -266,19 +266,19 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
       let button = $(this);
-      let page = parseInt(button.attr('data-page'), 10);
+      const page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
       }
       button.attr('disabled', 1);
       button.html(VuFind.translate('loading_ellipsis'));
 
-      let overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
+      const overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
       VuFind.facetList.getContent(overrideParams).then(data => {
         $(data).find('.js-facet-item').each(function eachItem() {
           button.before($(this).prop('outerHTML'));
         });
-        let list = $(data).find('.js-facet-item');
+        const list = $(data).find('.js-facet-item');
         if (list.length && $(data).find('.js-facet-next-page').length) {
           button.attr('data-page', page + 1);
           button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
@@ -290,7 +290,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       });
       return false;
     });
-    let margin = 230;
+    const margin = 230;
     $('#modal').on('show.bs.modal', function facetListHeight() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });
