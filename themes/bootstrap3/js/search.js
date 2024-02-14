@@ -343,7 +343,7 @@ VuFind.register('search', function search() {
             if (contents.target === 'inner') {
               element.innerHTML = tmpDiv.innerHTML;
             } else if (contents.target === 'outer') {
-              element.outerHTML = tmpDiv.outerHTML;
+              element.outerHTML = tmpDiv.innerHTML;
             }
             Object.entries(contents.attrs).forEach(([attr, value]) => element.setAttribute(attr, value));
 

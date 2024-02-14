@@ -445,6 +445,12 @@ ul.list-group {
 }
 #login-dropdown
 #login-dropdown .dropdown-menu .account-menu { display: block; }
+.login-tokens-table {
+  margin-bottom: 0.5rem;
+  tbody > tr > td {
+    vertical-align: middle;
+  }
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { .clearfix(); }
@@ -639,4 +645,12 @@ div.holding-notes {
   list-style-type: none;
   margin-bottom: 1rem;
   padding: 0;
+}
+
+/* --- Pagination --- */
+.pagination {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }

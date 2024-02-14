@@ -101,7 +101,7 @@
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $cspNonce = $this->cspNonce();
+      $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($this->layout()->searchId);
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
@@ -139,13 +139,13 @@
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
-      <div class="container">
-        <?php if (!empty($this->layout()->showBreadcrumbs ?? true) && !empty($this->layout()->breadcrumbs)): ?>
+    <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
+      <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
+        <div class="container">
           <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
-        <?php endif; ?>
-      </div>
-    </nav>
+        </div>
+      </nav>
+    <?php endif; ?>
     <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>

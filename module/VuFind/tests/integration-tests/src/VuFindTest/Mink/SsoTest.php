@@ -41,7 +41,6 @@ use VuFindTest\Feature\LiveDatabaseTrait;
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class SsoTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -70,8 +69,6 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test changing a password.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -107,7 +104,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-nav .save-record');
 
         // Login in lightbox
-        $this->assertEquals('Institutional Login', $this->findCss($page, '.modal-body .btn.btn-link')->getText());
+        $this->assertEquals('Institutional Login', $this->findCssAndGetText($page, '.modal-body .btn.btn-link'));
         $this->clickCss($page, '.modal-body .btn.btn-link');
 
         // Check if save form is in lightbox
@@ -120,7 +117,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         // Check that we are still on the record page
         $this->assertEquals(
             'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, '.record .media-body h1')->getText()
+            $this->findCssAndGetText($page, '.record .media-body h1')
         );
 
         // Log out

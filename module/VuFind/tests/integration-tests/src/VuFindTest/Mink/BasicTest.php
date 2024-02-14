@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class BasicTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -76,11 +75,11 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.location.ajax-availability');
         $this->assertEquals(
             'A1234.567',
-            $this->findCss($page, '.callnumber')->getText()
+            $this->findCssAndGetText($page, '.callnumber')
         );
         $this->assertEquals(
             '3rd Floor Main Library',
-            $this->findCss($page, '.location')->getText()
+            $this->findCssAndGetText($page, '.location')
         );
     }
 
@@ -97,7 +96,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         // Check footer help-link
         $this->assertEquals(
             'Search Tips',
-            $this->findCss($page, 'footer .help-link')->getHTML()
+            $this->findCssAndGetHtml($page, 'footer .help-link')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
@@ -106,7 +105,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         // Check footer help-link
         $this->assertNotEquals(
             'Search Tips',
-            $this->findCss($page, 'footer .help-link')->getHTML()
+            $this->findCssAndGetHtml($page, 'footer .help-link')
         );
     }
 
@@ -146,7 +145,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         // Check h1 again -- it should exist now
         $this->assertEquals(
             'Welcome to your custom theme!',
-            $this->findCss($page, 'h1')->getHTML()
+            $this->findCssAndGetHtml($page, 'h1')
         );
     }
 

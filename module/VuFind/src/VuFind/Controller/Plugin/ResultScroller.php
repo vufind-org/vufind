@@ -150,8 +150,7 @@ class ResultScroller extends AbstractPlugin
         $data->limit = $searchObject->getParams()->getLimit();
         $data->sort = $searchObject->getParams()->getSort();
         $data->total = $searchObject->getResultTotal();
-        $data->firstlast = $searchObject->getOptions()
-            ->supportsFirstLastNavigation();
+        $data->firstlast = $searchObject->getOptions()->recordFirstLastNavigationEnabled();
 
         // save the IDs of records on the current page to the session
         // so we can "slide" from one record to the next/previous records
