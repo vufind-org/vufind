@@ -22,30 +22,32 @@
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 <?php if (count($this->sortOptions) > 1): ?>
-  <div class="full-facet-sort-options">
-    <label><?=$this->translate('Sort') ?></label>
-    <div class="btn-group">
-      <?php foreach ($this->sortOptions as $key => $sort): ?>
-        <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=1&facetsort=' . urlencode($key) . '&contains=' . urlencode($contains)) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
-      <?php endforeach; ?>
-    </div>
+  <form class="form-inline">
 
-    <div class="btn-group facet-lightbox-filter hidden">
-      <form>
-        <fieldset>
+    <div class="full-facet-sort-options form-group">
+      <label class="control-label" for="btn-group-sort"><?=$this->translate('Sort') ?></label>
+      <div id="btn-group-sort" class="btn-group">
+        <?php foreach ($this->sortOptions as $key => $sort): ?>
+          <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=1&facetsort=' . urlencode($key) . '&contains=' . urlencode($contains)) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->transEsc($sort) ?></a>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="facet-lightbox-filter form-group hidden">
+        <div class="form-group">
           <?php if ($this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
-            <legend><?=$this->transEsc('Filter') ?></legend>
-            <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
-            <button id="btn-reset-contains" <?=strlen($this->contains) < 1 ? 'class="hidden" ' : ''?>type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
+            <label class="control-label" for="input-contains"><?=$this->transEsc('Filter') ?></label>
+            <input id="input-contains" class="ajax_param form-control" data-name="contains" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
+            <button id="btn-reset-contains" class="btn btn-default <?=strlen($this->contains) < 1 ? 'hidden' : ''?>" type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
           <?php endif; ?>
 
           <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction]; ?>
           <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
           <button type="submit" disabled style="display: none" aria-hidden="true"></button>
-        </fieldset>
-      </form>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </form>
 <?php endif; ?>
 
 <?php $this->headScript()->appendFile('facets.js'); ?>

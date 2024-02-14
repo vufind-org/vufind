@@ -196,27 +196,3 @@ h3.facet-title {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
 }
-
-.facet-lightbox-filter {
-  fieldset {
-    display: flex;
-    padding: 0;
-    gap: 4px;
-    width: auto;
-    height: 2em;
-    legend {
-      margin-top: 2px;
-      width: auto;
-      display: inline;
-      border: 0;
-      font-size: inherit;
-      font-weight: 700;
-      float: left;
-    }
-  }
-}
-
-#btn-reset-contains {
-  @extend .btn;
-  @extend .btn-default;
-}
