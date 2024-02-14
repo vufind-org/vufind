@@ -24,7 +24,7 @@
         <?php if ($showFirstLast): ?>
           <?=
             $this->render(
-                'search/pagination-item.phtml',
+                'Helpers/pagination-item.phtml',
                 [
                   'results' => $this->results,
                   'current' => $this->current,
@@ -39,7 +39,7 @@
 
         <?=
           $this->render(
-              'search/pagination-item.phtml',
+              'Helpers/pagination-item.phtml',
               [
                 'results' => $this->results,
                 'current' => $this->current,
@@ -56,7 +56,7 @@
         <?php foreach ($this->pagesInRange as $page): ?>
           <?=
             $this->render(
-                'search/pagination-item.phtml',
+                'Helpers/pagination-item.phtml',
                 [
                   'results' => $this->results,
                   'current' => $this->current,
@@ -72,7 +72,7 @@
       <?php if (isset($this->next)): ?>
         <?=
           $this->render(
-              'search/pagination-item.phtml',
+              'Helpers/pagination-item.phtml',
               [
                 'results' => $this->results,
                 'current' => $this->current,
@@ -86,7 +86,7 @@
         <?php if ($showFirstLast): ?>
           <?=
             $this->render(
-                'search/pagination-item.phtml',
+                'Helpers/pagination-item.phtml',
                 [
                   'results' => $this->results,
                   'current' => $this->current,
