@@ -1,11 +1,16 @@
 <?php
   $classes = array_merge(['page-item'], $this->liClasses ?? []);
+  $aAttrs = $this->htmlAttributes([
+    'class' => 'page-link',
+    'aria-label' => $this->label,
+  ]);
   if ($this->page == $this->current) {
-      $classes[] = 'active';
+    $classes[] = 'active';
+    $aAttrs['aria-current'] = 'page';
   }
 ?>
 <li class="<?=implode(' ', $classes)?>">
-  <a class="page-link" href="<?=$this->results->getUrlQuery()->setPage($this->page)?>" aria-label="<?=$this->escapeHtmlAttr($this->label)?>">
+  <a<?=$aAttrs?> href="<?=$this->results->getUrlQuery()->setPage($this->page)?>">
     <?=$contentHtml?>
   </a>
 </li>

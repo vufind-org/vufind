@@ -183,18 +183,21 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertShowingResults($page, '1 - 20');
 
         $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li.active'));
+        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li a[aria-current=page]'));
         $secondPage = $this->findCss($page, '.pagination-top li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
         $this->assertShowingResults($page, '21 - 40');
         $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination-top li.active'));
+        $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination-top li a[aria-current=page]'));
 
         // First page now present, click it:
         $this->scrollToResults();
         $this->clickCss($page, '.pagination-top li a');
         $this->assertShowingResults($page, '1 - 20');
         $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li.active'));
+        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li a[aria-current=page]'));
     }
 
     /**
@@ -211,6 +214,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.pagination .page-first');
         $this->findCss($page, '.pagination .page-last');
         $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination li.active'));
+        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination li a[aria-current=page]'));
         $secondPage = $this->findCss($page, '.pagination li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
@@ -218,6 +222,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.pagination .page-first');
         $this->findCss($page, '.pagination .page-last');
         $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination li.active'));
+        $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination li a[aria-current=page]'));
     }
 
     /**
