@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mink test class for Markdown rendering support.
+ * Mink test class for the static content controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFindTest\Mink;
 
 /**
- * Mink test class for Markdown rendering support.
+ * Mink test class for the static content controller.
  *
  * @category VuFind
  * @package  Tests
@@ -40,7 +40,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
+class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Data provider for testMarkdownContentRendering() to confirm that the initial part
