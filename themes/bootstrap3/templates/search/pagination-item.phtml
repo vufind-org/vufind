@@ -3,6 +3,7 @@
   $aAttrs = $this->htmlAttributes([
     'class' => 'page-link',
     'aria-label' => $this->label,
+    'href' => $this->results->getUrlQuery()->setPage($this->page)->getParams(false),
   ]);
   if ($this->page == $this->current) {
     $classes[] = 'active';
@@ -10,7 +11,7 @@
   }
 ?>
 <li class="<?=implode(' ', $classes)?>">
-  <a<?=$aAttrs?> href="<?=$this->results->getUrlQuery()->setPage($this->page)?>">
+  <a<?=$aAttrs?>>
     <?=$contentHtml?>
   </a>
 </li>

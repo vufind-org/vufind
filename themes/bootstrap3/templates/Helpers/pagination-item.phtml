@@ -3,10 +3,8 @@
   $aAttrs = $this->htmlAttributes([
     'class' => 'page-link',
     'aria-label' => $this->label,
+    'href' => $this->currentPath() . '?' . http_build_query(array_merge($this->params, ['page' => $this->page])),
   ]);
-  $newParams = $this->params;
-  $newParams['page'] = $this->page;
-  $aAttrs['href'] = $this->currentPath() . '?' . http_build_query($newParams);
   if ($this->page === $this->current) {
     $classes[] = 'active';
     $aAttrs['aria-current'] = 'page';
