@@ -1,19 +1,21 @@
 <?php
-  $classes = array_merge(['page-item'], $this->liClasses ?? []);
-  if (null !== $this->page && ($this->currentActive || $this->page != $this->current)) {
-    $newParams = $this->params;
-    $newParams['page'] = $this->page;
-    $href = $this->escapeHtmlAttr($this->currentPath() . '?' . http_build_query($newParams));
-    if ($this->page == $this->current) {
-        $classes[] = 'active';
-    }
-  } else {
-    $href = '#';
-    $classes[] = 'disabled';
+  $liAttrs = $this->htmlAttributes([
+    'class' => array_merge(['page-item'], $this->liClasses ?? []),
+  ]);
+  $aAttrs = $this->htmlAttributes([
+    'class' => 'page-link',
+    'aria-label' => $this->label,
+    'href' => null !== $this->results
+      ? $this->results->getUrlQuery()->setPage($this->page)->getParams(false)
+      : $this->currentPath() . '?' . http_build_query(array_merge($this->params, ['page' => $this->page])),
+  ]);
+  if ($this->page === $this->current) {
+    $liAttrs->add('class', 'active');
+    $liAttrs['aria-current'] = 'page';
   }
 ?>
-<li class="<?=implode(' ', $classes)?>">
-  <a class="page-link" href="<?=$href?>" aria-label="<?=$this->escapeHtmlAttr($this->label)?>">
+<li<?=$liAttrs?>>
+  <a<?=$aAttrs?>>
     <?=$contentHtml?>
   </a>
 </li>
