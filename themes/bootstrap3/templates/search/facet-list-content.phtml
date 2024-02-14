@@ -1,5 +1,5 @@
 <ul class="full-facet-list facet__list facet-group" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
-  <?php if ($this->page > 1 && !$this->inLightbox && !$this->ajaxLightbox): ?>
+  <?php if ($this->page > 1 && !$this->inLightbox): ?>
     <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=' . ($this->page - 1) . '&facetsort=' . urlencode($this->sort) . '&contains=' . urlencode($this->contains))?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($this->sort) ?>" data-limit="<?=count($this->data) ?>"><?=$this->transEsc('prev_ellipsis') ?></a>
   <?php endif; ?>
   <?php foreach ($this->data as $item): ?>

@@ -39,7 +39,7 @@
             <button id="btn-reset-contains" <?=strlen($this->contains) < 1 ? 'class="hidden" ' : ''?>type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
           <?php endif; ?>
 
-          <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval($this->ajaxLightbox || $this->inLightbox)]; ?>
+          <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction]; ?>
           <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
           <button type="submit" disabled style="display: none" aria-hidden="true"></button>
         </fieldset>
@@ -63,6 +63,6 @@
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.facetList.setup();', 'SET')?>
-<?php if ($this->inLightbox || $this->ajaxLightbox): ?>
+<?php if ($this->inLightbox): ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.lightbox_facets.setup();', 'SET')?>
 <?php endif; ?>

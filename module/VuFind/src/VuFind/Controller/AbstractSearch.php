@@ -873,8 +873,6 @@ class AbstractSearch extends AbstractBase
         $page = (int)$this->params()->fromQuery('facetpage', 1);
         // Has the request been sent in an AJAX context?
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
-        // Has the requesting view been rendered inside a lightbox?
-        $ajaxLightbox = (int)$this->params()->fromQuery('ajaxLightbox', 0);
         $urlBase = $this->params()->fromQuery('urlBase', '');
         $searchAction = $this->params()->fromQuery('searchAction', '');
         $options = $results->getOptions();
@@ -917,7 +915,6 @@ class AbstractSearch extends AbstractBase
             'sort' => $sort,
             'sortOptions' => $facetSortOptions,
             'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
-            'ajaxLightbox' => $ajaxLightbox,
             'active' => $sort,
             'key' => $sort,
             'urlBase' => $urlBase,
