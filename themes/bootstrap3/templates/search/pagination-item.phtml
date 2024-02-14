@@ -1,16 +1,18 @@
 <?php
-  $classes = array_merge(['page-item'], $this->liClasses ?? []);
+  $liAttrs = $this->htmlAttributes([
+    'class' => array_merge(['page-item'], $this->liClasses ?? []),
+  ]);
   $aAttrs = $this->htmlAttributes([
     'class' => 'page-link',
     'aria-label' => $this->label,
     'href' => $this->results->getUrlQuery()->setPage($this->page)->getParams(false),
   ]);
   if ($this->page == $this->current) {
-    $classes[] = 'active';
-    $aAttrs['aria-current'] = 'page';
+    $liAttrs->add('class', 'active');
+    $liAttrs['aria-current'] = 'page';
   }
 ?>
-<li class="<?=implode(' ', $classes)?>">
+<li<?=$liAttrs?>>
   <a<?=$aAttrs?>>
     <?=$contentHtml?>
   </a>
