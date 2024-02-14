@@ -1,15 +1,22 @@
 <?php if ($this->pageCount): ?>
   <?php
     $showFirstLast = $this->pageCount > 3 && $this->results->getOptions()->firstLastNavigationSupported();
+    $navAttrs = $this->htmlAttributes(['aria-label' => $this->translate('pagination_label')]);
+    if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+      $navAttrs->add('class', 'js-pagination');
+      if ($this->top) {
+        $navAttrs->add('class', 'js-pagination__top');
+      }
+    }
   ?>
-  <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
+  <nav<?=$navAttrs?>>
     <?php
       $ulAttrs = $this->htmlAttributes(['class' => 'pagination']);
+      if ($this->top) {
+        $ulAttrs->add('class', 'pagination-top');
+      }
       if ($className = $this->options['className'] ?? '') {
         $ulAttrs->add('class', $className);
-      }
-      if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
-        $ulAttrs->add('class', 'js-pagination');
       }
     ?>
     <ul<?=$ulAttrs?>>
@@ -17,7 +24,7 @@
         <?php if ($showFirstLast): ?>
           <?=
             $this->render(
-                'search/pagination-item.phtml',
+                'Helpers/pagination-item.phtml',
                 [
                   'results' => $this->results,
                   'current' => $this->current,
@@ -32,7 +39,7 @@
 
         <?=
           $this->render(
-              'search/pagination-item.phtml',
+              'Helpers/pagination-item.phtml',
               [
                 'results' => $this->results,
                 'current' => $this->current,
@@ -49,7 +56,7 @@
         <?php foreach ($this->pagesInRange as $page): ?>
           <?=
             $this->render(
-                'search/pagination-item.phtml',
+                'Helpers/pagination-item.phtml',
                 [
                   'results' => $this->results,
                   'current' => $this->current,
@@ -65,7 +72,7 @@
       <?php if (isset($this->next)): ?>
         <?=
           $this->render(
-              'search/pagination-item.phtml',
+              'Helpers/pagination-item.phtml',
               [
                 'results' => $this->results,
                 'current' => $this->current,
@@ -79,7 +86,7 @@
         <?php if ($showFirstLast): ?>
           <?=
             $this->render(
-                'search/pagination-item.phtml',
+                'Helpers/pagination-item.phtml',
                 [
                   'results' => $this->results,
                   'current' => $this->current,
