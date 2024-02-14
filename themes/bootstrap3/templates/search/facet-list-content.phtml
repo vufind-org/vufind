@@ -1,6 +1,6 @@
 <ul class="full-facet-list facet__list facet-group" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
   <?php if ($this->page > 1 && !$this->inLightbox): ?>
-    <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=' . ($this->page - 1) . '&facetsort=' . urlencode($this->sort) . '&contains=' . urlencode($this->contains))?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($this->sort) ?>" data-limit="<?=count($this->data) ?>"><?=$this->transEsc('prev_ellipsis') ?></a>
+    <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => $this->page - 1, 'facetsort' => $this->sort, 'contains' => $this->contains]))?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($this->sort) ?>" data-limit="<?=count($this->data) ?>"><?=$this->transEsc('prev_ellipsis') ?></a>
   <?php endif; ?>
   <?php foreach ($this->data as $item): ?>
     <li>
@@ -14,7 +14,7 @@
     </li>
   <?php endforeach; ?>
   <?php if ($this->anotherPage): ?>
-    <a href="<?=$this->escapeHtmlAttr($urlBase . '&facet=' . $facet . '&facetpage=' . ($this->page + 1) . '&facetsort=' . urlencode($key) . '&contains=' . urlencode($this->contains))?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
+    <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => $this->page + 1, 'facetsort' => $this->sort, 'contains' => $this->contains]))?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
       <span class="text"><?=$this->transEsc('more_ellipsis') ?></span>
     </a>
   <?php endif; ?>
