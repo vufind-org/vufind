@@ -49,7 +49,7 @@ class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
     public static function basePathProvider(): array
     {
         return [
-            'uppercase path' => ['/Content'],
+            'capitalized path' => ['/Content'],
             'lowercase path' => ['/content'],
         ];
     }
