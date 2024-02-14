@@ -28,6 +28,8 @@ function Autocomplete(_settings) {
       timeout = setTimeout(function () {
         func.apply(context, args);
       }, delay);
+
+      return timeout;
     };
   }
 
@@ -59,22 +61,18 @@ function Autocomplete(_settings) {
   }
 
   let lastInput = false;
-  let lastCB;
   function _show(input) {
     lastInput = input;
     list.style.left = "-100%"; // hide offscreen
     list.classList.add("open");
   }
 
-  function _hide(e) {
-    if (
-      typeof e !== "undefined" &&
-      !!e.relatedTarget &&
-      e.relatedTarget.hasAttribute("href")
-    ) {
-      return;
-    }
+  let lastCB;
+  let debounceTimeout;
+  function _hide() {
     list.classList.remove("open");
+
+    clearTimeout(debounceTimeout);
     _currentIndex = -1;
     lastInput = false;
     lastCB = false;
@@ -322,7 +320,7 @@ function Autocomplete(_settings) {
         ) {
           _search(handler, input);
         } else {
-          debounceSearch(handler, input);
+          debounceTimeout = debounceSearch(handler, input);
         }
       },
       false
