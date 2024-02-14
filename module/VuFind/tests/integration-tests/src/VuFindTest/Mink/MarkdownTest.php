@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
@@ -63,7 +64,7 @@ class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testMarkdownContentRendering($basePath)
+    public function testMarkdownContentRendering(string $basePath): void
     {
         // Switch to the example theme, because that's where a Markdown example lives:
         $this->changeConfigs(
