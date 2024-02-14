@@ -41,11 +41,29 @@ namespace VuFindTest\Mink;
 class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Data provider for testMarkdownContentRendering() to confirm that the initial part
+     * of the content URL is case-insensitive.
+     *
+     * @return array
+     */
+    public static function basePathProvider(): array
+    {
+        return [
+            'uppercase path' => ['/Content'],
+            'lowercase path' => ['/content'],
+        ];
+    }
+
+    /**
      * Test that Markdown static content rendering is working.
+     *
+     * @param string $basePath Base path of content route
+     *
+     * @dataProvider basePathProvider
      *
      * @return void
      */
-    public function testMarkdownContentRendering()
+    public function testMarkdownContentRendering($basePath)
     {
         // Switch to the example theme, because that's where a Markdown example lives:
         $this->changeConfigs(
@@ -59,7 +77,7 @@ class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Open the page:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Content/example');
+        $session->visit($this->getVuFindUrl() . $basePath . '/example');
         $page = $session->getPage();
         // Confirm that the Markdown was converted into appropriate h1/a tags:
         $this->assertEquals(
