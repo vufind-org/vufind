@@ -32,7 +32,6 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
-use PHPUnit\Util\Test;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;

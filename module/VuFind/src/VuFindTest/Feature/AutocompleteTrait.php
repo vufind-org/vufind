@@ -30,6 +30,7 @@
 namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 
 /**
  * Trait adding autocomplete checking functionality to a Mink test class.
@@ -48,9 +49,9 @@ trait AutocompleteTrait
      * @param Element $page Page element
      * @param string  $text Expected text
      *
-     * @return Element
+     * @return NodeElement
      */
-    public function getAndAssertFirstAutocompleteValue(Element $page, string $text): Element
+    public function getAndAssertFirstAutocompleteValue(Element $page, string $text): NodeElement
     {
         $tries = 0;
         $snoozeTime = 0;

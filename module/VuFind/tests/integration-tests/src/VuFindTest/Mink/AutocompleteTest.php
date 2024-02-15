@@ -30,6 +30,8 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Session;
 
 /**
  * Mink test class for autocomplete functionality.
@@ -45,23 +47,37 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\AutocompleteTrait;
 
     /**
+     * Load the Search/Home page as a foundation for searching.
+     *
+     * @param ?Session $session Mink session (will be automatically established if not provided).
+     *
+     * @return Element
+     */
+    protected function loadSearchHome(?Session $session = null): Element
+    {
+        $session ??= $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        return $session->getPage();
+    }
+
+    /**
      * For the provided search, assert the first autocomplete value and return the
      * associated page element.
      *
-     * @param string  $search   Search term(s)
-     * @param string  $expected First expected Autocomplete suggestion
-     * @param ?string $type     Search type (null for default)
+     * @param string   $search   Search term(s)
+     * @param string   $expected First expected Autocomplete suggestion
+     * @param ?string  $type     Search type (null for default)
+     * @param ?Element $page     Existing page to use for searching (will load Search/Home if not provided)
      *
-     * @return Element
+     * @return NodeElement
      */
     protected function assertAutocompleteValueAndReturnItem(
         string $search,
         string $expected,
-        ?string $type = null
-    ): Element {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        ?string $type = null,
+        ?Element $page = null,
+    ): NodeElement {
+        $page ??= $this->loadSearchHome();
         if ($type) {
             $this->findCssAndSetValue($page, '#searchForm_type', $type);
         }
@@ -137,18 +153,17 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testMultipleAutocompletesInSingleSession(): void
     {
-        // First do a search in All Fields
-        $this->assertAutocompleteValueAndReturnItem('jsto', 'Al Gore');
-
-        // Now repeat the same search in Author
+        // Load the page first so we'll use the same context across all testing:
         $session = $this->getMinkSession();
-        $page = $session->getPage();
-        $this->findCssAndSetValue($page, '#searchForm_type', 'Author');
-        $this->findCssAndSetValue($page, '#searchForm_lookfor', 'jsto');
-        // Make sure we get the right author match, and not a cached All Fields value!
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'JSTOR (Organization)');
+        $page = $this->loadSearchHome($session);
+
+        // First do a search in All Fields
+        $this->assertAutocompleteValueAndReturnItem('jsto', 'Al Gore', null, $page);
+
+        // Now repeat the same search in Author, making sure we get the right author match, and not a cached
+        // All Fields value!
+        $acItem = $this->assertAutocompleteValueAndReturnItem('jsto', 'JSTOR (Organization)', 'Author', $page);
         $acItem->click();
-        $page = $session->getPage();
         $this->waitForPageLoad($page);
         $this->assertEquals(
             $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
