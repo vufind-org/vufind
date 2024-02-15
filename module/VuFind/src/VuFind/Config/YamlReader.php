@@ -201,6 +201,13 @@ class YamlReader
             // Swallow the directive after processing it:
             unset($results['@merge_sections']);
         }
+        // Check for sections to replace recursive instead of overriding:
+        $recursiveReplacedSections = [];
+        if (isset($results['@recursive_replaced_sections'])) {
+            $recursiveReplacedSections = $results['@recursive_replaced_sections'];
+            // Swallow the directive after processing it:
+            unset($results['@recursive_replaced_sections']);
+        }
 
         // Now load in merged or missing sections from parent, if applicable:
         if (null !== $defaultParent) {
@@ -214,6 +221,19 @@ class YamlReader
                         = &$this->getArrayElemRefByPath($results, $path, true);
                     $resultElemRef
                         = array_merge_recursive($parentElem, $resultElemRef);
+                    unset($parentElem);
+                    unset($resultElemRef);
+                }
+            }
+            // Process recursive replaced sections:
+            foreach ($recursiveReplacedSections as $path) {
+                $parentElem
+                    = $this->getArrayElemRefByPath($parentSections, $path);
+                if (is_array($parentElem)) {
+                    $resultElemRef
+                        = &$this->getArrayElemRefByPath($results, $path, true);
+                    $resultElemRef
+                        = array_replace_recursive($parentElem, $resultElemRef);
                     unset($parentElem);
                     unset($resultElemRef);
                 }
