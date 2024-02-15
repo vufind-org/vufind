@@ -43,6 +43,7 @@ use function is_object;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
@@ -88,8 +89,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
         if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(',', $searchSettings->General->limit_options);
+            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
         }
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
@@ -208,7 +208,7 @@ class Options extends \VuFind\Search\Base\Options
             isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
-            $this->firstlastNavigation = true;
+            $this->recordPageFirstLastNavigation = true;
         }
 
         // Turn on highlighting if the user has requested highlighting or snippet
