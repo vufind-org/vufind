@@ -382,7 +382,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem('fiv', 'five', 'tag', $page);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'tag');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
