@@ -56,8 +56,7 @@ trait AutocompleteTrait
         $snoozeTime = 0;
         $loadMsg = 'Loading…';
         do {
-            $acItem = $this->findCss($page, '.autocomplete-results .ac-item');
-            $acItemText = $acItem->getText();
+            $acItemText = $this->findCssAndGetText($page, '.autocomplete-results .ac-item');
             if (strcasecmp($acItemText, $loadMsg) === 0) {
                 $this->snooze(0.5);
                 $snoozeTime += 0.5 * $this->getSnoozeMultiplier();
@@ -66,9 +65,9 @@ trait AutocompleteTrait
         } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
         $this->assertEquals(
             $text,
-            $this->findCss($page, '.autocomplete-results .ac-item')->getText(),
+            $acItemText,
             "Failed after $tries tries, with $snoozeTime seconds snooze time."
         );
-        return $acItem;
+        return $this->findCss($page, '.autocomplete-results .ac-item');
     }
 }

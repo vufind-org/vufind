@@ -43,6 +43,34 @@ use Behat\Mink\Element\Element;
 class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Selector for active pagination item
+     *
+     * @var string
+     */
+    protected $activePageSelector = '.pagination li.active';
+
+    /**
+     * Selector for current pagination item
+     *
+     * @var string
+     */
+    protected $ariaCurrentPageSelector = '.pagination li[aria-current=page] a';
+
+    /**
+     * Selector for active top pagination item
+     *
+     * @var string
+     */
+    protected $topActivePageSelector = '.pagination-top li.active';
+
+    /**
+     * Selector for current top pagination item
+     *
+     * @var string
+     */
+    protected $topAriaCurrentPageSelector = '.pagination-top li[aria-current=page] a';
+
+    /**
      * Test that an out-of-bounds page number redirects to an in-bounds page.
      *
      * @return void
@@ -182,19 +210,22 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->assertShowingResults($page, '1 - 20');
 
-        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li.active'));
+        $this->assertEquals('1', $this->findCssAndGetText($page, $this->topActivePageSelector));
+        $this->assertEquals('1', $this->findCssAndGetText($page, $this->topAriaCurrentPageSelector));
         $secondPage = $this->findCss($page, '.pagination-top li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
         $this->assertShowingResults($page, '21 - 40');
-        $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination-top li.active'));
+        $this->assertEquals('2', $this->findCssAndGetText($page, $this->topActivePageSelector));
+        $this->assertEquals('2', $this->findCssAndGetText($page, $this->topAriaCurrentPageSelector));
 
         // First page now present, click it:
         $this->scrollToResults();
         $this->clickCss($page, '.pagination-top li a');
         $this->assertShowingResults($page, '1 - 20');
-        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination-top li.active'));
+        $this->assertEquals('1', $this->findCssAndGetText($page, $this->topActivePageSelector));
+        $this->assertEquals('1', $this->findCssAndGetText($page, $this->topAriaCurrentPageSelector));
     }
 
     /**
@@ -210,14 +241,16 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->unFindCss($page, '.pagination .page-first');
         $this->findCss($page, '.pagination .page-last');
-        $this->assertEquals('1', $this->findCssAndGetText($page, '.pagination li.active'));
+        $this->assertEquals('1', $this->findCssAndGetText($page, $this->activePageSelector));
+        $this->assertEquals('1', $this->findCssAndGetText($page, $this->ariaCurrentPageSelector));
         $secondPage = $this->findCss($page, '.pagination li', null, 1);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
         $this->findCss($page, '.pagination .page-first');
         $this->findCss($page, '.pagination .page-last');
-        $this->assertEquals('2', $this->findCssAndGetText($page, '.pagination li.active'));
+        $this->assertEquals('2', $this->findCssAndGetText($page, $this->activePageSelector));
+        $this->assertEquals('2', $this->findCssAndGetText($page, $this->ariaCurrentPageSelector));
     }
 
     /**
