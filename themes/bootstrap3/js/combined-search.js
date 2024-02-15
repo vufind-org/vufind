@@ -7,7 +7,7 @@ VuFind.combinedSearch = (function CombinedSearch() {
         container.style.display = "none";
         let parent = container.parentNode;
         while (parent.classList.contains('js-hide-if-empty')) {
-          parent.hide();
+          $(parent).hide();
           parent = parent.parent();
         }
       } else {

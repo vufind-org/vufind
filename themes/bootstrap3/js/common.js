@@ -241,7 +241,7 @@ var VuFind = (function VuFind() {
 
   function setInnerHtml(elm, html) {
     elm.innerHTML = html;
-    Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
+    elm.querySelectorAll("script").forEach(oldScript => {
       const newScript = document.createElement("script");
       Array.from(oldScript.attributes).forEach(attr => {
         if (attr.name !== 'nonce') {
