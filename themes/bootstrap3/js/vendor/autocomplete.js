@@ -67,7 +67,7 @@ function Autocomplete(_settings) {
     list.classList.add("open");
   }
 
-  let lastCB;
+  let lastCB = null;
   let debounceTimeout;
   function _hide() {
     list.classList.remove("open");
@@ -75,7 +75,7 @@ function Autocomplete(_settings) {
     clearTimeout(debounceTimeout);
     _currentIndex = -1;
     lastInput = false;
-    lastCB = false;
+    lastCB = null;
   }
 
   function _selectItem(item, input) {
