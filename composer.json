@@ -95,7 +95,7 @@
         "vufind-org/vufind-marc": "1.1.0",
         "webfontkit/open-sans": "^1.0",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.4.0"
+        "yajra/laravel-pdo-via-oci8": "3.4.2"
     },
     "require-dev": {
         "behat/mink": "1.11.0",
@@ -130,6 +130,7 @@
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
         "qa": "phing qa-console -Ddefaultconfigs=true",
+        "show-outdated": "composer show -oD --ignore-platform-req=ext-oci8",
         "update-npm-dependencies": [
             "npm update",
             "cd themes/bootstrap3 && npm run updateDeps"
