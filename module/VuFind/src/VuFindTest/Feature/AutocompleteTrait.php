@@ -71,4 +71,30 @@ trait AutocompleteTrait
         );
         return $this->findCss($page, '.autocomplete-results .ac-item');
     }
+
+    /**
+     * For the provided search, assert the first autocomplete value and return the
+     * associated page element.
+     *
+     * @param string   $search   Search term(s)
+     * @param string   $expected First expected Autocomplete suggestion
+     * @param ?string  $type     Search type (null for default)
+     * @param ?Element $page     Existing page to use for searching (will load Search/Home if not provided)
+     *
+     * @return NodeElement
+     */
+    protected function assertAutocompleteValueAndReturnItem(
+        string $search,
+        string $expected,
+        ?string $type = null,
+        ?Element $page = null,
+    ): NodeElement {
+        $page ??= $this->getSearchHomePage();
+        if ($type) {
+            $this->findCssAndSetValue($page, '#searchForm_type', $type);
+        }
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $search);
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, $expected);
+        return $acItem;
+    }
 }

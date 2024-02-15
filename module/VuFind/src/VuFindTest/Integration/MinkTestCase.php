@@ -324,6 +324,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Load the Search/Home page as a foundation for searching.
+     *
+     * @param ?Session $session Mink session (will be automatically established if not provided).
+     *
+     * @return Element
+     */
+    protected function getSearchHomePage(?Session $session = null): Element
+    {
+        $session ??= $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        return $session->getPage();
+    }
+
+    /**
      * Get query string for the current page
      *
      * @param bool $excludeSid Whether to remove any sid from the query string
