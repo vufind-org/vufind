@@ -204,7 +204,12 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'VuFind:Solr|Author');
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'jsto',
+            'JSTOR (Organization)',
+            'VuFind:Solr|Author'
+        );
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
