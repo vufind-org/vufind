@@ -69,18 +69,13 @@ function Autocomplete(_settings) {
 
   let lastCB = null;
   let debounceTimeout;
-  function _hide(outdatedHandler = false) {
+  function _hide() {
     list.classList.remove("open");
 
     clearTimeout(debounceTimeout);
     _currentIndex = -1;
     lastInput = false;
-    // If we were called from an outdated handler, we don't want to reset the lastCB value,
-    // since that will break the current active handler. But in other situations, we want
-    // to stop everything, so we SHOULD reset the value.
-    if (!outdatedHandler) {
-      lastCB = null;
-    }
+    lastCB = null;
   }
 
   function _selectItem(item, input) {
@@ -185,8 +180,13 @@ function Autocomplete(_settings) {
 
     handler(input.value, function callback(items) {
       const outdatedHandler = thisCB !== lastCB;
-      if (outdatedHandler || items === false || items.length === 0) {
-        _hide(outdatedHandler);
+      if (outdatedHandler) {
+        // We should just ignore outdated handler callbacks; newer code will do
+        // the right thing, and taking action based on an old request will only
+        // cause problems.
+        return;
+      }
+      if (items === false || items.length === 0) {
         return;
       }
       _searchCallback(items, input);
