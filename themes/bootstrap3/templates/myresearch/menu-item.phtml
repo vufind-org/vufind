@@ -31,12 +31,13 @@
       // Use a "fines" icon based on the configured default currency symbol:
       $this->icon = 'currency-' . strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
   }
-
 ?>
 <?php if ($showItem): ?>
   <li>
     <a href="<?=$this->url($this->route)?>" class="<?=$this->name?> icon-link<?=$this->active == $this->name ? ' active' : ''?>">
-      <?=$this->icon($this->icon, 'icon-link__icon') ?>
+      <?php if (isset($this->icon)): ?>
+        <?=$this->icon($this->icon, 'icon-link__icon') ?>
+      <?php endif; ?>
       <span class="icon-link__label"><?=$this->transEsc($this->label)?></span>
       <?php if ($this->status ?? false): ?>
         <span class="<?=strtolower($this->name)?>-status status hidden"><?=$this->icon('spinner') ?></span>
