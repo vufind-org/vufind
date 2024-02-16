@@ -1,6 +1,6 @@
 <?php
   $user = $this->auth()->isLoggedIn();
-  $menuItemsConfig = $this->config()->get('MyResearchMenu')?->MenuItems?->toArray() ?? [];
+  $menuItemsConfig = $this->config()->get('AccountMenu')?->MenuItems?->toArray() ?? [];
   $menuItemsDefault = [
     'favorites' => [
       'label' => 'Favorites',
