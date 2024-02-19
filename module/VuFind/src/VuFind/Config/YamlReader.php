@@ -49,6 +49,8 @@ use function is_array;
  */
 class YamlReader
 {
+    use \VuFind\Feature\MergeRecursiveTrait;
+
     /**
      * Cache directory name
      *
@@ -213,7 +215,7 @@ class YamlReader
                     $resultElemRef
                         = &$this->getArrayElemRefByPath($results, $path, true);
                     $resultElemRef
-                        = $this->arrayMergeRecursiveDistinct($parentElem, $resultElemRef);
+                        = $this->mergeRecursive($parentElem, $resultElemRef);
                     unset($parentElem);
                     unset($resultElemRef);
                 }
@@ -255,30 +257,5 @@ class YamlReader
             $result = &$result[$pathPart];
         }
         return $result;
-    }
-
-    /**
-     * Merges arrays recursive without combining single values into an array.
-     *
-     * @param array $arr1 array1
-     * @param array $arr2 array2
-     *
-     * @return array
-     */
-    protected function arrayMergeRecursiveDistinct($arr1, $arr2)
-    {
-        $merged = $arr1;
-        foreach ($arr2 as $key => $value) {
-            if (is_array($merged[$key] ?? null) && is_array($value)) {
-                if (array_is_list($merged[$key]) && array_is_list($value)) {
-                    $merged[$key] = array_merge($merged[$key], $value);
-                } else {
-                    $merged[$key] = $this->arrayMergeRecursiveDistinct($merged[$key], $value);
-                }
-            } else {
-                $merged[$key] = $value;
-            }
-        }
-        return $merged;
     }
 }
