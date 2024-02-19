@@ -68,9 +68,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoSearch($query = 'Dewey')
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
@@ -143,7 +141,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Test List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -200,7 +198,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Future List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -208,7 +206,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Login Test List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .alert.alert-success');
@@ -254,7 +252,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.save-record');
         $this->waitForPageLoad($page);
         $this->assertLightboxTitle($page, 'Login');
-        $this->assertEquals('Login', $page->find('css', '#lightbox-title')->getText());
+        $this->assertEquals('Login', $this->findCssAndGetText($page, '#lightbox-title'));
         $this->clickCss($page, '.modal-body .createAccountLink');
         // Empty
         $this->waitForPageLoad($page);
@@ -299,7 +297,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Test List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -346,7 +344,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Future List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -354,7 +352,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Login Test List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.alert.alert-success');
@@ -431,7 +429,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Tagged List',
-            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
+            trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->clickCss($page, '.alert.alert-success a');
@@ -492,10 +490,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page)
     {
-        $warning = $this->findCss($page, '.modal-body .alert');
         $this->assertEquals(
             'No items were selected. Please click on a checkbox next to an item and try again.',
-            $warning->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert')
         );
         $this->closeLightbox($page);
     }
@@ -540,7 +537,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal .alert-success')
         );
     }
 
@@ -571,8 +568,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
-        $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
-        $this->assertEquals('Download File', $result->getText());
+        $this->assertEquals('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
     }
 
     /**
@@ -588,10 +584,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $this->clickCss($page, '[name=bulkActionForm] [name=print]');
-        $warning = $this->findCss($page, '.flash-message');
         $this->assertEquals(
             'No items were selected. Please click on a checkbox next to an item and try again.',
-            $warning->getText()
+            $this->findCssAndGetText($page, '.flash-message')
         );
 
         // Now do it for real -- we should get redirected.
@@ -647,7 +642,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal .alert-success')
         );
     }
 
@@ -757,7 +752,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');
         $this->waitForPageLoad($page);
         if ($matchExpected) {
-            $this->assertEquals('Test List', $this->findCss($page, '.channel-title h2')->getText());
+            $this->assertEquals('Test List', $this->findCssAndGetText($page, '.channel-title h2'));
             $this->assertCount(1, $page->findAll('css', '.channel-record'));
         } else {
             $this->unfindCss($page, '.channel-title h2');
@@ -829,7 +824,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Check for confirmation message
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCss($page, '.modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal .alert-success')
         );
         $this->closeLightbox($page);
         $this->unFindCss($page, '.result');

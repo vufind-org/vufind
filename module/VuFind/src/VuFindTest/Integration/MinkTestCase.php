@@ -32,7 +32,6 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
-use PHPUnit\Util\Test;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
@@ -325,6 +324,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Load the Search/Home page as a foundation for searching.
+     *
+     * @param ?Session $session Mink session (will be automatically established if not provided).
+     *
+     * @return Element
+     */
+    protected function getSearchHomePage(?Session $session = null): Element
+    {
+        $session ??= $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        return $session->getPage();
+    }
+
+    /**
      * Get query string for the current page
      *
      * @param bool $excludeSid Whether to remove any sid from the query string
@@ -574,6 +587,108 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
 
         throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetText(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get value of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetValue(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetHtml(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $retries);
+    }
+
+    /**
+     * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element  $page     Page element
+     * @param string   $selector CSS selector
+     * @param callable $method   Method to call
+     * @param int      $timeout  Wait timeout for CSS selection (in ms)
+     * @param int      $index    Index of the element (0-based)
+     * @param int      $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndCallMethod(
+        Element $page,
+        $selector,
+        $method,
+        $timeout = null,
+        $index = 0,
+        $retries = 6,
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+
+        for ($i = 1; $i <= $retries; $i++) {
+            try {
+                $element = $this->findCss($page, $selector, $timeout, $index);
+                return call_user_func([$element, $method]);
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY findCssAndGetText after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
+            }
+
+            $this->snooze();
+        }
+
+        throw new \Exception('Failed to get text after ' . $retries . ' attempts.');
     }
 
     /**

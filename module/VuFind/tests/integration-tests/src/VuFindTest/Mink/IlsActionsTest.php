@@ -123,7 +123,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Interlibrary Loan Requests',
-            $this->findCss($page, 'h2')->getText()
+            $this->findCssAndGetText($page, 'h2')
         );
     }
 
@@ -158,7 +158,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Storage Retrieval Requests',
-            $this->findCss($page, 'h2')->getText()
+            $this->findCssAndGetText($page, 'h2')
         );
     }
 
@@ -191,7 +191,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Test that control is disabled upon empty selection
@@ -206,7 +206,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Now cancel for real:
@@ -214,7 +214,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             '1 request(s) were successfully canceled',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
         $this->assertNull($page->find('css', 'a.title'));
     }
@@ -233,7 +233,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Click cancel but bail out with no... item should still be there.
@@ -243,7 +243,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Now cancel for real:
@@ -251,7 +251,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             '1 request(s) were successfully canceled',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
         $this->assertNull($page->find('css', 'a.title'));
     }
@@ -279,7 +279,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
         $this->assertTrue(false !== strstr($page->getContent(), 'Main Desk'));
     }
@@ -307,7 +307,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
         $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
     }
@@ -346,7 +346,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             'Connection to the library management system failed. '
             . 'Information related to your library account cannot be displayed. '
             . 'If the problem persists, please contact your library.',
-            $this->findCss($page, 'div.alert-warning')->getText()
+            $this->findCssAndGetText($page, 'div.alert-warning')
         );
 
         // Clean up the user account so we can sign up again in the next test:
@@ -568,7 +568,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'No items were selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-danger')
         );
 
         // Test "renew all":
@@ -576,7 +576,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Renewal Successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
     }
 
@@ -606,7 +606,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($titles as $index => $title) {
             $this->assertEquals(
                 $title,
-                $this->findCss($page, 'ul.record-list li a.title', null, $index)->getText()
+                $this->findCssAndGetText($page, 'ul.record-list li a.title', null, $index)
             );
         }
         $this->clickCss($page, '#sort_options_1 option', null, 2);
@@ -614,7 +614,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         foreach (array_reverse($titles) as $index => $title) {
             $this->assertEquals(
                 $title,
-                $this->findCss($page, 'ul.record-list li a.title', null, $index)->getText()
+                $this->findCssAndGetText($page, 'ul.record-list li a.title', null, $index)
             );
         }
 
@@ -623,7 +623,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'No Items were Selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-danger')
         );
 
         // Purge one:
@@ -632,7 +632,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Selected loans have been purged from your loan history',
-            $this->findCss($page, '.alert.alert-info')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-info')
         );
         $this->findCss($page, '.checkbox-select-item');
         $this->unFindCss($page, '.checkbox-select-item', null, 1);
@@ -642,7 +642,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Your loan history has been purged',
-            $this->findCss($page, '.alert.alert-info')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-info')
         );
         $this->unFindCss($page, '.checkbox-select-item');
     }

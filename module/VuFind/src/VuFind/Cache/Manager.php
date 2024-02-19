@@ -103,6 +103,14 @@ class Manager
      * @var array
      */
     protected $cacheSpecs = [
+        'browscap' => [
+            'cliOverride' => false,
+            'directory' => 'browscap',
+            'options' => [
+                'ttl' => 0, // no expiration - cache is updated with console util/browscap
+                'keyPattern' => '/^[a-z0-9_\+\-\.]*$/Di',
+            ],
+        ],
         'config' => [
             'directory' => 'configs',
         ],
