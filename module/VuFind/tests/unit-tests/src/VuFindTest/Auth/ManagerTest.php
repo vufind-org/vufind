@@ -578,6 +578,12 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $loginTokenManager = $this->getMockBuilder(\VuFind\Auth\LoginTokenManager::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $ils = $this->getMockBuilder(\VuFind\ILS\Connection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $ils->expects($this->any())
+            ->method('loginIsHidden')
+            ->willReturn(false);
         return new Manager(
             $config,
             $userTable,
@@ -585,7 +591,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $pm,
             $cookies,
             $csrf,
-            $loginTokenManager
+            $loginTokenManager,
+            $ils
         );
     }
 

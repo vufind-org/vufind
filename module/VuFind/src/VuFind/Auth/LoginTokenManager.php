@@ -31,11 +31,11 @@ declare(strict_types=1);
 
 namespace VuFind\Auth;
 
+use BrowscapPHP\BrowscapInterface;
 use Laminas\Session\SessionManager;
+use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
-
-use function is_array;
 
 /**
  * Class LoginTokenManager
@@ -100,6 +100,35 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $viewRenderer = null;
 
     /**
+     * Callback for creating Browscap so that we can defer the cache access to when
+     * it's actually needed.
+     *
+     * @var callable
+     */
+    protected $browscapCallback;
+
+    /**
+     * Browscap
+     *
+     * @var BrowscapInterface
+     */
+    protected $browscap = null;
+
+    /**
+     * Has the theme been initialized yet?
+     *
+     * @var bool
+     */
+    protected $themeInitialized = false;
+
+    /**
+     * User that needs to receive a warning (or null for no warning needed)
+     *
+     * @var ?User
+     */
+    protected $userToWarn = null;
+
+    /**
      * LoginToken constructor.
      *
      * @param Config                                   $config          Configuration
@@ -109,6 +138,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      * @param SessionManager                           $sessionManager  Session manager
      * @param \VuFind\Mailer\Mailer                    $mailer          Mailer
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
+     * @param callable                                 $browscapCB      Callback for creating Browscap
      */
     public function __construct(
         \Laminas\Config\Config $config,
@@ -118,6 +148,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         SessionManager $sessionManager,
         \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
+        callable $browscapCB
     ) {
         $this->config = $config;
         $this->userTable = $userTable;
@@ -126,6 +157,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         $this->sessionManager = $sessionManager;
         $this->mailer = $mailer;
         $this->viewRenderer = $viewRenderer;
+        $this->browscapCallback = $browscapCB;
     }
 
     /**
@@ -151,11 +183,32 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
                 $this->deleteUserLoginTokens($user->id);
-                $this->sendLoginTokenWarningEmail($user);
+                // We can't send an email until after the theme has initialized;
+                // if it's not ready yet, save the user for later.
+                if ($this->themeInitialized) {
+                    $this->sendLoginTokenWarningEmail($user);
+                } else {
+                    $this->userToWarn = $user;
+                }
                 return null;
             }
         }
         return $user;
+    }
+
+    /**
+     * Event hook -- called after the theme has initialized.
+     *
+     * @return void
+     */
+    public function themeIsReady(): void
+    {
+        $this->themeInitialized = true;
+        // If we have queued a user warning, we can send it now!
+        if ($this->userToWarn) {
+            $this->sendLoginTokenWarningEmail($this->userToWarn);
+            $this->userToWarn = null;
+        }
     }
 
     /**
@@ -173,23 +226,25 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     {
         $token = bin2hex(random_bytes(32));
         $series = $series ? $series : bin2hex(random_bytes(32));
-        $browser = '';
-        $platform = '';
         try {
-            $userInfo = get_browser(null, true);
+            $browser = $this->getBrowscap()->getBrowser();
         } catch (\Exception $e) {
+            throw new AuthException('Problem with browscap: ' . (string)$e);
         }
-        if (!is_array($userInfo ?? null)) {
-            throw new AuthException('Problem with browscap.ini');
-        }
-        $browser = $userInfo['browser'] ?? '';
-        $platform = $userInfo['platform'] ?? '';
         if ($expires === 0) {
             $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
         try {
-            $this->loginTokenTable->saveToken($user->id, $token, $series, $browser, $platform, $expires, $sessionId);
+            $this->loginTokenTable->saveToken(
+                $user->id,
+                $token,
+                $series,
+                $browser->browser,
+                $browser->platform,
+                $expires,
+                $sessionId
+            );
             $this->setLoginTokenCookie($user->id, $token, $series, $expires);
         } catch (\Exception $e) {
             throw new AuthException('Failed to save token');
@@ -314,5 +369,18 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             ];
         }
         return $result;
+    }
+
+    /**
+     * Get Browscap
+     *
+     * @return BrowscapInterface
+     */
+    protected function getBrowscap(): BrowscapInterface
+    {
+        if (null === $this->browscap) {
+            $this->browscap = ($this->browscapCallback)();
+        }
+        return $this->browscap;
     }
 }

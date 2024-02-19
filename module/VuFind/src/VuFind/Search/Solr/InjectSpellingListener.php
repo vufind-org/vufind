@@ -206,7 +206,7 @@ class InjectSpellingListener
                 $spellcheck->mergeWith($collection->getSpellcheck());
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 // Don't let exceptions cause the whole search to fail
-                if ($this->logger instanceof \VuFind\Log\Logger) {
+                if ($this->logger instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $this->logger->logException(
                         $e,
                         new \Laminas\Stdlib\Parameters()

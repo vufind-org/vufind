@@ -12,7 +12,7 @@
 @import "rtl";
 
 html {
-  font-size: 16px;
+  font-size: $font-size-base;
   overflow-x: hidden;
 }
 body {
@@ -29,9 +29,12 @@ body {
 .navbar { border-radius: 0; }
 .banner {
   width: auto;
-  color: #fff;
+  color: $white;
 
   a { color: #fff; }
+  .dropdown-menu {
+    color: $black;
+  }
 }
 .banner .navbar-right { margin-top: calc((#{$banner-height-sm} - 50px) / 2); } // Put right nav in the middle
 .banner .navbar-brand {
@@ -49,8 +52,6 @@ body {
 
 header {
   background-color: $header-bg;
-  font-size: $reduced-font-size;
-  font-weight: 500;
   color: $white;
 
   .navbar-nav { margin-top: 0; }
@@ -115,15 +116,15 @@ header {
   }
 }
 
-#account-icon.text-success,
-#account-icon.text-warning,
-#account-icon.text-danger {
-  margin-left: -.25rem;
-  margin-top: -0.5rem;
-  margin-bottom: -.5rem;
-  padding: 0.5rem;
-  background-color: $header-light;
-  border-radius: 100%;
+#account-icon {
+  &.notification-level-1, &.notification-level-2, &.notification-level-3 {
+    margin-left: -.25rem;
+    margin-top: -0.5rem;
+    margin-bottom: -.5rem;
+    padding: 0.5rem;
+    background-color: $header-light;
+    border-radius: 100%;
+  }
 }
 #login-dropdown .login-dropdown-caret:hover,
 a:hover .login-dropdown-caret {
@@ -178,7 +179,6 @@ a:hover .login-dropdown-caret {
   margin-top: 1rem;
   margin-right: auto;
 }
-.info-col { font-size: $reduced-font-size; }
 .info-col h3 {
   margin-top: 0;
   font-weight: 500;

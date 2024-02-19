@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mink test class for Markdown rendering support.
+ * Mink test class for the static content controller.
  *
  * PHP version 8
  *
@@ -27,26 +27,45 @@
  * @link     https://vufind.org Main Page
  */
 
+declare(strict_types=1);
+
 namespace VuFindTest\Mink;
 
 /**
- * Mink test class for Markdown rendering support.
+ * Mink test class for the static content controller.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
-class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
+class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
 {
+    /**
+     * Data provider for testMarkdownContentRendering() to confirm that the initial part
+     * of the content URL is case-insensitive.
+     *
+     * @return array
+     */
+    public static function basePathProvider(): array
+    {
+        return [
+            'capitalized path' => ['/Content'],
+            'lowercase path' => ['/content'],
+        ];
+    }
+
     /**
      * Test that Markdown static content rendering is working.
      *
+     * @param string $basePath Base path of content route
+     *
+     * @dataProvider basePathProvider
+     *
      * @return void
      */
-    public function testMarkdownContentRendering()
+    public function testMarkdownContentRendering(string $basePath): void
     {
         // Switch to the example theme, because that's where a Markdown example lives:
         $this->changeConfigs(
@@ -60,16 +79,16 @@ class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Open the page:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Content/example');
+        $session->visit($this->getVuFindUrl() . $basePath . '/example');
         $page = $session->getPage();
         // Confirm that the Markdown was converted into appropriate h1/a tags:
         $this->assertEquals(
             'Static Content Example',
-            $this->findCss($page, 'h1')->getText()
+            $this->findCssAndGetText($page, 'h1')
         );
         $this->assertEquals(
             'Static Pages documentation',
-            $this->findCss($page, '#content a')->getText()
+            $this->findCssAndGetText($page, '#content a')
         );
     }
 }

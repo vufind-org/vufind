@@ -34,16 +34,14 @@ $config = [
                 ],
             ],
             'content-page' => [
-                'type'    => 'Laminas\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'route'    => '/Content/:page',
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
                     ],
+                    'spec' => '/Content/%page%',
                 ],
             ],
             'shortlink' => [
@@ -374,7 +372,6 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
-            'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
@@ -432,6 +429,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
+            'VuFind\Http\GuzzleService' => 'VuFind\Http\GuzzleServiceFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
@@ -548,7 +546,6 @@ $config = [
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Logger' => 'VuFind\Log\Logger',
             'VuFind\Mailer' => 'VuFind\Mailer\Mailer',
-            'VuFind\ProxyConfig' => 'ProxyManager\Configuration',
             'VuFind\Recaptcha' => 'VuFind\Service\ReCaptcha',
             'VuFind\RecommendPluginManager' => 'VuFind\Recommend\PluginManager',
             'VuFind\RecordCache' => 'VuFind\Record\Cache',

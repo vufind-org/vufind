@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -92,7 +91,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     protected function fillInAndSubmitFeedbackForm($page)
     {
         $this->clickCss($page, '#feedbackLink');
-        $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
+        $this->findCssAndSetValue($page, '#modal .form-control[name="name"]', 'Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
         $this->findCss($page, '#modal #form_FeedbackSite_message')
@@ -111,7 +110,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             'Thank you for your feedback.',
-            $this->findCss($page, '#modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '#modal .alert-success')
         );
     }
 
@@ -132,7 +131,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         // CAPTCHA should have failed...
         $this->assertEquals(
             'CAPTCHA not passed',
-            $this->findCss($page, '.modal-body .alert-danger')->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
         // Now fix the CAPTCHA
         $this->findCss($page, 'form [name="demo_captcha"]')
@@ -140,7 +139,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->assertEquals(
             'Thank you for your feedback.',
-            $this->findCss($page, '#modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '#modal .alert-success')
         );
     }
 
@@ -164,7 +163,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertMatchesRegularExpression(
             '/This action can only be performed after (\d+) seconds/',
-            $this->findCss($page, '#modal .alert-danger')->getText(),
+            $this->findCssAndGetText($page, '#modal .alert-danger'),
         );
 
         // Set up with no real delay and test that submission is passed:
@@ -180,7 +179,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             'Thank you for your feedback.',
-            $this->findCss($page, '#modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '#modal .alert-success')
         );
     }
 }

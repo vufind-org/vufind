@@ -337,11 +337,18 @@ abstract class Options implements TranslatorAwareInterface
     protected $resultLimit = -1;
 
     /**
-     * Is the first/last navigation scroller enabled?
+     * Is first/last navigation supported by the backend?
      *
      * @var bool
      */
-    protected $firstlastNavigation = false;
+    protected $firstLastNavigationSupported = true;
+
+    /**
+     * Is the record page first/last navigation scroller enabled?
+     *
+     * @var bool
+     */
+    protected $recordPageFirstLastNavigation = false;
 
     /**
      * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
@@ -1186,7 +1193,7 @@ abstract class Options implements TranslatorAwareInterface
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
         if (count($class) !== 4) {
-            if (str_starts_with($className, 'Mock_')) {
+            if (str_starts_with($className, 'Mock_') || str_starts_with($className, 'MockObject_')) {
                 return 'Mock';
             }
             throw new \Exception("Unexpected class name: {$className}");
@@ -1209,13 +1216,35 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we include first/last options in result scroller navigation?
+     * Should we include first/last options in record page navigation?
      *
      * @return bool
+     *
+     * @deprecated Use recordFirstLastNavigationEnabled instead
      */
     public function supportsFirstLastNavigation()
     {
-        return $this->firstlastNavigation;
+        return $this->recordFirstLastNavigationEnabled();
+    }
+
+    /**
+     * Is first/last navigation supported by the backend
+     *
+     * @return bool
+     */
+    public function firstLastNavigationSupported()
+    {
+        return $this->firstLastNavigationSupported;
+    }
+
+    /**
+     * Should we include first/last options in record page navigation?
+     *
+     * @return bool
+     */
+    public function recordFirstLastNavigationEnabled()
+    {
+        return $this->firstLastNavigationSupported() && $this->recordPageFirstLastNavigation;
     }
 
     /**

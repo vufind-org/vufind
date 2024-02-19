@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ProxyManager configuration factory.
+ * Factory for Util/BrowscapCommand.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Service;
+namespace VuFindConsole\Command\Util;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * ProxyManager configuration factory.
+ * Factory for Util/BrowscapCommand.
  *
  * @category VuFind
- * @package  Service
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ProxyConfigFactory implements FactoryInterface
+class BrowscapCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,16 +65,10 @@ class ProxyConfigFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $config = new $requestedName();
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $dir = $cacheManager->getCacheDir() . 'objects';
-        $config->setProxiesTargetDir($dir);
-        if (APPLICATION_ENV != 'development') {
-            spl_autoload_register($config->getProxyAutoloader());
-        }
-        return $config;
+        return new $requestedName(
+            $container->get(\VuFind\Cache\Manager::class),
+            $container->get(\VuFind\Http\GuzzleService::class),
+            ...($options ?? [])
+        );
     }
 }

@@ -35,6 +35,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -141,6 +142,20 @@ class Manager implements
     protected $csrf;
 
     /**
+     * Cache for hideLogin setting
+     *
+     * @var ?bool
+     */
+    protected $hideLogin = null;
+
+    /**
+     * ILS connection
+     *
+     * @var Connection
+     */
+    protected $ils;
+
+    /**
      * Constructor
      *
      * @param Config            $config            VuFind configuration
@@ -150,6 +165,7 @@ class Manager implements
      * @param CookieManager     $cookieManager     Cookie manager
      * @param CsrfInterface     $csrf              CSRF validator
      * @param LoginTokenManager $loginTokenManager Login Token manager
+     * @param Connection        $ils               ILS connection
      */
     public function __construct(
         Config $config,
@@ -158,7 +174,8 @@ class Manager implements
         PluginManager $pm,
         CookieManager $cookieManager,
         CsrfInterface $csrf,
-        LoginTokenManager $loginTokenManager
+        LoginTokenManager $loginTokenManager,
+        Connection $ils
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -168,6 +185,7 @@ class Manager implements
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
         $this->csrf = $csrf;
+        $this->ils = $ils;
 
         // Set up session:
         $this->session = new \Laminas\Session\Container('Account', $sessionManager);
@@ -453,8 +471,26 @@ class Manager implements
      */
     public function loginEnabled()
     {
-        // Assume login is enabled unless explicitly turned off:
-        return !($this->config->Authentication->hideLogin ?? false);
+        if (null === $this->hideLogin) {
+            // Assume login is enabled unless explicitly turned off:
+            $this->hideLogin = ($this->config->Authentication->hideLogin ?? false);
+
+            if (!$this->hideLogin) {
+                try {
+                    // Check if the catalog wants to hide the login link, and override
+                    // the configuration if necessary.
+                    if ($this->ils->loginIsHidden()) {
+                        $this->hideLogin = true;
+                    }
+                } catch (\Exception $e) {
+                    // Ignore exceptions; if the catalog is broken, throwing an exception
+                    // here may interfere with UI rendering. If we ignore it now, it will
+                    // still get handled appropriately later in processing.
+                    $this->logError('Could not check loginIsHidden:' . (string)$e);
+                }
+            }
+        }
+        return !$this->hideLogin;
     }
 
     /**
@@ -717,61 +753,67 @@ class Manager implements
      */
     public function login($request)
     {
-        // Allow the auth module to inspect the request (used by ChoiceAuth,
-        // for example):
-        $this->getAuth()->preLoginCheck($request);
-
-        // Check if the current auth method wants to delegate the request to another
-        // method:
-        if ($delegate = $this->getAuth()->getDelegateAuthMethod($request)) {
-            $this->setAuthMethod($delegate, true);
-        }
-
-        // Validate CSRF for form-based authentication methods:
-        if (
-            !$this->getAuth()->getSessionInitiator('')
-            && $this->getAuth()->needsCsrfCheck($request)
-        ) {
-            if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
-                $this->getAuth()->resetState();
-                $this->logWarning('Invalid CSRF token passed to login');
-                throw new AuthException('authentication_error_technical');
-            } else {
-                // After successful token verification, clear list to shrink session:
-                $this->csrf->trimTokenList(0);
-            }
-        }
-
-        // Perform authentication:
+        // Wrap everything in try-catch so that we can reset the state on failure:
         try {
-            $user = $this->getAuth()->authenticate($request);
-        } catch (AuthException $e) {
-            // Pass authentication exceptions through unmodified
-            throw $e;
-        } catch (\VuFind\Exception\PasswordSecurity $e) {
-            // Pass password security exceptions through unmodified
-            throw $e;
-        } catch (\Exception $e) {
-            // Catch other exceptions, log verbosely, and treat them as technical
-            // difficulties
-            $this->logError((string)$e);
-            throw new AuthException('authentication_error_technical', 0, $e);
-        }
+            // Allow the auth module to inspect the request (used by ChoiceAuth,
+            // for example):
+            $this->getAuth()->preLoginCheck($request);
 
-        // Update user object
-        $this->updateUser($user);
+            // Check if the current auth method wants to delegate the request to another
+            // method:
+            if ($delegate = $this->getAuth()->getDelegateAuthMethod($request)) {
+                $this->setAuthMethod($delegate, true);
+            }
 
-        if ($request->getPost()->get('remember_me') && $this->supportsPersistentLogin()) {
+            // Validate CSRF for form-based authentication methods:
+            if (
+                !$this->getAuth()->getSessionInitiator('')
+                && $this->getAuth()->needsCsrfCheck($request)
+            ) {
+                if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
+                    $this->getAuth()->resetState();
+                    $this->logWarning('Invalid CSRF token passed to login');
+                    throw new AuthException('authentication_error_technical');
+                } else {
+                    // After successful token verification, clear list to shrink session:
+                    $this->csrf->trimTokenList(0);
+                }
+            }
+
+            // Perform authentication:
             try {
-                $this->loginTokenManager->createToken($user, '', $this->sessionManager->getId());
+                $user = $this->getAuth()->authenticate($request);
+            } catch (AuthException $e) {
+                // Pass authentication exceptions through unmodified
+                throw $e;
+            } catch (\VuFind\Exception\PasswordSecurity $e) {
+                // Pass password security exceptions through unmodified
+                throw $e;
             } catch (\Exception $e) {
+                // Catch other exceptions, log verbosely, and treat them as technical
+                // difficulties
                 $this->logError((string)$e);
                 throw new AuthException('authentication_error_technical', 0, $e);
             }
+
+            // Update user object
+            $this->updateUser($user);
+
+            if ($request->getPost()->get('remember_me') && $this->supportsPersistentLogin()) {
+                try {
+                    $this->loginTokenManager->createToken($user, '', $this->sessionManager->getId());
+                } catch (\Exception $e) {
+                    $this->logError((string)$e);
+                    throw new AuthException('authentication_error_technical', 0, $e);
+                }
+            }
+            // Store the user in the session and send it back to the caller:
+            $this->updateSession($user);
+            return $user;
+        } catch (\Exception $e) {
+            $this->getAuth()->resetState();
+            throw $e;
         }
-        // Store the user in the session and send it back to the caller:
-        $this->updateSession($user);
-        return $user;
     }
 
     /**

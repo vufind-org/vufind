@@ -200,19 +200,14 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      */
     protected function getContextualUrl($node, $context)
     {
-        if ($context == 'Collection') {
-            return $this->getUrlFromRouteCache('collection', $node->id)
-                . '#tabnav';
-        } else {
-            $type = $node->type;
-            if ('collection' === $type && !$this->collectionsEnabled) {
-                $type = 'record';
-            }
-            $url = $this->getUrlFromRouteCache($type, $node->id);
-            return $type === 'collection'
-                ? $url . '#tabnav'
-                : $url;
+        $type = $node->type;
+        if ('collection' === $type && !$this->collectionsEnabled) {
+            $type = 'record';
         }
+        $url = $this->getUrlFromRouteCache($type, $node->id);
+        return $type === 'collection'
+            ? $url . '#tabnav'
+            : $url;
     }
 
     /**
