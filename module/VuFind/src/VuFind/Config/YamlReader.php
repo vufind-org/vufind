@@ -201,13 +201,6 @@ class YamlReader
             // Swallow the directive after processing it:
             unset($results['@merge_sections']);
         }
-        // Check for sections to replace recursive instead of overriding:
-        $recursiveReplacedSections = [];
-        if (isset($results['@recursive_replaced_sections'])) {
-            $recursiveReplacedSections = $results['@recursive_replaced_sections'];
-            // Swallow the directive after processing it:
-            unset($results['@recursive_replaced_sections']);
-        }
 
         // Now load in merged or missing sections from parent, if applicable:
         if (null !== $defaultParent) {
@@ -220,20 +213,7 @@ class YamlReader
                     $resultElemRef
                         = &$this->getArrayElemRefByPath($results, $path, true);
                     $resultElemRef
-                        = array_merge_recursive($parentElem, $resultElemRef);
-                    unset($parentElem);
-                    unset($resultElemRef);
-                }
-            }
-            // Process recursive replaced sections:
-            foreach ($recursiveReplacedSections as $path) {
-                $parentElem
-                    = $this->getArrayElemRefByPath($parentSections, $path);
-                if (is_array($parentElem)) {
-                    $resultElemRef
-                        = &$this->getArrayElemRefByPath($results, $path, true);
-                    $resultElemRef
-                        = array_replace_recursive($parentElem, $resultElemRef);
+                        = $this->arrayMergeRecursiveDistinct($parentElem, $resultElemRef);
                     unset($parentElem);
                     unset($resultElemRef);
                 }
@@ -275,5 +255,30 @@ class YamlReader
             $result = &$result[$pathPart];
         }
         return $result;
+    }
+
+    /**
+     * Merges arrays recursive without combining single values into an array.
+     *
+     * @param array $arr1 array1
+     * @param array $arr2 array2
+     *
+     * @return array
+     */
+    protected function arrayMergeRecursiveDistinct($arr1, $arr2)
+    {
+        $merged = $arr1;
+        foreach ($arr2 as $key => $value) {
+            if (is_array($merged[$key] ?? null) && is_array($value)) {
+                if (array_is_list($merged[$key]) && array_is_list($value)) {
+                    $merged[$key] = array_merge($merged[$key], $value);
+                } else {
+                    $merged[$key] = $this->arrayMergeRecursiveDistinct($merged[$key], $value);
+                }
+            } else {
+                $merged[$key] = $value;
+            }
+        }
+        return $merged;
     }
 }

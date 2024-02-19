@@ -2,7 +2,6 @@
 "@merge_sections":
   - [Other, Merged]
   - [Other, ParentOnly]
-"@recursive_replaced_sections":
   - [Other, Replaced]
 
 Overridden:
