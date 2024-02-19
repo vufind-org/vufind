@@ -180,7 +180,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     form.appendChild(nonDefaultIdsInput);
 
     let checkedDefaultInput = document.createElement('input');
-    checkedDefaultInput.setAttribute('class', 'checked_default');
+    checkedDefaultInput.setAttribute('class', 'checked_default hidden');
     checkedDefaultInput.setAttribute('type', 'checkbox');
     checkedDefaultInput.setAttribute('name', 'checked_default');
     form.appendChild(checkedDefaultInput);
