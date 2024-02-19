@@ -7,7 +7,7 @@
     'aria-label' => $this->label,
     'href' => null !== $this->results
       ? $this->results->getUrlQuery()->setPage($this->page)->getParams(false)
-      : $this->currentPath() . '?' . http_build_query(array_merge($this->params, ['page' => $this->page])),
+      : $this->currentPath() . '?' . http_build_query(array_merge($this->params ?? [], ['page' => $this->page])),
   ]);
   if ($this->page === $this->current) {
     $liAttrs->add('class', 'active');

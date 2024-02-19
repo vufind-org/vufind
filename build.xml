@@ -145,10 +145,10 @@
     <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
   </target>
   <target name="phpcs">
-    <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
   </target>
   <target name="phpcs-console">
-    <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Phpstan -->
