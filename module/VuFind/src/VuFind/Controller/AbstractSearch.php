@@ -875,6 +875,12 @@ class AbstractSearch extends AbstractBase
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
         $urlBase = $this->params()->fromQuery('urlBase', '');
         $searchAction = $this->params()->fromQuery('searchAction', '');
+        // $urlBase and $searchAction should be relative URLs; if there is an
+        // absolute URL passed in, this may be a sign of malicious activity and
+        // we should fail.
+        if (str_contains($urlBase . $searchAction, '://')) {
+            throw new \Exception('Unexpected absolute URL found.');
+        }
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
