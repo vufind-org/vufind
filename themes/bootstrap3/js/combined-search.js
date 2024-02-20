@@ -6,8 +6,8 @@ VuFind.combinedSearch = (function CombinedSearch() {
       if (responseText.length === 0) {
         container.style.display = "none";
         let parent = container.parentNode;
-        while (parent.classList.contains('js-hide-if-empty')) {
-          $(parent).hide();
+        while (parent && parent.classList.contains('js-hide-if-empty')) {
+          parent.hide();
           parent = parent.parent();
         }
       } else {
