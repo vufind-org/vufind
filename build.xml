@@ -168,7 +168,7 @@
           </filterchain>
         </property>
         <!-- Finally, run phpcbf: -->
-        <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml ${phpcbf_filelist}" escape="false" passthru="true" checkreturn="true" />
+        <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml ${phpcbf_filelist}" escape="false" passthru="true" />
       </then>
     </if>
   </target>
