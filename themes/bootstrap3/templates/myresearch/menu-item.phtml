@@ -1,35 +1,10 @@
 <?php
-  $user = $this->auth()->isLoggedIn();
-  $patron = $user ? $this->auth()->getILSPatron() : false;
-  $capabilityParams = $patron ? ['patron' => $patron] : [];
-  $ilsOnline = ('ils-none' !== $this->ils()->getOfflineMode());
-?>
-<?php
   $showItem = true;
-  if ($this->name === 'favorites') {
-      $showItem = $this->userlist()->getMode() !== 'disabled';
+  if (isset($this->checkMethod)) {
+      $showItem = $this->accountMenu()->{$this->checkMethod}();
   }
-  if ($this->name === 'librarycards') {
-      $showItem = $ilsOnline && $user && $user->libraryCardsEnabled();
-  }
-  if ($this->name === 'dgcontent') {
-      $showItem = $this->overdrive()->showMyContentLink();
-  }
-  if ($this->name === 'history') {
-      $showItem = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
-  }
-  if ($this->name === 'logout') {
-      $showItem = $user;
-  }
-  if (isset($this->ilsCapability)) {
-      $showItem = $ilsOnline && $this->ils()->checkCapability($this->ilsCapability, $capabilityParams);
-  }
-  if (isset($this->ilsFunction)) {
-      $showItem = $ilsOnline && $this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams);
-  }
-  if ($this->name === 'fines' && !isset($this->icon)) {
-      // Use a "fines" icon based on the configured default currency symbol:
-      $this->icon = 'currency-' . strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
+  if (isset($this->iconMethod) && !isset($this->icon)) {
+      $this->icon = $this->accountMenu()->{$this->iconMethod}();
   }
 ?>
 <?php if ($showItem): ?>
