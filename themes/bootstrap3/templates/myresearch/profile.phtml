@@ -85,10 +85,8 @@
   </div>
 
   <?php $user = $this->auth()->isLoggedIn(); ?>
-  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user)): ?>
-    <div class="myresearch-profile-header">
-      <h3><?=$this->transEsc('Saved Logins')?></h3>
-    </div>
+  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
+    <h3><?=$this->transEsc('Saved Logins')?></h3>
     <?php $tokens = $user->getLoginTokens($user->id); ?>
     <?php if (!$tokens): ?>
       <div class="my-profile-col"><?=$this->transEsc('No saved logins')?></div>
