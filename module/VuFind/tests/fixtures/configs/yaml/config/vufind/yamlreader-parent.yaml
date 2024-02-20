@@ -8,6 +8,9 @@ Other:
     Baz:
       - Bar
       - Bar
+  Replaced:
+    ParentOnly: Will exist
+    Original: Will not exist
   NonMerged:
     Original: Will not exist
   ParentOnly:
