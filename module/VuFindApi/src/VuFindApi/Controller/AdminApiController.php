@@ -78,7 +78,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
      *
      * @var array
      */
-    protected $defaultIgnoredCaches = ['cover'];
+    protected $defaultIgnoredCaches = ['browscap', 'cover'];
 
     /**
      * Clear the cache
