@@ -126,6 +126,7 @@
         }
     },
     "scripts": {
+        "fix": "phing fix-php",
         "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
