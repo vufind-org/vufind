@@ -65,6 +65,9 @@
               <?=$this->icon('place-recall', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
             </a>
+	  <?php endif; ?>
+	  <?php if ($holding['in_transit']): ?>
+              <span><?=$this->transEsc('transit_to')?> <?=$this->escapeHtml($holding['in_transit'])?> <?=$this->transEsc("transit_sent_on")?> <?=$this->transEsc($holding['in_transit_date'])?></span>
           <?php endif; ?>
           <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
         <?php endif; ?>

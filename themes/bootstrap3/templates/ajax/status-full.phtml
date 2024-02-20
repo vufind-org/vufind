@@ -47,7 +47,10 @@
                 $status = 'Available';
               }
             ?>
-            <?=$this->transEsc($status)?>
+            <?=$this->transEsc($item['status'])?>
+            <?php if ($item['in_transit']): ?>
+              <?=$this->transEsc("transit_to")?> <?=$this->transEsc($item['in_transit'])?> <?=$this->transEsc("transit_sent_on")?> <?=$this->transEsc($item['in_transit_date'])?>
+            <?php endif; ?>
           </span>
         <?php endif; ?>
       </td>
