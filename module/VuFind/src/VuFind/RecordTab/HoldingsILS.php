@@ -191,7 +191,7 @@ class HoldingsILS extends AbstractBase
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
-        if (!$itemLimit || $totalItemCount < $itemLimit) {
+        if (!$itemLimit || $totalItemCount <= $itemLimit) {
             return;
         }
 

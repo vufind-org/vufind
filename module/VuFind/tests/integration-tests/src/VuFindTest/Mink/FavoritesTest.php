@@ -68,9 +68,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoSearch($query = 'Dewey')
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);

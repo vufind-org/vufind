@@ -32,7 +32,6 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
-use PHPUnit\Util\Test;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
@@ -322,6 +321,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $base = 'http://localhost/vufind';
         }
         return $base . $path;
+    }
+
+    /**
+     * Load the Search/Home page as a foundation for searching.
+     *
+     * @param ?Session $session Mink session (will be automatically established if not provided).
+     *
+     * @return Element
+     */
+    protected function getSearchHomePage(?Session $session = null): Element
+    {
+        $session ??= $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        return $session->getPage();
     }
 
     /**

@@ -90,6 +90,13 @@ jobs:
           key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpstan-"
 
+      - name: Cache PHP_CodeSniffer data
+        uses: actions/cache@v3
+        with:
+          path: tests/phpcs.cache.json
+          key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpcs-"
+
       - name: Install composer dependencies
         run: composer install
 
