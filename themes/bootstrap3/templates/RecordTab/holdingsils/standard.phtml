@@ -52,7 +52,11 @@
           <?php endif; ?>
         <?php else: ?>
           <?php /* Begin Unavailable Items (Recalls) */ ?>
-          <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
+          <?php if ($holding['in_transit'] ?? null): ?>
+              <span class="text-danger"><?=$this->transEsc('transit_to', ['%%location%%' => $holding['in_transit'], '%%date%%' => $holding['in_transit_date']])?></span>
+	  <?php else: ?>
+              <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
+          <?php endif; ?>
           <?php if ($holding['returnDate'] ?? false): ?>&ndash; <span class="small"><?=$this->escapeHtml($holding['returnDate'])?></span><?php endif; ?>
           <?php if ($holding['duedate'] ?? false): ?>
             &ndash; <span class="small"><?=$this->transEsc('Due')?>: <?=$this->escapeHtml($holding['duedate'])?></span>
@@ -66,9 +70,6 @@
               <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
             </a>
 	  <?php endif; ?>
-	  <?php if ($holding['in_transit']): ?>
-              <span class="text-danger"><?=$this->transEsc('transit_to')?> <?=$this->escapeHtml($holding['in_transit'])?> <?=$this->transEsc('transit_sent_on')?> <?=$this->transEsc($holding['in_transit_date'])?></span>
-          <?php endif; ?>
           <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
         <?php endif; ?>
         <?php if (isset($holding['item_notes'])): ?>
