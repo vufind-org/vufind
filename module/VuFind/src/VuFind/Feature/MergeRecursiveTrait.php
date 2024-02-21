@@ -70,7 +70,7 @@ trait MergeRecursiveTrait
      */
     protected function mergeRecursive($val1, $val2)
     {
-        if (empty($val2)) {
+        if ($val2 === null || $val2 === []) {
             return $val1;
         }
 

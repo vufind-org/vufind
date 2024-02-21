@@ -15,6 +15,7 @@ Other:
       - Baz
   Replaced:
     Original: Replaces parent
+    Boolean: false
     ChildOnly: From child
   NonMerged:
     Original: Not so original either

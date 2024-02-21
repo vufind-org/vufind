@@ -11,6 +11,7 @@ Other:
   Replaced:
     ParentOnly: Will exist
     Original: Will not exist
+    Boolean: true
   NonMerged:
     Original: Will not exist
   ParentOnly:
