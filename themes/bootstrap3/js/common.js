@@ -239,26 +239,26 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  function setInnerHtml(elm, html) {
-    elm.innerHTML = html;
-    elm.querySelectorAll("script").forEach(oldScript => {
-        // Check if the script type is JavaScript
-        if (oldScript.type === '' || oldScript.type === 'text/javascript') {
-            replaceScriptWithNonce(oldScript);
-        }
-    });
-  }
-
   function replaceScriptWithNonce(oldScript) {
     const newScript = document.createElement("script");
     oldScript.querySelectorAll("script").forEach(attr => {
-        if (attr.name !== 'nonce') {
-            newScript.setAttribute(attr.name, attr.value);
-        }
+      if (attr.name !== 'nonce') {
+        newScript.setAttribute(attr.name, attr.value);
+      }
     });
     newScript.setAttribute('nonce', getCspNonce());
     newScript.appendChild(document.createTextNode(oldScript.innerHTML));
     oldScript.parentNode.replaceChild(newScript, oldScript);
+  }
+
+  //Additional handling in updating inline script tags to avoid CSP XSS attacks:
+  function setInnerHtml(elm, html) {
+    elm.innerHTML = html;
+    elm.querySelectorAll("script").forEach(oldScript => {
+      if (oldScript.type === '' || oldScript.type === 'text/javascript') {
+        replaceScriptWithNonce(oldScript);
+      }
+    });
   }
 
   var loadHtml = function loadHtml(_element, url, data, success) {
