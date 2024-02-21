@@ -150,7 +150,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      */
     public function __construct(
         Config $config,
-        Usertable $userTable,
+        UserTable $userTable,
         LoginTokenTable $loginTokenTable,
         CookieManager $cookieManager,
         SessionManager $sessionManager,

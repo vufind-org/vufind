@@ -310,12 +310,8 @@ class Manager implements
     public function supportsPersistentLogin(?string $method = null): bool
     {
         if (!empty($this->config->Authentication->persistent_login)) {
-            if (null === $method) {
-                $method = $this->getSelectedAuthMethod();
-            }
-
             return in_array(
-                strtolower($method),
+                strtolower($method ?? $this->getSelectedAuthMethod()),
                 explode(',', strtolower($this->config->Authentication->persistent_login))
             );
         }
@@ -475,10 +471,10 @@ class Manager implements
      */
     public function getSelectedAuthMethod()
     {
-        if ($this->getAuth() instanceof ChoiceAuth) {
-            return $this->getAuth()->getSelectedAuthOption();
-        }
-        return $this->getAuthMethod();
+        $auth = $this->getAuth();
+        return is_callable([$auth, 'getSelectedAuthOption'])
+            ? $auth->getSelectedAuthOption()
+            : $this->getAuthMethod();
     }
 
     /**
@@ -775,8 +771,7 @@ class Manager implements
             $this->getAuth()->preLoginCheck($request);
 
             // Get the main auth method before switching to any delegate:
-            $mainAuthMethod = $this->getAuth() instanceof ChoiceAuth
-                ? $this->getAuth()->getSelectedAuthOption() : $this->getAuthMethod();
+            $mainAuthMethod = $this->getSelectedAuthMethod();
 
             // Check if the current auth method wants to delegate the request to another
             // method:
