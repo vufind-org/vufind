@@ -242,16 +242,23 @@ var VuFind = (function VuFind() {
   function setInnerHtml(elm, html) {
     elm.innerHTML = html;
     elm.querySelectorAll("script").forEach(oldScript => {
-      const newScript = document.createElement("script");
-      Array.from(oldScript.attributes).forEach(attr => {
-        if (attr.name !== 'nonce') {
-          newScript.setAttribute(attr.name, attr.value);
+        // Check if the script type is JavaScript
+        if (oldScript.type === '' || oldScript.type === 'text/javascript') {
+            replaceScriptWithNonce(oldScript);
         }
-      });
-      newScript.setAttribute('nonce', getCspNonce());
-      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-      oldScript.parentNode.replaceChild(newScript, oldScript);
     });
+  }
+
+  function replaceScriptWithNonce(oldScript) {
+    const newScript = document.createElement("script");
+    oldScript.querySelectorAll("script").forEach(attr => {
+        if (attr.name !== 'nonce') {
+            newScript.setAttribute(attr.name, attr.value);
+        }
+    });
+    newScript.setAttribute('nonce', getCspNonce());
+    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+    oldScript.parentNode.replaceChild(newScript, oldScript);
   }
 
   var loadHtml = function loadHtml(_element, url, data, success) {
@@ -271,7 +278,7 @@ var VuFind = (function VuFind() {
         return response.text();
       })
       .then(htmlContent => {
-        setInnerHtml(element, updateCspNonce(htmlContent));
+        setInnerHtml(element, htmlContent);
         if (typeof success === 'function') {
           success(htmlContent);
         }
