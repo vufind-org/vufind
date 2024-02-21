@@ -2013,7 +2013,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'id' => $id,
                 'item_id' => $item['item_id'],
                 'location' => $this->getItemLocationName($item),
-                'shelvinglocation' => $this->getItemShelvingLocationName($item), 
+                'shelvinglocation' => $this->getItemShelvingLocationName($item),
                 'availability' => $available,
                 'status' => $status,
                 'status_array' => $statusCodes,
@@ -2461,20 +2461,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         return $name;
     }
 
+    /**
+     * Return the shelving location description for a Koha item
+     *
+     * @param array $item Item
+     *
+     * @return string
+     */
     protected function getItemShelvingLocationName($item)
     {
         $queryParams = [
-            'value'   => $item['location']
+            'value'   => $item['location'],
         ];
         $result = $this->makeRequest(
             [
                 'path' => [
-                     'v1', 'authorised_value_categories', 'loc', 'authorised_values'
+                     'v1', 'authorised_value_categories', 'loc', 'authorised_values',
                  ],
                  'query' => $queryParams,
             ]
         );
-        $shelvingLocation = isset($result['data'][0]['description']) ? $result['data'][0]['description'] : null;
+        $shelvingLocation = $result['data'][0]['description'] ?? null;
         return $shelvingLocation;
     }
 
