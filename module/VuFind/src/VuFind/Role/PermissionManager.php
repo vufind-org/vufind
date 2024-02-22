@@ -42,7 +42,7 @@ use function is_array;
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
-gt * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
 class PermissionManager
