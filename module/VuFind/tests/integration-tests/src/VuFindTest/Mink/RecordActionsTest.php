@@ -381,13 +381,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testTagAutocomplete(): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_type')
-            ->setValue('tag');
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('fiv');
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'five');
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'tag');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -570,11 +565,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testPrint(): void
     {
         // Go to a record view (manually search so we can access $session)
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCssAndSetValue($page, '#searchForm_lookfor', 'Dewey');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $page = $this->performSearch('Dewey');
         $this->clickCss($page, '.result a.title');
 
         // Click Print
