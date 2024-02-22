@@ -71,6 +71,7 @@ function Autocomplete(_settings) {
   let debounceTimeout;
   function _hide() {
     list.classList.remove("open");
+    list.innerHTML = "";
 
     clearTimeout(debounceTimeout);
     _currentIndex = -1;
@@ -174,6 +175,8 @@ function Autocomplete(_settings) {
       _hide();
       return;
     }
+    let loadingEl = _renderItem({ _header: settings.loadingString }, input);
+    list.innerHTML = loadingEl.outerHTML;
 
     let thisCB = new Date().getTime();
     lastCB = thisCB;
@@ -187,6 +190,7 @@ function Autocomplete(_settings) {
         return;
       }
       if (items === false || items.length === 0) {
+        _hide();
         return;
       }
       _searchCallback(items, input);
@@ -313,8 +317,6 @@ function Autocomplete(_settings) {
     input.addEventListener(
       "input",
       (event) => {
-        let loadingEl = _renderItem({ _header: settings.loadingString }, input);
-        list.innerHTML = loadingEl.outerHTML;
         _show(input);
         _align(input);
 
