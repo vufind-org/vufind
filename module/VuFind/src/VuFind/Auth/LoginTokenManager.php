@@ -240,7 +240,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             throw new AuthException('Problem with browscap: ' . (string)$e);
         }
         if ($expires === 0) {
-            $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
+            $lifetime = $this->getCookieLifetime();
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
         try {
@@ -272,7 +272,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     {
         $cookie = $this->getLoginTokenCookie();
         if (!empty($cookie) && $cookie['series'] === $series) {
-            $this->cookieManager->clear('loginToken');
+            $this->cookieManager->clear($this->getCookieName());
         }
         if ($token = $this->loginTokenTable->getBySeries($series, $cookie['user_id'])) {
             $handler = $this->sessionManager->getSaveHandler();
@@ -310,7 +310,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         if (!empty($cookie) && $cookie['series'] && $cookie['user_id']) {
             $this->loginTokenTable->deleteBySeries($cookie['series'], $cookie['user_id']);
         }
-        $this->cookieManager->clear('loginToken');
+        $this->cookieManager->clear($this->getCookieName());
     }
 
     /**
@@ -353,7 +353,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     {
         $token = implode(';', [$series, $userId, $token]);
         $this->cookieManager->set(
-            'loginToken',
+            $this->getCookieName(),
             $token,
             $expires,
             true
@@ -368,7 +368,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     public function getLoginTokenCookie(): array
     {
         $result = [];
-        if ($cookie = $this->cookieManager->get('loginToken')) {
+        if ($cookie = $this->cookieManager->get($this->getCookieName())) {
             $parts = explode(';', $cookie);
             $result = [
                 'series' => $parts[0] ?? '',
@@ -377,6 +377,26 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             ];
         }
         return $result;
+    }
+
+    /**
+     * Get login token cookie name
+     *
+     * @return string
+     */
+    public function getCookieName(): string
+    {
+        return 'loginToken';
+    }
+
+    /**
+     * Get login token cookie lifetime (days)
+     *
+     * @return int
+     */
+    public function getCookieLifetime(): int
+    {
+        return (int)($this->config->Authentication->persistent_login_lifetime ?? 14);
     }
 
     /**
