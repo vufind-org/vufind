@@ -24,12 +24,14 @@
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
 
 namespace VuFind\Role;
 
+use LmcRbacMvc\Identity\IdentityInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 use function in_array;
@@ -42,6 +44,7 @@ use function is_array;
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
@@ -69,11 +72,12 @@ class PermissionManager
     /**
      * Determine if the user is authorized in a certain context or not
      *
-     * @param string $context Context for the permission behavior
+     * @param string $permission Permission
+     * @param mixed  $context    Context for the permission behavior (optional)
      *
      * @return bool
      */
-    public function isAuthorized($context)
+    public function isAuthorized($permission, $context = null)
     {
         $authService = $this->getAuthorizationService();
 
@@ -82,7 +86,7 @@ class PermissionManager
             return false;
         }
 
-        if ($authService->isGranted($context)) {
+        if ($authService->isGranted($permission, $context)) {
             return true;
         }
 
@@ -90,28 +94,38 @@ class PermissionManager
     }
 
     /**
-     * Check if a permission rule exists for a given context
+     * Check if a permission rule exists
      *
-     * @param string $context Context for the permission behavior
+     * @param string $permission Permission
      *
      * @return bool
      */
-    public function permissionRuleExists($context)
+    public function permissionRuleExists($permission)
     {
         foreach ($this->config as $value) {
             if (!isset($value['permission'])) {
                 continue;
             }
-            if ($value['permission'] == $context) {
+            if ($value['permission'] == $permission) {
                 return true;
             }
             if (
                 is_array($value['permission'])
-                && in_array($context, $value['permission'])
+                && in_array($permission, $value['permission'])
             ) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Get the current identity from the authorization service.
+     *
+     * @return ?IdentityInterface
+     */
+    public function getIdentity(): ?IdentityInterface
+    {
+        return $this->authorizationService?->getIdentity();
     }
 }
