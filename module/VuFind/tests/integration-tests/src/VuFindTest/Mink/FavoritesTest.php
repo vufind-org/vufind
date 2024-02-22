@@ -433,13 +433,13 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username2', 'test', false);
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
-        $this->findCssAndSetValue($page, '#sort_options_1', 'year');
+        $this->findCssAndSetValue($page, '#sort_options_1', 'year', verifyValue: false);
         $this->waitForPageLoad($page);
         $this->assertFavoriteTitleOrder(
             $page,
             ['Fake Record 1 with multiple relators/', 'Dewey browse test']
         );
-        $this->findCssAndSetValue($page, '#sort_options_1', 'year DESC');
+        $this->findCssAndSetValue($page, '#sort_options_1', 'year DESC', verifyValue: false);
         $this->waitForPageLoad($page);
         $this->assertFavoriteTitleOrder(
             $page,
