@@ -24,14 +24,12 @@
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
 
 namespace VuFind\Role;
 
-use LmcRbacMvc\Identity\IdentityInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 use function in_array;
@@ -44,8 +42,7 @@ use function is_array;
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+gt * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
 class PermissionManager
@@ -117,15 +114,5 @@ class PermissionManager
             }
         }
         return false;
-    }
-
-    /**
-     * Get the current identity from the authorization service.
-     *
-     * @return ?IdentityInterface
-     */
-    public function getIdentity(): ?IdentityInterface
-    {
-        return $this->authorizationService?->getIdentity();
     }
 }
