@@ -1,13 +1,12 @@
 <?php
   $user = $this->auth()->isLoggedIn();
-  $menuItems = $this->accountMenu()->getItems();
 ?>
 
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
 <nav class="myresearch-menu" aria-labelledby="acc-menu-acc-header">
   <ul class="account-menu">
-    <?php foreach ($menuItems as $item): ?>
+    <?php foreach ($this->items as $item): ?>
       <?=$this->render('myresearch/menu-item.phtml', ['active' => $this->active, ...$item])?>
     <?php endforeach; ?>
   </ul>

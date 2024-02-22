@@ -52,14 +52,18 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get menu items
+     * Get available menu items
      *
      * @return array
      */
     public function getItems(): array
     {
-        $itemsConfig = $this->config['MenuItems'] ?? [];
-        return !empty($itemsConfig) ? $itemsConfig : $this->getDefaultItems();
+        return array_filter(
+            $this->config['MenuItems'] ?? $this->getDefaultItems(),
+            function ($item) {
+                return (isset($item['checkMethod']) && $this->{$item['checkMethod']}()) || !isset($item['checkMethod']);
+            }
+        );
     }
 
     /**
@@ -70,77 +74,89 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     protected function getDefaultItems(): array
     {
         return [
-            'favorites' => [
+            [
+                'name' => 'favorites',
                 'label' => 'Favorites',
                 'route' => 'myresearch-favorites',
                 'icon' => 'user-favorites',
                 'checkMethod' => 'checkFavorites',
             ],
-            'checkedout' => [
+            [
+                'name' => 'checkedout',
                 'label' => 'Checked Out Items',
                 'route' => 'myresearch-checkedout',
                 'icon' => 'user-checked-out',
                 'status' => true,
                 'checkMethod' => 'checkCheckedout',
             ],
-            'historicloans' => [
+            [
+                'name' => 'historicloans',
                 'label' => 'Loan History',
                 'route' => 'checkouts-history',
                 'icon' => 'user-loan-history',
                 'checkMethod' => 'checkHistoricloans',
             ],
-            'holds' => [
+            [
+                'name' => 'holds',
                 'label' => 'Holds and Recalls',
                 'route' => 'holds-list',
                 'icon' => 'user-holds',
                 'status' => true,
                 'checkMethod' => 'checkHolds',
             ],
-            'storageRetrievalRequests' => [
+            [
+                'name' => 'storageRetrievalRequests',
                 'label' => 'Storage Retrieval Requests',
                 'route' => 'myresearch-storageretrievalrequests',
                 'icon' => 'user-storage-retrievals',
                 'status' => true,
                 'checkMethod' => 'checkStorageRetrievalRequests',
             ],
-            'ILLRequests' => [
+            [
+                'name' => 'ILLRequests',
                 'label' => 'Interlibrary Loan Requests',
                 'route' => 'myresearch-illrequests',
                 'icon' => 'user-ill-requests',
                 'status' => true,
                 'checkMethod' => 'checkILLRequests',
             ],
-            'fines' => [
+            [
+                'name' => 'fines',
                 'label' => 'Fines',
                 'route' => 'myresearch-fines',
                 'status' => true,
                 'checkMethod' => 'checkFines',
                 'iconMethod' => 'finesIcon',
             ],
-            'profile' => [
+            [
+                'name' => 'profile',
                 'label' => 'Profile',
                 'route' => 'myresearch-profile',
                 'icon' => 'profile',
             ],
-            'librarycards' => [
+            [
+                'name' => 'librarycards',
                 'label' => 'Library Cards',
                 'route' => 'librarycards-home',
                 'icon' => 'barcode',
                 'checkMethod' => 'checkLibraryCards',
             ],
-            'dgcontent' => [
+            [
+                'name' => 'dgcontent',
                 'label' => 'Overdrive Content',
                 'route' => 'overdrive-mycontent',
                 'icon' => 'overdrive',
                 'checkMethod' => 'checkOverdrive',
             ],
-            'history' => [
+            [
+                'name' => 'history',
                 'label' => 'Search History',
                 'route' => 'search-history',
                 'icon' => 'search',
                 'checkMethod' => 'checkHistory',
             ],
-            'logout' => [
+            [
+                'name' => 'logout',
                 'label' => 'Log Out',
                 'route' => 'myresearch-logout',
                 'icon' => 'sign-out',
@@ -338,5 +354,24 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     protected function getIlsConnection(): IlsConnection
     {
         return $this->getView()->plugin('ils')();
+    }
+
+    /**
+     * Render account menu
+     *
+     * @param string $activeItem The name of current active item
+     *
+     * @return string
+     */
+    public function render(string $activeItem): string
+    {
+        $contextHelper = $this->getView()->plugin('context');
+        return $contextHelper->renderInContext(
+            'myresearch/menu.phtml',
+            [
+                'items' => $this->getItems(),
+                'active' => $activeItem,
+            ]
+        );
     }
 }
