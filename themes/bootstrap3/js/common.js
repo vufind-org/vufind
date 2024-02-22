@@ -239,21 +239,59 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url, data, success) {
-    var $elem = $(_element);
-    if ($elem.length === 0) {
-      return;
-    }
-    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
-      if ('success' === textStatus || 'notmodified' === textStatus) {
-        $elem.html(updateCspNonce(responseText));
-      }
-      if (typeof success !== 'undefined') {
-        success(responseText, textStatus, jqXhr);
+  function replaceScriptWithNonce(oldScript) {
+    const newScript = document.createElement("script");
+    oldScript.querySelectorAll("script").forEach(attr => {
+      if (attr.name !== 'nonce') {
+        newScript.setAttribute(attr.name, attr.value);
       }
     });
-  };
+    newScript.setAttribute('nonce', getCspNonce());
+    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+    oldScript.parentNode.replaceChild(newScript, oldScript);
+  }
 
+  //Additional handling in updating inline script tags to avoid CSP XSS attacks:
+  function setInnerHtml(elm, html) {
+    elm.innerHTML = html;
+    elm.querySelectorAll("script").forEach(oldScript => {
+      if (oldScript.type === '' || oldScript.type === 'text/javascript') {
+        replaceScriptWithNonce(oldScript);
+      }
+    });
+  }
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);
+    if (!element) {
+      return;
+    }
+
+    fetch(url, {
+      method: 'GET',
+      body: data ? JSON.stringify(data) : null
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(VuFind.translate('error_occurred'));
+        }
+        return response.text();
+      })
+      .then(htmlContent => {
+        setInnerHtml(element, htmlContent);
+        if (typeof success === 'function') {
+          success(htmlContent);
+        }
+      })
+      .catch(error => {
+        console.error('Request failed:', error);
+        setInnerHtml(element, VuFind.translate('error_occurred'));
+        if (typeof success === 'function') {
+          success(null, error);
+        }
+      });
+  };
+  
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
