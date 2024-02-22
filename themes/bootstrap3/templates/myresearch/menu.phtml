@@ -7,8 +7,8 @@
 <h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
 <nav class="myresearch-menu" aria-labelledby="acc-menu-acc-header">
   <ul class="account-menu">
-    <?php foreach ($menuItems as $key => $item): ?>
-      <?=$this->render('myresearch/menu-item.phtml', ['name' => $key, 'active' => $this->active, ...$item])?>
+    <?php foreach ($menuItems as $item): ?>
+      <?=$this->render('myresearch/menu-item.phtml', ['active' => $this->active, ...$item])?>
     <?php endforeach; ?>
   </ul>
 </nav>

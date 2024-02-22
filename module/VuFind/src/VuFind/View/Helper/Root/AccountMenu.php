@@ -45,9 +45,9 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config AccountMenu.ini configuration
+     * @param array $config AccountMenu configuration
      */
-    public function __construct(protected \Laminas\Config\Config $config)
+    public function __construct(protected array $config)
     {
     }
 
@@ -58,7 +58,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     public function getItems(): array
     {
-        $itemsConfig = $this->config?->MenuItems?->toArray() ?? [];
+        $itemsConfig = $this->config['MenuItems'] ?? [];
         return !empty($itemsConfig) ? $itemsConfig : $this->getDefaultItems();
     }
 
