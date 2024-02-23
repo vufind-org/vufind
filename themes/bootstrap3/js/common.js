@@ -438,9 +438,9 @@ var VuFind = (function VuFind() {
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
     setupQRCodeLinks: setupQRCodeLinks,
-    setInnerHtml,
-    setOuterHtml,
-    setElementContents
+    setInnerHtml: setInnerHtml,
+    setOuterHtml: setOuterHtml,
+    setElementContents: setElementContents
   };
 })();
 
