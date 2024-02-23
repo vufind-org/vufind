@@ -137,6 +137,13 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $userToWarn = null;
 
     /**
+     * Token data for deferred token update
+     *
+     * @var ?array
+     */
+    protected $tokenToUpdate = null;
+
+    /**
      * LoginToken constructor.
      *
      * @param Config            $config          Configuration
@@ -182,9 +189,10 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         if ($cookie) {
             try {
                 if ($token = $this->loginTokenTable->matchToken($cookie)) {
-                    $this->loginTokenTable->deleteBySeries($token->series, $token->user_id);
+                    // Queue token update to be done after everything else is
+                    // successfully processed:
                     $user = $this->userTable->getById($token->user_id);
-                    $this->createToken($user, $token->series, $sessionId, $token->expires);
+                    $this->tokenToUpdate = compact('user', 'token', 'sessionId');
                 }
             } catch (LoginTokenException $e) {
                 // Delete all login tokens for the user and all sessions
@@ -220,6 +228,27 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     }
 
     /**
+     * Event hook -- called after the request has been processed.
+     *
+     * @return void
+     */
+    public function requestIsFinished(): void
+    {
+        // If we have queued a login token update, we can process it now!
+        if ($this->tokenToUpdate) {
+            $token = $this->tokenToUpdate['token'];
+            $this->loginTokenTable->deleteBySeries($token->series, $token->user_id);
+            $this->createToken(
+                $this->tokenToUpdate['user'],
+                $token->series,
+                $this->tokenToUpdate['sessionId'],
+                $token->expires
+            );
+            $this->tokenToUpdate = null;
+        }
+    }
+
+    /**
      * Create a new login token
      *
      * @param \VuFind\Db\Row\User $user      user
@@ -233,7 +262,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     public function createToken(\VuFind\Db\Row\User $user, string $series = '', string $sessionId = '', $expires = 0)
     {
         $token = bin2hex(random_bytes(32));
-        $series = $series ? $series : bin2hex(random_bytes(32));
+        $series = $series ?: bin2hex(random_bytes(32));
         try {
             $browser = $this->getBrowscap()->getBrowser();
         } catch (\Exception $e) {
@@ -261,7 +290,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
 
     /**
      * Delete a login token by series. Also destroys
-     * sessions associated with the login token
+     * sessions associated with the login token.
      *
      * @param string $series Series to identify the token
      * @param string $userId User identifier
@@ -322,18 +351,22 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      */
     public function sendLoginTokenWarningEmail(\VuFind\Db\Row\User $user)
     {
+        if (!($this->config->Authentication->send_login_warnings ?? true)) {
+            return;
+        }
+        $title = $this->config->Site->title ?? '';
         if (!empty($user->email)) {
             $message = $this->viewRenderer->render(
                 'Email/login-warning.phtml',
-                ['title' => $this->config->Site->title]
+                compact('title')
             );
-            $subject = $this->config->Authentication->login_warning_email_subject
-                ?? 'login_warning_email_subject';
+            $subject = $this->config->Authentication->persistent_login_warning_email_subject
+                ?? 'persistent_login_warning_email_subject';
 
             $this->mailer->send(
                 $user->email,
                 $this->config->Mail->default_from ?? $this->config->Site->email,
-                $this->translate($subject),
+                $this->translate($subject, ['%%title%%' => $title]),
                 $message
             );
         }
