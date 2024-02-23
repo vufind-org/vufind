@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Db\Row\User;
 use VuFind\ILS\Connection as IlsConnection;
 
 /**
@@ -61,7 +62,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
         return array_filter(
             $this->config['MenuItems'] ?? $this->getDefaultItems(),
             function ($item) {
-                return (isset($item['checkMethod']) && $this->{$item['checkMethod']}()) || !isset($item['checkMethod']);
+                return !isset($item['checkMethod']) || $this->{$item['checkMethod']}();
             }
         );
     }
@@ -242,7 +243,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     public function checkLibraryCards(): bool
     {
-        $user = $this->getAuthHelper()->isLoggedIn();
+        $user = $this->getUser();
         return $this->isIlsOnline() && $user && $user->libraryCardsEnabled();
     }
 
@@ -273,7 +274,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     public function checkLogout(): bool
     {
-        return (bool)$this->getAuthHelper()->isLoggedIn();
+        return (bool)$this->getUser();
     }
 
     /**
@@ -319,9 +320,8 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCapabilityParams(): array
     {
-        $user = $this->getAuthHelper()->isLoggedIn();
-        $patron = $user ? $this->getAuthHelper()->getILSPatron() : false;
-        return $patron ? ['patron' => $patron] : [];
+        $patron = $this->getUser() ? $this->getAuthHelper()->getILSPatron() : false;
+        return $patron ? compact('patron') : [];
     }
 
     /**
@@ -373,5 +373,15 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
                 'active' => $activeItem,
             ]
         );
+    }
+
+    /**
+     * Get authenticated user
+     *
+     * @return User|bool Object if user is logged in, false otherwise.
+     */
+    protected function getUser(): User|bool
+    {
+        return $this->getAuthHelper()->isLoggedIn();
     }
 }
