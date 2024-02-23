@@ -1,6 +1,25 @@
+<?php
+    $rawParams = ['class' => 'facet', 'data-sort' => $this->sort, 'data-lightbox-ignore' => 'data-lightbox-ignore'];
+    $rawHrefParams = ['facetsort' => $this->sort, 'contains' => $this->contains];
+
+    $prevParams = $rawParams;
+    $prevParams['class'] .= ' js-facet-prev-page';
+    $prevParams['data-page'] = ($this->page - 1);
+    $prevParams['data-limit'] = count($this->data);
+    $prevHrefParams = $rawHrefParams;
+    $prevHrefParams['facetpage'] = $this->page - 1;
+    $prevParams['href'] = $urlBase . '&' . http_build_query($prevHrefParams);
+
+    $nextParams = $rawParams;
+    $nextParams['class'] .= ' js-facet-next-page';
+    $nextParams['data-page'] = ($this->page + 1);
+    $nextHrefParams = $rawHrefParams;
+    $nextHrefParams['facetpage'] = $this->page + 1;
+    $nextParams['href'] = $urlBase . '&' . http_build_query($nextHrefParams);
+?>
 <ul class="full-facet-list facet__list facet-group" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
   <?php if ($this->page > 1 && !$this->inLightbox): ?>
-    <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => $this->page - 1, 'facetsort' => $this->sort, 'contains' => $this->contains]))?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($this->sort) ?>" data-limit="<?=count($this->data) ?>"><?=$this->transEsc('prev_ellipsis') ?></a>
+    <a<?=$this->htmlAttributes($prevParams)?>><?=$this->transEsc('prev_ellipsis') ?></a>
   <?php endif; ?>
   <?php foreach ($this->data as $item): ?>
     <li>
@@ -14,7 +33,7 @@
     </li>
   <?php endforeach; ?>
   <?php if ($this->anotherPage): ?>
-    <a href="<?=$this->escapeHtmlAttr($urlBase . '&' . http_build_query(['facetpage' => $this->page + 1, 'facetsort' => $this->sort, 'contains' => $this->contains]))?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
+    <a<?=$this->htmlAttributes($nextParams)?>>
       <span class="text"><?=$this->transEsc('more_ellipsis') ?></span>
     </a>
   <?php endif; ?>
