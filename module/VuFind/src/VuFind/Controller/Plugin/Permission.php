@@ -177,4 +177,14 @@ class Permission extends AbstractPlugin implements
         }
         return null;
     }
+
+    /**
+     * Get the current identity from the authentication manager.
+     *
+     * @return \LmcRbacMvc\Identity\IdentityInterface|null
+     */
+    public function getIdentity()
+    {
+        return $this->authManager->getIdentity();
+    }
 }
