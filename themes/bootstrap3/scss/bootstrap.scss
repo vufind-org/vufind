@@ -23,6 +23,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/form";
 @import "components/icons";
 @import "components/js-tree";
+@import "components/keyboard";
 @import "components/lightbox";
 @import "components/offcanvas";
 @import "components/record";
@@ -103,6 +104,14 @@ label { cursor: pointer; }
     }
   }
 }
+.navbar-nav button.dropdown-toggle {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: inherit;
+  background-color: transparent;
+}
 
 // Normalize highlighting
 .highlight,
@@ -148,14 +157,6 @@ h3 { font-size: 16px; }
   }
   .form-control { max-width: 400px; }
   #modal .form-control { max-width: none; }
-}
-
-button.dropdown-toggle {
-  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
-  appearance: none;
-  padding: 15px;
-  border: 0;
-  color: $brand-primary;
 }
 
 /* ------ Layout ------ */
@@ -437,6 +438,52 @@ ul.list-group {
 .table {
   table-layout: fixed;
   word-wrap: break-word;
+}
+// No wrapping for fines table in wide windows
+@media (min-width: 992px) {
+  .table.fines-table {
+    table-layout: auto;
+    word-wrap: normal;
+  }
+}
+
+/* ------ Responsive table for small screen size ------ */
+@media screen and (max-width: 768px) {
+  .table-responsive {
+    border: none;
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    tr {
+      display: block;
+      margin-bottom: $line-height-computed;
+      border-left: 1px solid $table-border-color;
+      border-right: 1px solid $table-border-color;
+      border-bottom: 4px solid $table-border-color;
+    }
+    td {
+      display: flex;
+      align-items: first baseline;
+      background: #fff;
+      &:before {
+        display: flex;
+        flex-basis: 40%;
+        flex-shrink: 0;
+        font-weight: bold;
+        content: attr(data-label);
+      }
+    }
+    td:nth-child(even) {
+      background-color: $table-bg-accent;
+    }
+  }
 }
 
 /* ------ Visualization View ------ */

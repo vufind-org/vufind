@@ -7,7 +7,7 @@ return [
         'vendor/datatables.min.css',
         'vendor/jquery-ui.css',
         'compiled.css',
-        'print.css:print'
+        'print.css:print',
     ],
     'js' => [
         /**
@@ -84,7 +84,7 @@ return [
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Notifications\Notifications' => 'VuFind\View\Helper\Notifications\NotificationsFactory'
+            'VuFind\View\Helper\Notifications\Notifications' => 'VuFind\View\Helper\Notifications\NotificationsFactory',
         ],
         'aliases' => [
             'copyToClipboardButton' => 'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton',
@@ -167,9 +167,9 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
-            'facet-collapse' => 'Unicode:25BD',
+            'facet-collapse' => 'FontAwesome:caret-down',
             'facet-exclude' => 'FontAwesome:times',
-            'facet-expand' => 'Unicode:25B6',
+            'facet-expand' => 'FontAwesome:caret-right',
             'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',

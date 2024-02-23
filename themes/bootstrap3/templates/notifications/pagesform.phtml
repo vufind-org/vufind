@@ -37,7 +37,7 @@ $form->prepare();
   <?php foreach($this->languages as $language): ?>
     <div id="notifications-tabs-<?=$language?>">
       <div class="form-group">
-          <?php $navTitle = $form->get('nav_title_'.$language); ?>
+          <?php $navTitle = $form->get('nav_title_' . $language); ?>
           <?= $this->formLabel($navTitle) ?>
           <?= $this->formElement($navTitle) ?>
           <?= $this->formElementErrors()->render($navTitle, ['class' => 'help-block']) ?>
@@ -45,14 +45,14 @@ $form->prepare();
 
       <div class="not_external_url_content">
         <div class="form-group">
-            <?php $headline = $form->get('headline_'.$language); ?>
+            <?php $headline = $form->get('headline_' . $language); ?>
             <?= $this->formLabel($headline) ?>
             <?= $this->formElement($headline) ?>
             <?= $this->formElementErrors()->render($headline, ['class' => 'help-block']) ?>
         </div>
 
         <div class="form-group">
-            <?php $content = $form->get('content_'.$language); ?>
+            <?php $content = $form->get('content_' . $language); ?>
             <?php $content->setLabelOptions(['disable_html_escape' => true]); ?>
             <?= $this->formLabel($content) ?>
             <?= $this->formElement($content) ?>
@@ -61,7 +61,7 @@ $form->prepare();
       </div>
 
       <div class="form-group external_url_content">
-          <?php $externalUrl = $form->get('external_url_'.$language); ?>
+          <?php $externalUrl = $form->get('external_url_' . $language); ?>
           <?php $externalUrl->setLabelOptions(['disable_html_escape' => true]); ?>
           <?= $this->formLabel($externalUrl) ?>
           <?= $this->formElement($externalUrl) ?>

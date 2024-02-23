@@ -16,7 +16,7 @@
 
   <p><?= $this->translate('Are you sure you want to delete the following page?') ?></p>
 
-  <b><?= $this->page['nav_title'].' / '.$this->page['headline'] ?></b><br/><br/>
+  <b><?= $this->page['nav_title'] . ' / ' . $this->page['headline'] ?></b><br/><br/>
 
   <form action="<?php $this->url('admin/notifications-pages', [['action' => 'DeletePage'], 'page_id' => $this->page_id]) ?>" method="post">
     <div class="form-group">
@@ -29,5 +29,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'pages'])?>
+    <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'pages'])?>
 </div>

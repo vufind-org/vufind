@@ -9,12 +9,18 @@
 
   .collapse,
   .collapsing,
-  & > .facet {
+  &.full-facet-list .facet {
     position: relative;
     border-left: 1px solid $list-group-border;
     border-right: 1px solid $list-group-border;
   }
-  & > .facet:first-child { border-top: 1px solid $list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid $list-group-border; }
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .facet,
@@ -91,7 +97,10 @@
 }
 
 .top-facets-contents {
+  display: block;
   margin: 2px 0;
+  padding: 0;
+  list-style: none;
 }
 .top-facets .facet,
 .top-facets > strong {
@@ -191,6 +200,7 @@ h3.facet-title {
 .facet-tree {
   padding-left: 0;
 
+  // Constrain the width of lower levels to avoid overflow:
   ul {
     padding: 0;
     width: 100%;
@@ -208,6 +218,7 @@ h3.facet-title {
       border: 0;
       background: none;
       max-width: 1.5em;
+      padding: 0;
 
       &:hover {
         background-color: $list-group-hover-bg;
@@ -266,12 +277,12 @@ h3.facet-title {
   }
 
   // Top level bottom border:
-  & > ul > li, .more-less-btn-wrapper {
+  & > li, .more-less-btn-wrapper {
     border-bottom: 1px solid $list-group-border;
   }
   // Make the first child level start a bit higher to counter the padding of top
   // level items:
-  & > ul > li > ul {
+  & > li > ul {
     margin-top: -0.2rem;
   }
 }

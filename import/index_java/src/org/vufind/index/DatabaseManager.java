@@ -94,7 +94,7 @@ public class DatabaseManager
                 prefix = "postgresql";
             }
 
-            Class.forName(classname).newInstance();
+            Class.forName(classname).getDeclaredConstructor().newInstance();
             String[] parts = dsn.split("://");
             if (parts.length > 1) {
                 parts = parts[1].split("@");

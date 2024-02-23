@@ -7,6 +7,6 @@
       <li><a href="<?=$page['external_url']?>" target="_blank"><?=$page['nav_title']?></a></li>
     <?php else: ?>
       <li><a href="<?=$this->url('notifications-page')?><?=$page['page_id']?>"><?=$page['nav_title']?></a></li>
-    <?php ENDIF; ?>
+    <?php endif; ?>
   <?php endforeach; ?>
 </ul>

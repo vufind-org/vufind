@@ -1,75 +1,76 @@
 <?php
+
+/**
+ * Factory for NotificationsVisibility AJAX handler.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) effective WEBWORK GmbH 2023.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Controller
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Johannes Schultze <schultze@effective-webwork.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+
+namespace VuFind\AjaxHandler;
+
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+
+/**
+ * Factory for NotificationsClose AJAX handler.
+ *
+ * @category VuFind
+ * @package  AJAX
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Johannes Schultze <schultze@effective-webwork.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class NotificationsCloseFactory implements FactoryInterface
+{
     /**
-     * Factory for NotificationsVisibility AJAX handler.
+     * Create an object
      *
-     * PHP version 8
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * Copyright (C) effective WEBWORK GmbH 2023.
+     * @return object
      *
-     * This program is free software; you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License version 2,
-     * as published by the Free Software Foundation.
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      *
-     * This program is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
-     * GNU General Public License for more details.
-     *
-     * You should have received a copy of the GNU General Public License
-     * along with this program; if not, write to the Free Software
-     * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-     *
-     * @category VuFind
-     * @package  Controller
-     * @author   Demian Katz <demian.katz@villanova.edu>
-     * @author   Johannes Schultze <schultze@effective-webwork.de>
-     * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
-     * @link     https://vufind.org Main Page
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-
-    namespace VuFind\AjaxHandler;
-
-    use Interop\Container\ContainerInterface;
-    use Interop\Container\Exception\ContainerException;
-    use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-    use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-    use Laminas\ServiceManager\Factory\FactoryInterface;
-
-    /**
-     * Factory for NotificationsClose AJAX handler.
-     *
-     * @category VuFind
-     * @package  AJAX
-     * @author   Demian Katz <demian.katz@villanova.edu>
-     * @author   Johannes Schultze <schultze@effective-webwork.de>
-     * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
-     * @link     https://vufind.org/wiki/development Wiki
-     */
-    class NotificationsCloseFactory implements FactoryInterface {
-
-        /**
-         * Create an object
-         *
-         * @param ContainerInterface $container     Service manager
-         * @param string             $requestedName Service being created
-         * @param null|array         $options       Extra options (optional)
-         *
-         * @return object
-         *
-         * @throws ServiceNotFoundException if unable to resolve the service.
-         * @throws ServiceNotCreatedException if an exception is raised when
-         * creating a service.
-         * @throws ContainerException&\Throwable if any other error occurs
-         *
-         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-         */
-        public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-        {
-            if (!empty($options)) {
-                throw new \Exception('Unexpected options sent to factory.');
-            }
-            return new $requestedName(
-                $container->get(\Laminas\Session\SessionManager::class)
-            );
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
+        return new $requestedName(
+            $container->get(\Laminas\Session\SessionManager::class)
+        );
     }
+}

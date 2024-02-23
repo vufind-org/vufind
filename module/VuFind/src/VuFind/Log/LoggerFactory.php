@@ -305,6 +305,18 @@ class LoggerFactory implements FactoryInterface
         if (!$hasWriter) {
             $logger->addWriter(new \Laminas\Log\Writer\Noop());
         }
+
+        // Add ReferenceId processor, if applicable:
+        if ($referenceId = $config->Logging->reference_id ?? false) {
+            if ('username' === $referenceId) {
+                $authManager = $container->get(\VuFind\Auth\Manager::class);
+                if ($user = $authManager->isLoggedIn()) {
+                    $processor = new \Laminas\Log\Processor\ReferenceId();
+                    $processor->setReferenceId($user->username);
+                    $logger->addProcessor($processor);
+                }
+            }
+        }
     }
 
     /**
@@ -329,10 +341,11 @@ class LoggerFactory implements FactoryInterface
             '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
+        $level = (is_int($debug) ? $debug : '5');
         $this->addWriters(
             $logger,
             $writer,
-            'debug-' . (is_int($debug) ? $debug : '5')
+            "debug-$level,notice-$level,error-$level,alert-$level"
         );
     }
 

@@ -318,7 +318,7 @@ class ResourceContainer
         // Special case: don't explode URLs:
         if (
             ($parts[0] === 'http' || $parts[0] === 'https')
-            && '//' === substr($parts[1], 0, 2)
+            && str_starts_with($parts[1], '//')
         ) {
             $protocol = array_shift($parts);
             $parts[0] = $protocol . ':' . $parts[0];

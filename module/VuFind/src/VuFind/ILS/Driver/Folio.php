@@ -254,7 +254,12 @@ class Folio extends AbstractAPI implements
             'username' => $this->config['API']['username'],
             'password' => $this->config['API']['password'],
         ];
-        $response = $this->makeRequest('POST', '/authn/login', json_encode($auth));
+        $response = $this->makeRequest(
+            method: 'POST',
+            path: '/authn/login',
+            params: json_encode($auth),
+            debugParams: '{"username":"...","password":"..."}'
+        );
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
@@ -430,7 +435,8 @@ class Folio extends AbstractAPI implements
      */
     public function getStatus($itemId)
     {
-        return $this->getHolding($itemId);
+        $holding = $this->getHolding($itemId);
+        return $holding['holdings'] ?? [];
     }
 
     /**
@@ -523,8 +529,8 @@ class Folio extends AbstractAPI implements
                 $code = $location->code;
                 $locationMap[$location->id] = compact('name', 'code');
             }
+            $this->putCachedData($cacheKey, $locationMap);
         }
-        $this->putCachedData($cacheKey, $locationMap);
         return $locationMap;
     }
 
@@ -645,13 +651,14 @@ class Folio extends AbstractAPI implements
      * Support method for getHolding() -- given a few key details, format an item
      * for inclusion in the return value.
      *
-     * @param string $bibId          Current bibliographic ID
-     * @param array  $holdingDetails Holding details produced by
-     * getHoldingDetailsForItem()
-     * @param object $item           FOLIO item record (decoded from JSON)
-     * @param int    $number         The current item number (position within
-     * current holdings record)
-     * @param string $dueDateValue   The due date to display to the user
+     * @param string $bibId            Current bibliographic ID
+     * @param array  $holdingDetails   Holding details produced by
+     *                                 getHoldingDetailsForItem()
+     * @param object $item             FOLIO item record (decoded from JSON)
+     * @param int    $number           The current item number (position within
+     *                                 current holdings record)
+     * @param string $dueDateValue     The due date to display to the user
+     * @param array  $boundWithRecords Any bib records this holding is bound with
      *
      * @return array
      */
@@ -660,12 +667,13 @@ class Folio extends AbstractAPI implements
         array $holdingDetails,
         $item,
         $number,
-        string $dueDateValue
+        string $dueDateValue,
+        $boundWithRecords,
     ): array {
         $itemNotes = array_filter(
             array_map([$this, 'formatNote'], $item->notes ?? [])
         );
-        $locationId = $item->effectiveLocationId;
+        $locationId = $item->effectiveLocation->id;
         $locationData = $this->getLocationData($locationId);
         $locationName = $locationData['name'];
         $locationCode = $locationData['code'];
@@ -692,7 +700,7 @@ class Folio extends AbstractAPI implements
         return $callNumberData + [
             'id' => $bibId,
             'item_id' => $item->id,
-            'holding_id' => $holdingDetails['id'],
+            'holdings_id' => $holdingDetails['id'],
             'number' => $number,
             'enumchron' => $enum,
             'barcode' => $item->barcode ?? '',
@@ -710,6 +718,7 @@ class Folio extends AbstractAPI implements
             'location_code' => $locationCode,
             'reserve' => 'TODO',
             'addLink' => true,
+            'bound_with_records' => $boundWithRecords,
         ];
     }
 
@@ -735,6 +744,41 @@ class Folio extends AbstractAPI implements
             $holdings[$nbIndex]['number'] = $nbIndex + 1;
         }
         return $holdings;
+    }
+
+    /**
+     * Get all bib records bound-with this item, including
+     * the directly-linked bib record.
+     *
+     * @param object $item The item record
+     *
+     * @return array An array of key metadtaa for each bib record
+     */
+    protected function getBoundWithRecords($item)
+    {
+        $boundWithRecords = [];
+        // Get the bound-with holdings for the item.
+        foreach (
+            $this->getPagedResults(
+                'boundWithParts',
+                '/inventory-storage/bound-with-parts',
+                ['query' => '(itemId=="' . $item->id . '")']
+            ) as $boundWithPart
+        ) {
+            $boundWithHoldingId = $boundWithPart->holdingsRecordId;
+            $response = $this->makeRequest(
+                'GET',
+                '/holdings-storage/holdings/' . $boundWithHoldingId
+            );
+            $holding = json_decode($response->getBody());
+            // Get the bound-with holding's instance record.
+            $instance = $this->getInstanceById($holding->instanceId);
+            $boundWithRecords[] = [
+                'title' => $instance->title,
+                'bibId' => $this->getBibId($instance),
+            ];
+        }
+        return $boundWithRecords;
     }
 
     /**
@@ -770,8 +814,7 @@ class Folio extends AbstractAPI implements
                 $query
             ) as $holding
         ) {
-            $rawQuery = '(holdingsRecordId=="' . $holding->id
-                . '" NOT discoverySuppress==true)';
+            $rawQuery = '(holdingsRecordId=="' . $holding->id . '")';
             if (!empty($folioItemSort)) {
                 $rawQuery .= ' sortby ' . $folioItemSort;
             }
@@ -783,10 +826,13 @@ class Folio extends AbstractAPI implements
             foreach (
                 $this->getPagedResults(
                     'items',
-                    '/item-storage/items',
+                    '/inventory/items-by-holdings-id',
                     $query
                 ) as $item
             ) {
+                if ($item->discoverySuppress ?? false) {
+                    continue;
+                }
                 $number++;
                 $dueDateValue = '';
                 if (
@@ -797,12 +843,16 @@ class Folio extends AbstractAPI implements
                     $dueDateValue = $this->getDueDate($item->id, $showTime);
                     $dueDateItemCount++;
                 }
+                if ($item->isBoundWith ?? false) {
+                    $boundWithRecords = $this->getBoundWithRecords($item);
+                }
                 $nextItem = $this->formatHoldingItem(
                     $bibId,
                     $holdingDetails,
                     $item,
                     $number,
-                    $dueDateValue
+                    $dueDateValue,
+                    $boundWithRecords ?? []
                 );
                 if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
                     $sortNeeded = true;
@@ -815,7 +865,11 @@ class Folio extends AbstractAPI implements
                     ? $this->sortHoldings($nextBatch, $vufindItemSort) : $nextBatch
             );
         }
-        return $items;
+        return [
+            'total' => count($items),
+            'holdings' => $items,
+            'electronic_holdings' => [],
+        ];
     }
 
     /**
@@ -1410,6 +1464,40 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get latest major version of a $moduleName enabled for a tenant.
+     * Result is cached.
+     *
+     * @param string $moduleName module name
+     *
+     * @return int module version or 0 if no module found
+     */
+    protected function getModuleMajorVersion(string $moduleName): int
+    {
+        $cacheKey = 'module_version:' . $moduleName;
+        $version = $this->getCachedData($cacheKey);
+        if ($version === null) {
+            // get latest version of a module enabled for a tenant
+            $response = $this->makeRequest(
+                'GET',
+                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
+            );
+
+            // get version major from json result
+            $versions = json_decode($response->getBody());
+            $latest = $versions[0]->id ?? '0';
+            preg_match_all('!\d+!', $latest, $matches);
+            $version = (int)($matches[0][0] ?? 0);
+            if ($version === 0) {
+                $this->debug('Unable to find version in ' . $response->getBody());
+            } else {
+                // Only cache non-zero values, so we don't persist an error condition:
+                $this->putCachedData($cacheKey, $version);
+            }
+        }
+        return $version;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1447,12 +1535,15 @@ class Folio extends AbstractAPI implements
             // applying the latest hotfix is a better solution!
             $baseParams = ['itemId' => $holdDetails['item_id']];
         }
+        // Account for an API spelling change introduced in mod-circulation v24:
+        $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
+            ? 'fulfillmentPreference' : 'fulfilmentPreference';
         $requestBody = $baseParams + [
             'requestType' => $holdDetails['status'] == 'Available'
                 ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
-            'fulfilmentPreference' => 'Hold Shelf',
+            $fulfillmentKey => 'Hold Shelf',
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
