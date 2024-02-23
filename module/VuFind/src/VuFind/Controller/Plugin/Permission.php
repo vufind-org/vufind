@@ -95,12 +95,13 @@ class Permission extends AbstractPlugin implements
      * applying any additional behavior.
      *
      * @param string $permission Permission to check
+     * @param mixed  $context    Context for the permission behavior (optional)
      *
      * @return bool
      */
-    public function isAuthorized($permission)
+    public function isAuthorized($permission, $context = null)
     {
-        return $this->permissionManager->isAuthorized($permission);
+        return $this->permissionManager->isAuthorized($permission, $context);
     }
 
     /**
