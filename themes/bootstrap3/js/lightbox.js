@@ -209,8 +209,10 @@ VuFind.register('lightbox', function Lightbox() {
 
           VuFind.emit(
             'lightbox.login',
-            obj.url,
-            _originalUrl,
+            {
+              formUrl: obj.url,
+              originalUrl: _originalUrl,
+            },
             cancelRefresh // call this function to cancel refresh
           );
 
