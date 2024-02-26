@@ -239,26 +239,75 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  function replaceScriptWithNonce(oldScript) {
-    const newScript = document.createElement("script");
-    oldScript.querySelectorAll("script").forEach(attr => {
-      if (attr.name !== 'nonce') {
-        newScript.setAttribute(attr.name, attr.value);
+  /**
+   * Set element contents and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm      Target element
+   * @param {string}  html     HTML
+   * @param {Object}  attrs    Any additional attributes
+   * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
+   */
+  function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
+    // Extract any scripts from the HTML and add them separately so that they are executed properly:
+    const scripts = [];
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = html;
+    tmpDiv.querySelectorAll('script').forEach((el) => {
+      const type = el.getAttribute('type');
+      if (!type || 'text/javascript' === type) {
+        scripts.push(el.cloneNode(true));
+        el.remove();
       }
     });
-    newScript.setAttribute('nonce', getCspNonce());
-    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-    oldScript.parentNode.replaceChild(newScript, oldScript);
+
+    let newElm = elm;
+    if (property === 'innerHTML') {
+      elm.innerHTML = tmpDiv.innerHTML;
+    } else if (property === 'outerHTML') {
+      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
+      const nextElm = elm.nextElementSibling;
+      const parentElm = elm.parentElement ? elm.parentElement : null;
+      elm.outerHTML = tmpDiv.innerHTML;
+      // Try to find a new reference, leave as is if not possible:
+      if (nextElm) {
+        newElm = nextElm.previousElementSibling;
+      } else if (parentElm) {
+        newElm = parentElm.lastElementChild;
+      }
+    }
+
+    // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
+    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
+
+    // Append any scripts:
+    scripts.forEach((script) => {
+      const scriptEl = document.createElement('script');
+      scriptEl.innerHTML = script.innerHTML;
+      scriptEl.setAttribute('nonce', getCspNonce());
+      newElm.appendChild(scriptEl);
+    });
   }
 
-  //Additional handling in updating inline script tags to avoid CSP XSS attacks:
-  function setInnerHtml(elm, html) {
-    elm.innerHTML = html;
-    elm.querySelectorAll("script").forEach(oldScript => {
-      if (oldScript.type === '' || oldScript.type === 'text/javascript') {
-        replaceScriptWithNonce(oldScript);
-      }
-    });
+  /**
+   * Set innerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setInnerHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'innerHTML');
+  }
+
+  /**
+   * Set outerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setOuterHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'outerHTML');
   }
 
   var loadHtml = function loadHtml(_element, url, data, success) {
@@ -291,7 +340,7 @@ var VuFind = (function VuFind() {
         }
       });
   };
-  
+
   var isPrinting = function() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
@@ -394,7 +443,10 @@ var VuFind = (function VuFind() {
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
-    setupQRCodeLinks: setupQRCodeLinks
+    setupQRCodeLinks: setupQRCodeLinks,
+    setInnerHtml: setInnerHtml,
+    setOuterHtml: setOuterHtml,
+    setElementContents: setElementContents
   };
 })();
 

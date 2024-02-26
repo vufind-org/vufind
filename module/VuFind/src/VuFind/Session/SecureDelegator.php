@@ -154,7 +154,7 @@ class SecureDelegator implements HandlerInterface
     public function read($session_id): string|false
     {
         $data = $this->handler->read($session_id);
-        return $data ? $this->cipher->decrypt($data) : $data;
+        return $data ? ($this->cipher->decrypt($data) ?: '') : $data;
     }
 
     /**
