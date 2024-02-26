@@ -455,6 +455,16 @@ abstract class AbstractBase implements
     }
 
     /**
+     * Return the collection search ID for this record.
+     *
+     * @return string
+     */
+    public function getCollectionSearchId(): string
+    {
+        return $this->getUniqueID();
+    }
+
+    /**
      * Try to call the requested method and return null if it is unavailable; this is
      * useful for checking for the existence of get methods for particular types of
      * data without causing fatal errors.
