@@ -1,11 +1,11 @@
 <?php
 
 /**
- * CookieConsent helper factory.
+ * Account menu view helper factory
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) Moravian library 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,9 +22,9 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Josef Moravec <josef.moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
 namespace VuFind\View\Helper\Root;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * CookieConsent helper factory.
+ * Account menu view helper factory
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Josef Moravec <josef.moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class CookieConsentFactory implements FactoryInterface
+class AccountMenuFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,16 +68,7 @@ class CookieConsentFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $consentConfig = $container->get(\VuFind\Config\YamlReader::class)
-            ->get('CookieConsent.yaml');
-        return new $requestedName(
-            $config->toArray(),
-            $consentConfig['CookieConsent'] ?? [],
-            $container->get(\VuFind\Cookie\CookieManager::class),
-            $container->get(\VuFind\Date\Converter::class),
-            $container->get(\VuFind\Auth\LoginTokenManager::class)
-        );
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        return new $requestedName($yamlReader->get('AccountMenu.yaml'));
     }
 }

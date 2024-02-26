@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  VuFind\Auth
  * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -32,10 +33,16 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use BrowscapPHP\BrowscapInterface;
+use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User;
+use VuFind\Db\Table\LoginToken as LoginTokenTable;
+use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
+use VuFind\Mailer\Mailer;
 
 /**
  * Class LoginTokenManager
@@ -43,6 +50,7 @@ use VuFind\Exception\LoginToken as LoginTokenException;
  * @category VuFind
  * @package  VuFind\Auth
  * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -67,7 +75,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     /**
      * Login token table gateway
      *
-     * @var LoginToken
+     * @var LoginTokenTable
      */
     protected $loginTokenTable;
 
@@ -81,7 +89,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     /**
      * Mailer
      *
-     * @var \VuFind\Mailer\Mailer
+     * @var Mailer
      */
     protected $mailer;
 
@@ -95,7 +103,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     /**
      * View Renderer
      *
-     * @var \Laminas\View\Renderer\RendererInterface
+     * @var RendererInterface
      */
     protected $viewRenderer = null;
 
@@ -129,25 +137,32 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     protected $userToWarn = null;
 
     /**
+     * Token data for deferred token update
+     *
+     * @var ?array
+     */
+    protected $tokenToUpdate = null;
+
+    /**
      * LoginToken constructor.
      *
-     * @param Config                                   $config          Configuration
-     * @param UserTable                                $userTable       User table gateway
-     * @param LoginTokenTable                          $loginTokenTable Login Token table gateway
-     * @param CookieManager                            $cookieManager   Cookie manager
-     * @param SessionManager                           $sessionManager  Session manager
-     * @param \VuFind\Mailer\Mailer                    $mailer          Mailer
-     * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
-     * @param callable                                 $browscapCB      Callback for creating Browscap
+     * @param Config            $config          Configuration
+     * @param UserTable         $userTable       User table gateway
+     * @param LoginTokenTable   $loginTokenTable Login Token table gateway
+     * @param CookieManager     $cookieManager   Cookie manager
+     * @param SessionManager    $sessionManager  Session manager
+     * @param Mailer            $mailer          Mailer
+     * @param RendererInterface $viewRenderer    View Renderer
+     * @param callable          $browscapCB      Callback for creating Browscap
      */
     public function __construct(
-        \Laminas\Config\Config $config,
-        \VuFind\Db\Table\User $userTable,
-        \VuFind\Db\Table\LoginToken $loginTokenTable,
-        \VuFind\Cookie\CookieManager $cookieManager,
+        Config $config,
+        UserTable $userTable,
+        LoginTokenTable $loginTokenTable,
+        CookieManager $cookieManager,
         SessionManager $sessionManager,
-        \VuFind\Mailer\Mailer $mailer,
-        \Laminas\View\Renderer\RendererInterface $viewRenderer,
+        Mailer $mailer,
+        RendererInterface $viewRenderer,
         callable $browscapCB
     ) {
         $this->config = $config;
@@ -174,9 +189,10 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         if ($cookie) {
             try {
                 if ($token = $this->loginTokenTable->matchToken($cookie)) {
-                    $this->loginTokenTable->deleteBySeries($token->series, $token->user_id);
+                    // Queue token update to be done after everything else is
+                    // successfully processed:
                     $user = $this->userTable->getById($token->user_id);
-                    $this->createToken($user, $token->series, $sessionId, $token->expires);
+                    $this->tokenToUpdate = compact('user', 'token', 'sessionId');
                 }
             } catch (LoginTokenException $e) {
                 // Delete all login tokens for the user and all sessions
@@ -212,6 +228,27 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     }
 
     /**
+     * Event hook -- called after the request has been processed.
+     *
+     * @return void
+     */
+    public function requestIsFinished(): void
+    {
+        // If we have queued a login token update, we can process it now!
+        if ($this->tokenToUpdate) {
+            $token = $this->tokenToUpdate['token'];
+            $this->loginTokenTable->deleteBySeries($token->series, $token->user_id);
+            $this->createToken(
+                $this->tokenToUpdate['user'],
+                $token->series,
+                $this->tokenToUpdate['sessionId'],
+                $token->expires
+            );
+            $this->tokenToUpdate = null;
+        }
+    }
+
+    /**
      * Create a new login token
      *
      * @param \VuFind\Db\Row\User $user      user
@@ -225,14 +262,14 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     public function createToken(\VuFind\Db\Row\User $user, string $series = '', string $sessionId = '', $expires = 0)
     {
         $token = bin2hex(random_bytes(32));
-        $series = $series ? $series : bin2hex(random_bytes(32));
+        $series = $series ?: bin2hex(random_bytes(32));
         try {
             $browser = $this->getBrowscap()->getBrowser();
         } catch (\Exception $e) {
             throw new AuthException('Problem with browscap: ' . (string)$e);
         }
         if ($expires === 0) {
-            $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 14;
+            $lifetime = $this->getCookieLifetime();
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
         try {
@@ -253,7 +290,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
 
     /**
      * Delete a login token by series. Also destroys
-     * sessions associated with the login token
+     * sessions associated with the login token.
      *
      * @param string $series Series to identify the token
      * @param string $userId User identifier
@@ -264,7 +301,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     {
         $cookie = $this->getLoginTokenCookie();
         if (!empty($cookie) && $cookie['series'] === $series) {
-            $this->cookieManager->clear('loginToken');
+            $this->cookieManager->clear($this->getCookieName());
         }
         if ($token = $this->loginTokenTable->getBySeries($series, $cookie['user_id'])) {
             $handler = $this->sessionManager->getSaveHandler();
@@ -302,7 +339,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         if (!empty($cookie) && $cookie['series'] && $cookie['user_id']) {
             $this->loginTokenTable->deleteBySeries($cookie['series'], $cookie['user_id']);
         }
-        $this->cookieManager->clear('loginToken');
+        $this->cookieManager->clear($this->getCookieName());
     }
 
     /**
@@ -314,18 +351,22 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      */
     public function sendLoginTokenWarningEmail(\VuFind\Db\Row\User $user)
     {
+        if (!($this->config->Authentication->send_login_warnings ?? true)) {
+            return;
+        }
+        $title = $this->config->Site->title ?? '';
         if (!empty($user->email)) {
             $message = $this->viewRenderer->render(
                 'Email/login-warning.phtml',
-                ['title' => $this->config->Site->title]
+                compact('title')
             );
-            $subject = $this->config->Authentication->login_warning_email_subject
-                ?? 'login_warning_email_subject';
+            $subject = $this->config->Authentication->persistent_login_warning_email_subject
+                ?? 'persistent_login_warning_email_subject';
 
             $this->mailer->send(
                 $user->email,
                 $this->config->Mail->default_from ?? $this->config->Site->email,
-                $this->translate($subject),
+                $this->translate($subject, ['%%title%%' => $title]),
                 $message
             );
         }
@@ -345,7 +386,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     {
         $token = implode(';', [$series, $userId, $token]);
         $this->cookieManager->set(
-            'loginToken',
+            $this->getCookieName(),
             $token,
             $expires,
             true
@@ -360,7 +401,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     public function getLoginTokenCookie(): array
     {
         $result = [];
-        if ($cookie = $this->cookieManager->get('loginToken')) {
+        if ($cookie = $this->cookieManager->get($this->getCookieName())) {
             $parts = explode(';', $cookie);
             $result = [
                 'series' => $parts[0] ?? '',
@@ -369,6 +410,26 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             ];
         }
         return $result;
+    }
+
+    /**
+     * Get login token cookie name
+     *
+     * @return string
+     */
+    public function getCookieName(): string
+    {
+        return 'loginToken';
+    }
+
+    /**
+     * Get login token cookie lifetime (days)
+     *
+     * @return int
+     */
+    public function getCookieLifetime(): int
+    {
+        return (int)($this->config->Authentication->persistent_login_lifetime ?? 14);
     }
 
     /**
