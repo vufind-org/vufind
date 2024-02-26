@@ -33,8 +33,6 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
-use function is_callable;
-
 /**
  * Primo Central Controller
  *
@@ -109,11 +107,6 @@ class PrimoController extends AbstractSearch
         $this->saveToHistory = false;
 
         $callback = function ($runner, $params, $searchId) {
-            $defaultCallback = is_callable([$this, 'getSearchSetupCallback'])
-                ? $this->getSearchSetupCallback() : null;
-            if (is_callable($defaultCallback)) {
-                $defaultCallback($runner, $params, $searchId);
-            }
             $options = $params->getOptions();
             $options->disableHighlighting();
             $options->spellcheckEnabled(false);

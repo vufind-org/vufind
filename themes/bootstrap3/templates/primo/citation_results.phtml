@@ -7,6 +7,12 @@
       $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $title])
   );
 
+  // Override search results:
+  $this->slot('search-controls')->set(
+      $this->render('search/controls/limit.phtml')
+      . ' ' . $this->render('search/controls/view.phtml')
+  );
+
   // Call the standard search template:
   echo $this->render('search/results.phtml');
 
@@ -35,9 +41,9 @@
   $titleLink = $this->translate(
       $this->pageTitleLink,
       [
-      '%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)),
-      '%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb()),
-    ]
+          '%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)),
+          '%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb()),
+      ]
   );
 
   $this->layout()->breadcrumbs = '<li class="active">' . $titleLink . '</li>';
