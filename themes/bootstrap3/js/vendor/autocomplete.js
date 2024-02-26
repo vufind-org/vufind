@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.8) (2024-01-29) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.9) (2024-02-26) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -175,6 +175,7 @@ function Autocomplete(_settings) {
       _hide();
       return;
     }
+
     let loadingEl = _renderItem({ _header: settings.loadingString }, input);
     list.innerHTML = loadingEl.outerHTML;
 
@@ -189,7 +190,7 @@ function Autocomplete(_settings) {
         // cause problems.
         return;
       }
-      if (items === false || items.length === 0) {
+      if (!items || items.length === 0) {
         _hide();
         return;
       }
