@@ -72,9 +72,10 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($mockToken);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, false);
 
-        // Expect exception due to browscap.ini requirements
+        // Expect exception due to browscap cache requirement
         $this->expectException(\VuFind\Exception\Auth::class);
         $loginToken->tokenLogin('123');
+        $loginToken->requestIsFinished();
     }
 
     /**

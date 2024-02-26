@@ -23,7 +23,7 @@
     Clear cache(s):
     <?php foreach ($caches as $cache): ?>
       <label>
-        <input type="checkbox"<?='browscap' !== $cache ? ' checked="checked"' : ''?> name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>">
+        <input type="checkbox"<?=in_array($cache, $nonPersistentCaches) ? ' checked="checked"' : ''?> name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>">
         <?=$this->escapeHtml($cache) ?>
       </label>
     <?php endforeach; ?>

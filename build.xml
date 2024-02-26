@@ -130,6 +130,12 @@
     <phingcall target="phpstan-console"/>
   </target>
 
+  <!-- Fix PHP Tasks -->
+  <target name="fix-php" description="quality assurance php tasks">
+    <phingcall target="php-cs-fixer"/>
+    <phingcall target="phpcbf"/>
+  </target>
+
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
     <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
@@ -142,13 +148,35 @@
 
   <!-- PHP CodeSniffer -->
   <target name="phpcbf">
-    <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
+    <!-- Run phpcs first to find any problems (faster than phpcbf): -->
+    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" escape="false" returnProperty="phpcs_retval" outputProperty="phpcs_output" />
+    <if>
+      <not><equals arg1="${phpcs_retval}" arg2="0" /></not>
+      <then>
+        <echo msg="Trying to fix the following issues: " />
+        <echo msg="${phpcs_output}" />
+        <!-- Extract file names from phpcs output: -->
+        <property name="phpcbf_filelist" value="${phpcs_output}">
+          <filterchain>
+            <linecontainsregexp>
+              <regexp pattern="^FILE: (.*)" />
+            </linecontainsregexp>
+            <striplinebreaks />
+            <replaceregexp>
+              <regexp pattern="FILE: " replace=" " />
+            </replaceregexp>
+          </filterchain>
+        </property>
+        <!-- Finally, run phpcbf: -->
+        <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml ${phpcbf_filelist}" escape="false" passthru="true" />
+      </then>
+    </if>
   </target>
   <target name="phpcs">
-    <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
   </target>
   <target name="phpcs-console">
-    <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Phpstan -->
@@ -315,7 +343,7 @@
           <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
            <then>
             <mkdir dir="${srcdir}/downloads" />
-            <httpget url="http://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->

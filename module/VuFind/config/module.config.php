@@ -34,16 +34,14 @@ $config = [
                 ],
             ],
             'content-page' => [
-                'type'    => 'Laminas\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'route'    => '/Content/:page',
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
                     ],
+                    'spec' => '/Content/%page%',
                 ],
             ],
             'shortlink' => [

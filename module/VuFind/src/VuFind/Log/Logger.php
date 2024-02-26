@@ -30,6 +30,8 @@
 namespace VuFind\Log;
 
 use Laminas\Log\Logger as BaseLogger;
+use Laminas\Log\Writer\WriterInterface;
+use Laminas\Stdlib\SplPriorityQueue;
 use Traversable;
 use VuFind\Net\UserIpReader;
 
@@ -222,6 +224,24 @@ class Logger extends BaseLogger
         ];
 
         $this->log($this->getSeverityFromException($error), $errorDetails);
+    }
+
+    /**
+     * Remove a writer.
+     *
+     * @param WriterInterface $writer Writer to remove
+     *
+     * @return void
+     */
+    public function removeWriter(WriterInterface $writer): void
+    {
+        $newQueue = new SplPriorityQueue();
+        foreach ($this->getWriters() as $i => $current) {
+            if ($current !== $writer) {
+                $newQueue->insert($current, $i);
+            }
+        }
+        $this->setWriters($newQueue);
     }
 
     /**

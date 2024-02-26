@@ -47,9 +47,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testNormalFacets()
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
         $this->assertEquals('A - General Works', $this->findCssAndGetText($page, '.home-facet.callnumber-first a'));
         $this->clickCss($page, '.home-facet.callnumber-first a');
@@ -82,9 +80,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'level1a level1z',
