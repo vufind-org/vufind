@@ -19,6 +19,10 @@ var VuFind = (function VuFind() {
 
   let listeners = {};
   function unlisten(event, fn) {
+    if (typeof listeners[event] === "undefined") {
+      return;
+    }
+
     const index = listeners[event].indexOf(fn);
 
     if (index > -1) {
@@ -34,7 +38,7 @@ var VuFind = (function VuFind() {
     const listenFn = !once ? fn : (...args) => {
       fn(...args);
       // Automatically remove a listener we only want to run once
-      unlisten(arguments.callee);
+      unlisten(event, arguments.callee);
     };
 
     listeners[event].push(listenFn);
