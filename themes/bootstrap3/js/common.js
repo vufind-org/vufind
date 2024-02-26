@@ -264,10 +264,16 @@ var VuFind = (function VuFind() {
     if (property === 'innerHTML') {
       elm.innerHTML = tmpDiv.innerHTML;
     } else if (property === 'outerHTML') {
-      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling as reference:
+      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
       const nextElm = elm.nextElementSibling;
+      const parentElm = elm.parentElement ? elm.parentElement : null;
       elm.outerHTML = tmpDiv.innerHTML;
-      newElm = nextElm ? nextElm.previousElementSibling : elm.parentElement.lastElementChild;
+      // Try to find a new reference, leave as is if not possible:
+      if (nextElm) {
+        newElm = nextElm.previousElementSibling;
+      } else if (parentElm) {
+        newElm = parentElm.lastElementChild;
+      }
     }
 
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
