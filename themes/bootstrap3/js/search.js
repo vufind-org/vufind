@@ -321,7 +321,7 @@ VuFind.register('search', function search() {
     updateResultControls(pageUrl);
     updateResultLinks(pageUrl);
 
-    VuFind.emit('vf-results-load', {
+    VuFind.emit('results-load', {
       url: pageUrl,
       addToHistory: addToHistory
     });
@@ -364,7 +364,7 @@ VuFind.register('search', function search() {
         VuFind.initResultScripts(jsRecordListSelector);
         initPagination();
 
-        VuFind.emit('vf-results-loaded', {
+        VuFind.emit('results-loaded', {
           url: pageUrl,
           addToHistory: addToHistory,
           data: result
