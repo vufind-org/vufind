@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Default text normalizer for spellcheck text replacement.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Normalizer;
+
+use function in_array;
 
 /**
  * Default text normalizer for spellcheck text replacement.
@@ -53,7 +57,7 @@ class DefaultSpellingNormalizer
         $booleans = ['AND', 'OR', 'NOT'];
         $words = [];
         foreach (preg_split('/\s+/', $stripped) as $word) {
-            $words[] = in_array($word, $booleans) ? $word : strtolower($word);
+            $words[] = in_array($word, $booleans) ? $word : mb_strtolower($word, 'UTF-8');
         }
         return implode(' ', $words);
     }

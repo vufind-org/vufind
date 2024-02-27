@@ -3,7 +3,7 @@
 /**
  * Abstract base class of SOLR error listeners.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,14 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
-use SplObjectStorage;
+use VuFindSearch\Service;
 
-use VuFindSearch\Backend\BackendInterface;
+use function in_array;
 
 /**
  * Abstract base class of SOLR error listeners.
@@ -56,45 +56,47 @@ abstract class AbstractErrorListener
     /**
      * Backends to listen for.
      *
-     * @var SplObjectStorage
+     * @var array
      */
     protected $backends;
 
     /**
      * Constructor.
      *
-     * @param string $backend Name of backend to listen for
+     * @param string $backend Identifier of backend to listen for
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend)
+    public function __construct(string $backend)
     {
-        $this->backends = new SplObjectStorage();
+        $this->backends = [];
         $this->addBackend($backend);
     }
 
     /**
      * Add backend to listen for.
      *
-     * @param BackendInterface $backend Backend instance
+     * @param string $backend Identifier of backend to listen for
      *
      * @return void
      */
-    public function addBackend(BackendInterface $backend)
+    public function addBackend(string $backend)
     {
-        $this->backends->attach($backend);
+        if (!$this->listenForBackend($backend)) {
+            $this->backends[] = $backend;
+        }
     }
 
     /**
      * Return true if listeners listens for backend errors.
      *
-     * @param BackendInterface $backend Backend instance
+     * @param string $backend Backend identifier
      *
      * @return bool
      */
-    public function listenForBackend(BackendInterface $backend)
+    public function listenForBackend(string $backend)
     {
-        return $this->backends->contains($backend);
+        return in_array($backend, $this->backends);
     }
 
     /**
@@ -106,7 +108,11 @@ abstract class AbstractErrorListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'error', [$this, 'onSearchError']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_ERROR,
+            [$this, 'onSearchError']
+        );
     }
 
     /**

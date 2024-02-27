@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink ChoiceAuth test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -37,7 +39,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -51,21 +52,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
-    }
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        static::failIfDataExists();
     }
 
     /**
@@ -89,6 +76,20 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Get config.ini override settings for testing ChoiceAuth with SSO.
+     *
+     * @return array
+     */
+    public function getConfigIniSSOOverrides()
+    {
+        return [
+            'ChoiceAuth' => [
+                'choice_order' => 'ILS, SimulatedSSO',
+            ],
+        ];
+    }
+
+    /**
      * Get Demo.ini override settings for testing ILS functions.
      *
      * @param string $bibId Bibliographic record ID to create fake item info for.
@@ -103,9 +104,21 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test creating a DB user....
+     * Get SimulatedSSO.ini override settings for testing ChoiceAuth with SSO.
      *
-     * @retryCallback tearDownAfterClass
+     * @return array
+     */
+    public function getSimulatedSSOIniOverrides()
+    {
+        return [
+            'General' => [
+                'username' => 'ssofakeuser1',
+            ],
+        ];
+    }
+
+    /**
+     * Test creating a DB user....
      *
      * @return void
      */
@@ -125,16 +138,12 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $element = $this->findCss($page, '#loginOptions a');
         $this->assertEquals('Login', $element->getText());
         $element->click();
-        $this->snooze();
         $this->clickCss($page, '.createAccountLink');
-        $this->snooze();
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
-        $this->snooze();
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->snooze();
 
         // Log back in to confirm that creation worked
         $element = $this->findCss($page, '#loginOptions a');
@@ -172,11 +181,64 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that demo driver expected values are present:
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));
         }
+    }
+
+    /**
+     * Test login on record page with ILS and SSO authentication
+     *
+     * @return void
+     */
+    public function testRecordPageWithILSAndSSO()
+    {
+        // Set up configs and session
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniSSOOverrides() + $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+                'SimulatedSSO' => $this->getSimulatedSSOIniOverrides(),
+            ]
+        );
+        $recordUrl = $this->getVuFindUrl() . '/Record/testsample1';
+        $session = $this->getMinkSession();
+        $session->visit($recordUrl);
+        $page = $session->getPage();
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // login with ILS
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'catuser', 'catpass', false, '.authmethod0 ');
+        $this->submitLoginForm($page, false, '.authmethod0 ');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // Login with SSO
+        $this->assertEquals(
+            'Institutional Login',
+            $this->findCssAndGetText($page, '.modal-body .authmethod1 .btn.btn-link')
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-link');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
@@ -186,6 +248,6 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser']);
+        static::removeUsers(['username1', 'catuser', 'ssofakeuser1']);
     }
 }

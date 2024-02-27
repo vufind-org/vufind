@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy tree data source plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-namespace VuFind\Hierarchy\TreeDataSource;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
  * Hierarchy tree data source plugin manager
@@ -48,7 +48,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'solr' => Solr::class,
         'search2' => Search2::class,
-        'xmlfile' => XMLFile::class,
     ];
 
     /**
@@ -59,7 +58,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         Solr::class => SolrFactory::class,
         Search2::class => Search2Factory::class,
-        XMLFile::class => InvokableFactory::class,
     ];
 
     /**

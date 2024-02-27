@@ -1,8 +1,9 @@
 <?php
+
 /**
  * IpRegEx permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -61,7 +63,7 @@ class IpRegEx implements PermissionProviderInterface
      * @param Request      $request      Request object
      * @param UserIpReader $userIpReader User IP address reader
      */
-    public function __construct(Request $request, UserIpReader $userIpReader = null)
+    public function __construct(Request $request, UserIpReader $userIpReader)
     {
         $this->request = $request;
         $this->userIpReader = $userIpReader;
@@ -78,13 +80,7 @@ class IpRegEx implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // Check if any regex matches....
-        if ($this->userIpReader !== null) {
-            $ipAddr = $this->userIpReader->getUserIp();
-        } elseif (PHP_SAPI == 'cli') {
-            $ipAddr = null;
-        } else {
-            $ipAddr = $this->request->getServer()->get('REMOTE_ADDR');
-        }
+        $ipAddr = $this->userIpReader->getUserIp();
         foreach ((array)$options as $current) {
             if (preg_match($current, $ipAddr)) {
                 // Match? Grant to all users (guest or logged in).

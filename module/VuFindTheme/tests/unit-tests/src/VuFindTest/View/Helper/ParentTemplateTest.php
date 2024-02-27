@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ParentTemplate view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\ParentTemplate;
@@ -63,13 +65,14 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a populated resource container for testing.
      *
+     * @param array $stack Path stack
+     *
      * @return ParentTemplate
      */
     protected function getHelper($stack)
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
+        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
             ->disableOriginalConstructor()->getMock();
 
         $return = new \SplStack();
@@ -96,8 +99,25 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper(['parent', 'child']);
         $this->assertEquals(
             "{$this->fixturePath}/parent/templates/everything.phtml",
-            $helper->__invoke('everything.phtml')
+            $helper('everything.phtml')
         );
+    }
+
+    /**
+     * Test stack rewinding bug (VUFIND-1604)
+     *
+     * @return void
+     */
+    public function testRepeatCalls()
+    {
+        $helper = $this->getHelper(['parent', 'child']);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->assertEquals(
+                "{$this->fixturePath}/parent/templates/foo/bar/child.phtml",
+                $helper('foo/bar/child.phtml')
+            );
+        }
     }
 
     /**
@@ -110,7 +130,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper(['parent', 'noop', 'skip', 'child']);
         $this->assertEquals(
             "{$this->fixturePath}/parent/templates/everything.phtml",
-            $helper->__invoke('everything.phtml')
+            $helper('everything.phtml')
         );
     }
 
@@ -125,6 +145,6 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('not found in parent themes: missing.phtml');
 
         $helper = $this->getHelper(['parent', 'child']);
-        $helper->__invoke('missing.phtml');
+        $helper('missing.phtml');
     }
 }

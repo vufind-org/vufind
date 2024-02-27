@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Pazpar2 backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,16 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function intval;
 
 /**
  * Pazpar2 backend.
@@ -86,7 +87,8 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
+    public function __construct(
+        Connector $connector,
         RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
@@ -129,7 +131,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
@@ -148,7 +153,8 @@ class Backend extends AbstractBackend
          */
         $queryStart = time();
         $progress = $this->getSearchProgress();
-        while ($progress < $this->progressTarget
+        while (
+            $progress < $this->progressTarget
             && (time() - $queryStart) < $this->maxQueryTime
         ) {
             sleep(1);
@@ -162,7 +168,9 @@ class Backend extends AbstractBackend
 
         $hits = $response->hit ?? [];
         $collection = $this->createRecordCollection(
-            $hits, intval($response->merged), $offset
+            $hits,
+            intval($response->merged),
+            $offset
         );
         $this->injectSourceIdentifier($collection);
         return $collection;

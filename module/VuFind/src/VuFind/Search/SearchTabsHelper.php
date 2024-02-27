@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Search tabs" helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2016.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search;
 
 use Laminas\Http\Request;
@@ -73,6 +75,13 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     protected $permissionConfig;
 
     /**
+     * Tab settings
+     *
+     * @var array
+     */
+    protected $settings;
+
+    /**
      * Request
      *
      * @var Request
@@ -87,15 +96,22 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      * @param array         $filterConfig Tab filter configuration
      * @param Request       $request      Request
      * @param array         $permConfig   Tab permission configuration
+     * @param array         $settings     Tab settings
      */
-    public function __construct(PluginManager $results, array $tabConfig,
-        array $filterConfig, Request $request, array $permConfig = []
+    public function __construct(
+        PluginManager $results,
+        array $tabConfig,
+        array $filterConfig,
+        Request $request,
+        array $permConfig = [],
+        array $settings = []
     ) {
         $this->results = $results;
         $this->tabConfig = $tabConfig;
         $this->filterConfig = $filterConfig;
         $this->request = $request;
         $this->permissionConfig = $permConfig;
+        $this->settings = $settings;
     }
 
     /**
@@ -109,7 +125,9 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true,
+    public function getHiddenFilters(
+        $searchClassId,
+        $returnDefaultsIfEmpty = true,
         $ignoreCurrentRequest = false
     ) {
         $filters = $ignoreCurrentRequest
@@ -118,7 +136,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
             $filters = $this->getDefaultTabHiddenFilters($searchClassId);
         }
         return null === $filters
-            ? [] : $this->parseFilters($searchClassId, $filters);
+            ? [] : $this->parseFilters($searchClassId, (array)$filters);
     }
 
     /**
@@ -152,6 +170,16 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get the tab details
+     *
+     * @return array
+     */
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    /**
      * Extract search class name from a tab id
      *
      * @param string $tabId Tab id as defined in config.ini
@@ -168,8 +196,8 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      * Check if given hidden filters match with the hidden filters from configuration
      *
      * @param string $class         Search class ID
-     * @param string $hiddenFilters Hidden filters
-     * @param string $configFilters Filters from filter configuration
+     * @param array  $hiddenFilters Hidden filters
+     * @param array  $configFilters Filters from filter configuration
      *
      * @return bool
      */

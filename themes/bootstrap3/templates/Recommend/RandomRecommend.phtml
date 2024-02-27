@@ -1,27 +1,31 @@
-<?php $recommend = $this->recommend->getResults(); if (count($recommend) > 0): ?>
+<?php $recommend = $this->recommend->getResults(); ?>
+<?php if (count($recommend) > 0): ?>
   <ul class="list-group random <?=$this->recommend->getDisplayMode()?>">
-    <li class="list-group-item title" data-toggle="collapse" href="#side-collapse-randomrecommend">
-      <?=$this->transEsc("random_recommendation_title")?>
+    <li class="list-group-item title" data-toggle="collapse" data-target="#side-collapse-randomrecommend">
+      <?=$this->transEsc('random_recommendation_title')?>
     </li>
     <div id="side-collapse-randomrecommend" class="collapse in">
     <?php foreach ($recommend as $driver): ?>
       <li class="list-group-item">
-        <?php if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>
+        <?php if ($this->recommend->getDisplayMode() === 'images' || $this->recommend->getDisplayMode() === 'mixed'): ?>
           <?php /* Display thumbnail if appropriate: */ ?>
-          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
+          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLinker()->getUrl($driver)); ?>
         <?php endif; ?>
 
-        <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
-        <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
+        <?php
+          $formats = $driver->getFormats();
+          $format = $formats[0] ?? '';
+        ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
           <?=$this->record($driver)->getTitleHtml()?>
-          <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
-          <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
-            <?php $summDate = $driver->getPublicationDates(); ?>
-            <?php if (!empty($summDate)): ?>
-              <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
-            <?php endif; ?>
-          </span>
         </a>
+        <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
+        <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
+          <?php $summDate = $driver->getPublicationDates(); ?>
+          <?php if (!empty($summDate)): ?>
+            <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
+          <?php endif; ?>
+        </span>
         <?php if (!empty($summAuthors)): ?>
           <span class="small text-right">
             <?=$this->transEsc('By')?>

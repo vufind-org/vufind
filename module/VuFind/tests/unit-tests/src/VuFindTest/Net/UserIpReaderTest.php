@@ -1,8 +1,9 @@
 <?php
+
 /**
  * UserIpReader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Net;
 
 use Laminas\Stdlib\Parameters;
@@ -58,7 +60,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
         );
         // Test appropriate behavior with forwarding configured to prefer Real-IP:
         $reader1 = new UserIpReader(
-            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+            $params,
+            'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
         $this->assertEquals('1.2.3.4', $reader1->getUserIp());
         // Test appropriate behavior with forwarding configured to ignore Real-IP:
@@ -72,8 +75,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method for testMultipleHeadersWithFilter().
      *
-     * @params Parameters $params Parameters
-     * @param string      $rules  Rules to apply to UserIpReader
+     * @param Parameters $params Parameters
+     * @param string     $rules  Rules to apply to UserIpReader
      *
      * @return void
      */
@@ -196,7 +199,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
         );
         // Test appropriate behavior with forwarding enabled:
         $reader1 = new UserIpReader(
-            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+            $params,
+            'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
         $this->assertEquals('127.0.0.1', $reader1->getUserIp());
         // Test appropriate behavior with forwarding disabled:

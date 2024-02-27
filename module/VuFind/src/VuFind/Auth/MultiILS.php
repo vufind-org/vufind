@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2013.
@@ -28,10 +29,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Driver\MultiBackend;
+
+use function in_array;
 
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
@@ -47,7 +51,7 @@ use VuFind\ILS\Driver\MultiBackend;
 class MultiILS extends ILS
 {
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
@@ -57,17 +61,25 @@ class MultiILS extends ILS
      */
     public function authenticate($request)
     {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
-        $target = trim($request->getPost()->get('target'));
+        $username = trim($request->getPost()->get('username', ''));
+        $password = trim($request->getPost()->get('password', ''));
+        $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
+        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         // We should have target either separately or already embedded into username
         if ($target) {
             $username = "$target.$username";
+        } else {
+            [$target] = explode('.', $username);
         }
 
-        return $this->handleLogin($username, $password, $loginMethod);
+        // Check that the target is valid:
+        if (!in_array($target, $this->getLoginTargets())) {
+            throw new AuthException('authentication_error_admin');
+        }
+
+        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
     }
 
     /**

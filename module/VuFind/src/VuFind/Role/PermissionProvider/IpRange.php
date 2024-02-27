@@ -1,8 +1,9 @@
 <?php
+
 /**
  * IpRange permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2015.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Stdlib\RequestInterface;
@@ -75,8 +77,10 @@ class IpRange implements PermissionProviderInterface
      * @param IpAddressUtils   $ipUtils      IpAddressUtils object
      * @param UserIpReader     $userIpReader User IP address reader
      */
-    public function __construct(RequestInterface $request, IpAddressUtils $ipUtils,
-        UserIpReader $userIpReader = null
+    public function __construct(
+        RequestInterface $request,
+        IpAddressUtils $ipUtils,
+        UserIpReader $userIpReader
     ) {
         $this->request = $request;
         $this->ipAddressUtils = $ipUtils;
@@ -94,13 +98,7 @@ class IpRange implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // Check if any regex matches....
-        if ($this->userIpReader !== null) {
-            $ipAddr = $this->userIpReader->getUserIp();
-        } elseif (PHP_SAPI == 'cli') {
-            $ipAddr = null;
-        } else {
-            $ipAddr = $this->request->getServer()->get('REMOTE_ADDR');
-        }
+        $ipAddr = $this->userIpReader->getUserIp();
         if ($this->ipAddressUtils->isInRange($ipAddr, (array)$options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];

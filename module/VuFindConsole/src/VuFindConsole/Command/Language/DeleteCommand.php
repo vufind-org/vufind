@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Language command: add string using template.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;
@@ -103,7 +105,7 @@ class DeleteCommand extends AbstractCommand
             $out = '';
             $found = false;
             foreach ($lines as $line) {
-                if (substr($line, 0, strlen($target)) !== $target) {
+                if (!str_starts_with($line, $target)) {
                     $out .= $line;
                 } else {
                     $found = true;

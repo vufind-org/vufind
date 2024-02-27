@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for fetching information about user requests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -40,6 +42,8 @@ use Laminas\Mvc\Controller\Plugin\Params;
  */
 abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
 {
+    use \VuFind\ILS\Logic\SummaryTrait;
+
     /**
      * ILS driver method for data retrieval.
      *
@@ -61,22 +65,10 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
         if (!$patron) {
             return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
         }
-        if (!$this->ils->checkCapability($this->lookupMethod)) {
+        if (!$this->ils->checkCapability($this->lookupMethod, [$patron])) {
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);
-        $status = [
-            'available' => 0,
-            'in_transit' => 0
-        ];
-        foreach ($requests as $request) {
-            if ($request['available'] ?? false) {
-                $status['available'] += 1;
-            }
-            if ($request['in_transit'] ?? false) {
-                $status['in_transit'] += 1;
-            }
-        }
-        return $this->formatResponse($status);
+        return $this->formatResponse($this->getRequestSummary($requests));
     }
 }

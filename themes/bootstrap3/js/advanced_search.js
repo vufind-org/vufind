@@ -1,9 +1,11 @@
+/*global VuFind */
 /*exported addGroup, addSearch, deleteGroup, deleteSearch */
+
 var nextGroup = 0;
 var groupLength = [];
 var deleteGroup, deleteSearch;
 
-function addSearch(group, _fieldValues) {
+function addSearch(group, _fieldValues, isUser = false) {
   var fieldValues = _fieldValues || {};
   // Build the new search
   var inputID = group + '_' + groupLength[group];
@@ -21,7 +23,7 @@ function addSearch(group, _fieldValues) {
   $newSearch.find('.adv-term-remove')
     .data('group', group)
     .data('groupLength', groupLength[group])
-    .click(function deleteSearchHandler() {
+    .on("click", function deleteSearchHandler() {
       return deleteSearch($(this).data('group'), $(this).data('groupLength'));
     });
   // Preset Values
@@ -53,6 +55,11 @@ function addSearch(group, _fieldValues) {
     $('#group' + group + ' .adv-term-remove').removeClass('hidden');
   }
   groupLength[group]++;
+
+  if (isUser) {
+    $newSearch.find('input.form-control').trigger("focus");
+  }
+
   return false;
 }
 
@@ -67,7 +74,12 @@ deleteSearch = function _deleteSearch(group, sindex) {
   }
   if (groupLength[group] > 1) {
     groupLength[group]--;
-    $('#search' + group + '_' + groupLength[group]).remove();
+    var toRemove = $('#search' + group + '_' + groupLength[group]);
+    var parent = toRemove.parent();
+    toRemove.remove();
+    if (parent.length) {
+      parent.find('.adv-search input.form-control').focus();
+    }
     if (groupLength[group] === 1) {
       $('#group' + group + ' .adv-term-remove').addClass('hidden'); // Hide x
     }
@@ -75,7 +87,16 @@ deleteSearch = function _deleteSearch(group, sindex) {
   return false;
 };
 
-function addGroup(_firstTerm, _firstField, _join) {
+function _renumberGroupLinkLabels() {
+  $('.adv-group-close').each(function deleteGroupLinkLabel(i, link) {
+    $(link).attr(
+      'aria-label',
+      VuFind.translate('del_search_num', { '%%num%%': i + 1 })
+    );
+  });
+}
+
+function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   var firstTerm = _firstTerm || '';
   var firstField = _firstField || '';
   var join = _join || '';
@@ -90,13 +111,13 @@ function addGroup(_firstTerm, _firstField, _join) {
   $newGroup.find('.add_search_link')
     .attr('id', 'add_search_link_' + nextGroup)
     .data('nextGroup', nextGroup)
-    .click(function addSearchHandler() {
-      return addSearch($(this).data('nextGroup'));
+    .on("click", function addSearchHandler() {
+      return addSearch($(this).data('nextGroup'), {}, true);
     })
     .removeClass('hidden');
   $newGroup.find('.adv-group-close')
     .data('nextGroup', nextGroup)
-    .click(function deleteGroupHandler() {
+    .on("click", function deleteGroupHandler() {
       return deleteGroup($(this).data('nextGroup'));
     });
   $newGroup.find('select.form-control')
@@ -107,23 +128,31 @@ function addGroup(_firstTerm, _firstField, _join) {
   if (join.length > 0) {
     $newGroup.find('option[value="' + join + '"]').attr('selected', 1);
   }
+
   // Insert
   $('#groupPlaceHolder').before($newGroup);
+  _renumberGroupLinkLabels();
+
   // Populate
   groupLength[nextGroup] = 0;
-  addSearch(nextGroup, {term: firstTerm, field: firstField});
+  addSearch(nextGroup, {term: firstTerm, field: firstField}, isUser);
   // Show join menu
   if (nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');
     // Show x
     $('.adv-group-close').removeClass('hidden');
   }
+
+  $newGroup.children('input.form-control').first().trigger("focus");
+
   return nextGroup++;
 }
 
 deleteGroup = function _deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
+  _renumberGroupLinkLabels();
+
   // If the last group was removed, add an empty group
   if ($('.adv-group').length === 0) {
     addGroup();
@@ -134,10 +163,14 @@ deleteGroup = function _deleteGroup(group) {
   return false;
 };
 
-$(document).ready(function advSearchReady() {
-  $('.clear-btn').click(function clearBtnClick() {
+$(function advSearchReady() {
+  $('.clear-btn').on("click", function clearBtnClick() {
     $('input[type="text"]').val('');
+    $('input[type="checkbox"],input[type="radio"]').each(function onEachCheckbox() {
+      var checked = $(this).data('checked-by-default');
+      checked = (checked == null) ? false : checked;
+      $(this).prop("checked", checked);
+    });
     $("option:selected").prop("selected", false);
-    $("#illustrated_-1").click();
   });
 });

@@ -1,0 +1,48 @@
+{
+  "total": 1,
+  "records": [
+    {
+      "Address1": [
+        {
+          "display": "Address 1"
+        }
+      ],
+      "Address2": [
+        {
+          "display": "Address 2"
+        }
+      ],
+      "ZipCode": [
+        {
+          "display": "12345"
+        }
+      ],
+      "City": [
+        {
+          "display": "FakeCity"
+        }
+      ],
+      "StateProv.CodeDesc": [
+        {
+          "display": "FakeState"
+        }
+      ],
+      "Country.CodeDesc": [
+        {
+          "display": "USA"
+        }
+      ],
+      "PhoneNumber": [
+        {
+          "display": "1234567890"
+        }
+      ],
+      "ExpiryDate": [
+        {
+          "display": "12/31/2022 3:55:00 PM"
+        }
+      ],
+      "_uri": "https://foo"
+    }
+  ]
+}

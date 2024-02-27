@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Holdings (WorldCat) tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
-use VuFindSearch\Backend\WorldCat\Connector;
+use VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand;
+use VuFindSearch\Service;
 
 /**
  * Holdings (WorldCat) tab
@@ -41,20 +44,20 @@ use VuFindSearch\Backend\WorldCat\Connector;
 class HoldingsWorldCat extends AbstractBase
 {
     /**
-     * WorldCat connection
+     * Search service
      *
-     * @var Connector
+     * @var Service
      */
-    protected $wc;
+    protected $searchService;
 
     /**
      * Constructor
      *
-     * @param Connector $wc WorldCat connection
+     * @param Service $searchService Search service
      */
-    public function __construct(Connector $wc)
+    public function __construct(Service $searchService)
     {
-        $this->wc = $wc;
+        $this->searchService = $searchService;
     }
 
     /**
@@ -75,7 +78,11 @@ class HoldingsWorldCat extends AbstractBase
     public function getHoldings()
     {
         $id = $this->getOCLCNum();
-        return empty($id) ? false : $this->wc->getHoldings($id);
+        if (empty($id)) {
+            return false;
+        }
+        $command = new GetHoldingsCommand('WorldCat', $id);
+        return $this->searchService->invoke($command)->getResult();
     }
 
     /**
@@ -96,10 +103,6 @@ class HoldingsWorldCat extends AbstractBase
      */
     protected function getOCLCNum()
     {
-        static $id = false;     // cache value in static variable
-        if (!$id) {
-            $id = $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
-        }
-        return $id;
+        return $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
     }
 }

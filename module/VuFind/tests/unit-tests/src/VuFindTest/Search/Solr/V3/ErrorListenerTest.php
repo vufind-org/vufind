@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR 3.x error listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,16 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr\V3;
 
 use Laminas\EventManager\Event;
-
 use Laminas\Http\Response;
-
 use PHPUnit\Framework\TestCase;
-
 use VuFind\Search\Solr\V3\ErrorListener;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
@@ -50,6 +47,7 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
 class ErrorListenerTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\MockSearchCommandTrait;
 
     /**
      * Detect parser error response.
@@ -59,14 +57,18 @@ class ErrorListenerTest extends TestCase
     public function testDetectParseError()
     {
         $response = $this->createResponse('solr3-parse-error');
-        $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
+        $backend  = 'foo';
 
+        $command   = $this->getMockSearchCommand();
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = ['backend_instance' => $backend];
-        $event     = new Event(null, $exception, $params);
+        $params    = [
+            'command'   => $command,
+            'error'     => $exception,
+        ];
+        $event     = new Event(null, null, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /**
@@ -77,14 +79,18 @@ class ErrorListenerTest extends TestCase
     public function testDetectUndefinedFieldError()
     {
         $response = $this->createResponse('solr3-undefined-field-error');
-        $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
+        $backend  = 'foo';
 
+        $command   = $this->getMockSearchCommand();
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = ['backend_instance' => $backend];
-        $event     = new Event(null, $exception, $params);
+        $params    = [
+            'command'   => $command,
+            'error'     => $exception,
+        ];
+        $event     = new Event(null, null, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
-        $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
+        $this->assertTrue($exception->hasTag(ErrorListener::TAG_PARSER_ERROR));
     }
 
     /// Internal API

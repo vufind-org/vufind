@@ -1,0 +1,103 @@
+[
+    {
+        "id": [
+            "1"
+        ],
+        "title": [
+            "first"
+        ],
+        "author": [
+            "Bob",
+            "Fred"
+        ],
+        "author_first": [
+            "Bob"
+        ],
+        "author_concat": [
+            "Bob-Fred"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "2"
+        ],
+        "title": [
+            "second"
+        ],
+        "author": [
+            "Jane"
+        ],
+        "author_concat": [
+            "Jane"
+        ],
+        "author_first": [
+            "Jane"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "3"
+        ],
+        "title": [
+            "third"
+        ],
+        "author": [
+            "     Kevin"
+        ],
+        "author_first": [
+            "Kevin"
+        ],
+        "author_concat": [
+            "Kevin"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "4"
+        ],
+        "title": [
+            "The Fourth"
+        ],
+        "author": [
+            "Tom"
+        ],
+        "author_first": [
+            "Tom"
+        ],
+        "author_concat": [
+            "Tom"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "5"
+        ],
+        "title": [
+            "fiveyfivey"
+        ],
+        "author": [
+            "Pet\u00e9"
+        ],
+        "author_first": [
+            "Pet\u00e9"
+        ],
+        "author_concat": [
+            "Pet\u00e9"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    }
+]

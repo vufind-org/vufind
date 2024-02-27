@@ -3,7 +3,7 @@
 /**
  * Unit tests for Query class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Query;
 
 use PHPUnit\Framework\TestCase;
@@ -110,13 +111,17 @@ class QueryTest extends TestCase
     public function testMultipleReplacements()
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
-        $q = new Query("color code");
+        $q = new Query('color code');
         $q->replaceTerm(
-            'color code', '((color code) OR (color codes))', $normalizer
+            'color code',
+            '((color code) OR (color codes))',
+            $normalizer
         );
         $this->assertEquals('((color code) OR (color codes))', $q->getString());
         $q->replaceTerm(
-            'color code', '((color code) OR (color coded))', $normalizer
+            'color code',
+            '((color code) OR (color coded))',
+            $normalizer
         );
         $this->assertEquals(
             '((((color code) OR (color coded))) OR (color codes))',
@@ -136,10 +141,16 @@ class QueryTest extends TestCase
         $this->assertFalse($q->containsTerm('test'));
         $this->assertTrue($q->containsTerm('test', $normalizer));
         $this->assertEquals(
-            'this is a test of things', $q->getString($normalizer)
+            'this is a test of things',
+            $q->getString($normalizer)
         );
         $q->replaceTerm('test', 'mess', $normalizer);
         $this->assertEquals('this is a mess of things', $q->getString());
+
+        // Test UNICODE characters ("composers" in Northern Sámi):
+        $q = new Query('šuokŋadahkkit');
+        $this->assertTrue($q->containsTerm('šuokŋadahkkit', $normalizer));
+        $this->assertTrue($q->containsTerm('suokŋadahkkit', $normalizer));
     }
 
     /**

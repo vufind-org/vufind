@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT importer support methods for work key generation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2020.
  *
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
 use Normalizer;
+
+use function in_array;
 
 /**
  * XSLT importer support methods for work key generation.
@@ -60,12 +64,19 @@ class VuFindWorkKeys
      *
      * @return DOMDocument
      */
-    public static function getWorkKeys($uniformTitles, $titles, $trimmedTitles,
-        $authors, $includeRegEx = '', $excludeRegEx = '', $transliteratorRules = ''
+    public static function getWorkKeys(
+        $uniformTitles,
+        $titles,
+        $trimmedTitles,
+        $authors,
+        $includeRegEx = '',
+        $excludeRegEx = '',
+        $transliteratorRules = ''
     ) {
         $transliterator = $transliteratorRules
             ? \Transliterator::createFromRules(
-                $transliteratorRules, \Transliterator::FORWARD
+                $transliteratorRules,
+                \Transliterator::FORWARD
             ) : null;
 
         $dom = new DOMDocument('1.0', 'utf-8');
@@ -74,7 +85,10 @@ class VuFindWorkKeys
             ? $uniformTitles : (array)$uniformTitles;
         foreach ($uniformTitles as $uniformTitle) {
             $normalizedTitle = self::normalize(
-                $uniformTitle, $includeRegEx, $excludeRegEx, $transliterator
+                $uniformTitle,
+                $includeRegEx,
+                $excludeRegEx,
+                $transliterator
             );
             if (!empty($normalizedTitle)) {
                 $element = $dom->createElement('workKey', 'UT ' . $normalizedTitle);
@@ -94,9 +108,13 @@ class VuFindWorkKeys
         $normalizedTitles = [];
         foreach (array_merge($titles, $trimmedTitles) as $title) {
             $normalizedTitle = self::normalize(
-                $title, $includeRegEx, $excludeRegEx, $transliterator
+                $title,
+                $includeRegEx,
+                $excludeRegEx,
+                $transliterator
             );
-            if (empty($normalizedTitle)                          // skip empties
+            if (
+                empty($normalizedTitle)                          // skip empties
                 || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;
@@ -104,7 +122,10 @@ class VuFindWorkKeys
             $normalizedTitles[] = $normalizedTitle;
             foreach ($authors as $author) {
                 $normalizedAuthor = self::normalize(
-                    $author, $includeRegEx, $excludeRegEx, $transliterator
+                    $author,
+                    $includeRegEx,
+                    $excludeRegEx,
+                    $transliterator
                 );
                 if (!empty($author)) {
                     $key = 'AT ' . $normalizedAuthor . ' ' . $normalizedTitle;
@@ -141,7 +162,10 @@ class VuFindWorkKeys
      *
      * @return string
      */
-    protected static function normalize($rawString, $includeRegEx, $excludeRegEx,
+    protected static function normalize(
+        $rawString,
+        $includeRegEx,
+        $excludeRegEx,
         $transliterator
     ) {
         // Handle strings and/or DOM elements:
@@ -155,6 +179,6 @@ class VuFindWorkKeys
         if (!empty($excludeRegEx)) {
             $normalized = preg_replace($excludeRegEx, '', $normalized);
         }
-        return substr(strtolower($normalized), 0, 255);
+        return mb_substr(mb_strtolower($normalized, 'UTF-8'), 0, 255, 'UTF-8');
     }
 }

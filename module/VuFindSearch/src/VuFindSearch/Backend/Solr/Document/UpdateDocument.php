@@ -3,7 +3,7 @@
 /**
  * SOLR update document class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,14 +23,18 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Document;
 
 use SplObjectStorage;
 use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
 use XMLWriter;
+
+use function is_array;
 
 /**
  * SOLR update document class.
@@ -38,10 +42,11 @@ use XMLWriter;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class UpdateDocument extends AbstractDocument
+class UpdateDocument implements DocumentInterface
 {
     /**
      * Records and index attributes.
@@ -52,8 +57,6 @@ class UpdateDocument extends AbstractDocument
 
     /**
      * Constructor.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -61,21 +64,21 @@ class UpdateDocument extends AbstractDocument
     }
 
     /**
-     * Return serialized JSON representation.
+     * Return content MIME type.
      *
      * @return string
      */
-    public function asJSON()
+    public function getContentType(): string
     {
-        // @todo Implement
+        return 'text/xml; charset=UTF-8';
     }
 
     /**
-     * Return serialized XML representation.
+     * Return serialized representation.
      *
      * @return string
      */
-    public function asXML()
+    public function getContent(): string
     {
         $writer = new XMLWriter();
         $writer->openMemory();
@@ -111,9 +114,10 @@ class UpdateDocument extends AbstractDocument
      *
      * @return void
      */
-    public function addRecord(SerializableRecordInterface $record,
+    public function addRecord(
+        SerializableRecordInterface $record,
         array $indexAttr = []
-    ) {
+    ): void {
         $this->records->attach($record, $indexAttr);
     }
 }

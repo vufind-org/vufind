@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
@@ -62,7 +68,7 @@ class ResourceContainer
     /**
      * Favicon
      *
-     * @var string
+     * @var string|array|null
      */
     protected $favicon = null;
 
@@ -79,25 +85,6 @@ class ResourceContainer
      * @var string
      */
     protected $generator = '';
-
-    /**
-     * Add a Less CSS file.
-     *
-     * @param array|string $less Less CSS file (or array of Less CSS files) to add
-     *
-     * @return void
-     */
-    public function addLessCss($less)
-    {
-        if (!is_array($less) && !is_a($less, 'Traversable')) {
-            $less = [$less];
-        }
-        unset($less['active']);
-        foreach ($less as $current) {
-            $this->less[] = $current;
-            $this->removeCSS($current);
-        }
-    }
 
     /**
      * Add a CSS file.
@@ -138,7 +125,7 @@ class ResourceContainer
         } elseif ($js === []) {
             return;
         } else {
-            throw new \Exception("Invalid JS entry format: " . print_r($js, true));
+            throw new \Exception('Invalid JS entry format: ' . print_r($js, true));
         }
     }
 
@@ -189,6 +176,10 @@ class ResourceContainer
      */
     protected function addJsArrayEntry($jsEntry)
     {
+        if (!isset($jsEntry['position'])) {
+            $jsEntry['position'] = 'header';
+        }
+
         if (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
             throw new \Exception(
                 'Using "priority" as well as "load_after" in the same entry '
@@ -196,9 +187,14 @@ class ResourceContainer
             );
         }
 
+        // If we are disabling the dependency, remove it now.
+        if ($jsEntry['disabled'] ?? false) {
+            $this->removeEntry($jsEntry, $this->js);
+            return;
+        }
+
         foreach ($this->js as $existingEntry) {
             if ($existingEntry['file'] == $jsEntry['file']) {
-
                 // If we have the same settings as before, just skip this entry.
                 if ($existingEntry == $jsEntry) {
                     return;
@@ -212,6 +208,24 @@ class ResourceContainer
         }
 
         $this->insertEntry($jsEntry, $this->js);
+    }
+
+    /**
+     * Helper function to remove an entry from an array based on filename.
+     *
+     * @param array $entry The entry to remove.
+     * @param array $array The array from which the entry shall be removed.
+     *
+     * @return void
+     */
+    protected function removeEntry($entry, &$array)
+    {
+        foreach (array_keys($array) as $i) {
+            if (($array[$i]['file'] ?? '') === ($entry['file'] ?? null)) {
+                unset($array[$i]);
+                return;
+            }
+        }
     }
 
     /**
@@ -229,7 +243,8 @@ class ResourceContainer
             foreach (array_keys($array) as $i) {
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
-                    if (!isset($currentPriority)
+                    if (
+                        !isset($currentPriority)
                         || $currentPriority > $entry['priority']
                     ) {
                         array_splice($array, $i, 0, [$entry]);
@@ -256,16 +271,6 @@ class ResourceContainer
     }
 
     /**
-     * Get Less CSS files.
-     *
-     * @return array
-     */
-    public function getLessCss()
-    {
-        return array_unique($this->less);
-    }
-
-    /**
      * Get CSS files.
      *
      * @return array
@@ -278,11 +283,23 @@ class ResourceContainer
     /**
      * Get Javascript files.
      *
+     * @param string $position Position where the files should be inserted
+     * (allowed values are 'header' or 'footer').
+     *
      * @return array
      */
-    public function getJs()
+    public function getJs(string $position = null)
     {
-        return $this->js;
+        if (!isset($position)) {
+            return $this->js;
+        } else {
+            return array_filter(
+                $this->js,
+                function ($jsFile) use ($position) {
+                    return $jsFile['position'] == $position;
+                }
+            );
+        }
     }
 
     /**
@@ -299,8 +316,9 @@ class ResourceContainer
         // have been converted to arrays
         $parts = explode(':', $current);
         // Special case: don't explode URLs:
-        if (($parts[0] === 'http' || $parts[0] === 'https')
-            && '//' === substr($parts[1], 0, 2)
+        if (
+            ($parts[0] === 'http' || $parts[0] === 'https')
+            && str_starts_with($parts[1], '//')
         ) {
             $protocol = array_shift($parts);
             $parts[0] = $protocol . ':' . $parts[0];
@@ -333,7 +351,7 @@ class ResourceContainer
     /**
      * Set the favicon.
      *
-     * @param string $favicon New favicon path.
+     * @param string|array $favicon New favicon path.
      *
      * @return void
      */
@@ -345,7 +363,7 @@ class ResourceContainer
     /**
      * Get the favicon (null for none).
      *
-     * @return string
+     * @return string|array|null
      */
     public function getFavicon()
     {
@@ -396,7 +414,7 @@ class ResourceContainer
      *
      * @param string $file Filename to remove
      *
-     * @return bool
+     * @return void
      */
     protected function removeCSS($file)
     {

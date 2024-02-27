@@ -3,7 +3,7 @@
 /**
  * Unit tests for DevTools controller.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -26,9 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Controller;
 
+use Laminas\I18n\Translator\TextDomain;
 use VuFindDevTools\Controller\DevtoolsController as Controller;
+
+use function count;
+use function get_class;
+use function in_array;
 
 /**
  * Unit tests for DevTools controller.
@@ -60,7 +66,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('English', $result['mainName']);
 
         // Make sure correct type of object was loaded:
-        $this->assertEquals('Laminas\I18n\Translator\TextDomain', get_class($result['main']));
+        $this->assertEquals(TextDomain::class, get_class($result['main']));
 
         // Shortcut to help check some key details:
         $en = $result['details']['en'];
@@ -70,7 +76,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(in_array('search.phtml', $en['helpFiles']));
 
         // Did we put the object in the right place?
-        $this->assertEquals('Laminas\I18n\Translator\TextDomain', get_class($en['object']));
+        $this->assertEquals(TextDomain::class, get_class($en['object']));
 
         // Did the @parent_ini macro get stripped correctly?
         $this->assertFalse(isset($result['details']['en-gb']['object']['@parent_ini']));

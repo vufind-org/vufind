@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Related records view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\PluginManager as ConfigManager;
@@ -72,8 +74,10 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      * @param ConfigManager  $cm            Configuration manager
      * @param OptionsManager $om            Search options manager
      */
-    public function __construct(RelatedManager $pluginManager,
-        ConfigManager $cm, OptionsManager $om
+    public function __construct(
+        RelatedManager $pluginManager,
+        ConfigManager $cm,
+        OptionsManager $om
     ) {
         $this->pluginManager = $pluginManager;
         $this->configManager = $cm;
@@ -109,7 +113,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function getList(\VuFind\RecordDriver\AbstractBase $driver)
     {
         $retVal = [];
-        $config = $this->getConfigForSource($driver->getSourceIdentifier());
+        $config = $this->getConfigForSource($driver->getSearchBackendIdentifier());
         foreach ($config as $current) {
             $parts = explode(':', $current, 2);
             $type = $parts[0];
@@ -136,7 +140,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function render($related)
     {
         $template = 'Related/%s.phtml';
-        $className = get_class($related);
+        $className = $related::class;
         $context = ['related' => $related];
         return $this->renderClassTemplate($template, $className, $context);
     }

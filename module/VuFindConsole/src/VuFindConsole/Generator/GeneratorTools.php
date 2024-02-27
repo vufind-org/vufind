@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generator tools.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,13 +26,21 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Generator;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
+use Psr\Container\ContainerInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
+use function strlen;
 
 /**
  * Generator tools.
@@ -90,7 +99,7 @@ class GeneratorTools
         $handle = opendir($moduleDir);
         $results = [];
         while ($line = readdir($handle)) {
-            if (substr($line, 0, 6) === 'VuFind' && strlen($line) > 6) {
+            if (str_starts_with($line, 'VuFind') && strlen($line) > 6) {
                 $results[] = $line;
             }
         }
@@ -212,7 +221,9 @@ class GeneratorTools
      *
      * @return ContainerInterface
      */
-    protected function getPluginManagerForClassParts($container, $classParts,
+    protected function getPluginManagerForClassParts(
+        $container,
+        $classParts,
         $topLevelService
     ) {
         // Special case -- short-circuit for top-level service:
@@ -243,8 +254,11 @@ class GeneratorTools
      * @return bool
      * @throws \Exception
      */
-    public function createPlugin(ContainerInterface $container, $class,
-        $factory = null, $topLevelService = false
+    public function createPlugin(
+        ContainerInterface $container,
+        $class,
+        $factory = null,
+        $topLevelService = false
     ) {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
@@ -261,7 +275,9 @@ class GeneratorTools
 
         // Figure out further information based on the plugin manager:
         $pm = $this->getPluginManagerForClassParts(
-            $container, $classParts, $topLevelService
+            $container,
+            $classParts,
+            $topLevelService
         );
         $interface = $this->getExpectedInterfaceFromPluginManager($pm);
 
@@ -274,26 +290,28 @@ class GeneratorTools
             $parent = $interface;
             $interfaces = [];
         }
-        $configPath = $this->getConfigPathForClass(get_class($pm));
+        $configPath = $this->getConfigPathForClass($pm::class);
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
         if ($generateFactory) {
-            $this->generateFactory($class, $factory, $module);
+            $this->generateFactory($factory, $module);
         }
         $factoryPath = array_merge($configPath, ['factories', $class]);
-        $this->writeNewConfig($factoryPath, $factory, $module);
         $aliasPath = array_merge($configPath, ['aliases', $shortName]);
-        // Don't back up the config twice -- the first backup from the previous
-        // write operation is sufficient.
-        $this->writeNewConfig($aliasPath, $class, $module, false);
+        $newConfigs = [
+            ['path' => $factoryPath, 'setting' => $factory],
+            ['path' => $aliasPath, 'setting' => $class],
+        ];
         // Add extra lowercase alias if necessary:
         if (strtolower($shortName) != $shortName) {
             $lowerAliasPath = array_merge(
-                $configPath, ['aliases', strtolower($shortName)]
+                $configPath,
+                ['aliases', strtolower($shortName)]
             );
-            $this->writeNewConfig($lowerAliasPath, $class, $module, false);
+            $newConfigs[] = ['path' => $lowerAliasPath, 'setting' => $class];
         }
+        $this->writeNewConfigs($newConfigs, $module, false);
 
         return true;
     }
@@ -301,18 +319,19 @@ class GeneratorTools
     /**
      * Generate a factory class.
      *
-     * @param string $class   Name of class being built by factory
      * @param string $factory Name of factory to generate
      * @param string $module  Name of module to generate factory within
      *
      * @return void
      */
-    protected function generateFactory($class, $factory, $module)
+    protected function generateFactory($factory, $module)
     {
         $this->createClassInModule(
-            $factory, $module, null,
+            $factory,
+            $module,
+            null,
             ['Laminas\ServiceManager\Factory\FactoryInterface'],
-            function ($generator) use ($class) {
+            function ($generator) {
                 $method = MethodGenerator::fromArray(
                     [
                         'name' => '__invoke',
@@ -321,7 +340,7 @@ class GeneratorTools
                 );
                 $param1 = [
                     'name' => 'container',
-                    'type' => 'Interop\Container\ContainerInterface'
+                    'type' => 'Psr\Container\ContainerInterface',
                 ];
                 $param2 = [
                     'name' => 'requestedName',
@@ -334,7 +353,8 @@ class GeneratorTools
                 $method->setParameters([$param1, $param2, $param3]);
                 // Copy doc block from this class' factory:
                 $reflection = new \Laminas\Code\Reflection\MethodReflection(
-                    GeneratorToolsFactory::class, '__invoke'
+                    GeneratorToolsFactory::class,
+                    '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);
                 $method->setDocBlock($example->getDocBlock());
@@ -356,7 +376,10 @@ class GeneratorTools
      * @return bool
      * @throws \Exception
      */
-    public function extendClass(ContainerInterface $container, $class, $target,
+    public function extendClass(
+        ContainerInterface $container,
+        $class,
+        $target,
         $extendFactory = false
     ) {
         // Set things up differently depending on whether this is a top-level
@@ -374,7 +397,7 @@ class GeneratorTools
             $configPath = ['controller_plugins'];
         } elseif ($pm = $this->getPluginManagerContainingClass($container, $class)) {
             $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
-            $pmKey = $apmFactory->getConfigKey(get_class($pm));
+            $pmKey = $apmFactory->getConfigKey($pm::class);
             $factory = $this->getFactoryFromContainer($pm, $class);
             $configPath = ['vufind', 'plugin_managers', $pmKey];
             $delegators = $this->getDelegatorsFromContainer($pm, $class);
@@ -395,11 +418,11 @@ class GeneratorTools
         // Finalize the local module configuration -- create a factory for the
         // new class, and set up the new class as an alias for the old class.
         $factoryPath = array_merge($configPath, ['factories', $newClass]);
-        $this->writeNewConfig($factoryPath, $newFactory, $target);
         $aliasPath = array_merge($configPath, ['aliases', $class]);
-        // Don't back up the config twice -- the first backup from the previous
-        // write operation is sufficient.
-        $this->writeNewConfig($aliasPath, $newClass, $target, false);
+        $newConfigs = [
+            ['path' => $factoryPath, 'setting' => $newFactory],
+            ['path' => $aliasPath, 'setting' => $newClass],
+        ];
 
         // Clone/configure delegator factories as needed.
         if (!empty($delegators)) {
@@ -409,8 +432,9 @@ class GeneratorTools
                     ? $this->cloneFactory($delegator, $target) : $delegator;
             }
             $delegatorPath = array_merge($configPath, ['delegators', $newClass]);
-            $this->writeNewConfig($delegatorPath, $newDelegators, $target, false);
+            $newConfigs[] = ['path' => $delegatorPath, 'setting' => $newDelegators];
         }
+        $this->writeNewConfigs($newConfigs, $target, false);
 
         return true;
     }
@@ -467,7 +491,8 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getDelegatorsFromContainer(ContainerInterface $container,
+    protected function getDelegatorsFromContainer(
+        ContainerInterface $container,
         $class
     ) {
         $delegators = $this->getAllDelegatorsFromContainer($container);
@@ -483,12 +508,13 @@ class GeneratorTools
      *
      * @return ContainerInterface
      */
-    protected function getPluginManagerContainingClass(ContainerInterface $container,
+    protected function getPluginManagerContainingClass(
+        ContainerInterface $container,
         $class
     ) {
         $factories = $this->getAllFactoriesFromContainer($container);
         foreach (array_keys($factories) as $service) {
-            if (substr($service, -13) == 'PluginManager') {
+            if (str_ends_with($service, 'PluginManager')) {
                 $pm = $container->get($service);
                 if (null !== $this->getFactoryFromContainer($pm, $class)) {
                     return $pm;
@@ -530,15 +556,15 @@ class GeneratorTools
         }
 
         switch ($sourceType) {
-        case 'factories':
-            $this->createSubclassInModule($parts[$partCount - 1], $target);
-            $newConfig = $this->cloneFactory($config, $target);
-            break;
-        case 'invokables':
-            $newConfig = $this->createSubclassInModule($config, $target);
-            break;
-        default:
-            throw new \Exception('Reached unreachable code!');
+            case 'factories':
+                $this->createSubclassInModule($parts[$partCount - 1], $target);
+                $newConfig = $this->cloneFactory($config, $target);
+                break;
+            case 'invokables':
+                $newConfig = $this->createSubclassInModule($config, $target);
+                break;
+            default:
+                throw new \Exception('Reached unreachable code!');
         }
         $this->writeNewConfig($parts, $newConfig, $target);
         return true;
@@ -565,7 +591,8 @@ class GeneratorTools
         // either be a [controller, method] array or a "controller::method"
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
-        if (!is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+        if (
+            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
             || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
@@ -595,7 +622,9 @@ class GeneratorTools
                 $oldReflection->getMethod($factoryMethod)
             );
             $this->updateFactory(
-                $method, $oldReflection->getNamespaceName(), $module
+                $method,
+                $oldReflection->getNamespaceName(),
+                $module
             );
             $generator->addMethodFromGenerator($method);
             $this->writeClass($generator, $module, true, $skipBackup);
@@ -628,8 +657,10 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function updateFactory(MethodGenerator $method,
-        $ns, $module
+    protected function updateFactory(
+        MethodGenerator $method,
+        $ns,
+        $module
     ) {
         $body = $method->getBody();
         $regex = '/new\s+([\w\\\\]*)\s*\(/m';
@@ -641,7 +672,7 @@ class GeneratorTools
         }
         $className = $classNames[0];
         // Figure out fully qualified name for purposes of createSubclassInModule():
-        $fqClassName = (substr($className, 0, 1) != '\\')
+        $fqClassName = (!str_starts_with($className, '\\'))
             ? "$ns\\$className" : $className;
         $newClass = $this->generateLocalClassName($fqClassName, $module);
         $body = preg_replace(
@@ -687,8 +718,12 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function createClassInModule($class, $module, $parent = null,
-        array $interfaces = [], $callback = null
+    protected function createClassInModule(
+        $class,
+        $module,
+        $parent = null,
+        array $interfaces = [],
+        $callback = null
     ) {
         $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
         if (is_callable($callback)) {
@@ -708,8 +743,11 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function writeClass(ClassGenerator $classGenerator, $module,
-        $allowOverwrite = false, $skipBackup = false
+    protected function writeClass(
+        ClassGenerator $classGenerator,
+        $module,
+        $allowOverwrite = false,
+        $skipBackup = false
     ) {
         // Use the class name parts from the previous step to determine a path
         // and filename, then create the new path.
@@ -734,7 +772,9 @@ class GeneratorTools
         // omits the leading backslash on "extends" statements when rewriting
         // existing classes. Can we remove this after a future Laminas\Code upgrade?
         $code = str_replace(
-            'extends VuFind\\', 'extends \\VuFind\\', $generator->generate()
+            'extends VuFind\\',
+            'extends \\VuFind\\',
+            $generator->generate()
         );
         if (!file_put_contents($fullPath, $code)) {
             throw new \Exception("Problem writing to $fullPath.");
@@ -835,7 +875,7 @@ class GeneratorTools
     {
         $generator = FileGenerator::fromArray(
             [
-                'body' => 'return ' . var_export($config, true) . ';'
+                'body' => 'return ' . var_export($config, true) . ';',
             ]
         );
         if (!file_put_contents($configPath, $generator->generate())) {
@@ -845,25 +885,19 @@ class GeneratorTools
     }
 
     /**
-     * Update the configuration of a target module.
+     * Apply a single setting to a configuration array.
      *
-     * @param array  $path    Representation of path in config array
-     * @param string $setting New setting to write into config
-     * @param string $module  Module in which to write the configuration
-     * @param bool   $backup  Should we back up the existing config?
+     * @param array        $path    Representation of path in config array
+     * @param string|array $setting New setting to write into config
+     * @param array        $config  Configuration array (passed by reference)
      *
      * @return void
-     * @throws \Exception
      */
-    protected function writeNewConfig($path, $setting, $module, $backup  = true)
-    {
-        // Create backup of configuration
-        $configPath = $this->getModuleConfigPath($module);
-        if ($backup) {
-            $this->backUpFile($configPath);
-        }
-
-        $config = include $configPath;
+    protected function applySettingToConfig(
+        array $path,
+        $setting,
+        array &$config
+    ) {
         $current = & $config;
         $finalStep = array_pop($path);
         foreach ($path as $step) {
@@ -879,9 +913,57 @@ class GeneratorTools
             throw new \Exception('Unexpected non-array: ' . $current);
         }
         $current[$finalStep] = $setting;
+    }
+
+    /**
+     * Update the configuration of a target module with multiple settings.
+     *
+     * @param array  $newValues An array of arrays containing 'path' and 'setting'
+     * keys to specify changes to the configuration.
+     * @param string $module    Module in which to write the configuration
+     * @param bool   $backup    Should we back up the existing config?
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeNewConfigs(
+        array $newValues,
+        string $module,
+        bool $backup = true
+    ) {
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        if ($backup) {
+            $this->backUpFile($configPath);
+        }
+
+        $config = include $configPath;
+        foreach ($newValues as $current) {
+            $this->applySettingToConfig(
+                $current['path'],
+                $current['setting'],
+                $config
+            );
+        }
 
         // Write updated configuration
         $this->writeModuleConfig($configPath, $config);
+    }
+
+    /**
+     * Update the configuration of a target module with a single setting.
+     *
+     * @param array        $path    Representation of path in config array
+     * @param string|array $setting New setting to write into config
+     * @param string       $module  Module in which to write the configuration
+     * @param bool         $backup  Should we back up the existing config?
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeNewConfig($path, $setting, $module, $backup = true)
+    {
+        $this->writeNewConfigs([compact('path', 'setting')], $module, $backup);
     }
 
     /**

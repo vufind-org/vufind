@@ -10,12 +10,12 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile('check_item_statuses.js');
 
   // Load Javascript only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() != "full") {
-    $this->headScript()->appendFile("record.js");
-    $this->headScript()->appendFile("embedded_record.js");
+  if ($this->params->getOptions()->getListViewOption() != 'full') {
+    $this->headScript()->appendFile('record.js');
+    $this->headScript()->appendFile('embedded_record.js');
   }
 
   $recordTotal = $this->results->getResultTotal();
@@ -25,12 +25,19 @@
   $user = $this->auth()->isLoggedIn();
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('Your Favorites')?></h2>
+
+  <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
+    <strong>
+      <?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?>
+      <?=$this->transEscAttr('public_list_indicator') ?>
+    </strong>
+  <?php endif; ?>
 
   <?=$this->flashmessages()?>
 
@@ -41,7 +48,7 @@
           $transParams = [
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
-            '%%total%%' => $this->localizedNumber($recordTotal)
+            '%%total%%' => $this->localizedNumber($recordTotal),
           ];
         ?>
         <?=$this->translate('showing_items_of_html', $transParams); ?>
@@ -50,12 +57,17 @@
     <div class="search-controls">
       <?php if (isset($list)): ?>
         <?php if ($list->editAllowed($account->isLoggedIn())): ?>
-          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
+          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link icon-link">
+            <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
+          </a>
           <div class="btn-group">
-            <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-              <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc("delete_list")?>
+            <a class="btn btn-link dropdown-toggle icon-link" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+              <?=$this->icon('user-list-delete', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('delete_list')?></span>
             </a>
             <ul class="dropdown-menu">
+              <li class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></li>
               <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
@@ -77,9 +89,11 @@
   <?php if ($recordTotal > 0): ?>
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
-      <?php foreach ($this->results->getResults() as $i => $current): ?>
-        <?=$this->record($current)->getListEntry($list, $user)?>
-      <?php endforeach; ?>
+      <ul class="record-list">
+        <?php foreach ($this->results->getResults() as $i => $current): ?>
+          <?=$this->record($current)->getListEntry($list, $user)?>
+        <?php endforeach; ?>
+      </ul>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
   <?php else: ?>
@@ -87,8 +101,8 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render(isset($list) ? 'list' . $list['id'] : 'favorites')?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

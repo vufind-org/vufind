@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Helper - Renewals Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFind\Validator\CsrfInterface;
+
+use function is_array;
 
 /**
  * Action helper to perform renewal-related actions
@@ -75,12 +80,15 @@ class Renewals extends AbstractPlugin
      * @param \Laminas\Stdlib\Parameters $request       Request object
      * @param \VuFind\ILS\Connection     $catalog       ILS connection object
      * @param array                      $patron        Current logged in patron
-     * @param \VuFind\Validator\Csrf     $csrfValidator CSRF validator
+     * @param CsrfInterface              $csrfValidator CSRF validator
      *
      * @return array                  The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)
      */
-    public function processRenewals($request, $catalog, $patron,
+    public function processRenewals(
+        $request,
+        $catalog,
+        $patron,
         $csrfValidator = null
     ) {
         // Pick IDs to renew based on which button was pressed:
@@ -116,7 +124,8 @@ class Renewals extends AbstractPlugin
             );
             if ($renewResult !== false) {
                 // Assign Blocks to the Template
-                if (isset($renewResult['blocks'])
+                if (
+                    isset($renewResult['blocks'])
                     && is_array($renewResult['blocks'])
                 ) {
                     foreach ($renewResult['blocks'] as $block) {

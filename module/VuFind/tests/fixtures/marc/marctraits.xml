@@ -4,7 +4,8 @@
     <record
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
-        xmlns="http://www.loc.gov/MARC21/slim">
+        xmlns="http://www.loc.gov/MARC21/slim"
+        type="Bibliographic">
         <leader>00000cam a22000004i 4500</leader>
         <controlfield tag="001">123</controlfield>
         <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
@@ -108,11 +109,11 @@
             <subfield code="a">2020-</subfield>
         </datafield>
         <datafield tag="440" ind1=" " ind2="0">
-            <subfield code="a">Development Series &amp;&apos;&gt;&lt;&quot;</subfield>    
+            <subfield code="a">Development Series &amp;&apos;&gt;&lt;&quot;</subfield>
             <subfield code="x">1111-2222</subfield>
         </datafield>
         <datafield tag="490" ind1="0" ind2=" ">
-            <subfield code="a">System Collection</subfield>    
+            <subfield code="a">System Collection</subfield>
             <subfield code="x">2222-3333</subfield>
         </datafield>
         <datafield tag="500" ind1=" " ind2=" ">
@@ -183,20 +184,20 @@
             <subfield code="x">5555-6666</subfield>
         </datafield>
         <datafield tag="780" ind1="0" ind2="0">
-            <subfield code="a">Old Journal</subfield>    
+            <subfield code="a">Old Journal</subfield>
             <subfield code="x">6666-7777</subfield>
         </datafield>
         <datafield tag="785" ind1="0" ind2="0">
-            <subfield code="a">New Journal</subfield>    
+            <subfield code="a">New Journal</subfield>
             <subfield code="x">7777-8888</subfield>
         </datafield>
         <datafield tag="830" ind1=" " ind2="0">
-            <subfield code="a">Development</subfield>    
+            <subfield code="a">Development</subfield>
             <subfield code="v">no. 2</subfield>
             <subfield code="x">7777-8888</subfield>
         </datafield>
         <datafield tag="856" ind1="4" ind2="2">
-            <subfield code="u">https://vufind.org/vufind/</subfield>    
+            <subfield code="u">https://vufind.org/vufind/</subfield>
             <subfield code="y">VuFind Home Page</subfield>
         </datafield>
     </record>

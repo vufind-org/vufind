@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EIT Record Driver Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\EIT;
@@ -113,9 +115,9 @@ class EITTest extends \PHPUnit\Framework\TestCase
         $overrides = [
             'header' => [
                 'controlInfo' => [
-                    'pubinfo' => ['pub' => ['TestPublisher']]
-                ]
-            ]
+                    'pubinfo' => ['pub' => ['TestPublisher']],
+                ],
+            ],
         ];
         $driver = $this->getDriver($overrides);
         $this->assertEquals([['TestPublisher']], $driver->getPublishers());

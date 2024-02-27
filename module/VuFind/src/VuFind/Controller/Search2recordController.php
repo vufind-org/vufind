@@ -3,7 +3,7 @@
 /**
  * Search2 Record Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -48,7 +49,7 @@ class Search2recordController extends AbstractRecord
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->searchClassId = 'Search2';
+        $this->sourceId = 'Search2';
         $this->fallbackDefaultTab = 'Description';
         parent::__construct($sm);
     }
@@ -62,7 +63,6 @@ class Search2recordController extends AbstractRecord
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Search2');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

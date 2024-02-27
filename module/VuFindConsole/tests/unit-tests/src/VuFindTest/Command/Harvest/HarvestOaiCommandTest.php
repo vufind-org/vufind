@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HarvestOai command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Harvest;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Harvest\HarvestOaiCommand;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * HarvestOai command test.
@@ -41,6 +44,8 @@ use VuFindConsole\Command\Harvest\HarvestOaiCommand;
  */
 class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use PathResolverTrait;
+
     /**
      * Test that the --ini setting is overridden automatically.
      *
@@ -51,7 +56,7 @@ class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
         $command = new HarvestOaiCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $expectedIni = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+        $expectedIni = $this->getPathResolver()->getConfigPath('oai.ini', 'harvest');
         $this->assertEquals(
             "Please add OAI-PMH settings to $expectedIni.\n",
             $commandTester->getDisplay()

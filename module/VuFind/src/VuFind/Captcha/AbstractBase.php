@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base CAPTCHA
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+
+use function get_class;
 
 /**
  * Abstract base CAPTCHA
@@ -58,6 +62,17 @@ abstract class AbstractBase
     public function getId(): string
     {
         return preg_replace('"^.*\\\\"', '', get_class($this));
+    }
+
+    /**
+     * Get any error message after a failed captcha verification. The message can be
+     * displayed to the user.
+     *
+     * @return string
+     */
+    public function getErrorMessage(): string
+    {
+        return 'captcha_not_passed';
     }
 
     /**

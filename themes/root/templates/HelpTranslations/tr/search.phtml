@@ -1,24 +1,24 @@
 <h1>Faydalı Arama İpuçları</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Joker Aramaları</a></li>
-  <li><a href="#Fuzzy Searches">Bulanık Aramalar</a></li>
-  <li><a href="#Proximity Searches">Yakınlık Aramaları</a></li>
-  <li><a href="#Range Searches">Aralık Aramaları</a></li>
-  <li><a href="#Boosting a Term">Bir Terimi Artırma</a></li>
-  <li><a href="#Boolean operators">Boolean Operatörleri</a>
+  <li><a href="#wildcard_searches">Joker Aramaları</a></li>
+  <li><a href="#fuzzy_searches">Bulanık Aramalar</a></li>
+  <li><a href="#proximity_searches">Yakınlık Aramaları</a></li>
+  <li><a href="#range_searches">Aralık Aramaları</a></li>
+  <li><a href="#boosting_a_term">Bir Terimi Artırma</a></li>
+  <li><a href="#boolean_operators">Boolean Operatörleri</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Joker Aramaları</dt>
+  <dt><a id="wildcard_searches"></a>Joker Aramaları</dt>
   <dd>
     <p>Tek karakterli bir belirsiz arama gerçekleştirmek için,  ? sembolünü kullanınız.</p>
     <p>Örneğin, &quot;text&quot; ya da &quot;test&quot; aramak için, şu aramayı kullanabilirsiniz: </p>
@@ -30,8 +30,8 @@
     <pre class="code">te*t</pre>
     <p>Not:   Aramanın ilk karakteri olarak * ya da ? sembolünü kullanamazsınız. </p>
   </dd>
-  
-  <dt><a name="Fuzzy Searches"></a>Bulanık Aramalar</dt>
+
+  <dt><a id="fuzzy_searches"></a>Bulanık Aramalar</dt>
   <dd>
     <p>Tek kelimelik bir terimin sonunda  ~ (yaklaşık işareti) sembolünü kullanınız.  Örneğin, &quot;roam&quot;a yazım olarak benzer bir terimi aramak için, belgisiz aramayı kullanınız: </p>
     <pre class="code">roam~</pre>
@@ -40,44 +40,44 @@
     <pre class="code">roam~0.8</pre>
     <p>Parametre 0.5 olarak verilmezse, varsayılan kullanılır. </p>
   </dd>
-  
-  <dt><a name="Proximity Searches"></a>Yakınlık Aramaları</dt>
+
+  <dt><a id="proximity_searches"></a>Yakınlık Aramaları</dt>
   <dd>
     <p>
-      Çoklu bir kelime teriminin sonunda  ~ (yaklaşık işareti) sembolünü kullanınız.  Örneğin, yaklaşık 10 kelimelik economics ve keynesi aramak için:  
+      Çoklu bir kelime teriminin sonunda  ~ (yaklaşık işareti) sembolünü kullanınız.  Örneğin, yaklaşık 10 kelimelik economics ve keynesi aramak için:
     </p>
     <pre class="code">"economics Keynes"~10</pre>
   </dd>
-  
+
   {literal}
-  <dt><a name="Range Searches"></a>Aralık Aramaları</dt>
+  <dt><a id="range_searches"></a>Aralık Aramaları</dt>
   <dd>
     <p>
       Aralık aramalarını gerçekleştirmek için,  { } karakterlerini kullanabilirsiniz. Örneğin, A, B, ya da C ile başlayan bir terimi aramak için: </p>
     <pre class="code">{A TO C}</pre>
     <p>
-      Aynısı Yıl olarak sayısal alanlarla yapılabilir: 
+      Aynısı Yıl olarak sayısal alanlarla yapılabilir:
     </p>
     <pre class="code">[2002 TO 2003]</pre>
   </dd>
   {/literal}
-  
-  <dt><a name="Boosting a Term"></a>Bir Terimi Artırma</dt>
+
+  <dt><a id="boosting_a_term"></a>Bir Terimi Artırma</dt>
   <dd>
     <p>
       Bir terime daha fazla değer uygularsanız,  ^ karakterini kullanabilirsiniz. Örneğin, aşağıdaki aramayı deneyebilirsiniz: </p>
     <pre class="code">economics Keynes^5</pre>
     <p>Hangisi &quot;Keynes&quot; terimine daha çok değer yükleyecek </p>
   </dd>
-  
-  <dt><a name="Boolean operators"></a>Boolean Operatörleri</dt>
+
+  <dt><a id="boolean_operators"></a>Boolean Operatörleri</dt>
   <dd>
     <p>
       Boolean terimlere, mantık işlemcileriyle birleşmesine imkan verir.  Aşağıdaki operatörlere imkan tanınmıştır:  <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> ve<strong>-</strong>.
     </p>
     <p>Not: Boolean işlemcilerinin HEPSİ BÜYÜK HARFLE olmalıdır.</p>
     <dl>
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
         <p>AND operatörü varsayılan birleşme işlemcisidir. Bu, iki terim arasında Boolean operatörü yoksa AND operatörünün kullanılacağı anlamına gelir. AND operatörü her iki terimin kayıt alanının her hangi bir yerinde mevcut olan kayıtları eşler.</p>
         <p>&quot;economics&quot; ve &quot;Keynes&quot; içeren kayıtları aramak için,  şu sorguyu kullanınız: </p>
@@ -85,19 +85,19 @@
         <p>or</p>
         <pre class="code">economics AND Keynes</pre>
       </dd>
-      <dt><a name="+"></a>+</dt>
+      <dt><a id="boolean_plus"></a>+</dt>
       <dd>
         <p>&quot;+&quot; ya da gerekli işlemci, &quot;+&quot; sembolünden sonraki terimin kayıt alanının her hangi bir yerinde mevcut olmasını gerektirir. </p>
         <p>&quot;economics&quot; içermesi gereken kayıtları aramak için ve &quot;Keynes&quot; içerebilen kayıtları aramak için, şu sorguyu kullanınız: </p>
         <pre class="code">+economics Keynes</pre>
       </dd>
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>OR operatörü iki terimi birbirine bağlar ve her iki terimden biri kayıtta mevcutsa eşleme kaydını bulur.</p>
         <p>&quot;economics Keynes&quot; ya da sadece &quot;Keynes&quot; içeren belgeleri aramak için, şu sorguyu kullanınız: </p>
         <pre class="code">"economics Keynes" OR Keynes</pre>
       </dd>
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>NOT operatörü NOT'dan sonra yazılan terimlerin kayıtlarını hariç tutar.</p>
         <p>&quot;Keynes&quot;in dışında &quot;economics&quot; içeren belgeleri aramak için, şu sorguyu kullanınız: </p>
@@ -105,7 +105,7 @@
         <p>Not: NOT operatörü sadece bir terim olarak kullanılamaz. Örneğin, aşağıdaki aramada sonuç çıkmayacaktır: </p>
         <pre class="code">NOT economics</pre>
       </dd>
-      <dt><a name="-"></a>-</dt>
+      <dt><a id="boolean_minus"></a>-</dt>
       <dd>
         <p>- ya da önleme işlemcisi , &quot;-&quot; sembolünden sonra yazılan terimlerin kayıtlarını hariç tutar.</p>
         <p>&quot;Keynes&quot;in dışında &quot;economics&quot; içeren belgeleri aramak için, şu sorguyu kullanınız: </p>

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OnCampus listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Primo;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFindSearch\Service;
 
 /**
  * OnCampus listener.
@@ -94,7 +96,11 @@ class InjectOnCampusListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -120,7 +126,7 @@ class InjectOnCampusListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $params = $event->getParam('params');
+        $params = $event->getParam('command')->getSearchParameters();
         $params->set('onCampus', $this->getOnCampus());
 
         return $event;

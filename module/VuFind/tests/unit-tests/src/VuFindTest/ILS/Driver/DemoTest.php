@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\Demo;
@@ -57,7 +59,8 @@ class DemoTest extends \PHPUnit\Framework\TestCase
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         $this->driver = new Demo(
-            new \VuFind\Date\Converter(), $this->createMock(\VuFindSearch\Service::class),
+            new \VuFind\Date\Converter(),
+            $this->createMock(\VuFindSearch\Service::class),
             function () use ($session) {
                 return $session;
             }

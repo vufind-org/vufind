@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy tree data formatter plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-namespace VuFind\Hierarchy\TreeDataFormatter;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+namespace VuFind\Hierarchy\TreeDataFormatter;
 
 /**
  * Hierarchy tree data formatter plugin manager
@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'json' => Json::class,
-        'xml' => Xml::class,
     ];
 
     /**
@@ -56,8 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Json::class => InvokableFactory::class,
-        Xml::class => InvokableFactory::class,
+        Json::class => AbstractBaseFactory::class,
     ];
 
     /**

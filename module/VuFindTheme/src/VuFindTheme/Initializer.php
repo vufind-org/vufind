@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Theme Initializer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Theme Initializer
@@ -61,7 +63,7 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     protected $serviceManager;
 
@@ -129,7 +131,7 @@ class Initializer
             $this->serviceManager = $eventOrContainer;
         } else {
             throw new \Exception(
-                'Illegal type for $eventOrContainer: ' . get_class($eventOrContainer)
+                'Illegal type for $eventOrContainer: ' . $eventOrContainer::class
             );
         }
 
@@ -146,7 +148,7 @@ class Initializer
     }
 
     /**
-     * Initialize the theme.  This needs to be triggered as part of the dispatch
+     * Initialize the theme. This needs to be triggered as part of the dispatch
      * event.
      *
      * @throws \Exception
@@ -166,7 +168,7 @@ class Initializer
         );
 
         // Determine theme options:
-        $this->sendThemeOptionsToView();
+        $this->sendThemeOptionsToView($currentTheme);
 
         // Make sure the current theme is set correctly in the tools object:
         $error = null;
@@ -211,8 +213,10 @@ class Initializer
         $selectedUI = null;
         if (isset($request)) {
             $selectedUI = $request->getPost()->get(
-                'ui', $request->getQuery()->get(
-                    'ui', $request->getCookie()->ui ?? null
+                'ui',
+                $request->getQuery()->get(
+                    'ui',
+                    $request->getCookie()->ui ?? null
                 )
             );
         }
@@ -230,14 +234,16 @@ class Initializer
         }
 
         // Do we have a non-standard selection?
-        if ($selectedUI != 'standard'
+        if (
+            $selectedUI != 'standard'
             && isset($this->config->alternate_themes)
         ) {
             // Check the alternate theme settings for a match:
             $parts = explode(',', $this->config->alternate_themes);
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
-                if ((trim($subparts[0]) == trim($selectedUI))
+                if (
+                    (trim($subparts[0]) == trim($selectedUI))
                     && isset($subparts[1]) && !empty($subparts[1])
                 ) {
                     return $subparts[1];
@@ -254,26 +260,30 @@ class Initializer
     /**
      * Make the theme options available to the view.
      *
+     * @param string $currentTheme Active theme
+     *
      * @return void
      */
-    protected function sendThemeOptionsToView()
+    protected function sendThemeOptionsToView($currentTheme)
     {
         // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:
-            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions($currentTheme));
         }
     }
 
     /**
-     * Return an array of information about user-selectable themes.  Each entry in
+     * Return an array of information about user-selectable themes. Each entry in
      * the array is an associative array with 'name', 'desc' and 'selected' keys.
+     *
+     * @param string $currentTheme Active theme
      *
      * @return array
      */
-    protected function getThemeOptions()
+    protected function getThemeOptions($currentTheme)
     {
         $options = [];
         if (isset($this->config->selectable_themes)) {
@@ -286,7 +296,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($this->cookieManager->get('ui') == $name)
+                        'selected' => ($currentTheme == $name),
                     ];
                 }
             }
@@ -339,6 +349,17 @@ class Initializer
             }
         }
 
+        // Determine doctype and apply it:
+        $doctype = 'HTML5';
+        foreach ($themes as $key => $currentThemeInfo) {
+            if (isset($currentThemeInfo['doctype'])) {
+                $doctype = $currentThemeInfo['doctype'];
+                break;
+            }
+        }
+        $loader = $this->serviceManager->get('ViewHelperManager');
+        ($loader->get('doctype'))($doctype);
+
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['helpers'])) {
@@ -349,9 +370,6 @@ class Initializer
             $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
-            if ($lessActive && isset($currentThemeInfo['less'])) {
-                $resources->addLessCss($currentThemeInfo['less']);
-            }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);
             }
@@ -372,7 +390,7 @@ class Initializer
 
         // Inject the path stack generated above into the resolver:
         $resolver = $this->serviceManager->get(TemplatePathStack::class);
-        $resolver->setPaths($templatePathStack);
+        $resolver->addPaths($templatePathStack);
 
         // Add theme specific language files for translation
         $this->updateTranslator($themes);
@@ -421,7 +439,7 @@ class Initializer
                 // note of it:
                 $logger = $this->serviceManager->get(\VuFind\Log\Logger::class);
                 $logger->debug(
-                    'Problem loading cache: ' . get_class($e) . ' exception: '
+                    'Problem loading cache: ' . $e::class . ' exception: '
                     . $e->getMessage()
                 );
             }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Abstract Plugin Factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ServiceManager;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Abstract Plugin Factory
@@ -65,7 +67,7 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     protected function getClassName($requestedName)
     {
         // If we have a FQCN that refers to an existing class, return it as-is:
-        if (strpos($requestedName, '\\') !== false && class_exists($requestedName)) {
+        if (str_contains($requestedName, '\\') && class_exists($requestedName)) {
             return $requestedName;
         }
         // First try the raw service name, then try a normalized version:
@@ -104,7 +106,9 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         $class = $this->getClassName($requestedName);

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Image link view helper (extended for VuFind's theme system)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTheme\View\Helper;
 
 /**
@@ -67,7 +69,8 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
         // Normalize href to account for themes:
         $relPath = 'images/' . $image;
         $details = $this->themeInfo->findContainingTheme(
-            $relPath, \VuFindTheme\ThemeInfo::RETURN_ALL_DETAILS
+            $relPath,
+            \VuFindTheme\ThemeInfo::RETURN_ALL_DETAILS
         );
 
         if (null === $details) {
@@ -75,7 +78,9 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
         }
 
         $urlHelper = $this->getView()->plugin('url');
-        $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+        $parts = explode('/', $relPath);
+        $encodedRelPath = implode('/', array_map('rawurlencode', $parts));
+        $url = $urlHelper('home') . "themes/{$details['theme']}/" . $encodedRelPath;
         $url .= strstr($url, '?') ? '&_=' : '?_=';
         $url .= filemtime($details['path']);
 

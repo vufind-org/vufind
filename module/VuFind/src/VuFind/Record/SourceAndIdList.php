@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record ID list (support class for Loader)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 use VuFind\RecordDriver\AbstractBase as Record;
+
+use function is_array;
 
 /**
  * Record ID list (support class for Loader)
@@ -73,7 +77,7 @@ class SourceAndIdList
             if (!is_array($details)) {
                 $parts = explode('|', $details, 2);
                 $ids[$i] = $details = [
-                    'source' => $parts[0], 'id' => $parts[1]
+                    'source' => $parts[0], 'id' => $parts[1],
                 ];
             }
             $this->bySource[$details['source']][$details['id']][] = $i;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record driver view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
+
+use function get_class;
+use function in_array;
+use function is_callable;
 
 /**
  * Record driver view helper
@@ -109,7 +115,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
         return $this->renderClassTemplate(
-            $template, $className, $context ?? ['driver' => $this->driver], $throw
+            $template,
+            $className,
+            $context ?? ['driver' => $this->driver],
+            $throw
         );
     }
 
@@ -163,7 +172,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Export the record in the requested format.  For legal values, see
+     * Export the record in the requested format. For legal values, see
      * the export helper's getFormatsForRecord() method.
      *
      * @param string $format Export format to display
@@ -177,7 +186,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the CSS class used to properly render a format.  (Note that this may
+     * Get the CSS class used to properly render a format. (Note that this may
      * not be used by every theme).
      *
      * @param string $format Format text to convert into CSS class
@@ -187,7 +196,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getFormatClass($format)
     {
         return $this->renderTemplate(
-            'format-class.phtml', ['format' => $format]
+            'format-class.phtml',
+            ['format' => $format]
         );
     }
 
@@ -199,6 +209,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getFormatList()
     {
         return $this->renderTemplate('format-list.phtml');
+    }
+
+    /**
+     * Render a list of record labels.
+     *
+     * @return string
+     */
+    public function getLabelList()
+    {
+        return $this->renderTemplate('label-list.phtml');
     }
 
     /**
@@ -223,7 +243,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'driver' => $this->driver,
                 'list' => $list,
                 'user' => $user,
-                'lists' => $lists
+                'lists' => $lists,
             ]
         );
     }
@@ -336,8 +356,15 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             'link-' . $type . '.phtml',
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
+
+        $prepend = (!str_contains($link, '?')) ? '?' : '&amp;';
+
         $link .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+            ->getCurrentHiddenFilterParams(
+                $this->driver->getSearchBackendIdentifier(),
+                false,
+                $prepend
+            );
         return $link;
     }
 
@@ -351,7 +378,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getTab(\VuFind\RecordTab\TabInterface $tab)
     {
         $context = ['driver' => $this->driver, 'tab' => $tab];
-        $classParts = explode('\\', get_class($tab));
+        $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
         $html = $this->view->render($template);
@@ -400,7 +427,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $context['formAttr'] = $formAttr;
         }
         return $this->contextHelper->renderInContext(
-            'record/checkbox.phtml', $context
+            'record/checkbox.phtml',
+            $context
         );
     }
 
@@ -485,7 +513,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (isset($this->config->Content->coversize)
+        if (
+            isset($this->config->Content->coversize)
             && !$this->config->Content->coversize
         ) {
             // covers disabled entirely
@@ -527,7 +556,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string|bool
      */
-    public function getQrCode($context, $extra = [], $level = "L", $size = 3,
+    public function getQrCode(
+        $context,
+        $extra = [],
+        $level = 'L',
+        $size = 3,
         $margin = 4
     ) {
         if (!isset($this->config->QRCode)) {
@@ -535,28 +568,30 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         }
 
         switch ($context) {
-        case "core":
-        case "results":
-            $key = 'showIn' . ucwords(strtolower($context));
-            break;
-        default:
-            return false;
+            case 'core':
+            case 'results':
+                $key = 'showIn' . ucwords(strtolower($context));
+                break;
+            default:
+                return false;
         }
 
-        if (!isset($this->config->QRCode->$key)
+        if (
+            !isset($this->config->QRCode->$key)
             || !$this->config->QRCode->$key
         ) {
             return false;
         }
 
-        $template = $context . "-qrcode.phtml";
+        $template = $context . '-qrcode.phtml';
 
         // Try to build text:
         $text = $this->renderTemplate(
-            $template, $extra + ['driver' => $this->driver]
+            $template,
+            $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+            'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');
@@ -583,7 +618,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get all URLs associated with the record.  Returns an array of strings.
+     * Get all URLs associated with the record. Returns an array of strings.
      *
      * @return array
      */
@@ -597,7 +632,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get all the links associated with this record.  Returns an array of
+     * Get all the links associated with this record. Returns an array of
      * associative arrays each containing 'desc' and 'url' keys.
      *
      * @param bool $openUrlActive Is there an active OpenURL on the page?
@@ -646,12 +681,12 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return $link;
         };
 
-        return array_map($formatLink, $urls);
+        return $this->deduplicateLinks(array_map($formatLink, $urls));
     }
 
     /**
      * Get all the links associated with this record depending on the OpenURL setting
-     * replace_other_urls.  Returns an array of associative arrays each containing
+     * replace_other_urls. Returns an array of associative arrays each containing
      * 'desc' and 'url' keys.
      *
      * @return bool
@@ -660,5 +695,20 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         return isset($this->config->OpenURL->replace_other_urls)
             && $this->config->OpenURL->replace_other_urls;
+    }
+
+    /**
+     * Remove duplicates from the array. All keys and values are being used
+     * recursively to compare, so if there are 2 links with the same url
+     * but different desc, they will both be preserved.
+     *
+     * @param array $links array of associative arrays,
+     * each containing 'desc' and 'url' keys
+     *
+     * @return array
+     */
+    protected function deduplicateLinks($links)
+    {
+        return array_values(array_unique($links, SORT_REGULAR));
     }
 }

@@ -3,7 +3,7 @@
 /**
  * A single/simple query.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Query;
 
 /**
@@ -67,7 +68,7 @@ class Query extends AbstractQuery
      * @param string $handler  Name of search handler
      * @param string $operator Operator to apply to query string (null if n/a)
      */
-    public function __construct($string = null, $handler = null, $operator = null)
+    public function __construct($string = '', $handler = null, $operator = null)
     {
         $this->queryHandler = $handler ? $handler : null;
         $this->queryString  = $string;
@@ -114,7 +115,7 @@ class Query extends AbstractQuery
      *
      * @param string $handler Name of handler
      *
-     * @return string
+     * @return void
      */
     public function setHandler($handler)
     {
@@ -136,7 +137,7 @@ class Query extends AbstractQuery
      *
      * @param string $operator Operator
      *
-     * @return string
+     * @return void
      */
     public function setOperator($operator)
     {

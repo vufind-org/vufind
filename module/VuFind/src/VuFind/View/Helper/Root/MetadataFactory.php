@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Metadata helper factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Tübingen 2019.
  *
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Metadata helper factory
@@ -52,7 +54,9 @@ class MetadataFactory implements FactoryInterface
      *
      * @throws \Exception (options not allowed in this implementation)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {

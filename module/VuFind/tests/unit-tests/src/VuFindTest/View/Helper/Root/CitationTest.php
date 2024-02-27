@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CitationBuilder Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\Citation;
@@ -58,7 +60,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '',
                 'PlacesOfPublication' => ['St. Louis'],
                 'Publishers' => ['Mosby'],
-                'PublicationDates' => ['1958']
+                'PublicationDates' => ['1958'],
             ],
             'apa' => 'Shafer, K. N. (1958). <i>Medical-surgical nursing</i>. Mosby.',
             'mla' => 'Shafer, Kathleen Newton. <i>Medical-surgical Nursing</i>. Mosby, 1958.',
@@ -72,7 +74,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '7th ed. /',
                 'PlacesOfPublication' => ['St. Louis, Mo.'],
                 'Publishers' => ['Mosby Elsevier'],
-                'PublicationDates' => ['2007']
+                'PublicationDates' => ['2007'],
             ],
             'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Assessment and management of clinical problems</i> (7th ed.). Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. Mosby Elsevier, 2007.',
@@ -89,8 +91,8 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'CleanDOI' => 'myDOI',
             ],
             'apa' => 'Lewis, S. (2007). <i>Even if you &quot;test&quot; Medical-surgical nursing: Assessment and management of clinical problems on top of crazy capitalization</i> (7th ed.). Mosby Elsevier. https://doi.org/myDOI',
-            'mla' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://dx.doi.org/myDOI.',
+            'mla' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. Mosby Elsevier, 2007. https://doi.org/myDOI.',
+            'chicago' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://doi.org/myDOI.',
         ],
         [
             'raw' => [
@@ -100,7 +102,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '1st ed.',
                 'PlacesOfPublication' => ['St. Louis, Mo.'],
                 'Publishers' => ['Mosby Elsevier'],
-                'PublicationDates' => ['2007']
+                'PublicationDates' => ['2007'],
             ],
             'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Assessment and management of clinical problems</i>. Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. Mosby Elsevier, 2007.',
@@ -114,7 +116,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '7th ed.',
                 'PlacesOfPublication' => ['St. Louis, Mo.'],
                 'Publishers' => ['Mosby Elsevier'],
-                'PublicationDates' => ['2007']
+                'PublicationDates' => ['2007'],
             ],
             'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Why?</i> (7th ed.). Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Why?</i> 7th ed. Mosby Elsevier, 2007.',
@@ -128,7 +130,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '1st ed.',
                 'PlacesOfPublication' => ['St. Louis, Mo.'],
                 'Publishers' => ['Mosby Elsevier'],
-                'PublicationDates' => ['2007']
+                'PublicationDates' => ['2007'],
             ],
             'apa' => 'Lewis, S., IV. (2007). <i>Medical-surgical nursing: Why?</i> Mosby Elsevier.',
             'mla' => 'Lewis, S.M., IV. <i>Medical-surgical Nursing: Why?</i> Mosby Elsevier, 2007.',
@@ -142,7 +144,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '',
                 'PlacesOfPublication' => ['New York :'],
                 'Publishers' => ['Holmes & Meier,'],
-                'PublicationDates' => ['1980.']
+                'PublicationDates' => ['1980.'],
             ],
             'apa' => 'Burch, P. H., Jr. (1980). <i>The New Deal to the Carter administration</i>. Holmes &amp; Meier.',
             'mla' => 'Burch, Philip H., Jr. <i>The New Deal to the Carter Administration</i>. Holmes &amp; Meier, 1980.',
@@ -156,7 +158,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '',
                 'PlacesOfPublication' => ['New York :'],
                 'Publishers' => ['Holmes & Meier,'],
-                'PublicationDates' => ['1980.']
+                'PublicationDates' => ['1980.'],
             ],
             'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <i>The New Deal to the Carter administration</i>. Holmes &amp; Meier.',
             'mla' => 'Burch, Philip H., Jr., et al. <i>The New Deal to the Carter Administration</i>. Holmes &amp; Meier, 1980.',
@@ -170,7 +172,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Edition' => '',
                 'PlacesOfPublication' => '',
                 'Publishers' => '',
-                'PublicationDates' => ''
+                'PublicationDates' => '',
             ],
             'apa' => 'Burch, P. H., Jr., Coauthor, F., Fakeperson, T., III, Mob, W., &amp; Manypeople, L. <i>The New Deal to the Carter administration</i>.',
             'mla' => 'Burch, Philip H., Jr., et al. <i>The New Deal to the Carter Administration</i>.',
@@ -183,7 +185,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'Subtitle' => '',
                 'Edition' => '',
                 'PlacesOfPublication' => ['New York'],
-                'Publishers' => ['Holmes & Meier']
+                'Publishers' => ['Holmes & Meier'],
             ],
             'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <i>The New Deal to the Carter administration</i>. Holmes &amp; Meier.',
             'mla' => 'Burch, Philip H., Jr., et al. <i>The New Deal to the Carter Administration</i>. Holmes &amp; Meier.',
@@ -198,7 +200,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -213,7 +215,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -228,7 +230,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -243,7 +245,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -258,7 +260,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -273,7 +275,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 19
+                'ContainerEndPage' => 19,
             ],
             'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19.',
             'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, p. 19.',
@@ -289,7 +291,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 19
+                'ContainerEndPage' => 19,
             ],
             'apa' => 'IBM &amp; Two, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19.',
             'mla' => 'IBM and Person Two. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, p. 19.',
@@ -304,7 +306,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -319,7 +321,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -334,7 +336,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerIssue' => 7,
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
-                'ContainerEndPage' => 21
+                'ContainerEndPage' => 21,
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
@@ -350,12 +352,12 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
-                'CleanDOI' => 'testDOI'
+                'CleanDOI' => 'testDOI',
             ],
             'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21. https://doi.org/testDOI',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://dx.doi.org/testDOI.',
-        ]
+            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21, https://doi.org/testDOI.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://doi.org/testDOI.',
+        ],
         // @codingStandardsIgnoreEnd
     ];
 
@@ -371,21 +373,22 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
             $driver->setRawData($current['raw']);
-            $cb = $citation->__invoke($driver);
+            $cb = $citation($driver);
 
             // Normalize whitespace:
-            $apa = trim(preg_replace("/\s+/", " ", $cb->getCitation('APA')));
+            $apa = trim(preg_replace("/\s+/", ' ', $cb->getCitation('APA')));
             $this->assertEquals($current['apa'], $apa);
 
             // Normalize whitespace:
-            $mla = trim(preg_replace("/\s+/", " ", $cb->getCitation('MLA')));
+            $mla = trim(preg_replace("/\s+/", ' ', $cb->getCitation('MLA')));
             $this->assertEquals($current['mla'], $mla);
 
             // Normalize whitespace:
-            $chicago = trim(preg_replace("/\s+/", " ", $cb->getCitation('Chicago')));
+            $chicago = trim(preg_replace("/\s+/", ' ', $cb->getCitation('Chicago')));
             $this->assertEquals($current['chicago'], $chicago);
         }
 
+        $cb = $citation($driver);
         // Test a couple of illegal citation formats:
         $this->assertEquals('', $cb->getCitation(''));
         $this->assertEquals('', $cb->getCitation('Citation'));

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * IndexReservesCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -44,6 +46,7 @@ use VuFindConsole\Command\Util\IndexReservesCommand;
 class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Get mock ILS connection.
@@ -164,7 +167,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')
@@ -195,6 +198,36 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test unsuccessful ILS loading (missing data elements).
+     *
+     * @return void
+     */
+    public function testMissingData()
+    {
+        $ils = $this->getMockIlsConnection();
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves'],
+            ],
+            []
+        );
+        $command = $this->getCommand($this->getMockSolrWriter(), $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertEquals(
+            'Unable to load data. No data found for: '
+            . "instructors, courses, departments, reserves\n",
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
      * Test successful ILS loading.
      *
      * @return void
@@ -204,7 +237,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
         $courses = [
-            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3'
+            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3',
         ];
         $departments = ['dept1' => 'dept1', 'dept2' => 'dept2', 'dept3' => 'dept3'];
         $reserves = [
@@ -227,13 +260,22 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 'INSTRUCTOR_ID' => 'inst3',
             ],
         ];
-        $ils->expects($this->exactly(4))->method('__call')
-            ->withConsecutive(
-                ['getInstructors'], ['getCourses'], ['getDepartments'],
-                ['findReserves']
-            )->willReturnOnConsecutiveCalls(
-                $instructors, $courses, $departments, $reserves
-            );
+        $this->expectConsecutiveCalls(
+            $ils,
+            '__call',
+            [
+                ['getInstructors'],
+                ['getCourses'],
+                ['getDepartments'],
+                ['findReserves'],
+            ],
+            [
+                $instructors,
+                $courses,
+                $departments,
+                $reserves,
+            ]
+        );
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
             ->with($this->equalTo('SolrReserves'));
@@ -272,7 +314,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')

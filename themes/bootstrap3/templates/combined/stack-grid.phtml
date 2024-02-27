@@ -1,0 +1,32 @@
+<div class="combined-search-container grid"
+  style="grid-template-columns: repeat(<?=$this->escapeHtmlAttr($columns)?>, minmax(0, 1fr))"
+>
+  <?php $columnIndex = 0; ?>
+  <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+    <?php
+      if (
+        !($currentSearch['ajax'] ?? false)                        // AJAX column
+        && ($currentSearch['hide_if_empty'] ?? false)             // set to hide when empty
+        && $currentSearch['view']->results->getResultTotal() <= 0 // and empty
+      ) {
+        continue;
+      }
+      $colParams = [
+        'searchClassId' => $searchClassId,
+        'currentSearch' => $currentSearch,
+        'domId' => $currentSearch['domId'],
+      ];
+      if (isset($currentSearch['ajax'])) {
+        $colParams['ajax'] = $currentSearch['ajax'];
+      }
+      $columnIndex++;
+    ?>
+    <?php // This empty div prevents margin collapse, as the otherwise unneeded div.combined-column does elsewhere. ?>
+    <div class="js-hide-if-empty">
+      <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
+        <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
+        <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+</div>

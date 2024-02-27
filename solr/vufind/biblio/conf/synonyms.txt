@@ -1,3 +1,6 @@
+# Note: If you want to use multiterm synonyms, you will need to set sow=false in
+# Solr default parameters. See "default_parameters" in searches.ini for more
+# information.
 I,i,1,one,One
 II,ii,2,two,Two
 III,iii,3,three,Three

@@ -3,7 +3,7 @@
 /**
  * Unit tests for Socialstats controller.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Controller;
 
 /**
@@ -52,18 +53,29 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $container->set(\VuFind\Db\Table\PluginManager::class, $tables);
         $c = new \VuFindAdmin\Controller\SocialstatsController($container);
         $comments = $this->getMockBuilder(\VuFind\Db\Table\Comments::class)
-            ->disableOriginalConstructor()->setMethods(['getStatistics'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
         $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
         $tables->set('comments', $comments);
         $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
-            ->setMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
+            ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
         $tables->set('userresource', $userresource);
         $resourcetags = $this->getMockBuilder(\VuFind\Db\Table\ResourceTags::class)
-            ->disableOriginalConstructor()->setMethods(['getStatistics'])
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
             ->getMock();
         $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
         $tables->set('resourcetags', $resourcetags);
+        $ratings = $this->getMockBuilder(\VuFind\Db\Table\Ratings::class)
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
+        $ratings->expects($this->once())->method('getStatistics')->will($this->returnValue(['ratings-data']));
+        $tables->set('ratings', $ratings);
+        $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
+            ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
+        $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
+            ->will($this->returnValue(function ($input) {
+                return 'url';
+            }));
+        $container->set('ViewRenderer', $viewRenderer);
 
         // Confirm properly-constructed view object:
         $view = $c->homeAction();
@@ -71,5 +83,6 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('comments-data', $view->comments);
         $this->assertEquals('userresource-data', $view->favorites);
         $this->assertEquals('resourcetags-data', $view->tags);
+        $this->assertEquals(['ratings-data'], $view->ratings);
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class encapsulating publication details.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Response;
 
 /**
@@ -112,7 +114,8 @@ class PublicationDetails
     {
         return trim(
             preg_replace(
-                '/\s+/', ' ',
+                '/\s+/',
+                ' ',
                 implode(' ', [$this->place, $this->name, $this->date])
             )
         );

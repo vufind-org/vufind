@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cover Router Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Cover;
 
 use Laminas\Config\Config;
@@ -96,7 +98,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     {
         $url = 'http://foo/bar';
         $this->assertEquals(
-            $url, $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
+            $url,
+            $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $url]))
         );
     }
 
@@ -139,7 +142,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
         }

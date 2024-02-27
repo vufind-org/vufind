@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EBSCO EIT API Search Options
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EIT;
+
+use function count;
 
 /**
  * EBSCO EIT Search Options
@@ -73,7 +77,8 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
-        if (isset($searchSettings->DefaultSortingByType)
+        if (
+            isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {

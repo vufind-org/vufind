@@ -1,0 +1,334 @@
+# Fields in each configuration provide mappings from field names used in Blender.ini
+# to field names used in each backend.
+# This example configuration is designed with the assumption that Solr is the primary
+# search backend used, so the field names are based on the Solr fields. There is no
+# dependency on Solr; it can be thought of as simply a naming convention.
+# Any missing mapping means that the backend does not support the field. For facets
+# this means that any filter is ignored for the backend. For searches and sorting
+# enabling a field that is not supported by all backends should be avoided as any
+# missing fields are set to empty.
+
+# In Facets Type indicates what kind of processing the facet needs. Allowed values
+# are normal (default) and boolean (checkbox facet).
+# Facet settings include filter mappings e.g. for checkbox facets.
+#
+# Settings for mappings:
+# Field         Field name in backend
+# Values        Mappings from backend values to VuFind for facets and the other way
+#               for active filters.
+# Hierarchical  Boolean setting indicating that the values should be mapped to a
+#               hierarchical facet. This ensures that when a value is mapped to
+#               a sub-level hierarchy item, facet counts for its parents get
+#               incremented as well.
+# Unmapped      How to handle values with no mappings when building facets. Possible
+#               values:
+#               "keep" - Use the values as is (default)
+#               "drop" - Drop the values from facets
+# Ignore        true to ignore all values for a filter, or an array of values to
+#               ignore. Otherwise any filter value that does not have a field and
+#               value mapping causes the backend to be disabled for the search.
+# DefaultValue  Filter value used for the backend unless a filter is active.
+#               For example the pcAvailability filter by default limits results to
+#               those that have full text available, so a DefaultValue can be used to
+#               override it.
+#
+# Example:
+#
+# Facets:                             # Facet configuration section
+#   Fields:                           # Field configuration
+#     fulltext:                       # Field name in VuFind
+#       Type: boolean                 # Field type
+#       Mappings:                     # Mappings for backends
+#         Solr:                       # Solr backend
+#           Field: fulltext_boolean   # Use fulltext_boolean field with Solr
+#         Primo:                      # Primo backend
+#           Field: pcAvailability     # Use pcAvailability field with Primo
+#           Values:                   # Value mappings
+#             "false": 1              # Map 1 in VuFind to "false"
+#           DefaultValue: "true"      # If no filter set, use "pcAvailability=true"
+#         EDS:                        # EDS backend
+#           Field: "LIMIT|FT"         # Use limiter "LIMIT|FT" with EDS
+#           Values:                   # Map 1 in VuFind to "y"
+#             y: 1
+
+# Facet and filter mappings
+Facets:
+  Fields:
+    author_facet:
+      Mappings:
+        EDS:
+          Field: "LIMIT|AU"
+        Primo:
+          Field: creator
+        Solr:
+          Field: author_facet
+    building:
+      Type: hierarchical
+      Mappings:
+        Solr:
+          Field: building
+    format:
+      Mappings:
+        EDS:
+          Field: SourceType
+          Values:
+            Academic Journals: Journal
+            Magazines: Article
+            Books: Book
+            Conference Materials: Conference Proceeding
+            Reviews: Review
+            Trade Publications: Trade Publications
+            Reports: Report
+            Electronic Resources: Electronic
+            eBooks: eBook
+            Non-Print Resources: Text
+            Biographies: Biography
+            Dissertations: Thesis
+            Audio: Audio
+            Music Scores: Music Score
+            Videos: Video
+            Primary Source Documents: Primary Source Document
+            Maps: Map
+            Research Starters: Research Starter
+            Audiobooks: Audiobook
+        Primo:
+          Field: rtype
+          Values:
+            archival_material_manuscripts: Archival Material / Manuscript
+            articles: Article
+            audios: Audio
+            book_chapters: Book Chapter
+            books: Book
+            conference_proceedings: Conference Proceeding
+            databases: Database
+            datasets: Data Set
+            dissertations: Thesis
+            government_documents: Government Document
+            images: Image
+            journals: Journal
+            legal_documents: Legal Document
+            maps: Map
+            media: Media
+            newsletterarticle: Newsletter Article
+            newspaper_articles: Newspaper Article
+            other: Other
+            patents: Patent
+            reference_entrys: Reference Entry
+            reports: Report
+            research_datasets: Research Data
+            reviews: Review
+            scores: Score
+            standards: Standard
+            statistical_data_sets: Data Set
+            technical_reports: Technical Report
+            text_resources: Text
+            videos: Video
+            websites: Web Resource
+            web_resources: Web Resource
+        Solr:
+          Field: format
+        SolrAuth:
+          Field: record_type
+
+    # Example mappings for a hierarchical format facet:
+    #format:
+    #  Mappings:
+    #    EDS:
+    #      Field: SourceType
+    #      Hierarchical: true
+    #      Values:
+    #        Academic Journals: "1/Journal/eJournal/"
+    #        Magazines: "1/Journal/eArticle/"
+    #        Books: "1/Book/eBook/"
+    #        Conference Materials: "1/OtherText/ConferenceProceeding/"
+    #        Reviews: "1/OtherText/Text/"
+    #        Trade Publications: "1/Other/Other/"
+    #        Reports: "1/OtherText/ResearchReport/"
+    #        Electronic Resources: "1/Other/Electronic/"
+    #        eBooks: "1/Book/eBook/"
+    #        Non-Print Resources: "1/OtherText/Text/"
+    #        Biographies: "1/OtherText/Text/"
+    #        Dissertations: "1/Thesis/Thesis/"
+    #        Audio: "1/Sound/SoundRecording/"
+    #        Music Scores: "1/MusicalScore/MusicalScore/"
+    #        Videos: "1/Video/Video/"
+    #        Primary Source Documents: "1/OtherText/Text/"
+    #        Maps: "1/Map/Map/"
+    #        Research Starters: "1/OtherText/Text/"
+    #        Audiobooks: "1/Sound/NonmusicalRecording/"
+    #    Primo:
+    #      Field: rtype
+    #      Hierarchical: true
+    #      Values:
+    #        archival_material_manuscripts: "0/Archival Material or Manuscript/"
+    #        articles: "1/Journal/eArticle/"
+    #        audios: "1/Sound/SoundRecording/"
+    #        book_chapters: "1/Book/eBookSection/"
+    #        books: "1/Book/eBook/"
+    #        conference_proceedings: "1/OtherText/ConferenceProceeding/"
+    #        databases: "0/Database/"
+    #        datasets: "0/Data Set/"
+    #        dissertations: "1/Thesis/Thesis/"
+    #        government_documents: "1/OtherText/Text/"
+    #        images: "1/Image/Image/"
+    #        journals: "1/Journal/eJournal/"
+    #        legal_documents: "1/OtherText/Text/"
+    #        maps: "1/Map/Map/"
+    #        media: "1/Other/Electronic/"
+    #        newsletterarticle: "0/Newsletter Article/"
+    #        newspaper_articles: "1/Journal/NewspaperArticle/"
+    #        other: "1/Other/Other/"
+    #        patents: "1/OtherText/Text/"
+    #        reference_entrys: "1/OtherText/Text/"
+    #        reports: "1/OtherText/ResearchReport/"
+    #        research_datasets: "1/Other/ResearchData/"
+    #        reviews: "1/OtherText/Text/"
+    #        scores: "1/MusicalScore/MusicalScore/"
+    #        standards: "0/Standard/"
+    #        statistical_data_sets: "1/Other/Other/"
+    #        technical_reports: "1/OtherText/Text/"
+    #        text_resources: "1/OtherText/Text/"
+    #        videos: "1/Video/Video/"
+    #        websites: "1/Other/Electronic/"
+    #        web_resources: "1/Other/Electronic/"
+    #    Solr:
+    #      Field: format
+
+    fulltext:
+      Type: boolean
+      Mappings:
+        EDS:
+          Field: "LIMIT|FT"
+          Values:
+            "y": true
+        Primo:
+          Field: pcAvailability
+          Values:
+            "false": 1
+          DefaultValue: "true"
+        Solr:
+          Field: fulltext_boolean
+    gender:
+      Mappings:
+        SolrAuth:
+          Field: gender
+    institution:
+      Mappings:
+        EDS:
+          Field: ContentProvider
+        Primo:
+          Field: domain
+        Solr:
+          Field: institution
+    language:
+      Mappings:
+        Primo:
+          Field: lang
+        Solr:
+          Field: language
+        SolrAuth:
+          Field: language
+    occupation:
+      Mappings:
+        SolrAuth:
+          Field: occupation
+    online:
+      Type: boolean
+      Mappings:
+        Primo:
+          Field: tlevel
+          Values:
+            online_resources: true
+        Solr:
+          Field: online_boolean
+    open_access:
+      Type: boolean
+      Mappings:
+        Primo:
+          Field: tlevel
+          Values:
+            open_access: true
+        Solr:
+          Field: open_access_boolean
+    peer_reviewed:
+      Type: boolean
+      Mappings:
+        EDS:
+          Field: "LIMIT|RV"
+          Values:
+            "y": true
+        Primo:
+          Field: tlevel
+          Values:
+            peer_reviewed: true
+        Solr:
+          Field: peer_reviewed_boolean
+    publish_date:
+      Mappings:
+        EDS:
+          Field: PublicationDate
+        Primo:
+          Field: creationdate
+        Solr:
+          Field: publishDate
+    topic:
+      Mappings:
+        EDS:
+          Field: SubjectEDS
+        Primo:
+          Field: topic
+        Solr:
+          Field: topic
+# Search type mappings between backends
+Search:
+  Fields:
+    AllFields:
+      Mappings:
+        EDS: AllFields
+        Primo: AllFields
+        Solr: AllFields
+    Author:
+      Mappings:
+        EDS: AU
+        Primo: Author
+        Solr: Author
+        SolrAuth: Heading
+    Subject:
+      Mappings:
+        EDS: SU
+        Primo: Subject
+        Solr: Subject
+    Title:
+      Mappings:
+        EDS: TI
+        Primo: Title
+        Solr: Title
+        SolrAuth: Heading
+# Sort mappings between backends
+Sorting:
+  Fields:
+    author:
+      Mappings:
+        Primo: screator
+        Solr: author
+        SolrAuth: heading
+    relevance:
+      Mappings:
+        EDS: relevance
+        Primo: relevance
+        Solr: relevance
+    title:
+      Mappings:
+        Primo: title
+        Solr: title
+        SolrAuth: heading
+    year:
+      Mappings:
+        EDS: date
+        Primo: scdate
+        Solr: year # This is mapped to the actual Solr field by VuFind
+    "year asc":
+      Mappings:
+        EDS: date2
+        Primo: scdate2
+        Solr: year asc # This is mapped to the actual Solr field by VuFind

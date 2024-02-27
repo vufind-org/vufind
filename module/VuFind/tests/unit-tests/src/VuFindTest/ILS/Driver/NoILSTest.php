@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\NoILS;
@@ -65,7 +67,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                     $this->createMock(\VuFindSearch\Service::class),
-                    $this->createMock(\VuFind\RecordDriver\PluginManager::class)
+                    $this->createMock(\VuFind\RecordDriver\PluginManager::class),
                 ]
             )->getMock();
         $this->driver = new NoILS($this->loader);
@@ -121,7 +123,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'N',
                     'callnumber' => 'xyzzy',
                     'barcode' => null,
-                ]
+                ],
             ]
         );
         $this->assertTrue($this->driver->hasHoldings('foo'));

@@ -21,7 +21,6 @@
   padding: 1rem;
   padding-right: 0;
   border-bottom: 1px solid @moon-gray;
-  font-size: @reduced-font-size;
 
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
@@ -36,13 +35,12 @@
   .callnumAndLocation {
     margin-top: .25rem;
     margin-bottom: .25rem;
-    font-size: 12px;
+    font-size: @reduced-font-size;
   }
   .format,
   .label {
     display: inline-block;
     padding: 4px .75rem;
-    font-size: 11px;
   }
   .savedLists {
     margin-bottom: 0;
@@ -119,23 +117,17 @@
   }
   .result-link-icon,
   .result .cart-link-icon {
-    margin-right: .2rem;
-    padding: 0;
     font-size: inherit;
     color: @gray-darker;
   }
-  .result-link-icon { margin-right: 0; }
   .result-link-label,
   .result .cart-link-label { display: inline; }
 }
 
-.top-facets,
-.search-header { font-size: @reduced-font-size; }
 .search-header {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-#searchForm { font-size: @reduced-font-size; }
 #searchForm_lookfor,
 #searchForm_type { margin-bottom: 4px; }
 
@@ -165,8 +157,7 @@
   }
   @media (min-width: 768px) {
     height: 300px;
-    padding: 7rem 3rem;
-    padding-left: ~"calc(50vw - 50% + .5rem)"; // Align searchbox with container
+    padding: 7rem calc(50vw - 50% + .5rem); // Align searchbox with container
   }
 }
 .searchHomeContent::after {
@@ -177,7 +168,7 @@
   width: 100%;
   padding: .25rem .5rem;
   padding-left: 1rem;
-  font-size: 10px;
+  font-size: @min-font-size;
   color: #fff;
   background-color: rgba(0,0,0,.3);
   content: "Photo by Paul Gilmore on Unsplash";
@@ -195,7 +186,39 @@
 #searchForm {
   padding-top: .5rem;
   padding-bottom: calc(@search-tab-height + 1.5rem);
+
+  .keyboard-selection {
+    bottom: 2px;
+
+    button.dropdown-toggle:hover,
+    button.dropdown-toggle:focus,
+    &.open > button.dropdown-toggle {
+      color: white;
+      background-color: @header-bg;
+      border-color: @header-bg;
+    }
+
+    &:not(.open) {
+      .activated:not(:hover){
+        background: @header-light;
+      }
+    }
+
+    .dropdown-menu .active a,
+    .dropdown-menu .active a:hover {
+      background-color: @header-bg;
+    }
+
+    .btn-primary {
+      height: 22px;
+    }
+  }
 }
+
+.keyboard-box {
+  color: @input-color;
+}
+
 .nav.searchbox,
 #searchForm {
   position: relative;
@@ -277,21 +300,21 @@
     .filters-term {
       color: #000;
     }
-    a:hover {
+    a:hover {
       background-color: transparent;
     }
   }
 }
 
-.reset-filters-btn {
+.active-filters .reset-filters-btn {
   font-weight: bold;
   color: #fff;
-  background-color: rgba(255,255,255,.1);
+  background-color: rgba(255,255,255,0.2);
   border-radius: 4px;
-}
-.active-filters .reset-filters-btn:hover {
-  color: #fff;
-  background-color: rgba(255,255,255,.2);
+
+  &:hover {
+    background-color: rgba(255,255,255,0.3);
+  }
 }
 .active-filters .filters .filter-value,
 .search-filter-dropdown .btn,
@@ -302,20 +325,19 @@
 .active-filters .filters .filter-value {
   border-radius: 2px;
 }
-.active-filters .search-filter-remove::after {
-  content: "\f00d"; /* fa-close */
+.active-filters .search-filter-remove {
   color: @mid-gray;
 }
-.search-filter-dropdown .btn {
-  box-shadow: 0 3px 3px rgba(0,0,0,.3);
-
-  &::after {
-    display: inline-block;
-    width: 1rem;
-    margin-right: -0.5rem;
-  }
+.search-filter-dropdown .btn::after {
+  display: inline-block;
+  width: 1rem;
+  margin-right: -0.5rem;
 }
 .search-filter-dropdown .btn:active {
   box-shadow: none;
   background-color: @light-silver;
+}
+
+#searchForm-reset {
+  color: #000;
 }

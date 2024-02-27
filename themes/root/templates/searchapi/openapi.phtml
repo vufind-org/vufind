@@ -1,0 +1,411 @@
+<?php // This template is a JSON fragment of a complete OpenAPI specification ?>
+<?php ob_start(); ?>
+                    {
+                        "name": "field[]",
+                        "in": "query",
+                        "description": "Fields to return.<?php if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><?php endif; ?>",
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+<?php $field = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+<?php ob_start(); ?>
+                    {
+                        "name": "prettyPrint",
+                        "in": "query",
+                        "description": "Whether to pretty-print the response. Useful for observing the results in a browser.",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "Language for returned translated strings.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->config->Languages->toArray()))) ?>],
+                            "default": "<?=addslashes($this->config->Site->language) ?>"
+                        }
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "A callback that can be used for JSONP.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+<?php $commonFields = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+{
+    "paths": {
+        "/<?=$recordRoute?>": {
+            "get": {
+                "summary": "Fetch records from <?=$this->indexLabel?> index",
+                "description": "Return a single record or multiple records from <?=$this->indexLabel?> index. POST method may also be used if sending a long request.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "A single record ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id[]",
+                        "in": "query",
+                        "description": "Multiple record IDs",
+                        "required": false,
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+<?=$field ?>,
+<?=$commonFields ?>
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Response containing result count and records",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/<?=$this->modelPrefix?>SearchResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/<?=$searchRoute?>": {
+            "get": {
+                "summary": "Search <?=$this->indexLabel?> index",
+                "description": "Search <?=$this->indexLabel?> index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the as the one used in VuFind user interface. It is possible to make a search in VuFind and copy the query parameters here to make the same search via the API.",
+                "parameters": [
+                    {
+                        "name": "lookfor",
+                        "in": "query",
+                        "description": "Search terms. May be a single term, multiple words or a complex query containing boolean operators (AND, OR, NOT), quotes etc. Terms may also be prefixed with a field name (e.g. author:smith) to target only that field (see also type parameter).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Search type. The following search types are available:\n- <?=implode('\n- ', array_map('addslashes', array_keys($this->searchTypes))) ?>",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "<?=addslashes($this->defaultSearchType) ?>"
+                        }
+                    },
+<?=$field ?>,
+                    {
+                        "name": "filter[]",
+                        "in": "query",
+                        "description": "Filter queries. Repeat for every filter.\nThe format for a filter is field:value.\n\n'AND' filtering is used by default. 'OR' or 'NOT' filtering can be used by prepending the field with '~' (OR) or '-' (NOT).",
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "facet[]",
+                        "in": "query",
+                        "description": "Fields to facet on. Repeat for every field. <?php if ($this->facetConfig): ?>At least the following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map('addslashes', array_keys($this->facetConfig))) ?><?php endif; ?>",
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "facetFilter[]",
+                        "in": "query",
+                        "description": "Faceting result filters. Contains regular expressions that the facet must match for it to be returned. The result will include the matched facet items and for hierarchical facets any ancestor values.\nFormat for a facet filter is field:regexp, e.g. `author_facet:Sm.*th`.\n\n**N.B.**The filtered facet needs to be present in the list of returned facets (facet[] parameter).",
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sort method.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->sortOptions))) ?>],
+                            "default": "<?=addslashes($this->defaultSort) ?>"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Record page (first page is 1).",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Records to return per page. Set to 0 to return no records.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": <?=$maxLimit?>,
+                            "default": 20
+                        }
+                    },
+<?=$commonFields ?>
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Response containing result count, records and/or facets.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/<?=$this->modelPrefix?>SearchResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Authors": {
+                "type": "object",
+                "description": "Deduplicated author information including primary, corporate and secondary authors",
+                "properties": {
+                    "primary": {
+                        "description": "Primary authors",
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/AuthorWithRoles"
+                        }
+                    },
+                    "secondary": {
+                        "description": "Secondary authors",
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/AuthorWithRoles"
+                        }
+                    },
+                    "corporate": {
+                        "description": "Corporate authors",
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/AuthorWithRoles"
+                        }
+                    }
+                }
+            },
+            "AuthorWithRoles": {
+                "type": "object",
+                "properties": {
+                    "Author name": {
+                        "type": "array",
+                        "description": "Author's roles",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "Facet": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "description": "Facet value",
+                        "type": "string"
+                    },
+                    "translated": {
+                        "description": "Translated facet value",
+                        "type": "string"
+                    },
+                    "count": {
+                        "description": "Count of records that can be found if the facet is added to the search as a filter",
+                        "type": "integer"
+                    },
+                    "href": {
+                        "description": "The current search with the facet added as a filter",
+                        "type": "string"
+                    },
+                    "isApplied": {
+                        "description": "True if if the facet is in use in the filter parameter of the query",
+                        "type": "boolean"
+                    },
+                    "children": {
+                        "description": "For hierarchical facets, any child facets",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Facet"
+                        }
+                    }
+                }
+            },
+            "Link": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "description": "Link type (e.g. id, isn or title)",
+                        "type": "string"
+                    },
+                    "value": {
+                        "description": "Link value (e.g. record ID, ISBN or title)",
+                        "type": "string"
+                    },
+                    "exclude": {
+                        "description": "Record IDs that need to be excluded from the results",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "<?=$this->modelPrefix?>Record": {
+                "type": "object",
+                "properties": <?=json_encode($this->recordFields) ?>
+            },
+            "RecordLink": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "Link title",
+                        "type": "string"
+                    },
+                    "value": {
+                        "description": "Link value",
+                        "type": "string"
+                    },
+                    "link": {
+                        "$ref": "#/components/schemas/Link"
+                    }
+                }
+            },
+            "<?=$this->modelPrefix?>SearchResponse": {
+                "type": "object",
+                "properties": {
+                    "resultCount": {
+                        "description": "Number of results",
+                        "type": "integer"
+                    },
+                    "records": {
+                        "description": "Records",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/<?=$this->modelPrefix?>Record"
+                        }
+                    },
+                    "facets": {
+                        "description": "Facets",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Facet"
+                        }
+                    },
+                    "status": {
+                        "description": "Status code",
+                        "type": "string",
+                        "enum": ["OK"]
+                    }
+                },
+                "required": ["resultCount", "status"]
+            },
+            "Subject": {
+                "type": "object",
+                "properties": {
+                    "heading": {
+                        "description": "Subject heading parts as an array from the least specific to the most specific",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "type": {
+                        "description": "Subject type",
+                        "type": "string",
+                        "enum": ["", "personal name", "corporate name", "meeting name", "uniform title", "chronological", "topic", "geographic", "genre\/form", "occupation", "keyword"]
+                    },
+                    "source": {
+                        "description": "Subject source/thesaurus (e.g. lcsh, mesh)",
+                        "type": "string"
+                    }
+                }
+            },
+            "Url": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "description": "URL",
+                        "type": "string"
+                    },
+                    "desc": {
+                        "description": "URL Description",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

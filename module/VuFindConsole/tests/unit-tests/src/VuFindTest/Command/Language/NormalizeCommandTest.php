@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Language/Normalize command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Language;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -87,15 +89,35 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNormalizingDirectory()
     {
-        $target = realpath($this->languageFixtureDir) . '/foo/';
+        $target = realpath($this->languageFixtureDir);
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeDirectory')
             ->with($this->equalTo($target));
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test normalizing a directory.
+     *
+     * @return void
+     */
+    public function testNormalizingDirectoryWithBadFilter()
+    {
+        $target = realpath($this->languageFixtureDir);
+        $filter = '*.ini';
+        $command = new NormalizeCommand(new ExtendedIniNormalizer());
+        $commandTester = new CommandTester($command);
+
+        $this->expectExceptionMessage(
+            "Cannot normalize a file with sections; $target/non-language-file.ini"
+            . ' line 1 contains: [Main]'
+        );
+
+        $commandTester->execute(['target' => $target, '--filter' => $filter]);
     }
 
     /**
@@ -112,7 +134,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
@@ -128,9 +150,28 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
         $this->assertEquals(
-            "{$target} does not exist.\n", $commandTester->getDisplay()
+            "{$target} does not exist.\n",
+            $commandTester->getDisplay()
         );
         $this->assertEquals(1, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test an attempt to normalize a file that contains bad content.
+     *
+     * @return void
+     */
+    public function testNormalizingNonLanguageFile()
+    {
+        $target = realpath($this->languageFixtureDir) . '/non-language-file.ini';
+        $command = new NormalizeCommand(new ExtendedIniNormalizer());
+        $commandTester = new CommandTester($command);
+
+        $this->expectExceptionMessage(
+            "Cannot normalize a file with sections; $target line 1 contains: [Main]"
+        );
+
+        $commandTester->execute(compact('target'));
     }
 
     /**
@@ -142,10 +183,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -157,9 +200,11 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockReader($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniReader::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

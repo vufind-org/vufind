@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Driver Factory Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Hierarchy Driver Factory Class
@@ -55,7 +57,9 @@ class ConfigurationBasedFactory
      *
      * @throws Exception if options is populated
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -68,7 +72,7 @@ class ConfigurationBasedFactory
         $configReader = $container->get(\VuFind\Config\PluginManager::class);
         $globalConfig = $configReader->get('config');
         $options = [
-            'enabled' => $globalConfig->Hierarchy->showTree ?? false
+            'enabled' => $globalConfig->Hierarchy->showTree ?? false,
         ];
 
         // Load driver-specific configuration:

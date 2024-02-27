@@ -1,5 +1,25 @@
 [
-  { "status": 400 },
-  { "headers": { "X-Okapi-Token": "x-okapi-token-after-invalid" } },
-  { "body": "{ \"servicepoints\": [] }" }
+  {
+    "comment": "simulate bad token",
+    "expectedPath": "/users",
+    "status": 400
+  },
+  {
+    "comment": "send new token",
+    "expectedMethod": "POST",
+    "expectedPath": "/authn/login-with-expiry",
+    "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"config_username\",\"password\":\"config_password\"}",
+    "headers": { "Set-Cookie": "folioAccessToken=x-okapi-token-after-invalid; Max-Age=600; Expires=Fri, 22 Sep 2023 14:30:10 GMT; Path=/; Secure; HTTPOnly; SameSite=None" }
+  },
+  {
+    "comment": "confirm that new token is used",
+    "expectedPath": "/service-points",
+    "expectedHeaders": { "X-Okapi-Token": "x-okapi-token-after-invalid" },
+    "expectedParams": {
+      "query": "pickupLocation=true",
+      "offset": 0,
+      "limit": 1000
+    },
+    "body": "{ \"servicepoints\": [] }"
+  }
 ]

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract options search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -22,13 +23,22 @@
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use Laminas\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_string;
 
 /**
  * Abstract options search model.
@@ -38,6 +48,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -51,6 +62,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var array
      */
     protected $sortOptions = [];
+
+    /**
+     * Allowed hidden sort options
+     *
+     * @var array
+     */
+    protected $hiddenSortOptions = [];
 
     /**
      * Available sort options for facets
@@ -113,7 +131,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $retainFiltersByDefault = true;
+    protected $retainFiltersByDefault;
+
+    /**
+     * Should we display a "Reset Filters" link regardless of retainFiltersByDefault?
+     *
+     * @var bool
+     */
+    protected $alwaysDisplayResetFilters;
 
     /**
      * Default filters to apply to new searches
@@ -186,6 +211,34 @@ abstract class Options implements TranslatorAwareInterface
     protected $translatedFacetsTextDomains = [];
 
     /**
+     * Formats for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsFormats = [];
+
+    /**
+     * Hierarchical facets
+     *
+     * @var array
+     */
+    protected $hierarchicalFacets = [];
+
+    /**
+     * Hierarchical facet separators
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSeparators = [];
+
+    /**
+     * Hierarchical facet sort settings
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortSettings = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -235,6 +288,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
+     * Autocomplete query formatting rules
+     *
+     * @var array
+     */
+    protected $autocompleteFormattingRules = [];
+
+    /**
      * Configuration file to read global settings from
      *
      * @var string
@@ -260,7 +320,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $listviewOption = "full";
+    protected $listviewOption = 'full';
 
     /**
      * Configuration loader
@@ -277,11 +337,54 @@ abstract class Options implements TranslatorAwareInterface
     protected $resultLimit = -1;
 
     /**
-     * Is the first/last navigation scroller enabled?
+     * Is first/last navigation supported by the backend?
      *
      * @var bool
      */
-    protected $firstlastNavigation = false;
+    protected $firstLastNavigationSupported = true;
+
+    /**
+     * Is the record page first/last navigation scroller enabled?
+     *
+     * @var bool
+     */
+    protected $recordPageFirstLastNavigation = false;
+
+    /**
+     * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
+     * apply in advanced search
+     *
+     * @var bool
+     */
+    protected $filterHierarchicalFacetsInAdvanced = false;
+
+    /**
+     * Hierarchical exclude filters
+     *
+     * @var array
+     */
+    protected $hierarchicalExcludeFilters = [];
+
+    /**
+     * Hierarchical facet filters
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetFilters = [];
+
+    /**
+     * Top pagination control style (none, simple or full)
+     *
+     * @var string
+     */
+    protected $topPaginatorStyle;
+
+    /**
+     * Is loading of results with JavaScript enabled?
+     *
+     * @var bool
+     */
+    protected $loadResultsWithJs;
 
     /**
      * Constructor
@@ -296,9 +399,8 @@ abstract class Options implements TranslatorAwareInterface
         $id = $this->getSearchClassId();
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
-            foreach ($facetSettings->AvailableFacetSortOptions[$id]->toArray()
-                     as $facet => $sortOptions
-            ) {
+            $sortArray = $facetSettings->AvailableFacetSortOptions[$id]->toArray();
+            foreach ($sortArray as $facet => $sortOptions) {
                 $this->facetSortOptions[$facet] = [];
                 foreach (explode(',', $sortOptions) as $fieldAndLabel) {
                     [$field, $label] = explode('=', $fieldAndLabel);
@@ -306,6 +408,20 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+        $this->filterHierarchicalFacetsInAdvanced
+            = !empty($facetSettings->Advanced_Settings->enable_hierarchical_filters);
+        $this->hierarchicalExcludeFilters
+            = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
+        $this->hierarchicalFacetFilters
+            = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
+
+        $searchSettings = $configLoader->get($this->searchIni);
+        $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
+        $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator
+            ?? ($this->loadResultsWithJs ? 'simple' : false);
+        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
     }
 
     /**
@@ -386,7 +502,8 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getLabelForBasicHandler($handler)
     {
-        return $this->basicHandlers[$handler] ?? false;
+        $handlers = $this->getBasicHandlers();
+        return $handlers[$handler] ?? false;
     }
 
     /**
@@ -483,6 +600,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getSortOptions()
     {
         return $this->sortOptions;
+    }
+
+    /**
+     * Get an array of hidden sort options.
+     *
+     * @return array
+     */
+    public function getHiddenSortOptions()
+    {
+        return $this->hiddenSortOptions;
     }
 
     /**
@@ -642,7 +769,8 @@ abstract class Options implements TranslatorAwareInterface
     public function setTranslatedFacets($facets)
     {
         // Reset properties:
-        $this->translatedFacets = $this->translatedFacetsTextDomains = [];
+        $this->translatedFacets = $this->translatedFacetsTextDomains
+            = $this->translatedFacetsFormats = [];
 
         // Fill in new data:
         foreach ($facets as $current) {
@@ -650,6 +778,9 @@ abstract class Options implements TranslatorAwareInterface
             $this->translatedFacets[] = $parts[0];
             if (isset($parts[1])) {
                 $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+            if (isset($parts[2])) {
+                $this->translatedFacetsFormats[$parts[0]] = $parts[2];
             }
         }
     }
@@ -665,6 +796,49 @@ abstract class Options implements TranslatorAwareInterface
     public function getTextDomainForTranslatedFacet($field)
     {
         return $this->translatedFacetsTextDomains[$field] ?? 'default';
+    }
+
+    /**
+     * Look up the format for use when translating a particular facet
+     * field.
+     *
+     * @param string $field Field name being translated
+     *
+     * @return string
+     */
+    public function getFormatForTranslatedFacet($field)
+    {
+        return $this->translatedFacetsFormats[$field] ?? null;
+    }
+
+    /**
+     * Get hierarchical facet fields.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacets()
+    {
+        return $this->hierarchicalFacets;
+    }
+
+    /**
+     * Get hierarchical facet separators.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSeparators()
+    {
+        return $this->hierarchicalFacetSeparators;
+    }
+
+    /**
+     * Get hierarchical facet sort settings.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortSettings()
+    {
+        return $this->hierarchicalFacetSortSettings;
     }
 
     /**
@@ -742,6 +916,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get autocomplete query formatting rules.
+     *
+     * @return array
+     */
+    public function getAutocompleteFormattingRules(): array
+    {
+        return $this->autocompleteFormattingRules;
+    }
+
+    /**
      * Get a string of the listviewOption (full or tab).
      *
      * @return string
@@ -806,6 +990,28 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Return the route name for the "cites" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitesAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cited by" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitedByAction()
+    {
+        return false;
+    }
+
+    /**
      * Does this search option support the cart/book bag?
      *
      * @return bool
@@ -834,6 +1040,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getRetainFilterSetting()
     {
         return $this->retainFiltersByDefault;
+    }
+
+    /**
+     * Should the "Reset Filters" button be displayed?
+     *
+     * @return bool
+     */
+    public function shouldDisplayResetFilters()
+    {
+        return $this->alwaysDisplayResetFilters || $this->getRetainFilterSetting();
     }
 
     /**
@@ -875,8 +1091,7 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * If there is a limit to how many search results a user can access, this
-     * method will return that limit.  If there is no limit, this will return
-     * -1.
+     * method will return that limit. If there is no limit, this will return -1.
      *
      * @return int
      */
@@ -904,7 +1119,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
@@ -923,7 +1138,8 @@ abstract class Options implements TranslatorAwareInterface
         // otherwise:
         $recommend = [];
 
-        if (null !== $handler
+        if (
+            null !== $handler
             && isset($searchSettings->TopRecommendations->$handler)
         ) {
             $recommend['top'] = $searchSettings->TopRecommendations
@@ -934,7 +1150,8 @@ abstract class Options implements TranslatorAwareInterface
                 ? $searchSettings->General->default_top_recommend->toArray()
                 : false;
         }
-        if (null !== $handler
+        if (
+            null !== $handler
             && isset($searchSettings->SideRecommendations->$handler)
         ) {
             $recommend['side'] = $searchSettings->SideRecommendations
@@ -945,7 +1162,8 @@ abstract class Options implements TranslatorAwareInterface
                 ? $searchSettings->General->default_side_recommend->toArray()
                 : false;
         }
-        if (null !== $handler
+        if (
+            null !== $handler
             && isset($searchSettings->NoResultsRecommendations->$handler)
         ) {
             $recommend['noresults'] = $searchSettings->NoResultsRecommendations
@@ -969,18 +1187,64 @@ abstract class Options implements TranslatorAwareInterface
     public function getSearchClassId()
     {
         // Parse identifier out of class name of format VuFind\Search\[id]\Options:
-        $class = explode('\\', get_class($this));
+        $className = get_class($this);
+        $class = explode('\\', $className);
+
+        // Special case: if there's an unexpected number of parts, we may be testing
+        // with a mock object; if so, that's okay, but anything else is unexpected.
+        if (count($class) !== 4) {
+            if (str_starts_with($className, 'Mock_') || str_starts_with($className, 'MockObject_')) {
+                return 'Mock';
+            }
+            throw new \Exception("Unexpected class name: {$className}");
+        }
+
         return $class[2];
     }
 
     /**
-     * Should we include first/last options in result scroller navigation?
+     * Get the search class ID for identifying search box options; this is normally
+     * the same as the current search class ID, but some "special purpose" search
+     * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
+     * generation
+     *
+     * @return string
+     */
+    public function getSearchBoxSearchClassId(): string
+    {
+        return $this->getSearchClassId();
+    }
+
+    /**
+     * Should we include first/last options in record page navigation?
      *
      * @return bool
+     *
+     * @deprecated Use recordFirstLastNavigationEnabled instead
      */
     public function supportsFirstLastNavigation()
     {
-        return $this->firstlastNavigation;
+        return $this->recordFirstLastNavigationEnabled();
+    }
+
+    /**
+     * Is first/last navigation supported by the backend
+     *
+     * @return bool
+     */
+    public function firstLastNavigationSupported()
+    {
+        return $this->firstLastNavigationSupported;
+    }
+
+    /**
+     * Should we include first/last options in record page navigation?
+     *
+     * @return bool
+     */
+    public function recordFirstLastNavigationEnabled()
+    {
+        return $this->firstLastNavigationSupported() && $this->recordPageFirstLastNavigation;
     }
 
     /**
@@ -992,6 +1256,26 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Should we load results with JavaScript?
+     *
+     * @return bool
+     */
+    public function loadResultsWithJsEnabled(): bool
+    {
+        return $this->loadResultsWithJs;
+    }
+
+    /**
+     * Get top paginator style
+     *
+     * @return string
+     */
+    public function getTopPaginatorStyle(): string
+    {
+        return $this->topPaginatorStyle;
     }
 
     /**
@@ -1018,6 +1302,10 @@ abstract class Options implements TranslatorAwareInterface
             ?? $this->autocompleteEnabled;
         $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
             ?? $this->autocompleteAutoSubmit;
+        $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
+        if (!is_string($formattingRules) && count($formattingRules) > 0) {
+            $this->autocompleteFormattingRules = $formattingRules->toArray();
+        }
     }
 
     /**
@@ -1034,6 +1322,48 @@ abstract class Options implements TranslatorAwareInterface
         $limits = $facetSettings->Advanced_Settings->limitOrderOverride ?? null;
         $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
         $limitConf = $limits ? $limits->get($limit) : '';
-        return array_map('trim', explode($delimiter, $limitConf));
+        return array_map('trim', explode($delimiter, $limitConf ?? ''));
+    }
+
+    /**
+     * Are hierarchicalFacetFilters and hierarchicalExcludeFilters enabled in advanced search?
+     *
+     * @return bool
+     */
+    public function getFilterHierarchicalFacetsInAdvanced(): bool
+    {
+        return $this->filterHierarchicalFacetsInAdvanced;
+    }
+
+    /**
+     * Get hierarchical exclude filters.
+     *
+     * @param string|null $field Field to get or null for all values.
+     *                           Default is null.
+     *
+     * @return array
+     */
+    public function getHierarchicalExcludeFilters(?string $field = null): array
+    {
+        if ($field) {
+            return $this->hierarchicalExcludeFilters[$field] ?? [];
+        }
+        return $this->hierarchicalExcludeFilters;
+    }
+
+    /**
+     * Get hierarchical facet filters.
+     *
+     * @param string|null $field Field to get or null for all values.
+     *                           Default is null.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetFilters(?string $field = null): array
+    {
+        if ($field) {
+            return $this->hierarchicalFacetFilters[$field] ?? [];
+        }
+        return $this->hierarchicalFacetFilters;
     }
 }

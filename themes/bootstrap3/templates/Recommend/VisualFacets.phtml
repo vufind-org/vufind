@@ -1,5 +1,5 @@
 <?php
-  $this->headScript()->appendFile("vendor/d3.min.js");
+  $this->headScript()->appendFile('vendor/d3.min.js');
   $this->headScript()->appendFile('visual_facets.js');
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
@@ -14,7 +14,7 @@
       $toplevelinfo['field'] = $toplevelfacet['field'];
       $toplevelinfo['size'] = $toplevelfacet['count'];
       $pivot = $toplevelfacet['pivot'] ?? [];
-      foreach($pivot as $secondlevelfacet) {
+      foreach ($pivot as $secondlevelfacet) {
         $secondlevelinfo = [];
         $secondlevelinfo['name'] = $secondlevelfacet['value'];
         $secondlevelinfo['size'] = $secondlevelfacet['count'];
@@ -34,26 +34,23 @@
 <?php if (isset($visualFacetSet)): ?>
   <?php
     $pivotData = json_encode($visualFacetSet);
+    $translations = $this->jsTranslations()->getJSONFromArray(
+        [
+          'More Topics' => 'More Topics',
+          'visual_facet_parent' => 'visual_facet_parent',
+          'items' => 'items',
+          'more_topics_unescaped' => 'more_topics',
+          'on_topic_unescaped' => 'on_topic',
+        ]
+    );
 
-    $translations_escaped = ['More Topics', 'visual_facet_parent', 'items'];
-    $translations = ['more_topics', 'on_topic'];
-
-    $script = "VuFind.addTranslations({\n"
-      . implode(",\n", array_map(function ($translation) {
-          return "'$translation': '" . $this->transEsc($translation) . "'";
-        }, $translations_escaped))
-      . ",\n"
-      . implode(",\n", array_map(function ($translation) {
-          return "'$translation': '" . $this->translate($translation) . "'";
-        }, $translations))
-      . "});\n";
-
-    $script .= <<<JS
-  var pivotdata = $pivotData;
-  jQuery(document).ready(function(data) {
-      showVisualFacets(pivotdata);
-});
-JS;
-?>
+    $script = <<<JS
+        VuFind.addTranslations($translations);
+        var pivotdata = $pivotData;
+        jQuery(document).ready(function(data) {
+          showVisualFacets(pivotdata);
+        });
+        JS;
+  ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
 <?php endif; ?>

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Content Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -27,9 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller;
 
 use Laminas\View\Model\ViewModel;
+
+use function is_callable;
 
 /**
  * Controller for mostly static pages that doesn't fall under any particular
@@ -62,7 +66,7 @@ class ContentController extends AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $pathPrefix = "templates/content/";
+        $pathPrefix = 'templates/content/';
         $pageLocator = $this->serviceLocator
             ->get(\VuFind\Content\PageLocator::class);
         $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
@@ -72,21 +76,6 @@ class ContentController extends AbstractBase
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
             : $this->notFoundAction();
-    }
-
-    /**
-     * Action called if matched action does not exist
-     *
-     * @return ViewModel
-     */
-    public function notFoundAction(): ViewModel
-    {
-        $response   = $this->response;
-
-        if ($response instanceof \Laminas\Http\Response) {
-            return $this->createHttpNotFoundModel($response);
-        }
-        return $this->createConsoleNotFoundModel($response);
     }
 
     /**

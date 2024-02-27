@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mailer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Mailer;
 
 use Laminas\Mail\Address;
@@ -32,6 +34,8 @@ use Laminas\Mail\AddressList;
 use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
 use VuFindTest\Container\MockContainer;
+
+use function count;
 
 /**
  * Mailer Test Class
@@ -44,6 +48,8 @@ use VuFindTest\Container\MockContainer;
  */
 class MailerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test that the factory configures the object correctly.
      *
@@ -51,20 +57,17 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testFactoryConfiguration()
     {
-        $config = new \Laminas\Config\Config(
-            [
-                'Mail' => [
-                    'host' => 'vufindtest.localhost',
-                    'port' => 123,
-                    'connection_time_limit' => 600,
-                    'name' => 'foo',
-                    'username' => 'vufinduser',
-                    'password' => 'vufindpass',
-                ]
-            ]
-        );
-        $cm = new MockContainer($this);
-        $cm->set('config', $config);
+        $config = [
+            'Mail' => [
+                'host' => 'vufindtest.localhost',
+                'port' => 123,
+                'connection_time_limit' => 600,
+                'name' => 'foo',
+                'username' => 'vufinduser',
+                'password' => 'vufindpass',
+            ],
+        ];
+        $cm = $this->getMockConfigPluginManager(compact('config'));
         $sm = new MockContainer($this);
         $sm->set(\VuFind\Config\PluginManager::class, $cm);
         $factory = new MailerFactory();
@@ -242,6 +245,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_RECIPIENT);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -257,11 +261,17 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Reply-To Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_REPLY_TO);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
-            'good@good.com', 'from@example.com', 'subject', 'body', null, 'bad@bad'
+            'good@good.com',
+            'from@example.com',
+            'subject',
+            'body',
+            null,
+            'bad@bad'
         );
     }
 
@@ -274,6 +284,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_RECIPIENT);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -289,6 +300,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Too Many Email Recipients');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_TOO_MANY_RECIPIENTS);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -304,6 +316,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_SENDER);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -319,6 +332,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_SENDER);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -342,6 +356,29 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test unknown exception.
+     *
+     * @return void
+     */
+    public function testUnknownException()
+    {
+        $mailer = $this->createMock(Mailer::class);
+        $mailer->expects($this->once())->method('send')->will(
+            $this->throwException(
+                new \VuFind\Exception\Mail(
+                    'Technical message',
+                    \VuFind\Exception\Mail::ERROR_UNKNOWN
+                )
+            )
+        );
+        try {
+            $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+        } catch (\VuFind\Exception\Mail $e) {
+            $this->assertEquals('email_failure', $e->getDisplayMessage());
+        }
+    }
+
+    /**
      * Test sendLink
      *
      * @return void
@@ -354,8 +391,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+            ->addMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -375,7 +412,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $mailer = new Mailer($transport);
         $mailer->setMaxRecipients(2);
         $mailer->sendLink(
-            'to@example.com;to2@example.com', 'from@example.com', 'message', 'http://foo', $view, null,
+            'to@example.com;to2@example.com',
+            'from@example.com',
+            'message',
+            'http://foo',
+            $view,
+            null,
             'cc@example.com'
         );
     }
@@ -396,8 +438,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+            ->addMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -452,12 +494,5 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $mailer = new Mailer($transport);
         $body = $mailer->buildMultipartBody($text, $html);
         $mailer->send('to@example.com', $address, 'subject', $body);
-    }
-}
-
-class MockEmailRenderer extends \Laminas\View\Renderer\PhpRenderer
-{
-    public function partial($template, $driver)
-    {
     }
 }

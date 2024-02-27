@@ -3,7 +3,7 @@
 /**
  * Unit tests for Hierarchical Facet Helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014-2020.
  *
@@ -23,11 +23,14 @@
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
+use VuFind\I18n\Sorter;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**
@@ -36,6 +39,7 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  * @todo     Test buildFacetArray using url helper
@@ -53,50 +57,50 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'displayText' => 'Book',
             'count' => 1000,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '0/AV/',
             'displayText' => 'Audiovisual',
             'count' => 600,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '0/Audio/',
             'displayText' => 'Sound',
             'count' => 400,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Book/BookPart/',
             'displayText' => 'Book Part',
             'count' => 300,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Book/Section/',
             'displayText' => 'Book Section',
             'count' => 200,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Audio/Spoken/',
             'displayText' => 'Spoken Text',
             'count' => 100,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Audio/Music/',
             'displayText' => 'Music',
             'count' => 50,
             'operator' => 'OR',
-            'isApplied' => false
-        ]
+            'isApplied' => false,
+        ],
     ];
 
     /**
@@ -110,21 +114,21 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'displayText' => 'Book',
             'count' => 1000,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => 'AV',
             'displayText' => 'Audiovisual',
             'count' => 600,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => 'Audio',
             'displayText' => 'Sound',
             'count' => 400,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
     ];
 
@@ -143,6 +147,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->helper = new HierarchicalFacetHelper();
+        $this->helper->setSorter(new Sorter(new \Collator('en')));
     }
 
     /**
@@ -259,14 +264,16 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertFalse($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
+            $facetList[0]['children'][0]['value'],
+            '1/Book/BookPart/'
         );
         $this->assertEquals(1, $facetList[0]['children'][0]['level']);
         $this->assertFalse($facetList[0]['children'][0]['isApplied']);
         $this->assertEquals('0/AV/', $facetList[1]['value']);
         $this->assertEquals('0/Audio/', $facetList[2]['value']);
         $this->assertEquals(
-            $facetList[2]['children'][0]['value'], '1/Audio/Spoken/'
+            $facetList[2]['children'][0]['value'],
+            '1/Audio/Spoken/'
         );
         $this->assertEquals('1/Audio/Music/', $facetList[2]['children'][1]['value']);
 
@@ -279,7 +286,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertTrue($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
+            $facetList[0]['children'][0]['value'],
+            '1/Book/BookPart/'
         );
         $this->assertEquals(true, $facetList[0]['children'][0]['isApplied']);
     }
@@ -320,7 +328,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     {
         $facetList = $this->helper->flattenFacetHierarchy(
             $this->helper->buildFacetArray(
-                'format', $this->facetList
+                'format',
+                $this->facetList
             )
         );
         $this->assertEquals('0/Book/', $facetList[0]['value']);
@@ -433,6 +442,143 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test hierarchical exclude filters
+     *
+     * @return void
+     */
+    public function testHierarchicalExcludeFilters(): void
+    {
+        $facet = 'format';
+        $facetList = $this->helper->buildFacetArray(
+            $facet,
+            $this->facetList
+        );
+        $exclude = [
+            '0/Book/',
+            '1/Audio/Spoken/',
+        ];
+        // Always test that the proper values are found in the test data
+        $testDataIsok = array_column($this->facetList, 'value');
+        $this->assertContains('0/Book/', $testDataIsok);
+        $this->assertContains('1/Audio/Spoken/', $testDataIsok);
+        $expected = [
+            [
+                'value' => '0/AV/',
+                'displayText' => 'Audiovisual',
+                'count' => 600,
+                'operator' => 'OR',
+                'isApplied' => false,
+                'level' => '0',
+                'parent' => '',
+                'hasAppliedChildren' => false,
+                'href' => '',
+                'exclude' => '',
+                'children' => [],
+            ],
+            [
+                'value' => '0/Audio/',
+                'displayText' => 'Sound',
+                'count' => 400,
+                'operator' => 'OR',
+                'isApplied' => false,
+                'level' => '0',
+                'parent' => '',
+                'hasAppliedChildren' => false,
+                'href' => '',
+                'exclude' => '',
+                'children' => [
+                    [
+                        'value' => '1/Audio/Music/',
+                        'displayText' => 'Music',
+                        'count' => 50,
+                        'operator' => 'OR',
+                        'isApplied' => false,
+                        'level' => '1',
+                        'parent' => '0/Audio/',
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                ],
+            ],
+        ];
+        $options = $this->getMockOptions();
+        $options->expects($this->any())->method('getHierarchicalExcludeFilters')
+            ->will($this->returnValue($exclude));
+        $options->expects($this->any())->method('getHierarchicalFacetFilters')
+            ->will($this->returnValue([]));
+        $filtered = $this->helper->filterFacets($facet, $facetList, $options);
+        $this->assertEquals($expected, $filtered);
+    }
+
+    /**
+     * Test hierarchical facet filters
+     *
+     * @return void
+     */
+    public function testHierarchicalFacetFilters(): void
+    {
+        $facet = 'format';
+        $facetList = $this->helper->buildFacetArray(
+            $facet,
+            $this->facetList
+        );
+        $filters = [
+            '0/Audio/',
+        ];
+        $expected = [
+            [
+                'value' => '0/Audio/',
+                'displayText' => 'Sound',
+                'count' => 400,
+                'operator' => 'OR',
+                'isApplied' => false,
+                'level' => '0',
+                'parent' => null,
+                'hasAppliedChildren' => false,
+                'href' => '',
+                'exclude' => '',
+                'children' => [
+                    [
+                        'value' => '1/Audio/Spoken/',
+                        'displayText' => 'Spoken Text',
+                        'count' => 100,
+                        'operator' => 'OR',
+                        'isApplied' => false,
+                        'level' => '1',
+                        'parent' => '0/Audio/',
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                    [
+                        'value' => '1/Audio/Music/',
+                        'displayText' => 'Music',
+                        'count' => 50,
+                        'operator' => 'OR',
+                        'isApplied' => false,
+                        'level' => '1',
+                        'parent' => '0/Audio/',
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                ],
+            ],
+        ];
+        $options = $this->getMockOptions();
+        $options->expects($this->any())->method('getHierarchicalExcludeFilters')
+            ->will($this->returnValue([]));
+        $options->expects($this->any())->method('getHierarchicalFacetFilters')
+            ->will($this->returnValue($filters));
+        $filtered = $this->helper->filterFacets($facet, $facetList, $options);
+        $this->assertEquals($expected, $filtered);
+    }
+
+    /**
      * Set 'isApplied' to true in facet item with the given value
      *
      * @param string $facetValue Value to search for
@@ -448,5 +594,16 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             }
         }
         return $facetList;
+    }
+
+    /**
+     * Create mock options class
+     *
+     * @return \PHPUnit\Framework\MockObject\MockObject
+     */
+    protected function getMockOptions(): \PHPUnit\Framework\MockObject\MockObject
+    {
+        return $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+            ->disableOriginalConstructor()->getMock();
     }
 }

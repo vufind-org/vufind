@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EDS Autocomplete Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -27,7 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
+
 namespace VuFind\Autocomplete;
+
+use VuFindSearch\Service;
+
+use function is_array;
 
 /**
  * EDS Autocomplete Module
@@ -58,20 +64,20 @@ class Eds implements AutocompleteInterface
     protected $searchClassId = 'EDS';
 
     /**
-     * Results plugin manager
+     * Search service
      *
-     * @var \VuFindSearch\Backend\EDS\Backend
+     * @var Service
      */
-    protected $backend;
+    protected $searchService;
 
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Backend\EDS\Backend $backend Results plugin manager
+     * @param Service $ss Search service
      */
-    public function __construct(\VuFindSearch\Backend\EDS\Backend $backend)
+    public function __construct(Service $ss)
     {
-        $this->backend = $backend;
+        $this->searchService = $ss;
     }
 
     /**
@@ -87,7 +93,12 @@ class Eds implements AutocompleteInterface
         $results = null;
         try {
             // Perform the autocomplete search:
-            $results = $this->backend->autocomplete($query, $this->domain);
+            $command = new \VuFindSearch\Backend\EDS\Command\AutocompleteCommand(
+                $this->searchClassId,
+                $query,
+                $this->domain
+            );
+            $results = $this->searchService->invoke($command)->getResult();
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }

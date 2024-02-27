@@ -1,96 +1,54 @@
 <?php
   $user = $this->auth()->isLoggedIn();
-  $patron = $user ? $this->auth()->getILSPatron() : false;
-  $capabilityParams = $patron ? ['patron' => $patron] : [];
-  $ilsOnline = ('ils-none' !== $this->ils()->getOfflineMode());
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
-<h3><?=$this->transEsc('Your Account')?></h3>
-<div class="myresearch-menu account-menu">
-  <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Favorites')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyTransactions', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-checkedout')?>" class="flex checkedout<?=$this->active == 'checkedout' ? ' active' : ''?>">
-      <span class="flex-col"><i class="fa fa-fw fa-book" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Checked Out Items')?></span>
-      <span class="checkedout-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-    </a>
-  <?php endif; ?>
-  <?php if ($ilsOnline && $this->ils()->checkFunction('getMyTransactionHistory', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-historicloans')?>"<?=$this->active == 'historicloans' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-history" aria-hidden="true"></i> <?=$this->transEsc('Loan History')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyHolds', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-holds')?>" class="flex<?=$this->active == 'holds' ? ' active' : ''?>">
-      <span class="flex-col"><i class="fa fa-fw fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Holds and Recalls')?></span>
-      <span class="holds-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-    </a>
-  <?php endif; ?>
-  <?php if ($ilsOnline && $this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="flex<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
-      <span class="flex-col"><i class="fa fa-fw fa-archive" aria-hidden="true"></i> <?=$this->transEsc('Storage Retrieval Requests')?></span>
-      <span class="storageretrievalrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-    </a>
-  <?php endif; ?>
-  <?php if ($ilsOnline && $this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-illrequests')?>" class="flex<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
-      <span class="flex-col"><i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?></span>
-      <span class="illrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-    </a>
-  <?php endif; ?>
-  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-fines')?>" class="flex<?=$this->active == 'fines' ? ' active' : ''?>">
-      <?php
-        // Use a "fines" icon based on the configured default currency symbol:
-        $currency = strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
-      ?>
-      <span class="flex-col"><i class="fa fa-fw fa-<?=$this->escapeHtmlAttr($currency)?>" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
-      <span class="fines-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-    </a>
-  <?php endif; ?>
-  <a href="<?=$this->url('myresearch-profile')?>"<?=$this->active == 'profile' ? ' class="active"' : ''?>>
-    <i class="fa fa-fw fa-user" aria-hidden="true"></i> <?=$this->transEsc('Profile')?>
-  </a>
-  <?php if ($ilsOnline && $user && $user->libraryCardsEnabled()): ?>
-    <a href="<?=$this->url('librarycards-home')?>"<?=$this->active == 'librarycards' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-barcode" aria-hidden="true"></i> <?=$this->transEsc('Library Cards')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($this->overdrive()->showMyContentLink()):?>
-     <a href="<?=$this->url('overdrive-mycontent')?>"<?=$this->active == 'dgcontent' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-download" aria-hidden="true"></i> <?=$this->transEsc('Overdrive Content')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
-    <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?>
-    </a>
-  <?php endif; ?>
-  <?php if ($user): ?>
-    <a href="<?=$this->url('myresearch-logout')?>">
-      <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
-    </a>
-  <?php endif; ?>
-</div>
-
-<?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
-  <h3><?=$this->transEsc('Your Lists')?></h3>
-  <div class="myresearch-menu">
-    <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
-      <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Your Favorites')?>
-    </a>
-    <?php $lists = $user->getLists() ?>
-    <?php foreach ($lists as $list): ?>
-      <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
-        <?=$this->escapeHtml($list['title'])?>
-        <span class="badge"><?=$list->cnt ?></span>
-      </a>
+<h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
+<nav class="myresearch-menu" aria-labelledby="acc-menu-acc-header">
+  <ul class="account-menu">
+    <?php foreach ($this->items as $item): ?>
+      <?=$this->render('myresearch/menu-item.phtml', ['active' => $this->active, ...$item])?>
     <?php endforeach; ?>
-    <a href="<?=$this->url('editList', ['id' => 'NEW'])?>">
-      <i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?>
-    </a>
-  </div>
+  </ul>
+</nav>
+<?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
+  <h3 id="acc-menu-lists-header"><?=$this->transEsc('Your Lists')?></h3>
+  <nav class="myresearch-menu" aria-labelledby="acc-menu-lists-header">
+    <ul>
+      <li>
+        <a href="<?=$this->url('myresearch-favorites')?>" class="icon-link <?=$this->active == 'favorites' ? 'active' : ''?>">
+          <?=$this->icon('user-favorites', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Your Favorites')?></span>
+        </a>
+      </li>
+      <?php
+        // Use a variable so that we can output this nicely without whitespace that would get underlined:
+        $publicInd = $this->icon(
+            'user-public-list-indicator',
+            [
+              'class' => 'user-list__public-icon',
+              'title' => $this->transEscAttr('public_list_indicator'),
+            ]
+        );
+        $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
+      ?>
+  
+      <?php $lists = $user->getLists() ?>
+      <?php foreach ($lists as $list): ?>
+      <li>
+        <a class="user-list-link icon-link <?=$this->active == 'list' . $list['id'] ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list['id']])?>">
+          <?=$this->icon('user-list', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->escapeHtml($list['title'])?></span>
+          <?=$list['public'] ? $publicInd : ''?>
+          <span class="badge"><?=$list->cnt ?></span>
+        </a>
+      </li>
+      <?php endforeach; ?>
+      <li>
+        <a href="<?=$this->url('editList', ['id' => 'NEW'])?>" class="icon-link <?=$this->active == 'editlist/NEW' ? ' active' : ''?>">
+          <?=$this->icon('ui-add', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Create a List') ?></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 <?php endif ?>

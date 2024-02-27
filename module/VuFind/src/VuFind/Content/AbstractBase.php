@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base for content loader plug-ins.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 use VuFindCode\ISBN;
+
+use function is_object;
 
 /**
  * Abstract base for content loader plug-ins.
@@ -38,7 +42,8 @@ use VuFindCode\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+abstract class AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

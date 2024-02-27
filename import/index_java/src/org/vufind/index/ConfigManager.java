@@ -36,7 +36,8 @@ public class ConfigManager
 {
     // Initialize logging category
     static Logger logger = Logger.getLogger(ConfigManager.class.getName());
-    private static ConcurrentHashMap<String, Ini> configCache = new ConcurrentHashMap<String, Ini>();
+    private static Map<String, Ini> configCache = new ConcurrentHashMap<>();
+    private static Map<String, ConcurrentHashMap<String, String>> sanitizedConfigCache = new ConcurrentHashMap<>();
     private Properties vuFindConfigs = null;
     private static ThreadLocal<ConfigManager> managerCache =
         new ThreadLocal<ConfigManager>()
@@ -109,20 +110,27 @@ public class ConfigManager
      */
     private String sanitizeConfigSetting(String str)
     {
-        // Drop comments if necessary:
-        int pos = str.indexOf(';');
-        if (pos >= 0) {
-            str = str.substring(0, pos).trim();
+        // Work on a copy of the string.
+        // We do not want the sanitizer to update the cache, because it might
+        // cause problems when executing them multiple times, like
+        // e.g. in multithreaded scenarios.
+        String retVal = new String(str);
+
+        // Drop comments if necessary; if the semi-colon is inside quotes, leave
+        // it alone. TODO: handle complex cases with comment AND quoted semi-colon
+        int pos = retVal.indexOf(';');
+        if (pos >= 0 && !retVal.matches("\"[^\"]*;[^\"]*\"")) {
+            retVal = retVal.substring(0, pos).trim();
         }
 
         // Strip wrapping quotes if necessary (the ini reader won't do this for us):
-        if (str.startsWith("\"")) {
-            str = str.substring(1, str.length());
+        if (retVal.startsWith("\"")) {
+            retVal = retVal.substring(1, retVal.length());
         }
-        if (str.endsWith("\"")) {
-            str = str.substring(0, str.length() - 1);
+        if (retVal.endsWith("\"")) {
+            retVal = retVal.substring(0, retVal.length() - 1);
         }
-        return str;
+        return retVal;
     }
 
     /**
@@ -161,11 +169,37 @@ public class ConfigManager
     }
 
     /**
-     * Get a section from a VuFind configuration file.
+     * Get a section from a VuFind configuration file and sanitize all the values.
      * @param filename configuration file name
      * @param section section name within the file
      */
     public Map<String, String> getConfigSection(String filename, String section)
+    {
+        String sanitizedCacheKey = filename + "#" + section;
+        return sanitizedConfigCache.computeIfAbsent(sanitizedCacheKey, retVal -> {
+            Map<String, String> rawSection = getRawConfigSection(filename, section);
+            if (rawSection == null) {
+                return new ConcurrentHashMap<>();
+            }
+
+            // Sanitize a copy of the section.
+            // We do not want the sanitizer to update the cache, because it might
+            // cause problems when executing them multiple times, like
+            // e.g. in multithreaded scenarios.
+            ConcurrentHashMap<String, String> sanitizedSection = new ConcurrentHashMap<>();
+            for (Map.Entry<String, String> entry : rawSection.entrySet()) {
+                sanitizedSection.put(entry.getKey(), sanitizeConfigSetting(entry.getValue()));
+            }
+            return sanitizedSection;
+        });
+    }
+
+    /**
+     * Get a section from a VuFind configuration file.
+     * @param filename configuration file name
+     * @param section section name within the file
+     */
+    public Map<String, String> getRawConfigSection(String filename, String section)
     {
         // Grab the ini file.
         Ini ini = loadConfigFile(filename);
@@ -191,7 +225,30 @@ public class ConfigManager
                 retVal.put(key, overrideSection.get(key));
             }
         }
+
         return retVal;
+    }
+
+    /**
+     * @deprecated Please use getConfigSection instead, or getRawConfigSection
+     *             if you would like to get the non-sanitized values.
+     */
+    @Deprecated
+    public Map<String, String> getSanitizedConfigSection(String filename, String section)
+    {
+        return getConfigSection(filename, section);
+    }
+
+    /**
+     * Get a setting from a VuFind configuration file and sanitize the value.
+     * @param filename configuration file name
+     * @param section section name within the file
+     * @param setting setting name within the section
+     */
+    public String getConfigSetting(String filename, String section, String setting)
+    {
+        String retVal = getRawConfigSetting(filename, section, setting);
+        return retVal == null ? retVal : sanitizeConfigSetting(retVal);
     }
 
     /**
@@ -200,46 +257,20 @@ public class ConfigManager
      * @param section section name within the file
      * @param setting setting name within the section
      */
-    public String getConfigSetting(String filename, String section, String setting)
+    public String getRawConfigSetting(String filename, String section, String setting)
     {
-        String retVal = null;
+        Map<String, String> sectionMap = getRawConfigSection(filename, section);
+        return sectionMap == null ? null : sectionMap.get(setting);
+    }
 
-        // Grab the ini file.
-        Ini ini = loadConfigFile(filename);
-
-        // Check to see if we need to worry about an override file:
-        String override = ini.get("Extra_Config", "local_overrides");
-        if (override != null) {
-            Ini overrideIni = loadConfigFile(override);
-            retVal = overrideIni.get(section, setting);
-            if (retVal != null) {
-                return sanitizeConfigSetting(retVal);
-            }
-        }
-
-        // Try to find the requested setting:
-        retVal = ini.get(section, setting);
-
-        //  No setting?  Check for a parent configuration:
-        while (retVal == null) {
-            String parent = ini.get("Parent_Config", "path");
-            if (parent !=  null) {
-                try {
-                    ini.load(new FileReader(new File(parent)));
-                } catch (Throwable e) {
-                    dieWithError(
-                        "Unable to access " + parent
-                        + " (" + e.getMessage() + ")"
-                    );
-                }
-                retVal = ini.get(section, setting);
-            } else {
-                break;
-            }
-        }
-
-        // Return the processed setting:
-        return retVal == null ? null : sanitizeConfigSetting(retVal);
+    /**
+     * @deprecated Please use getConfigSetting instead, or getRawConfigSetting
+     *             if you would like to get the non-sanitized value.
+     */
+    @Deprecated
+    public String getSanitizedConfigSetting(String filename, String section, String setting)
+    {
+        return getConfigSetting(filename, section, setting);
     }
 
     /**

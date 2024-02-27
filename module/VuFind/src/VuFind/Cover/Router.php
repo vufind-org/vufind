@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cover image router
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use VuFind\Cover\Loader as CoverLoader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
+use function get_class;
+use function is_array;
 
 /**
  * Cover image router
@@ -83,11 +88,17 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      *
      * @return string|false|null
      */
-    public function getUrl(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true, $testLoadImage = false
+    public function getUrl(
+        RecordDriver $driver,
+        $size = 'small',
+        $resolveDynamic = true,
+        $testLoadImage = false
     ) {
         $metadata = $this->getMetadata(
-            $driver, $size, $resolveDynamic, $testLoadImage
+            $driver,
+            $size,
+            $resolveDynamic,
+            $testLoadImage
         );
         // getMetadata could return null or false, that is the reason we are
         // respecting the returned value - in case it is not empty array to be on
@@ -111,8 +122,12 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      *
      * @return false|array|null
      */
-    public function getMetadata(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true, $testLoadImage = false, $ajax = false
+    public function getMetadata(
+        RecordDriver $driver,
+        $size = 'small',
+        $resolveDynamic = true,
+        $testLoadImage = false,
+        $ajax = false
     ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
@@ -148,12 +163,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
             try {
                 // Is the current provider appropriate for the available data?
-                if ($handler['handler']->supports($ids)
+                if (
+                    $handler['handler']->supports($ids)
                     && $handler['handler']->useDirectUrls()
                 ) {
                     $nextMetadata = $handler['handler']
                         ->getMetadata($handler['key'], $size, $ids);
-                    if ($nextMetadata !== false) {
+                    if (!empty($nextMetadata)) {
                         $nextMetadata['backlink_locations'] = $backlinkLocations;
                         $metadata = $nextMetadata;
                         break;
@@ -161,7 +177,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 }
             } catch (\Exception $e) {
                 $this->debug(
-                    get_class($e) . ' during processing of '
+                    $e::class . ' during processing of '
                     . get_class($handler['handler']) . ': ' . $e->getMessage()
                 );
             }
@@ -169,16 +185,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
 
         if (isset($metadata)) {
             return $metadata;
-        } elseif (isset($dynamicUrl)) {
-            if ($testLoadImage) {
-                $this->coverLoader->loadImage($settings);
-                if ($this->coverLoader->hasLoadedUnavailable()) {
-                    return false;
-                }
-            }
-            return ['url' => $dynamicUrl];
         }
-
-        return false;
+        if ($testLoadImage) {
+            $this->coverLoader->loadImage($settings);
+            if ($this->coverLoader->hasLoadedUnavailable()) {
+                return false;
+            }
+        }
+        return ['url' => $dynamicUrl];
     }
 }

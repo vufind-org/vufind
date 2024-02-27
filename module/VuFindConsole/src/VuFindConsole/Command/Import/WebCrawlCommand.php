@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: web crawler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Import;
 
 use Laminas\Config\Config;
@@ -83,7 +85,10 @@ class WebCrawlCommand extends Command
      * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Importer $importer, Writer $solr, Config $config,
+    public function __construct(
+        Importer $importer,
+        Writer $solr,
+        Config $config,
         $name = null
     ) {
         $this->importer = $importer;
@@ -154,8 +159,12 @@ class WebCrawlCommand extends Command
      *
      * @return bool           True on success, false on error.
      */
-    protected function harvestSitemap(OutputInterface $output, $url,
-        $verbose = false, $index = 'SolrWeb', $testMode = false
+    protected function harvestSitemap(
+        OutputInterface $output,
+        $url,
+        $verbose = false,
+        $index = 'SolrWeb',
+        $testMode = false
     ) {
         if ($verbose) {
             $output->writeln("Harvesting $url...");
@@ -171,7 +180,11 @@ class WebCrawlCommand extends Command
             foreach ($results as $current) {
                 if (isset($current->loc)) {
                     $success = $this->harvestSitemap(
-                        $output, (string)$current->loc, $verbose, $index, $testMode
+                        $output,
+                        (string)$current->loc,
+                        $verbose,
+                        $index,
+                        $testMode
                     );
                     if (!$success) {
                         $retVal = false;
@@ -182,14 +195,17 @@ class WebCrawlCommand extends Command
             if (isset($xml->url)) {
                 try {
                     $result = $this->importer->save(
-                        $file, 'sitemap.properties', $index, $testMode
+                        $file,
+                        'sitemap.properties',
+                        $index,
+                        $testMode
                     );
                     if ($testMode) {
                         $output->writeln($result);
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln(get_class($e) . ': ' . $e->getMessage());
+                        $output->writeln($e::class . ': ' . $e->getMessage());
                     }
                     $retVal = false;
                 }
@@ -214,7 +230,7 @@ class WebCrawlCommand extends Command
         $index = $input->getOption('index');
 
         // Get the time we started indexing -- we'll delete records older than this
-        // date after everything is finished.  Note that we subtract a few seconds
+        // date after everything is finished. Note that we subtract a few seconds
         // for safety.
         $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
 
@@ -226,11 +242,15 @@ class WebCrawlCommand extends Command
         $error = false;
         foreach ($this->config->Sitemaps->url as $current) {
             $error = $error || !$this->harvestSitemap(
-                $output, $current, $verbose, $index, $testMode
+                $output,
+                $current,
+                $verbose,
+                $index,
+                $testMode
             );
         }
         if ($error) {
-            $output->writeln("Error encountered during harvest.");
+            $output->writeln('Error encountered during harvest.');
         }
 
         // Skip Solr operations if we're in test mode.

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for user_resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+
+use function is_array;
 
 /**
  * Table Definition for user_resource
@@ -52,8 +56,12 @@ class UserResource extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        ?RowGateway $rowObj = null, $table = 'user_resource'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'user_resource'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -70,20 +78,25 @@ class UserResource extends Gateway
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getSavedData($resourceId, $source = DEFAULT_SEARCH_BACKEND,
-        $listId = null, $userId = null
+    public function getSavedData(
+        $resourceId,
+        $source = DEFAULT_SEARCH_BACKEND,
+        $listId = null,
+        $userId = null
     ) {
         $callback = function ($select) use ($resourceId, $source, $listId, $userId) {
             $select->columns(
                 [
                     new Expression(
-                        'DISTINCT(?)', ['user_resource.id'],
+                        'DISTINCT(?)',
+                        ['user_resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR
+                    ), Select::SQL_STAR,
                 ]
             );
             $select->join(
-                ['r' => 'resource'], 'r.id = user_resource.resource_id',
+                ['r' => 'resource'],
+                'r.id = user_resource.resource_id',
                 []
             );
             $select->join(
@@ -114,12 +127,15 @@ class UserResource extends Gateway
      *
      * @return \VuFind\Db\Row\UserResource
      */
-    public function createOrUpdateLink($resource_id, $user_id, $list_id,
+    public function createOrUpdateLink(
+        $resource_id,
+        $user_id,
+        $list_id,
         $notes = ''
     ) {
         $params = [
             'resource_id' => $resource_id, 'list_id' => $list_id,
-            'user_id' => $user_id
+            'user_id' => $user_id,
         ];
         $result = $this->select($params)->current();
 
@@ -138,7 +154,7 @@ class UserResource extends Gateway
     }
 
     /**
-     * Unlink rows for the specified resource.  This will also automatically remove
+     * Unlink rows for the specified resource. This will also automatically remove
      * any tags associated with the relationship.
      *
      * @param string|array $resource_id ID (or array of IDs) of resource(s) to
@@ -193,18 +209,21 @@ class UserResource extends Gateway
         $select->columns(
             [
                 'users' => new Expression(
-                    'COUNT(DISTINCT(?))', ['user_id'],
+                    'COUNT(DISTINCT(?))',
+                    ['user_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
                 'lists' => new Expression(
-                    'COUNT(DISTINCT(?))', ['list_id'],
+                    'COUNT(DISTINCT(?))',
+                    ['list_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
                 'resources' => new Expression(
-                    'COUNT(DISTINCT(?))', ['resource_id'],
+                    'COUNT(DISTINCT(?))',
+                    ['resource_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
-                'total' => new Expression('COUNT(*)')
+                'total' => new Expression('COUNT(*)'),
             ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -224,20 +243,30 @@ class UserResource extends Gateway
             $select->columns(
                 [
                     'resource_id' => new Expression(
-                        'MIN(?)', ['resource_id'], [Expression::TYPE_IDENTIFIER]
+                        'MIN(?)',
+                        ['resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ),
                     'list_id' => new Expression(
-                        'MIN(?)', ['list_id'], [Expression::TYPE_IDENTIFIER]
+                        'MIN(?)',
+                        ['list_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ),
                     'user_id' => new Expression(
-                        'MIN(?)', ['user_id'], [Expression::TYPE_IDENTIFIER]
+                        'MIN(?)',
+                        ['user_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ),
                     'cnt' => new Expression(
-                        'COUNT(?)', ['resource_id'], [Expression::TYPE_IDENTIFIER]
+                        'COUNT(?)',
+                        ['resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ),
                     'id' => new Expression(
-                        'MIN(?)', ['id'], [Expression::TYPE_IDENTIFIER]
-                    )
+                        'MIN(?)',
+                        ['id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
                 ]
             );
             $select->group(['resource_id', 'list_id', 'user_id']);

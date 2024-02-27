@@ -5,7 +5,7 @@
  * functionality depends upon the LiveDetectionTrait for identification of a live
  * test environment.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -28,7 +28,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
+
+use function count;
 
 /**
  * Mix-in for accessing a real database during testing.
@@ -41,6 +44,8 @@ namespace VuFindTest\Feature;
  */
 trait LiveDatabaseTrait
 {
+    use PathResolverTrait;
+
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
      * dependencies).
@@ -69,14 +74,17 @@ trait LiveDatabaseTrait
                 . '/module/VuFind/config/module.config.php';
             $container = new \VuFindTest\Container\MockContainer($this);
             $configManager = new \VuFind\Config\PluginManager(
-                $container, $config['vufind']['config_reader']
+                $container,
+                $config['vufind']['config_reader']
             );
             $container->set(\VuFind\Config\PluginManager::class, $configManager);
+            $this->addPathResolverToContainer($container);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );
             $container->set(
-                \Laminas\Db\Adapter\Adapter::class, $adapterFactory->getAdapter()
+                \Laminas\Db\Adapter\Adapter::class,
+                $adapterFactory->getAdapter()
             );
             $container->set(\VuFind\Tags::class, new \VuFind\Tags());
             $container->set('config', $config);
@@ -85,10 +93,12 @@ trait LiveDatabaseTrait
                 new \VuFind\Db\Row\PluginManager($container, [])
             );
             $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
-                $container, []
+                $container,
+                []
             );
             $container->set(
-                \VuFind\Db\Table\PluginManager::class, $this->liveTableManager
+                \VuFind\Db\Table\PluginManager::class,
+                $this->liveTableManager
             );
         }
         return $this->liveTableManager;
@@ -107,32 +117,45 @@ trait LiveDatabaseTrait
     }
 
     /**
-     * Static setup support function to fail if users already exist in the database.
-     * We want to ensure a clean state for each test!
+     * Static setup support function to fail if there is already data in the
+     * database. We want to ensure a clean state for each test!
      *
      * @return void
      */
-    protected static function failIfUsersExist(): void
+    protected static function failIfDataExists(): void
     {
-        $test = new static();   // create instance of current class
+        $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
         if (!$test->hasLiveDetectionTrait ?? false) {
             self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
+                'Test requires LiveDetectionTrait, but it is not used.'
             );
         }
         // If CI is not running, all tests were skipped, so no work is necessary:
         if (!$test->continuousIntegrationRunning()) {
             return;
         }
-        // Fail if there are already users in the database (we don't want to run this
-        // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        if (count($userTable->select()) > 0) {
-            self::fail(
-                'Test cannot run with pre-existing user data!'
-            );
-            return;
+        // Fail if there are already records in the database (we don't want to run
+        // this on a real system -- it's only meant for the continuous integration
+        // server)
+        $checks = [
+            [
+                'table' => \VuFind\Db\Table\User::class,
+                'name' => 'users',
+            ],
+            [
+                'table' => \VuFind\Db\Table\Tags::class,
+                'name' => 'tags',
+            ],
+        ];
+        foreach ($checks as $check) {
+            $table = $test->getTable($check['table']);
+            if (count($table->select()) > 0) {
+                self::fail(
+                    "Test cannot run with pre-existing {$check['name']} in database!"
+                );
+                return;
+            }
         }
     }
 
@@ -148,11 +171,11 @@ trait LiveDatabaseTrait
      */
     protected static function removeUsers($users)
     {
-        $test = new static();   // create instance of current class
+        $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
         if (!$test->hasLiveDetectionTrait ?? false) {
             self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
+                'Test requires LiveDetectionTrait, but it is not used.'
             );
         }
         // If CI is not running, all tests were skipped, so no work is necessary:

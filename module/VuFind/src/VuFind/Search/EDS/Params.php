@@ -1,10 +1,12 @@
 <?php
+
 /**
  * EDS API Params
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
+ * Copyright (C) The National Library of Finland 2022
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,12 +24,16 @@
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
+
+use function count;
 
 /**
  * EDS API Params
@@ -35,10 +41,11 @@ use VuFindSearch\ParamBag;
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Params extends \VuFind\Search\Base\Params
+class Params extends AbstractEDSParams
 {
     /**
      * Settings for the date facet only
@@ -61,7 +68,7 @@ class Params extends \VuFind\Search\Base\Params
      * @var array
      */
     protected $defaultFacetLabelSections
-        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+        = ['FacetsTop', 'Facets'];
 
     /**
      * Config sections to search for checkbox facet labels if no override
@@ -72,18 +79,27 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Is the request using this parameters objects for setup only?
-     *
-     * @var bool
-     */
-    public $isSetupOnly = false;
-
-    /**
      * Facet settings
      *
      * @var array
      */
     protected $fullFacetSettings = [];
+
+    /**
+     * A flag indicating whether limiters and expanders have been added to the
+     * checkbox facets. Used to defer adding them (and accessing the API) until
+     * necessary.
+     *
+     * @var bool
+     */
+    protected $checkboxFacetsAugmented = false;
+
+    /**
+     * Default query adapter class (override to use EDS version)
+     *
+     * @var string
+     */
+    protected $queryAdapterClass = QueryAdapter::class;
 
     /**
      * Constructor
@@ -94,8 +110,6 @@ class Params extends \VuFind\Search\Base\Params
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($options, $configLoader);
-        $this->addLimitersAsCheckboxFacets($options);
-        $this->addExpandersAsCheckboxFacets($options);
     }
 
     /**
@@ -133,7 +147,7 @@ class Params extends \VuFind\Search\Base\Params
         $options = $this->getOptions();
 
         // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
+        // this null in order to achieve the desired effect with EDS:
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
@@ -143,67 +157,16 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         $view = $this->getEdsView();
-        if (isset($view)) {
-            $backendParams->set('view', $view);
-        }
+        $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
         if (isset($mode)) {
             $backendParams->set('searchMode', $mode);
         }
 
-        //process the setup only parameter
-        if (true == $this->isSetupOnly) {
-            $backendParams->set('setuponly', $this->isSetupOnly);
-        }
-        $this->createBackendFilterParameters($backendParams, $options);
+        $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
-    }
-
-    /**
-     * Set up filters based on VuFind settings.
-     *
-     * @param ParamBag $params  Parameter collection to update
-     * @param Options  $options Options from which to add extra filter parameters
-     *
-     * @return void
-     */
-    public function createBackendFilterParameters(ParamBag $params, Options $options)
-    {
-        // Which filters should be applied to our query?
-        $filterList = $this->getFilterList();
-        $hiddenFilterList = $this->getHiddenFilters();
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    // Standard case:
-                    $fq = "{$filt['field']}:{$filt['value']}";
-                    $params->add('filters', $fq);
-                }
-            }
-        }
-        if (!empty($hiddenFilterList)) {
-            foreach ($hiddenFilterList as $field => $hiddenFilters) {
-                foreach ($hiddenFilters as $value) {
-                    // Standard case:
-                    $hfq = "{$field}:{$value}";
-                    $params->add('filters', $hfq);
-                }
-            }
-        }
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        $viewArr = explode('|', $this->view);
-        return $viewArr[0];
     }
 
     /**
@@ -213,7 +176,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getEdsView()
     {
-        $viewArr = explode('|', $this->view);
+        $viewArr = explode('|', $this->view ?? '');
         return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
@@ -229,7 +192,7 @@ class Params extends \VuFind\Search\Base\Params
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
         // Save the full field name (which may include extra parameters);
-        // we'll need these to do the proper search using the Summon class:
+        // we'll need these to do the proper search using the EDS class:
         if (strstr($newField, 'PublicationDate')) {
             // Special case -- we don't need to send this to the EDS API,
             // but we do need to set a flag so VuFind knows to display the
@@ -267,9 +230,9 @@ class Params extends \VuFind\Search\Base\Params
     public function getFacetLabel($field, $value = null, $default = null)
     {
         // Also store Limiter/Search Mode IDs/Values in the config file
-        if (substr($field, 0, 6) == 'LIMIT|') {
+        if (str_starts_with($field, 'LIMIT|')) {
             $facetId = substr($field, 6);
-        } elseif (substr($field, 0, 11) == 'SEARCHMODE|') {
+        } elseif (str_starts_with($field, 'SEARCHMODE|')) {
             $facetId = substr($field, 11);
         } else {
             $facetId = $field;
@@ -297,12 +260,12 @@ class Params extends \VuFind\Search\Base\Params
     public function addLimitersAsCheckboxFacets(Options $options)
     {
         $ssLimiters = $options->getSearchScreenLimiters();
-        if (isset($ssLimiters)) {
-            foreach ($ssLimiters as $ssLimiter) {
-                $this->addCheckboxFacet(
-                    $ssLimiter['selectedvalue'], $ssLimiter['description']
-                );
-            }
+        foreach ($ssLimiters as $ssLimiter) {
+            $this->addCheckboxFacet(
+                $ssLimiter['selectedvalue'],
+                $ssLimiter['description'],
+                true
+            );
         }
     }
 
@@ -316,12 +279,12 @@ class Params extends \VuFind\Search\Base\Params
     public function addExpandersAsCheckboxFacets(Options $options)
     {
         $availableExpanders = $options->getSearchScreenExpanders();
-        if (isset($availableExpanders)) {
-            foreach ($availableExpanders as $expander) {
-                $this->addCheckboxFacet(
-                    $expander['selectedvalue'], $expander['description']
-                );
-            }
+        foreach ($availableExpanders as $expander) {
+            $this->addCheckboxFacet(
+                $expander['selectedvalue'],
+                $expander['description'],
+                true
+            );
         }
     }
 
@@ -336,7 +299,7 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView() . '|' . $this->getEdsView())
+                'selected' => ($key == $this->getView() . '|' . $this->getEdsView()),
             ];
         }
         return $list;
@@ -356,6 +319,32 @@ class Params extends \VuFind\Search\Base\Params
         $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
-        return QueryAdapter::display($this->getQuery(), $translate, $showField);
+        return $this->getQueryAdapter()->display($this->getQuery(), $translate, $showField);
+    }
+
+    /**
+     * Return checkbox facets without any processing
+     *
+     * @return array
+     */
+    protected function getRawCheckboxFacets(): array
+    {
+        $this->augmentCheckboxFacets();
+        return parent::getRawCheckboxFacets();
+    }
+
+    /**
+     * Augment checkbox facets with limiters and expanders retrieved from the API
+     * info
+     *
+     * @return void
+     */
+    protected function augmentCheckboxFacets(): void
+    {
+        if (!$this->checkboxFacetsAugmented) {
+            $this->addLimitersAsCheckboxFacets($this->getOptions());
+            $this->addExpandersAsCheckboxFacets($this->getOptions());
+            $this->checkboxFacetsAugmented = true;
+        }
     }
 }

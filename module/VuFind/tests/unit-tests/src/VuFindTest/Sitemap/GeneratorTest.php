@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Sitemap Generator Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,13 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap;
 
 use Laminas\Config\Config;
-use VuFind\Search\BackendManager;
 use VuFind\Sitemap\Generator;
 use VuFind\Sitemap\PluginManager;
-use VuFindSearch\Service as SearchService;
 use VuFindTest\Container\MockContainer;
 
 /**
@@ -79,10 +79,6 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         string $baseUrl = 'http://foo'
     ) {
         return new Generator(
-            $objects[BackendManager::class]
-                ?? $this->container->get(BackendManager::class),
-            $objects[SearchService::class]
-                ?? $this->container->get(SearchService::class),
             $baseUrl,
             new Config($config),
             $locales,

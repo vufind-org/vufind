@@ -1,8 +1,9 @@
 <?php
+
 /**
  * DisplayLanguageOption view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -55,18 +57,6 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-        try {
-            $this->translator->addTranslationFile(
-                'ExtendedIni', null, 'default', 'native'
-            );
-            $this->translator->setLocale('native');
-        } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
-            if (!extension_loaded('intl')) {
-                error_log(
-                    'Translation broken due to missing PHP intl extension.'
-                );
-            }
-        }
     }
 
     /**
@@ -78,6 +68,8 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($str)
     {
-        return $this->view->escapeHtml($this->translator->translate($str));
+        return $this->view->escapeHtml(
+            $this->translator->translate($str, 'default', 'native')
+        );
     }
 }

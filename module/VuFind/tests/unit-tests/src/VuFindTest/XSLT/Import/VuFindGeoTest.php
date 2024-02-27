@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT geographic helper tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFindGeo;
@@ -67,14 +69,26 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
      */
     public function getLogger()
     {
-        $logger = new class {
+        $logger = new class () {
             protected $messages = [];
 
+            /**
+             * Capture a log message
+             *
+             * @param string $msg Log message
+             *
+             * @return void
+             */
             public function log($msg): void
             {
                 $this->messages[] = $msg;
             }
 
+            /**
+             * Get the top message from the message stack
+             *
+             * @return string
+             */
             public function popMessage()
             {
                 return array_pop($this->messages);
@@ -139,12 +153,11 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
         ];
         $logger = $this->getLogger();
         foreach ($badInputs as $input) {
-            extract($input);
             // When one or more coordinates are missing, we expect a null return:
-            $this->assertNull(VuFindGeo::getDisplayCoordinatesFromCoverage($data));
-            $this->assertEquals($error, $logger->popMessage());
-            $this->assertNull(VuFindGeo::getAllCoordinatesFromCoverage($data));
-            $this->assertEquals($error, $logger->popMessage());
+            $this->assertNull(VuFindGeo::getDisplayCoordinatesFromCoverage($input['data']));
+            $this->assertEquals($input['error'], $logger->popMessage());
+            $this->assertNull(VuFindGeo::getAllCoordinatesFromCoverage($input['data']));
+            $this->assertEquals($input['error'], $logger->popMessage());
         }
     }
 }

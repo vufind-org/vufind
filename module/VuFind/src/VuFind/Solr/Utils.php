@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr Utility Functions
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Andrew Nagy 2009.
  *
@@ -25,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Solr;
+
+use function strlen;
 
 /**
  * Solr Utility Functions
  *
  * This class is designed to hold Solr-related support methods that may
- * be called statically.  This allows sharing of some Solr-related logic
+ * be called statically. This allows sharing of some Solr-related logic
  * between the Solr and Summon classes.
  *
  * @category VuFind
@@ -81,7 +85,8 @@ class Utils
             }
 
             // Check for month/year or month-year formats:
-            if (preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
+            if (
+                preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
                 || preg_match('/([0-9]{2})(-|\/)([0-9]{4})/', $date, $matches)
             ) {
                 $month = $matches[1];
@@ -98,7 +103,7 @@ class Utils
                 }
                 $time = @strtotime($date);
                 if ($time) {
-                    $date = @date("Y-m-d", $time);
+                    $date = @date('Y-m-d', $time);
                     if ($year) {
                         $date = str_replace('1999', $year, $date);
                     }
@@ -130,7 +135,7 @@ class Utils
             if (strlen($date) < 8) {
                 $day = '01';
                 if (preg_match('/^[0-9]{4}-([0-9]{1,2})/', $date, $matches)) {
-                    $month = str_pad($matches[1], 2, "0", STR_PAD_LEFT);
+                    $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
                 } else {
                     $month = '01';
                 }
@@ -138,8 +143,8 @@ class Utils
                 // If we have year + month + day, parse that out:
                 $ymdRegex = '/^[0-9]{4}-([0-9]{1,2})-([0-9]{1,2})/';
                 if (preg_match($ymdRegex, $date, $matches)) {
-                    $month = str_pad($matches[1], 2, "0", STR_PAD_LEFT);
-                    $day = str_pad($matches[2], 2, "0", STR_PAD_LEFT);
+                    $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+                    $day = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
                 } else {
                     $month = $day = '01';
                 }

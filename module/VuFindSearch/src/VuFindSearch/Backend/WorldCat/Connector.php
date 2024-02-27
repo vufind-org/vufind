@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class for accessing OCLC WorldCat search API
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Andrew Nagy 2008.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindSearch\Backend\WorldCat;
 
 use VuFindSearch\ParamBag;
@@ -62,11 +64,14 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param \Laminas\Http\Client $client  An HTTP client object
      * @param array                $options Additional config settings
      */
-    public function __construct($wsKey, \Laminas\Http\Client $client,
+    public function __construct(
+        $wsKey,
+        \Laminas\Http\Client $client,
         array $options = []
     ) {
         parent::__construct(
-            'http://www.worldcat.org/webservices/catalog/search/sru', $client
+            'http://www.worldcat.org/webservices/catalog/search/sru',
+            $client
         );
         $this->wskey = $wsKey;
         $this->options = $options;
@@ -78,7 +83,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param string $id Record to obtain holdings for.
      *
      * @throws \Exception
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     public function getHoldings($id)
     {
@@ -133,7 +138,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $error ? [] : [$body],
             'offset' => 0,
-            'total' => $error ? 0 : 1
+            'total' => $error ? 0 : 1,
         ];
     }
 
@@ -164,7 +169,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)($xml->numberOfRecords ?? 0)
+            'total' => (int)($xml->numberOfRecords ?? 0),
         ];
     }
 }

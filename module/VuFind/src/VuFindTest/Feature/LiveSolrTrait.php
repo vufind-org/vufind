@@ -3,7 +3,7 @@
 /**
  * Mix-in for accessing a real Solr instance during testing.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use Laminas\EventManager\SharedEventManager;
@@ -45,6 +46,8 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  */
 trait LiveSolrTrait
 {
+    use PathResolverTrait;
+
     /**
      * Container for services related to live Solr connectivity.
      *
@@ -63,9 +66,17 @@ trait LiveSolrTrait
         $config = include APPLICATION_PATH
             . '/module/VuFind/config/module.config.php';
         $configManager = new \VuFind\Config\PluginManager(
-            $container, $config['vufind']['config_reader']
+            $container,
+            $config['vufind']['config_reader']
         );
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $this->addPathResolverToContainer($container);
+        $httpFactory = new \VuFind\Service\HttpServiceFactory();
+        $container->set(
+            \VuFindHttp\HttpService::class,
+            $httpFactory($container, \VuFindHttp\HttpService::class)
+        );
         $container->set(SearchSpecsReader::class, new SearchSpecsReader());
         $container->set('SharedEventManager', new SharedEventManager());
         $container->set(

@@ -3,7 +3,7 @@
 /**
  * SOLR SimilarBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -30,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
@@ -86,13 +87,15 @@ class SimilarBuilder implements SimilarBuilderInterface
      *
      * @return void
      */
-    public function __construct(\Laminas\Config\Config $searchConfig = null,
+    public function __construct(
+        \Laminas\Config\Config $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
         if (isset($searchConfig->MoreLikeThis)) {
             $mlt = $searchConfig->MoreLikeThis;
-            if (isset($mlt->useMoreLikeThisHandler)
+            if (
+                isset($mlt->useMoreLikeThisHandler)
                 && $mlt->useMoreLikeThisHandler
             ) {
                 $this->useHandler = true;
@@ -124,7 +127,8 @@ class SimilarBuilder implements SimilarBuilderInterface
             $params->set('q', sprintf('{!mlt %s}%s', $mltParams, $id));
         } else {
             $params->set(
-                'q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
+                'q',
+                sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
             $params->set('qt', 'morelikethis');
         }

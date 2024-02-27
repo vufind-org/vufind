@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Alphabrowse channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2016, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -32,8 +34,13 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
-use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Command\AlphabeticBrowseCommand;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
+
+use function count;
+use function is_object;
 
 /**
  * Alphabrowse channel provider.
@@ -44,8 +51,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -69,13 +75,6 @@ class AlphaBrowse extends AbstractChannelProvider
      * @var \VuFindSearch\Service
      */
     protected $searchService;
-
-    /**
-     * Solr backend
-     *
-     * @var Backend
-     */
-    protected $solr;
 
     /**
      * URL helper
@@ -113,19 +112,27 @@ class AlphaBrowse extends AbstractChannelProvider
     protected $rowsBefore;
 
     /**
+     * The search backend to query
+     *
+     * @var string
+     */
+    protected $source;
+
+    /**
      * Constructor
      *
      * @param \VuFindSearch\Service $search  Search service
-     * @param Backend               $solr    Solr backend
      * @param Url                   $url     URL helper
      * @param RecordRouter          $router  Record router
      * @param array                 $options Settings (optional)
      */
-    public function __construct(\VuFindSearch\Service $search, Backend $solr,
-        Url $url, RecordRouter $router, array $options = []
+    public function __construct(
+        \VuFindSearch\Service $search,
+        Url $url,
+        RecordRouter $router,
+        array $options = []
     ) {
         $this->searchService = $search;
-        $this->solr = $solr;
         $this->url = $url;
         $this->recordRouter = $router;
         $this->setOptions($options);
@@ -145,6 +152,7 @@ class AlphaBrowse extends AbstractChannelProvider
         $this->browseIndex = $options['browseIndex'] ?? 'lcc';
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
         $this->rowsBefore = $options['rows_before'] ?? 10;
+        $this->source = $options['source'] ?? 'Solr';
     }
 
     /**
@@ -196,9 +204,11 @@ class AlphaBrowse extends AbstractChannelProvider
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
         if (empty($channels) && is_object($driver) && $channelToken !== null) {
-            $driver = $this->searchService->retrieve(
-                $driver->getSourceIdentifier(), $channelToken
-            )->first();
+            $command = new RetrieveCommand(
+                $driver->getSourceIdentifier(),
+                $channelToken
+            );
+            $driver = $this->searchService->invoke($command)->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
             }
@@ -225,15 +235,16 @@ class AlphaBrowse extends AbstractChannelProvider
                 $ids[] = $id = $item['extras']['id'][0][0];
                 $results[] = [
                     'title' => $item['extras']['title'][0][0],
-                    'source' => 'Solr',
+                    'source' => $this->source,
                     'thumbnail' => false, // TODO: better thumbnails!
-                    'id' => $id
+                    'id' => $id,
                 ];
             }
         }
         // If we have a cover router and a non-empty ID list, look up thumbnails:
         if ($this->coverRouter && !empty($ids)) {
-            $records = $this->searchService->retrieveBatch('Solr', $ids);
+            $command = new RetrieveBatchCommand($this->source, $ids);
+            $records = $this->searchService->invoke($command)->getResult();
             $thumbs = [];
             // First map record drivers to an ID => thumb array...
             foreach ($records as $record) {
@@ -260,15 +271,17 @@ class AlphaBrowse extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannelFromRecord(RecordDriver $driver,
+    protected function buildChannelFromRecord(
+        RecordDriver $driver,
         $tokenOnly = false
     ) {
         $retVal = [
             'title' => $this->translate(
-                'nearby_items', ['%%title%%' => $driver->getBreadcrumb()]
+                'nearby_items',
+                ['%%title%%' => $driver->getBreadcrumb()]
             ),
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -279,33 +292,38 @@ class AlphaBrowse extends AbstractChannelProvider
         } elseif ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
         } else {
-            // If we got this far, we can safely assume that $from[0] is set
-            $details = $this->solr->alphabeticBrowse(
-                $this->browseIndex, $from[0], 0, $this->channelSize,
+            $command = new AlphabeticBrowseCommand(
+                $this->source,
+                $this->browseIndex,
+                // If we got this far, we can safely assume that $from[0] is set
+                $from[0],
+                0,
+                $this->channelSize,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
+            $details = $this->searchService->invoke($command)->getResult();
             $retVal['contents'] = $this->summarizeBrowseDetails($details);
             $route = $this->recordRouter->getRouteDetails($driver);
             $retVal['links'][] = [
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
                 'icon' => 'fa-list',
                 'url' => $this->url->fromRoute('alphabrowse-home')
                     . '?source=' . urlencode($this->browseIndex)
-                    . '&from=' . $from[0]
+                    . '&from=' . $from[0],
             ];
         }
         return $retVal;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Development Tools Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,12 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFindDevTools\Controller;
 
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
+
+use function is_callable;
 
 /**
  * Development Tools Controller
@@ -55,15 +59,14 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function getQueryBuilder($id)
     {
+        $command = new \VuFindSearch\Command\GetQueryBuilderCommand($id);
         try {
-            $backend = $this->serviceLocator
-                ->get(\VuFind\Search\BackendManager::class)
-                ->get($id);
+            $this->serviceLocator->get(\VuFindSearch\Service::class)
+                ->invoke($command);
         } catch (\Exception $e) {
             return null;
         }
-        return is_callable([$backend, 'getQueryBuilder'])
-            ? $backend->getQueryBuilder() : null;
+        return $command->getResult();
     }
 
     /**
@@ -108,6 +111,20 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
+     * Icon action
+     *
+     * @return array
+     */
+    public function iconAction()
+    {
+        $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
+            ->getMergedConfig('icons');
+        $aliases = array_keys($config['aliases'] ?? []);
+        sort($aliases);
+        return compact('aliases');
+    }
+
+    /**
      * Language action
      *
      * @return array
@@ -119,6 +136,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         $langs = $this->serviceLocator->get(LocaleSettings::class)
             ->getEnabledLocales();
         $helper = new LanguageHelper($loader, $langs);
-        return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
+        return $helper->getAllDetails(
+            $this->params()->fromQuery('main', 'en'),
+            (bool)$this->params()->fromQuery('includeOptional', 1)
+        );
     }
 }

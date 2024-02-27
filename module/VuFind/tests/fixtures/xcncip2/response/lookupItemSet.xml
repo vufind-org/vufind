@@ -36,7 +36,7 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                         <ns1:BibliographicItemIdentifierCode ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">Legal Deposit Number</ns1:BibliographicItemIdentifierCode>
                      </ns1:BibliographicItemId>
                   </ns1:BibliographicDescription>
-                  <ns1:ItemUseRestrictionType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">In Library Use Only</ns1:ItemUseRestrictionType>
+                  <ns1:ItemUseRestrictionType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">Not For Loan</ns1:ItemUseRestrictionType>
                   <ns1:CirculationStatus ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available on shelf</ns1:CirculationStatus>
                   <ns1:HoldQueueLength>0</ns1:HoldQueueLength>
                   <ns1:ItemDescription>
@@ -70,6 +70,7 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                   <ns1:ItemIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ns1:ItemIdentifierType>
                   <ns1:ItemIdentifierValue>MZK01000062021-MZK50000062021000010</ns1:ItemIdentifierValue>
                </ns1:ItemId>
+               <ns1:DateDue>2019-12-08T23:00:00Z</ns1:DateDue>
                <ns1:ItemOptionalFields>
                   <ns1:BibliographicDescription>
                      <ns1:BibliographicItemId>
@@ -97,13 +98,22 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
          </ns1:BibliographicId>
          <ns1:HoldingsSet>
             <ns1:Location>
-               <ns1:LocationType Scheme="http://www.niso.org/ncip/;1_0/imp1/schemes/locationtype/locationtype.scm">Permanent Location</ns1:LocationType>
+               <ns1:LocationType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/locationtype/locationtype.scm">Permanent Location</ns1:LocationType>
                <ns1:LocationName>
                   <ns1:LocationNameInstance>
-                     <ns1:LocationNameLevel>1</ns1:LocationNameLevel>
+                     <ns1:LocationNameLevel>15</ns1:LocationNameLevel>
                      <ns1:LocationNameValue>Some holding location</ns1:LocationNameValue>
                   </ns1:LocationNameInstance>
                </ns1:LocationName>
+            </ns1:Location>
+            <ns1:Location>
+              <ns1:LocationType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/locationtype/locationtype.scm">Permanent Location</ns1:LocationType>
+              <ns1:LocationName>
+                <ns1:LocationNameInstance>
+                  <ns1:LocationNameLevel>16</ns1:LocationNameLevel>
+                  <ns1:LocationNameValue>Some holding sublocation</ns1:LocationNameValue>
+                </ns1:LocationNameInstance>
+              </ns1:LocationName>
             </ns1:Location>
             <ns1:BibliographicDescription>
                <ns1:Author>Elman, Jiří</ns1:Author>
@@ -154,6 +164,7 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                   <ns1:ItemDescription>
                      <ns1:NumberOfPieces>2</ns1:NumberOfPieces>
                   </ns1:ItemDescription>
+                  <ns1:DateDue>2020-09-15T00:00:00Z</ns1:DateDue>
                </ns1:ItemOptionalFields>
             </ns1:ItemInformation>
          </ns1:HoldingsSet>

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Title Hold Logic Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,10 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Logic;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
+
+use function in_array;
+use function is_array;
+use function is_bool;
 
 /**
  * Title Hold Logic Class
@@ -86,8 +92,11 @@ class TitleHolds
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
      * @param \Laminas\Config\Config        $config  VuFind configuration
      */
-    public function __construct(\VuFind\Auth\ILSAuthenticator $ilsAuth,
-        ILSConnection $ils, \VuFind\Crypt\HMAC $hmac, \Laminas\Config\Config $config
+    public function __construct(
+        \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        ILSConnection $ils,
+        \VuFind\Crypt\HMAC $hmac,
+        \Laminas\Config\Config $config
     ) {
         $this->ilsAuth = $ilsAuth;
         $this->hmac = $hmac;
@@ -171,17 +180,19 @@ class TitleHolds
      */
     protected function checkOverrideMode($id, $mode)
     {
-        if (isset($this->config->Catalog->allow_holds_override)
+        if (
+            isset($this->config->Catalog->allow_holds_override)
             && $this->config->Catalog->allow_holds_override
         ) {
             $holdings = $this->getHoldings($id);
 
             // For title holds, the most important override feature to handle
-            // is to prevent displaying a link if all items are disabled.  We
+            // is to prevent displaying a link if all items are disabled. We
             // may eventually want to address other scenarios as well.
             $allDisabled = true;
             foreach ($holdings as $holding) {
-                if (!isset($holding['holdOverride'])
+                if (
+                    !isset($holding['holdOverride'])
                     || 'disabled' != $holding['holdOverride']
                 ) {
                     $allDisabled = false;
@@ -204,13 +215,15 @@ class TitleHolds
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
-            'Holds', compact('id', 'patron')
+            'Holds',
+            compact('id', 'patron')
         );
 
         if (isset($checkHolds['HMACKeys'])) {
             $data = ['id' => $id, 'level' => 'title'];
             $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ((is_array($result) && $result['valid'])
+            if (
+                (is_array($result) && $result['valid'])
                 || (is_bool($result) && $result)
             ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
@@ -236,12 +249,13 @@ class TitleHolds
 
         $data = [
             'id' => $id,
-            'level' => 'title'
+            'level' => 'title',
         ];
 
         // Are holds allows?
         $checkHolds = $this->catalog->checkFunction(
-            'Holds', compact('id', 'patron')
+            'Holds',
+            compact('id', 'patron')
         );
 
         if ($checkHolds != false) {
@@ -250,7 +264,8 @@ class TitleHolds
             } elseif ($type == 'availability') {
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
-                    if ($holding['availability']
+                    if (
+                        $holding['availability']
                         && !in_array($holding['location'], $this->hideHoldings)
                     ) {
                         $any_available = true;
@@ -303,7 +318,7 @@ class TitleHolds
         // Build Params
         return [
             'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
-            'anchor' => '#tabnav'
+            'anchor' => '#tabnav',
         ];
     }
 }

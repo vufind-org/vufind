@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cookie Manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  * Copyright (C) The National Library of Finland 2020.
@@ -27,7 +28,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Cookie;
+
+use function is_array;
 
 /**
  * Cookie Manager
@@ -79,7 +83,7 @@ class CookieManager
     /**
      * The name of the session cookie
      *
-     * @var string
+     * @var ?string
      */
     protected $sessionName;
 
@@ -93,17 +97,23 @@ class CookieManager
     /**
      * Constructor
      *
-     * @param array  $cookies     Cookie array to manipulate (e.g. $_COOKIE)
-     * @param string $path        Cookie base path (default = /)
-     * @param string $domain      Cookie domain
-     * @param bool   $secure      Are cookies secure only? (default = false)
-     * @param string $sessionName Session cookie name (if null defaults to PHP
+     * @param array   $cookies     Cookie array to manipulate (e.g. $_COOKIE)
+     * @param string  $path        Cookie base path (default = /)
+     * @param string  $domain      Cookie domain
+     * @param bool    $secure      Are cookies secure only? (default = false)
+     * @param ?string $sessionName Session cookie name (if null defaults to PHP
      * settings)
-     * @param bool   $httpOnly    Are cookies HTTP only? (default = true)
-     * @param string $sameSite    Default SameSite attribute (defaut = 'Lax')
+     * @param bool    $httpOnly    Are cookies HTTP only? (default = true)
+     * @param string  $sameSite    Default SameSite attribute (defaut = 'Lax')
      */
-    public function __construct($cookies, $path = '/', $domain = null,
-        $secure = false, $sessionName = null, $httpOnly = true, $sameSite = 'Lax'
+    public function __construct(
+        $cookies,
+        $path = '/',
+        $domain = null,
+        $secure = false,
+        $sessionName = null,
+        $httpOnly = true,
+        $sameSite = 'Lax'
     ) {
         $this->cookies = $cookies;
         $this->path = $path;
@@ -167,7 +177,7 @@ class CookieManager
     /**
      * Get the name of the cookie
      *
-     * @return mixed
+     * @return ?string
      */
     public function getSessionName()
     {
@@ -199,8 +209,15 @@ class CookieManager
      *
      * @return bool
      */
-    public function proxySetCookie($key, $value, $expire, $path, $domain, $secure,
-        $httpOnly, $sameSite
+    public function proxySetCookie(
+        $key,
+        $value,
+        $expire,
+        $path,
+        $domain,
+        $secure,
+        $httpOnly,
+        $sameSite
     ) {
         // Special case: in CLI -- don't actually write headers!
         if ('cli' === PHP_SAPI) {
@@ -208,7 +225,7 @@ class CookieManager
         }
         return setcookie(
             $key,
-            $value,
+            $value ?? '',
             [
                 'expires' => $expire,
                 'path' => $path,
@@ -231,7 +248,11 @@ class CookieManager
      *
      * @return bool
      */
-    public function setGlobalCookie($key, $value, $expire, $httpOnly = null,
+    public function setGlobalCookie(
+        $key,
+        $value,
+        $expire,
+        $httpOnly = null,
         $sameSite = null
     ) {
         if (null === $httpOnly) {
@@ -243,8 +264,14 @@ class CookieManager
         // Simple case: flat value.
         if (!is_array($value)) {
             return $this->proxySetCookie(
-                $key, $value, $expire, $this->path, $this->domain, $this->secure,
-                $httpOnly, $sameSite
+                $key,
+                $value,
+                $expire,
+                $this->path,
+                $this->domain,
+                $this->secure,
+                $httpOnly,
+                $sameSite
             );
         }
 
@@ -252,8 +279,14 @@ class CookieManager
         $success = true;
         foreach ($value as $i => $curr) {
             $lastSuccess = $this->proxySetCookie(
-                $key . '[' . $i . ']', $curr, $expire,
-                $this->path, $this->domain, $this->secure, $httpOnly, $sameSite
+                $key . '[' . $i . ']',
+                $curr,
+                $expire,
+                $this->path,
+                $this->domain,
+                $this->secure,
+                $httpOnly,
+                $sameSite
             );
             if (!$lastSuccess) {
                 $success = false;
@@ -273,7 +306,11 @@ class CookieManager
      *
      * @return bool
      */
-    public function set($key, $value, $expire = 0, $httpOnly = null,
+    public function set(
+        $key,
+        $value,
+        $expire = 0,
+        $httpOnly = null,
         $sameSite = null
     ) {
         $success = $this

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cart Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
+
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
 
 /**
  * Cart Class
@@ -98,9 +106,12 @@ class Cart
      * @param bool                  $togglesInSearch Is cart configured to toggles
      * in search results?
      */
-    public function __construct(\VuFind\Record\Loader $loader,
+    public function __construct(
+        \VuFind\Record\Loader $loader,
         \VuFind\Cookie\CookieManager $cookieManager,
-        $maxSize = 100, $active = true, $togglesInSearch = true
+        $maxSize = 100,
+        $active = true,
+        $togglesInSearch = true
     ) {
         $this->recordLoader = $loader;
         $this->cookieManager = $cookieManager;
@@ -272,7 +283,8 @@ class Cart
             } else {
                 // Default case for VuFind 2.x carts -- decompress source data:
                 $sources = explode(
-                    self::CART_COOKIE_DELIM, $cookies[self::CART_COOKIE_SOURCES]
+                    self::CART_COOKIE_DELIM,
+                    $cookies[self::CART_COOKIE_SOURCES]
                 );
                 for ($i = 0; $i < count($items); $i++) {
                     $sourceIndex = ord(substr($items[$i], 0, 1)) - 65;
@@ -338,7 +350,7 @@ class Cart
     }
 
     /**
-     * Get cookie SameSite attribute (null if unset).
+     * Get cookie SameSite attribute.
      *
      * @return string
      */

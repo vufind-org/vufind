@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AuthorFacets aspect of the Search Multi-class (Options)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrAuthorFacets;
 
 /**
@@ -53,7 +55,7 @@ class Options extends \VuFind\Search\Solr\Options
         //   is really using facet sorting.
         $this->sortOptions = [
             'relevance' => 'sort_author_relevance',
-            'author' => 'sort_author_author'
+            'author' => 'sort_author_author',
         ];
 
         // No spell check needed in author module:
@@ -94,7 +96,7 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
@@ -107,5 +109,18 @@ class Options extends \VuFind\Search\Solr\Options
     {
         // No recommendations here:
         return [];
+    }
+
+    /**
+     * Get the search class ID for identifying search box options; this is normally
+     * the same as the current search class ID, but some "special purpose" search
+     * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
+     * generation
+     *
+     * @return string
+     */
+    public function getSearchBoxSearchClassId(): string
+    {
+        return 'Solr';
     }
 }

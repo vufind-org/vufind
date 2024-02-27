@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ReCaptcha CAPTCHA.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -60,7 +62,8 @@ class ReCaptcha extends AbstractBase
      * @param \VuFind\Service\ReCaptcha $recaptcha ReCaptcha Service
      * @param string                    $language  Translator locale
      */
-    public function __construct(\VuFind\Service\ReCaptcha $recaptcha,
+    public function __construct(
+        \VuFind\Service\ReCaptcha $recaptcha,
         string $language
     ) {
         $this->recaptcha = $recaptcha;

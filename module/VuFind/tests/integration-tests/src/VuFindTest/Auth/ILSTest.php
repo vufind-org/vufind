@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Stdlib\Parameters;
@@ -44,6 +46,7 @@ use VuFind\Db\Table\User;
  */
 final class ILSTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
@@ -54,7 +57,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -79,11 +82,11 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = [])
+    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -106,13 +109,12 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
-        $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Laminas\Config\Config([])));
+        $mockConfigReader = $this->getMockConfigPluginManager([]);
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \Laminas\Config\Config(['driver' => 'Sample']),
-                $driverManager, $mockConfigReader
+                $driverManager,
+                $mockConfigReader
             ),
             $authenticator
         );
@@ -142,7 +144,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
@@ -203,7 +205,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     {
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
-            'email' => 'user@test.com'
+            'email' => 'user@test.com',
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
@@ -226,7 +228,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
 
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
-            'email' => 'user@test.com'
+            'email' => 'user@test.com',
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
@@ -372,7 +374,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
-            ->setMethods(['storedCatalogLogin'])
+            ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
         $mock->expects($this->any())->method('storedCatalogLogin')
             ->will($this->returnValue($patron));

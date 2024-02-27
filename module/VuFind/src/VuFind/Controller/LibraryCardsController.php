@@ -1,8 +1,9 @@
 <?php
+
 /**
  * LibraryCards Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2019.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use VuFind\Exception\ILS as ILSException;
@@ -52,27 +54,6 @@ class LibraryCardsController extends AbstractBase
     {
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
-        }
-
-        // Check for "delete card" request; parameter may be in GET or POST depending
-        // on calling context.
-        $deleteId = $this->params()->fromPost(
-            'delete', $this->params()->fromQuery('delete')
-        );
-        if ($deleteId) {
-            // If the user already confirmed the operation, perform the delete now;
-            // otherwise prompt for confirmation:
-            $confirm = $this->params()->fromPost(
-                'confirm', $this->params()->fromQuery('confirm')
-            );
-            if ($confirm) {
-                $success = $this->performDeleteLibraryCard($deleteId);
-                if ($success !== true) {
-                    return $success;
-                }
-            } else {
-                return $this->confirmDeleteLibraryCard($deleteId);
-            }
         }
 
         // Connect to the ILS for login drivers:
@@ -102,7 +83,8 @@ class LibraryCardsController extends AbstractBase
         }
 
         // Process email authentication:
-        if ($this->params()->fromQuery('auth_method') === 'Email'
+        if (
+            $this->params()->fromQuery('auth_method') === 'Email'
             && ($hash = $this->params()->fromQuery('hash'))
         ) {
             return $this->processEmailLink($user, $hash);
@@ -165,7 +147,8 @@ class LibraryCardsController extends AbstractBase
 
         // Have we confirmed this?
         $confirm = $this->params()->fromPost(
-            'confirm', $this->params()->fromQuery('confirm')
+            'confirm',
+            $this->params()->fromQuery('confirm')
         );
         if ($confirm) {
             $user->deleteLibraryCard($cardID);
@@ -181,7 +164,8 @@ class LibraryCardsController extends AbstractBase
             'confirm_delete_library_card_brief',
             $this->url()->fromRoute('librarycards-deletecard'),
             $this->url()->fromRoute('librarycards-home'),
-            'confirm_delete_library_card_text', ['cardID' => $cardID]
+            'confirm_delete_library_card_text',
+            ['cardID' => $cardID]
         );
     }
 
@@ -234,9 +218,8 @@ class LibraryCardsController extends AbstractBase
                 ->addMessage('authentication_error_technical', 'error');
         }
 
-        $this->setFollowupUrlToReferer();
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        $this->setFollowupUrlToReferer(false);
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));
         }
         return $this->redirect()->toRoute('myresearch-home');
@@ -313,6 +296,15 @@ class LibraryCardsController extends AbstractBase
         if ($card->cat_username !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
+            if (
+                'password' === $loginMethod
+                && !$this->getAuthManager()->allowsUserIlsLogin()
+            ) {
+                throw new \Exception(
+                    'Illegal configuration: '
+                    . 'password-based library cards and disabled user login'
+                );
+            }
             $catalog = $this->getILS();
             try {
                 $patron = $catalog->patronLogin($username, $password);
@@ -347,7 +339,10 @@ class LibraryCardsController extends AbstractBase
 
         try {
             $user->saveLibraryCard(
-                $id == 'NEW' ? null : $id, $cardName, $username, $password
+                $id == 'NEW' ? null : $id,
+                $cardName,
+                $username,
+                $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');

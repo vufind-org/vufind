@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SummonResultsDeferred Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
+
+use function is_object;
 
 /**
  * SummonResultsDeferred Recommendations Module
@@ -50,13 +54,11 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
     protected $typeLabel = '';
 
     /**
-     * Constructor
+     * Number of expected module parameters (from .ini config)
+     *
+     * @var int
      */
-    public function __construct()
-    {
-        $this->module = 'SummonResults';
-        $this->paramCount = 2;
-    }
+    protected $paramCount = 2;
 
     /**
      * Called before the Search Results object performs its main search
@@ -81,6 +83,16 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
                 $params->getSearchHandler()
             );
         }
+    }
+
+    /**
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
+     */
+    protected function getAjaxModule()
+    {
+        return 'SummonResults';
     }
 
     /**

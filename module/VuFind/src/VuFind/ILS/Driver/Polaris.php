@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Polaris ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,9 +25,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function intval;
+use function strlen;
 
 /**
  * VuFind Connector for Polaris
@@ -123,13 +129,16 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return obj
      */
-    protected function makeRequest($api_query, $http_method = "GET",
-        $patronpassword = "", $json = false
+    protected function makeRequest(
+        $api_query,
+        $http_method = 'GET',
+        $patronpassword = '',
+        $json = false
     ) {
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
         date_default_timezone_set('GMT');
-        $date = date("D, d M Y H:i:s T");
+        $date = date('D, d M Y H:i:s T');
         date_default_timezone_set($site_config_TZ);
 
         $url = $this->ws_host . $this->ws_app . $api_query;
@@ -141,10 +150,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $auth_token = "PWS {$this->ws_api_id}:$signature";
         $http_headers = [
-            "Content-type: application/json",
-            "Accept: application/json",
+            'Content-type: application/json',
+            'Accept: application/json',
             "PolarisDate: $date",
-            "Authorization: $auth_token"
+            "Authorization: $auth_token",
         ];
 
         try {
@@ -160,13 +169,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // httpService doesn't explicitly support PUT, so add this:
             if ($http_method == 'PUT') {
-                $http_headers[] = "Content-Length: " . strlen($json_data);
+                $http_headers[] = 'Content-Length: ' . strlen($json_data);
             }
             $client->setHeaders($http_headers);
             $client->setMethod($http_method);
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -188,7 +197,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
         if (count($matches) > 0) {
             $matchestmp = intval($matches[1] / 1000);
-            $date = date("n-j-Y", $matchestmp);
+            $date = date('n-j-Y', $matchestmp);
         } else {
             $date = 'n/a';
         }
@@ -210,7 +219,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $unix_time = strtotime($date);
         //date_default_timezone_set($site_config_TZ);
 
-        $json_time = "/Date(" . $unix_time . "000)/";
+        $json_time = '/Date(' . $unix_time . '000)/';
         return $json_time;
     }
 
@@ -227,7 +236,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $holds = [];
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/holdrequests/all", 'GET',
+            "patron/{$patron['cat_username']}/holdrequests/all",
+            'GET',
             $patron['cat_password']
         );
         $holds_response_array = $response->PatronHoldRequestsGetRows;
@@ -277,7 +287,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $copy_count++;
 
             $availability = 0;
-            if (($holdings_response->CircStatus == 'In')
+            if (
+                ($holdings_response->CircStatus == 'In')
                 || ($holdings_response->CircStatus == 'Just Returned')
                 || ($holdings_response->CircStatus == 'On Shelf')
                 || ($holdings_response->CircStatus == 'Available - Check shelves')
@@ -287,7 +298,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $duedate = '';
             if ($holdings_response->DueDate) {
-                $duedate = date("n-j-Y", strtotime($holdings_response->DueDate));
+                $duedate = date('n-j-Y', strtotime($holdings_response->DueDate));
             }
 
             $holding[] = [
@@ -343,7 +354,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -431,7 +442,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             ];
 
             $reply_response = $this->makeRequest(
-                "holdrequest/{$response->RequestGUID}", 'PUT', '',
+                "holdrequest/{$response->RequestGUID}",
+                'PUT',
+                '',
                 $reply_jsonrequest
             );
 
@@ -455,10 +468,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.    May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored. The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array             An array of associative arrays with locationID
@@ -474,12 +489,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($this->ws_pickUpLocations as $code => $library) {
                 $locations[] = [
                     'locationID'      => $code,
-                    'locationDisplay' => $library
+                    'locationDisplay' => $library,
                 ];
             }
         } else {
             // we get them from the API
-            $response = $this->makeRequest("organizations/branch");
+            $response = $this->makeRequest('organizations/branch');
             $locations_response_array = $response->OrganizationsGetRows;
             foreach ($locations_response_array as $location_response) {
                 $locations[] = [
@@ -583,7 +598,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function patronLogin($username, $password)
     {
         // username == barcode
-        $response = $this->makeRequest("patron/$username", "GET", "$password");
+        $response = $this->makeRequest("patron/$username", 'GET', "$password");
 
         if (!$response->ValidPatron) {
             return null;
@@ -617,7 +632,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $fineList = [];
 
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/account/outstanding", 'GET',
+            "patron/{$patron['cat_username']}/account/outstanding",
+            'GET',
             $patron['cat_password']
         );
         $fines_response_array = $response->PatronAccountGetRows;
@@ -653,7 +669,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // firstname, lastname, address1, address2, zip, phone, group
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/basicdata", 'GET',
+            "patron/{$patron['cat_username']}/basicdata",
+            'GET',
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
@@ -683,7 +700,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // polaris apis: PatronItemsOutGet, Patron_RewewBlocksGet
         $transactions = [];
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/itemsout/all", 'GET',
+            "patron/{$patron['cat_username']}/itemsout/all",
+            'GET',
             $patron['cat_password']
         );
 
@@ -711,7 +729,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -736,8 +754,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $jsonrequest['RenewData']['IgnoreOverrideErrors'] = 'true';
 
             $response = $this->makeRequest(
-                "patron/{$patron['cat_username']}/itemsout/$renew_id", 'PUT',
-                $patron['cat_password'], $jsonrequest
+                "patron/{$patron['cat_username']}/itemsout/$renew_id",
+                'PUT',
+                $patron['cat_password'],
+                $jsonrequest
             );
             if ($response->PAPIErrorCode == 0) {
                 $count++;
@@ -762,7 +782,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         $result = [
             'count' => $count, 'details' => $item_response,
-            'blocks' => $item_blocks
+            'blocks' => $item_blocks,
         ];
 
         return $result;
@@ -807,20 +827,22 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/cancelled"
-                . "?wsid=1&userid=1", 'PUT', $patron['cat_password']
+                . '?wsid=1&userid=1',
+                'PUT',
+                $patron['cat_password']
             );
 
             if ($response->PAPIErrorCode == 0) {
                 $count++;
                 $item_response[$hold_id] = [
                 'success' => true,
-                'status'  => 'hold_cancel_success'
+                'status'  => 'hold_cancel_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_cancel_fail',
-                'sysMessage' => 'Failure calling ILS to cancel hold'
+                'sysMessage' => 'Failure calling ILS to cancel hold',
                 ];
             }
         }
@@ -832,12 +854,15 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Get Cancel Hold Details
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field (just request id is all Polaris
      * needs)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }
@@ -859,7 +884,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $response = $this->makeRequest(
             "patron/{$patron['cat_username']}/readinghistory?rowsperpage=1&page=-1",
-            'GET', $patron['cat_password']
+            'GET',
+            $patron['cat_password']
         );
 
         // error code returns number of results
@@ -883,7 +909,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         while ($page_offset <= $pages) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/readinghistory?rowsperpage="
-                . "$items_per_page&page=$page_offset", 'GET',
+                . "$items_per_page&page=$page_offset",
+                'GET',
                 $patron['cat_password']
             );
 
@@ -958,25 +985,27 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $jsonrequest = [
                  'UserID' => '1',
-                 'ActivationDate' => "$jsondate"
+                 'ActivationDate' => "$jsondate",
                 ];
 
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/inactive",
-                'PUT', $patron['cat_password'], $jsonrequest
+                'PUT',
+                $patron['cat_password'],
+                $jsonrequest
             );
 
             if ($response->PAPIErrorCode == 0) {
                 $count++;
                 $item_response[$hold_id] = [
                   'success' => true,
-                  'status'  => 'hold_suspend_success'
+                  'status'  => 'hold_suspend_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_suspend_fail',
-                'sysMessage' => 'Failure calling ILS to suspend hold'
+                'sysMessage' => 'Failure calling ILS to suspend hold',
                 ];
             }
         }
@@ -1015,7 +1044,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $hold_ids = $reactivateDetails['details'];
         $patron = $reactivateDetails['patron'];
 
-        $date = date("d/M/Y");
+        $date = date('d/M/Y');
         $jsondate = $this->encodeJSONTime($date);
 
         $count = 0;
@@ -1024,25 +1053,27 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $jsonrequest = [
                  'UserID' => '1',
-                 'ActivationDate' => "$jsondate"
+                 'ActivationDate' => "$jsondate",
                  ];
 
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/holdrequests/$hold_id/active",
-                'PUT', $patron['cat_password'], $jsonrequest
+                'PUT',
+                $patron['cat_password'],
+                $jsonrequest
             );
 
             if ($response->PAPIErrorCode == 0) {
                 $count++;
                 $item_response[$hold_id] = [
                   'success' => true,
-                  'status'  => 'hold_reactivate_success'
+                  'status'  => 'hold_reactivate_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_reactivate_fail',
-                'sysMessage' => 'Failure calling ILS to reactivate hold'
+                'sysMessage' => 'Failure calling ILS to reactivate hold',
                 ];
             }
         }

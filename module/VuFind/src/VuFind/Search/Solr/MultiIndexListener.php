@@ -3,7 +3,7 @@
 /**
  * MultiIndex listener class file.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * MultiIndex listener class file.
@@ -82,8 +86,11 @@ class MultiIndexListener
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend, array $shards,
-        array $stripfields, array $specs
+    public function __construct(
+        BackendInterface $backend,
+        array $shards,
+        array $stripfields,
+        array $specs
     ) {
         $this->specs       = $specs;
         $this->backend     = $backend;
@@ -100,7 +107,11 @@ class MultiIndexListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -112,11 +123,11 @@ class MultiIndexListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $params = $event->getParam('params');
+        $command = $event->getParam('command');
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            $params = $command->getSearchParameters();
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
-            if (in_array($event->getParam('context'), $allShardsContexts)) {
+            if (in_array($command->getContext(), $allShardsContexts)) {
                 // If we're retrieving by id(s), we should pull all shards to be
                 // sure we find the right record(s).
                 $params->set('shards', implode(',', $this->shards));
@@ -129,11 +140,12 @@ class MultiIndexListener
                 // an array to prevent invalid argument warnings.
                 $shards = $params->get('shards');
                 $shards = explode(
-                    ',', implode(',', (is_array($shards) ? $shards : []))
+                    ',',
+                    implode(',', (is_array($shards) ? $shards : []))
                 );
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
-                $backend->getQueryBuilder()->setSpecs($specs);
+                $this->backend->getQueryBuilder()->setSpecs($specs);
                 $facets = $params->get('facet.field') ?: [];
                 $params->set('facet.field', array_diff($facets, $fields));
             }
@@ -187,13 +199,13 @@ class MultiIndexListener
             $specs[$handler] = [];
             foreach ($spec as $component => $settings) {
                 switch ($component) {
-                case 'QueryFields':
-                    $specs[$handler][$component]
-                        = $this->stripSpecsQueryFields($settings, $fields);
-                    break;
-                default:
-                    $specs[$handler][$component] = $settings;
-                    break;
+                    case 'QueryFields':
+                        $specs[$handler][$component]
+                            = $this->stripSpecsQueryFields($settings, $fields);
+                        break;
+                    default:
+                        $specs[$handler][$component] = $settings;
+                        break;
                 }
             }
         }

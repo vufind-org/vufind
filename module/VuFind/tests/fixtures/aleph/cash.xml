@@ -1,0 +1,746 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<pat-cash-list>
+  <reply-text>ok</reply-text>
+  <reply-code>0000</reply-code>
+  <charges>
+    <translate-change-active-library>LIBID</translate-change-active-library>
+    <institution code="LIBID">
+      <inst-name>Výpůjční pult</inst-name>
+      <balance>
+        <sublibrary code="LIBID">
+          <sublib-name>Výpůjční pult</sublib-name>
+          <open-sum>-         120.00</open-sum>
+          <transferred-sum>0.00</transferred-sum>
+        </sublibrary>
+        <sublibrary code="SVKPK">
+          <sublib-name>Fond</sublib-name>
+          <open-sum>          206.00</open-sum>
+          <transferred-sum>0.00</transferred-sum>
+        </sublibrary>
+        <sublibrary code="SVKVV">
+          <sublib-name>Volný výběr</sublib-name>
+          <open-sum>-         370.00</open-sum>
+          <transferred-sum>0.00</transferred-sum>
+        </sublibrary>
+      </balance>
+      <cash type="credit" transferred="N" href="https://aleph.test/rest-dlf/patron/123/circulationActions/cash/LIBID85037%20%20%20%20%20%20%20201508069027720">
+        <z13>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z13-doc-number>000343351</z13-doc-number>
+          <z13-year>0000</z13-year>
+          <z13-open-date>20060103</z13-open-date>
+          <z13-update-date>20160309</z13-update-date>
+          <z13-call-no-key/>
+          <z13-call-no-code/>
+          <z13-call-no/>
+          <z13-author-code/>
+          <z13-author/>
+          <z13-title-code/>
+          <z13-title/>
+          <z13-imprint-code/>
+          <z13-imprint/>
+          <z13-isbn-issn-code/>
+          <z13-isbn-issn/>
+          <z13-upd-time-stamp>201705312351232</z13-upd-time-stamp>
+        </z13>
+        <z31>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z31-id>85037</z31-id>
+          <z31-sequence>201508069027720</z31-sequence>
+          <z31-date>20150806</z31-date>
+          <z31-status>Neplaceno/připsáno k dobru čtenáři</z31-status>
+          <z31-sub-library>Fond</z31-sub-library>
+          <z31-alpha>L</z31-alpha>
+          <z31-type>Ztráta deštníku  - náhrada</z31-type>
+          <z31-credit-debit>K dobru</z31-credit-debit>
+          <z31-sum>103.00</z31-sum>
+          <z31-vat-sum>0.00</z31-vat-sum>
+          <z31-net-sum>103.00</z31-net-sum>
+          <z31-payment-date>00000000</z31-payment-date>
+          <z31-payment-hour>0000</z31-payment-hour>
+          <z31-payment-cataloger/>
+          <z31-payment-target>Fond</z31-payment-target>
+          <z31-payment-ip/>
+          <z31-payment-receipt-number/>
+          <z31-payment-mode/>
+          <z31-payment-identifier/>
+          <z31-description>Ztrata knihy - nahrada</z31-description>
+          <z31-key>000343351000010     002624707                     201506191653201507031900</z31-key>
+          <z31-key-type>Z36</z31-key-type>
+          <z31-transfer-department/>
+          <z31-transfer-date>00000000</z31-transfer-date>
+          <z31-transfer-number/>
+          <z31-recall-transfer-status/>
+          <z31-recall-transfer-date>00000000</z31-recall-transfer-date>
+          <z31-recall-transfer-number/>
+          <z31-related-z31-key>85037       201507158964516</z31-related-z31-key>
+          <z31-related-z31-key-type>PR</z31-related-z31-key-type>
+          <z31-requester-name/>
+          <z31-upd-time-stamp>200001011200000</z31-upd-time-stamp>
+          <z31-payment-ip-v6/>
+          <z31-note/>
+        </z31>
+        <z30>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z30-doc-number>000343351</z30-doc-number>
+          <z30-item-sequence>    1.0</z30-item-sequence>
+          <z30-barcode>2631080653</z30-barcode>
+          <z30-sub-library>Volný výběr</z30-sub-library>
+          <z30-material>Knihy</z30-material>
+          <z30-item-status>Absenčně</z30-item-status>
+          <z30-open-date>20170406</z30-open-date>
+          <z30-update-date>20170630</z30-update-date>
+          <z30-cataloger>SMOLIKOVA</z30-cataloger>
+          <z30-date-last-return>20200103</z30-date-last-return>
+          <z30-hour-last-return>1427</z30-hour-last-return>
+          <z30-ip-last-return>ETF</z30-ip-last-return>
+          <z30-no-loans>008</z30-no-loans>
+          <z30-alpha>L</z30-alpha>
+          <z30-collection>Volný výběr</z30-collection>
+          <z30-call-no-type>R</z30-call-no-type>
+          <z30-call-no>392A46744b</z30-call-no>
+          <z30-call-no-key>0000392a0046744b</z30-call-no-key>
+          <z30-call-no-2-type/>
+          <z30-call-no-2>811.162.3</z30-call-no-2>
+          <z30-call-no-2-key>0000811.0000162.0000003</z30-call-no-2-key>
+          <z30-description/>
+          <z30-note-opac/>
+          <z30-note-circulation/>
+          <z30-note-internal>N:D$$z00627</z30-note-internal>
+          <z30-order-number>000127954</z30-order-number>
+          <z30-inventory-number>2017:7370</z30-inventory-number>
+          <z30-inventory-number-date>20170627</z30-inventory-number-date>
+          <z30-last-shelf-report-date>20210813</z30-last-shelf-report-date>
+          <z30-price>249.00</z30-price>
+          <z30-shelf-report-number/>
+          <z30-on-shelf-date>00000000</z30-on-shelf-date>
+          <z30-on-shelf-seq>000000</z30-on-shelf-seq>
+          <z30-doc-number-2>000000000</z30-doc-number-2>
+          <z30-schedule-sequence-2>00000</z30-schedule-sequence-2>
+          <z30-copy-sequence-2>00000</z30-copy-sequence-2>
+          <z30-vendor-code/>
+          <z30-invoice-number/>
+          <z30-line-number>00000</z30-line-number>
+          <z30-pages/>
+          <z30-issue-date>00000000</z30-issue-date>
+          <z30-expected-arrival-date>00000000</z30-expected-arrival-date>
+          <z30-arrival-date>00000000</z30-arrival-date>
+          <z30-item-statistic/>
+          <z30-item-process-status>Bez kódu procesu zpracování</z30-item-process-status>
+          <z30-copy-id/>
+          <z30-hol-doc-number>000000000</z30-hol-doc-number>
+          <z30-temp-location>Ne</z30-temp-location>
+          <z30-enumeration-a/>
+          <z30-enumeration-b/>
+          <z30-enumeration-c/>
+          <z30-enumeration-d/>
+          <z30-enumeration-e/>
+          <z30-enumeration-f/>
+          <z30-enumeration-g/>
+          <z30-enumeration-h/>
+          <z30-chronological-i/>
+          <z30-chronological-j/>
+          <z30-chronological-k/>
+          <z30-chronological-l/>
+          <z30-chronological-m/>
+          <z30-supp-index-o/>
+          <z30-85x-type/>
+          <z30-depository-id/>
+          <z30-linking-number>000000000</z30-linking-number>
+          <z30-gap-indicator/>
+          <z30-maintenance-count>008</z30-maintenance-count>
+          <z30-process-status-date>20170630</z30-process-status-date>
+          <z30-upd-time-stamp>202001031427405</z30-upd-time-stamp>
+          <z30-ip-last-return-v6/>
+        </z30>
+        <z30-sub-library-code>SVKVV</z30-sub-library-code>
+        <z30-collection-code>VOLNY</z30-collection-code>
+        <z30-item-process-status-code/>
+        <z30-item-status-code>01</z30-item-status-code>
+      </cash>
+      <cash type="debit" transferred="N" href="https://aleph.test/rest-dlf/patron/123/circulationActions/cash/LIBID85037%20%20%20%20%20%20%20201804162524831">
+        <z31>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z31-id>85037</z31-id>
+          <z31-sequence>201804162524831</z31-sequence>
+          <z31-date>20180416</z31-date>
+          <z31-status>Neplaceno/připsáno k dobru čtenáři</z31-status>
+          <z31-sub-library>Výpůjční pult</z31-sub-library>
+          <z31-alpha>L</z31-alpha>
+          <z31-type>Prodloužení čt. průkazu</z31-type>
+          <z31-credit-debit>K tíži</z31-credit-debit>
+          <z31-sum>(120.00)</z31-sum>
+          <z31-vat-sum>(0.00)</z31-vat-sum>
+          <z31-net-sum>(120.00)</z31-net-sum>
+          <z31-payment-date>00000000</z31-payment-date>
+          <z31-payment-hour>0000</z31-payment-hour>
+          <z31-payment-cataloger>GPE1</z31-payment-cataloger>
+          <z31-payment-target>Výpůjční pult</z31-payment-target>
+          <z31-payment-ip>172.16.3.88</z31-payment-ip>
+          <z31-payment-receipt-number/>
+          <z31-payment-mode/>
+          <z31-payment-identifier>GPE-81-49000</z31-payment-identifier>
+          <z31-description>Prodloužení čt. průkazu</z31-description>
+          <z31-key/>
+          <z31-key-type/>
+          <z31-transfer-department/>
+          <z31-transfer-date>00000000</z31-transfer-date>
+          <z31-transfer-number/>
+          <z31-recall-transfer-status/>
+          <z31-recall-transfer-date>00000000</z31-recall-transfer-date>
+          <z31-recall-transfer-number/>
+          <z31-related-z31-key/>
+          <z31-related-z31-key-type/>
+          <z31-requester-name/>
+          <z31-upd-time-stamp>201804160751348</z31-upd-time-stamp>
+          <z31-payment-ip-v6/>
+          <z31-note/>
+        </z31>
+      </cash>
+      <cash type="credit" transferred="N" href="https://aleph.test/rest-dlf/patron/123/circulationActions/cash/LIBID85037%20%20%20%20%20%20%20201711211907063">
+        <z13>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z13-doc-number>000724004</z13-doc-number>
+          <z13-year>2015</z13-year>
+          <z13-open-date>20160308</z13-open-date>
+          <z13-update-date>20190325</z13-update-date>
+          <z13-call-no-key/>
+          <z13-call-no-code>Z30-1</z13-call-no-code>
+          <z13-call-no>Destnik-11</z13-call-no>
+          <z13-author-code/>
+          <z13-author/>
+          <z13-title-code>24510</z13-title-code>
+          <z13-title>Deštník Studijní a vědecké knihovny Plzeňského kraje : výpůjčka na 14 dní = The Umbrella</z13-title>
+          <z13-imprint-code>264 2</z13-imprint-code>
+          <z13-imprint>Studijní a vědecká knihovna Plzeňského kraje,</z13-imprint>
+          <z13-isbn-issn-code/>
+          <z13-isbn-issn/>
+          <z13-upd-time-stamp>201903251150100</z13-upd-time-stamp>
+        </z13>
+        <z31>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z31-id>85037</z31-id>
+          <z31-sequence>201711211907063</z31-sequence>
+          <z31-date>20171121</z31-date>
+          <z31-status>Neplaceno/připsáno k dobru čtenáři</z31-status>
+          <z31-sub-library>Fond</z31-sub-library>
+          <z31-alpha>L</z31-alpha>
+          <z31-type>Ztráta deštníku  - náhrada</z31-type>
+          <z31-credit-debit>K dobru</z31-credit-debit>
+          <z31-sum>103.00</z31-sum>
+          <z31-vat-sum>0.00</z31-vat-sum>
+          <z31-net-sum>103.00</z31-net-sum>
+          <z31-payment-date>00000000</z31-payment-date>
+          <z31-payment-hour>0000</z31-payment-hour>
+          <z31-payment-cataloger/>
+          <z31-payment-target>Fond</z31-payment-target>
+          <z31-payment-ip/>
+          <z31-payment-receipt-number/>
+          <z31-payment-mode/>
+          <z31-payment-identifier/>
+          <z31-description>Ztráta deštníku  - náhrada</z31-description>
+          <z31-key>000724060000050     003138943                     201711080744201711092359</z31-key>
+          <z31-key-type>Z36</z31-key-type>
+          <z31-transfer-department/>
+          <z31-transfer-date>00000000</z31-transfer-date>
+          <z31-transfer-number/>
+          <z31-recall-transfer-status/>
+          <z31-recall-transfer-date>00000000</z31-recall-transfer-date>
+          <z31-recall-transfer-number/>
+          <z31-related-z31-key>85037       201711141878553</z31-related-z31-key>
+          <z31-related-z31-key-type>PR</z31-related-z31-key-type>
+          <z31-requester-name/>
+          <z31-upd-time-stamp>201711210711378</z31-upd-time-stamp>
+          <z31-payment-ip-v6/>
+          <z31-note/>
+        </z31>
+        <z30>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z30-doc-number>000724060</z30-doc-number>
+          <z30-item-sequence>    5.0</z30-item-sequence>
+          <z30-barcode>263MD00005</z30-barcode>
+          <z30-sub-library>Fond</z30-sub-library>
+          <z30-material>Smíšené dokumenty</z30-material>
+          <z30-item-status>Deštník</z30-item-status>
+          <z30-open-date>20160309</z30-open-date>
+          <z30-update-date>20160309</z30-update-date>
+          <z30-cataloger>DOLEZAL</z30-cataloger>
+          <z30-date-last-return>20171121</z30-date-last-return>
+          <z30-hour-last-return>0711</z30-hour-last-return>
+          <z30-ip-last-return>ETF</z30-ip-last-return>
+          <z30-no-loans>001</z30-no-loans>
+          <z30-alpha>L</z30-alpha>
+          <z30-collection>Hlavní budova</z30-collection>
+          <z30-call-no-type/>
+          <z30-call-no>Destnik-05</z30-call-no>
+          <z30-call-no-key>destnik-0000005</z30-call-no-key>
+          <z30-call-no-2-type/>
+          <z30-call-no-2/>
+          <z30-call-no-2-key/>
+          <z30-description/>
+          <z30-note-opac/>
+          <z30-note-circulation/>
+          <z30-note-internal/>
+          <z30-order-number/>
+          <z30-inventory-number/>
+          <z30-inventory-number-date>00000000</z30-inventory-number-date>
+          <z30-last-shelf-report-date>00000000</z30-last-shelf-report-date>
+          <z30-price/>
+          <z30-shelf-report-number/>
+          <z30-on-shelf-date>00000000</z30-on-shelf-date>
+          <z30-on-shelf-seq>000000</z30-on-shelf-seq>
+          <z30-doc-number-2>000000000</z30-doc-number-2>
+          <z30-schedule-sequence-2>00000</z30-schedule-sequence-2>
+          <z30-copy-sequence-2>00000</z30-copy-sequence-2>
+          <z30-vendor-code/>
+          <z30-invoice-number/>
+          <z30-line-number>00000</z30-line-number>
+          <z30-pages/>
+          <z30-issue-date>00000000</z30-issue-date>
+          <z30-expected-arrival-date>00000000</z30-expected-arrival-date>
+          <z30-arrival-date>00000000</z30-arrival-date>
+          <z30-item-statistic/>
+          <z30-item-process-status>Bez kódu procesu zpracování</z30-item-process-status>
+          <z30-copy-id/>
+          <z30-hol-doc-number>000000000</z30-hol-doc-number>
+          <z30-temp-location>Ne</z30-temp-location>
+          <z30-enumeration-a/>
+          <z30-enumeration-b/>
+          <z30-enumeration-c/>
+          <z30-enumeration-d/>
+          <z30-enumeration-e/>
+          <z30-enumeration-f/>
+          <z30-enumeration-g/>
+          <z30-enumeration-h/>
+          <z30-chronological-i/>
+          <z30-chronological-j/>
+          <z30-chronological-k/>
+          <z30-chronological-l/>
+          <z30-chronological-m/>
+          <z30-supp-index-o/>
+          <z30-85x-type/>
+          <z30-depository-id/>
+          <z30-linking-number>000000000</z30-linking-number>
+          <z30-gap-indicator/>
+          <z30-maintenance-count>001</z30-maintenance-count>
+          <z30-process-status-date>20160309</z30-process-status-date>
+          <z30-upd-time-stamp>201711210711378</z30-upd-time-stamp>
+          <z30-ip-last-return-v6/>
+        </z30>
+        <z30-sub-library-code>SVKPK</z30-sub-library-code>
+        <z30-collection-code>HLAV</z30-collection-code>
+        <z30-item-process-status-code/>
+        <z30-item-status-code>08</z30-item-status-code>
+      </cash>
+      <cash type="debit" transferred="N" href="https://aleph.test/rest-dlf/patron/123/circulationActions/cash/LIBID85037%20%20%20%20%20%20%20201802152261653">
+        <z13>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z13-doc-number>000754734</z13-doc-number>
+          <z13-year>2017</z13-year>
+          <z13-open-date>20170301</z13-open-date>
+          <z13-update-date>20171022</z13-update-date>
+          <z13-call-no-key/>
+          <z13-call-no-code>Z30-1</z13-call-no-code>
+          <z13-call-no>392A46744</z13-call-no>
+          <z13-author-code>S100</z13-author-code>
+          <z13-author>Bezpalcová, Vladimíra</z13-author>
+          <z13-title-code>24510</z13-title-code>
+          <z13-title>K přijímačkám s nadhledem : příprava na jednotné přijímací zkoušky z českého jazyka 9.</z13-title>
+          <z13-imprint-code>264 1</z13-imprint-code>
+          <z13-imprint>Nakladatelství Fraus,</z13-imprint>
+          <z13-isbn-issn-code>ISB</z13-isbn-issn-code>
+          <z13-isbn-issn>978-80-7489-353-7</z13-isbn-issn>
+          <z13-upd-time-stamp>201705312352415</z13-upd-time-stamp>
+        </z13>
+        <z31>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z31-id>85037</z31-id>
+          <z31-sequence>201802152261653</z31-sequence>
+          <z31-date>20180215</z31-date>
+          <z31-status>Neplaceno/připsáno k dobru čtenáři</z31-status>
+          <z31-sub-library>Volný výběr</z31-sub-library>
+          <z31-alpha>L</z31-alpha>
+          <z31-type>2. upomínka</z31-type>
+          <z31-credit-debit>K tíži</z31-credit-debit>
+          <z31-sum>(60.00)</z31-sum>
+          <z31-vat-sum>(0.00)</z31-vat-sum>
+          <z31-net-sum>(60.00)</z31-net-sum>
+          <z31-payment-date>00000000</z31-payment-date>
+          <z31-payment-hour>0000</z31-payment-hour>
+          <z31-payment-cataloger>GPE1</z31-payment-cataloger>
+          <z31-payment-target>Volný výběr</z31-payment-target>
+          <z31-payment-ip>172.16.3.88</z31-payment-ip>
+          <z31-payment-receipt-number/>
+          <z31-payment-mode/>
+          <z31-payment-identifier>GPE-81-49000</z31-payment-identifier>
+          <z31-description>2. upomínka</z31-description>
+          <z31-key>000754734000030     003145417</z31-key>
+          <z31-key-type>Z36</z31-key-type>
+          <z31-transfer-department/>
+          <z31-transfer-date>00000000</z31-transfer-date>
+          <z31-transfer-number/>
+          <z31-recall-transfer-status/>
+          <z31-recall-transfer-date>00000000</z31-recall-transfer-date>
+          <z31-recall-transfer-number/>
+          <z31-related-z31-key/>
+          <z31-related-z31-key-type/>
+          <z31-requester-name/>
+          <z31-upd-time-stamp>201802150505077</z31-upd-time-stamp>
+          <z31-payment-ip-v6/>
+          <z31-note/>
+        </z31>
+        <z30>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z30-doc-number>000754734</z30-doc-number>
+          <z30-item-sequence>    3.0</z30-item-sequence>
+          <z30-barcode>2631080653</z30-barcode>
+          <z30-sub-library>Volný výběr</z30-sub-library>
+          <z30-material>Knihy</z30-material>
+          <z30-item-status>Absenčně</z30-item-status>
+          <z30-open-date>20170406</z30-open-date>
+          <z30-update-date>20170630</z30-update-date>
+          <z30-cataloger>SMOLIKOVA</z30-cataloger>
+          <z30-date-last-return>20200103</z30-date-last-return>
+          <z30-hour-last-return>1427</z30-hour-last-return>
+          <z30-ip-last-return>ETF</z30-ip-last-return>
+          <z30-no-loans>008</z30-no-loans>
+          <z30-alpha>L</z30-alpha>
+          <z30-collection>Volný výběr</z30-collection>
+          <z30-call-no-type>R</z30-call-no-type>
+          <z30-call-no>392A46744b</z30-call-no>
+          <z30-call-no-key>0000392a0046744b</z30-call-no-key>
+          <z30-call-no-2-type/>
+          <z30-call-no-2>811.162.3</z30-call-no-2>
+          <z30-call-no-2-key>0000811.0000162.0000003</z30-call-no-2-key>
+          <z30-description/>
+          <z30-note-opac/>
+          <z30-note-circulation/>
+          <z30-note-internal>N:D$$z00627</z30-note-internal>
+          <z30-order-number>000127954</z30-order-number>
+          <z30-inventory-number>2017:7370</z30-inventory-number>
+          <z30-inventory-number-date>20170627</z30-inventory-number-date>
+          <z30-last-shelf-report-date>20210813</z30-last-shelf-report-date>
+          <z30-price>249.00</z30-price>
+          <z30-shelf-report-number/>
+          <z30-on-shelf-date>00000000</z30-on-shelf-date>
+          <z30-on-shelf-seq>000000</z30-on-shelf-seq>
+          <z30-doc-number-2>000000000</z30-doc-number-2>
+          <z30-schedule-sequence-2>00000</z30-schedule-sequence-2>
+          <z30-copy-sequence-2>00000</z30-copy-sequence-2>
+          <z30-vendor-code/>
+          <z30-invoice-number/>
+          <z30-line-number>00000</z30-line-number>
+          <z30-pages/>
+          <z30-issue-date>00000000</z30-issue-date>
+          <z30-expected-arrival-date>00000000</z30-expected-arrival-date>
+          <z30-arrival-date>00000000</z30-arrival-date>
+          <z30-item-statistic/>
+          <z30-item-process-status>Bez kódu procesu zpracování</z30-item-process-status>
+          <z30-copy-id/>
+          <z30-hol-doc-number>000000000</z30-hol-doc-number>
+          <z30-temp-location>Ne</z30-temp-location>
+          <z30-enumeration-a/>
+          <z30-enumeration-b/>
+          <z30-enumeration-c/>
+          <z30-enumeration-d/>
+          <z30-enumeration-e/>
+          <z30-enumeration-f/>
+          <z30-enumeration-g/>
+          <z30-enumeration-h/>
+          <z30-chronological-i/>
+          <z30-chronological-j/>
+          <z30-chronological-k/>
+          <z30-chronological-l/>
+          <z30-chronological-m/>
+          <z30-supp-index-o/>
+          <z30-85x-type/>
+          <z30-depository-id/>
+          <z30-linking-number>000000000</z30-linking-number>
+          <z30-gap-indicator/>
+          <z30-maintenance-count>008</z30-maintenance-count>
+          <z30-process-status-date>20170630</z30-process-status-date>
+          <z30-upd-time-stamp>202001031427405</z30-upd-time-stamp>
+          <z30-ip-last-return-v6/>
+        </z30>
+        <z30-sub-library-code>SVKVV</z30-sub-library-code>
+        <z30-collection-code>VOLNY</z30-collection-code>
+        <z30-item-process-status-code/>
+        <z30-item-status-code>01</z30-item-status-code>
+      </cash>
+      <cash type="debit" transferred="N" href="https://aleph.test/rest-dlf/patron/123/circulationActions/cash/LIBID85037%20%20%20%20%20%20%20201803192407247">
+        <z13>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z13-doc-number>000754734</z13-doc-number>
+          <z13-year>2017</z13-year>
+          <z13-open-date>20170301</z13-open-date>
+          <z13-update-date>20171022</z13-update-date>
+          <z13-call-no-key/>
+          <z13-call-no-code>Z30-1</z13-call-no-code>
+          <z13-call-no>392A46744</z13-call-no>
+          <z13-author-code>S100</z13-author-code>
+          <z13-author>Bezpalcová, Vladimíra</z13-author>
+          <z13-title-code>24510</z13-title-code>
+          <z13-title>K přijímačkám s nadhledem : příprava na jednotné přijímací zkoušky z českého jazyka 9.</z13-title>
+          <z13-imprint-code>264 1</z13-imprint-code>
+          <z13-imprint>Nakladatelství Fraus,</z13-imprint>
+          <z13-isbn-issn-code>ISB</z13-isbn-issn-code>
+          <z13-isbn-issn>978-80-7489-353-7</z13-isbn-issn>
+          <z13-upd-time-stamp>201705312352415</z13-upd-time-stamp>
+        </z13>
+        <z31>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z31-id>85037</z31-id>
+          <z31-sequence>201803192407247</z31-sequence>
+          <z31-date>20180319</z31-date>
+          <z31-status>Neplaceno/připsáno k dobru čtenáři</z31-status>
+          <z31-sub-library>Volný výběr</z31-sub-library>
+          <z31-alpha>L</z31-alpha>
+          <z31-type>3. upomínka / předžalobní výzva</z31-type>
+          <z31-credit-debit>K tíži</z31-credit-debit>
+          <z31-sum>(120.00)</z31-sum>
+          <z31-vat-sum>(0.00)</z31-vat-sum>
+          <z31-net-sum>(120.00)</z31-net-sum>
+          <z31-payment-date>00000000</z31-payment-date>
+          <z31-payment-hour>0000</z31-payment-hour>
+          <z31-payment-cataloger>GPE1</z31-payment-cataloger>
+          <z31-payment-target>Volný výběr</z31-payment-target>
+          <z31-payment-ip>172.16.3.88</z31-payment-ip>
+          <z31-payment-receipt-number/>
+          <z31-payment-mode/>
+          <z31-payment-identifier>GPE-81-49000</z31-payment-identifier>
+          <z31-description>3. upomínka / předžalobní výzva</z31-description>
+          <z31-key>000754734000030     003145417</z31-key>
+          <z31-key-type>Z36</z31-key-type>
+          <z31-transfer-department/>
+          <z31-transfer-date>00000000</z31-transfer-date>
+          <z31-transfer-number/>
+          <z31-recall-transfer-status/>
+          <z31-recall-transfer-date>00000000</z31-recall-transfer-date>
+          <z31-recall-transfer-number/>
+          <z31-related-z31-key/>
+          <z31-related-z31-key-type/>
+          <z31-requester-name/>
+          <z31-upd-time-stamp>201803190510069</z31-upd-time-stamp>
+          <z31-payment-ip-v6/>
+          <z31-note/>
+        </z31>
+        <z30>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z30-doc-number>000754734</z30-doc-number>
+          <z30-item-sequence>    3.0</z30-item-sequence>
+          <z30-barcode>2631080653</z30-barcode>
+          <z30-sub-library>Volný výběr</z30-sub-library>
+          <z30-material>Knihy</z30-material>
+          <z30-item-status>Absenčně</z30-item-status>
+          <z30-open-date>20170406</z30-open-date>
+          <z30-update-date>20170630</z30-update-date>
+          <z30-cataloger>SMOLIKOVA</z30-cataloger>
+          <z30-date-last-return>20200103</z30-date-last-return>
+          <z30-hour-last-return>1427</z30-hour-last-return>
+          <z30-ip-last-return>ETF</z30-ip-last-return>
+          <z30-no-loans>008</z30-no-loans>
+          <z30-alpha>L</z30-alpha>
+          <z30-collection>Volný výběr</z30-collection>
+          <z30-call-no-type>R</z30-call-no-type>
+          <z30-call-no>392A46744b</z30-call-no>
+          <z30-call-no-key>0000392a0046744b</z30-call-no-key>
+          <z30-call-no-2-type/>
+          <z30-call-no-2>811.162.3</z30-call-no-2>
+          <z30-call-no-2-key>0000811.0000162.0000003</z30-call-no-2-key>
+          <z30-description/>
+          <z30-note-opac/>
+          <z30-note-circulation/>
+          <z30-note-internal>N:D$$z00627</z30-note-internal>
+          <z30-order-number>000127954</z30-order-number>
+          <z30-inventory-number>2017:7370</z30-inventory-number>
+          <z30-inventory-number-date>20170627</z30-inventory-number-date>
+          <z30-last-shelf-report-date>20210813</z30-last-shelf-report-date>
+          <z30-price>249.00</z30-price>
+          <z30-shelf-report-number/>
+          <z30-on-shelf-date>00000000</z30-on-shelf-date>
+          <z30-on-shelf-seq>000000</z30-on-shelf-seq>
+          <z30-doc-number-2>000000000</z30-doc-number-2>
+          <z30-schedule-sequence-2>00000</z30-schedule-sequence-2>
+          <z30-copy-sequence-2>00000</z30-copy-sequence-2>
+          <z30-vendor-code/>
+          <z30-invoice-number/>
+          <z30-line-number>00000</z30-line-number>
+          <z30-pages/>
+          <z30-issue-date>00000000</z30-issue-date>
+          <z30-expected-arrival-date>00000000</z30-expected-arrival-date>
+          <z30-arrival-date>00000000</z30-arrival-date>
+          <z30-item-statistic/>
+          <z30-item-process-status>Bez kódu procesu zpracování</z30-item-process-status>
+          <z30-copy-id/>
+          <z30-hol-doc-number>000000000</z30-hol-doc-number>
+          <z30-temp-location>Ne</z30-temp-location>
+          <z30-enumeration-a/>
+          <z30-enumeration-b/>
+          <z30-enumeration-c/>
+          <z30-enumeration-d/>
+          <z30-enumeration-e/>
+          <z30-enumeration-f/>
+          <z30-enumeration-g/>
+          <z30-enumeration-h/>
+          <z30-chronological-i/>
+          <z30-chronological-j/>
+          <z30-chronological-k/>
+          <z30-chronological-l/>
+          <z30-chronological-m/>
+          <z30-supp-index-o/>
+          <z30-85x-type/>
+          <z30-depository-id/>
+          <z30-linking-number>000000000</z30-linking-number>
+          <z30-gap-indicator/>
+          <z30-maintenance-count>008</z30-maintenance-count>
+          <z30-process-status-date>20170630</z30-process-status-date>
+          <z30-upd-time-stamp>202001031427405</z30-upd-time-stamp>
+          <z30-ip-last-return-v6/>
+        </z30>
+        <z30-sub-library-code>SVKVV</z30-sub-library-code>
+        <z30-collection-code>VOLNY</z30-collection-code>
+        <z30-item-process-status-code/>
+        <z30-item-status-code>01</z30-item-status-code>
+      </cash>
+      <cash type="debit" transferred="N" href="https://aleph.test/rest-dlf/patron/123/circulationActions/cash/LIBID85037%20%20%20%20%20%20%20201804092495284">
+        <z13>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z13-doc-number>000754734</z13-doc-number>
+          <z13-year>2017</z13-year>
+          <z13-open-date>20170301</z13-open-date>
+          <z13-update-date>20171022</z13-update-date>
+          <z13-call-no-key/>
+          <z13-call-no-code>Z30-1</z13-call-no-code>
+          <z13-call-no>392A46744</z13-call-no>
+          <z13-author-code>S100</z13-author-code>
+          <z13-author>Bezpalcová, Vladimíra</z13-author>
+          <z13-title-code>24510</z13-title-code>
+          <z13-title>K přijímačkám s nadhledem : příprava na jednotné přijímací zkoušky z českého jazyka 9.</z13-title>
+          <z13-imprint-code>264 1</z13-imprint-code>
+          <z13-imprint>Nakladatelství Fraus,</z13-imprint>
+          <z13-isbn-issn-code>ISB</z13-isbn-issn-code>
+          <z13-isbn-issn>978-80-7489-353-7</z13-isbn-issn>
+          <z13-upd-time-stamp>201705312352415</z13-upd-time-stamp>
+        </z13>
+        <z31>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z31-id>85037</z31-id>
+          <z31-sequence>201804092495284</z31-sequence>
+          <z31-date>20180409</z31-date>
+          <z31-status>Neplaceno/připsáno k dobru čtenáři</z31-status>
+          <z31-sub-library>Volný výběr</z31-sub-library>
+          <z31-alpha>L</z31-alpha>
+          <z31-type>Pozdní vrácení</z31-type>
+          <z31-credit-debit>K tíži</z31-credit-debit>
+          <z31-sum>(190.00)</z31-sum>
+          <z31-vat-sum>(0.00)</z31-vat-sum>
+          <z31-net-sum>(190.00)</z31-net-sum>
+          <z31-payment-date>00000000</z31-payment-date>
+          <z31-payment-hour>0000</z31-payment-hour>
+          <z31-payment-cataloger>GPE1</z31-payment-cataloger>
+          <z31-payment-target>Volný výběr</z31-payment-target>
+          <z31-payment-ip>172.16.3.88</z31-payment-ip>
+          <z31-payment-receipt-number/>
+          <z31-payment-mode/>
+          <z31-payment-identifier>GPE-81-49000</z31-payment-identifier>
+          <z31-description>Pozdní vrácení</z31-description>
+          <z31-key>000754734000030     003145417                     20171121201801042018040907122359080020171205</z31-key>
+          <z31-key-type>Z36</z31-key-type>
+          <z31-transfer-department/>
+          <z31-transfer-date>00000000</z31-transfer-date>
+          <z31-transfer-number/>
+          <z31-recall-transfer-status/>
+          <z31-recall-transfer-date>00000000</z31-recall-transfer-date>
+          <z31-recall-transfer-number/>
+          <z31-related-z31-key/>
+          <z31-related-z31-key-type/>
+          <z31-requester-name/>
+          <z31-upd-time-stamp>201804090800471</z31-upd-time-stamp>
+          <z31-payment-ip-v6/>
+          <z31-note/>
+        </z31>
+        <z30>
+          <translate-change-active-library>LIBID</translate-change-active-library>
+          <z30-doc-number>000754734</z30-doc-number>
+          <z30-item-sequence>    3.0</z30-item-sequence>
+          <z30-barcode>2631080653</z30-barcode>
+          <z30-sub-library>Volný výběr</z30-sub-library>
+          <z30-material>Knihy</z30-material>
+          <z30-item-status>Absenčně</z30-item-status>
+          <z30-open-date>20170406</z30-open-date>
+          <z30-update-date>20170630</z30-update-date>
+          <z30-cataloger>SMOLIKOVA</z30-cataloger>
+          <z30-date-last-return>20200103</z30-date-last-return>
+          <z30-hour-last-return>1427</z30-hour-last-return>
+          <z30-ip-last-return>ETF</z30-ip-last-return>
+          <z30-no-loans>008</z30-no-loans>
+          <z30-alpha>L</z30-alpha>
+          <z30-collection>Volný výběr</z30-collection>
+          <z30-call-no-type>R</z30-call-no-type>
+          <z30-call-no>392A46744b</z30-call-no>
+          <z30-call-no-key>0000392a0046744b</z30-call-no-key>
+          <z30-call-no-2-type/>
+          <z30-call-no-2>811.162.3</z30-call-no-2>
+          <z30-call-no-2-key>0000811.0000162.0000003</z30-call-no-2-key>
+          <z30-description/>
+          <z30-note-opac/>
+          <z30-note-circulation/>
+          <z30-note-internal>N:D$$z00627</z30-note-internal>
+          <z30-order-number>000127954</z30-order-number>
+          <z30-inventory-number>2017:7370</z30-inventory-number>
+          <z30-inventory-number-date>20170627</z30-inventory-number-date>
+          <z30-last-shelf-report-date>20210813</z30-last-shelf-report-date>
+          <z30-price>249.00</z30-price>
+          <z30-shelf-report-number/>
+          <z30-on-shelf-date>00000000</z30-on-shelf-date>
+          <z30-on-shelf-seq>000000</z30-on-shelf-seq>
+          <z30-doc-number-2>000000000</z30-doc-number-2>
+          <z30-schedule-sequence-2>00000</z30-schedule-sequence-2>
+          <z30-copy-sequence-2>00000</z30-copy-sequence-2>
+          <z30-vendor-code/>
+          <z30-invoice-number/>
+          <z30-line-number>00000</z30-line-number>
+          <z30-pages/>
+          <z30-issue-date>00000000</z30-issue-date>
+          <z30-expected-arrival-date>00000000</z30-expected-arrival-date>
+          <z30-arrival-date>00000000</z30-arrival-date>
+          <z30-item-statistic/>
+          <z30-item-process-status>Bez kódu procesu zpracování</z30-item-process-status>
+          <z30-copy-id/>
+          <z30-hol-doc-number>000000000</z30-hol-doc-number>
+          <z30-temp-location>Ne</z30-temp-location>
+          <z30-enumeration-a/>
+          <z30-enumeration-b/>
+          <z30-enumeration-c/>
+          <z30-enumeration-d/>
+          <z30-enumeration-e/>
+          <z30-enumeration-f/>
+          <z30-enumeration-g/>
+          <z30-enumeration-h/>
+          <z30-chronological-i/>
+          <z30-chronological-j/>
+          <z30-chronological-k/>
+          <z30-chronological-l/>
+          <z30-chronological-m/>
+          <z30-supp-index-o/>
+          <z30-85x-type/>
+          <z30-depository-id/>
+          <z30-linking-number>000000000</z30-linking-number>
+          <z30-gap-indicator/>
+          <z30-maintenance-count>008</z30-maintenance-count>
+          <z30-process-status-date>20170630</z30-process-status-date>
+          <z30-upd-time-stamp>202001031427405</z30-upd-time-stamp>
+          <z30-ip-last-return-v6/>
+        </z30>
+        <z30-sub-library-code>SVKVV</z30-sub-library-code>
+        <z30-collection-code>VOLNY</z30-collection-code>
+        <z30-item-process-status-code/>
+        <z30-item-status-code>01</z30-item-status-code>
+      </cash>
+    </institution>
+  </charges>
+</pat-cash-list>

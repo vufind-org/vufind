@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SafeMoneyFormat view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\SafeMoneyFormat;
@@ -80,22 +82,20 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      */
     public function testFormatting()
     {
-        $escaper = new \Laminas\View\Helper\EscapeHtml();
-        $view = new \Laminas\View\Renderer\PhpRenderer();
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('escapeHtml', $escaper);
-        $view->setHelperPluginManager($container);
-
         // test default settings
-        $smf = new SafeMoneyFormat();
-        $smf->setView($view);
-        $this->assertEquals('$3.00', $smf->__invoke(3));
-        $this->assertEquals('€3.00', $smf->__invoke(3, 'EUR'));
+        $smf = new SafeMoneyFormat(
+            new \VuFind\Service\CurrencyFormatter(),
+            new \Laminas\View\Helper\EscapeHtml()
+        );
+        $this->assertEquals('$3.00', $smf(3));
+        $this->assertEquals('€3.00', $smf(3, 'EUR'));
 
         // test override default currency
-        $smf = new SafeMoneyFormat('EUR');
-        $smf->setView($view);
-        $this->assertEquals('€3.00', $smf->__invoke(3));
-        $this->assertEquals('$3.00', $smf->__invoke(3, 'USD'));
+        $smf = new SafeMoneyFormat(
+            new \VuFind\Service\CurrencyFormatter('EUR'),
+            new \Laminas\View\Helper\EscapeHtml()
+        );
+        $this->assertEquals('€3.00', $smf(3));
+        $this->assertEquals('$3.00', $smf(3, 'USD'));
     }
 }

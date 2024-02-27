@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Get Record Details" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -90,8 +92,12 @@ class GetRecordDetails extends AbstractBase
      * @param TabManager        $tm       Record Tab manager
      * @param RendererInterface $renderer Renderer
      */
-    public function __construct(array $config, Request $request, Loader $loader,
-        TabManager $tm, RendererInterface $renderer
+    public function __construct(
+        array $config,
+        Request $request,
+        Loader $loader,
+        TabManager $tm,
+        RendererInterface $renderer
     ) {
         $this->config = $config;
         $this->request = $request;
@@ -112,15 +118,19 @@ class GetRecordDetails extends AbstractBase
         $driver = $this->recordLoader
             ->load($params->fromQuery('id'), $params->fromQuery('source'));
         $viewtype = preg_replace(
-            '/\W/', '', trim(strtolower($params->fromQuery('type')))
+            '/\W/',
+            '',
+            trim(strtolower($params->fromQuery('type')))
         );
 
         $details = $this->tabManager->getTabDetailsForRecord(
-            $driver, $this->request, 'Information'
+            $driver,
+            $this->request,
+            'Information'
         );
 
         $html = $this->renderer->render(
-            "record/ajaxview-" . $viewtype . ".phtml",
+            'record/ajaxview-' . $viewtype . '.phtml',
             [
                 'defaultTab' => $details['default'],
                 'driver' => $driver,

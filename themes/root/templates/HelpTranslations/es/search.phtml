@@ -1,31 +1,31 @@
 <h1>Conectivas lógicas</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Búsqueda comodín</a></li>
-  <li><a href="#Fuzzy Searches">Búsqueda difusa</a></li>
-  <li><a href="#Proximity Searches">Búsqueda de proximidad</a></li>
-  <li><a href="#Range Searches">Búsqueda de rango</a></li>
-  <li><a href="#Boosting a Term">Estimular un término</a></li>
-  <li><a href="#Boolean operators">Operadores booleanos</a>
+  <li><a href="#wildcard_searches">Búsqueda comodín</a></li>
+  <li><a href="#fuzzy_searches">Búsqueda difusa</a></li>
+  <li><a href="#proximity_searches">Búsqueda de proximidad</a></li>
+  <li><a href="#range_searches">Búsqueda de rango</a></li>
+  <li><a href="#boosting_a_term">Estimular un término</a></li>
+  <li><a href="#boolean_operators">Operadores booleanos</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Búsqueda comodín</dt>
+  <dt><a id="wildcard_searches"></a>Búsqueda comodín</dt>
   <dd>
     <p>Para sustituir un carácter determinado use el signo de interrogación (<strong>?</strong>).</p>
     <p>Por ejemplo, para buscar por "text" o "test" puede realizar la búsqueda:</p>
     <pre class="code">te?t</pre>
 
-    <p>Para sustituir múltiples carácteres (zero o más) use el asterisco (<strong>*</strong>).</p>
+    <p>Para sustituir múltiples caracteres (cero o más) use el asterisco (<strong>*</strong>).</p>
     <p>Por ejemplo, para buscar por "test", "tests" o "tester" introduzca: </p>
     <pre class="code">test*</pre>
 
@@ -33,31 +33,31 @@
     <pre class="code">te*t</pre>
   </dd>
 
-  <dt><a name="Fuzzy Searches"></a>Búsqueda difusa</dt>
+  <dt><a id="fuzzy_searches"></a>Búsqueda difusa</dt>
   <dd>
-    <p>Aplica el tilde (<strong>~</strong>) al final de un término sólo para buscar un término graficamente similar, la así llamada búsqueda difusa.
-       Por ejemplo, para buscar un término graficamente similar a "mono"</p>
+    <p>Aplica el tilde (<strong>~</strong>) al final de un término sólo para buscar un término gráficamente similar, la así llamada búsqueda difusa.
+       Por ejemplo, para buscar un término gráficamente similar a "mono"</p>
     <pre class="code">mono~</pre>
     <p>Esta búsqueda devolverá resultados con términos como mono, cono o tono.</p>
 
     <p>Puede ajustar el parámetro de similaridad especificando valores entre 0 y 1.
-       Cuanto más cercano el valor al 1, tanto más cercana es la similaridad. Poniendolo al 1
+       Cuanto más cercano el valor al 1, tanto más cercana es la similaridad. Poniéndolo al 1
        se buscará sólo términos escritos similarmente.
        Por ejemplo:</p>
     <pre class="code">mono~0.8</pre>
-    <p>Cuando no se indica el parámetro, se usa el valor estandar, que es el 0.5.</p>
+    <p>Cuando no se indica el parámetro, se usa el valor estándar, que es el 0.5.</p>
   </dd>
 
-  <dt><a name="Proximity Searches"></a>Búsqueda de proximidad</dt>
+  <dt><a id="proximity_searches"></a>Búsqueda de proximidad</dt>
   <dd>
     <p>
     Aplicando la búsqueda de proximidad usa el tilde (<strong>~</strong>) al final de un término múltiple.
-    Por ejemplo, para buscar por "marketing" y "Meffert" que estén a distancia inferior a cinco palabras realize la búsqueda siguiente:
+    Por ejemplo, para buscar por "marketing" y "Meffert" que estén a distancia inferior a cinco palabras realice la búsqueda siguiente:
     </p>
     <pre class="code">"marketing Meffert"~5</pre>
   </dd>
 
-  <dt><a name="Range Searches"></a>Búsqueda por rango</dt>
+  <dt><a id="range_searches"></a>Búsqueda por rango</dt>
   <dd>
     <p>
       Para realizar una búsqueda por rango aplique los corchetes (<strong>{ }</strong>).
@@ -70,7 +70,7 @@
     <pre class="code">[2009 TO 2012]</pre>
   </dd>
 
-  <dt><a name="Boosting a Term"></a>Estimular un término</dt>
+  <dt><a id="boosting_a_term"></a>Estimular un término</dt>
   <dd>
     <p>
       Use el símbolo acento circunflejo (<strong>^</strong>) para dar mayor importancia a un término en una búsqueda con términos múltiples:
@@ -80,7 +80,7 @@
     </p>
   </dd>
 
-  <dt><a name="Boolean operators"></a>Operadores booleanos</dt>
+  <dt><a id="boolean_operators"></a>Operadores booleanos</dt>
   <dd>
     <p>
       Los operadores Booleanos posibilitan conectar palabras o frases lógicamente.
@@ -94,11 +94,11 @@
     <p>Los operadores Booleanos deben escribirse en mayúscula.</p>
     <dl>
 
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
         <p>
             El operador AND es por defecto el operador de conjunción.
-            Ello significa que el operador <strong>AND</strong> será usado por el catálogo automaticamente,
+            Ello significa que el operador <strong>AND</strong> será usado por el catálogo automáticamente,
             sin introducirlo entre los términos de búsqueda.
             El operador <strong>AND</strong> localiza registros que contengan
             todos los términos de búsqueda especificados.
@@ -110,17 +110,17 @@
         <pre class="code">marketing AND Meffert</pre>
       </dd>
 
-      <dt><a name="+"></a>+ (más)</dt>
+      <dt><a id="boolean_plus"></a>+ (más)</dt>
       <dd>
         <p>
            El operador más (<strong>+</strong>) requiere un término a continuación.
-           Así los resultados deben de figurar de ese término en algún campo del registro.
+           Así los resultados de ese término deben figurar en algún campo del registro.
         </p>
         <p>Por ejemplo, para obtener resultados que contengan "marketing" y pueden contener "Meffert" introduzca:</p>
         <pre class="code">+marketing Meffert</pre>
       </dd>
 
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>Aplicando el operador <strong>OR</strong> la búsqueda devuelve resultados
         en los cuales existe una de las palabras.
@@ -129,10 +129,10 @@
         <pre class="code">marketing OR Meffert</pre>
       </dd>
 
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>
-           Utilize el operador <strong>NOT</strong> para localizar registros
+           Utilice el operador <strong>NOT</strong> para localizar registros
            que no contengan el primer término de búsqueda sino el segundo.
         </p>
         <p>
@@ -145,7 +145,7 @@
         <pre class="code">NOT marketing</pre>
       </dd>
 
-      <dt><a name="-"></a>- (menos)</dt>
+      <dt><a id="boolean_minus"></a>- (menos)</dt>
       <dd>
         <p>Poniendo el operador menos (<strong>-</strong>) ante un término excluye documentos que contengan esta palabra.</p>
         <p>Por ejemplo:</p>

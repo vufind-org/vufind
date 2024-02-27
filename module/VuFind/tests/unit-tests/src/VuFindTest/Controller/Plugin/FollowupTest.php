@@ -3,7 +3,7 @@
 /**
  * Followup controller plugin tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Controller\Plugin;
 
 use Laminas\Session\Container;
 use VuFind\Controller\Plugin\Followup;
+
+use function get_class;
 
 /**
  * Followup controller plugin tests.
@@ -70,7 +73,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
         // standard controller-provided URL retrieval:
         $this->assertEquals('http://localhost/default-url', $f->retrieve('url'));
         // no parameters retrieves session object:
-        $this->assertEquals('Laminas\Session\Container', get_class($f->retrieve()));
+        $this->assertEquals(Container::class, get_class($f->retrieve()));
         // test defaulting behavior:
         $this->assertEquals('foo', $f->retrieve('bar', 'foo'));
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * External Authentication/Authorization Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -73,8 +75,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
             // Access granted, redirect to EZproxy
             if (empty($config->EZproxy->disable_ticket_auth_logging)) {
                 $logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
-                $logger->log(
-                    \Laminas\Log\Logger::INFO,
+                $logger->info(
                     "EZproxy login to '" . $config->EZproxy->host
                     . "' for '" . ($user ? $user->username : 'anonymous')
                     . "' from IP address "
@@ -82,7 +83,8 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
                 );
             }
             $url = $this->params()->fromPost(
-                'url', $this->params()->fromQuery('url')
+                'url',
+                $this->params()->fromQuery('url')
             );
             $username = !empty($config->EZproxy->anonymous_ticket) || !$user
                 ? 'anonymous' : $user->username;

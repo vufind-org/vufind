@@ -1,43 +1,104 @@
 <?php if ($this->pageCount): ?>
-  <ul class="pagination" aria-label="<?=$this->transEscAttr('pagination_label')?>">
-    <?php if (isset($this->previous)): ?>
-      <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
-        <li role="none">
-          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEscAttr('page_first')?>">[1]</a>
-        </li>
-      <?php endif; ?>
-      <li role="none">
-        <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
-          <i class="fa fa-angle-left" aria-hidden="true"></i>
-          <?=$this->transEsc('Prev')?>
-        </a>
-      </li>
-    <?php endif; ?>
-
-    <?php if (count($this->pagesInRange) > 1): ?>
-      <?php foreach ($this->pagesInRange as $page): ?>
-        <?php if ($page != $this->current): ?>
-          <li role="none">
-            <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>" aria-label="<?=$this->transEscAttr('page_no', ['%%page%%' => $page])?>"><?=$page?></a>
-          </li>
-        <?php else: ?>
-          <li role="none" class="active" aria-current="page"><span><?=$page?></span></li>
+  <?php
+    $showFirstLast = $this->pageCount > 3 && $this->results->getOptions()->firstLastNavigationSupported();
+    $navAttrs = $this->htmlAttributes(['aria-label' => $this->translate('pagination_label')]);
+    if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+      $navAttrs->add('class', 'js-pagination');
+      if ($this->top) {
+        $navAttrs->add('class', 'js-pagination__top');
+      }
+    }
+  ?>
+  <nav<?=$navAttrs?>>
+    <?php
+      $ulAttrs = $this->htmlAttributes(['class' => 'pagination']);
+      if ($this->top) {
+        $ulAttrs->add('class', 'pagination-top');
+      }
+      if ($className = $this->options['className'] ?? '') {
+        $ulAttrs->add('class', $className);
+      }
+    ?>
+    <ul<?=$ulAttrs?>>
+      <?php if (isset($this->previous)): ?>
+        <?php if ($showFirstLast): ?>
+          <?=
+            $this->render(
+                'Helpers/pagination-item.phtml',
+                [
+                  'results' => $this->results,
+                  'current' => $this->current,
+                  'page' => 1,
+                  'liClasses' => ['page-first'],
+                  'label' => $this->translate('page_first'),
+                  'contentHtml' => '[1]',
+              ]
+            )
+          ?>
         <?php endif; ?>
-      <?php endforeach; ?>
-    <?php endif; ?>
 
-    <?php if (isset($this->next)): ?>
-      <li role="none">
-        <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>" aria-label="<?=$this->transEscAttr('page_next')?>">
-          <?=$this->transEsc('Next');?>
-          <i class="fa fa-angle-right" aria-hidden="true"></i>
-        </a>
-      </li>
-      <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
-        <li role="none">
-          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEscAttr('page_last')?>">[<?=$this->pageCount?>]</a>
-        </li>
+        <?=
+          $this->render(
+              'Helpers/pagination-item.phtml',
+              [
+                'results' => $this->results,
+                'current' => $this->current,
+                'page' => $this->previous,
+                'liClasses' => ['page-prev'],
+                'label' => $this->translate('page_prev'),
+                'contentHtml' => $this->icon('page-prev') . ' ' . $this->transEsc('Prev'),
+            ]
+          )
+        ?>
       <?php endif; ?>
-    <?php endif; ?>
-  </ul>
+
+      <?php if (count($this->pagesInRange) > 1): ?>
+        <?php foreach ($this->pagesInRange as $page): ?>
+          <?=
+            $this->render(
+                'Helpers/pagination-item.phtml',
+                [
+                  'results' => $this->results,
+                  'current' => $this->current,
+                  'page' => $page,
+                  'label' => $this->translate('page_num', ['%%page%%' => $page]),
+                  'contentHtml' => $this->escapeHtml($page),
+              ]
+            )
+          ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <?php if (isset($this->next)): ?>
+        <?=
+          $this->render(
+              'Helpers/pagination-item.phtml',
+              [
+                'results' => $this->results,
+                'current' => $this->current,
+                'page' => $this->next,
+                'liClasses' => ['page-next'],
+                'label' => $this->translate('page_next'),
+                'contentHtml' => $this->transEsc('Next') . ' ' . $this->icon('page-next'),
+            ]
+          )
+        ?>
+        <?php if ($showFirstLast): ?>
+          <?=
+            $this->render(
+                'Helpers/pagination-item.phtml',
+                [
+                  'results' => $this->results,
+                  'current' => $this->current,
+                  'page' => $this->last,
+                  'liClasses' => ['page-last'],
+                  'label' => $this->translate('page_last'),
+                  'contentHtml' => '[' . $this->escapeHtml($this->pageCount) . ']',
+              ]
+            )
+          ?>
+        <?php endif; ?>
+      <?php endif; ?>
+    </ul>
+  </nav>
 <?php endif; ?>

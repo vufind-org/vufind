@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Sitemap generator plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Sitemap;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -46,8 +48,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'StartPage' => Plugin\StartPage::class,
         'ContentPages' => Plugin\ContentPages::class,
+        'Index' => Plugin\Index::class,
+        'StartPage' => Plugin\StartPage::class,
     ];
 
     /**
@@ -56,8 +59,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Plugin\StartPage::class => InvokableFactory::class,
         Plugin\ContentPages::class => Plugin\ContentPagesFactory::class,
+        Plugin\Index::class => Plugin\IndexFactory::class,
+        Plugin\StartPage::class => InvokableFactory::class,
     ];
 
     /**
@@ -69,7 +73,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Wikipedia connection class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function is_array;
+use function strlen;
 
 /**
  * Wikipedia connection class
@@ -91,7 +97,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @param string $author The author name to search for
      *
-     * @return array
+     * @return ?array
      */
     public function get($author)
     {
@@ -102,7 +108,7 @@ class Wikipedia implements TranslatorAwareInterface
         }
 
         // Get information from Wikipedia API
-        $uri = 'http://' . $this->lang . '.wikipedia.org/w/api.php' .
+        $uri = 'https://' . $this->lang . '.wikipedia.org/w/api.php' .
                '?action=query&prop=revisions&rvprop=content&format=php' .
                '&list=allpages&titles=' . urlencode($author);
 
@@ -143,36 +149,37 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Get rid of the last pair of braces and split
         $infobox = explode(
-            "\n|", preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2))
+            "\n|",
+            preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2))
         );
 
         // Look through every row of the infobox
         foreach ($infobox as $row) {
-            $data  = explode("=", $row);
+            $data  = explode('=', $row);
             $key   = trim(array_shift($data));
-            $value = trim(join("=", $data));
+            $value = trim(implode('=', $data));
 
             // At the moment we only want stuff related to the image.
             switch (strtolower($key)) {
-            case "img":
-            case "image":
-            case "image:":
-            case "image_name":
-            case "imagem":
-            case 'imagen':
-            case 'immagine':
-                $imageName = str_replace(' ', '_', $value);
-                break;
-            case "caption":
-            case "img_capt":
-            case "image_caption":
-            case "legenda":
-            case 'textoimagen':
-                $imageCaption = $value;
-                break;
-            default:
-                /* Nothing else... yet */
-                break;
+                case 'img':
+                case 'image':
+                case 'image:':
+                case 'image_name':
+                case 'imagem':
+                case 'imagen':
+                case 'immagine':
+                    $imageName = str_replace(' ', '_', $value);
+                    break;
+                case 'caption':
+                case 'img_capt':
+                case 'image_caption':
+                case 'legenda':
+                case 'textoimagen':
+                    $imageCaption = $value;
+                    break;
+                default:
+                    /* Nothing else... yet */
+                    break;
             }
         }
 
@@ -195,12 +202,12 @@ class Wikipedia implements TranslatorAwareInterface
         foreach ($matches[1] as $m) {
             // Check if this is the Infobox; name may vary by language
             $infoboxTags = [
-                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia'
+                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia',
             ];
             foreach ($infoboxTags as $tag) {
-                if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
+                if (str_starts_with($m, '{' . $tag)) {
                     // We found an infobox!!
-                    return "{" . $m . "}";
+                    return '{' . $m . '}';
                 }
             }
         }
@@ -220,7 +227,7 @@ class Wikipedia implements TranslatorAwareInterface
         $imageName = $imageCaption = null;
         // The tag marking image files will vary depending on API language:
         $tags = [
-            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image'
+            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image',
         ];
         $pattern = '/(\x5b\x5b)('
             . implode('|', $tags)
@@ -254,22 +261,23 @@ class Wikipedia implements TranslatorAwareInterface
         //    ... unless there's a better pattern? TODO
         // eg. [[File:Johann Sebastian Bach.jpg|thumb|Bach in a 1748 portrait by
         //     [[Elias Gottlob Haussmann|Haussmann]]]]
-        $open    = "\\[";
-        $close   = "\\]";
-        $content = "(?>[^\\[\\]]+)";  // Anything but [ or ]
+        $open    = '\\[';
+        $close   = '\\]';
+        $content = '(?>[^\\[\\]]+)';  // Anything but [ or ]
         // We can either find content or recursive brackets:
         $recursive_match = "($content|(?R))*";
-        $body .= "[[file:bad]]";
+        $body .= '[[file:bad]]';
         preg_match_all("/{$open}{$recursive_match}{$close}/Us", $body, $new_matches);
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {
                 foreach ((array)$nm as $n) {
                     // If it's a file link get rid of it
-                    if (strtolower(substr($n, 0, 7)) == "[[file:"
-                        || strtolower(substr($n, 0, 8)) == "[[image:"
+                    if (
+                        str_starts_with(strtolower($n), '[[file:')
+                        || str_starts_with(strtolower($n), '[[image:')
                     ) {
-                        $body = str_replace($n, "", $body);
+                        $body = str_replace($n, '', $body);
                     }
                 }
             }
@@ -287,7 +295,7 @@ class Wikipedia implements TranslatorAwareInterface
     protected function sanitizeWikipediaBody($body)
     {
         // Cull our content back to everything before the first heading
-        $body = trim(substr($body, 0, strpos($body, "==")));
+        $body = trim(substr($body, 0, strpos($body, '==')));
 
         // Strip out links
         $body = $this->stripImageAndFileLinks($body);
@@ -306,7 +314,7 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Fix pronunciation guides
         $pattern[] = '/({{)pron-en\|([^}]*)(}})/Us';
-        $replacement[] = $this->translate('pronounced') . " /$2/";
+        $replacement[] = $this->translate('pronounced') . ' /$2/';
 
         // Fix dashes
         $pattern[] = '/{{ndash}}/';
@@ -314,13 +322,13 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Removes citations
         $pattern[] = '/({{)[^}]*(}})/Us';
-        $replacement[] = "";
+        $replacement[] = '';
         //  <ref ... > ... </ref> OR <ref> ... </ref>
         $pattern[] = '/<ref[^\/]*>.*<\/ref>/Us';
-        $replacement[] = "";
+        $replacement[] = '';
         //    <ref ... />
         $pattern[] = '/<ref.*\/>/Us';
-        $replacement[] = "";
+        $replacement[] = '';
 
         // Removes comments followed by carriage returns to avoid excess whitespace
         $pattern[] = '/<!--.*-->\n*/Us';
@@ -331,14 +339,14 @@ class Wikipedia implements TranslatorAwareInterface
         $replacement[] = '<strong>$1</strong>';
 
         // Trim leading newlines (which can result from leftovers after stripping
-        // other items above).  We want this to be greedy.
+        // other items above). We want this to be greedy.
         $pattern[] = '/^\n*/s';
         $replacement[] = '';
 
         // Convert multiple newlines into two breaks
         // We DO want this to be greedy
         $pattern[] = "/\n{2,}/s";
-        $replacement[] = '<br/><br/>';
+        $replacement[] = '<br><br>';
 
         return preg_replace($pattern, $replacement, $body);
     }
@@ -407,7 +415,7 @@ class Wikipedia implements TranslatorAwareInterface
      * This method is responsible for parsing the output from the Wikipedia
      * REST API.
      *
-     * @param string $rawBody The Wikipedia response to parse
+     * @param array $rawBody The Wikipedia response to parse
      *
      * @return array
      * @author Rushikesh Katikar <rushikesh.katikar@gmail.com>
@@ -474,7 +482,7 @@ class Wikipedia implements TranslatorAwareInterface
     protected function getWikipediaImageURL($imageName)
     {
         $imageUrl = null;
-        $url = "http://{$this->lang}.wikipedia.org/w/api.php" .
+        $url = "https://{$this->lang}.wikipedia.org/w/api.php" .
                '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=php' .
                '&titles=Image:' . urlencode($imageName);
 
@@ -489,7 +497,8 @@ class Wikipedia implements TranslatorAwareInterface
 
         if ($response = $result->getBody()) {
             if ($imageinfo = unserialize($response)) {
-                if (isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
+                if (
+                    isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
                 ) {
                     $imageUrl
                         = $imageinfo['query']['pages']['-1']['imageinfo'][0]['url'];
@@ -498,9 +507,9 @@ class Wikipedia implements TranslatorAwareInterface
                 // Hack for wikipedia api, just in case we couldn't find it
                 //   above look for a http url inside the response.
                 if (!isset($imageUrl)) {
-                    preg_match('/\"http:\/\/(.*)\"/', $response, $matches);
+                    preg_match('/\"https?:\/\/(.*)\"/', $response, $matches);
                     if (isset($matches[1])) {
-                        $imageUrl = 'http://' .
+                        $imageUrl = 'https://' .
                             substr($matches[1], 0, strpos($matches[1], '"'));
                     }
                 }

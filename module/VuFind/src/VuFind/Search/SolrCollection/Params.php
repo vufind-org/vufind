@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr Collection aspect of the Search Multi-class (Params)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrCollection;
 
 /**
@@ -58,22 +60,16 @@ class Params extends \VuFind\Search\Solr\Params
      * Pull the search parameters from the query and set up additional options using
      * a record driver representing a collection.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
+     * @param bool                              $hasSearch Is the user performing a search?
      *
      * @return void
      */
-    public function initFromRecordDriver($driver)
+    public function initFromRecordDriver($driver, bool $hasSearch = false)
     {
         $this->collectionID = $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
-            switch ($hierarchyDriver->getCollectionLinkType()) {
-            case 'All':
-                $this->collectionField = 'hierarchy_parent_id';
-                break;
-            case 'Top':
-                $this->collectionField = 'hierarchy_top_id';
-                break;
-            }
+            $this->collectionField = $hierarchyDriver->getCollectionField($hasSearch);
         }
 
         if (null === $this->collectionID) {

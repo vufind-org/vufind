@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SolrOverdrive Record Driver Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use Laminas\Config\Config;
@@ -154,7 +156,8 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
             ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
         );
         $this->assertEquals(
-            ['General notes here.', 'Translation.'], $driver->getGeneralNotes()
+            ['General notes here.', 'Translation.'],
+            $driver->getGeneralNotes()
         );
     }
 
@@ -171,7 +174,8 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
             ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
         );
         $this->assertEquals(
-            ['Summary.'], $driver->getSummary()
+            ['Summary.'],
+            $driver->getSummary()
         );
     }
 
@@ -188,7 +192,8 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
             ['description' => '<tag>&#8217;&#8217;Summary.</tag>']
         );
         $this->assertEquals(
-            ['Summary.'], array_values($driver->getSummary())
+            ['Summary.'],
+            array_values($driver->getSummary())
         );
     }
 
@@ -223,36 +228,9 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
             ['era' => ['foo'], 'genre' => ['bar']]
         );
         $this->assertEquals(
-            [['bar'], ['foo']], $driver->getAllSubjectHeadings()
+            [['bar'], ['foo']],
+            $driver->getAllSubjectHeadings()
         );
-    }
-
-    /**
-     * Test getRawData behavior in MARC mode
-     *
-     * @return void
-     */
-    public function testGetRawDataMarc(): void
-    {
-        $connector = $this->getMockConnector('{ "isMarc": true }');
-        $driver = $this->getDriver(null, null, $connector);
-        $raw = ['foo' => 'bar'];
-        $driver->setRawData($raw);
-        $this->assertEquals($raw, $driver->getRawData());
-    }
-
-    /**
-     * Test getRawData behavior in non-MARC mode
-     *
-     * @return void
-     */
-    public function testGetRawDataNonMarc(): void
-    {
-        $connector = $this->getMockConnector('{ "isMarc": false }');
-        $driver = $this->getDriver(null, null, $connector);
-        $raw = ['foo' => 'bar'];
-        $driver->setRawData(['fullrecord' => json_encode($raw)]);
-        $this->assertEquals($raw, $driver->getRawData());
     }
 
     /**
@@ -264,7 +242,9 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrOverdrive
      */
-    protected function getDriver(Config $config = null, Config $recordConfig = null,
+    protected function getDriver(
+        Config $config = null,
+        Config $recordConfig = null,
         OverdriveConnector $connector = null
     ): SolrOverdrive {
         return new SolrOverdrive(

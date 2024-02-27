@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Add ellipsis" view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+
+use function strlen;
 
 /**
  * "Add ellipsis" view helper
@@ -54,7 +58,9 @@ class AddEllipsis extends AbstractHelper
         // Remove highlighting markers from the string so we can perform a clean
         // comparison:
         $dehighlighted = str_replace(
-            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $highlighted
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            '',
+            $highlighted
         );
 
         // If the dehighlighted string is shorter than the full string, we need
@@ -78,7 +84,7 @@ class AddEllipsis extends AbstractHelper
 
             // If the first five characters don't match chances are something was cut
             // from the front:
-            if (substr($dehighlighted, 0, 5) != substr($fullString, 0, 5)) {
+            if (strncmp($dehighlighted, $fullString, 5) !== 0) {
                 $highlighted = '...' . $highlighted;
             }
 

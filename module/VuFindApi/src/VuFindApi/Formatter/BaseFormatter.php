@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Base formatter for API responses
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Formatter;
+
+use function count;
+use function is_array;
+use function is_bool;
 
 /**
  * Base formatter for API responses
@@ -59,7 +65,8 @@ class BaseFormatter
             // We don't want to return empty values -- unless it's an empty array
             // with a non-numeric key, since the key could be significant (e.g. in
             // the case of an author name => roles array with no assigned roles).
-            if ((is_numeric($key) && is_array($value) && empty($value))
+            if (
+                (is_numeric($key) && is_array($value) && empty($value))
                 || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {

@@ -3,7 +3,7 @@
 /**
  * Class Search2ApiController
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFindApi\Controller;
 
 /**

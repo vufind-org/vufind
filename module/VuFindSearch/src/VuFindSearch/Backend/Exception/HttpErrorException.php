@@ -3,7 +3,7 @@
 /**
  * HTTP error exception.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Exception;
 
 use Exception;
-
 use Laminas\Http\Response;
 
 /**
@@ -66,11 +66,15 @@ abstract class HttpErrorException extends BackendException
         $phrase = $response->getReasonPhrase();
         if ($status >= 500) {
             return new RemoteErrorException(
-                $status . ' ' . $phrase, $status, $response
+                $status . ' ' . $phrase,
+                $status,
+                $response
             );
         } else {
             return new RequestErrorException(
-                $status . ' ' . $phrase, $status, $response
+                $status . ' ' . $phrase,
+                $status,
+                $response
             );
         }
     }
@@ -85,7 +89,10 @@ abstract class HttpErrorException extends BackendException
      *
      * @return void
      */
-    public function __construct($message, $code, Response $response,
+    public function __construct(
+        $message,
+        $code,
+        Response $response,
         Exception $prev = null
     ) {
         parent::__construct($message, $code, $prev);

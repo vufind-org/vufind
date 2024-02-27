@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Default model for records
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
-use VuFind\View\Helper\Root\RecordLink;
+use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Default model for records
@@ -60,12 +67,13 @@ class DefaultRecord extends AbstractBase
      * @param \Laminas\Config\Config $searchSettings Search-specific configuration
      * file
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
-        $this->highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
+        $this->highlight = $searchSettings->General->highlighting ?? false;
 
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -82,7 +90,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -281,6 +289,51 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Return all ISBNs found in the record.
+     *
+     * @param string $mode          Mode for returning ISBNs:
+     *  - 'only10' returns only ISBN-10s
+     *  - 'prefer10' returns ISBN-10s if available, otherwise ISBN-13s (default)
+     *  - 'normalize13' returns ISBN-13s, normalizing ISBN-10s to ISBN-13s
+     * @param bool   $filterInvalid Whether to filter out invalid ISBNs
+     *
+     * @return array
+     */
+    public function getCleanISBNs(
+        string $mode = 'prefer10',
+        bool $filterInvalid = true
+    ): array {
+        $isbns = $this->getISBNs();
+        $all = $tens = $thirteens = $invalid = [];
+        foreach ($isbns as $isbn) {
+            // Strip off any unwanted notes:
+            if ($pos = strpos($isbn, ' ')) {
+                $isbn = substr($isbn, 0, $pos);
+            }
+            $isbnObj = new ISBN($isbn);
+            if ($isbnObj->isValid()) {
+                if ($isbn10 = $isbnObj->get10()) {
+                    $normalized
+                        = $mode === 'normalize13' ? $isbnObj->get13() : $isbn10;
+                    $tens[] = $normalized;
+                    $all[] = $normalized;
+                } elseif ($isbn13 = $isbnObj->get13()) {
+                    $thirteens[] = $isbn13;
+                    $all[] = $isbn13;
+                }
+            } elseif (!$filterInvalid) {
+                $invalid[] = $isbn;
+                $all[] = $isbn;
+            }
+        }
+        if ($mode === 'only10') {
+            return array_merge($tens, $invalid);
+        }
+        return $mode === 'prefer10'
+            ? array_merge($tens, $thirteens, $invalid) : $all;
+    }
+
+    /**
      * Get just the base portion of the first listed ISSN (or false if no ISSNs).
      *
      * @return mixed
@@ -363,7 +416,7 @@ class DefaultRecord extends AbstractBase
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array
@@ -395,7 +448,7 @@ class DefaultRecord extends AbstractBase
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
                     if (isset($array2[$author])) {
-                        $array1[$author] = array_merge(
+                        $array1[$author] = array_merge_recursive(
                             $array1[$author],
                             $array2[$author]
                         );
@@ -490,7 +543,9 @@ class DefaultRecord extends AbstractBase
         // Create a map of de-highlighted valeus => highlighted values.
         foreach ($this->getRawAuthorHighlights() as $current) {
             $dehighlighted = str_replace(
-                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+                '',
+                $current
             );
             $highlights[$dehighlighted] = $current;
         }
@@ -563,6 +618,16 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get the buildings containing the record.
+     *
+     * @return array
+     */
+    public function getBuildings()
+    {
+        return (array)($this->fields['building'] ?? []);
+    }
+
+    /**
      * Get an array of all ISBNs associated with the record (may be empty).
      *
      * @return array
@@ -616,14 +681,14 @@ class DefaultRecord extends AbstractBase
         // If there is a forward slash (/) in the string, remove it, and remove all
         // characters to the right of the forward slash.
         if (strpos($raw, '/') > 0) {
-            $tmpArray = explode("/", $raw);
+            $tmpArray = explode('/', $raw);
             $raw = $tmpArray[0];
         }
         /* If there is a hyphen in the string:
             a. Remove it.
             b. Inspect the substring following (to the right of) the (removed)
                hyphen. Then (and assuming that steps 1 and 2 have been carried out):
-                    i.  All these characters should be digits, and there should be
+                    i. All these characters should be digits, and there should be
                     six or less.
                     ii. If the length of the substring is less than 6, left-fill the
                     substring with zeros until  the length is six.
@@ -631,8 +696,8 @@ class DefaultRecord extends AbstractBase
         if (strpos($raw, '-') > 0) {
             // haven't checked for i. above. If they aren't all digits, there is
             // nothing that can be done, so might as well leave it.
-            $tmpArray = explode("-", $raw);
-            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, "0", STR_PAD_LEFT);
+            $tmpArray = explode('-', $raw);
+            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, '0', STR_PAD_LEFT);
         }
         return $raw;
     }
@@ -667,17 +732,30 @@ class DefaultRecord extends AbstractBase
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (in_array('Book', $formats)) {
+        if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
         } elseif (in_array('Article', $formats)) {
             return 'Article';
         } elseif (in_array('Journal', $formats)) {
             return 'Journal';
+        } elseif (strlen($this->getCleanISSN()) > 0) {
+            // If the record has an ISSN and we have not already
+            // decided it is an Article, we'll treat it as a Book
+            // if it has an ISBN and is therefore likely part of a
+            // monographic series. Otherwise, we'll treat it as a
+            // Journal.
+            // Anecdotally, some link resolvers do not return correct
+            // results when given both ISBN and ISSN for a member of a
+            // monographic series.
+            return strlen($this->getCleanISBN()) > 0 ? 'Book' : 'Journal';
         } elseif (isset($formats[0])) {
             return $formats[0];
-        } elseif (strlen($this->getCleanISSN()) > 0) {
-            return 'Journal';
         } elseif (strlen($this->getCleanISBN()) > 0) {
+            // Last ditch. Note that this is last by intention; if the
+            // record has a format set and also has an ISBN, we don't
+            // necessarily want to send the ISBN, as it may be a game
+            // or a DVD that wouldn't typically be found in OpenURL
+            // knowledgebases.
             return 'Book';
         }
         return 'UnknownFormat';
@@ -693,12 +771,14 @@ class DefaultRecord extends AbstractBase
         // Get the COinS ID -- it should be in the OpenURL section of config.ini,
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
-        if (isset($this->mainConfig->OpenURL->rfr_id)
+        if (
+            isset($this->mainConfig->OpenURL->rfr_id)
             && !empty($this->mainConfig->OpenURL->rfr_id)
         ) {
             return $this->mainConfig->OpenURL->rfr_id;
         }
-        if (isset($this->mainConfig->COinS->identifier)
+        if (
+            isset($this->mainConfig->COinS->identifier)
             && !empty($this->mainConfig->COinS->identifier)
         ) {
             return $this->mainConfig->COinS->identifier;
@@ -724,7 +804,7 @@ class DefaultRecord extends AbstractBase
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
             'rft.title' => $this->getTitle(),
-            'rft.date' => $pubDate
+            'rft.date' => $pubDate,
         ];
     }
 
@@ -749,6 +829,10 @@ class DefaultRecord extends AbstractBase
         $publishers = $this->getPublishers();
         if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
+        }
+        $placesOfPublication = $this->getPlacesOfPublication();
+        if (count($placesOfPublication) > 0) {
+            $params['rft.place'] = $placesOfPublication[0];
         }
         $params['rft.edition'] = $this->getEdition();
         $params['rft.isbn'] = (string)$this->getCleanISBN();
@@ -872,7 +956,14 @@ class DefaultRecord extends AbstractBase
         }
 
         // Assemble the URL:
-        return http_build_query($params);
+        $query = [];
+        foreach ($params as $key => $value) {
+            $value = (array)$value;
+            foreach ($value as $sub) {
+                $query[] = urlencode($key) . '=' . urlencode($sub);
+            }
+        }
+        return implode('&', $query);
     }
 
     /**
@@ -1098,7 +1189,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -1202,8 +1293,9 @@ class DefaultRecord extends AbstractBase
             'recordid'   => $this->getUniqueID(),
             'source'   => $this->getSourceIdentifier(),
         ];
-        if ($isbn = $this->getCleanISBN()) {
-            $arr['isbn'] = $isbn;
+        $isbns = $this->getCleanISBNs();
+        if (!empty($isbns)) {
+            $arr['isbns'] = $isbns;
         }
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;
@@ -1220,11 +1312,15 @@ class DefaultRecord extends AbstractBase
         if ($ismn = $this->getCleanISMN()) {
             $arr['ismn'] = $ismn;
         }
+        if ($uuid = $this->getCleanUuid()) {
+            $arr['uuid'] = $uuid;
+        }
 
         // If an ILS driver has injected extra details, check for IDs in there
         // to fill gaps:
         if ($ilsDetails = $this->getExtraDetail('ils_details')) {
-            foreach (['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn'] as $key) {
+            $idTypes = ['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn', 'uuid'];
+            foreach ($idTypes as $key) {
                 if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
                     $arr[$key] = $ilsDetails[$key];
                 }
@@ -1295,6 +1391,30 @@ class DefaultRecord extends AbstractBase
     public function getUPC()
     {
         return (array)($this->fields['upc_str_mv'] ?? []);
+    }
+
+    /**
+     * Get UUIDs (Universally unique identifier). These are commonly used in, for
+     * example, digital library or repository systems and can be a useful match
+     * point with third party systems.
+     *
+     * @return array
+     */
+    public function getUuids()
+    {
+        return (array)($this->fields['uuid_str_mv'] ?? []);
+    }
+
+    /**
+     * Get just the first listed UUID (Universally unique identifier), or false if
+     * none available.
+     *
+     * @return mixed
+     */
+    public function getCleanUuid()
+    {
+        $uuids = $this->getUuids();
+        return empty($uuids) ? false : $uuids[0];
     }
 
     /**
@@ -1412,16 +1532,16 @@ class DefaultRecord extends AbstractBase
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
-     * @param string     $format     Name of format to use (corresponds with OAI-PMH
-     * metadataPrefix parameter).
-     * @param string     $baseUrl    Base URL of host containing VuFind (optional;
+     * @param string       $format  Name of format to use (corresponds with
+     * OAI-PMH metadataPrefix parameter).
+     * @param string       $baseUrl Base URL of host containing VuFind (optional;
      * may be used to inject record URLs into XML when appropriate).
-     * @param RecordLink $recordLink Record link helper (optional; may be used to
+     * @param RecordLinker $linker  Record linker helper (optional; may be used to
      * inject record URLs into XML when appropriate).
      *
-     * @return mixed         XML, or false if format unsupported.
+     * @return mixed XML, or false if format unsupported.
      */
-    public function getXML($format, $baseUrl = null, $recordLink = null)
+    public function getXML($format, $baseUrl = null, $linker = null)
     {
         // For OAI-PMH Dublin Core, produce the necessary XML:
         if ($format == 'oai_dc') {
@@ -1452,11 +1572,13 @@ class DefaultRecord extends AbstractBase
             }
             foreach ($this->getAllSubjectHeadings() as $subj) {
                 $xml->addChild(
-                    'subject', htmlspecialchars(implode(' -- ', $subj)), $dc
+                    'subject',
+                    htmlspecialchars(implode(' -- ', $subj)),
+                    $dc
                 );
             }
-            if (null !== $baseUrl && null !== $recordLink) {
-                $url = $baseUrl . $recordLink->getUrl($this);
+            if (null !== $baseUrl && null !== $linker) {
+                $url = $baseUrl . $linker->getUrl($this);
                 $xml->addChild('identifier', $url, $dc);
             }
 
@@ -1469,7 +1591,7 @@ class DefaultRecord extends AbstractBase
 
     /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *
@@ -1568,25 +1690,25 @@ class DefaultRecord extends AbstractBase
         $types = [];
         foreach ($this->getFormats() as $format) {
             switch ($format) {
-            case 'Book':
-            case 'eBook':
-                $types['Book'] = 1;
-                break;
-            case 'Video':
-            case 'VHS':
-                $types['Movie'] = 1;
-                break;
-            case 'Photo':
-                $types['Photograph'] = 1;
-                break;
-            case 'Map':
-                $types['Map'] = 1;
-                break;
-            case 'Audio':
-                $types['MusicAlbum'] = 1;
-                break;
-            default:
-                $types['CreativeWork'] = 1;
+                case 'Book':
+                case 'eBook':
+                    $types['Book'] = 1;
+                    break;
+                case 'Video':
+                case 'VHS':
+                    $types['Movie'] = 1;
+                    break;
+                case 'Photo':
+                    $types['Photograph'] = 1;
+                    break;
+                case 'Map':
+                    $types['Map'] = 1;
+                    break;
+                case 'Audio':
+                    $types['MusicAlbum'] = 1;
+                    break;
+                default:
+                    $types['CreativeWork'] = 1;
             }
         }
         return array_keys($types);

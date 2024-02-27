@@ -1,8 +1,9 @@
 <?php
+
 /**
  * User permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
+
+use function count;
 
 /**
  * LDAP permission provider for VuFind.
@@ -39,7 +43,8 @@ use LmcRbacMvc\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class User implements PermissionProviderInterface,
+class User implements
+    PermissionProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

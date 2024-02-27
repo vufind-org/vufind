@@ -3,7 +3,7 @@
 /**
  * Trait with utility methods for user creation/management.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
@@ -42,23 +43,6 @@ use Behat\Mink\Element\Element;
 trait UserCreationTrait
 {
     /**
-     * Mink support function: assert a warning message in the lightbox.
-     *
-     * @param Element $page    Page element
-     * @param string  $message Expected message
-     *
-     * @return void
-     */
-    protected function assertLightboxWarning(Element $page, $message)
-    {
-        $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || strlen(trim($warning->getText())) == 0) {
-            $warning = $this->findCss($page, '.modal-body .alert-danger');
-        }
-        $this->assertEquals($message, $warning->getText());
-    }
-
-    /**
      * Mink support function: fill in the account creation form.
      *
      * @param Element $page      Page element.
@@ -74,12 +58,13 @@ trait UserCreationTrait
             'email' => 'username1@ignore.com',
             'username' => 'username1',
             'password' => 'test',
-            'password2' => 'test'
+            'password2' => 'test',
         ];
 
         foreach ($defaults as $field => $default) {
             $this->findCssAndSetValue(
-                $page, '#account_' . $field,
+                $page,
+                '#account_' . $field,
                 $overrides[$field] ?? $default
             );
         }
@@ -96,18 +81,26 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInLoginForm(Element $page, $username, $password,
-        $inModal = true, $prefix = ''
+    protected function fillInLoginForm(
+        Element $page,
+        $username,
+        $password,
+        $inModal = true,
+        $prefix = ''
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         if (null !== $username) {
             $this->findCssAndSetValue(
-                $page, $prefix . '[name="username"]', $username
+                $page,
+                $prefix . '[name="username"]',
+                $username
             );
         }
         if (null !== $password) {
             $this->findCssAndSetValue(
-                $page, $prefix . '[name="password"]', $password
+                $page,
+                $prefix . '[name="password"]',
+                $password
             );
         }
     }
@@ -123,8 +116,12 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInChangePasswordForm(Element $page, $old, $new,
-        $inModal = false, $prefix = '#newpassword '
+    protected function fillInChangePasswordForm(
+        Element $page,
+        $old,
+        $new,
+        $inModal = false,
+        $prefix = '#newpassword '
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $this->findCssAndSetValue($page, $prefix . '[name="oldpwd"]', $old);
@@ -146,6 +143,5 @@ trait UserCreationTrait
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
-        $this->snooze();
     }
 }

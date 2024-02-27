@@ -3,7 +3,7 @@
 /**
  * Class PageLocatorTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Content;
 
 use VuFind\Content\PageLocator;
@@ -61,7 +62,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                 'result' => [
                     'renderer' => 'phtml',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page1.phtml',
+                    'relativePath' => 'page-locator-test/page1.phtml',
                     'page' => 'page1',
+                    'theme' => 'parent',
+                    'matchType' => 'pageName',
                 ],
             ],
             [
@@ -69,7 +73,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                 'result' => [
                     'renderer' => 'phtml',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page2_aa.phtml',
+                    'relativePath' => 'page-locator-test/page2_aa.phtml',
                     'page' => 'page2_aa',
+                    'theme' => 'parent',
+                    'matchType' => 'language',
                 ],
             ],
             [
@@ -77,7 +84,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                 'result' => [
                     'renderer' => 'phtml',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page3_bb.phtml',
+                    'relativePath' => 'page-locator-test/page3_bb.phtml',
                     'page' => 'page3_bb',
+                    'theme' => 'parent',
+                    'matchType' => 'defaultLanguage',
                 ],
             ],
             [
@@ -85,7 +95,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                 'result' => [
                     'renderer' => 'md',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page4.md',
+                    'relativePath' => 'page-locator-test/page4.md',
                     'page' => 'page4',
+                    'theme' => 'parent',
+                    'matchType' => 'pageName',
                 ],
             ],
             [
@@ -93,7 +106,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                 'result' => [
                     'renderer' => 'md',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page5_aa.md',
+                    'relativePath' => 'page-locator-test/page5_aa.md',
                     'page' => 'page5_aa',
+                    'theme' => 'parent',
+                    'matchType' => 'language',
                 ],
             ],
             [
@@ -101,7 +117,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                 'result' => [
                     'renderer' => 'md',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page6_bb.md',
+                    'relativePath' => 'page-locator-test/page6_bb.md',
                     'page' => 'page6_bb',
+                    'theme' => 'parent',
+                    'matchType' => 'defaultLanguage',
                 ],
             ],
             [
@@ -112,7 +131,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
         $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
         $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
         foreach ($testCases as $case) {
-            $this->assertEquals($case['result'], $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName']));
+            $this->assertEquals(
+                $case['result'],
+                $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName'])
+            );
         }
     }
 }

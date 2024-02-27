@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: notify users of scheduled searches.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\ScheduledSearch;
 
 use Laminas\Config\Config;
@@ -39,6 +41,9 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
+use function in_array;
 
 /**
  * Console command: notify users of scheduled searches.
@@ -167,10 +172,17 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param string|null    $name            The name of the command; passing
      * null means it must be set in configure()
      */
-    public function __construct(HMAC $hmac, PhpRenderer $renderer,
-        ResultsManager $resultsManager, array $scheduleOptions, Config $mainConfig,
-        Mailer $mailer, SearchTable $searchTable, UserTable $userTable,
-        LocaleSettings $localeSettings, $name = null
+    public function __construct(
+        HMAC $hmac,
+        PhpRenderer $renderer,
+        ResultsManager $resultsManager,
+        array $scheduleOptions,
+        Config $mainConfig,
+        Mailer $mailer,
+        SearchTable $searchTable,
+        UserTable $userTable,
+        LocaleSettings $localeSettings,
+        $name = null
     ) {
         $this->hmac = $hmac;
         $this->renderer = $renderer;
@@ -337,7 +349,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         }
         $this->translator->setLocale($language);
         $this->addLanguageToTranslator(
-            $this->translator, $this->localeSettings, $language
+            $this->translator,
+            $this->localeSettings,
+            $language
         );
     }
 
@@ -392,7 +406,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             return false;
         }
         $newestRecordDate
-            = date($this->iso8601, strtotime($records[0]->getFirstIndexed()));
+            = date($this->iso8601, strtotime($records[0]->getFirstIndexed() ?? ''));
         $lastExecutionDate = $lastTime->format($this->iso8601);
         if ($newestRecordDate < $lastExecutionDate) {
             $this->msg(
@@ -431,12 +445,12 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function buildEmail($s, $user, $searchObject, $newRecords)
     {
         $viewBaseUrl = $searchUrl = $s->notification_base_url;
-        $searchUrl .= $this->urlHelper->__invoke(
+        $searchUrl .= ($this->urlHelper)(
             $searchObject->getOptions()->getSearchAction()
         ) . $searchObject->getUrlQuery()->getParams(false);
         $secret = $s->getUnsubscribeSecret($this->hmac, $user);
         $unsubscribeUrl = $s->notification_base_url
-            . $this->urlHelper->__invoke('myresearch-unsubscribe')
+            . ($this->urlHelper)('myresearch-unsubscribe')
             . "?id={$s->id}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();
@@ -445,6 +459,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             return $data['selected'] ?? false;
         };
         $viewParams = [
+            'user' => $user,
             'records' => $newRecords,
             'info' => [
                 'baseUrl' => $viewBaseUrl,
@@ -453,11 +468,12 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 'url' => $searchUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
                 'checkboxFilters' => array_filter(
-                    $params->getCheckboxFacets(), $selectedCheckboxes
+                    $params->getCheckboxFacets(),
+                    $selectedCheckboxes
                 ),
                 'filters' => $params->getFilterList(true),
-                'userInstitution' => $userInstitution
-             ]
+                'userInstitution' => $userInstitution,
+             ],
         ];
         return $this->renderer
             ->render('Email/scheduled-alert.phtml', $viewParams);
@@ -513,7 +529,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
-            if (!$this->validateSchedule($todayTime, $lastTime, $s)
+            if (
+                !$this->validateSchedule($todayTime, $lastTime, $s)
                 || !($user = $this->getUserForSearch($s))
                 || !($searchObject = $this->getObjectForSearch($s))
                 || !($newRecords = $this->getNewRecords($searchObject, $lastTime))

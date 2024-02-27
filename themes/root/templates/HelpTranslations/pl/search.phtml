@@ -1,24 +1,24 @@
 <h1>Suchoperatoren</h1>
 
 <ul class="HelpMenu">
-  <li><a href="#Wildcard Searches">Wyszukiwanie z wieloznacznikiem</a></li>
-  <li><a href="#Fuzzy Searches">Wyszukiwanie nieprecyzyjne</a></li>
-  <li><a href="#Proximity Searches">Wyszukiwanie z odstepem slów</a></li>
-  <li><a href="#Range Searches">Wyszukiwanie zakresowe</a></li>
-  <li><a href="#Boosting a Term">Zwiekszyc znaczenie slowa</a></li>
-  <li><a href="#Boolean operators">Operatory logiczne</a>
+  <li><a href="#wildcard_searches">Wyszukiwanie z wieloznacznikiem</a></li>
+  <li><a href="#fuzzy_searches">Wyszukiwanie nieprecyzyjne</a></li>
+  <li><a href="#proximity_searches">Wyszukiwanie z odstepem slów</a></li>
+  <li><a href="#range_searches">Wyszukiwanie zakresowe</a></li>
+  <li><a href="#boosting_a_term">Zwiekszyc znaczenie slowa</a></li>
+  <li><a href="#boolean_operators">Operatory logiczne</a>
     <ul>
-      <li><a href="#AND">AND</a></li>
-      <li><a href="#+">+</a></li>
-      <li><a href="#OR">OR</a></li>
-      <li><a href="#NOT">NOT</a></li>
-      <li><a href="#-">-</a></li>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
     </ul>
   </li>
 </ul>
 
 <dl class="Content">
-  <dt><a name="Wildcard Searches"></a>Wyszukiwanie z wieloznacznikiem</dt>
+  <dt><a id="wildcard_searches"></a>Wyszukiwanie z wieloznacznikiem</dt>
   <dd>
     <p>Aby zastosowac wieloznacznik zastepujacy pojedynczy dowolny znak, uzyj znaku zapytania (<strong>?</strong>).</p>
     <p>Przyklad: Jesli chcesz szukac "text" lub "test" wpisz:</p>
@@ -30,7 +30,7 @@
     <pre class="code">te*t</pre>
   </dd>
 
-  <dt><a name="Fuzzy Searches"></a>Wyszukiwanie nieprecyzyjne</dt>
+  <dt><a id="fuzzy_searches"></a>Wyszukiwanie nieprecyzyjne</dt>
   <dd>
     <p>Aby zastosowac wyszukiwanie nieprecyzyjne uzyj tylde (<strong>~</strong>) na koncu slowa.
        Przyklad: Jesli chcesz szukac podobnych slów do "room":</p>
@@ -43,7 +43,7 @@
     <p>Jesli nie podasz wartosci, automatycznie zostanie ona ustawiona na 0.5.</p>
   </dd>
 
-  <dt><a name="Proximity Searches"></a>Wyszukiwanie z odstepem slów</dt>
+  <dt><a id="proximity_searches"></a>Wyszukiwanie z odstepem slów</dt>
   <dd>
     <p>
       Aby zastosowac wyszukiwanie z odstepem slów uzyj tylde (<strong>~</strong>) za grupa slów wyszukiwawczych.
@@ -53,7 +53,7 @@
     <pre class="code">"ekonomia Keynes"~10</pre>
   </dd>
 
-  <dt><a name="Range Searches"></a>Wyszukiwanie zakresowe</dt>
+  <dt><a id="range_searches"></a>Wyszukiwanie zakresowe</dt>
   <dd>
     <p>
       Aby zastosowac wyszukiwanie zakresowe uzyj nawiasów klamrowych (<strong>{ }</strong>).
@@ -66,7 +66,7 @@
     <pre class="code">[2002 TO 2003]</pre>
   </dd>
 
-  <dt><a name="Boosting a Term"></a>Zwiekszyc znaczenie slowa</dt>
+  <dt><a id="boosting_a_term"></a>Zwiekszyc znaczenie slowa</dt>
   <dd>
     <p>
       Wieksze znaczenie mozesz przypisac slowu za pomoca liczb.
@@ -77,7 +77,7 @@
     </p>
   </dd>
 
-  <dt><a name="Boolean operators"></a>Operatory logiczne</dt>
+  <dt><a id="boolean_operators"></a>Operatory logiczne</dt>
   <dd>
     <p>
       Operatory logiczne umozliwiaja logiczne polaczenie slów wyszukiwawczych.
@@ -87,7 +87,7 @@
     </p>
     <p>Wskazówka: Operatory logiczne pisze sie duza litera.</p>
     <dl>
-      <dt><a name="AND"></a>AND</dt>
+      <dt><a id="boolean_and"></a>AND</dt>
       <dd>
         <p>Jesli uzyjesz operatora AND pomiedzy slowami wyszukiwawczymi
         otrzymasz wyniki zawierajace obydwa slowa.
@@ -102,14 +102,14 @@
         <pre class="code">ekonomia AND Keynes</pre>
       </dd>
 
-      <dt><a name="+"></a>+ (plus)</dt>
+      <dt><a id="boolean_plus"></a>+ (plus)</dt>
       <dd>
         <p>Jesli uzyjesz operatora plus (<strong>+</strong>) przed slowem wyszukiwawczym, to dolaczone zostana wszystkie trafienia, które to slowo zawieraja.</p>
         <p>Przyklad:</p>
         <pre class="code">+ekonomia +Keynes</pre>
       </dd>
 
-      <dt><a name="OR"></a>OR</dt>
+      <dt><a id="boolean_or"></a>OR</dt>
       <dd>
         <p>Jesli uzyjesz operatora OR pomiedzy slowami wyszukiwawczymi,
         otrzymasz wyniki zawierajace przynajmniej jedno z podanych slów.</p>
@@ -118,7 +118,7 @@
         <pre class="code">"ekonomia Keynes" OR Keynes</pre>
       </dd>
 
-      <dt><a name="NOT"></a>NOT</dt>
+      <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>Wpisujac NOT przed slowem  wyszukiwawczym, wykluczasz wszystkie wyniki wyszukiwania, które zawieraja to slowo.</p>
         <p>Przyklad: Chcesz szukac tytulów, które zawieraja slowo „ekonomia” ale nie „Keynes”:</p>
@@ -128,7 +128,7 @@
         <pre class="code">NOT ekonomia</pre>
       </dd>
 
-      <dt><a name="-"></a>- (minus)</dt>
+      <dt><a id="boolean_minus"></a>- (minus)</dt>
       <dd>
         <p>Jesli uzyjesz operatora minus (<strong>-</strong>) przed slowem wyszukiwawczym, to wykluczone zostana wszystkie trafienia, które to slowo zawieraja.</p>
         <p>Przyklad:</p>

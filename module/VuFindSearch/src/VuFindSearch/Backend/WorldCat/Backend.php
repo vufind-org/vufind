@@ -3,7 +3,7 @@
 /**
  * WorldCat backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,15 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\WorldCat;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -71,7 +69,8 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
+    public function __construct(
+        Connector $connector,
         RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
@@ -91,7 +90,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         if (null === $params) {
@@ -160,6 +162,19 @@ class Backend extends AbstractBackend
             $this->collectionFactory = new Response\XML\RecordCollectionFactory();
         }
         return $this->collectionFactory;
+    }
+
+    /**
+     * Get holdings information for the specified record.
+     *
+     * @param string $id Record to obtain holdings for.
+     *
+     * @throws \Exception
+     * @return \SimpleXMLElement
+     */
+    public function getHoldings($id)
+    {
+        return $this->getConnector()->getHoldings($id);
     }
 
     /**

@@ -1,0 +1,60 @@
+<?php
+    // This template is a JSON OpenAPI specification base.
+    // Fragments from other controllers will get merged with this one.
+    // See https://spec.openapis.org/oas/v3.0.3 for information on the format.
+
+    $basePath = rtrim($this->url('home'), '/') . '/api/v1';
+    $info = [
+        'title' => $this->config->Site->title,
+        'version' => $this->version,
+    ];
+    if ($description = $this->config->API->description ?? '') {
+        $info['description'] = $description;
+    }
+    if ($termsUrl = $this->config->API->termsOfServiceUrl ?? '') {
+        $info['termsOfService'] = $termsUrl;
+    }
+?>
+{
+    "openapi": "3.0.3",
+    "info": <?=json_encode($info)?>,
+    "servers": [
+        {
+            "url": <?=json_encode((string)$basePath) ?>
+        }
+    ],
+    "components": {
+        "schemas": {
+            "Success": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "Status code",
+                        "type": "string",
+                        "enum": ["OK"]
+                    },
+                    "statusMessage": {
+                        "description": "A descriptive error message",
+                        "type": "string"
+                    }
+                },
+                "required": ["status"]
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "Status code",
+                        "type": "string",
+                        "enum": ["ERROR"]
+                    },
+                    "statusMessage": {
+                        "description": "A descriptive error message",
+                        "type": "string"
+                    }
+                },
+                "required": ["status", "statusMessage"]
+            }
+        }
+    }
+}

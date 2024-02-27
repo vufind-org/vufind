@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Channel loader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Config\Config;
@@ -33,6 +35,8 @@ use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
+
+use function in_array;
 
 /**
  * Channel loader
@@ -97,8 +101,12 @@ class ChannelLoader
      * @param RecordLoader   $loader Record loader
      * @param string         $locale Current locale (used for caching)
      */
-    public function __construct(Config $config, CacheManager $cache,
-        ChannelManager $cm, SearchRunner $runner, RecordLoader $loader,
+    public function __construct(
+        Config $config,
+        CacheManager $cache,
+        ChannelManager $cm,
+        SearchRunner $runner,
+        RecordLoader $loader,
         string $locale = ''
     ) {
         $this->config = $config;
@@ -145,7 +153,8 @@ class ChannelLoader
         $channels = [];
         foreach ($providers as $provider) {
             $channels = array_merge(
-                $channels, $provider->getFromSearch($results, $token)
+                $channels,
+                $provider->getFromSearch($results, $token)
             );
         }
         return $channels;
@@ -209,7 +218,9 @@ class ChannelLoader
      *
      * @return array
      */
-    public function getHomeContext($token = null, $activeChannel = null,
+    public function getHomeContext(
+        $token = null,
+        $activeChannel = null,
         $activeSource = null
     ) {
         // Load appropriate channel objects:
@@ -231,7 +242,13 @@ class ChannelLoader
 
         // Fetch channel data from cache, or populate cache if necessary:
         if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
-            $results = $this->performChannelSearch([], $providers, $source);
+            $searchParams = [];
+            if (isset($this->config->General->default_home_search)) {
+                $searchParams['lookfor']
+                    = $this->config->General->default_home_search;
+            }
+            $results = $this
+                ->performChannelSearch($searchParams, $providers, $source);
             $channels = $this->getChannelsFromResults($providers, $results, $token);
             if ($cacheKey) {
                 $cache->setItem($cacheKey, $channels);
@@ -252,8 +269,11 @@ class ChannelLoader
      *
      * @return array
      */
-    public function getRecordContext($recordId, $token = null,
-        $activeChannel = null, $source = DEFAULT_SEARCH_BACKEND
+    public function getRecordContext(
+        $recordId,
+        $token = null,
+        $activeChannel = null,
+        $source = DEFAULT_SEARCH_BACKEND
     ) {
         // Load record:
         $driver = $this->recordLoader->load($recordId, $source);
@@ -265,7 +285,8 @@ class ChannelLoader
         $channels = [];
         foreach ($providers as $provider) {
             $channels = array_merge(
-                $channels, $provider->getFromRecord($driver, $token)
+                $channels,
+                $provider->getFromRecord($driver, $token)
             );
         }
 
@@ -283,8 +304,11 @@ class ChannelLoader
      *
      * @return array
      */
-    public function getSearchContext($searchRequest = [], $token = null,
-        $activeChannel = null, $source = DEFAULT_SEARCH_BACKEND
+    public function getSearchContext(
+        $searchRequest = [],
+        $token = null,
+        $activeChannel = null,
+        $source = DEFAULT_SEARCH_BACKEND
     ) {
         // Load appropriate channel objects:
         $providers = $this->getChannelProviders($source, 'search', $activeChannel);
