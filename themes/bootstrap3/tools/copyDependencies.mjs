@@ -8,6 +8,10 @@ await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autoco
 // chart.js
 await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 
+// splide
+await copyFile('node_modules/@splidejs/splide/dist/js/splide.min.js', 'js/vendor/splide.min.js');
+await copyFile('node_modules/@splidejs/splide/dist/css/splide.min.css', 'css/vendor/splide.min.css');
+
 // simple-keyboard
 await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');
 await copyFile('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');
