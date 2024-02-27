@@ -60,7 +60,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=__ReturnNoResults__&type=AllField');
-        $this->assertEquals($this->findCss($page, '.search-stats > h2')->getText(), 'No Results!');
+        $this->assertEquals($this->findCssAndGetText($page, '.search-stats > h2'), 'No Results!');
 
         // collection should render as normal
         $session->visit($this->getVuFindUrl() . '/Record/geo20001');
@@ -68,7 +68,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
         // should fail if exception is thrown
         $this->assertStringContainsString(
             'Test Publication 20001',
-            $this->findCss($page, 'div.media-body > h1[property=name]')->getText()
+            $this->findCssAndGetText($page, 'div.media-body > h1[property=name]')
         );
     }
 }
