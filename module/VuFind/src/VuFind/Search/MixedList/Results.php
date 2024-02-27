@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mixed List aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\MixedList;
 
 use VuFind\Search\Base\Results as BaseResults;
+
+use function count;
 
 /**
  * Search Mixed List Results

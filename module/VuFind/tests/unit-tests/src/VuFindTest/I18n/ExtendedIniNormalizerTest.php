@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ExtendedIniNormalizer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\I18n;
 
 use VuFind\I18n\ExtendedIniNormalizer;
+use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
 /**
  * ExtendedIniNormalizer Test Class
@@ -50,7 +53,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLanguageFileIntegrity()
+    public function testLanguageFileIntegrity(): void
     {
         $normalizer = new ExtendedIniNormalizer();
         $langDir = realpath(__DIR__ . '/../../../../../../../languages');
@@ -62,7 +65,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLanguageFileCheck()
+    public function testLanguageFileCheck(): void
     {
         $file = $this->getFixtureDir() . 'language/base/non-language.ini';
         $normalizer = new ExtendedIniNormalizer();
@@ -80,7 +83,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLanguageFileSectionCheck()
+    public function testLanguageFileSectionCheck(): void
     {
         $file = $this->getFixtureDir() . 'language/base/non-language-section.ini';
         $normalizer = new ExtendedIniNormalizer();
@@ -93,6 +96,39 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testEscaping
+     *
+     * @return array
+     */
+    public static function escapingProvider(): array
+    {
+        return [
+            ['foo = "This is a backslash: \\\\"'],
+            ["foo = 'Single \\'quote\\' vs. double \"quote\"'"],
+        ];
+    }
+
+    /**
+     * Test escaping.
+     *
+     * @param string $value Value to test
+     *
+     * @dataProvider escapingProvider
+     *
+     * @return void
+     */
+    public function testEscaping(string $value): void
+    {
+        $reader = new ExtendedIniReader();
+        $normalizer = new ExtendedIniNormalizer();
+
+        $this->assertEquals(
+            "$value\n",
+            $normalizer->formatAsString($reader->getTextDomain([$value]))
+        );
+    }
+
+    /**
      * Test language integrity inside a directory.
      *
      * @param ExtendedIniNormalizer $normalizer Normalizer to test
@@ -100,14 +136,14 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function checkDirectory($normalizer, $dir)
+    protected function checkDirectory(ExtendedIniNormalizer $normalizer, string $dir): void
     {
         $handle = opendir($dir);
         while ($file = readdir($handle)) {
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->checkDirectory($normalizer, $full);
-            } elseif (substr($file, -4) == '.ini') {
+            } elseif (str_ends_with($file, '.ini')) {
                 $this->assertEquals(
                     $normalizer->normalizeFileToString($full),
                     file_get_contents($full),

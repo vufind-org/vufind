@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
@@ -49,6 +50,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 class ConnectorTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Current response.
@@ -124,8 +126,7 @@ class ConnectorTest extends TestCase
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
         // The client will be reset before it is given the expected mime type:
-        $client->expects($this->exactly(2))->method('setEncType')
-            ->withConsecutive(['application/x-www-form-urlencoded'], ['text/csv']);
+        $this->expectConsecutiveCalls($client, 'setEncType', [['application/x-www-form-urlencoded'], ['text/csv']]);
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($csvData));
         $conn = $this->getConnectorMock(['send'], $client);
@@ -148,9 +149,13 @@ class ConnectorTest extends TestCase
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
         // The client will be reset before it is given the expected mime type:
-        $client->expects($this->exactly(2))->method('setEncType')->withConsecutive(
-            ['application/x-www-form-urlencoded'],
-            ['application/json']
+        $this->expectConsecutiveCalls(
+            $client,
+            'setEncType',
+            [
+                ['application/x-www-form-urlencoded'],
+                ['application/json'],
+            ]
         );
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($jsonData));
@@ -338,7 +343,7 @@ class ConnectorTest extends TestCase
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
-                    }
+                    },
                 ]
             )
             ->getMock();

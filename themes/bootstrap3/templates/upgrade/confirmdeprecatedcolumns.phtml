@@ -1,0 +1,19 @@
+<?php $this->headTitle($this->translate('Deprecated database columns detected')) ?>
+
+<h2>Deprecated database columns detected</h2>
+
+<div class="alert alert-info">
+	Your database contains one or more columns that are no longer used, and which should not contain any useful information.
+</div>
+
+<table class="table table-striped">
+    <tr><th scope="col">Table</th><th scope="col">Column(s)</th></tr>
+    <?php foreach ($deprecated as $table => $columns): ?>
+        <tr><td><?=$this->escapeHtml($table)?></td><td><?=$this->escapeHtml(implode(', ', $columns))?></td></tr>
+    <?php endforeach; ?>
+</table>
+
+<p><b>RECOMMENDED:</b> You can <a class="btn btn-default" href="<?=$this->url('upgrade-confirmdeprecatedcolumns')?>?action=delete">remove the columns</a>.</p>
+
+<p>Alternatively, if you are using these columns for some reason (e.g. in local custom code), you can choose to <a class="btn btn-default" href="<?=$this->url('upgrade-confirmdeprecatedcolumns')?>?action=keep">keep the columns</a>.</p>
+

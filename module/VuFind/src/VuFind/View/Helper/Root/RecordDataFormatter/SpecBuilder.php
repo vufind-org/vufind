@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Specification builder for record driver data formatting view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root\RecordDataFormatter;
 
 /**
@@ -102,6 +104,20 @@ class SpecBuilder
     {
         $options['multiFunction'] = $callback;
         $this->setLine($key, $dataMethod, 'Multi', $options);
+    }
+
+    /**
+     * Construct a combine alt template spec line.
+     *
+     * @param string $key        Label to associate with this spec line
+     * @param string $dataMethod Method of data retrieval for rendering element
+     * @param array  $options    Additional options
+     *
+     * @return void
+     */
+    public function setCombineAltLine($key, $dataMethod, $options = [])
+    {
+        $this->setLine($key, $dataMethod, 'CombineAlt', $options);
     }
 
     /**

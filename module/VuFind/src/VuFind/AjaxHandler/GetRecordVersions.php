@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AJAX handler for fetching versions link
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -32,6 +34,9 @@ use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
+
+use function count;
+use function is_array;
 
 /**
  * AJAX handler for fetching versions link
@@ -86,6 +91,27 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     }
 
     /**
+     * Load a single record and render the link template
+     *
+     * @param string $id       Record id
+     * @param string $source   Record source
+     * @param string $searchId Search ID
+     *
+     * @return string
+     */
+    protected function getVersionsLinkForRecord($id, $source, $searchId)
+    {
+        $driver = $this->recordLoader->load($id, $source, $searchId);
+        $tabs = $this->tabManager->getTabsForRecord($driver);
+        $full = true;
+
+        return ($this->recordPlugin)($driver)->renderTemplate(
+            'versions-link.phtml',
+            compact('driver', 'tabs', 'full', 'searchId')
+        );
+    }
+
+    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -98,15 +124,25 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 
         $id = $params->fromPost('id') ?: $params->fromQuery('id');
         $source = $params->fromPost('source') ?: $params->fromQuery('source');
-        $driver = $this->recordLoader->load($id, $source);
-        $tabs = $this->tabManager->getTabsForRecord($driver);
-        $full = true;
+        $searchId = $params->fromPost('sid') ?: $params->fromQuery('sid');
 
-        $html = ($this->recordPlugin)($driver)->renderTemplate(
-            'versions-link.phtml',
-            compact('driver', 'tabs', 'full')
-        );
+        if (!is_array($id)) {
+            return $this->formatResponse(
+                $this->getVersionsLinkForRecord($id, $source, $searchId)
+            );
+        }
 
-        return $this->formatResponse($html);
+        $htmlByRecord = [];
+        for ($i = 0; $i < count($id); $i++) {
+            $key = $source[$i] . '|' . $id[$i];
+
+            $htmlByRecord[$key] = $this->getVersionsLinkForRecord(
+                $id[$i],
+                $source[$i],
+                $searchId
+            );
+        }
+
+        return $this->formatResponse(['records' => $htmlByRecord]);
     }
 }

@@ -1,5 +1,10 @@
 module.exports = {
-  extends: "eslint:recommended",
+  plugins: ["no-jquery"],
+  ignorePatterns: [
+    "themes/**/vendor/**",
+    "themes/**/node_modules/**"
+  ],
+  extends: ["eslint:recommended", "plugin:no-jquery/deprecated"],
   env: {
     "browser": true,
     "es6": true,
@@ -31,6 +36,9 @@ module.exports = {
     "linebreak-style": ["error", "unix"],
     "no-multi-spaces": "warn",
     "semi-spacing": ["warn", { "before": false, "after": true }],
-    "space-infix-ops": "warn"
+    "space-infix-ops": "warn",
+
+    // the following is required for Bootstrap 3 collapse:
+    "no-jquery/no-support": "off"
   }
 };

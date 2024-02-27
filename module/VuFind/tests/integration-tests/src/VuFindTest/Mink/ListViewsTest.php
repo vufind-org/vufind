@@ -1,8 +1,9 @@
 <?php
+
 /**
  * List views (i.e. tabs/accordion) test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -39,7 +41,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
- * @retry    4
  */
 final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -63,9 +64,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoSearch()
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testdeweybrowse');
         $this->clickCss($page, '.btn.btn-primary');
@@ -90,10 +89,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can save a favorite from tab mode.
      *
-     * @retryCallback tearDownAfterClass
+     * @todo Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInTabMode()
     {
         // Change the theme:
@@ -114,7 +114,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->closeLightbox($page);
+        $this->waitForPageLoad($page);
         // Check saved items status
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
@@ -123,8 +125,11 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testFavoritesInTabMode
      *
+     * @todo Enable HTML validation when the issues are fixed in the upstream code
+     *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInAccordionMode()
     {
         // Change the theme:
@@ -142,14 +147,16 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
         // Make list
         $this->clickCss($page, '#make-list');
-        $this->findCss($page, '#list_title')->setValue('Test List');
-        $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
+        $this->findCssAndSetValue($page, '#list_title', 'Test List');
+        $this->findCssAndSetValue($page, '#list_desc', 'Just. THE BEST.');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->closeLightbox($page);
         // Check saved items status
         // Not visible, but still exists
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->waitForPageLoad($page);
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
@@ -180,17 +187,13 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
         // Search for anything else
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('anything else');
-        $this->clickCss($page, '.btn.btn-primary');
+        $page = $this->performSearch('anything else');
         $this->waitForPageLoad($page);
         // Come back
         $page = $this->gotoSearch();
         // Did our result close after not being being in the last search?
         $result = $page->find('css', '.result.embedded');
-        $this->assertFalse(is_object($result));
+        $this->assertIsNotObject($result);
     }
 
     /**

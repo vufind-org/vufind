@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Driver for offline/missing ILS.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,10 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function strlen;
 
 /**
  * Driver for offline/missing ILS.
@@ -135,7 +139,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     public function getStatus($id)
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
-        if ($useStatus == "custom") {
+        if ($useStatus == 'custom') {
             $status = $this->translate($this->config['Status']['status']);
             return [
                 [
@@ -151,10 +155,10 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     'reserve' => $this->config['Status']['reserve'],
                     'callnumber' => $this->translate(
                         $this->config['Status']['callnumber']
-                    )
-                ]
+                    ),
+                ],
             ];
-        } elseif ($useStatus == "marc") {
+        } elseif ($useStatus == 'marc') {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');
@@ -176,7 +180,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     public function getStatuses($idList)
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
-        if ($useStatus == "custom" || $useStatus == "marc") {
+        if ($useStatus == 'custom' || $useStatus == 'marc') {
             $status = [];
             foreach ($idList as $id) {
                 $status[] = $this->getStatus($id);
@@ -207,7 +211,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         $useHoldings = $this->config['settings']['useHoldings'] ?? 'none';
 
-        if ($useHoldings == "custom") {
+        if ($useHoldings == 'custom') {
             return [
                 [
                     'id' => $id,
@@ -229,10 +233,10 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     ),
                     'barcode' => $this->config['Holdings']['barcode'],
                     'notes' => $this->config['Holdings']['notes'] ?? [],
-                    'summary' => $this->config['Holdings']['summary'] ?? []
-                ]
+                    'summary' => $this->config['Holdings']['summary'] ?? [],
+                ],
             ];
-        } elseif ($useHoldings == "marc") {
+        } elseif ($useHoldings == 'marc') {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcHoldings');
@@ -264,8 +268,10 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // If the details coming back from the record driver include the
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
-            if (isset($result[0]['id']) && strlen($idPrefix)
-                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
+            if (
+                isset($result[0]['id'])
+                && '' !== $idPrefix
+                && str_starts_with($result[0]['id'], $idPrefix)
             ) {
                 $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
             }

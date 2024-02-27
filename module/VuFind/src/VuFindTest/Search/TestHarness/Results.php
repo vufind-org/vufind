@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test results search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Search\TestHarness;
 
 use VuFind\Record\Loader;
@@ -85,7 +87,7 @@ class Results extends \VuFind\Search\Base\Results
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->fakeExpectedTotal = $total;
-        $this->searchId = 'fake';   // fill a fake value here so we don't hit the DB
+        $this->searchId = -123;   // fill a fake value here so we don't hit the DB
         $this->facets = $facets;
     }
 
@@ -104,7 +106,7 @@ class Results extends \VuFind\Search\Base\Results
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
-     * on the parameters passed to the object.  This method is responsible for
+     * on the parameters passed to the object. This method is responsible for
      * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void

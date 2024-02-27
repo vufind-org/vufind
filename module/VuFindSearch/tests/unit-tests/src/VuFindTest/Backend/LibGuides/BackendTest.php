@@ -3,7 +3,7 @@
 /**
  * Unit tests for LibGuides backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\LibGuides;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -49,6 +50,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Test retrieving a record (not supported).
@@ -81,13 +83,13 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/tests-measures?hs=a', $rec->getUniqueID());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/testprep', $rec->getUniqueID());
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/psyctests-measures?hs=a', $recs[1]->getUniqueID());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/tests-measures', $recs[1]->getUniqueID());
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/social-work?hs=a', $recs[2]->getUniqueID());
-        $this->assertEquals(40, $coll->getTotal());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/psyctests-measures', $recs[2]->getUniqueID());
+        $this->assertEquals(53, $coll->getTotal());
         $this->assertEquals(0, $coll->getOffset());
     }
 
@@ -165,7 +167,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testMergedParamBag()
     {
         $myParams = new ParamBag(['foo' => 'bar']);
-        $expectedParams = ['foo' => 'bar', 'search' => 'baz'];
+        $expectedParams = ['foo' => 'bar', 'search' => 'baz', 'widget_type' => '1'];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -183,15 +185,17 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testSearchFallback()
     {
         $conn = $this->getConnectorMock(['query']);
-        $expectedParams0 = ['search' => 'baz'];
-        $expectedParams1 = ['search' => 'fallback'];
-        $conn->expects($this->exactly(2))
-            ->method('query')
-            ->withConsecutive([$expectedParams0, 0, 10], [$expectedParams1, 0, 10])
-            ->willReturnOnConsecutiveCalls(
+        $expectedParams0 = ['search' => 'baz', 'widget_type' => '1'];
+        $expectedParams1 = ['search' => 'fallback', 'widget_type' => '1'];
+        $this->expectConsecutiveCalls(
+            $conn,
+            'query',
+            [[$expectedParams0, 0, 10], [$expectedParams1, 0, 10]],
+            [
                 ['recordCount' => 0, 'documents' => []],
-                ['recordCount' => 0, 'documents' => []]
-            );
+                ['recordCount' => 0, 'documents' => []],
+            ]
+        );
         $back = new Backend($conn, null, 'fallback');
         $back->search(new Query('baz'), 0, 10);
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Get Result Counts" AJAX Handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) Staats- und Universitätsbibliothek 2021-2022.
@@ -27,11 +28,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * "Get Result Counts" AJAX Handler
@@ -55,11 +58,13 @@ class GetResultCount extends AbstractBase
     /**
      * Constructor
      *
-     * @param ResultsManager $resultsManager Results Manager
+     * @param ResultsManager  $resultsManager Results Manager
+     * @param SessionSettings $ss             Session settings
      */
-    public function __construct(ResultsManager $resultsManager)
+    public function __construct(ResultsManager $resultsManager, SessionSettings $ss)
     {
         $this->resultsManager = $resultsManager;
+        $this->sessionSettings = $ss;
     }
 
     /**
@@ -71,6 +76,7 @@ class GetResultCount extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
+        $this->disableSessionWrites();
         $queryString = $params->fromQuery('querystring');
         parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink saved searches test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -39,7 +41,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -67,7 +68,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.searchtools a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && str_contains($link->getHtml(), 'Save Search')
             ) {
                 $link->click();
@@ -80,8 +82,6 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test saving and clearing a search.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -97,7 +97,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'Search saved successfully.',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
     }
 
@@ -155,7 +155,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // in our search history.
         $this->findAndAssertLink($page, 'Search History')->click();
         $this->waitForPageLoad($page);
-        $this->assertSavedSearchList(["test"], $page);
+        $this->assertSavedSearchList(['test'], $page);
     }
 
     /**
@@ -173,14 +173,14 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // different problems in a single test.
         $page = $this->performSearch('foo \ bar');
         $this->findAndAssertLink($page, 'Search History')->click();
-        // We should see our "foo \ bar" search in the history, but no saved
-        // searches because we are logged out:
+        // We should see our "foo \ bar" search in the history, and a login link
+        // under saved searches because we are logged out:
         $this->assertEquals(
             'foo \ bar',
             $this->findAndAssertLink($page, 'foo \ bar')->getText()
         );
-        $this->assertFalse(
-            $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
+        $this->assertTrue(
+            $this->hasElementsMatchingText($page, 'a', 'log in')
         );
         $this->waitForPageLoad($page);
         $this->assertNull($page->findLink('test'));
@@ -194,6 +194,11 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'foo \ bar',
             $this->findAndAssertLink($page, 'foo \ bar')->getText()
+        );
+        // Make sure we see a Saved Searches header WITHOUT a log in link to ensure
+        // saved searches are actually displaying:
+        $this->assertFalse(
+            $this->hasElementsMatchingText($page, 'a', 'log in')
         );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
@@ -217,8 +222,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
-     * @depends       testSaveSearch
-     * @retryCallback removeUsername2
+     * @depends testSaveSearch
      *
      * @return void
      */
@@ -254,6 +258,11 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         $this->waitForPageLoad($page);
+        // Make sure we see a Saved Searches header WITHOUT a log in link to ensure
+        // saved searches are actually displaying:
+        $this->assertFalse(
+            $this->hasElementsMatchingText($page, 'a', 'log in')
+        );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
@@ -272,7 +281,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(
             [
-                'config' => ['Account' => ['schedule_searches' => true]]
+                'config' => ['Account' => ['schedule_searches' => true]],
             ]
         );
         $session = $this->getMinkSession();
@@ -310,14 +319,14 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now there should be two alert options visible (one in saved, one in
         // unsaved):
-        $this->assertEquals(2, count($page->findAll('css', $scheduleSelector)));
-        $this->assertEquals(
+        $this->assertCount(2, $page->findAll('css', $scheduleSelector));
+        $this->assertCount(
             1,
-            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+            $page->findAll('css', '#recent-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(
+        $this->assertCount(
             1,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
 
         // At this point, our journals search should be in the unsaved list; let's
@@ -325,9 +334,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
         $select->selectOption(7);
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertCount(
             2,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
 
         // Now let's delete the saved search and confirm that this clears the
@@ -358,7 +367,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now confirm that we have the expected text:
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: None", $link->getText());
+        $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
 
@@ -375,8 +384,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Let's confirm that if we repeat the search, the alert will now be set:
         $page = $this->performSearch('employment');
-        $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: Weekly", $link->getText());
+        $this->assertEquals('Alert schedule: Weekly', $this->findCssAndGetText($page, '.searchtools .manageSchedule'));
     }
 
     /**
@@ -396,7 +404,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We are not logged in, so we won't see the appropriate alert schedule yet
         // (it's always "None" for logged-out users).
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: None", $link->getText());
+        $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
 
@@ -409,7 +417,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // setting we set in the previous test, and with login deduplication, we
         // should now see the "7" option already selected:
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertEquals(7, $this->findCss($page, $scheduleSelector)->getValue());
+        $this->assertEquals(7, $this->findCssAndGetValue($page, $scheduleSelector));
     }
 
     /**
@@ -432,14 +440,14 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now there should be one alert option visible (in unsaved):
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertEquals(1, count($page->findAll('css', $scheduleSelector)));
-        $this->assertEquals(
+        $this->assertCount(1, $page->findAll('css', $scheduleSelector));
+        $this->assertCount(
             1,
-            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+            $page->findAll('css', '#recent-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
 
         // Let's set up our search for alerts and make sure it's handled correctly:
@@ -458,22 +466,12 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // look at! From previous tests, we expect to have two in our history, but
         // the important one ("employment") should be first, which enables us to
         // safely rely on the final assertion below.
-        $this->assertSavedSearchList(["employment", "test"], $page);
-        $this->assertEquals(
+        $this->assertSavedSearchList(['employment', 'test'], $page);
+        $this->assertCount(
             2,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(1, $this->findCss($page, $scheduleSelector)->getValue());
-    }
-
-    /**
-     * Retry cleanup method in case of failure during testSavedSearchSecurity.
-     *
-     * @return void
-     */
-    protected function removeUsername2(): void
-    {
-        static::removeUsers(['username2']);
+        $this->assertEquals(1, $this->findCssAndGetValue($page, $scheduleSelector));
     }
 
     /**

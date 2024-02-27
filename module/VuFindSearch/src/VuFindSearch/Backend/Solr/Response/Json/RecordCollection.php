@@ -3,7 +3,7 @@
 /**
  * Simple JSON-based record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use VuFindSearch\Response\AbstractRecordCollection;
+
+use function array_key_exists;
 
 /**
  * Simple JSON-based record collection.
@@ -77,6 +80,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $facetFields = null;
 
     /**
+     * How many facet values have been filtered out, indexed by field.
+     *
+     * @var array
+     */
+    protected $filteredFacetCounts = [];
+
+    /**
      * Constructor.
      *
      * @param array $response Deserialized SOLR response
@@ -85,7 +95,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function __construct(array $response)
     {
-        if (array_key_exists('response', $response)
+        if (
+            array_key_exists('response', $response)
             && null === $response['response']
         ) {
             unset($response['response']);
@@ -133,9 +144,8 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (null === $this->facetFields) {
             $this->facetFields = [];
-            foreach ($this->response['facet_counts']['facet_fields'] ?? []
-                as $field => $facetData
-            ) {
+            $facetFieldData = $this->response['facet_counts']['facet_fields'] ?? [];
+            foreach ($facetFieldData as $field => $facetData) {
                 $values = [];
                 foreach ($facetData as $value) {
                     $values[$value[0]] = $value[1];
@@ -144,6 +154,28 @@ class RecordCollection extends AbstractRecordCollection
             }
         }
         return $this->facetFields;
+    }
+
+    /**
+     * Set filtered facet data.
+     *
+     * @param array $counts Counts of filtered facet values, indexed by field name.
+     *
+     * @return void
+     */
+    public function setFilteredFacetCounts(array $counts): void
+    {
+        $this->filteredFacetCounts = $counts;
+    }
+
+    /**
+     * Get filtered facet data.
+     *
+     * @return array
+     */
+    public function getFilteredFacetCounts(): array
+    {
+        return $this->filteredFacetCounts;
     }
 
     /**
@@ -184,7 +216,8 @@ class RecordCollection extends AbstractRecordCollection
     public function getPivotFacets()
     {
         $result = [];
-        foreach ($this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
+        foreach (
+            $this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
         ) {
             foreach ($facetData as $current) {
                 $result[$current['value']] = $current;
@@ -221,6 +254,26 @@ class RecordCollection extends AbstractRecordCollection
     public function getCursorMark()
     {
         return $this->response['nextCursorMark'] ?? '';
+    }
+
+    /**
+     * Gets the highest relevance to search.
+     *
+     * @return mixed
+     */
+    public function getMaxScore()
+    {
+        return $this->response['response']['maxScore'] ?? null;
+    }
+
+    /**
+     * Get response header.
+     *
+     * @return array
+     */
+    public function getResponseHeader()
+    {
+        return $this->response['responseHeader'] ?? [];
     }
 
     /**

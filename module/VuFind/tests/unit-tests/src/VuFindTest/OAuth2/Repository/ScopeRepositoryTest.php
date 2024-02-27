@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OAuth2 ScopeRepository tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Repository\ScopeRepository;
@@ -38,14 +40,14 @@ use VuFind\OAuth2\Repository\ScopeRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ScopeRepositoryTest extends AbstractTokenRepositoryTest
+class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Data provider for testScopeRepository
      *
      * @return array
      */
-    public function getTestScopeRepositoryData(): array
+    public static function getTestScopeRepositoryData(): array
     {
         return [
             ['openid', 'OpenID', false, false],
@@ -56,6 +58,11 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
 
     /**
      * Test scope repository
+     *
+     * @param string $scopeId Scope ID
+     * @param string $desc    Expected description
+     * @param bool   $hidden  Expected hidden value
+     * @param bool   $ils     Expected "ILS Needed" value
      *
      * @dataProvider getTestScopeRepositoryData
      *
@@ -79,7 +86,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
                     'description' => 'Phone',
                     'ils' => true,
                 ],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 
@@ -107,7 +114,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
                 'openid' => [
                     'description' => 'OpenID',
                 ],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 
@@ -124,7 +131,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
         $config = [
             'Scopes' => [
                 'openid' => [],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 

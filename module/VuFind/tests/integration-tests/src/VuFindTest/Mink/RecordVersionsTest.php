@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record versions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -35,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -54,7 +55,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that "other versions" link exists:
         $this->assertEquals(
             'Show other versions (3)',
-            $this->findCss($page, 'div.record-versions a')->getText()
+            $this->findCssAndGetText($page, 'div.record-versions a')
         );
 
         // Click on the "other versions" link:
@@ -64,7 +65,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Other Versions (3)',
-            $this->findCss($page, 'li.record-tab.active')->getText()
+            $this->findCssAndGetText($page, 'li.record-tab.active')
         );
 
         // Click the "see all versions" link:
@@ -74,10 +75,10 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCss($page, 'ul.breadcrumb li.active')->getText()
+            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -112,9 +113,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $extraConfigs = [
             'RecordTabs' => [
                 'VuFind\RecordDriver\SolrMarc' => [
-                    'tabs[Versions]' => false
-                ]
-            ]
+                    'tabs[Versions]' => false,
+                ],
+            ],
         ];
         $this->changeConfigs($extraConfigs);
         // Search for an item known to have other versions in test data:
@@ -123,7 +124,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that "all versions" link exists:
         $this->assertEquals(
             'Show all versions (4)',
-            $this->findCss($page, 'div.record-versions a')->getText()
+            $this->findCssAndGetText($page, 'div.record-versions a')
         );
 
         // Click on the "all versions" link:
@@ -134,10 +135,10 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCss($page, 'ul.breadcrumb li.active')->getText()
+            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -152,9 +153,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $extraConfigs = [
             'searches' => [
                 'General' => [
-                    'display_versions' => false
-                ]
-            ]
+                    'display_versions' => false,
+                ],
+            ],
         ];
         $this->changeConfigs($extraConfigs);
 
@@ -162,9 +163,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:0001732009-0');
 
         // Click on the "other versions" link:
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($page->findAll('css', 'div.record-versions a'))
+            $page->findAll('css', 'div.record-versions a')
         );
     }
 }

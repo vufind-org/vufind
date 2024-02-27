@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class to compile SCSS into CSS within a theme.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
+
+use function dirname;
 
 /**
  * Class to compile SCSS into CSS within a theme.
@@ -57,7 +61,7 @@ class ScssCompiler extends AbstractCssPreCompiler
         // Get files
         $files = $this->getAllFiles($theme);
         if (empty($files)) {
-            $this->logMessage("No SCSS in " . $theme);
+            $this->logMessage('No SCSS in ' . $theme);
             return;
         }
 

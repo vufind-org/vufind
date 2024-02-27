@@ -6,7 +6,7 @@
  * See https://vufind.org/wiki/indexing:deduplication for details on how this is
  * used.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2013-2020.
@@ -31,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
@@ -38,6 +39,8 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
+
+use function in_array;
 
 /**
  * Solr merged record handling listener.
@@ -151,7 +154,8 @@ class DeduplicationListener
             if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
-                if ($this->enabled && 'getids' !== $context
+                if (
+                    $this->enabled && 'getids' !== $context
                     && !$this->hasChildFilter($params)
                 ) {
                     $fq = '-merged_child_boolean:true';

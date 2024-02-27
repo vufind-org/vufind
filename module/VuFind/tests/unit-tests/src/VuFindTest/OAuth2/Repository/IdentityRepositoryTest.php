@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OAuth2 IdentityRepository tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -43,7 +45,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IdentityRepositoryTest extends AbstractTokenRepositoryTest
+class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * OAuth2 configuration
@@ -96,7 +98,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
      *
      * @return array
      */
-    public function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): array
     {
         return [
             [null],
@@ -108,11 +110,11 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     /**
      * Test identity repository
      *
-     * @dataProvider getTestIdentityRepositoryData
-     *
      * @param ?bool $blocks Blocks status
      *
      * @return void
+     *
+     * @dataProvider getTestIdentityRepositoryData
      */
     public function testIdentityRepository(?bool $blocks): void
     {
@@ -141,7 +143,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
                 'birthdate' => $this->userBirthDate,
                 'locale' => 'en-GB',
                 'phone' => '1900 CALL ME',
-                'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City","postal_code":"12345","country":"Country"}',
+                'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City",'
+                    . '"postal_code":"12345","country":"Country"}',
                 'block_status' => $blocks,
                 'nonce' => $nonce,
                 'library_user_id' => $this->getCatUsernameHash('user'),
@@ -222,7 +225,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             ->willReturnMap(
                 [
                     [1, null],
-                    [2, $user]
+                    [2, $user],
                 ]
             );
         return $userTable;
@@ -245,7 +248,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             'cat_password' => 'pass',
             'email'        => 'Lib.Rarian@library.not',
             'major'        => null,
-            'college'      => null
+            'college'      => null,
         ];
 
         $profile = [

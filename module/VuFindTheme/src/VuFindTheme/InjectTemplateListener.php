@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind "Inject Template" Listener
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
+
+use function strlen;
 
 /**
  * VuFind "Inject Template" Listener -- this extends the core MVC class to adjust
@@ -77,7 +81,7 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
     protected function inflectName($name)
     {
         foreach ($this->prefixes as $prefix) {
-            if (strpos($name, $prefix) === 0) {
+            if (str_starts_with($name, $prefix)) {
                 return strtolower(substr($name, strlen($prefix)));
             }
         }

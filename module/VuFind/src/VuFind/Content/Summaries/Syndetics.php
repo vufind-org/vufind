@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics Summaries content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Summaries;
 
 /**
@@ -47,12 +49,12 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'AVSUMMARY' => [
             'title' => 'Summaries',
             'file' => 'AVSUMMARY.XML',
-            'div' => '<div id="syn_avsummary"></div>'
+            'div' => '<div id="syn_avsummary"></div>',
         ],
         'SUMMARY' => [
             'title' => 'Summaries',
             'file' => 'SUMMARY.XML',
-            'div' => '<div id="syn_summary"></div>'
+            'div' => '<div id="syn_summary"></div>',
         ],
     ];
 
@@ -111,7 +113,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $summaries[] = $sourceInfo['div'];
                 } else {
                     // Get the marc field for summaries. (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
                     foreach ($nodes as $node) {
                         $summaries[] = preg_replace(
                             '/<a>|<a [^>]*>|<\/a>/',

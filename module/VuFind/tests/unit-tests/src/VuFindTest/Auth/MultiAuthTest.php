@@ -1,8 +1,9 @@
 <?php
+
 /**
  * MultiAuth authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
@@ -52,9 +54,9 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
      */
     public function getAuthObject(Config $config = null): MultiAuth
     {
-        $manager = new \VuFind\Auth\PluginManager(
-            new \VuFindTest\Container\MockContainer($this)
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $manager = new \VuFind\Auth\PluginManager($container);
         $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);
         $obj->setConfig($config ?? $this->getAuthConfig());
@@ -70,7 +72,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     {
         $config = new Config(
             [
-                'method_order' => 'Database,ILS'
+                'method_order' => 'Database,ILS',
             ],
             true
         );
@@ -105,7 +107,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest(array $overrides = []): \Laminas\Http\Request
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
@@ -134,7 +136,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test login with handler configured to load a class which does not conform
-     * to the appropriate authentication interface.  (We'll use this test class
+     * to the appropriate authentication interface. (We'll use the factory class
      * as an arbitrary inappropriate class).
      *
      * @return void
@@ -142,13 +144,13 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     public function testLoginWithBadClass(): void
     {
         $this->expectException(InvalidServiceException::class);
+        $badClass = \VuFind\Auth\MultiAuthFactory::class;
         $this->expectExceptionMessage(
-            'Plugin VuFindTest\Auth\MultiAuthTest does not belong to '
-            . 'VuFind\Auth\AbstractBase'
+            'Plugin ' . ltrim($badClass, '\\') . ' does not belong to VuFind\Auth\AbstractBase'
         );
 
         $config = $this->getAuthConfig();
-        $config->MultiAuth->method_order = get_class($this) . ',Database';
+        $config->MultiAuth->method_order = $badClass . ',Database';
 
         $request = $this->getLoginRequest();
         $this->getAuthObject($config)->authenticate($request);

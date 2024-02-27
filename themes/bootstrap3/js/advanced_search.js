@@ -1,4 +1,6 @@
+/*global VuFind */
 /*exported addGroup, addSearch, deleteGroup, deleteSearch */
+
 var nextGroup = 0;
 var groupLength = [];
 var deleteGroup, deleteSearch;
@@ -21,7 +23,7 @@ function addSearch(group, _fieldValues, isUser = false) {
   $newSearch.find('.adv-term-remove')
     .data('group', group)
     .data('groupLength', groupLength[group])
-    .click(function deleteSearchHandler() {
+    .on("click", function deleteSearchHandler() {
       return deleteSearch($(this).data('group'), $(this).data('groupLength'));
     });
   // Preset Values
@@ -55,7 +57,7 @@ function addSearch(group, _fieldValues, isUser = false) {
   groupLength[group]++;
 
   if (isUser) {
-    $newSearch.find('input.form-control').focus();
+    $newSearch.find('input.form-control').trigger("focus");
   }
 
   return false;
@@ -85,6 +87,15 @@ deleteSearch = function _deleteSearch(group, sindex) {
   return false;
 };
 
+function _renumberGroupLinkLabels() {
+  $('.adv-group-close').each(function deleteGroupLinkLabel(i, link) {
+    $(link).attr(
+      'aria-label',
+      VuFind.translate('del_search_num', { '%%num%%': i + 1 })
+    );
+  });
+}
+
 function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   var firstTerm = _firstTerm || '';
   var firstField = _firstField || '';
@@ -100,13 +111,13 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   $newGroup.find('.add_search_link')
     .attr('id', 'add_search_link_' + nextGroup)
     .data('nextGroup', nextGroup)
-    .click(function addSearchHandler() {
+    .on("click", function addSearchHandler() {
       return addSearch($(this).data('nextGroup'), {}, true);
     })
     .removeClass('hidden');
   $newGroup.find('.adv-group-close')
     .data('nextGroup', nextGroup)
-    .click(function deleteGroupHandler() {
+    .on("click", function deleteGroupHandler() {
       return deleteGroup($(this).data('nextGroup'));
     });
   $newGroup.find('select.form-control')
@@ -117,8 +128,11 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   if (join.length > 0) {
     $newGroup.find('option[value="' + join + '"]').attr('selected', 1);
   }
+
   // Insert
   $('#groupPlaceHolder').before($newGroup);
+  _renumberGroupLinkLabels();
+
   // Populate
   groupLength[nextGroup] = 0;
   addSearch(nextGroup, {term: firstTerm, field: firstField}, isUser);
@@ -129,7 +143,7 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
     $('.adv-group-close').removeClass('hidden');
   }
 
-  $newGroup.children('input.form-control').first().focus();
+  $newGroup.children('input.form-control').first().trigger("focus");
 
   return nextGroup++;
 }
@@ -137,6 +151,8 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
 deleteGroup = function _deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
+  _renumberGroupLinkLabels();
+
   // If the last group was removed, add an empty group
   if ($('.adv-group').length === 0) {
     addGroup();
@@ -147,8 +163,8 @@ deleteGroup = function _deleteGroup(group) {
   return false;
 };
 
-$(document).ready(function advSearchReady() {
-  $('.clear-btn').click(function clearBtnClick() {
+$(function advSearchReady() {
+  $('.clear-btn').on("click", function clearBtnClick() {
     $('input[type="text"]').val('');
     $('input[type="checkbox"],input[type="radio"]').each(function onEachCheckbox() {
       var checked = $(this).data('checked-by-default');

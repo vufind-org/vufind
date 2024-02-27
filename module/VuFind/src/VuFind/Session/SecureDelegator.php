@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Secure session delegator
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
  *
- * PHP version 7
+ * PHP version 8
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,11 +28,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Crypt\BlockCipher;
 use Laminas\Math\Rand;
 use VuFind\Cookie\CookieManager;
+use VuFind\Db\Table\PluginManager;
+
+use function func_get_args;
 
 /**
  * Secure session delegator
@@ -43,7 +48,7 @@ use VuFind\Cookie\CookieManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
-class SecureDelegator
+class SecureDelegator implements HandlerInterface
 {
     /**
      * The block cipher for en/decrypting session data.
@@ -82,6 +87,40 @@ class SecureDelegator
     }
 
     /**
+     * Closes a session.
+     *
+     * @return bool
+     */
+    public function close(): bool
+    {
+        return $this->__call(__FUNCTION__, []);
+    }
+
+    /**
+     * Destroys a session.
+     *
+     * @param string $id Session ID
+     *
+     * @return bool
+     */
+    public function destroy(string $id): bool
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * Performs garbage collection.
+     *
+     * @param int $max_lifetime Maximum session life time
+     *
+     * @return int|false
+     */
+    public function gc(int $max_lifetime): int|false
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
      * Opens a session.
      *
      * @param string $save_path Session save path
@@ -89,7 +128,7 @@ class SecureDelegator
      *
      * @return bool
      */
-    public function open($save_path, $name)
+    public function open($save_path, $name): bool
     {
         $cookieName = "{$name}_KEY";
         $cipherKey = ($cookieValue = $this->cookieManager->get($cookieName))
@@ -112,10 +151,10 @@ class SecureDelegator
      *
      * @return bool|string
      */
-    public function read($session_id)
+    public function read($session_id): string|false
     {
         $data = $this->handler->read($session_id);
-        return $data ? $this->cipher->decrypt($data) : $data;
+        return $data ? ($this->cipher->decrypt($data) ?: '') : $data;
     }
 
     /**
@@ -126,10 +165,53 @@ class SecureDelegator
      *
      * @return bool
      */
-    public function write($session_id, $session_data)
+    public function write($session_id, $session_data): bool
     {
         $data = $this->cipher->encrypt($session_data);
         return $this->handler->write($session_id, $data);
+    }
+
+    /**
+     * Enable session writing (default)
+     *
+     * @return void
+     */
+    public function enableWrites()
+    {
+        $this->__call(__FUNCTION__, []);
+    }
+
+    /**
+     * Disable session writing, i.e. make it read-only
+     *
+     * @return void
+     */
+    public function disableWrites()
+    {
+        $this->__call(__FUNCTION__, []);
+    }
+
+    /**
+     * Get the plugin manager. Throw an exception if it is missing.
+     *
+     * @throws \Exception
+     * @return PluginManager
+     */
+    public function getDbTableManager()
+    {
+        return $this->__call(__FUNCTION__, []);
+    }
+
+    /**
+     * Set the plugin manager.
+     *
+     * @param PluginManager $manager Plugin manager
+     *
+     * @return void
+     */
+    public function setDbTableManager(PluginManager $manager)
+    {
+        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**

@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Solr Search Object Results Test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,11 +28,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Solr;
 
-use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Config\PluginManager;
-use VuFind\I18n\TranslatableString;
+use VuFind\I18n\Sorter;
 use VuFind\Record\Loader;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Options;
@@ -40,6 +41,8 @@ use VuFind\Search\Solr\Results;
 use VuFind\Search\Solr\SpellingProcessor;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Service as SearchService;
+
+use function get_class;
 
 /**
  * Solr Search Object Results Test
@@ -54,6 +57,49 @@ use VuFindSearch\Service as SearchService;
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
+
+    /**
+     * Default faceted search configuration
+     *
+     * @var array
+     */
+    protected $searchConfig = [
+        'facets' => [
+            'SpecialFacets' => [
+                'hierarchical' => [
+                    'building',
+                ],
+                'hierarchicalFacetSortOptions' => [
+                    'building' => 'top',
+                ],
+            ],
+        ],
+    ];
+
+    /**
+     * Default faceted search response
+     *
+     * @var array
+     */
+    protected $searchResponse = [
+        'response' => [
+            'numFound' => 5,
+        ],
+        'facet_counts' => [
+            'facet_fields' => [
+                'topic_facet' => [
+                    ['Research', 16],
+                    ['Psychotherapy', 8],
+                ],
+                'building' => [
+                    ['0/Main/', 11],
+                    ['1/Main/Fiction/', 5],
+                    ['0/Sub/', 2],
+                ],
+            ],
+        ],
+    ];
 
     /**
      * Test CursorMark functionality.
@@ -74,22 +120,24 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testFacetTranslations(): void
     {
-        $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->expects($this->exactly(2))
-            ->method('translate')
-            ->withConsecutive(
-                [$this->equalTo('000')],
-                [$this->equalTo('dewey_format_str')]
-            )->willReturnOnConsecutiveCalls(
-                'Computer science, information, general works',
-                '%%raw%% - %%translated%%'
-            );
+        $mockTranslator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'dewey_format_str' => '%%raw%% - %%translated%%',
+                ],
+                'DDC23' => [
+                    '000' => 'Computer science, information, general works',
+                ],
+            ]
+        );
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
-        $options->setTranslatedFacets([
-            'dewey-raw:DDC23:dewey_format_str'
-        ]);
+        $options->setTranslatedFacets(
+            [
+                'dewey-raw:DDC23:dewey_format_str',
+            ]
+        );
         $params = $this->getParams($options);
         $params->addFacet('dewey-raw');
         $searchService = $this->getSearchServiceWithMockSearchMethod(
@@ -98,7 +146,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'facet_counts' => [
                     'facet_fields' => [
                         'dewey-raw' => [
-                            ["000", 100]
+                            ['000', 100],
                         ],
                     ],
                 ],
@@ -116,8 +164,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResults($params, $searchService);
         $list = $results->getFacetList();
         $this->assertEquals(
-            $list['dewey-raw']['list'][0]['displayText'],
-            '000 - Computer science, information, general works'
+            '000 - Computer science, information, general works',
+            $list['dewey-raw']['list'][0]['displayText']
         );
     }
 
@@ -130,8 +178,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getResults();
         $defaultProcessor = $results->getSpellingProcessor();
-        $this->assertTrue(
-            $defaultProcessor instanceof SpellingProcessor,
+        $this->assertInstanceOf(
+            SpellingProcessor::class,
+            $defaultProcessor,
             'default spelling processor was created'
         );
         $mockProcessor = $this->createMock(SpellingProcessor::class);
@@ -161,8 +210,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search service that will return a RecordCollection.
      *
-     * @param array $solrResponse   Decoded Solr response for search to return
-     * @parma array $expectedParams Expected ParamBag parameters
+     * @param array $response       Decoded Solr response for search to return
+     * @param array $expectedParams Expected ParamBag parameters
      *
      * @return SearchService
      */
@@ -171,16 +220,27 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         array $expectedParams
     ): SearchService {
         $collection = new RecordCollection($response);
-        $searchService = $this->createMock(SearchService::class);
-        $searchService->expects($this->once())
-            ->method('search')
-            ->with(
-                $this->equalTo('Solr'),
-                $this->equalTo(new \VuFindSearch\Query\Query()),
-                $this->equalTo(0),
-                $this->equalTo(20),
-                $this->equalTo(new \VuFindSearch\ParamBag($expectedParams))
-            )->will($this->returnValue($collection));
+        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
+            ->will($this->returnValue($collection));
+
+        $checkCommand = function ($command) use ($expectedParams) {
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'Solr'
+                && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
+                && $command->getArguments()[1] === 0
+                && $command->getArguments()[2] === 20
+                && $command->getArguments()[3]->getArrayCopy() == $expectedParams;
+        };
+        $searchService->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         return $searchService;
     }
 
@@ -191,39 +251,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFacetList(): void
     {
-        $config = $this->getMockConfigPluginManager(
-            [
-                'facets' => [
-                    'SpecialFacets' => [
-                        'hierarchical' => [
-                            'building',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $results = $this->getResultsFromResponse(
-            [
-                'response' => [
-                    'numFound' => 5
-                ],
-                'facet_counts' => [
-                    'facet_fields' => [
-                        'topic_facet' => [
-                            ['Research', 16],
-                            ['Psychotherapy', 8],
-                        ],
-                        'building' => [
-                            ['0/Main/', 11],
-                            ['1/Main/Fiction/', 5],
-                            ['0/Sub/', 2],
-                        ]
-                    ]
-                ]
-            ],
-            $this->getParams(null, $config)
-        );
+        $results = $this->getResultsFromResponse();
 
         // No facets configured:
         $facets = $results->getFacetList();
@@ -257,7 +285,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -285,7 +313,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -313,97 +341,115 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
-
-        // Clone results so that we can test missing hierarchical facet helper later:
-        $resultsNoHelper = clone $results;
 
         // Test hierarchical facet:
-        $results->setHierarchicalFacetHelper(new HierarchicalFacetHelper());
-        $facets = $results->getFacetList(['building' => 'Building']);
-        $this->assertEquals(
-            [
-                'building' => [
-                    'label' => 'Building',
-                    'list' => [
-                        [
-                            'value' => '0/Main/',
-                            'displayText'
-                                => new TranslatableString('0/Main/', 'Main'),
-                            'count' => 11,
-                            'operator' => 'AND',
-                            'isApplied' => false,
-                        ],
-                        [
-                            'value' => '1/Main/Fiction/',
-                            'displayText' => new TranslatableString(
-                                '1/Main/Fiction/',
-                                'Fiction'
-                            ),
-                            'count' => 5,
-                            'operator' => 'AND',
-                            'isApplied' => false,
-                        ],
-                        [
-                            'value' => '0/Sub/',
-                            'displayText'
-                                => new TranslatableString('0/Sub/', 'Sub'),
-                            'count' => 2,
-                            'operator' => 'AND',
-                            'isApplied' => false,
+        $expectedBuildingFacets = [
+            'building' => [
+                'label' => 'Building',
+                'list' => [
+                    [
+                        'value' => '0/Main/',
+                        'displayText' => 'Main',
+                        'count' => 11,
+                        'operator' => 'AND',
+                        'isApplied' => false,
+                        'level' => '0',
+                        'parent' => null,
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [
+                            [
+                                'value' => '1/Main/Fiction/',
+                                'displayText' => 'Fiction',
+                                'count' => 5,
+                                'operator' => 'AND',
+                                'isApplied' => false,
+                                'level' => '1',
+                                'parent' => '0/Main/',
+                                'hasAppliedChildren' => false,
+                                'href' => '',
+                                'exclude' => '',
+                                'children' => [],
+                            ],
                         ],
                     ],
-                ]
+                    [
+                        'value' => '0/Sub/',
+                        'displayText' => 'Sub',
+                        'count' => 2,
+                        'operator' => 'AND',
+                        'isApplied' => false,
+                        'level' => '0',
+                        'parent' => null,
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                ],
             ],
-            $facets
+        ];
+        $facetHelper = new HierarchicalFacetHelper();
+        $facetHelper->setSorter(new Sorter(new \Collator('en_US')));
+        $results->setHierarchicalFacetHelper($facetHelper);
+        $mockTranslator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'Main' => 'Main Library',
+                ],
+            ]
         );
+        $results->getOptions()->setTranslator($mockTranslator);
+        $facets = $results->getFacetList(['building' => 'Building']);
+        $this->assertEquals($expectedBuildingFacets, $facets);
 
         // Make the building facet translated and add an 'AND' filter:
+        $expectedBuildingFacets['building']['list'][0]['displayText'] = 'Main Library';
+        $expectedBuildingFacets['building']['list'][0]['hasAppliedChildren'] = true;
+        $expectedBuildingFacets['building']['list'][0]['children'][0]['isApplied'] = true;
         $results->getParams()->addFilter('building:1/Main/Fiction/');
         $results->getOptions()->setTranslatedFacets(['building']);
         $facets = $results->getFacetList(['building' => 'Building']);
-        $this->assertEquals(
-            [
-                'building' => [
-                    'label' => 'Building',
-                    'list' => [
-                        [
-                            'value' => '0/Main/',
-                            'displayText' => 'Main',
-                            'count' => 11,
-                            'operator' => 'AND',
-                            'isApplied' => false,
-                        ],
-                        [
-                            'value' => '1/Main/Fiction/',
-                            'displayText' => 'Fiction',
-                            'count' => 5,
-                            'operator' => 'AND',
-                            'isApplied' => true,
-                        ],
-                        [
-                            'value' => '0/Sub/',
-                            'displayText' => 'Sub',
-                            'count' => 2,
-                            'operator' => 'AND',
-                            'isApplied' => false,
-                        ],
-                    ],
-                ]
-            ],
-            $facets
-        );
+        $this->assertEquals($expectedBuildingFacets, $facets);
+    }
 
-        // Test missing hierarchical facet helper:
-        $this->expectExceptionMessage('hierarchical facet helper unavailable');
-        $facets = $resultsNoHelper->getFacetList(['building' => 'Building']);
+    /**
+     * Test exception from missing hierarchical facet helper
+     *
+     * @return void
+     */
+    public function testMissingHierarchicalFacetHelper(): void
+    {
+        $results = $this->getResultsFromResponse();
+        $this->expectExceptionMessage('VuFind\Search\Solr\Results: hierarchical facet helper unavailable');
+        $results->getFacetList(['building' => 'Building']);
+    }
+
+    /**
+     * Test exception from missing sorter
+     *
+     * @return void
+     */
+    public function testMissingSorter(): void
+    {
+        $results = $this->getResultsFromResponse();
+        $facetHelper = new HierarchicalFacetHelper();
+        $results->setHierarchicalFacetHelper($facetHelper);
+        $this->expectExceptionMessage('Sorter class is not set.');
+        $results->getFacetList(['building' => 'Building']);
     }
 
     /**
      * Get Results object
+     *
+     * @param Params        $params        Params object
+     * @param SearchService $searchService Search service
+     * @param Loader        $loader        Record loader
      *
      * @return Results
      */
@@ -425,21 +471,41 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      * Note that this returns the response for a search request without validating
      * the request.
      *
-     * @param array  $response Solr response array
-     * @param Params $params   Params
+     * @param ?array  $response Solr response array or null for default
+     * @param ?Params $params   Params or null for default
      *
      * @return Results
      */
     protected function getResultsFromResponse(
-        array $response,
-        Params $params
+        ?array $response = null,
+        ?Params $params = null
     ): Results {
+        $response ??= $this->searchResponse;
+        $params ??= $this->getParams(
+            null,
+            $this->getMockConfigPluginManager($this->searchConfig)
+        );
+
         $collection = new RecordCollection($response);
-        $searchService = $this->createMock(SearchService::class);
+        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         // No need to validate the parameters, just return the requested results:
-        $searchService->expects($this->once())
-            ->method('search')
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
+
+        $checkCommand = function ($command) {
+            return $command::class === \VuFindSearch\Command\SearchCommand::class;
+        };
+        $searchService->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         return $this->getResults($params, $searchService);
     }
 
@@ -455,7 +521,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

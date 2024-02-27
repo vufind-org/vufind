@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for Pazpar2 records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Model for Pazpar2 records.
@@ -50,7 +56,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @param mixed $data Raw data representing the record; Record Model
      * objects are normally constructed by Record Driver objects using data
-     * passed in from a Search Results object.  The exact nature of the data may
+     * passed in from a Search Results object. The exact nature of the data may
      * vary depending on the data source -- the important thing is that the
      * Record Driver + Search Results objects work together correctly.
      *
@@ -95,7 +101,8 @@ class Pazpar2 extends DefaultRecord
             if (!isset($array[$key])) {
                 $array[$key] = $children;
             } else {
-                if (is_array($array[$key])
+                if (
+                    is_array($array[$key])
                     && is_numeric(current(array_keys($array[$key])))
                 ) {
                     $array[$key][] = $children;
@@ -103,7 +110,7 @@ class Pazpar2 extends DefaultRecord
                     // Convert for multiple children
                     $array[$key] = [
                         $array[$key],
-                        $children
+                        $children,
                     ];
                 }
             }
@@ -157,7 +164,8 @@ class Pazpar2 extends DefaultRecord
         }
         $providers = [];
         foreach ($this->pz2fields['location'] as $location) {
-            if (isset($location['_attr_']['name'])
+            if (
+                isset($location['_attr_']['name'])
                 && !in_array($location['_attr_']['name'], $providers)
             ) {
                 $providers[] = $location['_attr_']['name'];

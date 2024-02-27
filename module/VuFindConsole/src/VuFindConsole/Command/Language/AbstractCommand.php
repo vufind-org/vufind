@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for language commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,12 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
+
+use function count;
+use function in_array;
+use function is_callable;
 
 /**
  * Abstract base class for language commands.
@@ -65,6 +71,13 @@ abstract class AbstractCommand extends Command
     protected $languageDir;
 
     /**
+     * Files to ignore when processing directories
+     *
+     * @var string[]
+     */
+    protected $filesToIgnore = ['aliases.ini', 'native.ini'];
+
+    /**
      * Constructor
      *
      * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
@@ -97,11 +110,11 @@ abstract class AbstractCommand extends Command
      */
     protected function addLineToFile($filename, $key, $value)
     {
-        $fHandle = fopen($filename, "a");
+        $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }
-        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fwrite($fHandle, "\n$key = \"" . $value . "\"\n");
         fclose($fHandle);
     }
 
@@ -176,8 +189,8 @@ abstract class AbstractCommand extends Command
     protected function processDirectory($dir, $callback, $statusCallback = false)
     {
         while ($file = $dir->read()) {
-            // Only process .ini files, and ignore native.ini special case file:
-            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
+            // Only process .ini files, and ignore special case files:
+            if (str_ends_with($file, '.ini') && !in_array($file, $this->filesToIgnore)) {
                 if (is_callable($statusCallback)) {
                     $statusCallback("Processing $file...");
                 }

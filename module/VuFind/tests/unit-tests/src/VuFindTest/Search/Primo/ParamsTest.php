@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo Params.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021-2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Primo;
 
 use VuFind\Search\Primo\Options;
@@ -96,18 +97,20 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('building:main');
         $this->assertEquals(
             [
-                'format' => [
+                [
+                    'field' => 'format',
                     'facetOp' => 'OR',
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -117,12 +120,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('building:main');
         $this->assertEquals(
             [
-                'format' => [
+                [
+                    'field' => 'format',
                     'facetOp' => 'OR',
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -133,19 +137,21 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addHiddenFilter('building:sub');
         $this->assertEquals(
             [
-                'format' => [
-                    'facetOp' => 'OR',
-                    'values' => [
-                        'foo',
-                        'bar',
-                    ]
-                ],
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
+                ],
+                [
+                    'field' => 'format',
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'foo',
+                        'bar',
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -155,12 +161,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeAllFilters('~format');
         $this->assertEquals(
             [
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -170,11 +177,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('building:main');
         $this->assertEquals(
             [
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')

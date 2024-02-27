@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SIP2 authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
+use Laminas\Http\Request;
 use VuFind\Auth\SIP2;
 
 /**
@@ -44,19 +47,16 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
+     * @param ?Config $config Configuration to use (null for default)
      *
-     * @return LDAP
+     * @return SIP2
      */
-    public function getAuthObject($config = null)
+    public function getAuthObject(?Config $config = null): SIP2
     {
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $authManager = new \VuFind\Auth\PluginManager(
-            new \VuFindTest\Container\MockContainer($this)
-        );
-        $obj = $authManager->get('SIP2');
+        $obj = new SIP2();
         $obj->setConfig($config);
         return $obj;
     }
@@ -66,12 +66,12 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @return Config
      */
-    public function getAuthConfig()
+    public function getAuthConfig(): Config
     {
         $config = new Config(
             [
                 'host' => 'my.fake.host',
-                'port' => '6002'
+                'port' => '6002',
             ],
             true
         );
@@ -84,14 +84,14 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Laminas\Http\Request
+     * @return Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = []): Request
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
-        $request = new \Laminas\Http\Request();
+        $request = new Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
@@ -101,7 +101,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -114,7 +114,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 

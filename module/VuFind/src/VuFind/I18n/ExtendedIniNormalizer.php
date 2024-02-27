@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class to consistently format ExtendedIni language files.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\I18n;
 
 use Laminas\I18n\Translator\TextDomain;
@@ -84,20 +86,45 @@ class ExtendedIniNormalizer
      */
     public function normalizeFileToString($file)
     {
-        $reader = new Translator\Loader\ExtendedIniReader();
+        // Safeguard to avoid messing up wrong ini files:
+        $fileArray = $this->loadFileIntoArray($file);
+        $this->checkFileFormat($fileArray, $file);
+        return $this->normalizeArray($fileArray);
+    }
 
-        // Reading and rewriting the file by itself will eliminate all comments;
-        // we should extract comments separately and then recombine the parts.
-        $fileArray = file($file);
+    /**
+     * Load a language file into an array of lines, stripping UTF-8 BOM if necessary.
+     *
+     * @param string $filename File to load
+     *
+     * @return array
+     */
+    public function loadFileIntoArray(string $filename): array
+    {
+        $fileArray = file($filename);
 
         // Strip off UTF-8 BOM if necessary.
-        $bom = html_entity_decode('&#xFEFF;', ENT_NOQUOTES, 'UTF-8');
-        $fileArray[0] = str_replace($bom, '', $fileArray[0]);
+        if ($fileArray) {
+            $bom = html_entity_decode('&#xFEFF;', ENT_NOQUOTES, 'UTF-8');
+            $fileArray[0] = str_replace($bom, '', $fileArray[0]);
+        }
 
-        // Safeguard to avoid messing up wrong ini files:
-        $this->checkFileFormat($fileArray, $file);
+        return $fileArray;
+    }
 
+    /**
+     * Normalize an array of lines from a file and return the result as a string.
+     *
+     * @param string[] $fileArray Array of lines to normalize
+     *
+     * @return string
+     */
+    public function normalizeArray(array $fileArray): string
+    {
+        // Reading and rewriting the file by itself will eliminate all comments;
+        // we should extract comments separately and then recombine the parts.
         $comments = $this->extractComments($fileArray);
+        $reader = new Translator\Loader\ExtendedIniReader();
         $strings = $this->formatAsString($reader->getTextDomain($fileArray, false));
         return $comments . $strings;
     }
@@ -133,7 +160,14 @@ class ExtendedIniNormalizer
         // Format the lines:
         $output = '';
         foreach ($input as $key => $value) {
-            $output .= "$key = \"$value\"\n";
+            // Put purely numeric keys in single quotes for Lokalise compatibility:
+            $normalizedKey = is_numeric($key) ? "'$key'" : $key;
+            // Choose most appropriate type of outer quotes to reduce need for escaping:
+            $quote = str_contains($value, '"') ? "'" : '"';
+            // Apply minimal escaping (to existing slashes and quotes matching the outer ones):
+            $escapedValue = str_replace(['\\', $quote], ['\\\\', '\\' . $quote], $value);
+            // Put it all together!
+            $output .= "$normalizedKey = $quote$escapedValue$quote\n";
         }
         return trim($output) . "\n";
     }
@@ -149,7 +183,7 @@ class ExtendedIniNormalizer
     {
         $comments = '';
         foreach ($contents as $line) {
-            if (substr(trim($line), 0, 1) == ';') {
+            if (str_starts_with(trim($line), ';')) {
                 $comments .= $line;
             }
         }
@@ -194,7 +228,7 @@ class ExtendedIniNormalizer
             if ('' === $line || strncmp($line, ';', 1) === 0) {
                 continue;
             }
-            if (substr($line, 0, 1) === '[' && substr($line, -1) === ']') {
+            if (str_starts_with($line, '[') && str_ends_with($line, ']')) {
                 throw new \Exception(
                     "Cannot normalize a file with sections; $filename line $lineNum"
                     . " contains: $line"

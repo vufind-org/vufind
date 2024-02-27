@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AJAX handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 /**
@@ -49,7 +51,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'deleteRecordComment' => DeleteRecordComment::class,
         'doiLookup' => DoiLookup::class,
         'getACSuggestions' => GetACSuggestions::class,
-        'getFacetData' => GetFacetData::class,
         'getIlsStatus' => GetIlsStatus::class,
         'getItemStatuses' => GetItemStatuses::class,
         'getLibraryPickupLocations' => GetLibraryPickupLocations::class,
@@ -63,6 +64,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getResolverLinks' => GetResolverLinks::class,
         'getResultCount' => GetResultCount::class,
         'getSaveStatuses' => GetSaveStatuses::class,
+        'getSearchResults' => GetSearchResults::class,
         'getSideFacets' => GetSideFacets::class,
         'getUserFines' => GetUserFines::class,
         'getUserHolds' => GetUserHolds::class,
@@ -90,7 +92,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         DeleteRecordComment::class => DeleteRecordCommentFactory::class,
         DoiLookup::class => DoiLookupFactory::class,
         GetACSuggestions::class => GetACSuggestionsFactory::class,
-        GetFacetData::class => GetFacetDataFactory::class,
         GetIlsStatus::class => GetIlsStatusFactory::class,
         GetItemStatuses::class => GetItemStatusesFactory::class,
         GetLibraryPickupLocations::class => AbstractIlsAndUserActionFactory::class,
@@ -105,6 +106,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetResolverLinks::class => GetResolverLinksFactory::class,
         GetResultCount::class => GetResultCountFactory::class,
         GetSaveStatuses::class => GetSaveStatusesFactory::class,
+        GetSearchResults::class => GetSearchResultsFactory::class,
         GetSideFacets::class => GetSideFacetsFactory::class,
         GetUserFines::class => GetUserFinesFactory::class,
         GetUserHolds::class => AbstractIlsAndUserActionFactory::class,

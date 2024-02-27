@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Collections Controller
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,11 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
+
+use function array_slice;
+use function count;
 
 /**
  * Collections Controller
@@ -113,7 +119,7 @@ class CollectionsController extends AbstractBase implements
     protected function showBrowseAlphabetic()
     {
         // Process incoming parameters:
-        $source = "hierarchy";
+        $source = 'hierarchy';
         $from = $this->params()->fromQuery('from', '');
         $page = $this->params()->fromQuery('page', 0);
         $limit = $this->getBrowseLimit();
@@ -148,9 +154,9 @@ class CollectionsController extends AbstractBase implements
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result['Browse']['items'] as $rkey => $collection) {
             $collectionIdNamePair
-                = explode($delimiter, $collection["heading"]);
+                = explode($delimiter, $collection['heading']);
             $finalresult[$rkey]['displayText'] = $collectionIdNamePair[0];
-            $finalresult[$rkey]['count'] = $collection["count"];
+            $finalresult[$rkey]['count'] = $collection['count'];
             $finalresult[$rkey]['value'] = $collectionIdNamePair[1];
         }
         $view->result = $finalresult;
@@ -172,7 +178,7 @@ class CollectionsController extends AbstractBase implements
         $appliedFilters = $this->params()->fromQuery('filter', []);
         $limit = $this->getBrowseLimit();
 
-        $browseField = "hierarchy_browse";
+        $browseField = 'hierarchy_browse';
 
         $searchObject = $this->serviceLocator
             ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
@@ -306,7 +312,7 @@ class CollectionsController extends AbstractBase implements
     {
         $valNormalized = iconv('UTF-8', 'US-ASCII//TRANSLIT//IGNORE', $val);
         $valNormalized = strtolower($valNormalized);
-        $valNormalized = preg_replace("/[^a-zA-Z0-9\s]/", "", $valNormalized);
+        $valNormalized = preg_replace("/[^a-zA-Z0-9\s]/", '', $valNormalized);
         $valNormalized = trim($valNormalized);
         return $valNormalized;
     }
@@ -343,7 +349,13 @@ class CollectionsController extends AbstractBase implements
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
         $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
-        $result = $searchService->search('Solr', $query, 0, $this->getBrowseLimit());
+        $command = new SearchCommand(
+            'Solr',
+            $query,
+            0,
+            $this->getBrowseLimit()
+        );
+        $result = $searchService->invoke($command)->getResult();
         return $result->getRecords();
     }
 }

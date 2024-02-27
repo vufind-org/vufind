@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generate/ExtendService command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -83,7 +85,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'config_path' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -107,7 +109,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'config_path' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals("Foo!\n", $commandTester->getDisplay());

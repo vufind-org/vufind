@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Export Support Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use Laminas\Config\Config;
@@ -41,6 +43,8 @@ use VuFind\Export;
  */
 class ExportTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test options using legacy (deprecated) configuration.
      *
@@ -151,7 +155,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         $config = [
             'foo' => ['requiredMethods' => ['getTitle']],
-            'bar' => ['requiredMethods' => ['getThingThatDoesNotExist']]
+            'bar' => ['requiredMethods' => ['getThingThatDoesNotExist']],
         ];
 
         $export = $this->getExport([], $config);
@@ -182,7 +186,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         // turned on by default if no main config is passed in.
         $config = [
             'RefWorks' => ['requiredMethods' => ['getTitle']],
-            'EndNote' => ['requiredMethods' => ['getThingThatDoesNotExist']]
+            'EndNote' => ['requiredMethods' => ['getThingThatDoesNotExist']],
         ];
 
         $export = $this->getExport([], $config);
@@ -205,7 +209,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         ];
         $exportConfig = [
             'anything' => ['requiredMethods' => ['getTitle']],
-            'marc' => ['requiredMethods' => ['getMarcReader']]
+            'marc' => ['requiredMethods' => ['getMarcReader']],
         ];
         $export = $this->getExport($mainConfig, $exportConfig);
         $solrDefault = new \VuFind\RecordDriver\SolrDefault();
@@ -237,7 +241,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     public function testGetRedirectUrl()
     {
         $mainConfig = ['config' => ['this' => 'that=true']];
-        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}&configtest={encodedConfig|config|this|default}';
+        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}'
+            . '&configtest={encodedConfig|config|this|default}';
         $exportConfig = ['foo' => ['redirectUrl' => $template]];
         $export = $this->getExport($mainConfig, $exportConfig);
         $this->assertEquals(
@@ -308,9 +313,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $view->expects($this->exactly(2))->method('plugin')
-            ->withConsecutive(['serverurl'], ['url'])
-            ->willReturnOnConsecutiveCalls($serverUrl, $url);
+        $this->expectConsecutiveCalls($view, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
         $this->assertEquals(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
             $this->getExport()->getBulkUrl($view, 'foo', [1, 2, 3])

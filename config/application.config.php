@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/constants.config.php';
 
 // Set up modules:
@@ -69,8 +70,8 @@ if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
 
-// Enable caching unless in dev mode or running tests:
-$useCache = APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
+// Enable caching unless in CLI mode, dev mode or running tests:
+$useCache = PHP_SAPI !== 'cli' && APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
 
 // Build configuration:
 return [

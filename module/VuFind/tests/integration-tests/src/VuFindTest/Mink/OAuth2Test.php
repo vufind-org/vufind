@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OAuth2/OIDC test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,7 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 declare(strict_types=1);
+
 namespace VuFindTest\Mink;
 
 use const PHP_MAJOR_VERSION;
@@ -40,7 +43,6 @@ use const PHP_MAJOR_VERSION;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 {
@@ -87,7 +89,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         return [
             'Catalog' => [
                 'driver' => 'Demo',
-            ]
+            ],
         ];
     }
 
@@ -112,8 +114,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                     'redirectUri' => $redirectUri,
                     'isConfidential' => true,
                     'secret' => password_hash('mysecret', PASSWORD_DEFAULT),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -140,8 +142,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test OAuth2 authorization.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -193,8 +193,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedPermissions as $index => $permission) {
             $this->assertEquals(
                 $permission,
-                $this->findCss($page, 'div.oauth2-prompt li', null, $index)
-                    ->getText()
+                $this->findCssAndGetText($page, 'div.oauth2-prompt li', null, $index)
             );
         }
 
@@ -215,7 +214,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'grant_type' => 'authorization_code',
             'redirect_uri' => $redirectUri,
             'client_id' => 'test',
-            'client_secret' => 'mysecret'
+            'client_secret' => 'mysecret',
         ];
         $http = new \VuFindHttp\HttpService();
         $response = $http->post(
@@ -234,7 +233,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             200,
             $response->getStatusCode(),
-            "Response: " . $response->getContent()
+            'Response: ' . $response->getContent()
         );
         $jwks = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
@@ -268,13 +267,13 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             '',
             [
                 'Authorization' => $tokenResult['token_type'] . ' '
-                . $tokenResult['access_token']
+                . $tokenResult['access_token'],
             ]
         );
         $this->assertEquals(
             200,
             $response->getStatusCode(),
-            "Response: " . $response->getContent()
+            'Response: ' . $response->getContent()
         );
 
         $userInfo = json_decode($response->getBody(), true);
@@ -299,7 +298,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             401,
             $response->getStatusCode(),
-            "Response: " . $response->getContent()
+            'Response: ' . $response->getContent()
         );
         $tokenResult = json_decode($response->getBody(), true);
         $this->assertArrayHasKey('error', $tokenResult);
@@ -427,7 +426,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'An error has occurred',
-            $this->findCss($page, '.alert-danger p')->getText()
+            $this->findCssAndGetText($page, '.alert-danger p')
         );
     }
 
@@ -465,10 +464,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             }
         }
 
-        $privateKey = openssl_pkey_new([
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA
-        ]);
+        $privateKey = openssl_pkey_new(
+            [
+                'private_key_bits' => 2048,
+                'private_key_type' => OPENSSL_KEYTYPE_RSA,
+            ]
+        );
         if (!$privateKey) {
             throw new \Exception(
                 'Could not create private key: ' . openssl_error_string()

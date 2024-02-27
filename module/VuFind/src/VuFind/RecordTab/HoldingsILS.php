@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Holdings (ILS) tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFind\ILS\Connection;
+
+use function strlen;
 
 /**
  * Holdings (ILS) tab
@@ -122,7 +126,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    public function getUniqueCallNumbers($items, $fullDetails=false)
+    public function getUniqueCallNumbers($items, $fullDetails = false)
     {
         if (!$fullDetails) {
             return $this->getSimpleUniqueCallNumbers($items);
@@ -187,7 +191,7 @@ class HoldingsILS extends AbstractBase
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
-        if (!$itemLimit || $totalItemCount < $itemLimit) {
+        if (!$itemLimit || $totalItemCount <= $itemLimit) {
             return;
         }
 

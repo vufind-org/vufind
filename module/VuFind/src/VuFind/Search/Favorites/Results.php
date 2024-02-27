@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Favorites aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
@@ -37,6 +39,8 @@ use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
 
+use function count;
+
 /**
  * Search Favorites Results
  *
@@ -46,8 +50,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Results extends BaseResults
-    implements AuthorizationServiceAwareInterface
+class Results extends BaseResults implements AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;
 
@@ -137,25 +140,25 @@ class Results extends BaseResults
             if (!isset($this->facets[$field])) {
                 $this->facets[$field] = [
                     'label' => $this->getParams()->getFacetLabel($field),
-                    'list' => []
+                    'list' => [],
                 ];
                 switch ($field) {
-                case 'tags':
-                    if ($this->list) {
-                        $tags = $this->list->getResourceTags();
-                    } else {
-                        $tags = $this->user ? $this->user->getTags() : [];
-                    }
-                    foreach ($tags as $tag) {
-                        $this->facets[$field]['list'][] = [
-                            'value' => $tag->tag,
-                            'displayText' => $tag->tag,
-                            'count' => $tag->cnt,
-                            'isApplied' =>
-                                $this->getParams()->hasFilter("$field:" . $tag->tag)
-                        ];
-                    }
-                    break;
+                    case 'tags':
+                        if ($this->list) {
+                            $tags = $this->list->getResourceTags();
+                        } else {
+                            $tags = $this->user ? $this->user->getTags() : [];
+                        }
+                        foreach ($tags as $tag) {
+                            $this->facets[$field]['list'][] = [
+                                'value' => $tag->tag,
+                                'displayText' => $tag->tag,
+                                'count' => $tag->cnt,
+                                'isApplied' => $this->getParams()
+                                    ->hasFilter("$field:" . $tag->tag),
+                            ];
+                        }
+                        break;
                 }
             }
             if (isset($this->facets[$field])) {
@@ -185,7 +188,8 @@ class Results extends BaseResults
                 'Cannot retrieve favorites without logged in user.'
             );
         }
-        if (null !== $list && !$list->public
+        if (
+            null !== $list && !$list->public
             && (!$this->user || $list->user_id != $this->user->id)
         ) {
             throw new ListPermissionException(
@@ -223,8 +227,8 @@ class Results extends BaseResults
             $recordsToRequest[] = [
                 'id' => $row->record_id, 'source' => $row->source,
                 'extra_fields' => [
-                    'title' => $row->title
-                ]
+                    'title' => $row->title,
+                ],
             ];
         }
 

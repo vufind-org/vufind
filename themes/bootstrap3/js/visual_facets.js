@@ -66,9 +66,11 @@ function settitle() {
 function showVisualFacets(pivotdata) {
   if (!d3.select("#visualResults").empty()) {
     $('#visualResults').html('');
-    $('.limitSelect').css('display', 'none');
-    $('.sortSelector').css('display', 'none');
+    $('.search-result-limit').css('display', 'none');
+    $('.search-sort').css('display', 'none');
+    $('.search-stats').css('visibility', 'hidden');
     $('.pagination').css('display', 'none');
+    $('.pagination-simple').css('display', 'none');
     $('.bulkActionButtons').css('display', 'none');
 
     //  Color scheme developed using the awesome site
@@ -204,13 +206,18 @@ function showVisualFacets(pivotdata) {
       .data(treemap.nodes)
       .enter().append("a")
       .attr("href", function createHref(d) {
+        let url = new URL(window.location.href);
+        let params = url.searchParams;
         if (d.parentlevel && d.name !== VuFind.translate('More Topics')) {
-          return window.location + "&filter[]=" + d.field + ":\"" + encodeURIComponent(d.name) + "\"&filter[]=" + d.parentfield + ":\"" + encodeURIComponent(d.parentlevel) + "\"&view=list";
+          params.append('filter[]', d.field + ':"' + d.name + '"');
+          params.append('filter[]', d.parentfield + ':"' + d.parentlevel + '"');
+          params.set('view', 'list');
         } else if (d.name === VuFind.translate('More Topics')) {
-          return window.location + "&filter[]=" + d.parentfield + ":\"" + encodeURIComponent(d.parentlevel) + "\"";
+          params.append('filter[]', d.parentfield + ':"' + d.parentlevel + '"');
         } else if (d.name !== "theData") {
-          return window.location + "&filter[]=" + d.field + ":\"" + encodeURIComponent(d.name) + "\"";
+          params.append('filter[]', d.field + ':"' + d.name + '"');
         }
+        return url.toString();
       })
       .append("div")
       .attr("class", function createClass(d) { return (typeof d.parentfield === "undefined") ? "node toplevel" : "node secondlevel"; })
@@ -219,7 +226,6 @@ function showVisualFacets(pivotdata) {
       .style("background", function styleBackground(d) { return d.children ? color(d.name.substr(0, 1)) : null; })
       .call(settitle)
       .style("z-index", function setZindex(d) { return (typeof d.parentfield !== "undefined") ? "1" : "0"; })
-      .attr("tabindex", 0)
       .append("div")
       .call(settext)
       .attr("class", function createClass(d) { return d.children ? "label" : "notalabel"; } )

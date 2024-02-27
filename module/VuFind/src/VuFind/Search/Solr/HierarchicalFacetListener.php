@@ -3,7 +3,7 @@
 /**
  * Solr hierarchical facet listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2014.
@@ -28,15 +28,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -181,7 +184,8 @@ class HierarchicalFacetListener
             return $event;
         }
         $context = $command->getContext();
-        if ($context == 'search' || $context == 'retrieve'
+        if (
+            $context == 'search' || $context == 'retrieve'
             || $context == 'retrieveBatch' || $context == 'similar'
         ) {
             $this->processHierarchicalFacets($event);
@@ -214,7 +218,8 @@ class HierarchicalFacetListener
                         // Include a translation for each value only if we don't
                         // display full hierarchy or this is the deepest hierarchy
                         // level available
-                        if (!$allLevels
+                        if (
+                            !$allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
                                 $fields[$facetName],
                                 $value

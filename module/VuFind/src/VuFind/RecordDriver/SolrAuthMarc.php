@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for MARC authority records in Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 /**
@@ -64,7 +66,7 @@ class SolrAuthMarc extends SolrAuthDefault
     }
 
     /**
-     * Get a raw LCCN (not normalized).  Returns false if none available.
+     * Get a raw LCCN (not normalized). Returns false if none available.
      *
      * @return string|bool
      */
@@ -76,7 +78,7 @@ class SolrAuthMarc extends SolrAuthDefault
         }
         $lccns = $this->getFieldArray('700', ['0']);
         foreach ($lccns as $lccn) {
-            if (substr($lccn, 0, '5') == '(DLC)') {
+            if (str_starts_with($lccn, '(DLC)')) {
                 return substr($lccn, 5);
             }
         }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Csp View Helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 /**
@@ -50,14 +52,14 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
-                        'testing' => true
-                    ]
+                        'testing' => true,
+                    ],
                 ],
                 'Directives' => [
                     'script-src' => [
-                        "'unsafe-inline'"
-                    ]
-                ]
+                        "'unsafe-inline'",
+                    ],
+                ],
             ]
         );
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
@@ -75,7 +77,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $added = $headers->get('Content-Security-Policy');
         $this->assertEquals(1, $added->count());
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response);
+        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());
         $csp->disablePolicy();
         $this->assertFalse($headers->get('Content-Security-Policy'));
     }
@@ -92,14 +94,14 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
-                        'testing' => 'report_only'
-                    ]
+                        'testing' => 'report_only',
+                    ],
                 ],
                 'Directives' => [
                     'script-src' => [
-                        "'unsafe-inline'"
-                    ]
-                ]
+                        "'unsafe-inline'",
+                    ],
+                ],
             ]
         );
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
@@ -117,7 +119,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $added = $headers->get('Content-Security-Policy-Report-Only');
         $this->assertFalse(is_iterable($added));
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response);
+        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());
         $csp->disablePolicy();
         $this->assertFalse($headers->get('Content-Security-Policy-Report-Only'));
     }
@@ -134,14 +136,14 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
-                        'testing' => false
-                    ]
+                        'testing' => false,
+                    ],
                 ],
                 'Directives' => [
                     'script-src' => [
-                        "'unsafe-inline'"
-                    ]
-                ]
+                        "'unsafe-inline'",
+                    ],
+                ],
             ]
         );
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
@@ -153,7 +155,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $header = $cspHeaderGenerator->getHeader();
         $this->assertNull($header);
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response);
+        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());
         $csp->disablePolicy();
     }
 }

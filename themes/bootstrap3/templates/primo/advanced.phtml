@@ -24,7 +24,7 @@
     }
 ?>
 <form class="primo-adv-search" id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>">
-  <input type="hidden" name="join" value="AND" />
+  <input type="hidden" name="join" value="AND">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h3><?=$this->transEsc('Advanced Search')?></h3>
     <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
@@ -36,9 +36,9 @@
       }
     ?>
     <?php for ($i = 0; $i < $numGroups; $i++): ?>
-      <input type="hidden" name="bool<?=$i?>[]" value="AND" />
+      <input type="hidden" name="bool<?=$i?>[]" value="AND">
       <div class="primo adv-group" id="group<?=$i?>">
-        <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</label>
+        <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc('adv_search_label')?>:</label>
         <div class="search-container">
           <?php
             if (isset($groups[$i])) {
@@ -54,17 +54,17 @@
           <?php for ($j = 0; $j < $numRows; $j++): ?>
             <?php $currRow = $currentGroup[$j] ?? false; ?>
             <div class="search">
-              <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
+              <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control adv-term-type">
                 <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
                 <?php endforeach; ?>
               </select>
-              <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control">
+              <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control adv-term-type">
                 <?php foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
                 <?php endforeach; ?>
               </select>
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEscAttr("search_terms")?>"/>
+              <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow ? $this->escapeHtmlAttr($currRow->getString()) : ''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEscAttr('search_terms')?>">
             </div>
           <?php endfor; ?>
         </div>
@@ -72,23 +72,23 @@
     <?php endfor; ?>
     <?php $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
     <?php if (!empty($lastSort)): ?>
-      <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+      <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
     <?php endif; ?>
-    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEscAttr("Find")?>"/>
+    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEscAttr('Find')?>">
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
     <?php if ($hasDefaultsApplied): ?>
-      <input type="hidden" name="dfApplied" value="1" />
+      <input type="hidden" name="dfApplied" value="1">
     <?php endif ?>
     <?php if (!empty($searchFilters)): ?>
-      <h4><?=$this->transEsc("adv_search_filters")?></h4>
+      <h4><?=$this->transEsc('adv_search_filters')?></h4>
       <ul class="list-group">
         <li class="list-group-item">
           <div class="checkbox">
             <label>
-              <?=$this->transEsc("adv_search_select_all")?>
-              <input type="checkbox" checked="checked" class="checkbox-select-all" />
+              <?=$this->transEsc('adv_search_select_all')?>
+              <input type="checkbox" checked="checked" class="checkbox-select-all">
             </label>
           </div>
         </li>
@@ -101,7 +101,7 @@
               <li class="list-group-item">
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>
+                    <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"'> <?=$this->escapeHtml($value['displayText'])?>
                   </label>
                 </div>
               </li>

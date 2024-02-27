@@ -28,16 +28,18 @@
                 ?>
                 <?=$this->icon('format-' . $icon, $format ? ['title' => $format] : []) ?>
                 <b><?=$this->escapeHtml($data->getTitle())?></b>
-                <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
-                  <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+                <?php $authors = $data->getPrimaryAuthors(); ?>
+                <?php if (!empty($authors)): ?>
+                  <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
                 <?php endif; ?>
-                <?php $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
-                  <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+                <?php $pubDates = $data->getPublicationDates(); ?>
+                <?php if (!empty($pubDates)): ?>
+                  <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
                 <?php endif; ?>
               </div>
             </a>
           </div>
-          <?php if(($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
+          <?php if (($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
       </div>
       <div class="item">
           <?php endif; ?>
@@ -59,21 +61,21 @@
   <p><?=$this->transEsc('Cannot find similar records')?></p>
 <?php endif; ?>
 <?php
-  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : "";
+  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : '';
   $script .= <<<JS
-var normalizeHeightCount = $('#similar-items-carousel img').length;
-function normalizeHeights() {
-  if(--normalizeHeightCount > 0) return;
-  var tallest = 0;
-  var items = $('#similar-items-carousel .hover-overlay');
-  items.each(function() { //add heights to array
-    if(tallest < $(this).height()) {
-      tallest = $(this).height();
-    }
-  });
-  items.css('min-height', (tallest+25) + 'px');
-}
-$('#similar-items-carousel img').on('load', normalizeHeights);
-JS;
+      var normalizeHeightCount = $('#similar-items-carousel img').length;
+      function normalizeHeights() {
+        if (--normalizeHeightCount > 0) return;
+        var tallest = 0;
+        var items = $('#similar-items-carousel .hover-overlay');
+        items.each(function() { //add heights to array
+          if (tallest < $(this).height()) {
+            tallest = $(this).height();
+          }
+        });
+        items.css('min-height', (tallest+25) + 'px');
+      }
+      $('#similar-items-carousel img').on('load', normalizeHeights);
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

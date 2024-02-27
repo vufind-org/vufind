@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cover controller factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -66,10 +68,13 @@ class CoverControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $configArray = $config?->Content?->toArray() ?? [];
         return new $requestedName(
             $container->get(\VuFind\Cover\Loader::class),
             $container->get(\VuFind\Cover\CachingProxy::class),
-            $container->get(\VuFind\Session\Settings::class)
+            $container->get(\VuFind\Session\Settings::class),
+            $configArray
         );
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr Writer service
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Demian Katz 2013.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Solr;
 
 use VuFind\Db\Table\ChangeTracker;
@@ -35,6 +37,8 @@ use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
+
+use function func_get_args;
 
 /**
  * Solr Writer service

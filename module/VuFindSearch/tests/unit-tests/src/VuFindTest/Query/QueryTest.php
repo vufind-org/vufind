@@ -3,7 +3,7 @@
 /**
  * Unit tests for Query class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Query;
 
 use PHPUnit\Framework\TestCase;
@@ -110,7 +111,7 @@ class QueryTest extends TestCase
     public function testMultipleReplacements()
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
-        $q = new Query("color code");
+        $q = new Query('color code');
         $q->replaceTerm(
             'color code',
             '((color code) OR (color codes))',
@@ -145,6 +146,11 @@ class QueryTest extends TestCase
         );
         $q->replaceTerm('test', 'mess', $normalizer);
         $this->assertEquals('this is a mess of things', $q->getString());
+
+        // Test UNICODE characters ("composers" in Northern Sámi):
+        $q = new Query('šuokŋadahkkit');
+        $this->assertTrue($q->containsTerm('šuokŋadahkkit', $normalizer));
+        $this->assertTrue($q->containsTerm('suokŋadahkkit', $normalizer));
     }
 
     /**

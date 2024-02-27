@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Solr aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,11 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
+
+use function count;
 
 /**
  * Solr Search Parameters
@@ -65,6 +70,11 @@ class Results extends \VuFind\Search\Base\Results
     protected $responsePivotFacets = null;
 
     /**
+     * Counts of filtered-out facet values, indexed by field name.
+     */
+    protected $filteredFacetCounts = null;
+
+    /**
      * Search backend identifier.
      *
      * @var string
@@ -93,6 +103,13 @@ class Results extends \VuFind\Search\Base\Results
      * @var null|string
      */
     protected $cursorMark = null;
+
+    /**
+     * Highest relevance of all the results
+     *
+     * @var null|float
+     */
+    protected $maxScore = null;
 
     /**
      * Get spelling processor.
@@ -142,6 +159,33 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        $scoreMap = [];
+        foreach ($this->results as $record) {
+            $data = $record->getRawData();
+            if ($data['score'] ?? false) {
+                $scoreMap[$record->getUniqueId()] = $data['score'];
+            }
+        }
+        return $scoreMap;
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return null|float
+     */
+    public function getMaxScore()
+    {
+        return $this->maxScore;
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -163,27 +207,45 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         try {
-            $collection = $searchService
-                ->search($this->backendId, $query, $offset, $limit, $params);
+            $command = new SearchCommand(
+                $this->backendId,
+                $query,
+                $offset,
+                $limit,
+                $params
+            );
+
+            $collection = $searchService->invoke($command)->getResult();
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             // If the query caused a parser error, see if we can clean it up:
-            if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)
+            if (
+                $e->hasTag(ErrorListener::TAG_PARSER_ERROR)
                 && $newQuery = $this->fixBadQuery($query)
             ) {
                 // We need to get a fresh set of $params, since the previous one was
                 // manipulated by the previous search() call.
                 $params = $this->getParams()->getBackendParameters();
-                $collection = $searchService
-                    ->search($this->backendId, $newQuery, $offset, $limit, $params);
+                $command = new SearchCommand(
+                    $this->backendId,
+                    $newQuery,
+                    $offset,
+                    $limit,
+                    $params
+                );
+                $collection = $searchService->invoke($command)->getResult();
             } else {
                 throw $e;
             }
         }
 
+        $this->extraSearchBackendDetails = $command->getExtraRequestDetails();
+
         $this->responseFacets = $collection->getFacets();
+        $this->filteredFacetCounts = $collection->getFilteredFacetCounts();
         $this->responseQueryFacets = $collection->getQueryFacets();
         $this->responsePivotFacets = $collection->getPivotFacets();
         $this->resultTotal = $collection->getTotal();
+        $this->maxScore = $collection->getMaxScore();
 
         // Process spelling suggestions
         $spellcheck = $collection->getSpellcheck();
@@ -198,6 +260,9 @@ class Results extends \VuFind\Search\Base\Results
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
+
+        // Store any errors:
+        $this->errors = $collection->getErrors();
     }
 
     /**
@@ -294,6 +359,20 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
+     * Get counts of facet values filtered out by the HideFacetValueListener,
+     * indexed by field name.
+     *
+     * @return array
+     */
+    public function getFilteredFacetCounts(): array
+    {
+        if (null === $this->filteredFacetCounts) {
+            $this->performAndProcessSearch();
+        }
+        return $this->filteredFacetCounts;
+    }
+
+    /**
      * Get complete facet counts for several index fields
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
@@ -356,13 +435,15 @@ class Results extends \VuFind\Search\Base\Results
 
         // Do search
         $result = $clone->getFacetList();
+        $filteredCounts = $clone->getFilteredFacetCounts();
 
         // Reformat into a hash:
         foreach ($result as $key => $value) {
             // Detect next page and crop results if necessary
             $more = false;
-            if (isset($page) && count($value['list']) > 0
-                && count($value['list']) == $limit + 1
+            if (
+                isset($page) && count($value['list']) > 0
+                && (count($value['list']) + ($filteredCounts[$key] ?? 0)) == $limit + 1
             ) {
                 $more = true;
                 array_pop($value['list']);
@@ -388,7 +469,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Start building the flare object:
         $flare = new \stdClass();
-        $flare->name = "flare";
+        $flare->name = 'flare';
         $flare->total = $this->resultTotal;
         $flare->children = $this->responsePivotFacets;
         return $flare;

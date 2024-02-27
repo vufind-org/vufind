@@ -1,10 +1,11 @@
 <?php
+
 /**
  * OAuth2 Controller
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Http\Response;
@@ -42,6 +44,9 @@ use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\OAuth2\Entity\UserEntity;
 use VuFind\OAuth2\Repository\IdentityRepository;
 use VuFind\Validator\CsrfInterface;
+
+use function in_array;
+use function is_array;
 
 /**
  * OAuth2 Controller
@@ -209,7 +214,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         // Validate the authorization request:
         $laminasRequest = $this->getRequest();
         $clientId = $laminasRequest->getQuery('client_id');
-        if (empty($clientId)
+        if (
+            empty($clientId)
             || !($clientConfig = $this->oauth2Config['Clients'][$clientId] ?? [])
         ) {
             throw new BadRequestException("Invalid OAuth2 client $clientId");
@@ -224,8 +230,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             $authRequest = $server->validateAuthorizationRequest(
                 Psr7ServerRequest::fromLaminas($this->getRequest())
             );
-        } catch (OAuthServerException $exception) {
-            return $this->convertOAuthServerExceptionToResponse($exception);
+        } catch (OAuthServerException $e) {
+            return $this->handleOAuth2Exception('Authorization request', $e);
         } catch (\Exception $e) {
             return $this->handleException('Authorization request', $e);
         }
@@ -260,10 +266,10 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     new \Laminas\Diactoros\Response()
                 );
                 return Psr7Response::toLaminas($response);
-            } catch (OAuthServerException $exception) {
-                return $this->convertOAuthServerExceptionToResponse($exception);
+            } catch (OAuthServerException $e) {
+                return $this->handleOAuth2Exception('Authorization request', $e);
             } catch (\Exception $e) {
-                return $this->handleException('Authorize request', $e);
+                return $this->handleException('Authorization request', $e);
             }
         }
 
@@ -291,8 +297,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             $response = Psr7Response::toLaminas($response);
             $this->addCorsHeaders($response);
             return $response;
-        } catch (OAuthServerException $exception) {
-            return $this->convertOAuthServerExceptionToResponse($exception);
+        } catch (OAuthServerException $e) {
+            return $this->handleOAuth2Exception('Access token request', $e);
         } catch (\Exception $e) {
             return $this->handleException('Access token request', $e);
         }
@@ -314,24 +320,28 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                 );
             $scopes = $request->getAttribute('oauth_scopes');
             if (!in_array('openid', $scopes)) {
-                throw OAuthServerException::invalidRequest(
-                    'token',
-                    'Not an OpenID request'
+                return $this->handleOAuth2Exception(
+                    'User info request',
+                    OAuthServerException::invalidRequest(
+                        'token',
+                        'Not an OpenID request'
+                    )
                 );
             }
             $userId = $request->getAttribute('oauth_user_id');
             $userEntity = $this->identityRepository
                 ->getUserEntityByIdentifier($userId);
             if (!$userEntity) {
-                return $this->convertOAuthServerExceptionToResponse(
+                return $this->handleOAuth2Exception(
+                    'User info request',
                     OAuthServerException::accessDenied('User does not exist anymore')
                 );
             }
             $result = $this->claimExtractor
                 ->extract($scopes, $userEntity->getClaims());
             return $this->getJsonResponse($result);
-        } catch (OAuthServerException $exception) {
-            return $this->convertOAuthServerExceptionToResponse($exception);
+        } catch (OAuthServerException $e) {
+            return $this->handleOAuth2Exception('User info request', $e);
         } catch (\Exception $e) {
             return $this->handleException('User info request', $e);
         }
@@ -414,5 +424,20 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         return $this->convertOAuthServerExceptionToResponse(
             OAuthServerException::serverError('Server side issue')
         );
+    }
+
+    /**
+     * Create a server error response from a returnable exception.
+     *
+     * @param string     $function Function description
+     * @param \Exception $e        Exception
+     *
+     * @return Response
+     */
+    protected function handleOAuth2Exception(string $function, \Exception $e): Response
+    {
+        $this->debug("$function exception: " . (string)$e);
+
+        return $this->convertOAuthServerExceptionToResponse($e);
     }
 }

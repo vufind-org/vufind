@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CSP nonce view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -59,6 +61,8 @@ class CspNonce extends \Laminas\View\Helper\AbstractHelper
      * Return the current nonce
      *
      * Result is a base64 encoded string that does not need escaping.
+     *
+     * @deprecated Use Csp::getNonce() instead
      *
      * @return string
      */

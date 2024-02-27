@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Legacy adapter: search query parameters to AbstractQuery object
+ * Search query adapter
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,41 +24,52 @@
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
 use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\WorkKeysQuery;
+
+use function array_key_exists;
+use function call_user_func;
+use function count;
 
 /**
- * Legacy adapter: search query parameters to AbstractQuery object
- *
- * The class is a intermediate solution to translate the (possibly modified)
- * search query parameters in an object required by the new search system.
+ * Search query adapter
  *
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class QueryAdapter
+class QueryAdapter implements QueryAdapterInterface
 {
     /**
      * Return a Query or QueryGroup based on minified search arguments.
      *
      * @param array $search Minified search arguments
      *
-     * @return Query|QueryGroup
+     * @return Query|QueryGroup|WorkKeysQuery
      */
-    public static function deminify(array $search)
+    public function deminify(array $search)
     {
+        $type = $search['s'] ?? null;
+        if ('w' === $type) {
+            // WorkKeysQuery
+            return new WorkKeysQuery($search['l'], $search['i'], $search['k'] ?? []);
+        }
         // Use array_key_exists since null is also valid
-        if (array_key_exists('l', $search)) {
+        if ('b' === $type || array_key_exists('l', $search)) {
+            // Basic search
             $handler = $search['i'] ?? $search['f'];
             return new Query(
                 $search['l'],
@@ -68,7 +80,7 @@ abstract class QueryAdapter
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
                 $operator,
-                array_map(['self', 'deminify'], $search['g'])
+                array_map([$this, 'deminify'], $search['g'])
             );
         } else {
             // Special case: The outer-most group-of-groups.
@@ -76,7 +88,7 @@ abstract class QueryAdapter
                 $operator = $search[0]['j'];
                 return new QueryGroup(
                     $operator,
-                    array_map(['self', 'deminify'], $search)
+                    array_map([$this, 'deminify'], $search)
                 );
             } else {
                 // Simple query
@@ -94,30 +106,35 @@ abstract class QueryAdapter
      *
      * @return string
      */
-    public static function display(AbstractQuery $query, $translate, $showName)
+    public function display(AbstractQuery $query, $translate, $showName)
     {
         // Simple case -- basic query:
         if ($query instanceof Query) {
             return $query->getString();
         }
 
+        // Work keys query:
+        if ($query instanceof WorkKeysQuery) {
+            return $translate('Versions') . ' - ' . ($query->getId() ?? '');
+        }
+
         // Complex case -- advanced query:
-        return self::displayAdvanced($query, $translate, $showName);
+        return $this->displayAdvanced($query, $translate, $showName);
     }
 
     /**
      * Support method for display() -- process advanced queries.
      *
-     * @param AbstractQuery $query     Query to convert
-     * @param callable      $translate Callback to translate strings
-     * @param callable      $showName  Callback to translate field names
+     * @param QueryGroup $query     Query to convert
+     * @param callable   $translate Callback to translate strings
+     * @param callable   $showName  Callback to translate field names
      *
      * @return string
      */
-    protected static function displayAdvanced(
-        AbstractQuery $query,
-        $translate,
-        $showName
+    protected function displayAdvanced(
+        QueryGroup $query,
+        callable $translate,
+        callable $showName
     ) {
         // Groups and exclusions.
         $groups = $excludes = [];
@@ -133,11 +150,11 @@ abstract class QueryAdapter
                             = call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
                 // Is this an exclusion (NOT) group or a normal group?
-                $str = join(
+                $str = implode(
                     ' ' . call_user_func($translate, $search->getOperator())
                     . ' ',
                     $thisGroup
@@ -148,18 +165,18 @@ abstract class QueryAdapter
                     $groups[] = $str;
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
 
         // Base 'advanced' query
         $operator = call_user_func($translate, $query->getOperator());
-        $output = '(' . join(') ' . $operator . ' (', $groups) . ')';
+        $output = '(' . implode(') ' . $operator . ' (', $groups) . ')';
 
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' . call_user_func($translate, 'NOT') . ' (('
-                . join(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
+                . implode(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
                 . '))';
         }
 
@@ -168,15 +185,25 @@ abstract class QueryAdapter
 
     /**
      * Convert user request parameters into a query (currently for advanced searches
-     * only).
+     * and work keys searches only).
      *
      * @param Parameters $request        User-submitted parameters
      * @param string     $defaultHandler Default search handler
      *
-     * @return Query|QueryGroup
+     * @return Query|QueryGroup|WorkKeysQuery
      */
-    public static function fromRequest(Parameters $request, $defaultHandler)
+    public function fromRequest(Parameters $request, $defaultHandler)
     {
+        // Check for a work keys query first (id and keys included for back-compatibility):
+        if (
+            $request->get('search') === 'versions'
+            || ($request->offsetExists('id') && $request->offsetExists('keys'))
+        ) {
+            if (null !== ($id = $request->offsetGet('id'))) {
+                return new WorkKeysQuery($id, true);
+            }
+        }
+
         $groups = [];
         // Loop through all parameters and look for 'lookforX'
         foreach ($request as $key => $value) {
@@ -186,20 +213,21 @@ abstract class QueryAdapter
             $groupId = $matches[1];
             $group = [];
             $lastBool = null;
+            $value = (array)$value;
 
             // Loop through each term inside the group
             for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get("type$groupId");
+                    $typeArr = (array)$request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get("op$groupId");
+                    $opArr = (array)$request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get("bool$groupId");
+                    $boolArr = (array)$request->get("bool$groupId");
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
@@ -225,15 +253,26 @@ abstract class QueryAdapter
      *
      * @return array
      */
-    public static function minify(AbstractQuery $query, $topLevel = true)
+    public function minify(AbstractQuery $query, $topLevel = true)
     {
         // Simple query:
         if ($query instanceof Query) {
             return [
                 [
                     'l' => $query->getString(),
-                    'i' => $query->getHandler()
-                ]
+                    'i' => $query->getHandler(),
+                    's' => 'b',
+                ],
+            ];
+        }
+
+        // WorkKeys query:
+        if ($query instanceof WorkKeysQuery) {
+            return [
+                'l' => $query->getId(),
+                'i' => $query->getIncludeSelf(),
+                'k' => $query->getWorkKeys(),
+                's' => 'w',
             ];
         }
 
@@ -243,8 +282,9 @@ abstract class QueryAdapter
         foreach ($query->getQueries() as $current) {
             if ($topLevel) {
                 $retVal[] = [
-                    'g' => self::minify($current, false),
-                    'j' => $operator
+                    'g' => $this->minify($current, false),
+                    'j' => $operator,
+                    's' => 'a',
                 ];
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');
@@ -252,7 +292,7 @@ abstract class QueryAdapter
                 $currentArr = [
                     'f' => $current->getHandler(),
                     'l' => $current->getString(),
-                    'b' => $operator
+                    'b' => $operator,
                 ];
                 if (null !== ($op = $current->getOperator())) {
                     // Some search forms omit the operator for the first element;

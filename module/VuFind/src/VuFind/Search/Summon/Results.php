@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Summon Search Results
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Summon;
+
+use VuFindSearch\Command\SearchCommand;
+
+use function in_array;
+use function is_array;
 
 /**
  * Summon Search Parameters
@@ -85,14 +92,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
             $params
         );
-
+        $collection = $this->getSearchService()
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
@@ -117,7 +125,7 @@ class Results extends \VuFind\Search\Base\Results
                 $this->responseFacets[] = [
                     'fieldName' => $dateFacet,
                     'displayName' => $dateFacet,
-                    'counts' => []
+                    'counts' => [],
                 ];
             }
         }
@@ -146,7 +154,7 @@ class Results extends \VuFind\Search\Base\Results
             ? $this->getParams()->getFacetConfig()
             : $this->stripFilterParameters($filter);
 
-        // We want to sort the facets to match the order in the .ini file.  Let's
+        // We want to sort the facets to match the order in the .ini file. Let's
         // create a lookup array to determine order:
         $order = array_flip(array_keys($filter));
 
@@ -237,7 +245,7 @@ class Results extends \VuFind\Search\Base\Results
             }
 
             // We need to check two things to determine if the current
-            // value is an applied filter.  First, is the current field
+            // value is an applied filter. First, is the current field
             // present in the filter list?  Second, is the current value
             // an active filter for the current field?
             $orField = '~' . $field;
@@ -279,9 +287,10 @@ class Results extends \VuFind\Search\Base\Results
     {
         $this->suggestions = [];
         foreach ($spelling as $current) {
+            $current = $current['suggestion'];
             if (!isset($this->suggestions[$current['originalQuery']])) {
                 $this->suggestions[$current['originalQuery']] = [
-                    'suggestions' => []
+                    'suggestions' => [],
                 ];
             }
             $this->suggestions[$current['originalQuery']]['suggestions'][]
@@ -383,14 +392,15 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
         $params = $params->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             0,
             0,
             $params
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $facets = $collection->getFacets();
         $ret = [];
         foreach ($facets as $data) {
@@ -402,7 +412,7 @@ class Results extends \VuFind\Search\Base\Results
                         'label' => $data['displayName'],
                         'list' => $list,
                     ],
-                    'more' => null
+                    'more' => null,
                 ];
             }
         }

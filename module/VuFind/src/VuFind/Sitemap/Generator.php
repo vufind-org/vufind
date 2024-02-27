@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Sitemap
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
+
+use function call_user_func;
+use function in_array;
+use function is_callable;
+use function is_string;
 
 /**
  * Class for generating sitemaps
@@ -239,7 +246,7 @@ class Generator
      */
     protected function getTime()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         return $time[1] + $time[0];
     }
 
@@ -271,7 +278,10 @@ class Generator
     {
         $sitemapFiles = [];
         $sitemapIndexes = [];
-        $writeMap = function ($sitemap, $name) use (
+        $writeMap = function (
+            $sitemap,
+            $name
+        ) use (
             &$sitemapFiles,
             &$sitemapIndexes
         ) {
@@ -293,7 +303,7 @@ class Generator
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
             $msgName = empty($sitemapName)
-                ? "core sitemap" : "sitemap '$sitemapName'";
+                ? 'core sitemap' : "sitemap '$sitemapName'";
             $this->verboseMsg(
                 "Generating $msgName with '$pluginName'"
             );
@@ -378,7 +388,8 @@ class Generator
                 $smf->addUrl($baseUrl . '/' . $sitemap);
             }
 
-            if (false === $smf->write($this->fileLocation . '/' . $this->indexFile)
+            if (
+                false === $smf->write($this->fileLocation . '/' . $this->indexFile)
             ) {
                 throw new \Exception("Problem writing $this->indexFile.");
             }
@@ -447,7 +458,7 @@ class Generator
             [
                 'baseUrl' => $this->baseUrl,
                 'baseSitemapUrl' => $this->baseSitemapUrl,
-                'verboseMessageCallback' => $verboseCallback
+                'verboseMessageCallback' => $verboseCallback,
             ]
         );
         return $plugin;

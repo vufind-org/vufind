@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract class for representing XML sitemaps
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Sitemap;
+
+use function count;
+use function dirname;
 
 /**
  * Abstract class for representing XML sitemaps
@@ -117,7 +122,7 @@ abstract class AbstractFile
         // if a subfolder was specified that does not exist, make one
         $dirname = dirname($file);
         if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
+            mkdir($dirname, 0o755, true);
         }
         return file_put_contents($file, $this->toString());
     }

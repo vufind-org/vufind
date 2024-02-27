@@ -1,6 +1,6 @@
 @echo off
 rem #####################################################
-rem Make sure that environment edits are local and that we have access to the 
+rem Make sure that environment edits are local and that we have access to the
 rem Windows command extensions.
 rem #####################################################
 setlocal enableextensions
@@ -13,7 +13,7 @@ rem ##################################################
 rem # Set SOLR_HOME
 rem ##################################################
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -43,8 +43,29 @@ goto javaset
 set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
+rem This can point to an external Solr in e.g. a Docker container
+if not "!%SOLR_JAR_PATH%!"=="!!" goto solrjarpathfound
+set SOLR_JAR_PATH=%SOLR_HOME%\..\vendor
+:solrjarpathfound
+
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;%SOLR_HOME%\jars\*;%SOLR_HOME%\..\vendor\contrib\analysis-extras\lib\*;%SOLR_HOME%\..\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
+setlocal enabledelayedexpansion
+set SOLRMARC_MATCHCOUNT=x
+for %%a in (solrmarc_core*.jar) do (
+  set SOLRMARC_CLASSPATH=%%a
+  set SOLRMARC_MATCHCOUNT=!SOLRMARC_MATCHCOUNT!x
+)
+setlocal disabledelayedexpansion
+rem Make sure we found one, and only one, SolrMarc jar file
+if "%SOLRMARC_MATCHCOUNT%"=="xx" goto onesolrmarcfound
+if "%SOLRMARC_MATCHCOUNT%"=="x" goto nosolrmarcfound
+echo Error: more than one solrmarc_core*.jar in import; exiting.
+goto end
+:nosolrmarcfound
+echo "Error: could not find solrmarc_core*.jar in import; exiting.
+goto end
+:onesolrmarcfound
+SET CLASSPATH="browse-indexing.jar;%SOLRMARC_CLASSPATH%;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_JAR_PATH%\modules\analysis-extras\lib\*;%SOLR_JAR_PATH%\server\solr-webapp\webapp\WEB-INF\lib\*"
 
 SET bib_index=%SOLR_HOME%\biblio\index
 SET auth_index=%SOLR_HOME%\authority\index
@@ -62,8 +83,9 @@ if exist %index_dir% goto nomakeindexdir
 mkdir "%index_dir%"
 :nomakeindexdir
 
+rem These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_browse
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbib_field_iterator=org.vufind.solr.indexing.StoredFieldIterator -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-raw 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
@@ -90,20 +112,24 @@ if "!%3!"=="!1!" goto skipauth
 set args="%bib_index%" "%field%" "%auth_index%" "%browse%.tmp"
 :skipauth
 
-rem Extract lines from Solr
-%JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
+rem Get the browse headings from Solr
+%JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% org.vufind.solr.indexing.PrintBrowseHeadings %args%
 
-rem Sort lines
+rem Sort the browse headings
 sort %browse%.tmp /o sorted-%browse%.tmp /rec 65535
 
 rem Remove duplicate lines
 php %VUFIND_HOME%\util\dedupe.php "sorted-%browse%.tmp" "unique-%browse%.tmp"
 
-rem Build database file
-%JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
+rem Build the SQLite database
+%JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% org.vufind.solr.indexing.CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
 
+rem Clear up temp files
 del /q *.tmp > nul
 
+rem Move the new database to the index directory
 move "%browse%_browse.db" "%index_dir%\%browse%_browse.db-updated" > nul
+
+rem Indicate that the new database is ready for use
 echo OK > "%index_dir%\%browse%_browse.db-ready"
 :end

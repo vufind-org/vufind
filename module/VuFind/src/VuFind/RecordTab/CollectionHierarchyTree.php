@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HierarchyTree tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 /**
@@ -62,29 +64,29 @@ class CollectionHierarchyTree extends HierarchyTree
     /**
      * Render a hierarchy tree
      *
-     * @param string $baseUrl Base URL to use in links within tree
-     * @param string $id      Hierarchy ID (omit to use active tree)
-     * @param string $context Context for use by renderer
+     * @param string  $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $context Context for use by renderer or null for default
+     * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree($baseUrl, $id = null, $context = 'Collection')
+    public function renderTree(string $id = null, ?string $context = null, array $options = [])
     {
         // Same as parent -- we just have a different default context:
-        return parent::renderTree($baseUrl, $id, $context);
+        return parent::renderTree($id, $context ?? 'Collection', $options);
     }
 
     /**
-     * Get the current active record.  Returns record driver if found, false
-     * if no record requested, null if ID invalid.
+     * Get the current active record. Returns record driver if there is an active
+     * record or null otherwise.
      *
-     * @return mixed
+     * @return ?\VuFind\RecordDriver\AbstractBase
      */
-    public function getActiveRecord()
+    public function getActiveRecord(): ?\VuFind\RecordDriver\AbstractBase
     {
-        $id = $this->getRequest()->getQuery('recordID', false);
-        if ($id === false) {
-            return $id;
+        $id = $this->getRequest()->getQuery('recordID');
+        if (null === $id) {
+            return $this->driver;
         }
         try {
             return $this->loader->load($id);

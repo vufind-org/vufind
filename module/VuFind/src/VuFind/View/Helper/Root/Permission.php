@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Permission helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -116,15 +118,15 @@ class Permission extends AbstractHelper
             ->getDeniedTemplateBehavior($context);
 
         switch ($displayLogic['action'] ?? '') {
-        case 'showMessage':
-            return $this->view->transEsc($displayLogic['value']);
-        case 'showTemplate':
-            return $this->view->context($this->view)->renderInContext(
-                $displayLogic['value'],
-                $displayLogic['params']
-            );
-        default:
-            return null;
+            case 'showMessage':
+                return $this->view->transEsc($displayLogic['value']);
+            case 'showTemplate':
+                return $this->view->context($this->view)->renderInContext(
+                    $displayLogic['value'],
+                    $displayLogic['params']
+                );
+            default:
+                return null;
         }
     }
 }

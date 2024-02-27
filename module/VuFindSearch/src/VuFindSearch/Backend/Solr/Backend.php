@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,28 +26,28 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\Backend\Exception\RemoteErrorException;
-
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
-
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
-use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
+use VuFindSearch\Query\WorkKeysQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function count;
+use function is_int;
 
 /**
  * SOLR backend.
@@ -57,9 +58,12 @@ use VuFindSearch\Response\RecordCollectionInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Backend extends AbstractBackend
-    implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface, WorkExpressionsInterface
+class Backend extends AbstractBackend implements
+    SimilarInterface,
+    RetrieveBatchInterface,
+    RandomInterface,
+    ExtraRequestDetailsInterface,
+    GetIdsInterface
 {
     /**
      * Limit for records per query in a batch retrieval.
@@ -130,6 +134,9 @@ class Backend extends AbstractBackend
         $limit,
         ParamBag $params = null
     ) {
+        if ($query instanceof WorkKeysQuery) {
+            return $this->workKeysSearch($query, $offset, $limit, $params);
+        }
         $json = $this->rawJsonSearch($query, $offset, $limit, $params);
         $collection = $this->createRecordCollection($json);
         $this->injectSourceIdentifier($collection);
@@ -160,6 +167,28 @@ class Backend extends AbstractBackend
         $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
         return $this->connector->search($params);
+    }
+
+    /**
+     * Returns some extra details about the search.
+     *
+     * @return array
+     */
+    public function getExtraRequestDetails()
+    {
+        return [
+            'solrRequestUrl' => $this->connector->getLastUrl(),
+        ];
+    }
+
+    /**
+     * Clears all accumulated extra request details
+     *
+     * @return void
+     */
+    public function resetExtraRequestDetails()
+    {
+        $this->connector->resetLastUrl();
     }
 
     /**
@@ -388,41 +417,6 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Return work expressions.
-     *
-     * @param string   $id            Id of record to compare with
-     * @param array    $workKeys      Work identification keys
-     * @param ParamBag $defaultParams Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     */
-    public function workExpressions($id, $workKeys, ParamBag $defaultParams = null)
-    {
-        $params = $defaultParams ? clone $defaultParams
-            : new \VuFindSearch\ParamBag();
-        $this->injectResponseWriter($params);
-        $query = [];
-        foreach ($workKeys as $key) {
-            $key = addcslashes($key, '+-&|!(){}[]^"~*?:\\/');
-            $query[] = "work_keys_str_mv:(\"$key\")";
-        }
-        $params->set('q', implode(' OR ', $query));
-        if ($id) {
-            $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
-        }
-        if (!$params->hasParam('rows')) {
-            $params->add('rows', 100);
-        }
-        if (!$params->hasParam('sort')) {
-            $params->add('sort', 'publishDateSort desc, title_sort asc');
-        }
-        $response = $this->connector->search($params);
-        $collection = $this->createRecordCollection($response);
-        $this->injectSourceIdentifier($collection);
-        return $collection;
-    }
-
-    /**
      * Write a document to Solr. Return an array of details about the updated index.
      *
      * @param DocumentInterface $doc     Document to write
@@ -581,13 +575,14 @@ class Backend extends AbstractBackend
     protected function refineBrowseException(RemoteErrorException $e)
     {
         $error = $e->getMessage() . $e->getResponse();
-        if (strstr($error, 'does not exist') || strstr($error, 'no such table')
+        if (
+            strstr($error, 'does not exist') || strstr($error, 'no such table')
             || strstr($error, 'couldn\'t find a browse index')
         ) {
             throw new RemoteErrorException(
-                "Alphabetic Browse index missing.  See " .
-                "https://vufind.org/wiki/indexing:alphabetical_heading_browse for " .
-                "details on generating the index.",
+                'Alphabetic Browse index missing.  See ' .
+                'https://vufind.org/wiki/indexing:alphabetical_heading_browse for ' .
+                'details on generating the index.',
                 $e->getCode(),
                 $e->getResponse(),
                 $e->getPrevious()
@@ -626,5 +621,51 @@ class Backend extends AbstractBackend
         }
         $params->set('wt', ['json']);
         $params->set('json.nl', ['arrarr']);
+    }
+
+    /**
+     * Return work expressions.
+     *
+     * @param WorkKeysQuery $query         Search query
+     * @param int           $offset        Search offset
+     * @param int           $limit         Search limit
+     * @param ParamBag      $defaultParams Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    protected function workKeysSearch(
+        WorkKeysQuery $query,
+        int $offset,
+        int $limit,
+        ParamBag $defaultParams = null
+    ): RecordCollectionInterface {
+        $id = $query->getId();
+        if ('' === $id) {
+            throw new BackendException('Record ID empty in work keys query');
+        }
+        if (!($workKeys = $query->getWorkKeys())) {
+            $recordResponse = $this->connector->retrieve($id);
+            $recordCollection = $this->createRecordCollection($recordResponse);
+            $record = $recordCollection->first();
+            if (!$record || !($workKeys = $record->tryMethod('getWorkKeys'))) {
+                return $this->createRecordCollection('{}');
+            }
+        }
+
+        $params = $defaultParams ? clone $defaultParams : new \VuFindSearch\ParamBag();
+        $this->injectResponseWriter($params);
+        $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
+        if (!$query->getIncludeSelf()) {
+            $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
+        }
+        $params->set('rows', $limit);
+        $params->set('start', $offset);
+        if (!$params->hasParam('sort')) {
+            $params->add('sort', 'publishDateSort desc, title_sort asc');
+        }
+        $response = $this->connector->search($params);
+        $collection = $this->createRecordCollection($response);
+        $this->injectSourceIdentifier($collection);
+        return $collection;
     }
 }

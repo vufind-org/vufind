@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,12 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Config\PathResolver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver
@@ -41,7 +48,8 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+class XCNCIP2 extends AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
@@ -149,7 +157,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var string[]
      */
     protected $notHoldableStatuses = [
-        'circulation status undefined', 'not available', 'lost'
+        'circulation status undefined', 'not available', 'lost',
     ];
 
     /**
@@ -288,6 +296,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $maxNumberOfPages;
 
     /**
+     * Some ItemUseRestrictionType values could be useful as status. This property controls which values from
+     * ItemRestrictionType should replace the status value in response of getHolding method.
+     *
+     * @var array
+     */
+    protected $itemUseRestrictionTypesForStatus = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -312,20 +328,24 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new ILSException('Configuration needs to be set.');
+        // Validate config
+        $required = ['url', 'agency'];
+        foreach ($required as $current) {
+            if (!isset($this->config['Catalog'][$current])) {
+                throw new ILSException("Missing Catalog/{$current} config setting.");
+            }
         }
 
         $this->url = $this->config['Catalog']['url'];
         $this->fromAgency = $this->config['Catalog']['fromAgency'] ?? null;
-        if ($this->config['Catalog']['consortium']) {
+        if ($this->config['Catalog']['consortium'] ?? false) {
             $this->consortium = true;
-            foreach ($this->config['Catalog']['agency'] as $agency) {
+            foreach ($this->config['Catalog']['agency'] ?? [] as $agency) {
                 $this->agency[$agency] = 1;
             }
         } else {
             $this->consortium = false;
-            if (is_array($this->config['Catalog']['agency'])) {
+            if (is_array($this->config['Catalog']['agency'] ?? null)) {
                 $this->agency[$this->config['Catalog']['agency'][0]] = 1;
             } else {
                 $this->agency[$this->config['Catalog']['agency']] = 1;
@@ -371,6 +391,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 );
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
+
+        $this->itemUseRestrictionTypesForStatus = $this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? [];
     }
 
     /**
@@ -411,12 +433,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
             );
         }
-        if (($handle = fopen($pickupLocationsFile, "r")) !== false) {
+        if (($handle = fopen($pickupLocationsFile, 'r')) !== false) {
             while (($data = fgetcsv($handle)) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
-                    'locationDisplay' => $data[2]
+                    'locationDisplay' => $data[2],
                 ];
             }
             fclose($handle);
@@ -501,7 +523,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
 
-        if (!$result->isSuccess()
+        if (
+            !$result->isSuccess()
             && !in_array(
                 $result->getStatusCode(),
                 $this->otherAcceptedHttpStatusCodes
@@ -639,6 +662,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = (string)($status[0] ?? '');
+
+        $itemUseRestrictionType = $current->xpath('ns1:ItemOptionalFields/ns1:ItemUseRestrictionType');
+        $itemUseRestrictionType = (string)($itemUseRestrictionType[0] ?? '');
+
+        if (in_array($itemUseRestrictionType, $this->itemUseRestrictionTypesForStatus)) {
+            $status = $itemUseRestrictionType;
+        }
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
         $itemId = (string)($itemId[0] ?? '');
@@ -869,8 +899,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         if (!isset($status[$bibId])) {
                             $status[$bibId] = [];
                         }
-                        $chunk['location'] = $chunk['location']
-                            ?? $holdingLocation ?? null;
+                        $chunk['location'] ??= $holdingLocation ?? null;
                         $status[$bibId][] = $chunk;
                     }
                 }
@@ -968,9 +997,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
                     $chunk['eresource'] = $eResource;
-                    $chunk['location'] = $chunk['location']
-                        ?? $holdingLocation ?? null;
-                    if (!isset($chunk['collection_desc'])
+                    $chunk['location'] ??= $holdingLocation ?? null;
+                    if (
+                        !isset($chunk['collection_desc'])
                         && !empty($collection)
                     ) {
                         $chunk['collection_desc'] = $collection;
@@ -1161,7 +1190,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 );
                 // Hack to account for bibs from other non-local institutions
                 // temporarily until consortial functionality is enabled.
-                $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
+                $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
             }
             if ($itemAgencyId === null && isset($itemResponse)) {
                 $itemAgencyId = $itemResponse->xpath(
@@ -1252,7 +1281,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'fine' => $desc,
                 'duedate' => '',
                 'createdate' => $date,
-                'id' => $id
+                'id' => $id,
             ];
         }
         return $fines;
@@ -1433,7 +1462,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             if (isset($address[2])) {
                 $address2 .= ', ' . $address[2];
             }
-            $zip = $zip ?? $address[3] ?? null;
+            $zip ??= $address[3] ?? null;
         }
 
         $expirationDate = $response->xpath(
@@ -1619,7 +1648,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string A location ID
@@ -1673,7 +1702,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $blocks = array_filter(
             $blocks,
             function ($item) {
-                return strpos($item, 'Block') === 0;
+                return str_starts_with($item, 'Block');
             }
         );
         return !empty($blocks);
@@ -1688,10 +1717,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1729,7 +1758,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      *
@@ -1770,7 +1799,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getRenewDetails($checkOutDetails)
     {
         return $checkOutDetails['item_agency_id'] .
-            "|" . $checkOutDetails['item_id'];
+            '|' . $checkOutDetails['item_id'];
     }
 
     /**
@@ -1814,7 +1843,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $requestType = $details['holdtype'] ?? $type;
         $pickUpLocation = null;
         if (isset($details['pickUpLocation'])) {
-            [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
+            [, $pickUpLocation] = explode('|', $details['pickUpLocation']);
         }
 
         $convertedDate = $this->dateConverter->convertFromDisplayDate(
@@ -1832,7 +1861,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $details['patron']['patronAgencyId'],
             $details['item_agency_id'],
             $requestType,
-            "Item",
+            'Item',
             $lastInterestDateStr,
             $pickUpLocation,
             $username
@@ -1900,7 +1929,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
 
         foreach ($details as $detail) {
-            [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
+            [$itemAgencyId, $requestId, $itemId] = explode('|', $detail);
             $request = $this->getCancelRequest(
                 $username,
                 $password,
@@ -1966,8 +1995,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return '';
         }
         return $details['item_agency_id'] .
-            "|" . $details['requestId'] .
-            "|" . $details['item_id'];
+            '|' . $details['requestId'] .
+            '|' . $details['item_id'];
     }
 
     /**
@@ -1975,7 +2004,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * This function returns the item id and recall id as a string
      * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.  item id is used as the
+     * value is then extracted by the CancelHolds function. Item id is used as the
      * array key in the response.
      *
      * @param array $holdDetails A single hold array from getMyHolds
@@ -2030,7 +2059,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -2043,10 +2072,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $details = [];
         $username = $renewDetails['patron']['cat_username'];
         foreach ($renewDetails['details'] as $detail) {
-            [$agencyId, $itemId] = explode("|", $detail);
+            [$agencyId, $itemId] = explode('|', $detail);
             $failureReturn = [
-                "success" => false,
-                "item_id" => $itemId,
+                'success' => false,
+                'item_id' => $itemId,
             ];
             if ($this->disableRenewals) {
                 $details[$itemId] = $failureReturn;
@@ -2072,10 +2101,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             if ($dueDate !== '') {
                 $details[$itemId] = [
-                    "success" => true,
-                    "new_date" => $dueDate,
-                    "new_time" => $dueTime,
-                    "item_id" => $itemId,
+                    'success' => true,
+                    'new_date' => $dueDate,
+                    'new_time' => $dueTime,
+                    'item_id' => $itemId,
                 ];
             } else {
                 $details[$itemId] = $failureReturn;
@@ -2283,7 +2312,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $desiredElementTypes = [
             'Agency Address Information', 'Agency User Privilege Type',
             'Application Profile Supported Type', 'Authentication Prompt',
-            'Consortium Agreement', 'Organization Name Information'
+            'Consortium Agreement', 'Organization Name Information',
         ];
         foreach ($desiredElementTypes as $elementType) {
             $ret .= $this->element('AgencyElementType', $elementType);
@@ -2755,7 +2784,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getProblemDescription(
         \SimpleXMLElement $xml,
         array $elements = [
-            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
+            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue',
         ],
         bool $withElementNames = true
     ): string {
@@ -2788,7 +2817,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string Scheme attribute or empty string
      */
-    private function _schemeAttr(string $element, $namespacePrefix = 'ns1'): string
+    protected function schemeAttr(string $element, $namespacePrefix = 'ns1'): string
     {
         return isset($this->schemes[$element])
             ? ' ' . $namespacePrefix . ':Scheme="' . $this->schemes[$element] . '"'
@@ -2811,7 +2840,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     ): string {
         $fullElementName = $namespacePrefix . ':' . $elementName;
         return '<' . $fullElementName .
-            $this->_schemeAttr($elementName, $namespacePrefix) . '>' .
+            $this->schemeAttr($elementName, $namespacePrefix) . '>' .
             htmlspecialchars($text) .
             '</' . $fullElementName . '>';
     }

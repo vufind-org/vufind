@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cookie Consent View Helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
@@ -32,6 +34,7 @@ use Laminas\View\Helper\Layout;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\View\Helper\Root\CookieConsent;
 use VuFind\View\Helper\Root\Url;
@@ -104,7 +107,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'session_name' => 'vufindsession',
                 'consent' => true,
                 'consentCategories' => 'essential,matomo',
-            ]
+            ],
         ];
 
         $cookies = [
@@ -116,7 +119,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
                     'revision' => 0,
                 ]
-            )
+            ),
         ];
         $expectedParams = $this->getExpectedRenderParams(
             'CookieConsent.yaml',
@@ -147,7 +150,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'session_name' => 'vufindsession',
                 'consent' => true,
                 'consentCategories' => 'essential,matomo',
-            ]
+            ],
         ];
 
         $cookies = [
@@ -159,7 +162,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
                     'revision' => -1,
                 ]
-            )
+            ),
         ];
 
         $helper = $this->getCookieConsent($config, $cookies);
@@ -188,11 +191,27 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('http://localhost/first/vufind'));
         $serverUrl = new ServerUrl();
         $serverUrl->setHost('localhost');
-        $layout = $this->getMockBuilder(Layout::class)->getMock();
-        $layout->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnValue($layout));
-        $layout->rtl = false;
+
+        // Create an anonymous class to stub out some behavior:
+        $layout = new class () {
+            public $rtl = false;
+
+            /**
+             * Set layout template or retrieve "layout" view model
+             *
+             * If no arguments are given, grabs the "root" or "layout" view model.
+             * Otherwise, attempts to set the template for that view model.
+             *
+             * @param null|string $template Template
+             *
+             * @return Model|null|self
+             */
+            public function __invoke($template = null)
+            {
+                return $this;
+            }
+        };
+
         $plugins = [
             'escapeHtmlAttr' => new EscapeHtmlAttr(),
             'layout' => $layout,
@@ -208,11 +227,22 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 }
             );
 
+        $mockLoginTokenManager = $this->getMockBuilder(LoginTokenManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockLoginTokenManager->expects($this->any())
+            ->method('getCookieName')
+            ->willReturn('loginToken');
+        $mockLoginTokenManager->expects($this->any())
+            ->method('getCookieLifetime')
+            ->willReturn(321);
+
         $helper = new CookieConsent(
             $config,
             $this->getConsentConfig($consentConfigName),
             $this->getCookieManager($config, $cookies),
-            new \VuFind\Date\Converter()
+            new \VuFind\Date\Converter(),
+            $mockLoginTokenManager
         );
         $helper->setView($view);
         return $helper;
@@ -332,6 +362,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'rtl' => false,
         ];
         return [
             'consentConfig' => $consentConfig,
@@ -343,6 +374,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 '{{current_host_name}}' => 'localhost',
                 '{{vufind_cookie_domain}}' => 'localhost',
                 '{{vufind_session_cookie}}' => 'vufindsession',
+                '{{vufind_login_token_cookie_name}}' => 'loginToken',
+                '{{vufind_login_token_cookie_expiration}}' => 321,
             ],
             'cookieManager' => $this->getCookieManager($config, $cookies),
             'consentDialogConfig' => [
@@ -384,7 +417,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'matomo' => [
                     'matomo',
                 ],
-            ]
+            ],
         ];
     }
 

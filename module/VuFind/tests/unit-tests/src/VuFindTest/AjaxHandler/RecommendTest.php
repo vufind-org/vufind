@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Recommend test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\Recommend;
@@ -36,6 +38,8 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 
+use function count;
+
 /**
  * Recommend test class.
  *
@@ -45,7 +49,7 @@ use VuFind\View\Helper\Root\Recommend as RecommendHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
+class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Get a mock params object.
@@ -71,14 +75,14 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @param \VuFind\Search\Solr\Params $params Params to include in container.
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return Results
      */
-    protected function getMockResults($params = null)
+    protected function getMockResults($params = null): Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
+        $results = $this->getMockBuilder(Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));

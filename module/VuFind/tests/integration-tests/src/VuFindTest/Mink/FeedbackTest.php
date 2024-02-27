@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink Feedback module test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -37,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -90,10 +91,10 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     protected function fillInAndSubmitFeedbackForm($page)
     {
         $this->clickCss($page, '#feedbackLink');
-        $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
+        $this->findCssAndSetValue($page, '#modal .form-control[name="name"]', 'Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
-        $this->findCss($page, "#modal #form_FeedbackSite_message")
+        $this->findCss($page, '#modal #form_FeedbackSite_message')
             ->setValue('test test test');
         $this->clickCss($page, '#modal input[type="submit"]');
     }
@@ -105,12 +106,11 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFeedbackForm()
     {
-        // By default, no OpenURL on record page:
         $page = $this->setupPage();
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             'Thank you for your feedback.',
-            $this->findCss($page, '#modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '#modal .alert-success')
         );
     }
 
@@ -124,14 +124,14 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         // By default, no OpenURL on record page:
         $page = $this->setupPage(
             [
-                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback']
+                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback'],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
         // CAPTCHA should have failed...
         $this->assertEquals(
             'CAPTCHA not passed',
-            $this->findCss($page, '.modal-body .alert-danger')->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
         // Now fix the CAPTCHA
         $this->findCss($page, 'form [name="demo_captcha"]')
@@ -139,7 +139,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->assertEquals(
             'Thank you for your feedback.',
-            $this->findCss($page, '#modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '#modal .alert-success')
         );
     }
 
@@ -155,31 +155,31 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 60
-                ]
+                    'action_interval' => 60,
+                ],
             ]
         );
         // Test that submission is blocked:
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertMatchesRegularExpression(
             '/This action can only be performed after (\d+) seconds/',
-            $this->findCss($page, '#modal .alert-danger')->getText(),
+            $this->findCssAndGetText($page, '#modal .alert-danger'),
         );
 
-        // Set up with minimal delay and test that submission is passed:
+        // Set up with no real delay and test that submission is passed:
         $page = $this->setupPage(
             [
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 1
-                ]
+                    'action_interval' => 0,
+                ],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
             'Thank you for your feedback.',
-            $this->findCss($page, '#modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '#modal .alert-success')
         );
     }
 }

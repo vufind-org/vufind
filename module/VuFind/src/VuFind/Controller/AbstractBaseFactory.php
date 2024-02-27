@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic controller factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -58,10 +60,10 @@ class AbstractBaseFactory implements FactoryInterface
             ->get('permissionBehavior');
         $permissions = $config->global->controllerAccess ?? [];
 
-        if (!empty($permissions)) {
+        if (!empty($permissions) && $controller instanceof Feature\AccessPermissionInterface) {
             // Iterate through parent classes until we find the most specific
             // class access permission defined (if any):
-            $class = get_class($controller);
+            $class = $controller::class;
             do {
                 if (isset($permissions[$class])) {
                     $controller->setAccessPermission($permissions[$class]);
@@ -74,7 +76,8 @@ class AbstractBaseFactory implements FactoryInterface
             // or a string), that means it has no internally configured default, and
             // setAccessPermission was not called above; thus, we should apply the
             // default value:
-            if (isset($permissions['*'])
+            if (
+                isset($permissions['*'])
                 && $controller->getAccessPermission() === null
             ) {
                 $controller->setAccessPermission($permissions['*']);

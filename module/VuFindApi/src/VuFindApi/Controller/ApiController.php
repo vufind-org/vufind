@@ -1,8 +1,9 @@
 <?php
+
 /**
  * API Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
+
+use function in_array;
 
 /**
  * API Controller
@@ -76,7 +80,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
         // Disable session writes
         $this->disableSessionWrites();
 
-        if (null === $this->getRequest()->getQuery('swagger')
+        if (
+            null === $this->getRequest()->getQuery('swagger')
             && null === $this->getRequest()->getQuery('openapi')
         ) {
             $urlHelper = $this->getViewRenderer()->plugin('url');
@@ -102,7 +107,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
         $config = $this->getConfig();
         $params = [
             'config' => $config,
-            'version' => \VuFind\Config\Version::getBuildVersion()
+            'version' => \VuFind\Config\Version::getBuildVersion(),
         ];
         return $this->getViewRenderer()->render('api/openapi', $params);
     }
@@ -122,7 +127,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
             if (null === $specs) {
                 throw new \Exception(
                     'Could not parse API spec fragment of '
-                    . get_class($controller) . ': ' . json_last_error_msg()
+                    . $controller::class . ': ' . json_last_error_msg()
                 );
             }
             foreach ($specs as $key => $spec) {

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink cart test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,9 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+
+use function count;
+use function is_object;
 
 /**
  * Mink cart test class.
@@ -39,7 +44,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class CartTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -205,8 +209,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * into the cart, then opening the lightbox so that additional actions may
      * be attempted.
      *
-     * @param array  $extraConfigs Extra config settings
-     * @param string $selectAllId  ID of select all checkbox
+     * @param array $extraConfigs Extra config settings
      *
      * @return Element
      */
@@ -219,7 +222,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->getSearchResultsPage();
         $this->waitStatement('$(".cart-add:not(:hidden)").length === 2');
         $this->addCurrentPageToCartUsingButtons($page);
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '#cartItems strong'));
 
         // Open the cart and empty it:
         $this->openCartLightbox($page);
@@ -269,7 +272,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkForLoginMessage(Element $page)
     {
         $warning = $page->find('css', '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()
@@ -302,9 +305,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -328,9 +331,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -338,9 +341,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now select the same things twice:
         $this->addCurrentPageToCart($page, '#updateCart');
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '#cartItems strong'));
         $this->tryAddingDuplicatesToCart($page, '#updateCart');
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '#cartItems strong'));
     }
 
     /**
@@ -357,9 +360,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                     'Site' => [
                         'showBookBag' => true,
                         'bookBagMaxSize' => 1,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -367,7 +370,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now select the same things twice:
         $this->addCurrentPageToCart($page, '#updateCart');
-        $this->assertEquals('1', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('1', $this->findCssAndGetText($page, '#cartItems strong'));
     }
 
     /**
@@ -422,7 +425,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, '.cart-add');
             $this->assertEquals(
                 'Book Bag: ' . $x . ' items',
-                $this->findCss($page, '#cartItems')->getText()
+                $this->findCssAndGetText($page, '#cartItems')
             );
         }
     }
@@ -494,9 +497,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
         $page = $this->getSearchResultsPage();
@@ -508,7 +511,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEqualsWithTimeout(
             '2',
             function () use ($page) {
-                return $this->findCss($page, '#cartItems strong')->getText();
+                return $this->findCssAndGetText($page, '#cartItems strong');
             }
         );
     }
@@ -542,8 +545,6 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test that the email control works.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -580,7 +581,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal .alert-success')
         );
     }
 
@@ -612,10 +613,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->clickCss($page, '.modal-body input[name=submit]');
-        $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
-            $result->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
@@ -716,6 +716,24 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Get the search history data.
+     *
+     * @return array
+     */
+    protected function getSearchHistory()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $matches = $page->findAll('css', '#recent-searches td:nth-child(2) a');
+        $callback = function ($match) {
+            return $match->getText();
+        };
+        return array_map($callback, $matches);
+    }
+
+    /**
      * Test that the print control works.
      *
      * @return void
@@ -735,16 +753,41 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             [$this, 'getCurrentQueryString']
         );
+
+        // Printing should not have added anything to the search history beyond
+        // the initial search that set everything up.
+        $this->assertEquals(
+            ['id:(testsample1 OR testsample2)'],
+            $this->getSearchHistory()
+        );
     }
 
+    /**
+     * Assert visibility
+     *
+     * @param array  $combo    Current Site configuration
+     * @param bool[] $elements Array of element visibilty states indexed by name
+     * @param string $name     Name of element to check
+     * @param string $exp      Expected visibility
+     *
+     * @return void
+     */
     protected function assertVisible($combo, $elements, $name, $exp)
     {
         $message = $elements[$name]
             ? $name . " should be hidden.\n" . print_r($combo, true)
             : $name . " should be visible.\n" . print_r($combo, true);
-        $this->assertEquals($elements[$name], $exp, $message);
+        $this->assertEquals($exp, $elements[$name], $message);
     }
 
+    /**
+     * Run tests on a specified configuration
+     *
+     * @param Element $page  Page element
+     * @param array   $combo Site configuration to test
+     *
+     * @return array
+     */
     protected function runConfigCombo($page, $combo)
     {
         $this->changeConfigs(['config' => ['Site' => $combo]]);
@@ -760,12 +803,32 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Expected
         $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
         $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions']);
-        $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
-        $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
-        $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'bulkUpdateCart',
+            $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch'])
+        );
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'resultCartBtns',
+            $combo['showBookBag'] && $combo['bookbagTogglesInSearch']
+        );
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'resultCheckbox',
+            $elements['bulkEmail'] || $elements['bulkUpdateCart']
+        );
         return $elements;
     }
 
+    /**
+     * Test toolbar visibility configuration combinations
+     *
+     * @return void
+     */
     public function testToolbarVisibilityConfigCombinations()
     {
         $page = $this->getSearchResultsPage();

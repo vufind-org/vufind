@@ -1,8 +1,9 @@
 <?php
+
 /**
  * QR Code Generator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\QRCode;
 
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
@@ -36,6 +38,9 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelQuartile;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+
+use function intval;
+use function strlen;
 
 /**
  * QR Code Generator
@@ -138,19 +143,19 @@ class Loader extends \VuFind\ImageLoader
     protected function mapErrorLevel($level): ErrorCorrectionLevelInterface
     {
         switch (strtoupper(substr($level, 0, 1))) {
-        case '3':
-        case 'H':
-            return new ErrorCorrectionLevelHigh();
-        case '2':
-        case 'Q':
-            return new ErrorCorrectionLevelQuartile();
-        case '1':
-        case 'M':
-            return new ErrorCorrectionLevelMedium();
-        case '0':
-        case 'L':
-        default:
-            return new ErrorCorrectionLevelLow();
+            case '3':
+            case 'H':
+                return new ErrorCorrectionLevelHigh();
+            case '2':
+            case 'Q':
+                return new ErrorCorrectionLevelQuartile();
+            case '1':
+            case 'M':
+                return new ErrorCorrectionLevelMedium();
+            case '0':
+            case 'L':
+            default:
+                return new ErrorCorrectionLevelLow();
         }
     }
 

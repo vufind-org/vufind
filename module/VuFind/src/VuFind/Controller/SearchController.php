@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Default Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
+
+use function array_slice;
+use function count;
+use function is_object;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -41,25 +47,6 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
  */
 class SearchController extends AbstractSolrSearch
 {
-    /**
-     * Blended search action.
-     *
-     * @return mixed
-     */
-    public function blendedAction()
-    {
-        $saveId = $this->searchClassId;
-        try {
-            $this->searchClassId = 'Blender';
-            $view = $this->resultsAction();
-        } catch (\Exception $e) {
-            $this->searchClassId = $saveId;
-            throw $e;
-        }
-        $this->searchClassId = $saveId;
-        return $view;
-    }
-
     /**
      * Show facet list for Solr-driven collections.
      *
@@ -150,7 +137,8 @@ class SearchController extends AbstractSolrSearch
 
         // Force login if necessary:
         $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+        if (
+            (!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
             return $this->forceLogin(null, ['emailurl' => $view->url]);
@@ -187,7 +175,7 @@ class SearchController extends AbstractSolrSearch
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
         return $view;
@@ -202,8 +190,12 @@ class SearchController extends AbstractSolrSearch
     {
         // Force login if necessary
         $user = $this->getUser();
-        if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
-            return $this->forceLogin();
+        if ($this->params()->fromQuery('require_login', 'no') !== 'no') {
+            // If user is already logged in, drop the require_login parameter to
+            // allow for a cleaner log-out experience.
+            return $user
+                ? $this->redirect()->toRoute('search-history')
+                : $this->forceLogin();
         }
         $userId = is_object($user) ? $user->id : null;
 
@@ -243,12 +235,20 @@ class SearchController extends AbstractSolrSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
-        return $this->createViewModel(
+        $view = $this->createViewModel(
             [
+                'defaultSort' => $this->newItems()->getDefaultSort(),
                 'fundList' => $this->newItems()->getFundList(),
-                'ranges' => $this->newItems()->getRanges()
+                'ranges' => $this->newItems()->getRanges(),
             ]
         );
+        if ($this->newItems()->includeFacets()) {
+            $view->options = $this->serviceLocator
+                ->get(\VuFind\Search\Options\PluginManager::class)
+                ->get($this->searchClassId);
+            $this->addFacetDetailsToView($view, 'NewItems');
+        }
+        return $view;
     }
 
     /**
@@ -327,7 +327,8 @@ class SearchController extends AbstractSolrSearch
     public function reservesAction()
     {
         // Search parameters set?  Process results.
-        if ($this->params()->fromQuery('inst') !== null
+        if (
+            $this->params()->fromQuery('inst') !== null
             || $this->params()->fromQuery('course') !== null
             || $this->params()->fromQuery('dept') !== null
         ) {
@@ -347,7 +348,7 @@ class SearchController extends AbstractSolrSearch
             [
                 'deptList' => $catalog->getDepartments(),
                 'instList' => $catalog->getInstructors(),
-                'courseList' =>  $catalog->getCourses()
+                'courseList' =>  $catalog->getCourses(),
             ]
         );
     }
@@ -480,16 +481,17 @@ class SearchController extends AbstractSolrSearch
     public function opensearchAction()
     {
         switch ($this->params()->fromQuery('method')) {
-        case 'describe':
-            $config = $this->getConfig();
-            $xml = $this->getViewRenderer()->render(
-                'search/opensearch-describe.phtml',
-                ['site' => $config->Site]
-            );
-            break;
-        default:
-            $xml = $this->getViewRenderer()->render('search/opensearch-error.phtml');
-            break;
+            case 'describe':
+                $config = $this->getConfig();
+                $xml = $this->getViewRenderer()->render(
+                    'search/opensearch-describe.phtml',
+                    ['site' => $config->Site]
+                );
+                break;
+            default:
+                $xml = $this->getViewRenderer()
+                    ->render('search/opensearch-error.phtml');
+                break;
         }
 
         $response = $this->getResponse();
@@ -536,7 +538,6 @@ class SearchController extends AbstractSolrSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

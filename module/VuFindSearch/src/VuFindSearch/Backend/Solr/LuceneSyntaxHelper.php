@@ -3,7 +3,7 @@
 /**
  * Lucene query syntax helper class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -30,7 +30,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
+
+use function count;
+use function in_array;
 
 /**
  * Lucene query syntax helper class.
@@ -125,7 +129,7 @@ class LuceneSyntaxHelper
     {
         $rangeReg = self::SOLR_RANGE_RE;
         if (!$this->caseSensitiveRanges) {
-            $rangeReg .= "i";
+            $rangeReg .= 'i';
         }
         return preg_match($rangeReg, $searchString) ? true : false;
     }
@@ -146,7 +150,7 @@ class LuceneSyntaxHelper
 
         // The following conditions do not apply to text inside quoted strings,
         // so let's just strip all quoted strings out of the query to simplify
-        // detection.  We'll replace quoted phrases with a dummy keyword so quote
+        // detection. We'll replace quoted phrases with a dummy keyword so quote
         // removal doesn't interfere with the field specifier check below.
         $searchString = preg_replace('/"[^"]*"/', 'quoted', $searchString);
 
@@ -162,7 +166,8 @@ class LuceneSyntaxHelper
         }
 
         // Check for ranges, booleans, wildcards and fuzzy matches:
-        if ($this->containsRanges($searchString)
+        if (
+            $this->containsRanges($searchString)
             || $this->containsBooleans($searchString)
             || strstr($searchString, '*') || strstr($searchString, '?')
             || strstr($searchString, '~')
@@ -282,7 +287,6 @@ class LuceneSyntaxHelper
     public function extractSearchTerms($query)
     {
         $result = [];
-        $inQuotes = false;
         $collected = '';
         $discardParens = 0;
         // Discard local parameters
@@ -290,37 +294,43 @@ class LuceneSyntaxHelper
         // Discard fuzziness and proximity indicators
         $query = preg_replace('/\~[^\s]*/', '', $query);
         $query = preg_replace('/\^[^\s]*/', '', $query);
-        $lastCh = '';
-        foreach (str_split($query) as $ch) {
-            // Handle quotes (everything in quotes is considered part of search
-            // terms)
-            if ($ch == '"' && $lastCh != '\\') {
-                $inQuotes = !$inQuotes;
-            }
-            if (!$inQuotes) {
-                // Discard closing parenthesis for previously discarded opening ones
-                // to keep balance
-                if ($ch == ')' && $discardParens > 0) {
-                    --$discardParens;
-                    continue;
+
+        $this->processQueryString(
+            function (
+                string $ch,
+                bool $quoted,
+                bool $esc
+            ) use (
+                &$result,
+                &$collected,
+                &$discardParens
+            ) {
+                if (!$quoted) {
+                    // Discard closing parenthesis for previously discarded opening
+                    // ones to keep balance
+                    if (!$esc && ')' === $ch && $discardParens > 0) {
+                        --$discardParens;
+                        return;
+                    }
+                    // Flush to result array on word break
+                    if ($ch == ' ' && $collected !== '') {
+                        $result[] = $collected;
+                        $collected = '';
+                        return;
+                    }
+                    // If we encounter ':', discard preceding string as it's a field
+                    // name
+                    if (!$esc && $ch == ':') {
+                        // Take into account any opening parenthesis we discard here
+                        $discardParens += $this->countNonQuoted('(', $collected);
+                        $collected = '';
+                        return;
+                    }
                 }
-                // Flush to result array on word break
-                if ($ch == ' ' && $collected !== '') {
-                    $result[] = $collected;
-                    $collected = '';
-                    continue;
-                }
-                // If we encounter ':', discard preceding string as it's a field name
-                if ($ch == ':') {
-                    // Take into account any opening parenthesis we discard here
-                    $discardParens += substr_count($collected, '(');
-                    $collected = '';
-                    continue;
-                }
-            }
-            $collected .= $ch;
-            $lastCh = $ch;
-        }
+                $collected .= $ch;
+            },
+            $query
+        );
         // Flush final collected string
         if ($collected !== '') {
             $result[] = $collected;
@@ -397,12 +407,14 @@ class LuceneSyntaxHelper
     protected function normalizeWildcards($input)
     {
         // Ensure wildcards are not at beginning of input
-        return ((substr($input, 0, 1) == '*') || (substr($input, 0, 1) == '?'))
+        return str_starts_with($input, '*') || str_starts_with($input, '?')
             ? substr($input, 1) : $input;
     }
 
     /**
      * Normalize parentheses in a query.
+     *
+     * Removes all non-quoted parentheses if they're not balanced.
      *
      * @param string $input String to normalize
      *
@@ -410,12 +422,9 @@ class LuceneSyntaxHelper
      */
     protected function normalizeParens($input)
     {
-        // Ensure all parens match
-        //   Better: Remove all parens if they are not balanced
-        //     -- dmaus, 2012-11-11
-        $start = preg_match_all('/\(/', $input, $tmp);
-        $end = preg_match_all('/\)/', $input, $tmp);
-        return ($start != $end) ? str_replace(['(', ')'], '', $input) : $input;
+        $start = $this->countNonQuoted('(', $input);
+        $end = $this->countNonQuoted(')', $input);
+        return $start !== $end ? $this->removeNonQuoted(['(', ')'], $input) : $input;
     }
 
     /**
@@ -451,7 +460,7 @@ class LuceneSyntaxHelper
         // Remove unwanted brackets/braces that are not part of range queries.
         // This is a bit of a shell game -- first we replace valid brackets and
         // braces with tokens that cannot possibly already be in the query (due
-        // to the work of normalizeBoosts()).  Next, we escape all remaining
+        // to the work of normalizeBoosts()). Next, we escape all remaining
         // invalid brackets/braces, and transform our tokens back into valid ones.
         // Obviously, the order of the patterns/merges array is critically
         // important to get this right!!
@@ -554,17 +563,17 @@ class LuceneSyntaxHelper
         // If the user has entered a lone BOOLEAN operator, convert it to lowercase
         // so it is treated as a word (otherwise it will trigger a fatal error):
         switch (trim($input)) {
-        case 'OR':
-            return 'or';
-        case 'AND':
-            return 'and';
-        case 'NOT':
-            return 'not';
+            case 'OR':
+                return 'or';
+            case 'AND':
+                return 'and';
+            case 'NOT':
+                return 'not';
         }
 
         // If the string consists only of control characters and/or BOOLEANs with no
         // other input, wipe it out entirely to prevent weird errors:
-        $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&', '|'];
+        $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&&', '||'];
         if (trim(str_replace($operators, '', $input)) == '') {
             return '';
         }
@@ -597,14 +606,16 @@ class LuceneSyntaxHelper
      */
     protected function getBoolsToCap()
     {
-        if ($this->caseSensitiveBooleans === false
+        if (
+            $this->caseSensitiveBooleans === false
             || $this->caseSensitiveBooleans === 0
-            || $this->caseSensitiveBooleans === "0"
+            || $this->caseSensitiveBooleans === '0'
         ) {
             return $this->allBools;
-        } elseif ($this->caseSensitiveBooleans === true
+        } elseif (
+            $this->caseSensitiveBooleans === true
             || $this->caseSensitiveBooleans === 1
-            || $this->caseSensitiveBooleans === "1"
+            || $this->caseSensitiveBooleans === '1'
         ) {
             return [];
         }
@@ -643,7 +654,8 @@ class LuceneSyntaxHelper
         $end = $match[3];          // end of range
 
         // Is this a case-sensitive range?
-        if (strtoupper($start) != strtolower($start)
+        if (
+            strtoupper($start) != strtolower($start)
             || strtoupper($end) != strtolower($end)
         ) {
             // Build a lowercase version of the range:
@@ -664,6 +676,79 @@ class LuceneSyntaxHelper
         } else {
             // Simpler case -- case insensitive (probably numeric) range:
             return $open . trim($start) . ' TO ' . trim($end) . $close;
+        }
+    }
+
+    /**
+     * Count occurrences of a character in non-quoted parts of the string
+     *
+     * @param string $needle   Character to look for (non-escaped)
+     * @param string $haystack String to process
+     *
+     * @return int
+     */
+    protected function countNonQuoted(string $needle, string $haystack): int
+    {
+        $count = 0;
+        $this->processQueryString(
+            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count) {
+                if (!$quoted && !$esc && $ch === $needle) {
+                    ++$count;
+                }
+            },
+            $haystack
+        );
+
+        return $count;
+    }
+
+    /**
+     * Remove occurrences of given characters in non-quoted parts of the string
+     *
+     * @param array  $needles  Characters to remove (non-escaped)
+     * @param string $haystack String to process
+     *
+     * @return string
+     */
+    protected function removeNonQuoted(array $needles, string $haystack): string
+    {
+        $result = '';
+        $this->processQueryString(
+            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result) {
+                if ($quoted || $esc || !in_array($ch, $needles)) {
+                    $result .= $ch;
+                }
+            },
+            $haystack
+        );
+        return $result;
+    }
+
+    /**
+     * Process a Lucene query string with a callback
+     *
+     * @param callable $callback Callback that gets called for each character
+     * @param string   $str      String to process
+     *
+     * @return void
+     */
+    protected function processQueryString(callable $callback, string $str): void
+    {
+        $quoted = false;
+        $escaped = false;
+        foreach (str_split($str) as $ch) {
+            if ('\\' === $ch) {
+                $escaped = !$escaped;
+            }
+            // Check for escaped character (i.e. preceding character is backslash
+            // that's not escaped):
+            if (!$escaped && '"' === $ch) {
+                $quoted = !$quoted;
+            }
+            $callback($ch, $quoted, $escaped);
+            if ('\\' !== $ch) {
+                $escaped = false;
+            }
         }
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for building the Preview tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function in_array;
+use function strlen;
 
 /**
  * Factory for building the Preview tab.
@@ -76,7 +81,8 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
                 'trim',
                 explode(',', strtolower($cfg->Content->previews))
             );
-            if (in_array('google', $previews)
+            if (
+                in_array('google', $previews)
                 && strlen(trim($cfg->Content->GoogleOptions['tab'] ?? '')) > 0
             ) {
                 $active = true;

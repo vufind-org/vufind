@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Blender backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019-2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Blender;
 
 use Laminas\EventManager\EventInterface;
@@ -38,6 +40,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordInterface;
+
+use function count;
+use function intval;
 
 /**
  * Blender backend.
@@ -158,7 +163,7 @@ class Backend extends AbstractBackend
             $backendDetails[$backendId] = [
                 'backend' => $backend,
                 'query' => $params->get("query_$backendId")[0],
-                'params' => $params->get("params_$backendId")[0]
+                'params' => $params->get("params_$backendId")[0],
             ];
         }
         if (!$backendDetails) {
@@ -250,8 +255,8 @@ class Backend extends AbstractBackend
                 [
                     'msg' => 'search_backend_partial_failure',
                     'tokens' => [
-                        '%%sources%%' => implode(', ', $failedBackends)
-                    ]
+                        '%%sources%%' => implode(', ', $failedBackends),
+                    ],
                 ]
             );
         }
@@ -468,7 +473,7 @@ class Backend extends AbstractBackend
         array &$backendRecords,
         int $offset,
         int $blockSize
-    ): RecordInterface {
+    ): ?RecordInterface {
         if (!$backendRecords) {
             $collection = $backendDetails['backend']->search(
                 $backendDetails['query'],
@@ -557,7 +562,8 @@ class Backend extends AbstractBackend
     protected function triggerSearchEvent(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetIdentifier() !== $this->getIdentifier()
+        if (
+            $command->getTargetIdentifier() !== $this->getIdentifier()
             || !($command instanceof SearchCommand)
         ) {
             return $event;

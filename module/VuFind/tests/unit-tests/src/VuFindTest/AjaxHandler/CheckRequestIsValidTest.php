@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CheckRequestIsValid test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
@@ -42,7 +44,7 @@ use VuFind\ILS\Connection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
+class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CheckRequestIsValid handler for testing.
@@ -91,6 +93,9 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
 
     /**
      * Generic support function for successful request tests.
+     *
+     * @param string  $ilsMethod   ILS method to mock
+     * @param ?string $requestType Request type for params helper
      *
      * @return array
      */
@@ -146,7 +151,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $this->assertEquals(
             [
-                ['status' => true, 'msg' => 'storage_retrieval_request_place_text']
+                ['status' => true, 'msg' => 'storage_retrieval_request_place_text'],
             ],
             $this->runSuccessfulTest(
                 'checkStorageRetrievalRequestIsValid',

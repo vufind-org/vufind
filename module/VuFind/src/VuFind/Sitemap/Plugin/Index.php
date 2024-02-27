@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Index-based generator plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
 /**
@@ -135,7 +137,7 @@ class Index extends AbstractGeneratorPlugin
                 );
                 foreach ($result['ids'] as $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
+                    if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;

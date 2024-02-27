@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Tree Renderer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeRenderer;
+
+use function is_object;
 
 /**
  * Hierarchy Tree Renderer
@@ -70,7 +74,7 @@ abstract class AbstractBase
     /**
      * Get the current record driver
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return \VuFind\RecordDriver\DefaultRecord
      * @throws \Exception
      */
     protected function getRecordDriver()
@@ -111,7 +115,7 @@ abstract class AbstractBase
      *
      * @param string $hierarchyID Optional filter: specific hierarchy ID to retrieve
      *
-     * @return mixed An array of hierarchy IDS if an archive tree exists,
+     * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
     abstract public function getTreeList($hierarchyID = false);
@@ -119,26 +123,26 @@ abstract class AbstractBase
     /**
      * Render the Hierarchy Tree
      *
-     * @param string $context     The context from which the call has been made
-     * @param string $mode        The mode in which the tree should be generated
-     * @param string $hierarchyID The hierarchy ID of the tree to fetch (optional)
-     * @param string $recordID    The current record ID (optional)
+     * @param string  $context     The context from which the call has been made
+     * @param string  $mode        The mode in which the tree should be generated
+     * @param string  $hierarchyID The hierarchy ID of the tree to fetch (optional)
+     * @param ?string $selectedID  The current record ID (optional)
      *
      * @return mixed The desired hierarchy tree output (or false on error)
      */
     abstract public function render(
-        $context,
-        $mode,
-        $hierarchyID,
-        $recordID = false
+        string $context,
+        string $mode,
+        string $hierarchyID,
+        ?string $selectedID = null
     );
 
     /**
      * Get Hierarchy Name
      *
      * @param string $hierarchyID        The hierarchy ID to find the title for
-     * @param string $inHierarchies      An array of hierarchy IDs
-     * @param string $inHierarchiesTitle An array of hierarchy Titles
+     * @param array  $inHierarchies      An array of hierarchy IDs
+     * @param array  $inHierarchiesTitle An array of hierarchy Titles
      *
      * @return string A hierarchy title
      */

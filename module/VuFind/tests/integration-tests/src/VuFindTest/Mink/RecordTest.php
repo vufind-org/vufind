@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink test class for basic record functionality.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -35,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class RecordTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -55,6 +56,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
+        $this->waitForPageLoad($page);
         $staffViewTab = $this->findCss($page, '.record-tabs .details a');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
@@ -62,7 +64,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             $url . '#details',
             [$session, 'getCurrentUrl']
         );
-        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
+        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
         $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
@@ -84,14 +86,18 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
-        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
+        $this->assertStringStartsWith(
+            'LEADER',
+            $this->findCssAndGetText($page, '.record-tabs .details-tab table.staff-view--marc')
+        );
         $page = $session->getPage();
         $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
         $this->assertEquals('Holdings', $staffViewTab->getText());
         $staffViewTab->click();
-        $holdingsTabHeader = $this->findCss($page, '.record-tabs .holdings-tab h3');
-        $this->assertEquals('3rd Floor Main Library', $holdingsTabHeader->getText());
+        $this->assertEquals(
+            '3rd Floor Main Library',
+            $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
+        );
         [$baseUrl] = explode('#', $url);
         $this->assertEquals($baseUrl, $session->getCurrentUrl());
     }

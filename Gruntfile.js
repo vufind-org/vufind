@@ -1,6 +1,9 @@
 module.exports = function(grunt) {
   const fs = require("fs");
 
+  // Load dart-sass
+  grunt.loadNpmTasks('grunt-dart-sass');
+
   // Local custom tasks
   if (fs.existsSync("./Gruntfile.local.js")) {
     require("./Gruntfile.local.js")(grunt);
@@ -16,6 +19,7 @@ module.exports = function(grunt) {
     // initialize search path with directory containing LESS file
     var retVal = [];
     retVal.push(parts.join('/'));
+    retVal.push(parts.join('/') + '/vendor/');
 
     // Iterate through theme.config.php files collecting parent themes in search path:
     while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
@@ -39,6 +43,7 @@ module.exports = function(grunt) {
 
       parts[1] = matches[1];
       retVal.push(parts.join('/') + '/');
+      retVal.push(parts.join('/') + '/vendor/');
     }
     return retVal;
   }
@@ -72,10 +77,18 @@ module.exports = function(grunt) {
       }
     },
     // SASS compilation
-    scss: {
-      sass: {
+    'scss': {
+      'dart-sass': {
         options: {
-          style: 'compress'
+          outputStyle: 'compressed',
+          quietDeps: true
+        }
+      }
+    },
+    'check:scss': {
+      'dart-sass': {
+        options: {
+          quietDeps: true
         }
       }
     },
@@ -87,7 +100,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd: 'themes/bootstrap3/less',
-            src: ['*.less', 'components/*.less'],
+            src: ['*.less', 'components/**/*.less', 'mixins/**/*.less'],
             ext: '.scss',
             dest: 'themes/bootstrap3/scss'
           },
@@ -152,7 +165,7 @@ module.exports = function(grunt) {
             { // Wrap variables in calcs with #{}
               pattern: /calc\([^;]+/gi,
               replacement: function calcVariables(match) {
-                return match.replace(/(\$[^ ]+)/gi, '#{$1}');
+                return match.replace(/(\$[\w\-]+)/gi, '#{$1}');
               },
               order: 4
             },
@@ -203,36 +216,13 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('scss', function sassScan() {
-    var sassConfig = {},
-      path = require('path'),
-      themeList = fs.readdirSync(path.resolve('themes')).filter(function (theme) {
-        return fs.existsSync(path.resolve('themes/' + theme + '/scss/compiled.scss'));
-      });
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, false));
+    grunt.task.run('dart-sass');
+  });
 
-    for (var i in themeList) {
-      var config = {
-        options: {
-          implementation: require("node-sass"),
-          outputStyle: 'compressed'
-        },
-        files: [{
-          expand: true,
-          cwd: path.join('themes', themeList[i], 'scss'),
-          src: ['compiled.scss'],
-          dest: path.join('themes', themeList[i], 'css'),
-          ext: '.css'
-        }]
-      };
-      for (var key in this.data.options) {
-        config.options[key] = this.data.options[key] + '';
-      }
-      config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
-
-      sassConfig[themeList[i]] = config;
-    }
-
-    grunt.config.set('sass', sassConfig);
-    grunt.task.run('sass');
+  grunt.registerMultiTask('check:scss', function sassCheck() {
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, true));
+    grunt.task.run('dart-sass');
   });
 
   grunt.registerTask('default', function help() {
@@ -241,10 +231,45 @@ module.exports = function(grunt) {
     - grunt less        = compile and compress all themes' LESS files to css.
     - grunt scss        = compile and map all themes' SASS files to css.
     - grunt lessdev     = compile and map all themes' LESS files to css.
+    - grunt check:scss  = check all themes' SASS files.
     - grunt watch:[cmd] = continuous monitor source files and run command when changes are detected.
     - grunt watch:less
     - grunt watch:scss
     - grunt watch:lessdev
     - grunt lessToSass  = transpile all LESS files to SASS.`);
   });
+
+  function getSassConfig(additionalOptions, checkOnly) {
+    var sassConfig = {},
+      path = require('path'),
+      themeList = fs.readdirSync(path.resolve('themes')).filter(function (theme) {
+        return fs.existsSync(path.resolve('themes/' + theme + '/scss/compiled.scss'));
+      });
+
+    for (var i in themeList) {
+      if (Object.prototype.hasOwnProperty.call(themeList, i)) {
+        var config = {
+          options: {},
+          files: [{
+            expand: true,
+            cwd: path.join('themes', themeList[i], 'scss'),
+            src: ['compiled.scss'],
+            dest: checkOnly ? null : path.join('themes', themeList[i], 'css'),
+            ext: '.css'
+          }]
+        };
+        for (var key in additionalOptions) {
+          if (Object.prototype.hasOwnProperty.call(additionalOptions, key)) {
+            config.options[key] = additionalOptions[key];
+          }
+        }
+        config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+        // This allows loading of styles from composer dependencies:
+        config.options.includePaths.push('vendor/');
+
+        sassConfig[themeList[i]] = config;
+      }
+    }
+    return sassConfig;
+  }
 };

@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, escapeHtmlAttr */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -23,8 +23,9 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
     .done(function checkValidDone(response) {
       if (response.data.status) {
         $(element).removeClass('disabled')
+          .removeClass('request-check')
           .attr('title', response.data.msg)
-          .html(VuFind.icon(icon) + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + "</span>");
       } else {
         $(element).remove();
       }
@@ -72,8 +73,8 @@ function refreshCommentList($target, recordId, recordSource) {
       var $commentList = $target.find('.comment-list');
       $commentList.empty();
       $commentList.append(VuFind.updateCspNonce(response.data.html));
-      $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
-        var commentId = $(this).attr('id').substr('recordComment'.length);
+      $commentList.find('.delete').off("click").on("click", function commentRefreshDeleteClick() {
+        var commentId = $(this).attr('id').substring('recordComment'.length);
         deleteRecordComment(this, recordId, recordSource, commentId);
         return false;
       });
@@ -103,7 +104,7 @@ function refreshRecordRating(recordId, recordSource) {
 function registerAjaxCommentRecord(_context) {
   var context = typeof _context === "undefined" ? document : _context;
   // Form submission
-  $(context).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
+  $(context).find('form.comment-form').off("submit").on("submit", function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -144,7 +145,7 @@ function registerAjaxCommentRecord(_context) {
     return false;
   });
   // Delete links
-  $('.delete').click(function commentDeleteClick() {
+  $('.delete').on("click", function commentDeleteClick() {
     var commentId = this.id.substr('recordComment'.length);
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
     return false;
@@ -164,7 +165,7 @@ function handleAjaxTabLinks(_context) {
     var $a = $(this);
     var href = $a.attr('href');
     if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
-      $a.unbind('click').click(function linkClick() {
+      $a.off("click").on("click", function linkClick() {
         var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
         var $tab = $('.' + tabid + '-tab');
         $tab.html('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
@@ -211,6 +212,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   } else {
     url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
     postData.tab = tabid;
+    postData.sid = VuFind.getCurrentSearchId();
   }
   $.ajax({
     url: url,
@@ -290,7 +292,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabid) {
-  return $('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
+  return $('<div class="tab-pane ' + escapeHtmlAttr(tabid) + '-tab" aria-labelledby="record-tab-' + escapeHtmlAttr(tabid) + '">' + VuFind.loading() + '</div>');
 }
 
 function backgroundLoadTab(tabid) {
@@ -310,11 +312,11 @@ function applyRecordTabHash(scrollToTabs) {
 
   // Open tab in url hash
   if (newTab.length <= 1 || newTab === '#tabnav') {
-    $initiallyActiveTab.click();
+    $initiallyActiveTab.trigger("click");
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
     var $tabLink = $('.record-tabs .' + newTab.substr(1) + ' a');
     if ($tabLink.length > 0) {
-      $tabLink.click();
+      $tabLink.trigger("click");
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
         $('html, body').animate({
           scrollTop: $('.record-tabs').offset().top
@@ -344,7 +346,7 @@ function recordDocReady() {
     $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
     $(e.target).parent().attr('aria-selected', 'true');
   });
-  $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
+  $('.record-tabs .nav-tabs a').on('click', function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
     if ($li.hasClass('active')) {

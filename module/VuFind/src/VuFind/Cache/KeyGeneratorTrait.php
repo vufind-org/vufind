@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Cache Key Generator Trait
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2016.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture:caching
  */
+
 namespace VuFind\Cache;
+
+use function get_class;
 
 /**
  * VuFind Cache Key Generator Trait
@@ -54,8 +58,10 @@ trait KeyGeneratorTrait
         $key = get_class($this) . (!empty($suffix) ? '_' . $suffix : '');
 
         // Test the build key
-        if ($this->cache
-            && !preg_match($this->cache->getOptions()->getKeyPattern(), $key)
+        if (
+            $this->cache
+            && ($keyPattern = $this->cache->getOptions()->getKeyPattern())
+            && !preg_match($keyPattern, $key)
         ) {
             // The key violates the currently set StorageAdapter key_pattern. Our
             // best guess is to remove any characters that do not match the only
@@ -65,7 +71,7 @@ trait KeyGeneratorTrait
             // transformed key should match the custom pattern.
             $key = preg_replace(
                 "/([^a-z0-9_\+\-])+/Di",
-                "",
+                '',
                 $key
             );
         }

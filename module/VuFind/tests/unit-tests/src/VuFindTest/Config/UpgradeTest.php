@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Config Upgrade Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
+
+use function in_array;
 
 /**
  * Config Upgrade Test Class
@@ -70,6 +74,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * and warnings so that further assertions can be performed by calling code if
      * necessary.
      *
+     * @param string $version Version to test
+     *
      * @return array
      */
     protected function checkVersion($version)
@@ -95,18 +101,18 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // theme:
         $expectedWarnings = [
             'The Statistics module has been removed from VuFind. '
-            . 'For usage tracking, please configure Google Analytics or Matomo.'
+            . 'For usage tracking, please configure Google Analytics or Matomo.',
         ];
         if ((float)$version < 1.3) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the default theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the default theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         } elseif ((float)$version < 2.4) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the blueprint theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the blueprint theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         }
         $this->assertEquals($expectedWarnings, $warnings);
 
@@ -135,7 +141,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
                 'CallNumber' => ['TopFacets:ResultsTop'],
-                'WorkKeys' => ['']
+                'WorkKeys' => [''],
             ],
             $results['searches.ini']['TopRecommendations']
         );
@@ -185,7 +191,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'institution', 'building', 'format', 'callnumber-first',
                 'author_facet', 'language', 'genre_facet', 'era_facet',
-                'geographic_facet', 'publishDate'
+                'geographic_facet', 'publishDate',
             ],
             array_keys($results['facets.ini']['Results'])
         );
@@ -326,8 +332,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
-            'The Editions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
-            'The WorldCatEditions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID '
+            . 'API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
+            . 'xID API shutdown. It has been removed from your settings.',
         ];
         $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }
@@ -348,7 +356,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $adminConfig = [
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'username' => ['username1', 'username2'],
-            'permission' => 'access.AdminModule'
+            'permission' => 'access.AdminModule',
         ];
         $this->assertEquals(
             $adminConfig,
@@ -361,7 +369,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'role' => ['loggedin'],
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'boolean' => 'OR',
-            'permission' => 'access.SummonExtendedResults'
+            'permission' => 'access.SummonExtendedResults',
         ];
         $this->assertEquals(
             $summonConfig,
@@ -384,7 +392,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $expectedRegex = [
             'MEMBER1' => '/^1\.2\..*/',
-            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/']
+            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/'],
         ];
         foreach ($expectedRegex as $code => $regex) {
             $perm = "access.PrimoInstitution.$code";
@@ -394,7 +402,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             );
             $permDetails = [
                 'ipRegEx' => $regex,
-                'permission' => $perm
+                'permission' => $perm,
             ];
             $this->assertEquals($permDetails, $results['permissions.ini'][$perm]);
         }
@@ -504,6 +512,44 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'fileContainsMeaningfulLines',
                 [$meaningful]
             )
+        );
+    }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction()
+    {
+        $upgrader = $this->getUpgrader('comments');
+        $config = $this->getFixtureDir() . 'configs/comments/config.ini';
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $this->callMethod($upgrader, 'extractComments', [$config])
         );
     }
 

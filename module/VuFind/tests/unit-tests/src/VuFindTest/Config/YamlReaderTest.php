@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Config YamlReader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2022.
@@ -27,9 +28,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Config\YamlReader;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
@@ -57,8 +59,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testCacheWrite()
     {
         $yamlData = ['foo' => 'bar'];
-        $cache = $this->getMockBuilder(AbstractAdapter::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->once())->method('getItem')
             ->will($this->returnValue(null));
         $cache->expects($this->once())->method('setItem')
@@ -90,8 +91,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testCacheRead()
     {
         $yamlData = ['foo' => 'bar'];
-        $cache = $this->getMockBuilder(AbstractAdapter::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->once())->method('getItem')
             ->will($this->returnValue($yamlData));
         $cache->expects($this->never())->method('setItem');
@@ -120,8 +120,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testCacheForcedReload()
     {
         $yamlData = ['foo' => 'bar'];
-        $cache = $this->getMockBuilder(AbstractAdapter::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
             ->will($this->returnValue($yamlData));
         $cache->expects($this->never())->method('setItem');
@@ -157,7 +156,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'Overridden' => [
-                    'Original' => 'Not so original'
+                    'Original' => 'Not so original',
                 ],
                 'Other' => [
                     'Merged' => [
@@ -165,13 +164,19 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                         'Baz' => ['Bar', 'Bar', 'ChildBaz'],
                         'Child' => ['Foo', 'Baz'],
                     ],
-                    'NonMerged' => [
-                        'Original' => 'Not so original either'
+                    'Replaced' => [
+                        'ParentOnly' => 'Will exist',
+                        'Original' => 'Replaces parent',
+                        'Boolean' => false,
+                        'ChildOnly' => 'From child',
                     ],
-                    'ParentOnly' => [true]
+                    'NonMerged' => [
+                        'Original' => 'Not so original either',
+                    ],
+                    'ParentOnly' => [true],
                 ],
                 'ChildOnly' => [
-                    'Child' => 'true'
+                    'Child' => 'true',
                 ],
             ],
             $config

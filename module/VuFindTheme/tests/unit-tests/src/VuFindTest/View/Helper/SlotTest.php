@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HeadThemeResources view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\Slot;
@@ -49,7 +51,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
         $ret = $helper('test');
-        $this->assertTrue($ret instanceof Slot);
+        $this->assertInstanceOf(Slot::class, $ret);
     }
 
     /**
@@ -109,7 +111,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         // test object
         $helper('array')->clear();
         $ret = $helper('array')->set(new \SplStack());
-        $this->assertEquals(\SplStack::class, get_class($ret));
+        $this->assertEquals(\SplStack::class, $ret::class);
 
         // test shortcuts
         $ret = $helper('short', 'SUCCESS');

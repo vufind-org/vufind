@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Default cover text layer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
+
+use function count;
 
 /**
  * Default cover text layer
@@ -78,7 +82,8 @@ class DefaultText extends AbstractTextLayer
         $line = '';
         $lineCount = 0;
         $i = 0;
-        while ($i < count($words)
+        while (
+            $i < count($words)
             && $lineCount < $settings->maxTitleLines - 1
         ) {
             $pline = $line;
@@ -155,9 +160,10 @@ class DefaultText extends AbstractTextLayer
                 $settings->authorFont,
                 $fontSize
             );
-        } while ($textWidth > $settings->wrapWidth &&
+        } while (
+            $textWidth > $settings->wrapWidth &&
               $fontSize > $settings->minAuthorFontSize
-          );
+        );
         // Too small to read? Align left
         $textWidth = $this->textWidth(
             $author,

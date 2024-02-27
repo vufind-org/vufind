@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for instantiating Logger
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Log;
 
 use Laminas\Config\Config;
@@ -34,6 +36,10 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function count;
+use function is_array;
+use function is_int;
 
 /**
  * Factory for instantiating Logger
@@ -70,7 +76,7 @@ class LoggerFactory implements FactoryInterface
             'priority' => 'priority',
             'message' => 'message',
             'logtime' => 'timestamp',
-            'ident' => 'ident'
+            'ident' => 'ident',
         ];
 
         // Make Writers
@@ -179,7 +185,7 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setContentType('application/json');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            "*%priorityName%*: %message%"
+            '*%priorityName%*: %message%'
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);
@@ -214,7 +220,7 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setContentType('application/json');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            "*%priorityName%*: %message%"
+            '*%priorityName%*: %message%'
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);
@@ -232,7 +238,8 @@ class LoggerFactory implements FactoryInterface
         // Query parameters do not apply in console mode; if we do have a debug
         // query parameter, and the appropriate permission is set, activate dynamic
         // debug:
-        if (PHP_SAPI !== 'cli'
+        if (
+            PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
             return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
@@ -254,49 +261,60 @@ class LoggerFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        $hasWriter = false;
+        // Add a no-op writer so fatal errors are not triggered if log messages are
+        // sent during the initialization process.
+        $noOpWriter = new \Laminas\Log\Writer\Noop();
+        $logger->addWriter($noOpWriter);
 
         // DEBUGGER
         if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
-            $hasWriter = true;
             $this->addDebugWriter($logger, $config->System->debug);
         }
 
         // Activate database logging, if applicable:
         if (isset($config->Logging->database)) {
-            $hasWriter = true;
             $this->addDbWriters($logger, $container, $config->Logging->database);
         }
 
         // Activate file logging, if applicable:
         if (isset($config->Logging->file)) {
-            $hasWriter = true;
             $this->addFileWriters($logger, $config->Logging->file);
         }
 
         // Activate email logging, if applicable:
         if (isset($config->Logging->email)) {
-            $hasWriter = true;
             $this->addEmailWriters($logger, $container, $config);
         }
 
         // Activate Office365 logging, if applicable:
-        if (isset($config->Logging->office365)
+        if (
+            isset($config->Logging->office365)
             && isset($config->Logging->office365_url)
         ) {
-            $hasWriter = true;
             $this->addOffice365Writers($logger, $container, $config);
         }
 
         // Activate slack logging, if applicable:
         if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
-            $hasWriter = true;
             $this->addSlackWriters($logger, $container, $config);
         }
 
-        // Null (no-op) writer to avoid errors
-        if (!$hasWriter) {
-            $logger->addWriter(new \Laminas\Log\Writer\Noop());
+        // We're done now -- clean out the no-op writer if any other writers
+        // are found.
+        if (count($logger->getWriters()) > 1) {
+            $logger->removeWriter($noOpWriter);
+        }
+
+        // Add ReferenceId processor, if applicable:
+        if ($referenceId = $config->Logging->reference_id ?? false) {
+            if ('username' === $referenceId) {
+                $authManager = $container->get(\VuFind\Auth\Manager::class);
+                if ($user = $authManager->isLoggedIn()) {
+                    $processor = new \Laminas\Log\Processor\ReferenceId();
+                    $processor->setReferenceId($user->username);
+                    $logger->addProcessor($processor);
+                }
+            }
         }
     }
 
@@ -322,10 +340,11 @@ class LoggerFactory implements FactoryInterface
             '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
+        $level = (is_int($debug) ? $debug : '5');
         $this->addWriters(
             $logger,
             $writer,
-            'debug-' . (is_int($debug) ? $debug : '5')
+            "debug-$level,notice-$level,error-$level,alert-$level"
         );
     }
 
@@ -357,29 +376,29 @@ class LoggerFactory implements FactoryInterface
             // VuFind's configuration provides four priority options, each
             // combining two of the standard Laminas levels.
             switch (trim($priority)) {
-            case 'debug':
-                // Set static flag indicating that debug is turned on:
-                $logger->debugNeeded(true);
+                case 'debug':
+                    // Set static flag indicating that debug is turned on:
+                    $logger->debugNeeded(true);
 
-                $max = Logger::INFO;  // Informational: informational messages
-                $min = Logger::DEBUG; // Debug: debug messages
-                break;
-            case 'notice':
-                $max = Logger::WARN;  // Warning: warning conditions
-                $min = Logger::NOTICE;// Notice: normal but significant condition
-                break;
-            case 'error':
-                $max = Logger::CRIT;  // Critical: critical conditions
-                $min = Logger::ERR;   // Error: error conditions
-                break;
-            case 'alert':
-                $max = Logger::EMERG; // Emergency: system is unusable
-                $min = Logger::ALERT; // Alert: action must be taken immediately
-                break;
-            default:
-                // INVALID FILTER, so skip it. We must continue 2 levels, so we
-                // continue the foreach loop instead of just breaking the switch.
-                continue 2;
+                    $max = Logger::INFO;  // Informational: informational messages
+                    $min = Logger::DEBUG; // Debug: debug messages
+                    break;
+                case 'notice':
+                    $max = Logger::WARN;  // Warning: warning conditions
+                    $min = Logger::NOTICE;// Notice: normal but significant condition
+                    break;
+                case 'error':
+                    $max = Logger::CRIT;  // Critical: critical conditions
+                    $min = Logger::ERR;   // Error: error conditions
+                    break;
+                case 'alert':
+                    $max = Logger::EMERG; // Emergency: system is unusable
+                    $min = Logger::ALERT; // Alert: action must be taken immediately
+                    break;
+                default:
+                    // INVALID FILTER, so skip it. We must continue 2 levels, so we
+                    // continue the foreach loop instead of just breaking the switch.
+                    continue 2;
             }
 
             // Clone the submitted writer since we'll need a separate instance of the
@@ -392,7 +411,7 @@ class LoggerFactory implements FactoryInterface
                     $newWriter->setVerbosity($verbosity);
                 } else {
                     throw new \Exception(
-                        get_class($newWriter) . ' does not support verbosity.'
+                        $newWriter::class . ' does not support verbosity.'
                     );
                 }
             }
@@ -406,6 +425,23 @@ class LoggerFactory implements FactoryInterface
             // add the writer
             $logger->addWriter($newWriter);
         }
+    }
+
+    /**
+     * Get proxy class to instantiate from the requested class name
+     *
+     * @param string $requestedName Service being created
+     *
+     * @return string
+     */
+    protected function getProxyClassName(string $requestedName): string
+    {
+        $className = $requestedName . 'Proxy';
+        // Fall back to default if the class doesn't exist:
+        if (!class_exists($className)) {
+            return LoggerProxy::class;
+        }
+        return $className;
     }
 
     /**
@@ -430,21 +466,19 @@ class LoggerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        // Construct the logger as a lazy loading value holder so that
-        // the object is not instantiated until it is called. This helps break
-        // potential circular dependencies with other services.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
-            // Indicate that initialization is complete to avoid reinitialization:
-            $proxy->setProxyInitializer(null);
 
+        // Construct the logger as a lazy loading proxy so that the object is not
+        // instantiated until it is called. This helps break potential circular
+        // dependencies with other services.
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Now build the actual service:
             $wrapped = new $requestedName(
                 $container->get(\VuFind\Net\UserIpReader::class)
             );
             $this->configureLogger($container, $wrapped);
         };
-        $cfg = $container->get(\ProxyManager\Configuration::class);
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy($requestedName, $callback);
+
+        $proxyClass = $this->getProxyClassName($requestedName);
+        return new $proxyClass($callback);
     }
 }

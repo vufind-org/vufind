@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
@@ -72,7 +74,7 @@ class Module
                 // theme system to all loaded modules. If you need to apply theming
                 // to a controller whose namespace does not directly correspond to a
                 // loaded module, you will need to add it as a prefix in
-                // extra_theme_prefixes (e.g. 'MyNamespace/').  Conversely, if you
+                // extra_theme_prefixes (e.g. 'MyNamespace/'). Conversely, if you
                 // are loading a Laminas module that includes templates and does not
                 // follow VuFind's theme conventions, you should add that module name
                 // as a prefix in excluded_theme_prefixes to allow the default
@@ -85,7 +87,7 @@ class Module
                 // module.config.php configuration.
                 'excluded_theme_prefixes' => ['Laminas'],
                 'extra_theme_prefixes' => [],
-            ]
+            ],
         ];
     }
 

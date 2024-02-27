@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink account actions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2022.
@@ -27,9 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use VuFind\Db\Table\User;
+
+use function count;
 
 /**
  * Mink account actions test class.
@@ -42,7 +46,6 @@ use VuFind\Db\Table\User;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -63,11 +66,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test changing a password.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
-    public function testChangePassword()
+    public function testChangePassword(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -99,7 +100,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#newpassword .btn.btn-primary');
         $this->assertEquals(
             'Invalid login -- please try again.',
-            $this->findCss($page, '.alert-danger')->getText()
+            $this->findCssAndGetText($page, '.alert-danger')
         );
 
         // Change the password successfully:
@@ -107,7 +108,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#newpassword .btn.btn-primary');
         $this->assertEquals(
             'Your password has successfully been changed',
-            $this->findCss($page, '.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert-success')
         );
 
         // Log out
@@ -130,13 +131,91 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test username case-insensitivity.
+     *
+     * @depends testChangePassword
+     *
+     * @return void
+     */
+    public function testCaseInsensitiveUsername(): void
+    {
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+
+        // Go to profile page:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Log back in using UPPERCASE version of username (it was created in lowercase above).
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'USERNAME1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm that we logged in based on the presence of a "change password" link.
+        $this->findAndAssertLink($page, 'Change Password');
+    }
+
+    /**
+     * Data provider for testLoginWithSessionSettings().
+     *
+     * @return array
+     */
+    public static function sessionSettingsProvider(): array
+    {
+        return [
+            'unencrypted file' => ['File', false],
+            'encrypted file' => ['File', true],
+            'unencrypted database' => ['Database', false],
+            'encrypted database' => ['Database', true],
+        ];
+    }
+
+    /**
+     * Test that we can log in successfully using various session settings.
+     *
+     * @param string $type   Session handler to use
+     * @param bool   $secure Should we enable secure session mode?
+     *
+     * @return void
+     *
+     * @depends testChangePassword
+     *
+     * @dataProvider sessionSettingsProvider
+     */
+    public function testLoginWithSessionSettings(string $type, bool $secure): void
+    {
+        // Adjust session settings:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Session' => compact('type', 'secure'),
+                ],
+            ]
+        );
+
+        // Go to profile page:
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+
+        // Log in
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'username1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm that we logged in based on the presence of a "change password" link.
+        $this->findAndAssertLink($page, 'Change Password');
+    }
+
+    /**
      * Test that changing email is disabled by default.
      *
      * @depends testChangePassword
      *
      * @return void
      */
-    public function testChangeEmailDisabledByDefault()
+    public function testChangeEmailDisabledByDefault(): void
     {
         // Go to profile page:
         $session = $this->getMinkSession();
@@ -151,7 +230,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now confirm that email button is absent:
         $link = $page->findLink('Change Email Address');
-        $this->assertFalse(is_object($link));
+        $this->assertIsNotObject($link);
     }
 
     /**
@@ -161,7 +240,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testChangeEmail()
+    public function testChangeEmail(): void
     {
         // Turn on email change option:
         $this->changeConfigs(
@@ -169,8 +248,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'change_email' => true,
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -195,21 +274,19 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your email address has been changed successfully',
-            $this->findCss($page, '.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert-success')
         );
 
         // Now go to profile page and confirm that email has changed:
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
         $this->assertEquals(
             'First Name: Tester Last Name: McTestenson Email: new@email.com',
-            $this->findCss($page, '.table-striped')->getText()
+            $this->findCssAndGetText($page, '.table-striped')
         );
     }
 
     /**
      * Test default pick up location
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -223,7 +300,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
                 'config' => [
                     'Catalog' => ['driver' => 'Demo'],
-                ]
+                ],
             ]
         );
 
@@ -238,7 +315,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username2',
-                'email' => "username2@ignore.com"
+                'email' => 'username2@ignore.com',
             ]
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -255,13 +332,13 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame('', $userTable->getByUsername('username2')->home_library);
         $this->assertEquals(
             '',
-            $this->findCss($page, '#home_library')->getValue()
+            $this->findCssAndGetValue($page, '#home_library')
         );
         $expectedChoices = ['', ' ** ', 'A', 'B', 'C'];
         foreach ($expectedChoices as $i => $expected) {
             $this->assertEquals(
                 $expected,
-                $this->findCss($page, '#home_library option', null, $i)->getValue()
+                $this->findCssAndGetValue($page, '#home_library option', null, $i)
             );
         }
         // Make sure there are no more pick up locations:
@@ -273,34 +350,69 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Change the default and verify:
-        $this->findCss($page, '#home_library')->setValue('B');
+        $this->findCssAndSetValue($page, '#home_library', 'B');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
-        $this->assertEquals('B', $this->findCss($page, '#home_library')->getValue());
+        $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
         $this->assertEquals(
             'B',
             $userTable->getByUsername('username2')->home_library
         );
 
         // Change to "Always ask me":
-        $this->findCss($page, '#home_library')->setValue(' ** ');
+        $this->findCssAndSetValue($page, '#home_library', ' ** ');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             ' ** ',
-            $this->findCss($page, '#home_library')->getValue()
+            $this->findCssAndGetValue($page, '#home_library')
         );
         $this->assertNull($userTable->getByUsername('username2')->home_library);
 
         // Back to default:
-        $this->findCss($page, '#home_library')->setValue('');
+        $this->findCssAndSetValue($page, '#home_library', '');
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             '',
-            $this->findCss($page, '#home_library')->getValue()
+            $this->findCssAndGetValue($page, '#home_library')
         );
         $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+    }
+
+    /**
+     * Test ILS authentication.
+     *
+     * @return void
+     */
+    public function testILSAuthentication(): void
+    {
+        // Setup config
+        $this->changeConfigs(
+            [
+                'Demo' => [
+                    'Users' => ['username3' => 'catpass'],
+                ],
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                    'Authentication' => ['method' => 'ILS'],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->findCssAndSetValue($page, '#login_ILS_username', 'username3');
+        $this->findCssAndSetValue($page, '#login_ILS_password', 'catpass');
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Check that profile page is displayed
+        $this->findCss($page, '#home_library');
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
@@ -310,6 +422,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2']);
+        static::removeUsers(['username1', 'username2', 'username3']);
     }
 }

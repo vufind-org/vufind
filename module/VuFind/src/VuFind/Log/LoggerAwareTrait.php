@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Log;
+
+use function get_class;
 
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.

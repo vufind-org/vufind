@@ -1,8 +1,9 @@
 <?php
+
 /**
  * BrowZine backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -25,17 +26,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\BrowZine;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function array_slice;
+use function count;
+use function is_array;
 
 /**
  * BrowZine backend.
@@ -119,7 +122,7 @@ class Backend extends AbstractBackend
             [
                 'offset' => $offset,
                 'recordCount' => count($results),
-                'data' => array_slice($results, $offset, $limit)
+                'data' => array_slice($results, $offset, $limit),
             ]
         );
         $this->injectSourceIdentifier($collection);

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFindConsole\Command;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -65,8 +67,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'language/addusingtemplate' => Language\AddUsingTemplateCommand::class,
         'language/copystring' => Language\CopyStringCommand::class,
         'language/delete' => Language\DeleteCommand::class,
+        'language/importlokalise' => Language\ImportLokaliseCommand::class,
         'language/normalize' => Language\NormalizeCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
+        'util/browscap' => Util\BrowscapCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/commit' => Util\CommitCommand::class,
@@ -76,11 +80,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/expire_access_tokens' => Util\ExpireAccessTokensCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
+        'util/expire_login_tokens' => Util\ExpireLoginTokensCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
         'util/expire_sessions' => Util\ExpireSessionsCommand::class,
         'util/index_reserves' => Util\IndexReservesCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         'util/optimize' => Util\OptimizeCommand::class,
+        'util/purge_cached_record' => Util\PurgeCachedRecordCommand::class,
         'util/scssBuilder' => Util\ScssBuilderCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
@@ -122,9 +128,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Language\AbstractCommandFactory::class,
         Language\CopyStringCommand::class => Language\AbstractCommandFactory::class,
         Language\DeleteCommand::class => Language\AbstractCommandFactory::class,
+        Language\ImportLokaliseCommand::class => Language\AbstractCommandFactory::class,
         Language\NormalizeCommand::class => Language\AbstractCommandFactory::class,
         ScheduledSearch\NotifyCommand::class =>
             ScheduledSearch\NotifyCommandFactory::class,
+        Util\BrowscapCommand::class => Util\BrowscapCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class =>
             Util\CleanUpRecordCacheCommandFactory::class,
         Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,
@@ -138,6 +146,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\ExpireAuthHashesCommandFactory::class,
         Util\ExpireExternalSessionsCommand::class =>
             Util\ExpireExternalSessionsCommandFactory::class,
+        Util\ExpireLoginTokensCommand::class =>
+            Util\ExpireLoginTokensCommandFactory::class,
         Util\ExpireSearchesCommand::class =>
             Util\ExpireSearchesCommandFactory::class,
         Util\ExpireSessionsCommand::class =>
@@ -146,6 +156,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\AbstractSolrAndIlsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\PurgeCachedRecordCommand::class => Util\PurgeCachedRecordCommandFactory::class,
         Util\ScssBuilderCommand::class => Util\ScssBuilderCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class =>

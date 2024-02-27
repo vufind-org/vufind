@@ -57,14 +57,19 @@ function loadCoverByElement(data, element) {
 
 function loadCovers() {
   $('.ajaxcover').each(function getDataAndLoadCovers() {
-    var img = $(this).find('img');
+    let $cover = $(this);
+    if ($cover.data('loaded')) {
+      return;
+    }
+    $cover.data('loaded', true);
+    var img = $cover.find('img');
     var data = {
       source: img.data('recordsource'),
       recordId: img.data('recordid'),
       size: img.data('coversize'),
       context: img.data('context'),
     };
-    loadCoverByElement(data, $(this));
+    loadCoverByElement(data, $cover);
   });
 }
-$(document).ready(loadCovers);
+$(loadCovers);

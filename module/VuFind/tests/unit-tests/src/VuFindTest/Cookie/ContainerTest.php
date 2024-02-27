@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cookie Container Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Cookie;
 
 use VuFind\Cookie\Container;
+
+use function in_array;
 
 /**
  * Cookie Container Test Class
@@ -82,11 +86,11 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
 
         // Test get/set of array:
         $this->container->testArray = [1, 2];
-        $this->assertEquals(2, count($this->container->testArray));
+        $this->assertCount(2, $this->container->testArray);
 
         // Test getAllValues:
         $all = $this->container->getAllValues();
-        $this->assertEquals(2, count($all));
+        $this->assertCount(2, $all);
         $this->assertTrue(in_array('value', array_keys($all)));
         $this->assertTrue(in_array('testArray', array_keys($all)));
     }

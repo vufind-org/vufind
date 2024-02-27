@@ -1,42 +1,28 @@
 <?php
-// Set page title.
-$this->headTitle(
-    $this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb()
-);
-if($this->driver->getIsMarc()):
-   echo \VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21'));
-else:
+  if ($this->driver->getIsMarc()) {
+    echo $this->render('RecordTab/staffviewmarc.phtml');
+    return;
+  }
+
+  // Set page title.
+  $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+
+  // Note that heading below is not translated because it's a proper noun.
 ?>
-<table class="citation table table-striped staffviewod">
-    <?php foreach ($this->driver->getRawData() as $field => $values): ?>
-        <tr>
-            <th><?= $this->escapeHtml($field) ?></th>
-            <td>
-                <?php foreach ((array)$values as $value): ?>
-                    <?php if (is_array($value)): ?>
-                        <ul class="list-group">
-                            <?php foreach ($value as $key => $val): ?>
-                                <li class="list-group-item">
-                                    <strong><?php echo $key; ?>: </strong>
-                                    <?php if (is_array($val)): ?>
-                                        <?php foreach ($val as $k => $v): ?>
-                                            <?php echo "<strong>$k</strong>: <pre>"
-                                                . $this->escapeHtml(
-                                                    print_r($v, true)
-                                                ) . "</pre>"; ?><br/>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <?php echo $this->escapeHtml($val); ?>
-                                    <?php endif; ?>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php else: ?>
-                        <?php echo $this->escapeHtml($value); ?>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
+<h2>OverDrive</h2>
+<table class="staff-view table table-striped">
+  <?php
+    $rawData = json_decode($this->driver->getRawData()['fullrecord'] ?? '[]', true);
+    ksort($rawData);
+  ?>
+  <?php foreach ($rawData as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td><?=$this->printArrayHtml($values)?></td>
+    </tr>
+  <?php endforeach; ?>
 </table>
-<?php endif;?>
+<?php if ($this->config()->alwaysDisplayIndexRecordInStaffView()): ?>
+    <h2><?=$this->transEsc('Record in the Search Index')?></h2>
+    <?=$this->render('RecordTab/staffviewarray.phtml')?>
+<?php endif; ?>

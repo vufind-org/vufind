@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GetRecordCover AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -33,6 +35,8 @@ use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
+
+use function in_array;
 
 /**
  * GetRecordCover AJAX handler.
@@ -135,7 +139,7 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
                     'html' => $this->renderer->render(
                         'record/coverReplacement',
                         ['driver' => $record]
-                    )
+                    ),
                 ]
             );
     }

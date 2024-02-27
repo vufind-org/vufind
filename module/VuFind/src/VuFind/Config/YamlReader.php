@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind YAML Configuration Reader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2022.
@@ -27,9 +28,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
 use Symfony\Component\Yaml\Yaml;
+
+use function array_key_exists;
+use function dirname;
+use function is_array;
 
 /**
  * VuFind YAML Configuration Reader
@@ -43,6 +49,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlReader
 {
+    use \VuFind\Feature\MergeRecursiveTrait;
+
     /**
      * Cache directory name
      *
@@ -207,7 +215,7 @@ class YamlReader
                     $resultElemRef
                         = &$this->getArrayElemRefByPath($results, $path, true);
                     $resultElemRef
-                        = array_merge_recursive($parentElem, $resultElemRef);
+                        = $this->mergeRecursive($parentElem, $resultElemRef);
                     unset($parentElem);
                     unset($resultElemRef);
                 }

@@ -3,7 +3,7 @@
 /**
  * Fetch alphabrowse data from the backend (currently only supported by Solr)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
@@ -124,7 +125,7 @@ class AlphabeticBrowseCommand extends CallMethodCommand
             $this->getPage(),
             $this->getLimit(),
             $this->getSearchParameters(),
-            $this->getOffsetDelta()
+            $this->getOffsetDelta(),
         ];
     }
 

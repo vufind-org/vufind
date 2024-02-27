@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SideFacets recommendation module Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SideFacets;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
 
@@ -69,51 +70,16 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                 'facets' => [
                     'SpecialFacets' => [
                         'hierarchical' => ['format'],
-                        'hierarchicalFacetSortOptions' => ['a', 'b', 'c']
-                    ]
-                ]
+                        'hierarchicalFacetSortOptions' => ['a', 'b', 'c'],
+                    ],
+                ],
             ],
             [],
             $this->once()
         );
-        $sf = $this->getSideFacets($configLoader, null, '', null, null);
+        $sf = $this->getSideFacets($configLoader, null, '', null);
         $this->assertEquals(['format'], $sf->getHierarchicalFacets());
         $this->assertEquals(['a', 'b', 'c'], $sf->getHierarchicalFacetSortOptions());
-    }
-
-    /**
-     * Test missing hierarchical facet helper
-     *
-     * @return void
-     */
-    public function testMissingHierarchicalFacetHelper(): void
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            'VuFind\\Recommend\\SideFacets: hierarchical facet helper unavailable'
-        );
-
-        $configLoader = $this->getMockConfigPluginManager(
-            [
-                'facets' => [
-                    'Results' => [
-                        'format' => 'Format',
-                    ],
-                    'SpecialFacets' => [
-                        'hierarchical' => ['format']
-                    ]
-                ]
-            ],
-            [],
-            $this->once()
-        );
-        $results = $this->getMockResults();
-        $response = ['format' => ['dummy']];
-        $results->expects($this->once())->method('getFacetList')
-            ->with($this->equalTo(['format' => 'Format']))
-            ->will($this->returnValue($response));
-        $sf = $this->getSideFacets($configLoader, $results, '', null, null);
-        $sf->getFacetSet();
     }
 
     /**
@@ -134,8 +100,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                     'Checkboxes' => [
                         'description' => 'filter',
-                    ]
-                ]
+                    ],
+                ],
             ],
             [],
             $this->once()
@@ -175,7 +141,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => [
                         'orFacets' => '*',  // test or facet support
                     ],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -203,7 +169,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => [
                         'exclude' => '*',  // test or facet support
                     ],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -227,8 +193,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                         'fullDateRange' => ['fullDate'],
                         'genericRange' => ['generic'],
                         'numericRange' => ['numeric'],
-                    ]
-                ]
+                    ],
+                ],
             ],
             [],
             $this->once()
@@ -246,7 +212,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'date' => ['type' => 'date', 'values' => ['1900', '1905']],
             'fullDate' => [
-                'type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31']
+                'type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31'],
             ],
             'generic' => ['type' => 'generic', 'values' => ['A', 'Z']],
             'numeric' => ['type' => 'numeric', 'values' => ['1', '9']],
@@ -275,7 +241,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [
                 'facets' => [
                     'Results_Settings' => ['collapsedFacets' => '   foo, bar,baz   '],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -298,7 +264,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                         'format' => 'Format',
                     ],
                     'Results_Settings' => ['collapsedFacets' => '*'],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -336,8 +302,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $configLoader = $this->getMockConfigPluginManager(
             [
                 'facets' => [
-                    'Checkboxes' => ['foo' => 'bar']
-                ]
+                    'Checkboxes' => ['foo' => 'bar'],
+                ],
             ],
             [],
             $this->once()
@@ -364,8 +330,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $configLoader = $this->getMockConfigPluginManager(
             [
                 'facets' => [
-                    'Checkboxes' => ['foo' => 'bar']
-                ]
+                    'Checkboxes' => ['foo' => 'bar'],
+                ],
             ],
             [],
             $this->once()
@@ -390,8 +356,6 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      * @param Results                      $results      results object
      * @param string                       $settings     settings
      * @param \Laminas\Stdlib\Parameters   $request      request
-     * @param HierarchicalFacetHelper      $facetHelper  hierarchical facet helper
-     * (true to build default, null to omit)
      *
      * @return SideFacets
      */
@@ -399,16 +363,12 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         \VuFind\Config\PluginManager $configLoader = null,
         Results $results = null,
         string $settings = '',
-        \Laminas\Stdlib\Parameters $request = null,
-        $facetHelper = true
+        \Laminas\Stdlib\Parameters $request = null
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
         }
-        $sf = new SideFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
-            true === $facetHelper ? new HierarchicalFacetHelper() : $facetHelper
-        );
+        $sf = new SideFacets($configLoader ?? $this->getMockConfigPluginManager([]));
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Model for records retrieved via EBSCO's EIT API.
@@ -57,7 +63,7 @@ class EIT extends DefaultRecord
      *
      * @param mixed $data Raw data representing the record; Record Model
      * objects are normally constructed by Record Driver objects using data
-     * passed in from a Search Results object.  The exact nature of the data may
+     * passed in from a Search Results object. The exact nature of the data may
      * vary depending on the data source -- the important thing is that the
      * Record Driver + Search Results objects work together correctly.
      *
@@ -79,7 +85,7 @@ class EIT extends DefaultRecord
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -149,7 +155,7 @@ class EIT extends DefaultRecord
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array
@@ -176,7 +182,8 @@ class EIT extends DefaultRecord
      */
     public function getFormats()
     {
-        if (isset($this->controlInfo['artinfo']['doctype'])
+        if (
+            isset($this->controlInfo['artinfo']['doctype'])
             && is_array($this->controlInfo['artinfo']['doctype'])
         ) {
             return $this->controlInfo['artinfo']['doctype'];
@@ -192,7 +199,8 @@ class EIT extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        if (isset($this->controlInfo['artinfo']['aug']['au'])
+        if (
+            isset($this->controlInfo['artinfo']['aug']['au'])
             && is_array($this->controlInfo['artinfo']['aug']['au'])
         ) {
             return $this->controlInfo['artinfo']['aug']['au'];
@@ -211,7 +219,7 @@ class EIT extends DefaultRecord
     {
         if (isset($this->controlInfo['pubinfo']['dt']['@attributes']['year'])) {
             return [
-                $this->controlInfo['pubinfo']['dt']['@attributes']['year']
+                $this->controlInfo['pubinfo']['dt']['@attributes']['year'],
             ];
         } elseif (isset($this->controlInfo['pubinfo']['dt'])) {
             return [$this->controlInfo['pubinfo']['dt']];
@@ -252,7 +260,8 @@ class EIT extends DefaultRecord
         // array as needed (it should be a flat string according to the default
         // schema, but we might as well support the array case just to be on the safe
         // side:
-        if (isset($this->controlInfo['artinfo']['ab'])
+        if (
+            isset($this->controlInfo['artinfo']['ab'])
             && !empty($this->controlInfo['artinfo']['ab'])
         ) {
             return is_array($this->controlInfo['artinfo']['ab'])
@@ -433,7 +442,7 @@ class EIT extends DefaultRecord
     protected function getCoinsID()
     {
         // Added at Richard and Leslie's request, to facilitate ILL
-        return parent::getCoinsID() . ".ebsco";
+        return parent::getCoinsID() . '.ebsco';
     }
 
     /**

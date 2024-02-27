@@ -3,7 +3,7 @@
 /**
  * MultiIndex listener class file.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * MultiIndex listener class file.
@@ -196,13 +199,13 @@ class MultiIndexListener
             $specs[$handler] = [];
             foreach ($spec as $component => $settings) {
                 switch ($component) {
-                case 'QueryFields':
-                    $specs[$handler][$component]
-                        = $this->stripSpecsQueryFields($settings, $fields);
-                    break;
-                default:
-                    $specs[$handler][$component] = $settings;
-                    break;
+                    case 'QueryFields':
+                        $specs[$handler][$component]
+                            = $this->stripSpecsQueryFields($settings, $fields);
+                        break;
+                    default:
+                        $specs[$handler][$component] = $settings;
+                        break;
                 }
             }
         }

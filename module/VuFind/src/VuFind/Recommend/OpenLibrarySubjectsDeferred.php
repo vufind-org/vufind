@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OpenLibrarySubjects Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
+
+use function is_object;
 
 /**
  * OpenLibrarySubjects Recommendations Module
@@ -92,7 +96,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
         // Make sure all elements of the params array are filled in, even if just
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
-        $settings[1] = $settings[1] ?? '';
+        $settings[1] ??= '';
 
         // If Publication Date filter is to be applied, get the range and add it to
         //    $settings since the $searchObject will not be available after the AJAX
@@ -120,7 +124,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

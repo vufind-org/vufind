@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic VuFind table gateway.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\TableGateway\AbstractTableGateway;
 use Laminas\Db\TableGateway\Feature;
 use VuFind\Db\Row\RowGateway;
+
+use function count;
+use function is_object;
 
 /**
  * Generic VuFind table gateway.
@@ -89,7 +94,7 @@ class Gateway extends AbstractTableGateway
     public function initializeFeatures($cfg)
     {
         // Special case for PostgreSQL sequences:
-        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql') {
             $maps = $cfg['vufind']['pgsql_seq_mapping'] ?? null;
             if (isset($maps[$this->table])) {
                 if (!is_object($this->featureSet)) {
@@ -116,8 +121,9 @@ class Gateway extends AbstractTableGateway
 
         // If this is a PostgreSQL connection, we may need to initialize the ID
         // from a sequence:
-        if ($this->adapter
-            && $this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
+        if (
+            $this->adapter
+            && $this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql'
             && $obj instanceof \VuFind\Db\Row\RowGateway
         ) {
             // Do we have a sequence feature?

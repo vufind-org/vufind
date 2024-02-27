@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Helper - Holds Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2021.
@@ -27,9 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use VuFind\Date\DateException;
+
+use function in_array;
 
 /**
  * Action helper to perform holds-related actions
@@ -64,7 +68,7 @@ class Holds extends AbstractRequestBase
         // Generate Form Details for cancelling Holds if Cancelling Holds
         // is enabled
         if ($cancelStatus) {
-            if ($cancelStatus['function'] == "getCancelHoldLink") {
+            if ($cancelStatus['function'] == 'getCancelHoldLink') {
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
                     = $catalog->getCancelHoldLink($ilsDetails, $patron);
@@ -128,7 +132,7 @@ class Holds extends AbstractRequestBase
 
         if (!empty($details)) {
             // Confirm?
-            if ($params->fromPost('confirm') === "0") {
+            if ($params->fromPost('confirm') === '0') {
                 if ($params->fromPost('cancelAll') !== null) {
                     return $this->getController()->confirm(
                         'hold_cancel_all',
@@ -137,7 +141,7 @@ class Holds extends AbstractRequestBase
                         'confirm_hold_cancel_all_text',
                         [
                             'cancelAll' => 1,
-                            'cancelAllIDS' => $params->fromPost('cancelAllIDS')
+                            'cancelAllIDS' => $params->fromPost('cancelAllIDS'),
                         ]
                     );
                 } else {
@@ -149,7 +153,7 @@ class Holds extends AbstractRequestBase
                         [
                             'cancelSelected' => 1,
                             'cancelSelectedIDS' =>
-                                $params->fromPost('cancelSelectedIDS')
+                                $params->fromPost('cancelSelectedIDS'),
                         ]
                     );
                 }
@@ -224,8 +228,10 @@ class Holds extends AbstractRequestBase
             'requiredByTS' => null,
             'errors' => [],
         ];
-        if (!in_array('startDate', $enabledFormFields)
+        if (
+            !in_array('startDate', $enabledFormFields)
             && !in_array('requiredByDate', $enabledFormFields)
+            && !in_array('requiredByDateOptional', $enabledFormFields)
         ) {
             return $result;
         }
@@ -245,7 +251,11 @@ class Holds extends AbstractRequestBase
             }
         }
 
-        if (in_array('requiredByDate', $enabledFormFields)) {
+        if (
+            in_array('requiredByDate', $enabledFormFields)
+            || in_array('requiredByDateOptional', $enabledFormFields)
+        ) {
+            $optional = in_array('requiredByDateOptional', $enabledFormFields);
             try {
                 if ($requiredBy) {
                     $requiredByDateTime = \DateTime::createFromFormat(
@@ -259,7 +269,10 @@ class Holds extends AbstractRequestBase
                 } else {
                     $result['requiredByTS'] = 0;
                 }
-                if ($result['requiredByTS'] < strtotime('today')) {
+                if (
+                    (!$optional || $result['requiredByTS'])
+                    && $result['requiredByTS'] < strtotime('today')
+                ) {
                     $result['errors'][] = 'hold_required_by_date_invalid';
                 }
             } catch (DateException $e) {
@@ -267,9 +280,10 @@ class Holds extends AbstractRequestBase
             }
         }
 
-        if (!$result['errors']
+        if (
+            !$result['errors']
             && in_array('startDate', $enabledFormFields)
-            && in_array('requiredByDate', $enabledFormFields)
+            && !empty($result['requiredByTS'])
             && $result['startDateTS'] > $result['requiredByTS']
         ) {
             $result['errors'][] = 'hold_required_by_date_before_start_date';

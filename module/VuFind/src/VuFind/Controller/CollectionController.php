@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Collection Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Config\Config;
@@ -87,7 +89,8 @@ class CollectionController extends AbstractRecord
         }
 
         $result = parent::showTab($tab, $ajax);
-        if (!$ajax && $result instanceof \Laminas\View\Model\ViewModel
+        if (
+            !$ajax && $result instanceof \Laminas\View\Model\ViewModel
             && $result->getTemplate() !== 'myresearch/login'
         ) {
             $result->setTemplate('collection/view');
@@ -104,7 +107,6 @@ class CollectionController extends AbstractRecord
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

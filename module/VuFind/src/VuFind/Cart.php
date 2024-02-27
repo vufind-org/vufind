@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cart Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
+
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
 
 /**
  * Cart Class

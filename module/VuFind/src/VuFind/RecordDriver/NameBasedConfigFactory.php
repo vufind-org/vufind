@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for record drivers that uses the class name to look up config files.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

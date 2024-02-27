@@ -1,8 +1,9 @@
 <?php
+
 /**
  * UserComments Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\UserComments;
@@ -48,7 +50,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     public function testGetDescription(): void
     {
         $obj = new UserComments();
-        $this->assertSame("Comments", $obj->getDescription());
+        $this->assertSame('Comments', $obj->getDescription());
     }
 
     /**
@@ -56,7 +58,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Enabled' => [true, true], 'Not Enabled' => [false, false]];
     }
@@ -64,7 +66,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param bool $enable is this tab enabled
+     * @param bool $enable         is this tab enabled
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
@@ -82,7 +84,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isCaptchaActiveProvider(): array
+    public static function isCaptchaActiveProvider(): array
     {
         return ['Active' => [true, true], 'InActive' => [false, false]];
     }
@@ -90,7 +92,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the Captcha is Active.
      *
-     * @param bool $captcha is captcha active
+     * @param bool $captcha        is captcha active
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void

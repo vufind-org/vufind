@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Blender aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2019.
  *
@@ -25,9 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\Search\Blender;
 
-use VuFindSearch\Command\SearchCommand;
+namespace VuFind\Search\Blender;
 
 /**
  * Blender aspect of the Search Multi-class (Results)
@@ -55,34 +55,9 @@ class Results extends \VuFind\Search\Solr\Results
      */
     protected function performSearch()
     {
-        $query  = $this->getParams()->getQuery();
-        $limit  = $this->getParams()->getLimit();
-        $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
-        $searchService = $this->getSearchService();
-
-        $command = new SearchCommand(
-            $this->backendId,
-            $query,
-            $offset,
-            $limit,
-            $params
-        );
-        $searchService->invoke($command);
-        $collection = $command->getResult();
-
-        $this->responseFacets = $collection->getFacets();
-        $this->resultTotal = $collection->getTotal();
-
-        // Process spelling suggestions
-        $spellcheck = $collection->getSpellcheck();
-        $this->spellingQuery = $spellcheck->getQuery();
-        $this->suggestions = $this->getSpellingProcessor()
-            ->getSuggestions($spellcheck, $this->getParams()->getQuery());
-
-        // Construct record drivers for all the items in the response:
-        $this->results = $collection->getRecords();
-
-        $this->errors = $collection->getErrors();
+        if (null !== $this->getCursorMark()) {
+            throw new \Exception('Blender does not support cursorMark');
+        }
+        parent::performSearch();
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GeniePlus ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
@@ -43,6 +45,7 @@ use VuFind\ILS\Driver\GeniePlus;
 class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Default driver configuration
@@ -84,7 +87,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         [
             'Accept: application/json',
             'Authorization: Bearer fake-token',
-        ]
+        ],
     ];
 
     /**
@@ -108,7 +111,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Get a mock response with a predetermined body.
      *
-     * @param string $body Body
+     * @param string $body   Body
+     * @param int    $status HTTP status code
      *
      * @return Response
      */
@@ -162,8 +166,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response = $this->getMockResponse('Internal server error', 500);
         $this->driver->expects($this->once())
             ->method('makeRequest')
-            ->withConsecutive($this->expectedTokenRequest)
-            ->willReturnOnConsecutiveCalls($response);
+            ->with(...$this->expectedTokenRequest)
+            ->willReturn($response);
         $this->driver->setConfig($this->config);
         $this->driver->init();
         $this->expectExceptionMessage('No access token in API response.');
@@ -184,9 +188,10 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $patronLogin = $this->getMockResponse(
             $this->getFixture('genieplus/patronLogin.json')
         );
-        $this->driver->expects($this->exactly(5))
-            ->method('makeRequest')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $this->driver,
+            'makeRequest',
+            [
                 // first attempt (new token):
                 $this->expectedTokenRequest,
                 $this->expectedLoginRequest,
@@ -194,7 +199,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 $this->expectedLoginRequest,
                 $this->expectedTokenRequest,
                 $this->expectedLoginRequest,
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 // first attempt (new token):
                 $goodToken,
                 $patronLogin,
@@ -202,7 +208,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                 $expiredToken,
                 $goodToken,
                 $patronLogin,
-            );
+            ]
+        );
         $this->driver->setConfig($this->config);
         $this->driver->init();
         // We'll call patronLogin twice -- the first time will simulate a "normal"
@@ -229,15 +236,18 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response2 = $this->getMockResponse(
             $this->getFixture('genieplus/patronLogin.json')
         );
-        $this->driver->expects($this->exactly(2))
-            ->method('makeRequest')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $this->driver,
+            'makeRequest',
+            [
                 $this->expectedTokenRequest,
                 $this->expectedLoginRequest,
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $response1,
                 $response2,
-            );
+            ]
+        );
         $this->driver->setConfig($this->config);
         $this->driver->init();
         $this->assertEquals(
@@ -259,9 +269,10 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response2 = $this->getMockResponse(
             $this->getFixture('genieplus/holdings.json')
         );
-        $this->driver->expects($this->exactly(2))
-            ->method('makeRequest')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $this->driver,
+            'makeRequest',
+            [
                 $this->expectedTokenRequest,
                 [
                     'GET',
@@ -269,18 +280,21 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'page-size' => 100,
                         'page' => 0,
-                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
+                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,'
+                        . 'Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
                         'command' => "UniqRecNum == 'foo-id'",
                     ],
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $response1,
                 $response2,
-            );
+            ]
+        );
     }
 
     /**
@@ -448,9 +462,10 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response2 = $this->getMockResponse(
             $this->getFixture('genieplus/profile.json')
         );
-        $this->driver->expects($this->exactly(2))
-            ->method('makeRequest')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $this->driver,
+            'makeRequest',
+            [
                 $this->expectedTokenRequest,
                 [
                     'GET',
@@ -458,18 +473,21 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'page-size' => 1,
                         'page' => 0,
-                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,PhoneNumber,ExpiryDate',
+                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,'
+                        . 'PhoneNumber,ExpiryDate',
                         'command' => "ID == 'fake.user.fake.com'",
                     ],
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $response1,
                 $response2,
-            );
+            ]
+        );
         $this->driver->setConfig($this->config);
         $this->driver->init();
         $this->assertEquals(
@@ -501,9 +519,10 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response2 = $this->getMockResponse(
             $this->getFixture('genieplus/checkedout.json')
         );
-        $this->driver->expects($this->exactly(2))
-            ->method('makeRequest')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $this->driver,
+            'makeRequest',
+            [
                 $this->expectedTokenRequest,
                 [
                     'GET',
@@ -517,12 +536,14 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $response1,
                 $response2,
-            );
+            ]
+        );
         $this->driver->setConfig($this->config);
         $this->driver->init();
         $this->assertEquals(

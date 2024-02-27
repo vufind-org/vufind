@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Oracle support code for VTLS Virtua Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Southern Queensland 2008.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
+
+use function count;
+use function is_array;
 
 /**
  * Oracle support code for VTLS Virtua Driver
@@ -159,24 +164,24 @@ class Oracle
     protected function getDataTypeConstant($data_type)
     {
         switch ($data_type) {
-        case 'integer':
-            return SQLT_INT;
-        case 'float':
-            return SQLT_FLT;
-        case 'long':
-            return SQLT_LNG;
-        case 'row_id':
-            return SQLT_RDD;
-        case 'clob':
-            return SQLT_CLOB;
-        case 'blob':
-            return SQLT_BLOB;
-        case 'string':
-        case 'date':
-        default:
-            // Date and string are redundant since default is varchar,
-            //  but they're here for clarity.
-            return SQLT_CHR;
+            case 'integer':
+                return SQLT_INT;
+            case 'float':
+                return SQLT_FLT;
+            case 'long':
+                return SQLT_LNG;
+            case 'row_id':
+                return SQLT_RDD;
+            case 'clob':
+                return SQLT_CLOB;
+            case 'blob':
+                return SQLT_BLOB;
+            case 'string':
+            case 'date':
+            default:
+                // Date and string are redundant since default is varchar,
+                //  but they're here for clarity.
+                return SQLT_CHR;
         }
     }
 
@@ -336,8 +341,8 @@ class Oracle
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
-            [$column, $type] = explode(":", $field);
-            $this->bindParam($stmt, ":" . $column, $datum, $type);
+            [$column, $type] = explode(':', $field);
+            $this->bindParam($stmt, ':' . $column, $datum, $type);
         }
 
         if ($this->exec($stmt)) {
@@ -367,7 +372,7 @@ class Oracle
 
         // Split all the fields up into arrays
         foreach ($fields as $field => $datum) {
-            [$column, $type] = explode(":", $field);
+            [$column, $type] = explode(':', $field);
             $types[$column] = $type;
             $data[$column]  = $datum;
             $clauses[]      = "$column = :$column";
@@ -375,14 +380,14 @@ class Oracle
 
         // Prepare the SQL for child table - turn the columns in placeholders for
         // the bind
-        $sql  = "DELETE FROM $table WHERE " . join(" AND ", $clauses);
+        $sql  = "DELETE FROM $table WHERE " . implode(' AND ', $clauses);
         $delete = $this->prepare($sql);
 
         // Bind Variables
         foreach (array_keys($data) as $column) {
             $this->bindParam(
                 $delete,
-                ":" . $column,
+                ':' . $column,
                 $data[$column],
                 $types[$column]
             );
@@ -417,7 +422,7 @@ class Oracle
 
         // Split all the fields up into arrays
         foreach ($fields as $field => $datum) {
-            $tmp = explode(":", $field);
+            $tmp = explode(':', $field);
             $column = array_shift($tmp);
 
             // For binding
@@ -428,21 +433,21 @@ class Oracle
             $columns[]      = $column;
             // Dates are special
             if (count($tmp) > 0 && null !== $datum) {
-                $values[] = "TO_DATE(:$column, '" . join(":", $tmp) . "')";
+                $values[] = "TO_DATE(:$column, '" . implode(':', $tmp) . "')";
             } else {
                 $values[] = ":$column";
             }
         }
 
-        $sql  = "INSERT INTO $table (" . join(", ", $columns) . ") VALUES (" .
-            join(", ", $values) . ")";
+        $sql  = "INSERT INTO $table (" . implode(', ', $columns) . ') VALUES (' .
+            implode(', ', $values) . ')';
         $insert = $this->prepare($sql);
 
         // Bind Variables
         foreach (array_keys($data) as $column) {
             $this->bindParam(
                 $insert,
-                ":" . $column,
+                ':' . $column,
                 $data[$column],
                 $types[$column]
             );
@@ -472,8 +477,8 @@ class Oracle
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
-            [$column, $type] = explode(":", $field);
-            $this->bindParam($stmt, ":" . $column, $datum, $type);
+            [$column, $type] = explode(':', $field);
+            $this->bindParam($stmt, ':' . $column, $datum, $type);
         }
         if ($this->exec($stmt)) {
             $this->commit();
@@ -554,7 +559,7 @@ class Oracle
     public function getHtmlError()
     {
         if ($this->lastError == null) {
-            return "No error found!";
+            return 'No error found!';
         }
 
         // Generic stuff
@@ -567,31 +572,31 @@ class Oracle
 
         // Anything special for this error type?
         switch ($this->lastErrorType) {
-        case 'parsing':
-            $output .= "=============<br />\n";
-            $output .= "Offset into SQL:<br />\n";
-            $output .=
-                substr($this->lastError['sqltext'], $this->lastError['offset']) .
-                "\n";
-            break;
-        case 'executing':
-            $output .= "=============<br />\n";
-            $output .= "Offset into SQL:<br />\n";
-            $output .=
-                substr($this->lastError['sqltext'], $this->lastError['offset']) .
-                "<br />\n";
-            if (count($this->lastErrorFields) > 0) {
+            case 'parsing':
                 $output .= "=============<br />\n";
-                $output .= "Bind Variables:<br />\n";
-                foreach ($this->lastErrorFields as $k => $l) {
-                    if (is_array($l)) {
-                        $output .= "$k => (" . join(", ", $l) . ")<br />\n";
-                    } else {
-                        $output .= "$k => $l<br />\n";
+                $output .= "Offset into SQL:<br />\n";
+                $output .=
+                    substr($this->lastError['sqltext'], $this->lastError['offset']) .
+                    "\n";
+                break;
+            case 'executing':
+                $output .= "=============<br />\n";
+                $output .= "Offset into SQL:<br />\n";
+                $output .=
+                    substr($this->lastError['sqltext'], $this->lastError['offset']) .
+                    "<br />\n";
+                if (count($this->lastErrorFields) > 0) {
+                    $output .= "=============<br />\n";
+                    $output .= "Bind Variables:<br />\n";
+                    foreach ($this->lastErrorFields as $k => $l) {
+                        if (is_array($l)) {
+                            $output .= "$k => (" . implode(', ', $l) . ")<br />\n";
+                        } else {
+                            $output .= "$k => $l<br />\n";
+                        }
                     }
                 }
-            }
-            break;
+                break;
         }
 
         $this->clearError();

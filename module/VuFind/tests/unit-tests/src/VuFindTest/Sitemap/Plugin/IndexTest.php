@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Index Plugin Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap\Plugin;
 
 use VuFind\Sitemap\Plugin\Index;
@@ -41,6 +43,8 @@ use VuFind\Sitemap\Plugin\Index\AbstractIdFetcher;
  */
 class IndexTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test that nothing happens if configuration is empty.
      *
@@ -67,14 +71,18 @@ class IndexTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('*'));
         $fetcher->expects($this->once())->method('setupBackend')
             ->with($this->equalTo($backendId));
-        $fetcher->expects($this->exactly(2))->method('getIdsFromBackend')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $fetcher,
+            'getIdsFromBackend',
+            [
                 [$backendId, '*', $countPerPage, $fq],
-                [$backendId, 'offset', $countPerPage, $fq]
-            )->willReturnOnConsecutiveCalls(
+                [$backendId, 'offset', $countPerPage, $fq],
+            ],
+            [
                 ['ids' => [1, 2], 'nextOffset' => 'offset'],
-                ['ids' => [3]]
-            );
+                ['ids' => [3]],
+            ]
+        );
         $config = [
             ['url' => 'http://foo/', 'id' => $backendId],
         ];

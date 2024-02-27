@@ -17,10 +17,10 @@
           </a>
         </h4>
       </div>
-      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if($this->defaultTab === 'information'): ?> in<?php endif; ?>">
+      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'information'): ?> in<?php endif; ?>">
         <div class="list-tab-content record panel-body">
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>" />
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
           <?=$coreMetadata ?>
         </div>
       </div>
@@ -37,7 +37,7 @@
           </a>
         </h4>
       </div>
-      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if($this->defaultTab === 'tools'): ?> in<?php endif; ?>">
+      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'tools'): ?> in<?php endif; ?>">
         <div class="list-tab-content panel-body">
           <?=$toolbar ?>
         </div>
@@ -51,11 +51,11 @@
       <div id="related_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#related_<?=$idSuffixEsc?>-content">
         <h4 class="panel-title">
           <a class="accordion-toggle">
-            <?=$this->transEsc("Related Items")?>
+            <?=$this->transEsc('Related Items')?>
           </a>
         </h4>
       </div>
-      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if($this->defaultTab === 'related'): ?> in<?php endif; ?>">
+      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'related'): ?> in<?php endif; ?>">
         <div class="list-tab-content panel-body">
           <?php foreach ($relatedList as $current): ?>
             <?=$this->related()->render($current)?>
@@ -69,9 +69,15 @@
       <?php // add current tab to breadcrumbs if applicable:
         $desc = $obj->getDescription();
         $tab_classes = [];
-        if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-        if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
-        if ($this->defaultTab === strtolower($tab)) { $tab_classes[] = 'default'; }
+        if (!$obj->isVisible()) {
+          $tab_classes[] = 'hidden';
+        }
+        if (!$obj->supportsAjax()) {
+          $tab_classes[] = 'noajax';
+        }
+        if ($this->defaultTab === strtolower($tab)) {
+          $tab_classes[] = 'default';
+        }
       ?>
       <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
         <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
@@ -79,7 +85,7 @@
             <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
           </h4>
         </div>
-        <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if($this->defaultTab === strtolower($tab)): ?> in<?php endif; ?>"></div>
+        <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($this->defaultTab === strtolower($tab)): ?> in<?php endif; ?>"></div>
       </div>
     <?php endforeach; ?>
   <?php endif; ?>

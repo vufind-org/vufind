@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for record
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) University of Freiburg 2014.
@@ -28,12 +29,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Where;
 use VuFind\Db\Row\RowGateway;
+
+use function count;
 
 /**
  * Table Definition for record

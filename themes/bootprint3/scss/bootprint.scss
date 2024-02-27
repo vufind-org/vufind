@@ -58,10 +58,25 @@ header .navbar {
     &:hover { color: transparent; }
     &.lang-ar { background-image: url('../../bootprint3/images/vufind_logo_ar.png'); }
   }
-  .navbar-nav > li > a { padding: 12px 6px; }
+  .navbar-nav > li > a,
+  .navbar-nav > li .dropdown-toggle  {
+    position: relative;
+    padding: 12px 6px;
+    color: $link-color;
+
+    &:hover,
+    &:focus {
+      z-index: 1000;
+      text-decoration: none;
+      color: #000;
+      outline: dotted 1px #000;
+      background-color: #eeeeee;
+    }
+  }
   .navbar-right { margin-top: 12px; }
   @media (max-width: 767px) {
-    .navbar-nav > li > a { padding: 8px 24px; }
+    .navbar-nav > li > a,
+    .navbar-nav > li .dropdown-toggle { padding: 8px 24px; }
     .navbar-right { margin: 0; }
   }
 }
@@ -140,6 +155,9 @@ ul.random.image li img { margin: 0 auto; }
   .facet-group label.list-group-item input[type=checkbox] { margin-top: 2px; }
 
   .facet { padding: 7px 10px 6px; }
+  .facet-tree .facet {
+    padding-left: 2px;
+  }
   .facet.active,
   .facet.active:hover,
   .active-filters .facet {
@@ -147,9 +165,7 @@ ul.random.image li img { margin: 0 auto; }
     background-color: $active-orange;
     border-color: $active-orange;
   }
-  .facet.active .badge,
-  .jstree-node.active .badge,
-  .jstree-node.active .badge .fa { color: $active-orange; }
+  .facet.active .badge { color: $active-orange; }
   .facet .badge a { color: #fff; }
 }
 .checkboxFilter .facet { padding-left: 1px; }
@@ -166,8 +182,4 @@ ul.random.image li img { margin: 0 auto; }
 .top-row .badge a {
   color: #fff;
   &:hover { color: $brand-danger; }
-}
-
-.jstree-facet .active > .jstree-anchor .facet {
-  background-color: $active-orange;
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Search box view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Options\PluginManager as OptionsManager;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Search box view helper
@@ -143,6 +149,34 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get JSON-encoded configuration for autocomplete query formatting.
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return string
+     */
+    public function autocompleteFormattingRulesJson($activeSearchClass): string
+    {
+        if ($this->combinedHandlersActive()) {
+            $rules = [];
+            $settings = $this->getCombinedHandlerConfig($activeSearchClass);
+            foreach ($settings['target'] ?? [] as $i => $target) {
+                if (($settings['type'][$i] ?? null) === 'VuFind') {
+                    $options = $this->optionsManager->get($target);
+                    $handlerRules = $options->getAutocompleteFormattingRules();
+                    foreach ($handlerRules as $key => $val) {
+                        $rules["VuFind:$target|$key"] = $val;
+                    }
+                }
+            }
+        } else {
+            $options = $this->optionsManager->get($activeSearchClass);
+            $rules = $options->getAutocompleteFormattingRules();
+        }
+        return json_encode($rules);
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *
@@ -161,8 +195,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      */
     public function combinedHandlersActive()
     {
-        return isset($this->config['General']['combinedHandlers'])
-            && $this->config['General']['combinedHandlers'];
+        return $this->config['General']['combinedHandlers'] ?? false;
     }
 
     /**
@@ -208,7 +241,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $normalized
                 = preg_match($regex, $current['filter'], $match)
                 ? "{$match[1]}:\"{$match[2]}\"" : $current['filter'];
-            if ($current['selected'] && !in_array($normalized, $results)
+            if (
+                $current['selected'] && !in_array($normalized, $results)
                 && !in_array($current['filter'], $results)
             ) {
                 $results[] = $current['filter'];
@@ -237,6 +271,16 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                 ?? null;
         }
         return null;
+    }
+
+    /**
+     * Get an array of the configured virtual keyboard layouts
+     *
+     * @return array
+     */
+    public function getKeyboardLayouts()
+    {
+        return $this->config['VirtualKeyboard']['layouts'] ?? [];
     }
 
     /**
@@ -293,7 +337,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
             $handlers[] = [
                 'value' => $searchVal, 'label' => $searchDesc, 'indent' => false,
-                'selected' => ($activeHandler == $searchVal)
+                'selected' => ($activeHandler == $searchVal),
             ];
         }
         return $handlers;
@@ -315,7 +359,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
             $typeCount = count($settings['type']);
-            if ($typeCount != count($settings['target'])
+            if (
+                $typeCount != count($settings['target'])
                 || $typeCount != count($settings['label'])
             ) {
                 throw new \Exception('CombinedHandlers configuration incomplete.');
@@ -404,7 +449,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         && $activeHandler == $searchVal;
                     if ($selected) {
                         $selectedFound = true;
-                    } elseif ($backupSelectedIndex === false
+                    } elseif (
+                        $backupSelectedIndex === false
                         && $target == $activeSearchClass
                     ) {
                         $backupSelectedIndex = count($handlers);

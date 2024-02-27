@@ -6,7 +6,7 @@
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Fines') . '</li>';
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -39,6 +39,7 @@
           $tableData['Checked Out'][] = $this->escapeHtml($record['checkout'] ?? '');
           $tableData['Due Date'][] = $this->escapeHtml($record['duedate'] ?? '');
           $tableData['Fine'][] = $this->transEsc($record['fine'] ?? '');
+          $tableData['Fine Description'][] = $this->transEsc($record['description'] ?? '');
           $tableData['Fine Date'][] = $this->escapeHtml($record['createdate'] ?? '');
           $tableData['Fee'][] = isset($record['amount'])
               ? $this->safeMoneyFormat($record['amount'] / 100.00) : '';
@@ -51,7 +52,7 @@
       foreach ($tableData as $column => $values) {
           $empty = true;
           foreach ($values as $value) {
-              if (strlen($value) > 0) {
+              if ('' !== (string)$value) {
                   $empty = false;
                   break;
               }
@@ -65,30 +66,40 @@
       $columns = array_keys($tableData);
       $rowCount = count($this->fines);
     ?>
-    <table class="table table-striped">
+    <table class="table table-striped table-responsive fines-table">
       <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
-      <tr>
-        <?php foreach ($columns as $header): ?>
-          <th><?=$this->transEsc($header)?></th>
-        <?php endforeach; ?>
-      </tr>
-      <?php for ($row = 0; $row < $rowCount; $row++): ?>
+      <thead>
         <tr>
-          <?php foreach ($columns as $column): ?>
-            <td><?=$tableData[$column][$row]?></td>
+          <?php foreach ($columns as $header): ?>
+            <th scope="col"><?=$this->transEsc($header)?></th>
           <?php endforeach; ?>
         </tr>
-      <?php endfor; ?>
-      <tr style="font-weight:bold">
-        <td colspan="<?=count($columns) - 1?>"><?=$this->transEsc('Total Balance Due')?></td>
-        <td><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
-      </tr>
+      </thead>
+      <tbody>
+        <?php for ($row = 0; $row < $rowCount; $row++): ?>
+          <tr>
+            <?php foreach ($columns as $column): ?>
+              <?php if ('Title' == $column): ?>
+                <th data-label="<?=$this->transEscAttr($column)?>" scope="row"><?=$tableData[$column][$row]?></th>
+              <?php else: ?>
+                <td data-label="<?=$this->transEscAttr($column)?>"><?=$tableData[$column][$row]?></td>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          </tr>
+        <?php endfor; ?>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="<?=count($columns) - 1?>" scope="row"><?=$this->transEsc('Total Balance Due')?></th>
+          <td data-label="<?=$this->transEscAttr('Total Balance Due')?>" style="font-weight:bold"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
+        </tr>
+      </tfoot>
     </table>
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'fines'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('fines')?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'fines', 'accountStatus' => $this->accountStatus]); ?>

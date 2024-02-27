@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GetIdsWithTermsCommand Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap\Command;
 
 use VuFind\Sitemap\Plugin\Index\TermsIdFetcher;
@@ -32,6 +34,8 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
 use VuFindSearch\Service;
+
+use function array_slice;
 
 /**
  * GetIdsWithTermsCommand Test Class
@@ -44,6 +48,8 @@ use VuFindSearch\Service;
  */
 class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Unique key field to use in tests
      *
@@ -74,8 +80,8 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         return new Terms(
             [
                 'terms' => [
-                    $this->uniqueKey => $ids
-                ]
+                    $this->uniqueKey => $ids,
+                ],
             ]
         );
     }
@@ -174,18 +180,22 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockService();
 
         // Set up all the expected commands...
-        $service->expects($this->any())->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation(''))],
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation('99'))],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $this->getMockKeyCommand(),
                 $this->getMockTermsCommand($expectedResponse1),
                 $this->getMockKeyCommand(),
-                $this->getMockTermsCommand($expectedResponse2)
-            );
+                $this->getMockTermsCommand($expectedResponse2),
+            ]
+        );
         $fetcher = new TermsIdFetcher($service);
         $this->assertEquals(
             ['ids' => $expectedIds1, 'nextOffset' => 99],

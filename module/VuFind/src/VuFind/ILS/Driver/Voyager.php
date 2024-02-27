@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Voyager ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Validator\EmailAddress as EmailAddressValidator;
@@ -38,6 +40,12 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Marc\MarcReader;
 use Yajra\Pdo\Oci8;
+
+use function chr;
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
 
 /**
  * Voyager ILS Driver
@@ -50,8 +58,7 @@ use Yajra\Pdo\Oci8;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Voyager extends AbstractBase
-    implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -188,27 +195,6 @@ class Voyager extends AbstractBase
                      ')' .
                    ')';
             try {
-                if ((!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
-                    && empty($this->config['Catalog']['forceOCI8Support'])
-                ) {
-                    $this->error(
-                        <<<EOT
-Voyager connection is only supported on PHP 7 by default. To enable support, you
-will need to manually update the yajra/laravel-pdo-via-oci8 package using the
-following command:
-
-php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
-
-Then force the Voyager driver to connect by adding the following setting to
-Voyager.ini or VoyagerRestful.ini:
-
-[Catalog]
-forceOCI8Support = true
-
-EOT
-                    );
-                    throw new ILSException('Unsupported PHP version');
-                }
                 $this->lazyDb = new Oci8(
                     "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
@@ -239,7 +225,7 @@ EOT
 
         // Put String Together
         $sqlString = 'SELECT ' . $modifier . implode(', ', $sql['expressions']);
-        $sqlString .= " FROM " . implode(", ", $sql['from']);
+        $sqlString .= ' FROM ' . implode(', ', $sql['from']);
         $sqlString .= (!empty($sql['where']))
             ? ' WHERE ' . implode(' AND ', $sql['where']) : '';
         $sqlString .= (!empty($sql['group']))
@@ -285,9 +271,9 @@ EOT
      */
     protected function getStatusRanking($status)
     {
-        // This array controls the rankings of possible status messages.  The lower
+        // This array controls the rankings of possible status messages. The lower
         // the ID in the ITEM_STATUS_TYPE table, the higher the priority of the
-        // message.  We only need to load it once -- after that, it's cached in the
+        // message. We only need to load it once -- after that, it's cached in the
         // driver.
         if ($this->statusRankings == false) {
             // Execute SQL
@@ -321,7 +307,7 @@ EOT
 
     /**
      * Protected support method to take an array of status strings and determine
-     * whether or not this indicates an available item.  Returns an array with
+     * whether or not this indicates an available item. Returns an array with
      * two keys: 'available', the boolean availability status, and 'otherStatuses',
      * every status code found other than "Not Charged" - for use with
      * pickStatus().
@@ -332,7 +318,7 @@ EOT
      */
     protected function determineAvailability($statusArray)
     {
-        // It's possible for a record to have multiple status codes.  We
+        // It's possible for a record to have multiple status codes. We
         // need to loop through in search of the "Not Charged" (i.e. on
         // shelf) status, collecting any other statuses we find along the
         // way...
@@ -340,12 +326,12 @@ EOT
         $otherStatuses = [];
         foreach ($statusArray as $status) {
             switch ($status) {
-            case 'Not Charged':
-                $notCharged = true;
-                break;
-            default:
-                $otherStatuses[] = $status;
-                break;
+                case 'Not Charged':
+                    $notCharged = true;
+                    break;
+                default:
+                    $otherStatuses[] = $status;
+                    break;
             }
         }
 
@@ -389,35 +375,35 @@ EOT
     {
         // Expressions
         $sqlExpressions = [
-            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",  "MFHD_MASTER.MFHD_ID",
-            "ITEM.ON_RESERVE", "ITEM_STATUS_DESC as status",
-            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                "LOCATION.LOCATION_NAME) as location",
-            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-            "ITEM.TEMP_LOCATION", "ITEM.ITEM_TYPE_ID",
-            "ITEM.ITEM_SEQUENCE_NUMBER",
-            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
+            'BIB_ITEM.BIB_ID', 'ITEM.ITEM_ID',  'MFHD_MASTER.MFHD_ID',
+            'ITEM.ON_RESERVE', 'ITEM_STATUS_DESC as status',
+            'NVL(LOCATION.LOCATION_DISPLAY_NAME, ' .
+                'LOCATION.LOCATION_NAME) as location',
+            'MFHD_MASTER.DISPLAY_CALL_NO as callnumber',
+            'ITEM.TEMP_LOCATION', 'ITEM.ITEM_TYPE_ID',
+            'ITEM.ITEM_SEQUENCE_NUMBER',
+            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION'),
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".BIB_ITEM", $this->dbName . ".ITEM",
-            $this->dbName . ".ITEM_STATUS_TYPE",
-            $this->dbName . ".ITEM_STATUS",
-            $this->dbName . ".LOCATION", $this->dbName . ".MFHD_ITEM",
-            $this->dbName . ".MFHD_MASTER"
+            $this->dbName . '.BIB_ITEM', $this->dbName . '.ITEM',
+            $this->dbName . '.ITEM_STATUS_TYPE',
+            $this->dbName . '.ITEM_STATUS',
+            $this->dbName . '.LOCATION', $this->dbName . '.MFHD_ITEM',
+            $this->dbName . '.MFHD_MASTER',
         ];
 
         // Where
         $sqlWhere = [
-            "BIB_ITEM.BIB_ID = :id",
-            "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
-            "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
-            "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
-            "LOCATION.LOCATION_ID = ITEM.PERM_LOCATION",
-            "MFHD_ITEM.ITEM_ID = ITEM.ITEM_ID",
-            "MFHD_MASTER.MFHD_ID = MFHD_ITEM.MFHD_ID",
-            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
+            'BIB_ITEM.BIB_ID = :id',
+            'BIB_ITEM.ITEM_ID = ITEM.ITEM_ID',
+            'ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID',
+            'ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE',
+            'LOCATION.LOCATION_ID = ITEM.PERM_LOCATION',
+            'MFHD_ITEM.ITEM_ID = ITEM.ITEM_ID',
+            'MFHD_MASTER.MFHD_ID = MFHD_ITEM.MFHD_ID',
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
         ];
 
         // Bind
@@ -445,31 +431,31 @@ EOT
     {
         // Expressions
         $sqlExpressions = [
-            "BIB_MFHD.BIB_ID",
-            "null as ITEM_ID", "MFHD_MASTER.MFHD_ID", "'N' as ON_RESERVE",
+            'BIB_MFHD.BIB_ID',
+            'null as ITEM_ID', 'MFHD_MASTER.MFHD_ID', "'N' as ON_RESERVE",
             "'No information available' as status",
-            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                "LOCATION.LOCATION_NAME) as location",
-            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-            "0 AS TEMP_LOCATION",
-            "0 as ITEM_SEQUENCE_NUMBER",
+            'NVL(LOCATION.LOCATION_DISPLAY_NAME, ' .
+                'LOCATION.LOCATION_NAME) as location',
+            'MFHD_MASTER.DISPLAY_CALL_NO as callnumber',
+            '0 AS TEMP_LOCATION',
+            '0 as ITEM_SEQUENCE_NUMBER',
             $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID'),
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".BIB_MFHD", $this->dbName . ".LOCATION",
-            $this->dbName . ".MFHD_MASTER"
+            $this->dbName . '.BIB_MFHD', $this->dbName . '.LOCATION',
+            $this->dbName . '.MFHD_MASTER',
         ];
 
         // Where
         $sqlWhere = [
-            "BIB_MFHD.BIB_ID = :id",
-            "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
-            "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
+            'BIB_MFHD.BIB_ID = :id',
+            'LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID',
+            'MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID',
             "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
             "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM " .
-            "WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+            'WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)',
         ];
 
         // Bind
@@ -510,7 +496,7 @@ EOT
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
-                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX
+                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX,
                 ];
             } else {
                 $statusFound = in_array(
@@ -585,13 +571,13 @@ EOT
     {
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
-        // items and holdings records.  The second (a rare case) obtains
+        // items and holdings records. The second (a rare case) obtains
         // information from the holdings record when no items are available.
         $sqlArrayItems = $this->getStatusSQL($id);
         $sqlArrayNoItems = $this->getStatusNoItemsSQL($id);
         $possibleQueries = [
             $this->buildSqlFromArray($sqlArrayItems),
-            $this->buildSqlFromArray($sqlArrayNoItems)
+            $this->buildSqlFromArray($sqlArrayNoItems),
         ];
 
         // Loop through the possible queries and merge results.
@@ -647,59 +633,59 @@ EOT
     {
         // Expressions
         $returnDate = <<<EOT
-CASE WHEN ITEM_STATUS_TYPE.ITEM_STATUS_DESC = 'Discharged' THEN (
-  SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), 'MM-DD-YY HH24:MI')
-    FROM $this->dbName.CIRC_TRANS_ARCHIVE
-    WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID
-) ELSE NULL END RETURNDATE
-EOT;
+            CASE WHEN ITEM_STATUS_TYPE.ITEM_STATUS_DESC = 'Discharged' THEN (
+              SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), 'MM-DD-YY HH24:MI')
+                FROM $this->dbName.CIRC_TRANS_ARCHIVE
+                WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID
+            ) ELSE NULL END RETURNDATE
+            EOT;
         $sqlExpressions = [
-            "BIB_ITEM.BIB_ID", "MFHD_ITEM.MFHD_ID",
-            "ITEM_BARCODE.ITEM_BARCODE", "ITEM.ITEM_ID",
-            "ITEM.ON_RESERVE", "ITEM.ITEM_SEQUENCE_NUMBER",
-            "ITEM.RECALLS_PLACED", "ITEM.HOLDS_PLACED",
-            "ITEM_STATUS_TYPE.ITEM_STATUS_DESC as status",
-            "MFHD_DATA.RECORD_SEGMENT", "MFHD_ITEM.ITEM_ENUM",
-            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                "LOCATION.LOCATION_NAME) as location",
-            "ITEM.TEMP_LOCATION",
-            "ITEM.PERM_LOCATION",
-            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
+            'BIB_ITEM.BIB_ID', 'MFHD_ITEM.MFHD_ID',
+            'ITEM_BARCODE.ITEM_BARCODE', 'ITEM.ITEM_ID',
+            'ITEM.ON_RESERVE', 'ITEM.ITEM_SEQUENCE_NUMBER',
+            'ITEM.RECALLS_PLACED', 'ITEM.HOLDS_PLACED',
+            'ITEM_STATUS_TYPE.ITEM_STATUS_DESC as status',
+            'MFHD_DATA.RECORD_SEGMENT', 'MFHD_ITEM.ITEM_ENUM',
+            'NVL(LOCATION.LOCATION_DISPLAY_NAME, ' .
+                'LOCATION.LOCATION_NAME) as location',
+            'ITEM.TEMP_LOCATION',
+            'ITEM.PERM_LOCATION',
+            'MFHD_MASTER.DISPLAY_CALL_NO as callnumber',
             "to_char(CIRC_TRANSACTIONS.CURRENT_DUE_DATE, 'MM-DD-YY') as duedate",
             $returnDate,
-            "ITEM.ITEM_SEQUENCE_NUMBER",
-            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
+            'ITEM.ITEM_SEQUENCE_NUMBER',
+            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION'),
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".BIB_ITEM", $this->dbName . ".ITEM",
-            $this->dbName . ".ITEM_STATUS_TYPE",
-            $this->dbName . ".ITEM_STATUS",
-            $this->dbName . ".LOCATION", $this->dbName . ".MFHD_ITEM",
-            $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA",
-            $this->dbName . ".CIRC_TRANSACTIONS",
-            $this->dbName . ".ITEM_BARCODE"
+            $this->dbName . '.BIB_ITEM', $this->dbName . '.ITEM',
+            $this->dbName . '.ITEM_STATUS_TYPE',
+            $this->dbName . '.ITEM_STATUS',
+            $this->dbName . '.LOCATION', $this->dbName . '.MFHD_ITEM',
+            $this->dbName . '.MFHD_MASTER', $this->dbName . '.MFHD_DATA',
+            $this->dbName . '.CIRC_TRANSACTIONS',
+            $this->dbName . '.ITEM_BARCODE',
         ];
 
         // Where
         $sqlWhere = [
-            "BIB_ITEM.BIB_ID = :id",
-            "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
-            "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
-            "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
-            "ITEM_BARCODE.ITEM_ID (+)= ITEM.ITEM_ID",
-            "LOCATION.LOCATION_ID = ITEM.PERM_LOCATION",
-            "CIRC_TRANSACTIONS.ITEM_ID (+)= ITEM.ITEM_ID",
-            "MFHD_ITEM.ITEM_ID = ITEM.ITEM_ID",
-            "MFHD_MASTER.MFHD_ID = MFHD_ITEM.MFHD_ID",
-            "MFHD_DATA.MFHD_ID = MFHD_ITEM.MFHD_ID",
-            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
+            'BIB_ITEM.BIB_ID = :id',
+            'BIB_ITEM.ITEM_ID = ITEM.ITEM_ID',
+            'ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID',
+            'ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE',
+            'ITEM_BARCODE.ITEM_ID (+)= ITEM.ITEM_ID',
+            'LOCATION.LOCATION_ID = ITEM.PERM_LOCATION',
+            'CIRC_TRANSACTIONS.ITEM_ID (+)= ITEM.ITEM_ID',
+            'MFHD_ITEM.ITEM_ID = ITEM.ITEM_ID',
+            'MFHD_MASTER.MFHD_ID = MFHD_ITEM.MFHD_ID',
+            'MFHD_DATA.MFHD_ID = MFHD_ITEM.MFHD_ID',
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
         ];
 
         // Order
         $sqlOrder = [
-            "ITEM.ITEM_SEQUENCE_NUMBER", "MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM"
+            'ITEM.ITEM_SEQUENCE_NUMBER', 'MFHD_DATA.MFHD_ID', 'MFHD_DATA.SEQNUM',
         ];
 
         // Bind
@@ -727,39 +713,39 @@ EOT;
     {
         // Expressions
         $sqlExpressions = [
-            "null as ITEM_BARCODE", "null as ITEM_ID",
-            "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
-            "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
+            'null as ITEM_BARCODE', 'null as ITEM_ID',
+            'MFHD_DATA.RECORD_SEGMENT', 'null as ITEM_ENUM',
+            "'N' as ON_RESERVE", '1 as ITEM_SEQUENCE_NUMBER',
             "'No information available' as status",
-            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                "LOCATION.LOCATION_NAME) as location",
-            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-            "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-            "null as duedate", "null as RETURNDATE", "0 AS TEMP_LOCATION",
-            "0 as PERM_LOCATION",
-            "0 as ITEM_SEQUENCE_NUMBER",
-            $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID')
+            'NVL(LOCATION.LOCATION_DISPLAY_NAME, ' .
+                'LOCATION.LOCATION_NAME) as location',
+            'MFHD_MASTER.DISPLAY_CALL_NO as callnumber',
+            'BIB_MFHD.BIB_ID', 'MFHD_MASTER.MFHD_ID',
+            'null as duedate', 'null as RETURNDATE', '0 AS TEMP_LOCATION',
+            '0 as PERM_LOCATION',
+            '0 as ITEM_SEQUENCE_NUMBER',
+            $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID'),
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".BIB_MFHD", $this->dbName . ".LOCATION",
-            $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA"
+            $this->dbName . '.BIB_MFHD', $this->dbName . '.LOCATION',
+            $this->dbName . '.MFHD_MASTER', $this->dbName . '.MFHD_DATA',
         ];
 
         // Where
         $sqlWhere = [
-            "BIB_MFHD.BIB_ID = :id",
-            "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
-            "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
-            "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
+            'BIB_MFHD.BIB_ID = :id',
+            'LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID',
+            'MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID',
+            'MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID',
             "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
             "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM"
-            . " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+            . ' WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)',
         ];
 
         // Order
-        $sqlOrder = ["MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM"];
+        $sqlOrder = ['MFHD_DATA.MFHD_ID', 'MFHD_DATA.SEQNUM'];
 
         // Bind
         $sqlBind = [':id' => $id];
@@ -838,20 +824,20 @@ EOT;
      */
     protected function getPurchaseHistoryData($id)
     {
-        $sql = "select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON " .
+        $sql = 'select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON ' .
                "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, " .
                "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, " .
                "$this->dbName.LINE_ITEM, $this->dbName.LINE_ITEM_COPY_STATUS " .
-               "where SERIAL_ISSUES.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
-               "and ISSUES_RECEIVED.ISSUE_ID = SERIAL_ISSUES.ISSUE_ID " .
-               "and ISSUES_RECEIVED.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
-               "and COMPONENT.SUBSCRIPTION_ID = SUBSCRIPTION.SUBSCRIPTION_ID " .
-               "and SUBSCRIPTION.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
-               "and LINE_ITEM_COPY_STATUS.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
-               "and SERIAL_ISSUES.RECEIVED > 0 " .
-               "and ISSUES_RECEIVED.OPAC_SUPPRESSED = 1 " .
-               "and LINE_ITEM.BIB_ID = :id " .
-               "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
+               'where SERIAL_ISSUES.COMPONENT_ID = COMPONENT.COMPONENT_ID ' .
+               'and ISSUES_RECEIVED.ISSUE_ID = SERIAL_ISSUES.ISSUE_ID ' .
+               'and ISSUES_RECEIVED.COMPONENT_ID = COMPONENT.COMPONENT_ID ' .
+               'and COMPONENT.SUBSCRIPTION_ID = SUBSCRIPTION.SUBSCRIPTION_ID ' .
+               'and SUBSCRIPTION.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID ' .
+               'and LINE_ITEM_COPY_STATUS.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID ' .
+               'and SERIAL_ISSUES.RECEIVED > 0 ' .
+               'and ISSUES_RECEIVED.OPAC_SUPPRESSED = 1 ' .
+               'and LINE_ITEM.BIB_ID = :id ' .
+               'order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $id]);
         } catch (PDOException $e) {
@@ -894,7 +880,8 @@ EOT;
                     if ($subfields = $field['subfields'] ?? []) {
                         $line = '';
                         foreach ($subfields as $subfield) {
-                            if (false === strpos($subfieldCodes, $subfield['code'])
+                            if (
+                                !str_contains($subfieldCodes, $subfield['code'])
                             ) {
                                 continue;
                             }
@@ -994,7 +981,7 @@ EOT;
 
         // Fill cache if empty:
         if (!isset($cache[$id])) {
-            $sql = "SELECT NVL(LOCATION_DISPLAY_NAME, LOCATION_NAME) as location " .
+            $sql = 'SELECT NVL(LOCATION_DISPLAY_NAME, LOCATION_NAME) as location ' .
                 "FROM {$this->dbName}.LOCATION WHERE LOCATION_ID=:id";
             $bind = ['id' => $id];
             $sqlStmt = $this->executeSQL($sql, $bind);
@@ -1028,7 +1015,7 @@ EOT;
             'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
-            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX
+            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX,
         ];
     }
 
@@ -1044,7 +1031,7 @@ EOT;
     {
         if (!empty($row['DUEDATE'])) {
             return $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $row['DUEDATE']
             );
         }
@@ -1089,7 +1076,8 @@ EOT;
 
         // Build Holdings Array
         $purchaseHistory = [];
-        if (isset($this->config['Holdings']['purchase_history'])
+        if (
+            isset($this->config['Holdings']['purchase_history'])
             && $this->config['Holdings']['purchase_history'] === 'split'
         ) {
             $purchaseHistory = $this->getPurchaseHistoryData($id);
@@ -1127,7 +1115,7 @@ EOT;
                     'number' => $number,
                     'requests_placed' => $requests_placed,
                     'returnDate' => $this->processHoldingReturnDate($row),
-                    'purchase_history' => $purchases
+                    'purchase_history' => $purchases,
                 ];
 
                 // Parse Holding Record
@@ -1181,7 +1169,7 @@ EOT;
 
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
-        // items and holdings records.  The second (a rare case) obtains
+        // items and holdings records. The second (a rare case) obtains
         // information from the holdings record when no items are available.
 
         $sqlArrayItems = $this->getHoldingItemsSQL($id);
@@ -1281,15 +1269,15 @@ EOT;
         // barcode shouldn't contain any characters outside the basic latin
         // characters and check login verification fields here.
 
-        $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, " .
+        $sql = 'SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, ' .
                "PATRON.{$loginField} as LOGIN";
         if ($fallbackLoginField) {
             $sql .= ", PATRON.{$fallbackLoginField} as FALLBACK_LOGIN";
         }
         $sql .= " FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
-               "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND ";
+               'WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND ';
         $sql .= $usernameField === 'PATRON_BARCODE'
-            ? "lower(PATRON_BARCODE.PATRON_BARCODE) = :username"
+            ? 'lower(PATRON_BARCODE.PATRON_BARCODE) = :username'
             : "lower(PATRON.{$usernameField}) = :username";
 
         // Limit the barcode statuses that allow logging in. By default only
@@ -1319,7 +1307,8 @@ EOT;
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((null !== $primary && ($primary == $compareLogin
+                if (
+                    (null !== $primary && ($primary == $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
                     || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)
@@ -1356,58 +1345,58 @@ EOT;
         // Expressions
         $sqlExpressions = [
             "to_char(MAX(CIRC_TRANSACTIONS.CURRENT_DUE_DATE), 'MM-DD-YY HH24:MI')" .
-            " as DUEDATE",
+            ' as DUEDATE',
             "to_char(MAX(CURRENT_DUE_DATE), 'YYYYMMDD HH24:MI') as FULLDATE",
-            "MAX(BIB_ITEM.BIB_ID) AS BIB_ID",
-            "MAX(CIRC_TRANSACTIONS.ITEM_ID) as ITEM_ID",
-            "MAX(MFHD_ITEM.ITEM_ENUM) AS ITEM_ENUM",
-            "MAX(MFHD_ITEM.YEAR) AS YEAR",
-            "MAX(ITEM_BARCODE.ITEM_BARCODE) AS ITEM_BARCODE",
-            "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
-            "MAX(BIB_TEXT.TITLE) AS TITLE",
-            "LISTAGG(ITEM_STATUS_DESC, CHR(9)) "
-            . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
-            "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
-            "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
-            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION",
-            "MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL"
+            'MAX(BIB_ITEM.BIB_ID) AS BIB_ID',
+            'MAX(CIRC_TRANSACTIONS.ITEM_ID) as ITEM_ID',
+            'MAX(MFHD_ITEM.ITEM_ENUM) AS ITEM_ENUM',
+            'MAX(MFHD_ITEM.YEAR) AS YEAR',
+            'MAX(ITEM_BARCODE.ITEM_BARCODE) AS ITEM_BARCODE',
+            'MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF',
+            'MAX(BIB_TEXT.TITLE) AS TITLE',
+            'LISTAGG(ITEM_STATUS_DESC, CHR(9)) '
+            . 'WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status',
+            'MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT',
+            'MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT',
+            'MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION',
+            'MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL',
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".CIRC_TRANSACTIONS",
-            $this->dbName . ".BIB_ITEM",
-            $this->dbName . ".ITEM",
-            $this->dbName . ".ITEM_STATUS",
-            $this->dbName . ".ITEM_STATUS_TYPE",
-            $this->dbName . ".ITEM_BARCODE",
-            $this->dbName . ".MFHD_ITEM",
-            $this->dbName . ".BIB_TEXT",
-            $this->dbName . ".CIRC_POLICY_MATRIX",
-            $this->dbName . ".LOCATION"
+            $this->dbName . '.CIRC_TRANSACTIONS',
+            $this->dbName . '.BIB_ITEM',
+            $this->dbName . '.ITEM',
+            $this->dbName . '.ITEM_STATUS',
+            $this->dbName . '.ITEM_STATUS_TYPE',
+            $this->dbName . '.ITEM_BARCODE',
+            $this->dbName . '.MFHD_ITEM',
+            $this->dbName . '.BIB_TEXT',
+            $this->dbName . '.CIRC_POLICY_MATRIX',
+            $this->dbName . '.LOCATION',
         ];
 
         // Where
         $sqlWhere = [
-            "CIRC_TRANSACTIONS.PATRON_ID = :id",
-            "BIB_ITEM.ITEM_ID = CIRC_TRANSACTIONS.ITEM_ID",
-            "CIRC_TRANSACTIONS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
-            "BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID",
-            "CIRC_TRANSACTIONS.CIRC_POLICY_MATRIX_ID = " .
-            "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID",
-            "CIRC_TRANSACTIONS.CHARGE_LOCATION = LOCATION.LOCATION_ID",
-            "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
-            "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
-            "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
-            "ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)",
-            "(ITEM_BARCODE.BARCODE_STATUS IS NULL OR " .
-            "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
+            'CIRC_TRANSACTIONS.PATRON_ID = :id',
+            'BIB_ITEM.ITEM_ID = CIRC_TRANSACTIONS.ITEM_ID',
+            'CIRC_TRANSACTIONS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
+            'BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID',
+            'CIRC_TRANSACTIONS.CIRC_POLICY_MATRIX_ID = ' .
+            'CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID',
+            'CIRC_TRANSACTIONS.CHARGE_LOCATION = LOCATION.LOCATION_ID',
+            'BIB_ITEM.ITEM_ID = ITEM.ITEM_ID',
+            'ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID',
+            'ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE',
+            'ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)',
+            '(ITEM_BARCODE.BARCODE_STATUS IS NULL OR ' .
+            'ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM ' .
             "$this->dbName.ITEM_BARCODE_STATUS " .
-            " WHERE BARCODE_STATUS_DESC = 'Active'))"
+            " WHERE BARCODE_STATUS_DESC = 'Active'))",
         ];
 
         // Order
-        $sqlOrder = ["FULLDATE ASC", "TITLE ASC"];
+        $sqlOrder = ['FULLDATE ASC', 'TITLE ASC'];
 
         // Bind
         $sqlBind = [':id' => $patron['id']];
@@ -1418,7 +1407,7 @@ EOT;
             'where' => $sqlWhere,
             'order' => $sqlOrder,
             'bind' => $sqlBind,
-            'group' => ['CIRC_TRANSACTIONS.ITEM_ID']
+            'group' => ['CIRC_TRANSACTIONS.ITEM_ID'],
         ];
 
         return $sqlArray;
@@ -1460,11 +1449,11 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y H:i",
+                'm-d-y H:i',
                 $sqlRow['DUEDATE']
             );
             $dueTime = $this->dateFormat->convertToDisplayTime(
-                "m-d-y H:i",
+                'm-d-y H:i',
                 $sqlRow['DUEDATE']
             );
         }
@@ -1475,9 +1464,9 @@ EOT;
             $dueTimeStamp = strtotime($sqlRow['FULLDATE']);
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
-                    $dueStatus = "overdue";
+                    $dueStatus = 'overdue';
                 } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
-                    $dueStatus = "due";
+                    $dueStatus = 'due';
                 }
             }
         }
@@ -1488,7 +1477,7 @@ EOT;
             'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
             'dueStatus' => $dueStatus,
-            'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
+            'volume' => str_replace('v.', '', utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
             'title' => empty($sqlRow['TITLE_BRIEF'])
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
@@ -1498,7 +1487,8 @@ EOT;
                 $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
         // Display due time only if loan interval is not in days if configured
-        if (empty($this->displayDueTimeIntervals)
+        if (
+            empty($this->displayDueTimeIntervals)
             || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
         ) {
             $transaction['dueTime'] = $dueTime;
@@ -1554,28 +1544,28 @@ EOT;
     {
         // Expressions
         $sqlExpressions = [
-            "FINE_FEE_TYPE.FINE_FEE_DESC",
-            "PATRON.PATRON_ID", "FINE_FEE.FINE_FEE_AMOUNT",
-            "FINE_FEE.FINE_FEE_BALANCE",
+            'FINE_FEE_TYPE.FINE_FEE_DESC',
+            'PATRON.PATRON_ID', 'FINE_FEE.FINE_FEE_AMOUNT',
+            'FINE_FEE.FINE_FEE_BALANCE',
             "to_char(FINE_FEE.CREATE_DATE, 'MM-DD-YY HH:MI:SS') as CREATEDATE",
             "to_char(FINE_FEE.ORIG_CHARGE_DATE, 'MM-DD-YY') as CHARGEDATE",
             "to_char(FINE_FEE.DUE_DATE, 'MM-DD-YY') as DUEDATE",
-            "BIB_ITEM.BIB_ID"
+            'BIB_ITEM.BIB_ID',
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".FINE_FEE", $this->dbName . ".FINE_FEE_TYPE",
-            $this->dbName . ".PATRON", $this->dbName . ".BIB_ITEM"
+            $this->dbName . '.FINE_FEE', $this->dbName . '.FINE_FEE_TYPE',
+            $this->dbName . '.PATRON', $this->dbName . '.BIB_ITEM',
         ];
 
         // Where
         $sqlWhere = [
-            "PATRON.PATRON_ID = :id",
-            "FINE_FEE.FINE_FEE_TYPE = FINE_FEE_TYPE.FINE_FEE_TYPE",
-            "FINE_FEE.PATRON_ID  = PATRON.PATRON_ID",
-            "FINE_FEE.ITEM_ID = BIB_ITEM.ITEM_ID(+)",
-            "FINE_FEE.FINE_FEE_BALANCE > 0"
+            'PATRON.PATRON_ID = :id',
+            'FINE_FEE.FINE_FEE_TYPE = FINE_FEE_TYPE.FINE_FEE_TYPE',
+            'FINE_FEE.PATRON_ID  = PATRON.PATRON_ID',
+            'FINE_FEE.ITEM_ID = BIB_ITEM.ITEM_ID(+)',
+            'FINE_FEE.FINE_FEE_BALANCE > 0',
         ];
 
         // Bind
@@ -1585,7 +1575,7 @@ EOT;
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         return $sqlArray;
@@ -1601,29 +1591,29 @@ EOT;
      */
     protected function processFinesData($sqlRow)
     {
-        $dueDate = $this->translate("not_applicable");
+        $dueDate = $this->translate('not_applicable');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['DUEDATE']
             );
         }
 
-        $createDate = $this->translate("not_applicable");
+        $createDate = $this->translate('not_applicable');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATEDATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['CREATEDATE']
             );
         }
 
-        $chargeDate = $this->translate("not_applicable");
+        $chargeDate = $this->translate('not_applicable');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CHARGEDATE'])) {
             $chargeDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['CHARGEDATE']
             );
         }
@@ -1678,47 +1668,47 @@ EOT;
     protected function getMyHoldsSQL($patron)
     {
         // Modifier
-        $sqlSelectModifier = "distinct";
+        $sqlSelectModifier = 'distinct';
 
         // Expressions
         $sqlExpressions = [
-            "HOLD_RECALL.HOLD_RECALL_ID", "HOLD_RECALL.BIB_ID",
-            "HOLD_RECALL.PICKUP_LOCATION",
-            "HOLD_RECALL.HOLD_RECALL_TYPE",
+            'HOLD_RECALL.HOLD_RECALL_ID', 'HOLD_RECALL.BIB_ID',
+            'HOLD_RECALL.PICKUP_LOCATION',
+            'HOLD_RECALL.HOLD_RECALL_TYPE',
             "to_char(HOLD_RECALL.EXPIRE_DATE, 'MM-DD-YY') as EXPIRE_DATE",
             "to_char(HOLD_RECALL.CREATE_DATE, 'MM-DD-YY') as CREATE_DATE",
-            "HOLD_RECALL_ITEMS.ITEM_ID",
-            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS",
-            "HOLD_RECALL_ITEMS.QUEUE_POSITION",
-            "MFHD_ITEM.ITEM_ENUM",
-            "MFHD_ITEM.YEAR",
-            "BIB_TEXT.TITLE_BRIEF",
-            "BIB_TEXT.TITLE",
-            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME"
+            'HOLD_RECALL_ITEMS.ITEM_ID',
+            'HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS',
+            'HOLD_RECALL_ITEMS.QUEUE_POSITION',
+            'MFHD_ITEM.ITEM_ENUM',
+            'MFHD_ITEM.YEAR',
+            'BIB_TEXT.TITLE_BRIEF',
+            'BIB_TEXT.TITLE',
+            'REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME',
         ];
 
         // From
         $sqlFrom = [
-            $this->dbName . ".HOLD_RECALL",
-            $this->dbName . ".HOLD_RECALL_ITEMS",
-            $this->dbName . ".MFHD_ITEM",
-            $this->dbName . ".BIB_TEXT",
-            $this->dbName . ".VOYAGER_DATABASES",
-            $this->dbName . ".REQUEST_GROUP"
+            $this->dbName . '.HOLD_RECALL',
+            $this->dbName . '.HOLD_RECALL_ITEMS',
+            $this->dbName . '.MFHD_ITEM',
+            $this->dbName . '.BIB_TEXT',
+            $this->dbName . '.VOYAGER_DATABASES',
+            $this->dbName . '.REQUEST_GROUP',
         ];
 
         // Where
         $sqlWhere = [
-            "HOLD_RECALL.PATRON_ID = :id",
-            "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
-            "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
-            "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
-            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
-            "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID",
-            "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR HOLD_RECALL.HOLDING_DB_ID = 0 " .
-            "OR (HOLD_RECALL.HOLDING_DB_ID = " .
+            'HOLD_RECALL.PATRON_ID = :id',
+            'HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)',
+            'HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
+            '(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR ' .
+            'HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)',
+            'BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID',
+            '(HOLD_RECALL.HOLDING_DB_ID IS NULL OR HOLD_RECALL.HOLDING_DB_ID = 0 ' .
+            'OR (HOLD_RECALL.HOLDING_DB_ID = ' .
             "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))",
-            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)"
+            'HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)',
         ];
 
         // Bind
@@ -1729,7 +1719,7 @@ EOT;
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         return $sqlArray;
@@ -1746,20 +1736,20 @@ EOT;
     protected function processMyHoldsData($sqlRow)
     {
         $available = ($sqlRow['HOLD_RECALL_STATUS'] == 2) ? true : false;
-        $expireDate = $this->translate("Unknown");
+        $expireDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
             $expireDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['EXPIRE_DATE']
             );
         }
 
-        $createDate = $this->translate("Unknown");
+        $createDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['CREATE_DATE']
             );
         }
@@ -1775,10 +1765,10 @@ EOT;
             'available' => $available,
             'reqnum' => $sqlRow['HOLD_RECALL_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
-            'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
+            'volume' => str_replace('v.', '', utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
             'title' => empty($sqlRow['TITLE_BRIEF'])
-                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
+                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
         ];
     }
 
@@ -1854,7 +1844,7 @@ EOT;
     protected function getMyStorageRetrievalRequestsSQL($patron)
     {
         // Modifier
-        $sqlSelectModifier = "distinct";
+        $sqlSelectModifier = 'distinct';
 
         // Expressions
         $sqlExpressions = [
@@ -1878,7 +1868,7 @@ EOT;
             'MFHD_ITEM.ITEM_ENUM',
             'MFHD_ITEM.YEAR',
             'BIB_TEXT.TITLE_BRIEF',
-            'BIB_TEXT.TITLE'
+            'BIB_TEXT.TITLE',
         ];
 
         // From
@@ -1886,7 +1876,7 @@ EOT;
             $this->dbName . '.CALL_SLIP',
             $this->dbName . '.CALL_SLIP_STATUS_TYPE',
             $this->dbName . '.MFHD_ITEM',
-            $this->dbName . '.BIB_TEXT'
+            $this->dbName . '.BIB_TEXT',
         ];
 
         // Where
@@ -1894,7 +1884,7 @@ EOT;
             'CALL_SLIP.PATRON_ID = :id',
             'CALL_SLIP.STATUS = CALL_SLIP_STATUS_TYPE.STATUS_TYPE(+)',
             'CALL_SLIP.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
-            'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID'
+            'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID',
         ];
 
         if (!empty($this->config['StorageRetrievalRequests']['display_statuses'])) {
@@ -1911,7 +1901,7 @@ EOT;
 
         // Order by
         $sqlOrderBy = [
-            "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')"
+            "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')",
         ];
 
         // Bind
@@ -1923,7 +1913,7 @@ EOT;
             'from' => $sqlFrom,
             'where' => $sqlWhere,
             'order' => $sqlOrderBy,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         return $sqlArray;
@@ -1945,22 +1935,22 @@ EOT;
         // Convert Voyager Format to display format
         if (!empty($sqlRow['PROCESSED_DATE'])) {
             $processedDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['PROCESSED_DATE']
             );
         }
         if (!empty($sqlRow['STATUS_DATE'])) {
             $statusDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['STATUS_DATE']
             );
         }
 
-        $createDate = $this->translate("Unknown");
+        $createDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
-                "m-d-y",
+                'm-d-y',
                 $sqlRow['CREATE_DATE']
             );
         }
@@ -1979,14 +1969,14 @@ EOT;
             'reqnum' => $sqlRow['CALL_SLIP_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
             'volume' => str_replace(
-                "v.",
-                "",
+                'v.',
+                '',
                 utf8_encode($sqlRow['ITEM_ENUM'])
             ),
             'issue' => utf8_encode($sqlRow['ITEM_CHRON']),
             'year' => utf8_encode($sqlRow['ITEM_YEAR']),
             'title' => empty($sqlRow['TITLE_BRIEF'])
-                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
+                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
         ];
     }
 
@@ -2029,22 +2019,22 @@ EOT;
      */
     public function getMyProfile($patron)
     {
-        $sql = "SELECT PATRON.LAST_NAME, PATRON.FIRST_NAME, " .
-               "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
-               "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, " .
-               "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
-               "PATRON_PHONE.PHONE_NUMBER, PHONE_TYPE.PHONE_DESC, " .
-               "PATRON_GROUP.PATRON_GROUP_NAME " .
+        $sql = 'SELECT PATRON.LAST_NAME, PATRON.FIRST_NAME, ' .
+               'PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, ' .
+               'PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, ' .
+               'PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, ' .
+               'PATRON_PHONE.PHONE_NUMBER, PHONE_TYPE.PHONE_DESC, ' .
+               'PATRON_GROUP.PATRON_GROUP_NAME ' .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, " .
                "$this->dbName.PATRON_PHONE, $this->dbName.PHONE_TYPE, " .
                "$this->dbName.PATRON_BARCODE, $this->dbName.PATRON_GROUP " .
-               "WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) " .
-               "AND PATRON_ADDRESS.ADDRESS_ID = PATRON_PHONE.ADDRESS_ID (+) " .
-               "AND PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID (+) " .
-               "AND PATRON_BARCODE.PATRON_GROUP_ID = " .
-               "PATRON_GROUP.PATRON_GROUP_ID (+) " .
-               "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
-               "AND PATRON.PATRON_ID = :id";
+               'WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) ' .
+               'AND PATRON_ADDRESS.ADDRESS_ID = PATRON_PHONE.ADDRESS_ID (+) ' .
+               'AND PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID (+) ' .
+               'AND PATRON_BARCODE.PATRON_GROUP_ID = ' .
+               'PATRON_GROUP.PATRON_GROUP_ID (+) ' .
+               'AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) ' .
+               'AND PATRON.PATRON_ID = :id';
         $primaryPhoneType = $this->config['Profile']['primary_phone'] ?? 'Primary';
         $mobilePhoneType = $this->config['Profile']['mobile_phone'] ?? 'Mobile';
         try {
@@ -2112,7 +2102,7 @@ EOT;
     public function getHoldLink($recordId, $details)
     {
         // There is no easy way to link directly to hold screen; let's just use
-        // the record view.  For better hold behavior, use the VoyagerRestful
+        // the record view. For better hold behavior, use the VoyagerRestful
         // driver.
         return $this->config['Catalog']['pwebrecon'] . '?BBID=' . $recordId;
     }
@@ -2141,21 +2131,21 @@ EOT;
 
         $bindParams = [
             ':enddate' => date('d-m-Y', strtotime('now')),
-            ':startdate' => date('d-m-Y', strtotime("-$daysOld day"))
+            ':startdate' => date('d-m-Y', strtotime("-$daysOld day")),
         ];
 
-        $sql = "select count(distinct LINE_ITEM.BIB_ID) as count " .
+        $sql = 'select count(distinct LINE_ITEM.BIB_ID) as count ' .
                "from $this->dbName.LINE_ITEM, " .
                "$this->dbName.LINE_ITEM_COPY_STATUS, " .
                "$this->dbName.LINE_ITEM_FUNDS, $this->dbName.FUND " .
-               "where LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID " .
-               "and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID " .
-               "and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ";
+               'where LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID ' .
+               'and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID ' .
+               'and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ';
         if ($fundId) {
             // Although we're getting an ID value from getFunds() passed in here,
             // it's not actually an ID -- we use names as IDs (see note in getFunds
             // itself for more details).
-            $sql .= "and lower(FUND.FUND_NAME) = :fund ";
+            $sql .= 'and lower(FUND.FUND_NAME) = :fund ';
             $bindParams[':fund'] = strtolower($fundId);
         }
         $sql .= "and LINE_ITEM.CREATE_DATE >= to_date(:startdate, 'dd-mm-yyyy') " .
@@ -2172,27 +2162,27 @@ EOT;
         $limit = ($limit) ? $limit : 20;
         $bindParams[':startRow'] = (($page - 1) * $limit) + 1;
         $bindParams[':endRow'] = ($page * $limit);
-        $sql = "select * from " .
-               "(select a.*, rownum rnum from " .
-               "(select LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE " .
+        $sql = 'select * from ' .
+               '(select a.*, rownum rnum from ' .
+               '(select LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE ' .
                "from $this->dbName.LINE_ITEM, " .
                "$this->dbName.LINE_ITEM_COPY_STATUS, " .
                "$this->dbName.LINE_ITEM_STATUS, $this->dbName.LINE_ITEM_FUNDS, " .
                "$this->dbName.FUND " .
-               "where LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID " .
-               "and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID " .
-               "and LINE_ITEM_STATUS.LINE_ITEM_STATUS = " .
-               "LINE_ITEM_COPY_STATUS.LINE_ITEM_STATUS " .
-               "and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ";
+               'where LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID ' .
+               'and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID ' .
+               'and LINE_ITEM_STATUS.LINE_ITEM_STATUS = ' .
+               'LINE_ITEM_COPY_STATUS.LINE_ITEM_STATUS ' .
+               'and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ';
         if ($fundId) {
-            $sql .= "and lower(FUND.FUND_NAME) = :fund ";
+            $sql .= 'and lower(FUND.FUND_NAME) = :fund ';
         }
         $sql .= "and LINE_ITEM.CREATE_DATE >= to_date(:startdate, 'dd-mm-yyyy') " .
                "and LINE_ITEM.CREATE_DATE < to_date(:enddate, 'dd-mm-yyyy') " .
-               "group by LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE " .
-               "order by LINE_ITEM.CREATE_DATE desc) a " .
-               "where rownum <= :endRow) " .
-               "where rnum >= :startRow";
+               'group by LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE ' .
+               'order by LINE_ITEM.CREATE_DATE desc) a ' .
+               'where rownum <= :endRow) ' .
+               'where rnum >= :startRow';
         try {
             $sqlStmt = $this->executeSQL($sql, $bindParams);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -2242,13 +2232,14 @@ EOT;
             $bindParams = [];
             $whereClause = '';
         }
-        $sql = "select distinct lower(FUND.FUND_NAME) as name " .
+        $sql = 'select distinct lower(FUND.FUND_NAME) as name ' .
             "from $this->dbName.FUND {$whereClause} order by name";
         try {
             $sqlStmt = $this->executeSQL($sql, $bindParams);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Process inclusion/exclusion lists to skip illegal values:
-                if ((is_array($exclude) && in_array($row['NAME'], $exclude))
+                if (
+                    (is_array($exclude) && in_array($row['NAME'], $exclude))
                     || (is_array($include) && !in_array($row['NAME'], $include))
                 ) {
                     continue;
@@ -2261,8 +2252,8 @@ EOT;
                 // array value to the on-screen display name.
                 //
                 // We actually want to use the NAME of the fund to do lookups, not
-                // its ID.  This is because multiple funds may share the same name,
-                // and it is useful to collate all these results together.  To
+                // its ID. This is because multiple funds may share the same name,
+                // and it is useful to collate all these results together. To
                 // achieve the effect, we just fill the same value in as the name
                 // and the ID in the return array.
                 //
@@ -2290,15 +2281,15 @@ EOT;
     {
         $deptList = [];
 
-        $sql = "select DEPARTMENT.DEPARTMENT_ID, DEPARTMENT.DEPARTMENT_NAME " .
+        $sql = 'select DEPARTMENT.DEPARTMENT_ID, DEPARTMENT.DEPARTMENT_NAME ' .
                "from $this->dbName.RESERVE_LIST, " .
                "$this->dbName.RESERVE_LIST_COURSES, $this->dbName.DEPARTMENT " .
-               "where " .
-               "RESERVE_LIST.RESERVE_LIST_ID = " .
-               "RESERVE_LIST_COURSES.RESERVE_LIST_ID and " .
-               "RESERVE_LIST_COURSES.DEPARTMENT_ID = DEPARTMENT.DEPARTMENT_ID " .
-               "group by DEPARTMENT.DEPARTMENT_ID, DEPARTMENT_NAME " .
-               "order by DEPARTMENT_NAME";
+               'where ' .
+               'RESERVE_LIST.RESERVE_LIST_ID = ' .
+               'RESERVE_LIST_COURSES.RESERVE_LIST_ID and ' .
+               'RESERVE_LIST_COURSES.DEPARTMENT_ID = DEPARTMENT.DEPARTMENT_ID ' .
+               'group by DEPARTMENT.DEPARTMENT_ID, DEPARTMENT_NAME ' .
+               'order by DEPARTMENT_NAME';
         try {
             $sqlStmt = $this->executeSQL($sql);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -2323,15 +2314,15 @@ EOT;
     {
         $instList = [];
 
-        $sql = "select INSTRUCTOR.INSTRUCTOR_ID, " .
+        $sql = 'select INSTRUCTOR.INSTRUCTOR_ID, ' .
                "INSTRUCTOR.LAST_NAME || ', ' || INSTRUCTOR.FIRST_NAME as NAME " .
                "from $this->dbName.RESERVE_LIST, " .
                "$this->dbName.RESERVE_LIST_COURSES, $this->dbName.INSTRUCTOR " .
-               "where RESERVE_LIST.RESERVE_LIST_ID = " .
-               "RESERVE_LIST_COURSES.RESERVE_LIST_ID and " .
-               "RESERVE_LIST_COURSES.INSTRUCTOR_ID = INSTRUCTOR.INSTRUCTOR_ID " .
-               "group by INSTRUCTOR.INSTRUCTOR_ID, LAST_NAME, FIRST_NAME " .
-               "order by LAST_NAME";
+               'where RESERVE_LIST.RESERVE_LIST_ID = ' .
+               'RESERVE_LIST_COURSES.RESERVE_LIST_ID and ' .
+               'RESERVE_LIST_COURSES.INSTRUCTOR_ID = INSTRUCTOR.INSTRUCTOR_ID ' .
+               'group by INSTRUCTOR.INSTRUCTOR_ID, LAST_NAME, FIRST_NAME ' .
+               'order by LAST_NAME';
         try {
             $sqlStmt = $this->executeSQL($sql);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -2357,14 +2348,14 @@ EOT;
         $courseList = [];
 
         $sql = "select COURSE.COURSE_NUMBER || ': ' || COURSE.COURSE_NAME as NAME," .
-               " COURSE.COURSE_ID " .
+               ' COURSE.COURSE_ID ' .
                "from $this->dbName.RESERVE_LIST, " .
                "$this->dbName.RESERVE_LIST_COURSES, $this->dbName.COURSE " .
-               "where RESERVE_LIST.RESERVE_LIST_ID = " .
-               "RESERVE_LIST_COURSES.RESERVE_LIST_ID and " .
-               "RESERVE_LIST_COURSES.COURSE_ID = COURSE.COURSE_ID " .
-               "group by COURSE.COURSE_ID, COURSE_NUMBER, COURSE_NAME " .
-               "order by COURSE_NUMBER";
+               'where RESERVE_LIST.RESERVE_LIST_ID = ' .
+               'RESERVE_LIST_COURSES.RESERVE_LIST_ID and ' .
+               'RESERVE_LIST_COURSES.COURSE_ID = COURSE.COURSE_ID ' .
+               'group by COURSE.COURSE_ID, COURSE_NUMBER, COURSE_NAME ' .
+               'order by COURSE_NUMBER';
         try {
             $sqlStmt = $this->executeSQL($sql);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -2400,20 +2391,20 @@ EOT;
         $bindParams = [];
 
         if ($course != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.COURSE_ID = :course";
+            $reserveWhere[] = 'RESERVE_LIST_COURSES.COURSE_ID = :course';
             $bindParams[':course'] = $course;
         }
         if ($inst != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.INSTRUCTOR_ID = :inst";
+            $reserveWhere[] = 'RESERVE_LIST_COURSES.INSTRUCTOR_ID = :inst';
             $bindParams[':inst'] = $inst;
         }
         if ($dept != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.DEPARTMENT_ID = :dept";
+            $reserveWhere[] = 'RESERVE_LIST_COURSES.DEPARTMENT_ID = :dept';
             $bindParams[':dept'] = $dept;
         }
 
         $reserveWhere = empty($reserveWhere) ?
-            "" : "where (" . implode(' AND ', $reserveWhere) . ")";
+            '' : 'where (' . implode(' AND ', $reserveWhere) . ')';
 
         /* OLD SQL -- simpler but without support for the Solr-based reserves
          * module:
@@ -2443,43 +2434,43 @@ EOT;
                "      $this->dbName.reserve_list_courses $reserveWhere )) )) " .
                "  ) ";
          */
-        $sql = " select MFHD_MASTER.DISPLAY_CALL_NO, BIB_TEXT.BIB_ID, " .
-               " BIB_TEXT.AUTHOR, BIB_TEXT.TITLE, " .
-               " BIB_TEXT.PUBLISHER, BIB_TEXT.PUBLISHER_DATE, subquery.COURSE_ID, " .
-               " subquery.INSTRUCTOR_ID, subquery.DEPARTMENT_ID " .
+        $sql = ' select MFHD_MASTER.DISPLAY_CALL_NO, BIB_TEXT.BIB_ID, ' .
+               ' BIB_TEXT.AUTHOR, BIB_TEXT.TITLE, ' .
+               ' BIB_TEXT.PUBLISHER, BIB_TEXT.PUBLISHER_DATE, subquery.COURSE_ID, ' .
+               ' subquery.INSTRUCTOR_ID, subquery.DEPARTMENT_ID ' .
                " FROM $this->dbName.BIB_TEXT " .
                " JOIN $this->dbName.BIB_MFHD ON BIB_TEXT.BIB_ID=BIB_MFHD.BIB_ID " .
                " JOIN $this->dbName.MFHD_MASTER " .
-               " ON BIB_MFHD.MFHD_ID = MFHD_MASTER.MFHD_ID" .
-               " JOIN " .
-               "  ( " .
-               "  ((select distinct eitem.mfhd_id, subsubquery1.COURSE_ID, " .
-               "     subsubquery1.INSTRUCTOR_ID, subsubquery1.DEPARTMENT_ID " .
+               ' ON BIB_MFHD.MFHD_ID = MFHD_MASTER.MFHD_ID' .
+               ' JOIN ' .
+               '  ( ' .
+               '  ((select distinct eitem.mfhd_id, subsubquery1.COURSE_ID, ' .
+               '     subsubquery1.INSTRUCTOR_ID, subsubquery1.DEPARTMENT_ID ' .
                "     from $this->dbName.eitem join " .
-               "    (select distinct reserve_list_eitems.eitem_id, " .
-               "     RESERVE_LIST_COURSES.COURSE_ID, " .
-               "     RESERVE_LIST_COURSES.INSTRUCTOR_ID, " .
-               "     RESERVE_LIST_COURSES.DEPARTMENT_ID from " .
+               '    (select distinct reserve_list_eitems.eitem_id, ' .
+               '     RESERVE_LIST_COURSES.COURSE_ID, ' .
+               '     RESERVE_LIST_COURSES.INSTRUCTOR_ID, ' .
+               '     RESERVE_LIST_COURSES.DEPARTMENT_ID from ' .
                "     $this->dbName.reserve_list_eitems" .
                "     JOIN $this->dbName.reserve_list_courses ON " .
-               "      reserve_list_courses.reserve_list_id = " .
-               "      reserve_list_eitems.reserve_list_id" .
+               '      reserve_list_courses.reserve_list_id = ' .
+               '      reserve_list_eitems.reserve_list_id' .
                "      $reserveWhere ) subsubquery1 ON " .
-               "      subsubquery1.eitem_id = eitem.eitem_id)) union " .
-               "  ((select distinct mfhd_item.mfhd_id, subsubquery2.COURSE_ID, " .
-               "    subsubquery2.INSTRUCTOR_ID, subsubquery2.DEPARTMENT_ID " .
+               '      subsubquery1.eitem_id = eitem.eitem_id)) union ' .
+               '  ((select distinct mfhd_item.mfhd_id, subsubquery2.COURSE_ID, ' .
+               '    subsubquery2.INSTRUCTOR_ID, subsubquery2.DEPARTMENT_ID ' .
                "    from $this->dbName.mfhd_item join" .
-               "    (select distinct reserve_list_items.item_id, " .
-               "     RESERVE_LIST_COURSES.COURSE_ID, " .
-               "     RESERVE_LIST_COURSES.INSTRUCTOR_ID, " .
-               "     RESERVE_LIST_COURSES.DEPARTMENT_ID from " .
+               '    (select distinct reserve_list_items.item_id, ' .
+               '     RESERVE_LIST_COURSES.COURSE_ID, ' .
+               '     RESERVE_LIST_COURSES.INSTRUCTOR_ID, ' .
+               '     RESERVE_LIST_COURSES.DEPARTMENT_ID from ' .
                "    $this->dbName.reserve_list_items" .
                "    JOIN $this->dbName.reserve_list_courses on " .
-               "    reserve_list_items.reserve_list_id = " .
-               "    reserve_list_courses.reserve_list_id" .
+               '    reserve_list_items.reserve_list_id = ' .
+               '    reserve_list_courses.reserve_list_id' .
                "    $reserveWhere) subsubquery2 ON " .
-               "    subsubquery2.item_id = mfhd_item.item_id )) " .
-               "  ) subquery ON mfhd_master.mfhd_id = subquery.mfhd_id ";
+               '    subsubquery2.item_id = mfhd_item.item_id )) ' .
+               '  ) subquery ON mfhd_master.mfhd_id = subquery.mfhd_id ';
 
         try {
             $sqlStmt = $this->executeSQL($sql, $bindParams);
@@ -2519,22 +2510,23 @@ EOT;
         $safeLimit = $intLimit < 1 ? 30 : $intLimit;
 
         $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
-            . "max(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RETURNED "
+            . 'max(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RETURNED '
             . "from $this->dbName.CIRC_TRANS_ARCHIVE "
             . "join $this->dbName.MFHD_ITEM "
-            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID "
+            . 'on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID '
             . "join $this->dbName.BIB_MFHD "
-            . "on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID "
+            . 'on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID '
             . "join $this->dbName.BIB_MASTER "
-            . "on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID "
-            . "where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null "
-            . "and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage "
+            . 'on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID '
+            . 'where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null '
+            . 'and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage '
             . "and BIB_MASTER.SUPPRESS_IN_OPAC='N' "
-            . "group by BIB_MFHD.BIB_ID "
-            . "order by RETURNED desc";
+            . 'group by BIB_MFHD.BIB_ID '
+            . 'order by RETURNED desc';
         try {
             $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
-            while (count($recordList) < $limit
+            while (
+                count($recordList) < $limit
                 && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
             ) {
                 $recordList[] = ['id' => $row['BIB_ID']];
@@ -2567,25 +2559,26 @@ EOT;
         $safeLimit = $intLimit < 1 ? 30 : $intLimit;
 
         $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
-            . "count(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RECENT, "
-            . "sum(ITEM.HISTORICAL_CHARGES) as OVERALL "
+            . 'count(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RECENT, '
+            . 'sum(ITEM.HISTORICAL_CHARGES) as OVERALL '
             . "from $this->dbName.CIRC_TRANS_ARCHIVE "
             . "join $this->dbName.MFHD_ITEM "
-            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID "
+            . 'on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID '
             . "join $this->dbName.BIB_MFHD "
-            . "on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID "
+            . 'on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID '
             . "join $this->dbName.ITEM "
-            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID "
+            . 'on CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID '
             . "join $this->dbName.BIB_MASTER "
-            . "on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID "
-            . "where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null "
-            . "and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage "
+            . 'on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID '
+            . 'where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null '
+            . 'and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage '
             . "and BIB_MASTER.SUPPRESS_IN_OPAC='N' "
-            . "group by BIB_MFHD.BIB_ID "
-            . "order by RECENT desc, OVERALL desc";
+            . 'group by BIB_MFHD.BIB_ID '
+            . 'order by RECENT desc, OVERALL desc';
         try {
             $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
-            while (count($recordList) < $limit
+            while (
+                count($recordList) < $limit
                 && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
             ) {
                 $recordList[] = ['id' => $row['BIB_ID']];
@@ -2606,7 +2599,7 @@ EOT;
     {
         $list = [];
 
-        $sql = "select BIB_MASTER.BIB_ID " .
+        $sql = 'select BIB_MASTER.BIB_ID ' .
                "from $this->dbName.BIB_MASTER " .
                "where BIB_MASTER.SUPPRESS_IN_OPAC='Y'";
         try {

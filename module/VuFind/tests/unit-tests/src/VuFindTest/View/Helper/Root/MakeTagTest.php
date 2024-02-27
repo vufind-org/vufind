@@ -1,8 +1,9 @@
 <?php
+
 /**
- * makeTag view helper Test Class
+ * MakeTag view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -26,12 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\MakeTag;
 
+use function call_user_func_array;
+
 /**
- * makeTag view helper Test Class
+ * MakeTag view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -40,14 +44,14 @@ use VuFind\View\Helper\Root\MakeTag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
+class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
      * Get makeTag helper with mock view
      *
-     * return \Laminas\View\Helper\EscapeHtml
+     * @return MakeTag
      */
-    protected function getHelper()
+    protected function getHelper(): MakeTag
     {
         $helper = new MakeTag();
         $helper->setView($this->getViewWithHelpers());
@@ -56,36 +60,40 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test that responds to common inputs
+     *
+     * @return array
      */
-    public function htmlAttributesTests()
+    public static function htmlAttributesTests(): array
     {
         return [
             'Basic' => [
                 '<button class="btn" id="login">text</button>',
-                ['button', 'text', ['class' => 'btn', 'id' => 'login']]
+                ['button', 'text', ['class' => 'btn', 'id' => 'login']],
             ],
 
             'String' => [
                 '<i class="btn">text</i>',
-                ['i', 'text', 'btn']
+                ['i', 'text', 'btn'],
             ],
 
             'Empty text' => [
                 '<i class="fa&#x20;fa-awesome"></i>',
-                ['i', '', 'fa fa-awesome']
+                ['i', '', 'fa fa-awesome'],
             ],
 
             'Truthy attribute' => [
                 '<a href="&#x2F;login" data-lightbox="1">Login</a>',
-                ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]]
+                ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]],
             ],
         ];
     }
 
-    /*
+    /**
      * Void elements for test below
+     *
+     * @return array
      */
-    public function helperOptionTests()
+    public static function helperOptionTests(): array
     {
         return [
             'escapes innerHTML' => [
@@ -93,7 +101,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 [
                     'button',
                     'This link is <strong>important</strong>',
-                ]
+                ],
             ],
 
             'does not escape innerHTML with option' => [
@@ -102,8 +110,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                     'button',
                     'This link is <strong>important</strong>',
                     [],
-                    ['escapeContent' => false]
-                ]
+                    ['escapeContent' => false],
+                ],
             ],
 
             'escape innerHTML with option' => [
@@ -112,54 +120,61 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                     'button',
                     'This link is <strong>important</strong>',
                     [],
-                    ['escapeContent' => true]
-                ]
+                    ['escapeContent' => true],
+                ],
             ],
         ];
     }
 
-    /*
+    /**
      * Void elements for test below
+     *
+     * @return array
      */
-    public function voidTags()
+    public static function voidTags(): array
     {
         return [
             'self closing tag' => [
-                '<img src="book.gif" />',
+                '<img src="book.gif">',
                 [
                     'img',
                     '',
-                    ['src' => 'book.gif']
-                ]
+                    ['src' => 'book.gif'],
+                ],
             ],
 
             'class only' => [
-                '<br class="sm&#x3A;hidden" />',
+                '<br class="sm&#x3A;hidden">',
                 [
                     'br',
                     '',
-                    'sm:hidden'
-                ]
+                    'sm:hidden',
+                ],
             ],
 
             'non-void tag' => [
                 '<span></span>',
                 [
                     'span',
-                    ''
-                ]
-            ]
+                    '',
+                ],
+            ],
         ];
     }
 
     /**
      * Test all data providers above
      *
+     * @param string $expected Expected value
+     * @param array  $params   Parameters to test
+     *
      * @dataProvider htmlAttributesTests
      * @dataProvider helperOptionTests
      * @dataProvider voidTags
+     *
+     * @return void
      */
-    public function testElements($expected, $params)
+    public function testElements($expected, $params): void
     {
         $helper = $this->getHelper();
 
@@ -169,10 +184,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         );
     }
 
-    /*
+    /**
      * Good tag names for test below
+     *
+     * @return array
      */
-    public function validTags()
+    public static function validTags(): array
     {
         return [
             ['SPAN'], // CAPITAL
@@ -188,9 +205,13 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Test tag name edge cases
      *
+     * @param string $tagName Tag name to use in test
+     *
      * @dataProvider validTags
+     *
+     * @return void
      */
-    public function testValidTagNames($tagName)
+    public function testValidTagNames($tagName): void
     {
         $helper = $this->getHelper();
 
@@ -202,10 +223,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         // test passes if no errors are thrown
     }
 
-    /*
+    /**
      * Bad tag names for test below
+     *
+     * @return array
      */
-    public function invalidTags()
+    public static function invalidTags(): array
     {
         return [
             ['nohyphencustom'],
@@ -221,9 +244,13 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Test exception on bad tag names
      *
+     * @param string $tagName Tag name to use in test
+     *
      * @dataProvider invalidTags
+     *
+     * @return void
      */
-    public function testInvalidTagNames($tagName)
+    public function testInvalidTagNames($tagName): void
     {
         $helper = $this->getHelper();
 
@@ -237,15 +264,22 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test deprecated elements
+     *
+     * @return void
      */
-    public function testDeprecatedElementTriggersWarning()
+    public function testDeprecatedElementTriggersWarning(): void
     {
         $helper = $this->getHelper();
 
         // Fulfill plugin quota
         $helper('sanity-check', 'this is good');
 
-        $this->expectWarning();
+        $this->expectExceptionMessage("'<marquee>' is deprecated and should be replaced.");
+        $errorCallback = function (int $code, string $msg) {
+            throw new \Exception($msg, $code);
+        };
+        set_error_handler($errorCallback, E_USER_WARNING);
         $helper('marquee', 'Now Playing: A Simpler Time!');
+        restore_error_handler();
     }
 }

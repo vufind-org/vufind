@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for comments
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+
+use function count;
+use function is_object;
 
 /**
  * Table Definition for comments
@@ -94,7 +99,7 @@ class Comments extends Gateway
     }
 
     /**
-     * Delete a comment if the owner is logged in.  Returns true on success.
+     * Delete a comment if the owner is logged in. Returns true on success.
      *
      * @param int                 $id   ID of row to delete
      * @param \VuFind\Db\Row\User $user Logged in user object
@@ -156,7 +161,7 @@ class Comments extends Gateway
                     ['resource_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
-                'total' => new Expression('COUNT(*)')
+                'total' => new Expression('COUNT(*)'),
             ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);

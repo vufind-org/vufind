@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for EDS records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function strlen;
 
 /**
  * Model for EDS records.
@@ -110,7 +118,12 @@ class EDS extends DefaultRecord
     /**
      * Get the access level of the record.
      *
-     * @return string
+     * @return string If not empty, will contain a numerical value corresponding to these levels of access:
+     *                0 - Not Available to search via Guest Access
+     *                1 - Metadata is searched, but only a placeholder record is displayed
+     *                2 - Display record in the results but no access to detailed record or full text
+     *                3 - Full access: search/display all content to guests
+     *                6 - Display full record but no access to full text
      */
     public function getAccessLevel()
     {
@@ -207,12 +220,12 @@ class EDS extends DefaultRecord
         // Create a list of config sections to check, based on context:
         $sections = ['ItemGlobalFilter'];
         switch ($context) {
-        case 'result-list':
-            $sections[] = 'ItemResultListFilter';
-            break;
-        case 'core':
-            $sections[] = 'ItemCoreFilter';
-            break;
+            case 'result-list':
+                $sections[] = 'ItemResultListFilter';
+                break;
+            case 'core':
+                $sections[] = 'ItemCoreFilter';
+                break;
         }
         // Check to see if anything is filtered:
         foreach ($sections as $section) {
@@ -220,7 +233,8 @@ class EDS extends DefaultRecord
                 ? $this->recordConfig->$section->toArray() : [];
             $badLabels = (array)($currentConfig['excludeLabel'] ?? []);
             $badGroups = (array)($currentConfig['excludeGroup'] ?? []);
-            if (in_array($item['Label'], $badLabels)
+            if (
+                in_array($item['Label'], $badLabels)
                 || in_array($item['Group'], $badGroups)
             ) {
                 return true;
@@ -251,20 +265,39 @@ class EDS extends DefaultRecord
         $nameFilter = null
     ) {
         $items = [];
-        foreach ($this->fields['Items'] ?? [] as $item) {
-            $nextItem = [
-                'Label' => $item['Label'] ?? '',
-                'Group' => $item['Group'] ?? '',
-                'Name' => $item['Name'] ?? '',
-                'Data'  => isset($item['Data'])
-                    ? $this->toHTML($item['Data'], $item['Group']) : ''
-            ];
-            if (!$this->itemIsExcluded($nextItem, $context)
-                && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
-                && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
-                && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
-            ) {
-                $items[] = $nextItem;
+        if (is_array($this->fields['Items'] ?? null)) {
+            $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
+            $origItems = $this->fields['Items'];
+            // Only sort by label if we have a sort config and we're fetching multiple labels:
+            if (!empty($itemGlobalOrderConfig) && $labelFilter === null) {
+                // We want unassigned labels to appear AFTER configured labels:
+                $nextPos = max(array_keys($itemGlobalOrderConfig));
+                foreach (array_keys($origItems) as $key) {
+                    $label = $origItems[$key]['Label'] ?? '';
+                    $configuredPos = array_search($label, $itemGlobalOrderConfig);
+                    $origItems[$key]['Pos'] = $configuredPos === false
+                        ? ++$nextPos : $configuredPos;
+                }
+                $positions = array_column($origItems, 'Pos');
+                array_multisort($positions, SORT_ASC, $origItems);
+            }
+
+            foreach ($origItems as $item) {
+                $nextItem = [
+                    'Label' => $item['Label'] ?? '',
+                    'Group' => $item['Group'] ?? '',
+                    'Name' => $item['Name'] ?? '',
+                    'Data'  => isset($item['Data'])
+                        ? $this->toHTML($item['Data'], $item['Group']) : '',
+                ];
+                if (
+                    !$this->itemIsExcluded($nextItem, $context)
+                    && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
+                    && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
+                    && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
+                ) {
+                    $items[] = $nextItem;
+                }
             }
         }
         return $items;
@@ -357,7 +390,8 @@ class EDS extends DefaultRecord
     public function getEbookLink(array $types)
     {
         foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
-            if (!empty($link['Type']) && !empty($link['Url'])
+            if (
+                !empty($link['Type']) && !empty($link['Url'])
                 && in_array($link['Type'], $types)
             ) {
                 return $link['Url'];
@@ -485,7 +519,7 @@ class EDS extends DefaultRecord
 
     /**
      * Performs a regex and replaces any url's with links containing themselves
-     * as the text
+     * as the text. Also replaces link elements with anchors.
      *
      * @param string $string String to process
      *
@@ -493,11 +527,19 @@ class EDS extends DefaultRecord
      */
     public function linkUrls($string)
     {
+        $isLink = preg_match(
+            '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
+            $string,
+            $matches
+        );
+        if ($isLink) {
+            $string = $matches[1];
+        }
         $linkedString = preg_replace_callback(
             "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
             function ($matches) {
                 return "<a href='" . $matches[0] . "'>"
-                    . htmlentities($matches[0]) . "</a>";
+                    . htmlentities($matches[0]) . '</a>';
             },
             $string
         );
@@ -558,11 +600,11 @@ class EDS extends DefaultRecord
                 '<superscript' => '<sup',
                 '</superscript' => '</sup',
                 '<relatesTo'   => '<sup',
-                '</relatesTo'  => '</sup'
+                '</relatesTo'  => '</sup',
         ];
 
         //  The XML data is escaped, let's unescape html entities (e.g. &lt; => <)
-        $data = html_entity_decode($data, ENT_QUOTES, "utf-8");
+        $data = html_entity_decode($data, ENT_QUOTES, 'utf-8');
 
         // Start parsing the xml data
         if (!empty($data)) {
@@ -743,7 +785,8 @@ class EDS extends DefaultRecord
             'BibRecord/BibRelationships/IsPartOfRelationships/*/BibEntity/Numbering'
         );
         foreach ($numbering as $data) {
-            if (strtolower($data['Type'] ?? '') == $type
+            if (
+                strtolower($data['Type'] ?? '') == $type
                 && !empty($data['Value'])
             ) {
                 return $data['Value'];
@@ -836,24 +879,24 @@ class EDS extends DefaultRecord
         $formats = [];
         $pubType = $this->getPubType();
         switch (strtolower($pubType)) {
-        case 'academic journal':
-        case 'periodical':
-        case 'report':
-            // Add "article" format for better OpenURL generation
-            $formats[] = $pubType;
-            $formats[] = 'Article';
-            break;
-        case 'ebook':
-            // Treat eBooks as both "Books" and "Electronic" items
-            $formats[] = 'Book';
-            $formats[] = 'Electronic';
-            break;
-        case 'dissertation/thesis':
-            // Simplify wording for consistency with other drivers
-            $formats[] = 'Thesis';
-            break;
-        default:
-            $formats[] = $pubType;
+            case 'academic journal':
+            case 'periodical':
+            case 'report':
+                // Add "article" format for better OpenURL generation
+                $formats[] = $pubType;
+                $formats[] = 'Article';
+                break;
+            case 'ebook':
+                // Treat eBooks as both "Books" and "Electronic" items
+                $formats[] = 'Book';
+                $formats[] = 'Electronic';
+                break;
+            case 'dissertation/thesis':
+                // Simplify wording for consistency with other drivers
+                $formats[] = 'Thesis';
+                break;
+            default:
+                $formats[] = $pubType;
         }
 
         return $formats;

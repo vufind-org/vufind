@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink test class for visualization view.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -35,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -50,7 +51,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
                 'default_top_recommend' => ['VisualFacets'],
             ],
             'Views' => ['list' => 'List', 'visual' => 'Visual'],
-        ]
+        ],
     ];
 
     /**
@@ -68,7 +69,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $text = $this->findCss($page, '#visualResults')->getText();
+        $text = $this->findCssAndGetText($page, '#visualResults');
         // Confirm that some content has been dynamically loaded into the
         // visualization area:
         $this->assertStringContainsString('A - General Works', $text);

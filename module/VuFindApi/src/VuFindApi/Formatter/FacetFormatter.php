@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Facet formatter for API responses
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Formatter;
 
 use VuFind\Search\Base\Results;
+
+use function in_array;
 
 /**
  * Facet formatter for API responses
@@ -54,10 +58,10 @@ class FacetFormatter extends BaseFormatter
             foreach ($request['facetFilter'] as $filter) {
                 [$facetField, $regex] = explode(':', $filter, 2);
                 $regex = trim($regex);
-                if (substr($regex, 0, 1) == '"') {
+                if (str_starts_with($regex, '"')) {
                     $regex = substr($regex, 1);
                 }
-                if (substr($regex, -1, 1) == '"') {
+                if (str_ends_with($regex, '"')) {
                     $regex = substr($regex, 0, -1);
                 }
                 $facetFilters[$facetField][] = $regex;
@@ -107,7 +111,7 @@ class FacetFormatter extends BaseFormatter
         $result = [];
         $fields = [
             'value', 'displayText', 'count',
-            'children', 'href', 'isApplied'
+            'children', 'href', 'isApplied',
         ];
         foreach ($list as $value) {
             $resultValue = [];
@@ -150,7 +154,7 @@ class FacetFormatter extends BaseFormatter
      */
     public function format($request, Results $results, $hierarchicalFacetData)
     {
-        if ($results->getResultTotal() == 0 || empty($request['facet'])) {
+        if ($results->getResultTotal() <= 0 || empty($request['facet'])) {
             return [];
         }
 

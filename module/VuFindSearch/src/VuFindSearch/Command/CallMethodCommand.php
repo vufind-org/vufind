@@ -3,7 +3,7 @@
 /**
  * Call method command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -26,11 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\ParamBag;
+
+use function call_user_func;
 
 /**
  * Call method command.
@@ -56,6 +60,13 @@ abstract class CallMethodCommand extends AbstractBase
      * @var string
      */
     protected $method;
+
+    /**
+     * Optional search details.
+     *
+     * @var ?array
+     */
+    protected $extraRequestDetails = null;
 
     /**
      * CallMethodCommand constructor.
@@ -91,6 +102,16 @@ abstract class CallMethodCommand extends AbstractBase
     abstract public function getArguments(): array;
 
     /**
+     * Get extra request details.
+     *
+     * @return ?array
+     */
+    public function getExtraRequestDetails(): ?array
+    {
+        return $this->extraRequestDetails;
+    }
+
+    /**
      * Execute command on backend.
      *
      * @param BackendInterface $backend Backend
@@ -100,7 +121,8 @@ abstract class CallMethodCommand extends AbstractBase
     public function execute(BackendInterface $backend): CommandInterface
     {
         $this->validateBackend($backend);
-        if (!($backend instanceof $this->interface)
+        if (
+            !($backend instanceof $this->interface)
             || !method_exists($this->interface, $this->method)
         ) {
             throw new BackendException(
@@ -108,8 +130,15 @@ abstract class CallMethodCommand extends AbstractBase
             );
         }
         $args = $this->getArguments();
-        return $this->finalizeExecution(
+        if ($backend instanceof ExtraRequestDetailsInterface) {
+            $backend->resetExtraRequestDetails();
+        }
+        $this->finalizeExecution(
             call_user_func([$backend, $this->method], ...$args)
         );
+        if ($backend instanceof ExtraRequestDetailsInterface) {
+            $this->extraRequestDetails = $backend->getExtraRequestDetails();
+        }
+        return $this;
     }
 }

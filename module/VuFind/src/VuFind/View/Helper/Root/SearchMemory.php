@@ -1,8 +1,9 @@
 <?php
+
 /**
  * View helper for remembering recent user searches/parameters.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -22,9 +23,11 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -36,6 +39,7 @@ use VuFind\Search\Memory;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -70,10 +74,35 @@ class SearchMemory extends AbstractHelper
      */
     public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
-        $last = $this->memory->retrieveSearch();
-        if (!empty($last)) {
+        if ($lastSearch = $this->getLastSearch()) {
+            $searchClassId = $lastSearch->getBackendId();
+            $params = $lastSearch->getParams();
+            // Use last settings for params that are not stored in the search:
+            foreach (['limit', 'view', 'sort'] as $setting) {
+                $value
+                    = $this->memory->retrieveLastSetting($searchClassId, $setting);
+                if ($value) {
+                    $method = 'set' . ucfirst($setting);
+                    $params->$method($value);
+                }
+            }
+
+            $urlHelper = $this->getView()->plugin('url');
+            $url = $urlHelper($lastSearch->getOptions()->getSearchAction());
+            $queryHelper = $lastSearch->getUrlQuery();
+            // Try to append page number and page size from search context parameters saved in params object
+            $searchContext = $params->getSavedSearchContextParameters();
+            if (!empty($searchContext['limit'])) {
+                $queryHelper = $queryHelper->setLimit($searchContext['limit']);
+            }
+            if (!empty($searchContext['page'])) {
+                $queryHelper = $queryHelper->setPage($searchContext['page']);
+            }
+
+            $url .= $queryHelper->getParams(false);
+
             $escaper = $this->getView()->plugin('escapeHtml');
-            return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
+            return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'
                 . $suffix;
         }
         return '';
@@ -151,12 +180,51 @@ class SearchMemory extends AbstractHelper
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
         if ($lastUrl) {
-            $expectedPath
-                = $this->view->url($params->getOptions()->getSearchAction());
-            if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
+            $expectedPath = $this->view->url($params->getOptions()->getSearchAction());
+            if (str_starts_with($lastUrl, $expectedPath)) {
                 $params->initFromRequest($request);
             }
         }
         return $params;
+    }
+
+    /**
+     * Get current search id
+     *
+     * @return ?int
+     */
+    public function getCurrentSearchId(): ?int
+    {
+        return $this->memory->getCurrentSearchId();
+    }
+
+    /**
+     * Get current search
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getCurrentSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getCurrentSearch();
+    }
+
+    /**
+     * Get last search id
+     *
+     * @return ?int
+     */
+    public function getLastSearchId(): ?int
+    {
+        return $this->memory->getLastSearchId();
+    }
+
+    /**
+     * Get last search
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getLastSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getLastSearch();
     }
 }

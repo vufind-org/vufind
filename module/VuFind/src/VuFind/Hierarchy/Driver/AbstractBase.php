@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy interface.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
 use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager;
@@ -132,25 +134,25 @@ abstract class AbstractBase
      * Render the tree for a given record.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver      Record driver
-     * @param string                            $context     Context in which the
-     * tree is being created
+     * @param string                            $context     Context in which the tree is being created
      * @param string                            $mode        Type of tree required
-     * @param string                            $hierarchyID Hierarchy ID to get
-     * the tree for
+     * @param string                            $hierarchyID Hierarchy ID to get the tree for
+     * @param array                             $options     Additional options for the renderer
      *
      * @return string
      */
     public function render(
         \VuFind\RecordDriver\AbstractBase $driver,
-        $context,
-        $mode,
-        $hierarchyID
+        string $context,
+        string $mode,
+        string $hierarchyID,
+        array $options
     ) {
         if (!$this->showTree()) {
             return false;
         }
         return $this->getTreeRenderer($driver)
-            ->render($context, $mode, $hierarchyID, $driver->getUniqueID());
+            ->render($context, $mode, $hierarchyID, $driver->getUniqueID(), $options);
     }
 
     /**
@@ -175,4 +177,25 @@ abstract class AbstractBase
      * @return string
      */
     abstract public function getTreeSourceType();
+
+    /**
+     * Check if sorting is enabled in the hierarchy Options
+     *
+     * @return bool
+     */
+    abstract public function treeSorting();
+
+    /**
+     * Get Collection Link Type
+     *
+     * @return string
+     */
+    abstract public function getCollectionLinkType();
+
+    /**
+     * Get tree cache time in seconds
+     *
+     * @return int
+     */
+    abstract public function getTreeCacheTime();
 }

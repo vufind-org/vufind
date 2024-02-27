@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Flash message view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\AbstractHelper;
+
+use function is_array;
 
 /**
  * Flash message view helper
@@ -84,6 +88,9 @@ class Flashmessages extends AbstractHelper
      */
     public function __invoke()
     {
+        if (!empty($this->getView()->layout()->lightboxChild)) {
+            return '';
+        }
         $html = '';
         foreach ($this->namespaces as $ns) {
             $messages = array_merge(

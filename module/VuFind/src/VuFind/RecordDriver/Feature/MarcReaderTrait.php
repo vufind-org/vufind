@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Functions for reading MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,7 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Functions for reading MARC records.
@@ -74,6 +81,9 @@ trait MarcReaderTrait
                 break;
             }
         }
+        if (empty($this->fields[$preferredMarcField])) {
+            throw new \Exception('Missing MARC data in record ' . $this->getUniqueId());
+        }
         return trim($this->fields[$preferredMarcField]);
     }
 
@@ -95,9 +105,9 @@ trait MarcReaderTrait
 
     /**
      * Return an array of all values extracted from the specified field/subfield
-     * combination.  If multiple subfields are specified and $concat is true, they
+     * combination. If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array
-     * will correspond with a single MARC field.  If $concat is false, the return
+     * will correspond with a single MARC field. If $concat is false, the return
      * array will contain separate entries for separate subfields.
      *
      * @param string $field     The MARC field number to read
@@ -156,7 +166,7 @@ trait MarcReaderTrait
 
         // Now track down relevant RDA-style 264 fields; we only care about
         // copyright and publication places (and ignore copyright places if
-        // publication places are present).  This behavior is designed to be
+        // publication places are present). This behavior is designed to be
         // consistent with default SolrMarc handling of names/dates.
         $pubResults = $copyResults = [];
 
@@ -166,12 +176,12 @@ trait MarcReaderTrait
                 ->getSubfieldArray($currentField, [$subfield], true, $separator);
             if (!empty($currentVal)) {
                 switch ($currentField['i2']) {
-                case '1':
-                    $pubResults = array_merge($pubResults, $currentVal);
-                    break;
-                case '4':
-                    $copyResults = array_merge($copyResults, $currentVal);
-                    break;
+                    case '1':
+                        $pubResults = array_merge($pubResults, $currentVal);
+                        break;
+                    case '4':
+                        $copyResults = array_merge($copyResults, $currentVal);
+                        break;
                 }
             }
         }
@@ -213,9 +223,9 @@ trait MarcReaderTrait
 
     /**
      * Return an array of non-empty subfield values found in the provided MARC
-     * field.  If $concat is true, the array will contain either zero or one
+     * field. If $concat is true, the array will contain either zero or one
      * entries (empty array if no subfields found, subfield values concatenated
-     * together in specified order if found).  If concat is false, the array
+     * together in specified order if found). If concat is false, the array
      * will contain a separate entry for each subfield value found.
      *
      * @param array  $currentField Result from MarcReader::getFields

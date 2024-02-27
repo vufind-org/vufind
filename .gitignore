@@ -2,6 +2,8 @@
 \#*
 .\#*
 *~
+# Vim temporary files
+.*.sw[po]
 
 .php_cs_cache
 .phpstan_cache
@@ -14,8 +16,16 @@
 ChangeLog
 TAGS
 composer.phar
+env.bat
+env.sh
 import/solrmarc.log*
 lessphp_*.list
-module/VuFind/tests/.phpunit.result.cache
+module/VuFind/tests/.phpunit*
 node_modules
+package-lock.json
 public/swagger-ui
+tests/phpcs.cache.json
+local/DirLocations.ini
+local/config/vufind/*.ini
+local/config/vufind/*.json
+local/config/vufind/*.yaml

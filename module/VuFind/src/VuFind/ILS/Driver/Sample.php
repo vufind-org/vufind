@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Lightweight Dummy ILS Driver -- Always returns hard-coded sample values.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 /**
@@ -77,7 +79,7 @@ class Sample extends AbstractBase
                 'duedate' => '',
                 'number' => 1,
                 'barcode' => '1234567890',
-            ]
+            ],
         ];
     }
 

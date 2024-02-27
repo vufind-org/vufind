@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Logic for record versions support. Depends on versionAwareInterface.
  *
- * PHP version 7
+ * PHP version 8
  *
+ * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,10 +24,15 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\RecordDriver\Feature;
+
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\Query\WorkKeysQuery;
 
 /**
  * Logic for record versions support.
@@ -64,7 +71,7 @@ trait VersionAwareTrait
         }
 
         if (!isset($this->otherVersionsCount)) {
-            if (!($workKeys = $this->tryMethod('getWorkKeys'))) {
+            if (!($keys = $this->tryMethod('getWorkKeys'))) {
                 if (!($this instanceof VersionAwareInterface)) {
                     throw new \Exception(
                         'VersionAwareTrait requires VersionAwareInterface'
@@ -73,14 +80,13 @@ trait VersionAwareTrait
                 return false;
             }
 
-            $params = new \VuFindSearch\ParamBag();
-            $params->add('rows', 0);
-            $results = $this->searchService->workExpressions(
+            $command = new SearchCommand(
                 $this->getSourceIdentifier(),
-                $this->getUniqueID(),
-                $workKeys,
-                $params
+                new WorkKeysQuery($this->getUniqueID(), false, $keys),
+                0,
+                0
             );
+            $results = $this->searchService->invoke($command)->getResult();
             $this->otherVersionsCount = $results->getTotal();
         }
         return $this->otherVersionsCount;
@@ -97,24 +103,18 @@ trait VersionAwareTrait
      */
     public function getVersions($includeSelf = false, $count = 20, $offset = 0)
     {
-        if (null === $this->searchService) {
-            return false;
-        }
-
-        if (!($workKeys = $this->getWorkKeys())) {
+        if (null === $this->searchService || !($keys = $this->getWorkKeys())) {
             return false;
         }
 
         if (!isset($this->otherVersions)) {
-            $params = new \VuFindSearch\ParamBag();
-            $params->add('rows', $count);
-            $params->add('start', $offset);
-            $this->otherVersions = $this->searchService->workExpressions(
+            $command = new SearchCommand(
                 $this->getSourceIdentifier(),
-                $includeSelf ? '' : $this->getUniqueID(),
-                $workKeys,
-                $params
+                new WorkKeysQuery($this->getUniqueID(), false, $keys),
+                $offset,
+                $count
             );
+            $this->otherVersions = $this->searchService->invoke($command)->getResult();
         }
         return $this->otherVersions;
     }

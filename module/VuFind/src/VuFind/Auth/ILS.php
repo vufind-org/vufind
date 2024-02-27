@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
+
+use function get_class;
 
 /**
  * ILS authentication module.
@@ -106,7 +110,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -115,11 +119,12 @@ class ILS extends AbstractBase
      */
     public function authenticate($request)
     {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
+        $username = trim($request->getPost()->get('username', ''));
+        $password = trim($request->getPost()->get('password', ''));
         $loginMethod = $this->getILSLoginMethod();
+        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
-        return $this->handleLogin($username, $password, $loginMethod);
+        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
     }
 
     /**
@@ -188,7 +193,7 @@ class ILS extends AbstractBase
             [
                 'patron' => $patron,
                 'oldPassword' => $params['oldpwd'],
-                'newPassword' => $params['password']
+                'newPassword' => $params['password'],
             ]
         );
         if (!$result['success']) {
@@ -238,11 +243,12 @@ class ILS extends AbstractBase
      * @param string $username    User name
      * @param string $password    Password
      * @param string $loginMethod Login method
+     * @param bool   $rememberMe  Whether to remember the login
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Processed User object.
      */
-    protected function handleLogin($username, $password, $loginMethod)
+    protected function handleLogin($username, $password, $loginMethod, $rememberMe)
     {
         if ($username == '' || ('password' === $loginMethod && $password == '')) {
             throw new AuthException('authentication_error_blank');
@@ -270,7 +276,10 @@ class ILS extends AbstractBase
                 }
                 $this->emailAuthenticator->sendAuthenticationLink(
                     $patron['email'],
-                    $patron,
+                    [
+                        'userData' => $patron,
+                        'rememberMe' => $rememberMe,
+                    ],
                     ['auth_method' => $class]
                 );
             }

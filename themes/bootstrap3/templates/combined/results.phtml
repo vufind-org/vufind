@@ -17,7 +17,7 @@
         'checkboxFilters' => $this->params->getCheckboxFacets(),
         'filterList' => $this->params->getFilterList(true),
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
-        'selectedShards' => $this->params->getSelectedShards()
+        'selectedShards' => $this->params->getSelectedShards(),
       ]
   );
 
@@ -26,13 +26,6 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
-
-  // Enable cart if appropriate:
-  $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
-  // Enable bulk options if appropriate:
-  $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
-  // Enable bulk options if appropriate:
-  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Check if any results have version support enabled:
   $displayVersions = false;
@@ -46,36 +39,54 @@
 
   // Load Javascript dependencies into header:
   $this->render('search/results-scripts.phtml', compact('displayVersions'));
-  $this->headScript()->appendFile("combined-search.js");
+  $this->headScript()->appendFile('combined-search.js');
   // Style
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
+<h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
+<?php $recs = $combinedResults->getRecommendations('top'); ?>
+<?php if (!empty($recs)): ?>
+  <div>
+    <?php foreach ($recs as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+<?php if ($config['Layout']['jump_links'] ?? false): ?>
+  <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
+<?php endif; ?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-  <?php $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
-    <div>
-      <?php foreach ($recs as $current): ?>
-        <?=$this->recommend($current)?>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
-  <?php
-    $viewParams = [
-      'searchClassId' => $searchClassId,
-      'combinedResults' => $this->combinedResults,
-      'supportsCartOptions' => $this->supportsCartOptions,
-      'showCartControls' => $this->showCartControls,
-      'showBulkOptions' => $this->showBulkOptions
-    ];
-  ?>
-  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
-  <?php $recs = $combinedResults->getRecommendations('bottom'); ?>
-  <?php if (!empty($recs)): ?>
-    <div>
-      <?php foreach ($recs as $current): ?>
-        <?=$this->recommend($current)?>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
 </form>
+<?php
+  $viewParams = [
+    'searchClassId' => $searchClassId,
+    'combinedResults' => $this->combinedResults,
+  ];
+?>
+
+<?php if (!empty($columnSideRecommendations)): ?>
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+    <?php foreach ($columnSideRecommendations as $columnSideRecommendation): ?>
+      <div class="recommendation_container__<?=$columnSideRecommendation?>">
+        <?php // Content is added via JS in results-list.phtml. ?>
+      </div>
+    <?php endforeach; ?>
+  </div>
+<?php else: ?>
+  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+<?php endif; ?>
+
+<?php $recs = $combinedResults->getRecommendations('bottom'); ?>
+<?php if (!empty($recs)): ?>
+  <div>
+    <?php foreach ($recs as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>

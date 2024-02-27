@@ -3,7 +3,7 @@
 /**
  * Unit tests for EDS connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EDS;
 
 use InvalidArgumentException;
@@ -61,7 +62,7 @@ class ConnectorTest extends TestCase
      */
     public function testCaching()
     {
-        $conn = $this->createConnector('retrieve');
+        $conn = $this->createConnector('retrieveEdsItem');
 
         $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
 
@@ -119,7 +120,7 @@ class ConnectorTest extends TestCase
             [
                 'api_url' => 'http://example.tld/',
                 'auth_url' => 'http://example.tld/',
-                'orgid' => 'VuFindTest'
+                'orgid' => 'VuFindTest',
             ],
             $client ?: $this->createClient()
         );

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink ILS actions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
 
 /**
@@ -39,7 +42,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -69,7 +71,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',   // needed to display login link
                 'renewals_enabled' => true,
-            ]
+            ],
         ];
     }
 
@@ -98,15 +100,17 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function placeIllRequestAndGoToIllScreen(Element $page): void
     {
-        // Open the "place ILL request" dialog
         $this->waitForPageLoad($page);
+        // Wait for request checks to complete (they may affect layout):
+        $this->unFindCss($page, '.request-check');
+        // Open the "place ILL request" dialog
         $this->clickCss($page, 'a.placeILLRequest');
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '#pickupLibrary')->setValue('2');
+        $this->findCssAndSetValue($page, '#pickupLibrary', '2');
         $this->waitForPageLoad($page);
-        $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
+        $this->findCssAndSetValue($page, '#pickupLibraryLocation', '3');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         // If successful, we should now have a link to review the request:
@@ -119,7 +123,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Interlibrary Loan Requests',
-            $this->findCss($page, 'h2')->getText()
+            $this->findCssAndGetText($page, 'h2')
         );
     }
 
@@ -134,13 +138,15 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function placeStorageRetrievalRequestAndGoToSRRScreen(
         Element $page
     ): void {
-        // Open the "place storage request" dialog
         $this->waitForPageLoad($page);
+        // Wait for request checks to complete (they may affect layout):
+        $this->unFindCss($page, '.request-check');
+        // Open the "place storage request" dialog
         $this->clickCss($page, 'a.placeStorageRetrievalRequest');
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '.modal-body select')->setValue('C');
+        $this->findCssAndSetValue($page, '.modal-body select', 'C');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         // If successful, we should now have a link to review the request:
@@ -152,7 +158,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Storage Retrieval Requests',
-            $this->findCss($page, 'h2')->getText()
+            $this->findCssAndGetText($page, 'h2')
         );
     }
 
@@ -167,7 +173,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickButtonGroupLink(Element $page, string $text): void
     {
         $link = $this->findCss($page, '.btn-group.open')->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $link->click();
     }
 
@@ -185,7 +191,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Test that control is disabled upon empty selection
@@ -194,13 +200,13 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test that control becomes active if we click a checkbox (but don't
         // actually cancel anything yet).
-        $this->clickCss($page, "#checkbox_testsample1");
+        $this->clickCss($page, '#checkbox_testsample1');
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'No');
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Now cancel for real:
@@ -208,7 +214,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             '1 request(s) were successfully canceled',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
         $this->assertNull($page->find('css', 'a.title'));
     }
@@ -227,7 +233,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Click cancel but bail out with no... item should still be there.
@@ -237,7 +243,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
 
         // Now cancel for real:
@@ -245,7 +251,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             '1 request(s) were successfully canceled',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
         $this->assertNull($page->find('css', 'a.title'));
     }
@@ -273,7 +279,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
         $this->assertTrue(false !== strstr($page->getContent(), 'Main Desk'));
     }
@@ -301,7 +307,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCss($page, 'a.title')->getText()
+            $this->findCssAndGetText($page, 'a.title')
         );
         $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
     }
@@ -310,8 +316,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that user profile action blocks login with catalog login is disabled.
      * Note that we need to run this test FIRST, because after this, VuFind will
      * remember the credentials and won't display the login form again.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -337,10 +341,12 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'input.btn.btn-primary');
 
         // Confirm that login form is disabled:
-        $this->unFindCss($page, "#profile_cat_username");
+        $this->unFindCss($page, '#profile_cat_username');
         $this->assertEquals(
-            "Connection to the library management system failed. Information related to your library account cannot be displayed. If the problem persists, please contact your library.",
-            $this->findCss($page, "div.alert-warning")->getText()
+            'Connection to the library management system failed. '
+            . 'Information related to your library account cannot be displayed. '
+            . 'If the problem persists, please contact your library.',
+            $this->findCssAndGetText($page, 'div.alert-warning')
         );
 
         // Clean up the user account so we can sign up again in the next test:
@@ -349,8 +355,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test user profile action.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -379,7 +383,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that demo driver expected values are present:
         $this->waitForPageLoad($page);
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));
@@ -564,7 +568,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'No items were selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-danger')
         );
 
         // Test "renew all":
@@ -572,8 +576,145 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Renewal Successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
+    }
+
+    /**
+     * Test loan history.
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testLoanHistory(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        $page = $this->goToLoanHistory();
+
+        // Test sorting
+        $titles = [
+            'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
+            'Rational living.',
+        ];
+        foreach ($titles as $index => $title) {
+            $this->assertEquals(
+                $title,
+                $this->findCssAndGetText($page, 'ul.record-list li a.title', null, $index)
+            );
+        }
+        $this->clickCss($page, '#sort_options_1 option', null, 2);
+        $this->waitForPageLoad($page);
+        foreach (array_reverse($titles) as $index => $title) {
+            $this->assertEquals(
+                $title,
+                $this->findCssAndGetText($page, 'ul.record-list li a.title', null, $index)
+            );
+        }
+
+        // Test submitting with no selected checkboxes:
+        $this->clickCss($page, '#purgeSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'No Items were Selected',
+            $this->findCssAndGetText($page, '.alert.alert-danger')
+        );
+
+        // Purge one:
+        $this->clickCss($page, '.checkbox-select-item');
+        $this->clickCss($page, '#purgeSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'Selected loans have been purged from your loan history',
+            $this->findCssAndGetText($page, '.alert.alert-info')
+        );
+        $this->findCss($page, '.checkbox-select-item');
+        $this->unFindCss($page, '.checkbox-select-item', null, 1);
+
+        // Purge all:
+        $this->clickCss($page, '#purgeAll');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'Your loan history has been purged',
+            $this->findCssAndGetText($page, '.alert.alert-info')
+        );
+        $this->unFindCss($page, '.checkbox-select-item');
+    }
+
+    /**
+     * Data provider for testLoanHistoryWithPurgeDisabled
+     *
+     * @return array
+     */
+    public static function loanHistoryWithPurgeDisabledProvider(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+        ];
+    }
+
+    /**
+     * Test transaction history with purge option(s) disabled.
+     *
+     * @param bool $selected Whether to enable Purge Selected
+     * @param bool $all      Whether to enable Purge All
+     *
+     * @return void
+     *
+     * @dataProvider loanHistoryWithPurgeDisabledProvider
+     * @depends      testProfile
+     */
+    public function testLoanHistoryWithPurgeDisabled(bool $selected, bool $all): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['TransactionHistory']['purgeSelected'] = $selected;
+        $demoConfig['TransactionHistory']['purgeAll'] = $all;
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        $page = $this->goToLoanHistory();
+
+        if ($selected) {
+            $this->findCss($page, '#purgeSelected');
+        } else {
+            $this->unFindCss($page, '#purgeSelected');
+        }
+        if ($all) {
+            $this->findCss($page, '#purgeAll');
+        } else {
+            $this->unFindCss($page, '#purgeAll');
+        }
+    }
+
+    /**
+     * Log in and open loan history page
+     *
+     * @return DocumentElement
+     */
+    protected function goToLoanHistory(): DocumentElement
+    {
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Checkouts/History');
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        return $page;
     }
 
     /**

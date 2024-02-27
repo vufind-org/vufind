@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Jump to record" test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -35,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -47,14 +48,14 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     public function testJumpToFirst()
     {
         $this->changeConfigs(
-            ["config" => ["Record" => ["jump_to_single_search_result" => true]]]
+            ['config' => ['Record' => ['jump_to_single_search_result' => true]]]
         );
 
         $page = $this->performSearch('id:testbug2');
 
         $this->assertEquals(
             'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
-            trim($this->findCss($page, 'h1')->getText())
+            trim($this->findCssAndGetText($page, 'h1'))
         );
     }
 
@@ -68,14 +69,10 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->performSearch('id:testbug2');
 
-        $expected = 'Showing 1 - 1 results of 1 for search \'id:testbug2\'';
-        $this->assertEquals(
+        $expected = 'Showing 1 - 1 results of 1';
+        $this->assertStringStartsWith(
             $expected,
-            substr(
-                $this->findCss($page, '.search-stats')->getText(),
-                0,
-                strlen($expected)
-            )
+            $this->findCssAndGetText($page, '.search-stats')
         );
     }
 }

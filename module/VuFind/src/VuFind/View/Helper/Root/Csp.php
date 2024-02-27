@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Content Security Policy view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Response;
@@ -41,20 +43,13 @@ use Laminas\Http\Response;
 class Csp extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Response object
-     *
-     * @var Response
-     */
-    protected $response;
-
-    /**
      * Constructor
      *
-     * @param Response $response HTTP Response, if any
+     * @param ?Response $response HTTP Response, if any
+     * @param string    $nonce    CSP nonce
      */
-    public function __construct(?Response $response)
+    public function __construct(protected ?Response $response, protected string $nonce)
     {
-        $this->response = $response;
     }
 
     /**
@@ -62,15 +57,17 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    public function disablePolicy()
+    public function disablePolicy(): void
     {
         if (null === $this->response) {
             return;
         }
         $headers = $this->response->getHeaders();
-        foreach (['Content-Security-Policy', 'Content-Security-Policy-Report-Only']
-            as $field
-        ) {
+        $fieldsToCheck = [
+            'Content-Security-Policy',
+            'Content-Security-Policy-Report-Only',
+        ];
+        foreach ($fieldsToCheck as $field) {
             if ($cspHeaders = $headers->get($field)) {
                 // Make sure the result is iterable (an array cast doesn't work here
                 // as a single header may be castable as an array):
@@ -81,5 +78,17 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
                 }
             }
         }
+    }
+
+    /**
+     * Return the current nonce
+     *
+     * Result is a base64 encoded string that does not need escaping.
+     *
+     * @return string
+     */
+    public function getNonce(): string
+    {
+        return $this->nonce;
     }
 }

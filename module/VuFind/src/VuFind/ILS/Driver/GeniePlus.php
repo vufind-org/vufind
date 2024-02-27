@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GeniePlus API driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,9 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function in_array;
 
 /**
  * GeniePlus API driver
@@ -177,12 +182,12 @@ class GeniePlus extends AbstractAPI
      * @return \Laminas\Http\Response
      */
     protected function callApiWithToken(
-        $method = "GET",
-        $path = "/",
+        $method = 'GET',
+        $path = '/',
         $params = [],
         $headers = []
     ) {
-        $headers[] = "Accept: application/json";
+        $headers[] = 'Accept: application/json';
         if (null === $this->token) {
             $this->renewAccessToken();
         }
@@ -504,7 +509,7 @@ class GeniePlus extends AbstractAPI
             'cat_password' => trim($password),
             'email'        => $email,
             'major'        => null,
-            'college'      => null
+            'college'      => null,
         ];
     }
 

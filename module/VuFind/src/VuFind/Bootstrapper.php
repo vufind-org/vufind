@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Bootstrapper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind;
 
 use Laminas\Mvc\MvcEvent;
@@ -96,7 +98,7 @@ class Bootstrapper
         // automatically call all methods starting with "init":
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
-            if (substr($method, 0, 4) == 'init') {
+            if (str_starts_with($method, 'init')) {
                 $this->$method();
             }
         }
@@ -156,7 +158,7 @@ class Bootstrapper
             [
                 "{$this->config->Site->locale}.UTF8",
                 "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale
+                $this->config->Site->locale,
             ]
         );
         date_default_timezone_set($this->config->Site->timezone);
@@ -215,7 +217,8 @@ class Bootstrapper
         $settings = $this->container->get(LocaleSettings::class);
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
-        if (($user = $authManager->isLoggedIn())
+        if (
+            ($user = $authManager->isLoggedIn())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);
@@ -238,6 +241,25 @@ class Bootstrapper
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
+     * The login token manager needs to be informed after the theme has been initialized,
+     * so that it can send warning emails if necessary.
+     *
+     * @return void
+     */
+    protected function initLoginTokenManager(): void
+    {
+        $dispatchCallback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->themeIsReady();
+        };
+        $finishCallback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->requestIsFinished();
+        };
+        $this->events->attach('dispatch.error', $dispatchCallback, 8000);
+        $this->events->attach('dispatch', $dispatchCallback, 8000);
+        $this->events->attach('finish', $finishCallback, 8000);
     }
 
     /**
@@ -292,7 +314,7 @@ class Bootstrapper
         $callback = function ($event) {
             if ($this->container->has(\VuFind\Log\Logger::class)) {
                 $log = $this->container->get(\VuFind\Log\Logger::class);
-                if (is_callable([$log, 'logException'])) {
+                if ($log instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.

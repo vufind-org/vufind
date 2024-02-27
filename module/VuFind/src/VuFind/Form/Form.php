@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Configurable form.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2018-2021.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Form;
 
 use Laminas\InputFilter\InputFilter;
@@ -38,6 +40,10 @@ use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Configurable form.
@@ -149,20 +155,21 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Set form id
      *
-     * @param string $formId Form id
-     * @param array  $params Additional form parameters.
+     * @param string $formId  Form id
+     * @param array  $params  Additional form parameters.
+     * @param array  $prefill Prefill form with these values.
      *
      * @return void
      * @throws Exception
      */
-    public function setFormId($formId, $params = [])
+    public function setFormId($formId, $params = [], $prefill = [])
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
 
         $this->formElementConfig
-            = $this->parseConfig($formId, $config, $params);
+            = $this->parseConfig($formId, $config, $params, $prefill);
 
         $this->buildForm();
     }
@@ -179,7 +186,7 @@ class Form extends \Laminas\Form\Form implements
      */
     public function getDisplayString($translationKey, $escape = null)
     {
-        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        $escape ??= !str_ends_with($translationKey, '_html');
         $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
         return $helper($translationKey);
     }
@@ -262,11 +269,8 @@ class Form extends \Laminas\Form\Form implements
             ? [$recipient] : $recipient;
 
         foreach ($recipients as &$recipient) {
-            $recipient['email'] = $recipient['email']
-                ?? $this->defaultFormConfig['recipient_email'] ?? null;
-
-            $recipient['name'] = $recipient['name']
-                ?? $this->defaultFormConfig['recipient_name'] ?? null;
+            $recipient['email'] ??= $this->defaultFormConfig['recipient_email'] ?? null;
+            $recipient['name'] ??= $this->defaultFormConfig['recipient_name'] ?? null;
         }
 
         return $recipients;
@@ -349,7 +353,7 @@ class Form extends \Laminas\Form\Form implements
     {
         return !empty($this->formConfig['response'])
             ? $this->formConfig['response']
-            : 'Thank you for your feedback.';
+            : 'feedback_response';
     }
 
     /**
@@ -389,7 +393,7 @@ class Form extends \Laminas\Form\Form implements
     {
         return [
             $this->mapRequestParamsToFieldValues($requestParams),
-            'Email/form.phtml'
+            'Email/form.phtml',
         ];
     }
 
@@ -473,16 +477,16 @@ class Form extends \Laminas\Form\Form implements
                 'name' => EmailAddress::class,
                 'options' => [
                     'message' => $this->getValidationMessage('invalid_email'),
-                ]
+                ],
             ],
             'notEmpty' => [
                 'name' => NotEmpty::class,
                 'options' => [
                     'message' => [
                         NotEmpty::IS_EMPTY => $this->getValidationMessage('empty'),
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $elementObjects = $this->getElements();
@@ -508,8 +512,8 @@ class Form extends \Laminas\Form\Form implements
                                             $value
                                         )
                                     );
-                            }
-                         ]
+                            },
+                         ],
                     ];
                 } elseif ($required) {
                     $fieldValidators[] = [
@@ -517,11 +521,11 @@ class Form extends \Laminas\Form\Form implements
                         'options' => [
                             'message' => [
                                 Identical::MISSING_TOKEN
-                                => $this->getValidationMessage('empty')
+                                => $this->getValidationMessage('empty'),
                             ],
                             'strict' => true,
-                            'token' => array_keys($el['options'])
-                        ]
+                            'token' => array_keys($el['options']),
+                        ],
                     ];
                 }
             }
@@ -542,7 +546,7 @@ class Form extends \Laminas\Form\Form implements
                 [
                     'name' => $el['name'],
                     'required' => $required,
-                    'validators' => $fieldValidators
+                    'validators' => $fieldValidators,
                 ]
             );
         }
@@ -596,17 +600,18 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Parse form configuration.
      *
-     * @param string $formId Form id
-     * @param array  $config Configuration
-     * @param array  $params Additional form parameters.
+     * @param string $formId  Form id
+     * @param array  $config  Configuration
+     * @param array  $params  Additional form parameters.
+     * @param array  $prefill Prefill form with these values.
      *
      * @return array
      */
-    protected function parseConfig($formId, $config, $params)
+    protected function parseConfig($formId, $config, $params, $prefill)
     {
         $formConfig = [
            'id' => $formId,
-           'title' => !empty($config['name']) ?: $formId
+           'title' => !empty($config['name']) ?: $formId,
         ];
 
         foreach ($this->getFormSettingFields() as $key) {
@@ -617,6 +622,8 @@ class Form extends \Laminas\Form\Form implements
 
         $this->formConfig = $formConfig;
 
+        $prefill = $this->sanitizePrefill($prefill);
+
         $elements = [];
         $configuredElements = $this->getFormElements($config);
 
@@ -626,18 +633,12 @@ class Form extends \Laminas\Form\Form implements
             'type' => 'text',
             'label' => $this->translate('feedback_name'),
             'group' => '__sender__',
-            'settings' => [
-                'size' => 50
-            ]
         ];
         $senderEmail = [
             'name' => 'email',
             'type' => 'email',
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
-            'settings' => [
-                'size' => 254
-            ]
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderName['required'] = true;
@@ -654,7 +655,8 @@ class Form extends \Laminas\Form\Form implements
 
             $required = ['type', 'name'];
             $optional = $this->getFormElementSettingFields();
-            foreach (array_merge($required, $optional) as $field
+            foreach (
+                array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
                     continue;
@@ -663,7 +665,8 @@ class Form extends \Laminas\Form\Form implements
                 $element[$field] = $value;
             }
 
-            if (in_array($element['type'], ['checkbox', 'radio'])
+            if (
+                in_array($element['type'], ['checkbox', 'radio'])
                 && !isset($element['group'])
             ) {
                 $element['group'] = $element['name'];
@@ -707,20 +710,14 @@ class Form extends \Laminas\Form\Form implements
                 $senderEmail = null;
             }
 
-            // Add default field size settings for fields that don't define them:
-            if (in_array($elementType, ['text', 'url', 'email'])
-                && !isset($element['settings']['size'])
-            ) {
-                $element['settings']['size'] = 50;
-            }
-
             if ($elementType == 'textarea') {
-                if (!isset($element['settings']['cols'])) {
-                    $element['settings']['cols'] = 50;
-                }
                 if (!isset($element['settings']['rows'])) {
                     $element['settings']['rows'] = 8;
                 }
+            }
+
+            if (!empty($prefill[$element['name']])) {
+                $element['settings']['value'] = $prefill[$element['name']];
             }
 
             $elements[] = $element;
@@ -759,7 +756,7 @@ class Form extends \Laminas\Form\Form implements
         $elements[] = [
             'type' => 'submit',
             'name' => 'submit',
-            'label' => 'Send'
+            'label' => 'Send',
         ];
 
         return $elements;
@@ -789,8 +786,8 @@ class Form extends \Laminas\Form\Form implements
                 'value' => '',
                 'label' => $placeholder,
                 'attributes' => [
-                    'selected' => 'selected', 'disabled' => 'disabled'
-                ]
+                    'selected' => 'selected', 'disabled' => 'disabled',
+                ],
             ];
         }
         $idx = 0;
@@ -800,7 +797,7 @@ class Form extends \Laminas\Form\Form implements
             $label = $option['label'] ?? $option;
             $options["o$idx"] = [
                 'value' => $value,
-                'label' => $label
+                'label' => $label,
             ];
         }
         return $options;
@@ -837,7 +834,7 @@ class Form extends \Laminas\Form\Form implements
             }
             $groups[$group['label']] = [
                 'label' => $group['label'],
-                'options' => $options
+                'options' => $options,
             ];
         }
         return $groups;
@@ -868,6 +865,7 @@ class Form extends \Laminas\Form\Form implements
             'useCaptcha',
             'primaryHandler',
             'secondaryHandlers',
+            'prefillFields',
         ];
     }
 
@@ -889,6 +887,20 @@ class Form extends \Laminas\Form\Form implements
             'required',
             'requireOne',
             'value',
+        ];
+    }
+
+    /**
+     * Return field names that should not be prefilled.
+     *
+     * @return array
+     */
+    protected function getProtectedFieldNames(): array
+    {
+        return [
+            'referrer',
+            'submit',
+            'userAgent',
         ];
     }
 
@@ -930,7 +942,7 @@ class Form extends \Laminas\Form\Form implements
 
         $attributes = [
             'id' => $this->getElementId($el['name']),
-            'class' => [$el['settings']['class'] ?? null]
+            'class' => [$el['settings']['class'] ?? null],
         ];
 
         if ($type !== 'submit') {
@@ -944,88 +956,89 @@ class Form extends \Laminas\Form\Form implements
             $attributes += $el['settings'];
         }
         // Add aria-label only if not a hidden field and no aria-label specified:
-        if (!empty($el['label']) && 'hidden' !== $type
+        if (
+            !empty($el['label']) && 'hidden' !== $type
             && !isset($attributes['aria-label'])
         ) {
             $attributes['aria-label'] = $el['label'];
         }
 
         switch ($type) {
-        case 'checkbox':
-            $options = [];
-            if (isset($el['options'])) {
-                $options = $el['options'];
-            }
-            $optionElements = [];
-            foreach ($options as $key => $item) {
-                $optionElements[] = [
-                    'label' => $this->translate($item['label']),
-                    'value' => $key,
-                    'attributes' => [
-                        'id' => $this->getElementId($el['name'] . '_' . $key)
-                    ]
-                ];
-            }
-            $conf['options'] = ['value_options' => $optionElements];
-            break;
-        case 'date':
-            if (isset($el['minValue'])) {
-                $attributes['min'] = date('Y-m-d', strtotime($el['minValue']));
-            }
-            if (isset($el['maxValue'])) {
-                $attributes['max'] = date('Y-m-d', strtotime($el['maxValue']));
-            }
-            break;
-        case 'radio':
-            $options = [];
-            if (isset($el['options'])) {
-                $options = $el['options'];
-            }
-            $optionElements = [];
-            $first = true;
-            foreach ($options as $key => $option) {
-                $elemId = $this->getElementId($el['name'] . '_' . $key);
-                $optionElements[] = [
-                    'label' => $this->translate($option['label']),
-                    'value' => $key,
-                    'label_attributes' => ['for' => $elemId],
-                    'attributes' => [
-                        'id' => $elemId
-                    ],
-                    'selected' => $first
-                ];
-                $first = false;
-            }
-            $conf['options'] = ['value_options' => $optionElements];
-            break;
-        case 'select':
-            if (isset($el['options'])) {
-                $options = $el['options'];
-                foreach ($options as $key => &$option) {
-                    $option['value'] = $key;
+            case 'checkbox':
+                $options = [];
+                if (isset($el['options'])) {
+                    $options = $el['options'];
                 }
-                // Unset reference:
-                unset($option);
-                $conf['options'] = ['value_options' => $options];
-            } elseif (isset($el['optionGroups'])) {
-                $groups = $el['optionGroups'];
-                foreach ($groups as &$group) {
-                    foreach ($group['options'] as $key => &$option) {
+                $optionElements = [];
+                foreach ($options as $key => $item) {
+                    $optionElements[] = [
+                        'label' => $this->translate($item['label']),
+                        'value' => $key,
+                        'attributes' => [
+                            'id' => $this->getElementId($el['name'] . '_' . $key),
+                        ],
+                    ];
+                }
+                $conf['options'] = ['value_options' => $optionElements];
+                break;
+            case 'date':
+                if (isset($el['minValue'])) {
+                    $attributes['min'] = date('Y-m-d', strtotime($el['minValue']));
+                }
+                if (isset($el['maxValue'])) {
+                    $attributes['max'] = date('Y-m-d', strtotime($el['maxValue']));
+                }
+                break;
+            case 'radio':
+                $options = [];
+                if (isset($el['options'])) {
+                    $options = $el['options'];
+                }
+                $optionElements = [];
+                $first = true;
+                foreach ($options as $key => $option) {
+                    $elemId = $this->getElementId($el['name'] . '_' . $key);
+                    $optionElements[] = [
+                        'label' => $this->translate($option['label']),
+                        'value' => $key,
+                        'label_attributes' => ['for' => $elemId],
+                        'attributes' => [
+                            'id' => $elemId,
+                        ],
+                        'selected' => $first,
+                    ];
+                    $first = false;
+                }
+                $conf['options'] = ['value_options' => $optionElements];
+                break;
+            case 'select':
+                if (isset($el['options'])) {
+                    $options = $el['options'];
+                    foreach ($options as $key => &$option) {
                         $option['value'] = $key;
                     }
                     // Unset reference:
-                    unset($key);
+                    unset($option);
+                    $conf['options'] = ['value_options' => $options];
+                } elseif (isset($el['optionGroups'])) {
+                    $groups = $el['optionGroups'];
+                    foreach ($groups as &$group) {
+                        foreach ($group['options'] as $key => &$option) {
+                            $option['value'] = $key;
+                        }
+                        // Unset reference:
+                        unset($key);
+                    }
+                    // Unset reference:
+                    unset($group);
+                    $conf['options'] = ['value_options' => $groups];
                 }
-                // Unset reference:
-                unset($group);
-                $conf['options'] = ['value_options' => $groups];
-            }
-            break;
-        case 'submit':
-            $attributes['value'] = $el['label'];
-            $attributes['class'][] = 'btn';
-            $attributes['class'][] = 'btn-primary';
-            break;
+                break;
+            case 'submit':
+                $attributes['value'] = $el['label'];
+                $attributes['class'][] = 'btn';
+                $attributes['class'][] = 'btn-primary';
+                break;
         }
 
         $attributes['class'] = trim(implode(' ', $attributes['class']));
@@ -1134,5 +1147,26 @@ class Form extends \Laminas\Form\Form implements
     public function getFormId(): string
     {
         return $this->formConfig['id'] ?? '';
+    }
+
+    /**
+     * Validates prefill data and returns only the prefill values for enabled fields
+     *
+     * @param array $prefill Prefill data
+     *
+     * @return array
+     */
+    protected function sanitizePrefill(array $prefill): array
+    {
+        $prefillFields = $this->formConfig['prefillFields'] ?? [];
+        $prefill = array_filter(
+            $prefill,
+            function ($key) use ($prefillFields) {
+                return in_array($key, $prefillFields)
+                    && !in_array($key, $this->getProtectedFieldNames());
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+        return $prefill;
     }
 }

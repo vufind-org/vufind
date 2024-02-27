@@ -3,7 +3,7 @@
 /**
  * Mix-in for accessing a real Solr instance during testing.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use Laminas\EventManager\SharedEventManager;
@@ -68,6 +69,7 @@ trait LiveSolrTrait
             $container,
             $config['vufind']['config_reader']
         );
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $this->addPathResolverToContainer($container);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();

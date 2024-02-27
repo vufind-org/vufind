@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS Driver Plugin Manager Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\PluginManager;

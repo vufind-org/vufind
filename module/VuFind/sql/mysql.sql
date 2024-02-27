@@ -135,10 +135,9 @@ CREATE TABLE `search` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0',
   `session_id` varchar(128) DEFAULT NULL,
-  `folder_id` int(11) DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `title` varchar(20) DEFAULT NULL,
-  `saved` int(1) NOT NULL DEFAULT '0',
+  `saved` tinyint(1) NOT NULL DEFAULT '0',
   `search_object` blob,
   `checksum` int(11) DEFAULT NULL,
   `notification_frequency` int(11) NOT NULL DEFAULT '0',
@@ -146,7 +145,6 @@ CREATE TABLE `search` (
   `notification_base_url` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  KEY `folder_id` (`folder_id`),
   KEY `session_id` (`session_id`),
   KEY `notification_frequency` (`notification_frequency`),
   KEY `notification_base_url` (`notification_base_url`(190)),
@@ -265,7 +263,7 @@ CREATE TABLE `user_list` (
   `title` varchar(200) NOT NULL,
   `description` text,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-  `public` int(11) NOT NULL DEFAULT '0',
+  `public` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
@@ -410,4 +408,26 @@ CREATE TABLE `access_token` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `access_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `login_token`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `login_token` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `series` varchar(255) NOT NULL,
+  `last_login` datetime NOT NULL,
+  `browser` varchar(255) NULL,
+  `platform` varchar(255) NULL,
+  `expires` int NOT NULL,
+  `last_session_id` varchar(255) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id_series` (`user_id`, `series`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class for managing ILS-specific authentication.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\ILS as ILSException;
@@ -42,11 +44,18 @@ use VuFind\ILS\Connection as ILSConnection;
 class ILSAuthenticator
 {
     /**
-     * Auth manager
+     * Callback for retrieving the authentication manager
+     *
+     * @var callable
+     */
+    protected $authManagerCallback;
+
+    /**
+     * Authentication manager
      *
      * @var Manager
      */
-    protected $auth;
+    protected $authManager = null;
 
     /**
      * ILS connector
@@ -72,16 +81,16 @@ class ILSAuthenticator
     /**
      * Constructor
      *
-     * @param Manager            $auth      Auth manager
+     * @param callable           $authCB    Auth manager callback
      * @param ILSConnection      $catalog   ILS connection
      * @param EmailAuthenticator $emailAuth Email authenticator
      */
     public function __construct(
-        Manager $auth,
+        callable $authCB,
         ILSConnection $catalog,
         EmailAuthenticator $emailAuth = null
     ) {
-        $this->auth = $auth;
+        $this->authManagerCallback = $authCB;
         $this->catalog = $catalog;
         $this->emailAuthenticator = $emailAuth;
     }
@@ -99,10 +108,10 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
+        if (($user = $this->getAuthManager()->isLoggedIn()) && !empty($user->cat_username)) {
             return [
                 'cat_username' => $user->cat_username,
-                'cat_password' => $user->cat_password
+                'cat_password' => $user->cat_password,
             ];
         }
         return false;
@@ -121,7 +130,7 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
+        if (($user = $this->getAuthManager()->isLoggedIn()) && !empty($user->cat_username)) {
             // Do we have a previously cached ILS account?
             if (isset($this->ilsAccount[$user->cat_username])) {
                 return $this->ilsAccount[$user->cat_username];
@@ -169,24 +178,27 @@ class ILSAuthenticator
     /**
      * Send email authentication link
      *
-     * @param string $email Email address
-     * @param string $route Route for the login link
+     * @param string $email       Email address
+     * @param string $route       Route for the login link
+     * @param array  $routeParams Route parameters
+     * @param array  $urlParams   URL parameters
      *
      * @return void
      */
-    public function sendEmailLoginLink($email, $route)
+    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = [])
     {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
         }
 
-        $patron = $this->catalog->patronLogin($email, '');
-        if ($patron) {
+        $userData = $this->catalog->patronLogin($email, '');
+        if ($userData) {
             $this->emailAuthenticator->sendAuthenticationLink(
-                $patron['email'],
-                $patron,
-                ['auth_method' => 'ILS'],
-                $route
+                $userData['email'],
+                compact('userData'),
+                ['auth_method' => 'ILS'] + $urlParams,
+                $route,
+                $routeParams
             );
         }
     }
@@ -225,12 +237,25 @@ class ILSAuthenticator
      */
     protected function updateUser($catUsername, $catPassword, $patron)
     {
-        $user = $this->auth->isLoggedIn();
+        $user = $this->getAuthManager()->isLoggedIn();
         if ($user) {
             $user->saveCredentials($catUsername, $catPassword);
-            $this->auth->updateSession($user);
+            $this->getAuthManager()->updateSession($user);
             // cache for future use
             $this->ilsAccount[$catUsername] = $patron;
         }
+    }
+
+    /**
+     * Get authentication manager
+     *
+     * @return Manager
+     */
+    protected function getAuthManager(): Manager
+    {
+        if (null === $this->authManager) {
+            $this->authManager = ($this->authManagerCallback)();
+        }
+        return $this->authManager;
     }
 }

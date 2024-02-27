@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Database table plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
+
 namespace VuFind\Db\Table;
 
 /**
@@ -48,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'changetracker' => ChangeTracker::class,
         'comments' => Comments::class,
         'externalsession' => ExternalSession::class,
+        'logintoken' => LoginToken::class,
         'oairesumption' => OaiResumption::class,
         'ratings' => Ratings::class,
         'record' => Record::class,
@@ -75,6 +78,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Comments::class => GatewayFactory::class,
         ExternalSession::class => GatewayFactory::class,
         Feedback::class => GatewayFactory::class,
+        LoginToken::class => GatewayFactory::class,
         OaiResumption::class => GatewayFactory::class,
         Ratings::class => GatewayFactory::class,
         Record::class => GatewayFactory::class,

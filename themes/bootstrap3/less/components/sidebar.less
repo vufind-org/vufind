@@ -9,12 +9,18 @@
 
   .collapse,
   .collapsing,
-  & > .facet {
+  &.full-facet-list .facet {
     position: relative;
     border-left: 1px solid @list-group-border;
     border-right: 1px solid @list-group-border;
   }
-  & > .facet:first-child { border-top: 1px solid @list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid @list-group-border; }
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .facet,
@@ -26,14 +32,16 @@
   background-color: transparent;
 }
 .facet,
-.facet-group .title {
+.facet-group .title,
+.user-list-link {
   display: flex;
+  align-items: center;
 
   .text {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
     flex-grow: 1;
-    i {
-      margin-right: 0.3rem;
-    }
   }
 
   .badge {
@@ -84,9 +92,15 @@
   color: #fff;
   background-color: #000;
 }
+.facet .text {
+  overflow: hidden;
+}
 
 .top-facets-contents {
+  display: block;
   margin: 2px 0;
+  padding: 0;
+  list-style: none;
 }
 .top-facets .facet,
 .top-facets > strong {
@@ -154,7 +168,7 @@
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 
 .truncate-done {
-  overflow: hidden;
+  overflow: clip;
 }
 .more-less-btn-wrapper .fa {
   line-height: inherit;
@@ -173,6 +187,10 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
   .date-from, .date-to { flex: 0 1 100%; }
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
+}
+h3.facet-title {
+  font-size: @font-size-base;
+  margin: 0;
 }
 @media (min-width: 768px) {
   .author-facets { display: flex; }

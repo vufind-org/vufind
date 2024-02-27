@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Plugin to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2021, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFind\Sitemap\Plugin\Index;
 
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+use VuFindSearch\Command\GetIdsCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
@@ -131,20 +134,22 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
             $this->defaultParams + [
                 'rows' => $countPerPage,
                 'sort' => $key . ' asc',
-                'cursorMark' => $cursorMark
+                'cursorMark' => $cursorMark,
             ]
         );
         // Apply filters:
         foreach ($filters as $filter) {
             $params->add('fq', $filter);
         }
-        $results = $this->searchService->getIds(
+        $command = new GetIdsCommand(
             $backend,
             new Query('*:*'),
             0,
             $countPerPage,
             $params
         );
+
+        $results = $this->searchService->invoke($command)->getResult();
         $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);

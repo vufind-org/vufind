@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink test class for basic collection functionality.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -37,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -46,7 +47,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollection()
+    protected function goToCollection()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/topcollection1';
@@ -59,7 +60,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollectionHierarchy()
+    protected function goToCollectionHierarchy()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/subcollection1/HierarchyTree';
@@ -78,19 +79,19 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             [
             'config' => [
                 'Collections' => [
-                    'collections' => true
+                    'collections' => true,
                 ],
             ],
             'HierarchyDefault' => [
                 'Collections' => [
-                    'link_type' => 'Top'
-                ]
-            ]
+                    'link_type' => 'Top',
+                ],
+            ],
             ]
         );
         $page = $this->goToCollection();
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(7, count($results));
+        $this->assertCount(7, $results);
     }
 
     /**
@@ -104,14 +105,14 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             [
             'config' => [
                 'Collections' => [
-                    'collections' => true
+                    'collections' => true,
                 ],
             ],
             'HierarchyDefault' => [
                 'Collections' => [
-                    'link_type' => 'Top'
-                ]
-            ]
+                    'link_type' => 'Top',
+                ],
+            ],
             ]
         );
         $page = $this->goToCollection();
@@ -134,17 +135,17 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             [
             'config' => [
                 'Hierarchy' => [
-                    'showTree' => true
+                    'showTree' => true,
                 ],
                 'Collections' => [
-                    'collections' => true
+                    'collections' => true,
                 ],
             ],
             'HierarchyDefault' => [
                 'Collections' => [
-                    'link_type' => 'All'
-                ]
-            ]
+                    'link_type' => 'All',
+                ],
+            ],
             ]
         );
         $page = $this->goToCollection();
@@ -153,10 +154,10 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToCollectionHierarchy();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            trim($this->findCss($page, '#tree-preview h2')->getText()),
+            trim($this->findCssAndGetText($page, '#tree-preview h2')),
             'Subcollection 1'
         );
-        $this->clickCss($page, '[recordid="colitem2"] a');
+        $this->clickCss($page, 'a[data-record-id="colitem2"]');
 
         $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
 
