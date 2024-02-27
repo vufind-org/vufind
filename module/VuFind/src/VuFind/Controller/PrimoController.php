@@ -110,6 +110,9 @@ class PrimoController extends AbstractSearch
             $options = $params->getOptions();
             $options->disableHighlighting();
             $options->spellcheckEnabled(false);
+            if ($lastLimit = $this->getSearchMemory()->retrieveLastSetting($this->searchClassId, 'limit')) {
+                $params->setLimit($lastLimit);
+            }
         };
 
         $view = $this->getSearchResultsView($callback);

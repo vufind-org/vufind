@@ -430,7 +430,7 @@ abstract class Options implements TranslatorAwareInterface
             ?? ($this->loadResultsWithJs ? 'simple' : false);
         $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
         $this->displayCitationLinksInResults
-            = (bool)($searchSettings->Results_Settings->display_citation_links ?? false);
+            = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
     }
 
     /**
