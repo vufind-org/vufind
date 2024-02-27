@@ -40,6 +40,7 @@ use VuFind\Solr\Utils as SolrUtils;
 use function count;
 use function in_array;
 use function intval;
+use function is_array;
 
 /**
  * VuFind Search Controller
@@ -231,18 +232,10 @@ class AbstractSearch extends AbstractBase
         $rManager = $this->serviceLocator
             ->get(\VuFind\Recommend\PluginManager::class);
 
-        // Special case: override recommend settings through parameter (used by
-        // combined search)
-        if ($override = $this->params()->fromQuery('recommendOverride')) {
-            return function ($runner, $p, $searchId) use ($rManager, $override) {
-                $listener = new RecommendListener($rManager, $searchId);
-                $listener->setConfig($override);
-                $listener->attach($runner->getEventManager()->getSharedManager());
-            };
-        }
+        $override = $this->params()->fromQuery('recommendOverride');
 
-        // Standard case: retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
+        // Retrieve recommend settings from params object:
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()
@@ -252,6 +245,13 @@ class AbstractSearch extends AbstractBase
                     $config[$key] = $value;
                 }
             }
+
+            // Special case: override recommend settings through parameter (used by
+            // combined search)
+            if (is_array($override)) {
+                $config = array_merge($config, $override);
+            }
+
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
@@ -364,6 +364,7 @@ class AbstractSearch extends AbstractBase
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
+        $view->request = $request;
 
         $lastView = $this->getSearchMemory()
             ->retrieveLastSetting($this->searchClassId, 'view');
@@ -430,15 +431,11 @@ class AbstractSearch extends AbstractBase
             return $this->getRssSearchResponse($view);
         }
 
-        // Search toolbar
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $view->showBulkOptions = $config->Site->showBulkOptions ?? false;
-
         // Schedule options for footer tools
         $view->scheduleOptions = $this->serviceLocator
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
+        $view->saveToHistory = $this->saveToHistory;
         return $view;
     }
 
@@ -872,7 +869,18 @@ class AbstractSearch extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
+        $contains = $this->params()->fromQuery('contains', '');
         $page = (int)$this->params()->fromQuery('facetpage', 1);
+        // Has the request been sent in an AJAX context?
+        $ajax = (int)$this->params()->fromQuery('ajax', 0);
+        $urlBase = $this->params()->fromQuery('urlBase', '');
+        $searchAction = $this->params()->fromQuery('searchAction', '');
+        // $urlBase and $searchAction should be relative URLs; if there is an
+        // absolute URL passed in, this may be a sign of malicious activity and
+        // we should fail.
+        if (str_contains($urlBase . $searchAction, '://')) {
+            throw new \Exception('Unexpected absolute URL found.');
+        }
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
@@ -885,6 +893,10 @@ class AbstractSearch extends AbstractBase
             ->get($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
+        if (!empty($contains)) {
+            $params->setFacetContains($contains);
+            $params->setFacetContainsIgnoreCase(true);
+        }
         $facets = $results->getPartialFieldFacets(
             [$facet],
             false,
@@ -896,22 +908,27 @@ class AbstractSearch extends AbstractBase
         $list = $facets[$facet]['data']['list'] ?? [];
         $facetLabel = $params->getFacetLabel($facet);
 
-        $view = $this->createViewModel(
-            [
-                'data' => $list,
-                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
-                'facet' => $facet,
-                'facetLabel' => $facetLabel,
-                'operator' => $this->params()->fromQuery('facetop', 'AND'),
-                'page' => $page,
-                'results' => $results,
-                'anotherPage' => $facets[$facet]['more'] ?? '',
-                'sort' => $sort,
-                'sortOptions' => $facetSortOptions,
-                'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
-            ]
-        );
-        $view->setTemplate('search/facet-list');
+        $viewParams = [
+            'contains' => $contains,
+            'data' => $list,
+            'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
+            'facet' => $facet,
+            'facetLabel' => $facetLabel,
+            'operator' => $this->params()->fromQuery('facetop', 'AND'),
+            'page' => $page,
+            'results' => $results,
+            'anotherPage' => $facets[$facet]['more'] ?? '',
+            'sort' => $sort,
+            'sortOptions' => $facetSortOptions,
+            'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
+            'active' => $sort,
+            'key' => $sort,
+            'urlBase' => $urlBase,
+            'searchAction' => $searchAction,
+        ];
+        $viewParams['delegateParams'] = $viewParams;
+        $view = $this->createViewModel($viewParams);
+        $view->setTemplate($ajax ? 'search/facet-list-content' : 'search/facet-list');
         return $view;
     }
 

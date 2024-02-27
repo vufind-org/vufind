@@ -7,22 +7,18 @@
         $viewParams = [
           'searchClassId' => $searchClassId,
           'currentSearch' => $currentSearch,
-          // Enable cart if appropriate:
-          'showCartControls' => $this->supportsCartOptions[$columnIndex] && $this->showCartControls,
-          // Enable bulk options if appropriate:
-          'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
         ];
       ?>
       <?php
         if (
           !($currentSearch['ajax'] ?? false)                        // AJAX column
           && ($currentSearch['hide_if_empty'] ?? false)             // set to hide when empty
-          && $currentSearch['view']->results->getResultTotal() == 0 // and empty
+          && $currentSearch['view']->results->getResultTotal() <= 0 // and empty
         ) {
           continue;
         }
       ?>
-      <?php $columnIndex ++; ?>
+      <?php $columnIndex++; ?>
       <?php
         if ($columnIndex > 0 && $columnIndex < $columns) {
           $viewParams['domId'] = $currentSearch['domId'];

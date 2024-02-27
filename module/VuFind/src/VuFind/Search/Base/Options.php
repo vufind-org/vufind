@@ -232,6 +232,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $hierarchicalFacetSeparators = [];
 
     /**
+     * Hierarchical facet sort settings
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortSettings = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -330,11 +337,18 @@ abstract class Options implements TranslatorAwareInterface
     protected $resultLimit = -1;
 
     /**
-     * Is the first/last navigation scroller enabled?
+     * Is first/last navigation supported by the backend?
      *
      * @var bool
      */
-    protected $firstlastNavigation = false;
+    protected $firstLastNavigationSupported = true;
+
+    /**
+     * Is the record page first/last navigation scroller enabled?
+     *
+     * @var bool
+     */
+    protected $recordPageFirstLastNavigation = false;
 
     /**
      * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
@@ -366,6 +380,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $topPaginatorStyle;
 
     /**
+     * Is loading of results with JavaScript enabled?
+     *
+     * @var bool
+     */
+    protected $loadResultsWithJs;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -395,9 +416,11 @@ abstract class Options implements TranslatorAwareInterface
             = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
 
         $searchSettings = $configLoader->get($this->searchIni);
-        $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
         $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator
+            ?? ($this->loadResultsWithJs ? 'simple' : false);
         $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
     }
 
@@ -809,6 +832,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get hierarchical facet sort settings.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortSettings()
+    {
+        return $this->hierarchicalFacetSortSettings;
+    }
+
+    /**
      * Get current spellcheck setting and (optionally) change it.
      *
      * @param bool $bool True to enable, false to disable, null to leave alone
@@ -952,6 +985,28 @@ abstract class Options implements TranslatorAwareInterface
      * @return string|bool
      */
     public function getVersionsAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cites" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitesAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the "cited by" search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getCitedByAction()
     {
         return false;
     }
@@ -1138,7 +1193,7 @@ abstract class Options implements TranslatorAwareInterface
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
         if (count($class) !== 4) {
-            if (str_starts_with($className, 'Mock_')) {
+            if (str_starts_with($className, 'Mock_') || str_starts_with($className, 'MockObject_')) {
                 return 'Mock';
             }
             throw new \Exception("Unexpected class name: {$className}");
@@ -1161,13 +1216,35 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we include first/last options in result scroller navigation?
+     * Should we include first/last options in record page navigation?
      *
      * @return bool
+     *
+     * @deprecated Use recordFirstLastNavigationEnabled instead
      */
     public function supportsFirstLastNavigation()
     {
-        return $this->firstlastNavigation;
+        return $this->recordFirstLastNavigationEnabled();
+    }
+
+    /**
+     * Is first/last navigation supported by the backend
+     *
+     * @return bool
+     */
+    public function firstLastNavigationSupported()
+    {
+        return $this->firstLastNavigationSupported;
+    }
+
+    /**
+     * Should we include first/last options in record page navigation?
+     *
+     * @return bool
+     */
+    public function recordFirstLastNavigationEnabled()
+    {
+        return $this->firstLastNavigationSupported() && $this->recordPageFirstLastNavigation;
     }
 
     /**
@@ -1179,6 +1256,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Should we load results with JavaScript?
+     *
+     * @return bool
+     */
+    public function loadResultsWithJsEnabled(): bool
+    {
+        return $this->loadResultsWithJs;
     }
 
     /**

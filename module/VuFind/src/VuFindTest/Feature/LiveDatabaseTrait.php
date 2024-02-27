@@ -124,7 +124,7 @@ trait LiveDatabaseTrait
      */
     protected static function failIfDataExists(): void
     {
-        $test = new static();   // create instance of current class
+        $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
         if (!$test->hasLiveDetectionTrait ?? false) {
             self::fail(
@@ -171,7 +171,7 @@ trait LiveDatabaseTrait
      */
     protected static function removeUsers($users)
     {
-        $test = new static();   // create instance of current class
+        $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
         if (!$test->hasLiveDetectionTrait ?? false) {
             self::fail(

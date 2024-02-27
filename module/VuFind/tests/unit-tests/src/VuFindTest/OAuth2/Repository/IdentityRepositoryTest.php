@@ -45,7 +45,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IdentityRepositoryTest extends AbstractTokenRepositoryTest
+class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * OAuth2 configuration
@@ -98,7 +98,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
      *
      * @return array
      */
-    public function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): array
     {
         return [
             [null],

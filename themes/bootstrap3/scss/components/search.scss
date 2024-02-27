@@ -16,6 +16,32 @@ $thumbnail-width-large:  160px;
   }
 }
 
+.js-result-list {
+  position: relative;
+
+  // Loading spinner
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    display: flex;
+    font-size: 150%;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.2);
+
+    .loading-spinner {
+      padding: 2rem;
+      background-color: rgba(0,0,0,0.6);
+      border-radius: $border-radius-large;
+      color: $gray-lighter;
+    }
+  }
+}
+
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
@@ -56,22 +82,6 @@ $thumbnail-width-large:  160px;
     flex: 1 1 100%;
   }
   .home-facet-list { flex: 0 1 100%; }
-}
-
-.searchForm {
-  margin: 0;
-  padding: 0;
-
-  .input-group .form-control:first-child {
-    border-top-right-radius: $input-border-radius;
-    border-bottom-right-radius: $input-border-radius;
-  }
-
-  @media (max-width: 767px) {
-    .input-group {
-      width: 100%;
-    }
-  }
 }
 
 header .container.navbar { margin-bottom: 0; }
@@ -446,13 +456,18 @@ body.rtl {
   margin-left: 1rem;
   margin-right: 1rem;
 
+  // This is overridden via JS in combined/results-list.phtml
+  visibility: hidden;
+
   ul {
     display: inline;
     list-style: none;
     padding-left: 0;
 
     li {
-      display: inline;
+      // This is overridden via JS in combined/results-list.phtml
+      display: none;
+
       white-space: nowrap;
       &:not(:first-child):before {
         content: '\2013'; // n-dash
@@ -678,42 +693,71 @@ body.rtl {
 .search-history-table {
   @extend .table;
   @extend .table-striped;
+  @extend .table-responsive;
 }
 table.search-history-table {
   table-layout: auto;
 
-  tbody > tr > td { vertical-align: middle; }
-  .history_time {
-    width: 20%;
+  @media screen and (min-width: 768px) {
+    tbody > tr > td { vertical-align: middle; }
+    .history_time {
+      width: 20%;
+    }
   }
 }
 
-.searchForm-query {
-  position: relative;
-  display: inline-block;
+.searchForm {
+  margin: 0;
+  padding: 0;
 
-  #searchForm_lookfor {
-    padding-right: 28px;
+  .searchForm-query {
+    position: relative;
+
+    @media (min-width: 768px) {
+      display: inline-block;
+    }
+
+    #searchForm_lookfor {
+      padding-right: 34px;
+    }
+
+    /* Adjust padding for the virtual keyboard button */
+    @media (min-width: 401px) {
+      #searchForm_lookfor.with-keyboard-selection {
+        padding-right: 72px;
+      }
+    }
+
+    #searchForm_controls {
+      position: absolute;
+      right: 3px;
+      top: 5px;
+      z-index: 4;
+      height: 2em;
+    }
+
+    #searchForm-reset {
+      bottom: 0;
+      width: 2em;
+      border: none;
+      border-radius: 50%;
+      background-color: $gray-lighter;
+      margin: 0;
+      padding: 2px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  }
+}
+
+/* Hide virtual keyboard on narrow screens */
+@media (max-width: 400px) {
+  .keyboard-selection {
+    display: none;
   }
 
-  #searchForm_controls {
-    position: absolute;
-    right: 3px;
-    top: 5px;
-    z-index: 4;
-    height: 2em;
-  }
-
-  #searchForm-reset {
-    bottom: 0;
-    width: 2em;
-    border: none;
-    border-radius: 50%;
-    background-color: $gray-lighter;
-    margin: 0;
-    padding: 2px;
-    font-size: 1em;
-    cursor: pointer;
+  .show-keyboard, .simple-keyboard {
+    display: none;
   }
 }
 
@@ -735,10 +779,10 @@ table.search-history-table {
   text-align: inherit;
   li {
     display: inline-block;
-    a.page-prev {
+    &.page-prev a {
       margin-right: 0.5rem;
     }
-    a.page-next {
+    &.page-next a {
       margin-left: 0.5rem;
     }
   }

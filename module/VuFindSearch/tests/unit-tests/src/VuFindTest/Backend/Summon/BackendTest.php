@@ -48,6 +48,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Setup method.
@@ -93,10 +94,12 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $expected1 = new SummonQuery(null, ['idsToFetch' => range(1, 50), 'pageNumber' => 1, 'pageSize' => 50]);
         $expected2 = new SummonQuery(null, ['idsToFetch' => range(51, 60), 'pageNumber' => 1, 'pageSize' => 50]);
-        $conn->expects($this->exactly(2))
-            ->method('query')
-            ->withConsecutive([$expected1], [$expected2])
-            ->willReturnOnConsecutiveCalls($this->loadResponse('retrieve1'), $this->loadResponse('retrieve2'));
+        $this->expectConsecutiveCalls(
+            $conn,
+            'query',
+            [[$expected1], [$expected2]],
+            [$this->loadResponse('retrieve1'), $this->loadResponse('retrieve2')]
+        );
 
         $back = new Backend($conn);
         $back->setIdentifier('test');

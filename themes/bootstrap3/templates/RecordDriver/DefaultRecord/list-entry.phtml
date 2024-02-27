@@ -74,11 +74,11 @@
               <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
             <?php endif; ?>
             <?php $summInCollection = $this->driver->getContainingCollections(); ?>
-            <?php if (false && !empty($summInCollection)): ?>
+            <?php if (!empty($summInCollection)): ?>
               <?php foreach ($summInCollection as $collId => $collText): ?>
                 <div>
                   <b><?=$this->transEsc('in_collection_label')?></b>
-                  <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collid)?>">
+                  <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                     <?=$this->escapeHtml($collText)?>
                   </a>
                 </div>
