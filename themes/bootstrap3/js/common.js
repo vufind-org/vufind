@@ -239,19 +239,106 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url, data, success) {
-    var $elem = $(_element);
-    if ($elem.length === 0) {
-      return;
-    }
-    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
-      if ('success' === textStatus || 'notmodified' === textStatus) {
-        $elem.html(updateCspNonce(responseText));
-      }
-      if (typeof success !== 'undefined') {
-        success(responseText, textStatus, jqXhr);
+  /**
+   * Set element contents and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm      Target element
+   * @param {string}  html     HTML
+   * @param {Object}  attrs    Any additional attributes
+   * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
+   */
+  function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
+    // Extract any scripts from the HTML and add them separately so that they are executed properly:
+    const scripts = [];
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = html;
+    tmpDiv.querySelectorAll('script').forEach((el) => {
+      const type = el.getAttribute('type');
+      if (!type || 'text/javascript' === type) {
+        scripts.push(el.cloneNode(true));
+        el.remove();
       }
     });
+
+    let newElm = elm;
+    if (property === 'innerHTML') {
+      elm.innerHTML = tmpDiv.innerHTML;
+    } else if (property === 'outerHTML') {
+      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
+      const nextElm = elm.nextElementSibling;
+      const parentElm = elm.parentElement ? elm.parentElement : null;
+      elm.outerHTML = tmpDiv.innerHTML;
+      // Try to find a new reference, leave as is if not possible:
+      if (nextElm) {
+        newElm = nextElm.previousElementSibling;
+      } else if (parentElm) {
+        newElm = parentElm.lastElementChild;
+      }
+    }
+
+    // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
+    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
+
+    // Append any scripts:
+    scripts.forEach((script) => {
+      const scriptEl = document.createElement('script');
+      scriptEl.innerHTML = script.innerHTML;
+      scriptEl.setAttribute('nonce', getCspNonce());
+      newElm.appendChild(scriptEl);
+    });
+  }
+
+  /**
+   * Set innerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setInnerHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'innerHTML');
+  }
+
+  /**
+   * Set outerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setOuterHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'outerHTML');
+  }
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);
+    if (!element) {
+      return;
+    }
+
+    fetch(url, {
+      method: 'GET',
+      body: data ? JSON.stringify(data) : null
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(VuFind.translate('error_occurred'));
+        }
+        return response.text();
+      })
+      .then(htmlContent => {
+        setInnerHtml(element, htmlContent);
+        if (typeof success === 'function') {
+          success(htmlContent);
+        }
+      })
+      .catch(error => {
+        console.error('Request failed:', error);
+        setInnerHtml(element, VuFind.translate('error_occurred'));
+        if (typeof success === 'function') {
+          success(null, error);
+        }
+      });
   };
 
   var isPrinting = function() {
@@ -356,7 +443,10 @@ var VuFind = (function VuFind() {
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
-    setupQRCodeLinks: setupQRCodeLinks
+    setupQRCodeLinks: setupQRCodeLinks,
+    setInnerHtml: setInnerHtml,
+    setOuterHtml: setOuterHtml,
+    setElementContents: setElementContents
   };
 })();
 

@@ -328,32 +328,12 @@ VuFind.register('search', function search() {
         recordList.innerHTML = '';
         Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
           document.querySelectorAll(elementSelector).forEach((element) => {
-            // Extract any scripts from the HTML and add them separately so that they are executed properly:
-            const scripts = [];
-            const tmpDiv = document.createElement('div');
-            tmpDiv.innerHTML = contents.content;
-            tmpDiv.querySelectorAll('script').forEach((el) => {
-              const type = el.getAttribute('type');
-              if (!type || 'text/javascript' === type) {
-                scripts.push(el.cloneNode(true));
-                el.remove();
-              }
-            });
-
-            if (contents.target === 'inner') {
-              element.innerHTML = tmpDiv.innerHTML;
-            } else if (contents.target === 'outer') {
-              element.outerHTML = tmpDiv.outerHTML;
-            }
-            Object.entries(contents.attrs).forEach(([attr, value]) => element.setAttribute(attr, value));
-
-            // Append any scripts:
-            scripts.forEach((script) => {
-              const scriptEl = document.createElement('script');
-              scriptEl.innerHTML = script.innerHTML;
-              scriptEl.setAttribute('nonce', VuFind.getCspNonce());
-              element.appendChild(scriptEl);
-            });
+            VuFind.setElementContents(
+              element,
+              contents.content,
+              contents.attrs,
+              contents.target ? (contents.target + 'HTML') : ''
+            );
           });
         });
         VuFind.initResultScripts(jsRecordListSelector);

@@ -65,4 +65,16 @@ trait ExplodeSettingTrait
         }
         return $result;
     }
+
+    /**
+     * Explode a comma-delimited setting to an array of trimmed values
+     *
+     * @param string $value Setting value
+     *
+     * @return array
+     */
+    protected function explodeListSetting(string $value): array
+    {
+        return $this->explodeSetting($value, true, ',');
+    }
 }

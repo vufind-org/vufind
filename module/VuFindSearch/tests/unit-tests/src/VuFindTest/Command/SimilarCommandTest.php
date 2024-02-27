@@ -30,6 +30,7 @@
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
+use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Command\SimilarCommand;
 use VuFindSearch\ParamBag;
 
@@ -55,12 +56,12 @@ class SimilarCommandTest extends TestCase
         $params = new ParamBag(['foo' => 'bar']);
         $backend = $this->getBackend();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('similar')
             ->with(
                 $this->equalTo('id'),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));
+            )->willReturn('result');
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
@@ -156,7 +157,7 @@ class SimilarCommandTest extends TestCase
      */
     public function getBackend()
     {
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
+        $backend = $this->getMockBuilder(Backend::class)
             ->disableOriginalConstructor()->getMock();
         return $backend;
     }

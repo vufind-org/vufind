@@ -55,7 +55,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that "other versions" link exists:
         $this->assertEquals(
             'Show other versions (3)',
-            $this->findCss($page, 'div.record-versions a')->getText()
+            $this->findCssAndGetText($page, 'div.record-versions a')
         );
 
         // Click on the "other versions" link:
@@ -65,7 +65,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Other Versions (3)',
-            $this->findCss($page, 'li.record-tab.active')->getText()
+            $this->findCssAndGetText($page, 'li.record-tab.active')
         );
 
         // Click the "see all versions" link:
@@ -75,7 +75,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCss($page, 'ul.breadcrumb li.active')->getText()
+            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
         );
         $results = $page->findAll('css', '.result');
         $this->assertCount(4, $results);
@@ -124,7 +124,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that "all versions" link exists:
         $this->assertEquals(
             'Show all versions (4)',
-            $this->findCss($page, 'div.record-versions a')->getText()
+            $this->findCssAndGetText($page, 'div.record-versions a')
         );
 
         // Click on the "all versions" link:
@@ -135,7 +135,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCss($page, 'ul.breadcrumb li.active')->getText()
+            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
         );
         $results = $page->findAll('css', '.result');
         $this->assertCount(4, $results);

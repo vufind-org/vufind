@@ -132,11 +132,11 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @var array
      */
     protected $elements = [
-        '.js-pagination.pagination-top' => [
+        '.js-pagination.js-pagination__top' => [
             'method' => 'renderPaginationTop',
             'target' => 'outer',
         ],
-        '.js-pagination:not(.pagination-top)' => [
+        '.js-pagination:not(.js-pagination__top)' => [
             'method' => 'renderPagination',
             'target' => 'outer',
         ],
@@ -307,6 +307,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param Results $results  Search results
      * @param string  $template Paginator template
      * @param string  $ulClass  Additional class for the pagination container
+     * @param string  $navClass Additional class for the nav element
      *
      * @return ?string
      */
@@ -314,13 +315,15 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         Params $params,
         Results $results,
         string $template = 'search/pagination.phtml',
-        string $ulClass = ''
+        string $ulClass = '',
+        string $navClass = ''
     ): ?string {
-        $paginationOptions = $results->getOptions()->supportsFirstLastNavigation()
-            ? []
-            : ['disableFirst' => true, 'disableLast' => true];
+        $paginationOptions = [];
         if ($ulClass) {
             $paginationOptions['className'] = $ulClass;
+        }
+        if ($navClass) {
+            $paginationOptions['navClassName'] = $navClass;
         }
         $pagination = $this->renderer->plugin('paginationControl');
         return $pagination(
@@ -354,7 +357,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function renderPaginationTop(Params $params, Results $results): ?string
     {
-        return $this->renderPagination($params, $results, 'search/pagination.phtml', 'pagination-top');
+        return $this->renderPagination($params, $results, 'search/pagination-top.phtml');
     }
 
     /**
