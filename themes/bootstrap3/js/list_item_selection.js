@@ -38,6 +38,15 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     }
   }
 
+  function _updateSelectionCount(button, count) {
+    if (count < 1) {
+      button.classList.add('hidden');
+    } else {
+      button.getElementsByClassName('select-count')[0].innerHTML = count;
+      button.classList.remove('hidden');
+    }
+  }
+
   function getAllSelected(form) {
     let selected = [];
     let nonDefaultIdsInput = form.querySelector('.non_default_ids');
@@ -134,6 +143,8 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       .forEach((checkbox) => {
         _check(checkbox, _allGlobalAreSelected(form));
       });
+    document.querySelectorAll('#' + form.id + ' .clear-selection, .clear-selection[form="' + form.id + '"]')
+      .forEach((button) => _updateSelectionCount(button, getAllSelected(form).length));
   }
 
   function _selectAllCheckbox(checkbox) {
@@ -166,12 +177,29 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     _writeState(form);
   }
 
-  function _setupCheckboxes() {
+  function _clearAllSelected(button) {
+    let form = button.form ? button.form : button.closest('form');
+    if (form == null) {
+      return;
+    }
+    _writeToForm(form, {
+      'nonDefaultIds': [],
+      'checkedDefault': false,
+      'selectAllOnPage': false
+    });
+    _updateSelectionState(form);
+    _writeState(form);
+  }
+
+  function _setupControls() {
     document.querySelectorAll('.checkbox-select-all').forEach((checkbox) => {
       checkbox.addEventListener('change', () => _selectAllCheckbox(checkbox));
     });
     document.querySelectorAll('.checkbox-select-all-global').forEach((checkbox) => {
       checkbox.addEventListener('change', () => _selectAllGlobalCheckbox(checkbox));
+    });
+    document.querySelectorAll('.clear-selection').forEach((button) => {
+      button.addEventListener('click', () => _clearAllSelected(button));
     });
     document.querySelectorAll('.checkbox-select-item').forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
@@ -219,7 +247,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     document.querySelectorAll('.select-all-global').forEach((checkbox) => {
       checkbox.classList.remove("hidden");
     });
-    _setupCheckboxes();
+    _setupControls();
     document.querySelectorAll('.multi-page-selection').forEach( _setupMultiPageSelectionForm);
   }
 

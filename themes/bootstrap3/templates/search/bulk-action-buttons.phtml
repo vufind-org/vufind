@@ -3,10 +3,6 @@
 ?>
 <?php if ($searchSettings->checkboxesEnabled()): ?>
   <nav class="bulkActionButtons">
-    <div class="bulk-checkbox">
-      <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
-      <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll"><?=$this->transEsc('select_all_on_page')?></label>
-    </div>
     <ul class="action-toolbar">
       <?php if ($searchSettings->bulkOptionsEnabled()): ?>
         <?=
@@ -86,6 +82,12 @@
           )
         ?>
       <?php endif; ?>
+    </ul>
+    <ul class="selection-controls-bar">
+      <li class="bulk-checkbox">
+        <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll"><?=$this->transEsc('select_all_on_page')?></label>
+      </li>
     </ul>
   </nav>
 <?php endif; ?>
