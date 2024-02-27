@@ -191,11 +191,11 @@ class ILSAuthenticator
             throw new \Exception('Email authenticator not set');
         }
 
-        $patron = $this->catalog->patronLogin($email, '');
-        if ($patron) {
+        $userData = $this->catalog->patronLogin($email, '');
+        if ($userData) {
             $this->emailAuthenticator->sendAuthenticationLink(
-                $patron['email'],
-                $patron,
+                $userData['email'],
+                compact('userData'),
                 ['auth_method' => 'ILS'] + $urlParams,
                 $route,
                 $routeParams

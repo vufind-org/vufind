@@ -64,9 +64,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoSearch()
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testdeweybrowse');
         $this->clickCss($page, '.btn.btn-primary');
@@ -189,11 +187,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
         // Search for anything else
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('anything else');
-        $this->clickCss($page, '.btn.btn-primary');
+        $page = $this->performSearch('anything else');
         $this->waitForPageLoad($page);
         // Come back
         $page = $this->gotoSearch();

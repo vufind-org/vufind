@@ -77,7 +77,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             $expectedFirstTitle,
-            $this->findCss($page, 'table.alphabrowse td.title')->getText()
+            $this->findCssAndGetText($page, 'table.alphabrowse td.title')
         );
     }
 
@@ -91,8 +91,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=lcc&from=PS3552.R878+T47+2011');
         $page = $session->getPage();
-        $extras = $this->findCss($page, 'table.alphabrowse td.lcc ~ td');
-        $text = $extras->getText();
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.lcc ~ td');
         $this->assertStringContainsString('<HTML> The Basics', $text);
     }
 }

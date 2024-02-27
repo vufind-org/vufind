@@ -79,7 +79,7 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
 
         $urlHelper = $this->getView()->plugin('url');
         $parts = explode('/', $relPath);
-        $encodedRelPath = implode('/', array_map('urlencode', $parts));
+        $encodedRelPath = implode('/', array_map('rawurlencode', $parts));
         $url = $urlHelper('home') . "themes/{$details['theme']}/" . $encodedRelPath;
         $url .= strstr($url, '?') ? '&_=' : '?_=';
         $url .= filemtime($details['path']);
