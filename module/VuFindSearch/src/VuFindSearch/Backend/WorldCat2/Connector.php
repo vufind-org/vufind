@@ -2,7 +2,7 @@
 /**
  * Class for accessing OCLC WorldCat search API v2.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
