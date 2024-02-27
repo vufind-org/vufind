@@ -216,6 +216,9 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   }
 
   function init() {
+    document.querySelectorAll('.select-all-global').forEach((checkbox) => {
+      checkbox.classList.remove("hidden");
+    });
     _setupCheckboxes();
     document.querySelectorAll('.multi-page-selection').forEach( _setupMultiPageSelectionForm);
   }

@@ -16,7 +16,7 @@
     </div>
   <?php endif; ?>
   <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
-    <div class="bulk-checkbox">
+    <div class="bulk-checkbox select-all-global hidden">
       <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
       <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
     </div>
