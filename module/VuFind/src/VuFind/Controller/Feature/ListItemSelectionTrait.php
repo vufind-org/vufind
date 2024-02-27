@@ -49,6 +49,9 @@ trait ListItemSelectionTrait
      */
     protected function getSelectedIds()
     {
+        // Values may be stored as a default state (checked_default), a list of IDs that do not
+        // match the default state (non_default_ids), and a list of all IDs (all_ids_global). If these
+        // values are found, we need to calculate the selected list from them.
         $checkedDefault = $this->params()->fromPost('checked_default') !== null;
         $nonDefaultIds = $this->params()->fromPost('non_default_ids');
         $allIdsGlobal = $this->params()->fromPost('all_ids_global', '[]');
@@ -58,10 +61,13 @@ trait ListItemSelectionTrait
                 json_decode($allIdsGlobal),
                 function ($id) use ($checkedDefault, $nonDefaultIds) {
                     $nonDefaultId = in_array($id, $nonDefaultIds);
-                    return $checkedDefault ^ $nonDefaultId;
+                    return $checkedDefault xor $nonDefaultId;
                 }
             ));
         }
+        // If we got this far, values were passed in a simpler format: a list of checked IDs (ids),
+        // a list of all IDs on the current page (idsAll), and whether the whole page is
+        // selected (selectAll):
         return null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids', [])
             : $this->params()->fromPost('idsAll', []);

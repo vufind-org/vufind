@@ -76,6 +76,14 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     return selectedIds.length === allIds.length;
   }
 
+  /**
+   * Updates the form inputs based on the input data. "data" can contain the values for "non_default_ids",
+   * "checked_default" and if all single item checkboxes should be checked.
+   *
+   * @private
+   * @param form
+   * @param data
+   */
   function _writeToForm(form, data = {}) {
     if (data.nonDefaultIds !== undefined) {
       form.querySelector('.non_default_ids').value = JSON.stringify(data.nonDefaultIds);
@@ -88,7 +96,14 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     }
   }
 
-  function _checkIfAllSelected(form) {
+  /**
+   * Updates the state of the hidden input "checked_default" and "non_default_ids" and the checkboxes
+   * "checkbox-select-all" and "checkbox-select-all-global" to match the current selection.
+   *
+   * @private
+   * @param form
+   */
+  function _updateSelectionState(form) {
     let nonDefaultIdsInput = form.querySelector('.non_default_ids');
     let checkedDefaultInput = form.querySelector('.checked_default');
 
@@ -130,7 +145,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       _writeToForm(form, {
         'selectAllOnPage': checkbox.checked
       });
-      _checkIfAllSelected(form);
+      _updateSelectionState(form);
     }
     _writeState(form);
   }
@@ -146,7 +161,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
         'checkedDefault': checkbox.checked,
         'selectAllOnPage': checkbox.checked
       });
-      _checkIfAllSelected(form);
+      _updateSelectionState(form);
     }
     _writeState(form);
   }
@@ -164,8 +179,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
         if (form == null) {
           return;
         }
-        _writeToForm(form);
-        _checkIfAllSelected(form);
+        _updateSelectionState(form);
         _writeState(form);
       });
     });
@@ -196,7 +210,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       'nonDefaultIds': nonDefaultIds,
       'checkedDefault': checkedDefault,
     });
-    _checkIfAllSelected(form);
+    _updateSelectionState(form);
 
     window.addEventListener('beforeunload', () => _writeState(form));
   }
