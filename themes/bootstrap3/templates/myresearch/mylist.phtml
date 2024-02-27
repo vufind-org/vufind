@@ -104,7 +104,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
+  <?=$this->accountMenu()->render(isset($list) ? 'list' . $list['id'] : 'favorites')?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

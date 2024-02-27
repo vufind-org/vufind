@@ -14,8 +14,7 @@
             var url = VuFind.path
                 + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded'
                 + '&type=$typeEncoded';
-            var container = $('$targetIdHtmlEscaped');
-            VuFind.combinedSearch.init(container, url);
+            VuFind.combinedSearch.init('$targetIdHtmlEscaped', url);
         });
         JS;
 
