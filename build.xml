@@ -129,6 +129,7 @@
     <phingcall target="phpcs-console"/>
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpstan-console"/>
+    <phingcall target="psalm-console"/>
   </target>
 
   <!-- Fix PHP Tasks -->
