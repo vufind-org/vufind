@@ -373,7 +373,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
 
-        $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $manager = $this->getManager([], null, null, $pm);
@@ -390,7 +389,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
 
-        $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $manager = $this->getManager([], null, null, $pm);
