@@ -392,7 +392,8 @@ class XCNCIP2 extends AbstractBase implements
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
 
-        $this->itemUseRestrictionTypesForStatus = $this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? [];
+        $this->itemUseRestrictionTypesForStatus
+            = (array)($this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? []);
     }
 
     /**
