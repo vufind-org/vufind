@@ -301,6 +301,10 @@ header .container.navbar { margin-bottom: 0; }
   display: none;
 }
 
+.result-citation-links {
+  margin: 0.5rem 0;
+}
+
 @media (min-width: 768px) {
   .result-body {
     float: left;

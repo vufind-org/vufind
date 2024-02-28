@@ -144,6 +144,8 @@ return [
             'cart-empty' => 'FontAwesome:times',
             'cart-remove' => 'FontAwesome:minus-circle',
             'cite' => 'FontAwesome:asterisk',
+            'cites' => 'Unicode:275D',
+            'cited-by' => 'Unicode:275E',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
