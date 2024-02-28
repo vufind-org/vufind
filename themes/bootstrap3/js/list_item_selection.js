@@ -42,7 +42,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     if (count < 1) {
       button.classList.add('hidden');
     } else {
-      button.getElementsByClassName('select-count')[0].innerHTML = count;
+      button.innerHTML = VuFind.translate('clear_selection', { '%%count%%': count});
       button.classList.remove('hidden');
     }
   }
@@ -136,13 +136,9 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       });
     }
     document.querySelectorAll('#' + form.id + ' .checkbox-select-all, .checkbox-select-all[form="' + form.id + '"]')
-      .forEach((checkbox) => {
-        _check(checkbox, _allOnPageAreSelected(form));
-      });
+      .forEach((checkbox) => _check(checkbox, _allOnPageAreSelected(form)));
     document.querySelectorAll('#' + form.id + ' .checkbox-select-all-global, .checkbox-select-all-global[form="' + form.id + '"]')
-      .forEach((checkbox) => {
-        _check(checkbox, _allGlobalAreSelected(form));
-      });
+      .forEach((checkbox) => _check(checkbox, _allGlobalAreSelected(form)));
     document.querySelectorAll('#' + form.id + ' .clear-selection, .clear-selection[form="' + form.id + '"]')
       .forEach((button) => _updateSelectionCount(button, getAllSelected(form).length));
   }
