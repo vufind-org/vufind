@@ -130,7 +130,7 @@ header .container.navbar { margin-bottom: 0; }
 }
 .bulk-checkbox {
   padding-inline-end: 1rem;
-  margin-top: .2rem;
+  margin-top: .25rem;
 }
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
@@ -633,7 +633,6 @@ body.rtl {
 .reset-filters-btn {
   @extend .icon-link;
   gap: 0.25rem;
-
   margin-bottom: 4px;
   margin-top: 4px;
   padding: .5rem 1rem;
@@ -644,7 +643,7 @@ body.rtl {
 
 .clear-selection{
   font-weight: 700;
-  padding: .2rem .4rem;
+  padding: .25rem .4rem .15rem .4rem;
   flex-basis: 100%;
 }
 
