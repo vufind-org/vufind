@@ -148,12 +148,9 @@ trait MarcAdvancedTrait
                 if (!empty($current)) {
                     if ($extended) {
                         $sourceIndicator = $result['i2'];
-                        $source = '';
-                        if (isset($this->subjectSources[$sourceIndicator])) {
-                            $source = $this->subjectSources[$sourceIndicator] ?? '';
-                        } else {
-                            $source = $this->getSubfield($result, '2');
-                        }
+                        $source = (isset($this->subjectSources[$sourceIndicator]))
+                            ? ($this->subjectSources[$sourceIndicator] ?? '')
+                            : $this->getSubfield($result, '2');
                         $retval[] = [
                             'heading' => $current,
                             'type' => $fieldType,
@@ -425,8 +422,6 @@ trait MarcAdvancedTrait
      */
     public function getSeries()
     {
-        $matches = [];
-
         // First check the 440, 800 and 830 fields for series information:
         $primaryFields = [
             '440' => ['a', 'p'],

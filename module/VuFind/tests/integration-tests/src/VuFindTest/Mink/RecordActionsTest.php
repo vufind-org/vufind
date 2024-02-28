@@ -550,7 +550,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.modal .sms-error');
         // Send text to false number
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
-        $optionElement = $this->findCss($page, '.modal #sms_provider option');
+        $this->findCss($page, '.modal #sms_provider option');
         $page->selectFieldOption('sms_provider', 'verizon');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message

@@ -304,12 +304,10 @@ class Backend extends AbstractBackend
         }
 
         $backendOffsets = [];
-        $collectionOffsets = [];
         $backendTotals = [];
         $availableBackendIds = array_keys($collections);
         foreach ($availableBackendIds as $backendId) {
             $backendOffsets[$backendId] = 0;
-            $collectionOffsets[$backendId] = 0;
             $backendTotals[$backendId] = $collections[$backendId]->getTotal();
         }
         // First iterate through the merged records before the offset to
