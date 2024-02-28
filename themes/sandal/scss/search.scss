@@ -216,9 +216,14 @@
   color: $input-color;
 }
 
-.navbar-form {
+.nav.searchbox {
   padding: .5rem 0 1rem 0;
   margin: 0;
+}
+.navbar-form {
+  padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
 .nav.searchbox,
