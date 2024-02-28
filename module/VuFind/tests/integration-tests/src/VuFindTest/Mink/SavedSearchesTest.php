@@ -332,7 +332,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // At this point, our journals search should be in the unsaved list; let's
         // set it up for alerts and confirm that this auto-saves it.
-        $this->findCss($page, '#recent-searches ' . $this->scheduleSelector)->click();
+        $this->clickCss($page, '#recent-searches ' . $this->scheduleSelector);
         $this->waitForPageLoad($page);
         $this->findCss($page, '#recent-searches ' . $this->scheduleSelector)->findLink('Weekly')->click();
         $this->waitForPageLoad($page);
@@ -379,7 +379,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // We should now be on a page with a schedule selector; let's pick something:
-        $this->findCss($page, $this->scheduleSelector)->click();
+        $this->clickCss($page, $this->scheduleSelector);
         $this->waitForPageLoad($page);
         $this->findCss($page, $this->scheduleSelector)->findLink('Weekly')->click();
         $this->waitForPageLoad($page);
