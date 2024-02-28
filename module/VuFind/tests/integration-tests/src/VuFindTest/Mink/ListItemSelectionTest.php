@@ -149,6 +149,28 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Check that the number of selected elements globally is shown on the clear selection button.
+     *
+     * @param Element $page           Page element
+     * @param int     $expectedNumber Expected number of selected elements
+     *
+     * @return void
+     */
+    protected function checkClearSelectionButton($page, $expectedNumber)
+    {
+        $button = $this->findCss($page, '.clear-selection');
+        if ($expectedNumber == 0) {
+            $this->assertTrue(
+                $button->hasClass('hidden'),
+                'Clear selection button is not hidden'
+            );
+        } else {
+            $number = (int)filter_var($button->getText(), FILTER_SANITIZE_NUMBER_INT);
+            $this->assertEquals($expectedNumber, $number, 'Wrong number of selected on clear selection button');
+        }
+    }
+
+    /**
      * Check if the select all on page checkbox exits.
      *
      * @param Element $page       Page element
@@ -217,11 +239,12 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Check the complete status of the checkboxes and selection.
      *
-     * @param Element $page                    Page element
-     * @param int     $selectAllOnPageCheckbox Expected state of the select all on page checkbox
-     * @param int     $selectAllGlobalCheckbox Expected state of the select all global checkbox
-     * @param int     $numberOfSelectedOnPage  Expected number of selected elements on page
-     * @param int     $numberOfSelectedGlobal  Expected number of globally selected elements
+     * @param Element $page                      Page element
+     * @param int     $selectAllOnPageCheckbox   Expected state of the select all on page checkbox
+     * @param int     $selectAllGlobalCheckbox   Expected state of the select all global checkbox
+     * @param int     $numberOfSelectedOnPage    Expected number of selected elements on page
+     * @param int     $numberOfSelectedGlobal    Expected number of globally selected elements
+     * @param boolean $multiPageSelectionEnabled If multi page selecion is enabled
      *
      * @return void
      */
@@ -230,7 +253,8 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $selectAllOnPageCheckbox,
         $selectAllGlobalCheckbox,
         $numberOfSelectedOnPage,
-        $numberOfSelectedGlobal
+        $numberOfSelectedGlobal,
+        $multiPageSelectionEnabled = false
     ) {
         switch ($selectAllOnPageCheckbox) {
             case self::NONE:
@@ -260,6 +284,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         }
         $this->checkNumberOfSelectedOnPage($page, $numberOfSelectedOnPage);
         $this->checkNumberOfSelectedGlobal($page, $numberOfSelectedGlobal);
+        if ($multiPageSelectionEnabled) {
+            $this->checkClearSelectionButton($page, $numberOfSelectedGlobal);
+        }
     }
 
     /**
@@ -284,6 +311,18 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickSelectAllGlobal(Element $page)
     {
         $this->clickCss($page, '[name=bulkActionForm] .checkbox-select-all-global');
+    }
+
+    /**
+     * Click clear selection button.
+     *
+     * @param $page Element element
+     *
+     * @return void
+     */
+    protected function clickClearSelection(Element $page)
+    {
+        $this->clickCss($page, '[name=bulkActionForm] .clear-selection');
     }
 
     /**
@@ -499,29 +538,32 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
             'multi_page_favorites_selection' => true,
             'checkbox_select_all_favorites_type' => 'none',
         ]);
-        $this->checkStatus($page, self::NONE, self::NONE, 0, 0);
+        $this->checkStatus($page, self::NONE, self::NONE, 0, 0, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::NONE, 1, 1);
+        $this->checkStatus($page, self::NONE, self::NONE, 1, 1, true);
 
         $this->clickSelectSingleElement($page, 1);
         $this->clickSelectSingleElement($page, 2);
-        $this->checkStatus($page, self::NONE, self::NONE, 3, 3);
+        $this->checkStatus($page, self::NONE, self::NONE, 3, 3, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::NONE, 2, 2);
+        $this->checkStatus($page, self::NONE, self::NONE, 2, 2, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::NONE, self::NONE, 0, 2);
+        $this->checkStatus($page, self::NONE, self::NONE, 0, 2, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::NONE, 1, 3);
+        $this->checkStatus($page, self::NONE, self::NONE, 1, 3, true);
 
         $this->gotoPrevPage($page);
-        $this->checkStatus($page, self::NONE, self::NONE, 2, 3);
+        $this->checkStatus($page, self::NONE, self::NONE, 2, 3, true);
 
         $this->clickSelectSingleElement($page, 1);
-        $this->checkStatus($page, self::NONE, self::NONE, 1, 2);
+        $this->checkStatus($page, self::NONE, self::NONE, 1, 2, true);
+
+        $this->clickClearSelection($page);
+        $this->checkStatus($page, self::NONE, self::NONE, 0, 0, true);
     }
 
     /**
@@ -538,41 +580,44 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
             'multi_page_favorites_selection' => true,
             'checkbox_select_all_favorites_type' => 'on_page',
         ]);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 1, 1);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 1, 1, true);
 
         $this->clickSelectSingleElement($page, 1);
         $this->clickSelectSingleElement($page, 2);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 3, 3);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 3, 3, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 2, 2);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 2, 2, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20);
+        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 20);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 1, 21);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 1, 21, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 40);
+        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 40, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 19, 39);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 19, 39, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 40);
+        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 40, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 20);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 20, true);
 
         $this->gotoPrevPage($page);
-        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20);
+        $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20, true);
+
+        $this->clickClearSelection($page);
+        $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0, true);
     }
 
     /**
@@ -589,60 +634,60 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
             'multi_page_favorites_selection' => true,
             'checkbox_select_all_favorites_type' => 'global',
         ]);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 0);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 0, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 1, 1);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 1, 1, true);
 
         $this->clickSelectSingleElement($page, 1);
         $this->clickSelectSingleElement($page, 2);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 3, 3);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 3, 3, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 2, 2);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 2, 2, true);
 
         $this->clickSelectSingleElement($page, 0);
         for ($i = 3; $i < 20; $i++) {
             $this->clickSelectSingleElement($page, $i);
         }
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 20);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 20, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 20);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 1, 21);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 1, 21, true);
 
         $this->gotoPrevPage($page);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 21);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 21, true);
 
         $this->clickSelectSingleElement($page, 10);
         $this->clickSelectSingleElement($page, 11);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 18, 19);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 18, 19, true);
 
         $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 19, 99);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 19, 99, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 19, 99);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 19, 99, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 99);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 99, true);
 
         $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100, true);
 
-        $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 0);
+        $this->clickClearSelection($page);
+        $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 0, true);
     }
 
     /**
@@ -659,99 +704,102 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
             'multi_page_favorites_selection' => true,
             'checkbox_select_all_favorites_type' => 'both',
         ]);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 0);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 0, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 1);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 1, true);
 
         $this->clickSelectSingleElement($page, 1);
         $this->clickSelectSingleElement($page, 2);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 3, 3);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 3, 3, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 2, 2);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 2, 2, true);
 
         $this->clickSelectSingleElement($page, 0);
         for ($i = 3; $i < 20; $i++) {
             $this->clickSelectSingleElement($page, $i);
         }
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 21);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 21, true);
 
         $this->gotoPrevPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 21);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 21, true);
 
         $this->clickSelectSingleElement($page, 10);
         $this->clickSelectSingleElement($page, 11);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 18, 19);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 18, 19, true);
 
         $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 99);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 99, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 99);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 99, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 99);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 99, true);
 
         $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
         $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 0);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 0, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 21);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 21, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 40);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 40, true);
 
         $this->clickSelectSingleElement($page, 0);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 39);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 39, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 40);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 40, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20, true);
 
         $this->gotoPrevPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20, true);
 
         $this->clickSelectAllGlobal($page);
-        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 80);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 80, true);
 
         $this->gotoNextPage($page);
-        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 80);
+        $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 80, true);
 
         $this->gotoPrevPage($page);
-        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 80);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 80, true);
 
         $this->clickSelectAllOnPage($page);
-        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100);
+        $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
+
+        $this->clickClearSelection($page);
+        $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 0, true);
     }
 
     /**
