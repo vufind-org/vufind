@@ -1,0 +1,56 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" xmlns:ns2="https://ncip.knihovny.cz/ILSDI/ncip/2015/extensions" ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">
+    <ns1:LookupItemResponse>
+        <ns1:ItemId>
+            <ns1:AgencyId>Agency from lookup item</ns1:AgencyId>
+            <ns1:ItemIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Barcode</ns1:ItemIdentifierType>
+            <ns1:ItemIdentifierValue>318300321322</ns1:ItemIdentifierValue>
+        </ns1:ItemId>
+        <ns1:ItemTransaction>
+            <ns1:CurrentBorrower>
+                <ns1:UserId>
+                    <ns1:AgencyId>OPG001</ns1:AgencyId>
+                    <ns1:UserIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Institution Id Number</ns1:UserIdentifierType>
+                    <ns1:UserIdentifierValue>99046</ns1:UserIdentifierValue>
+                </ns1:UserId>
+            </ns1:CurrentBorrower>
+        </ns1:ItemTransaction>
+        <ns1:ItemOptionalFields>
+            <ns1:BibliographicDescription>
+                <ns1:Author>Prichard, Katharine Susannah, 1883-1969</ns1:Author>
+                <ns1:BibliographicItemId>
+                    <ns1:BibliographicItemIdentifier>KN3183000000046386</ns1:BibliographicItemIdentifier>
+                </ns1:BibliographicItemId>
+                <ns1:PlaceOfPublication>Praha</ns1:PlaceOfPublication>
+                <ns1:PublicationDate>1975</ns1:PublicationDate>
+                <ns1:Publisher>Svoboda</ns1:Publisher>
+                <ns1:Title>Sharn, má naděje a láska</ns1:Title>
+                <ns1:BibliographicLevel ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographiclevel/bibliographiclevel.scm">Monograph</ns1:BibliographicLevel>
+                <ns1:Language ns1:Scheme="http://lcweb.loc.gov/standards/iso639-2/bibcodes.html">cze</ns1:Language>
+                <ns1:MediumType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</ns1:MediumType>
+            </ns1:BibliographicDescription>
+            <ns1:ItemUseRestrictionType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">Limited Circulation, Normal Loan Period</ns1:ItemUseRestrictionType>
+            <ns1:CirculationStatus ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">On Loan</ns1:CirculationStatus>
+            <ns1:HoldQueueLength>0</ns1:HoldQueueLength>
+            <ns1:ItemDescription>
+                <ns1:CallNumber>Q</ns1:CallNumber>
+                <ns1:ItemDescriptionLevel ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemdescriptionlevel/itemdescriptionlevel.scm">Bibliographic Item</ns1:ItemDescriptionLevel>
+            </ns1:ItemDescription>
+            <ns1:Location>
+                <ns1:LocationType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/locationtype/locationtype.scm">Permanent Location</ns1:LocationType>
+                <ns1:LocationName>
+                    <ns1:LocationNameInstance>
+                        <ns1:LocationNameLevel>1</ns1:LocationNameLevel>
+                        <ns1:LocationNameValue>Středisko Opava VF</ns1:LocationNameValue>
+                    </ns1:LocationNameInstance>
+                </ns1:LocationName>
+            </ns1:Location>
+            <ns1:DateDue>2019-11-17T23:00:00Z</ns1:DateDue>
+        </ns1:ItemOptionalFields>
+    </ns1:LookupItemResponse>
+</ns1:NCIPMessage>
+

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract cover background layer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
+
+use function ord;
+use function strlen;
 
 /**
  * Abstract cover background layer
@@ -54,13 +59,13 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         }
         if (null !== $callnumber) {
             $cv = 0;
-            for ($i = 0;$i < strlen($callnumber);$i++) {
+            for ($i = 0; $i < strlen($callnumber); $i++) {
                 $cv += ord($callnumber[$i]);
             }
             return $cv;
         } else {
             // If no callnumber, random
-            return ceil(rand(pow(2, 4), pow(2, 32)));
+            return ceil(rand(2 ** 4, 2 ** 32));
         }
     }
 
@@ -78,7 +83,10 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         // Number to color, hsb to control saturation and lightness
         return $settings->accentColor == 'random'
             ? $this->getHSBColor(
-                $im, $seed % 256, $settings->saturation, $settings->lightness
+                $im,
+                $seed % 256,
+                $settings->saturation,
+                $settings->lightness
             ) : $this->getColor($im, $settings->accentColor);
     }
 }

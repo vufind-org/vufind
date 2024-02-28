@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Evergreen ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -22,14 +23,18 @@
  * @category VuFind
  * @package  ILS_Drivers
  * @author   Warren Layton, NRCan Library <warren.layton@gmail.com>
+ * @author   Galen Charlton, Equinox <gmcharlt@equinoxOLI.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
 
 /**
  * VuFind Connector for Evergreen
@@ -43,8 +48,10 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Evergreen extends AbstractBase
+class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Database connection
      *
@@ -58,6 +65,28 @@ class Evergreen extends AbstractBase
      * @var string
      */
     protected $dbName;
+
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
+     * Evergreen constants
+     */
+    public const EVG_ITEM_STATUS_IN_TRANSIT = '6';
 
     /**
      * Initialize the driver.
@@ -114,13 +143,15 @@ class Evergreen extends AbstractBase
 
         // Build SQL Statement
         $sql = <<<HERE
-SELECT ccs.name AS status, acn.label AS callnumber, acpl.name AS location
-FROM config.copy_status ccs
-    INNER JOIN asset.copy ac ON ccs.id = ac.status
-    INNER JOIN asset.call_number acn ON ac.call_number = acn.id
-    INNER JOIN asset.copy_location acpl ON ac.copy_location = acpl.id
-WHERE ac.id = ?
-HERE;
+            SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location
+            FROM config.copy_status ccs
+                INNER JOIN asset.copy ac ON ac.status = ccs.id
+                INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+                INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+            WHERE
+                acn.record = ? AND
+                NOT ac.deleted
+            HERE;
 
         // Execute SQL
         try {
@@ -129,24 +160,24 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             switch ($row['status']) {
-            case 'Available':
-                $available = true;
-                $reserve = false;
-                break;
-            case 'On holds shelf':
-                $available = false;
-                $reserve = true;
-                break;
-            default:
-                $available = false;
-                $reserve = false;
-                break;
+                case 'Available':
+                    $available = true;
+                    $reserve = false;
+                    break;
+                case 'On holds shelf':
+                    $available = false;
+                    $reserve = true;
+                    break;
+                default:
+                    $available = false;
+                    $reserve = false;
+                    break;
             }
 
             $holding[] = [
@@ -155,7 +186,7 @@ HERE;
                 'status' => $row['status'],
                 'location' => $row['location'],
                 'reserve' => $reserve,
-                'callnumber' => $row['callnumber']
+                'callnumber' => $row['callnumber'],
             ];
         }
 
@@ -192,7 +223,7 @@ HERE;
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -206,20 +237,22 @@ HERE;
 
         // Build SQL Statement
         $sql = <<<HERE
-SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location,
-    ac.copy_number, ac.barcode,
-    extract (year from circ.due_date) as due_year,
-    extract (month from circ.due_date) as due_month,
-    extract (day from circ.due_date) as due_day
-FROM config.copy_status ccs
-    INNER JOIN asset.copy ac ON ac.status = ccs.id
-    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
-    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
-    FULL JOIN action.circulation circ ON (
-        ac.id = circ.target_copy AND circ.checkin_time IS NULL
-    )
-WHERE acn.record = ?
-HERE;
+            SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location,
+                ac.copy_number, ac.barcode,
+                extract (year from circ.due_date) as due_year,
+                extract (month from circ.due_date) as due_month,
+                extract (day from circ.due_date) as due_day
+            FROM config.copy_status ccs
+                INNER JOIN asset.copy ac ON ac.status = ccs.id
+                INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+                INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+                FULL JOIN action.circulation circ ON (
+                    ac.id = circ.target_copy AND circ.checkin_time IS NULL
+                )
+            WHERE
+                acn.record = ? AND
+                NOT ac.deleted
+            HERE;
 
         // Execute SQL
         try {
@@ -227,36 +260,36 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             switch ($row['status']) {
-            case 'Available':
-                $available = true;
-                $reserve = false;
-                break;
-            case 'On holds shelf':
-                // Instead of relying on status = 'On holds shelf',
-                // I might want to see if:
-                // action.hold_request.current_copy = asset.copy.id
-                // and action.hold_request.capture_time is not null
-                // and I think action.hold_request.fulfillment_time is null
-                $available = false;
-                $reserve = true;
-                break;
-            default:
-                $available = false;
-                $reserve = false;
-                break;
+                case 'Available':
+                    $available = true;
+                    $reserve = false;
+                    break;
+                case 'On holds shelf':
+                    // Instead of relying on status = 'On holds shelf',
+                    // I might want to see if:
+                    // action.hold_request.current_copy = asset.copy.id
+                    // and action.hold_request.capture_time is not null
+                    // and I think action.hold_request.fulfillment_time is null
+                    $available = false;
+                    $reserve = true;
+                    break;
+                default:
+                    $available = false;
+                    $reserve = false;
+                    break;
             }
 
             if ($row['due_year']) {
-                $due_date = $row['due_year'] . "-" . $row['due_month'] . "-" .
+                $due_date = $row['due_year'] . '-' . $row['due_month'] . '-' .
                             $row['due_day'];
             } else {
-                $due_date = "";
+                $due_date = '';
             }
             $holding[] = [
                 'id' => $id,
@@ -267,7 +300,7 @@ HERE;
                 'callnumber' => $row['callnumber'],
                 'duedate' => $due_date,
                 'number' => $row['copy_number'],
-                'barcode' => $row['barcode']
+                'barcode' => $row['barcode'],
             ];
         }
 
@@ -308,19 +341,20 @@ HERE;
     public function patronLogin($barcode, $passwd)
     {
         $sql = <<<HERE
-SELECT usr.id, usr.first_given_name as firstName,
-    usr.family_name as lastName, usr.email, usrname
-FROM actor.usr usr
-    INNER JOIN actor.card ON usr.card = card.id
-WHERE card.active = true
-    AND usr.passwd = MD5(?)
-HERE;
+            SELECT usr.id, usr.first_given_name as firstName,
+                usr.family_name as lastName, usr.email, usrname
+            FROM actor.usr usr
+                INNER JOIN actor.card ON usr.card = card.id
+            WHERE card.active = true
+                AND actor.verify_passwd(usr.id, 'main',
+                                       MD5(actor.get_salt(usr.id, 'main') || MD5(?)))
+            HERE;
         if (is_numeric($barcode)) {
             // A barcode was supplied as ID
-            $sql .= "AND card.barcode = ?";
+            $sql .= 'AND card.barcode = ?';
         } else {
             // A username was supplied as ID
-            $sql .= "AND usr.usrname = ?";
+            $sql .= 'AND usr.usrname = ?';
         }
 
         try {
@@ -344,7 +378,7 @@ HERE;
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -356,7 +390,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -364,33 +398,77 @@ HERE;
     {
         $transList = [];
 
-        $sql = "select circulation.target_copy as bib_id, " .
-               "extract (year from circulation.due_date) as due_year, " .
-               "extract (month from circulation.due_date) as due_month, " .
-               "extract (day from circulation.due_date) as due_day " .
+        $sql = 'select call_number.record as bib_id, ' .
+               'circulation.due_date as due_date, ' .
+               'circulation.target_copy as item_id, ' .
+               'circulation.renewal_remaining as renewal_remaining, ' .
+               'aou_circ.name as borrowing_location, ' .
+               'aou_own.name as owning_library, ' .
+               'copy.barcode as barcode ' .
                "from $this->dbName.action.circulation " .
+               "join $this->dbName.asset.copy ON " .
+               ' (circulation.target_copy = copy.id) ' .
+               "join $this->dbName.asset.call_number ON " .
+               '  (copy.call_number = call_number.id) ' .
+               "join $this->dbName.actor.org_unit aou_circ ON " .
+               '  (circulation.circ_lib = aou_circ.id) ' .
+               "join $this->dbName.actor.org_unit aou_own ON " .
+               '  (call_number.owning_lib = aou_own.id) ' .
                "where circulation.usr = '" . $patron['id'] . "' " .
-               "and circulation.checkin_time is null";
+               'and circulation.checkin_time is null ' .
+               'and circulation.xact_finish is null';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
 
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                if ($row['due_year']) {
-                    $due_date = $row['due_year'] . "-" . $row['due_month'] . "-" .
-                                $row['due_day'];
+                $due_date = $this->formatDate($row['due_date']);
+                $_due_time = new \DateTime($row['due_date']);
+                if ($_due_time->format('H:i:s') == '23:59:59') {
+                    $dueTime = ''; // don't display due time for non-hourly loans
                 } else {
-                    $due_date = "";
+                    $dueTime = $this->dateConverter->convertToDisplayTime(
+                        'Y-m-d H:i',
+                        $row['due_date']
+                    );
                 }
 
-                $transList[] = ['duedate' => $due_date,
-                                     'id' => $row['bib_id']];
+                $today = new \DateTime();
+                $now = time();
+                // since Evergreen normalizes the due time of non-hourly
+                // loans to be 23:59:59, we use a slightly flexible definition
+                // of "due in 24 hours"
+                $end_of_today = strtotime($today->format('Y-m-d 23:59:59'));
+                $dueTimeStamp = strtotime($row['due_date']);
+                $dueStatus = false;
+                if (is_numeric($dueTimeStamp)) {
+                    $_dueTimeLessDay = $dueTimeStamp - (1 * 24 * 60 * 60) - 1;
+                    if ($now > $dueTimeStamp) {
+                        $dueStatus = 'overdue';
+                    } elseif ($end_of_today > $_dueTimeLessDay) {
+                        $dueStatus = 'due';
+                    }
+                }
+
+                $transList[] = [
+                                    'duedate' => $due_date,
+                                    'dueTime' => $dueTime,
+                                    'id' => $row['bib_id'],
+                                    'barcode' => $row['barcode'],
+                                    'item_id' => $row['item_id'],
+                                    'renewLimit' => $row['renewal_remaining'],
+                                    'renewable' => $row['renewal_remaining'] > 1,
+                                    'institution_name' => $row['owning_library'],
+                                    'borrowingLocation' =>
+                                        $row['borrowing_location'],
+                                    'dueStatus' => $dueStatus,
+                               ];
             }
-            return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return ['count' => count($transList), 'records' => $transList];
     }
 
     /**
@@ -400,7 +478,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -408,45 +486,44 @@ HERE;
     {
         $fineList = [];
 
-        $sql = "select billable_xact_summary.total_owed, " .
-               "billable_xact_summary.balance_owed, " .
-               "billable_xact_summary.last_billing_type, " .
-               "extract (year from billable_xact_summary.xact_start) " .
-               "as start_year, " .
-               "extract (month from billable_xact_summary.xact_start) " .
-               "as start_month, " .
-               "extract (day from billable_xact_summary.xact_start) " .
-               "as start_day, " .
-               "billable_cirulations.target_copy " .
+        $sql = 'select billable_xact_summary.total_owed * 100 as total_owed, ' .
+               'billable_xact_summary.balance_owed * 100 as balance_owed, ' .
+               'billable_xact_summary.last_billing_type, ' .
+               'billable_xact_summary.last_billing_ts, ' .
+               'billable_circulations.create_time as checkout_time, ' .
+               'billable_circulations.due_date, ' .
+               'billable_circulations.target_copy, ' .
+               'call_number.record ' .
                "from $this->dbName.money.billable_xact_summary " .
-               "LEFT JOIN $this->dbName.action.billable_cirulations " .
-               "ON (billable_xact_summary.id = billable_cirulations.id " .
-               " and billable_cirulations.xact_finish is null) " .
+               "LEFT JOIN $this->dbName.action.billable_circulations " .
+               'ON (billable_xact_summary.id = billable_circulations.id ' .
+               ' and billable_circulations.xact_finish is null) ' .
+               "LEFT JOIN $this->dbName.asset.copy ON " .
+               '  (billable_circulations.target_copy = copy.id) ' .
+               "LEFT JOIN $this->dbName.asset.call_number ON " .
+               '  (copy.call_number = call_number.id) ' .
                "where billable_xact_summary.usr = '" . $patron['id'] . "' " .
-               "and billable_xact_summary.xact_finish is null";
+               'and billable_xact_summary.total_owed <> 0 ' .
+               'and billable_xact_summary.xact_finish is null';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
 
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                if ($row['start_year']) {
-                    $charge_date = $row['start_year'] . "-" . $row['start_month'] .
-                            "-" . $row['start_day'];
-                } else {
-                    $charge_date = "";
-                }
-
-                $fineList[] = ['amount' => $row['total_owed'],
-                                    'fine' => $row['last_billing_type'],
-                                    'balance' => $row['balance_owed'],
-                                    'checkout' => $charge_date,
-                                    'duedate' => "",
-                                    'id' => $row['target_copy']];
+                $fineList[] = [
+                    'amount' => $row['total_owed'],
+                    'fine' => $row['last_billing_type'],
+                    'balance' => $row['balance_owed'],
+                    'checkout' => $this->formatDate($row['checkout_time']),
+                    'createdate' => $this->formatDate($row['last_billing_ts']),
+                    'duedate' => $this->formatDate($row['due_date']),
+                    'id' => $row['record'],
+                ];
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -457,7 +534,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -465,49 +542,46 @@ HERE;
     {
         $holdList = [];
 
-        $sql = "select hold_request.hold_type, hold_request.current_copy, " .
-               "extract (year from hold_request.expire_time) as exp_year, " .
-               "extract (month from hold_request.expire_time) as exp_month, " .
-               "extract (day from hold_request.expire_time) as exp_day, " .
-               "extract (year from hold_request.request_time) as req_year, " .
-               "extract (month from hold_request.request_time) as req_month, " .
-               "extract (day from hold_request.request_time) as req_day, " .
-               "org_unit.name as lib_name " .
-               "from $this->dbName.action.hold_request, " .
-               "$this->dbName.actor.org_unit " .
-               "where hold_request.usr = '" . $patron['id'] . "' " .
-               "and hold_request.pickup_lib = org_unit.id " .
-               "and hold_request.capture_time is not null " .
-               "and hold_request.fulfillment_time is null";
+        $sql = 'select ahr.hold_type, bib_record, ' .
+               'ahr.id as hold_id, ' .
+               'expire_time, request_time, shelf_time, capture_time, ' .
+               'shelf_time, shelf_expire_time, frozen, thaw_date, ' .
+               'org_unit.name as lib_name, acp.status as copy_status ' .
+               "from $this->dbName.action.hold_request ahr " .
+               "join $this->dbName.actor.org_unit on " .
+               '  (ahr.pickup_lib = org_unit.id) ' .
+               "join $this->dbName.reporter.hold_request_record rhrr on " .
+               '  (rhrr.id = ahr.id) ' .
+               "left join $this->dbName.asset.copy acp on " .
+               '  (acp.id = ahr.current_copy) ' .
+               "where ahr.usr = '" . $patron['id'] . "' " .
+               'and ahr.fulfillment_time is null ' .
+               'and ahr.cancel_time is null';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                if ($row['req_year']) {
-                    $req_time = $row['req_year'] . "-" . $row['req_month'] .
-                            "-" . $row['req_day'];
-                } else {
-                    $req_time = "";
-                }
-
-                if ($row['exp_year']) {
-                    $exp_time = $row['exp_year'] . "-" . $row['exp_month'] .
-                            "-" . $row['exp_day'];
-                } else {
-                    $exp_time = "";
-                }
-
-                $holdList[] = ['type' => $row['hold_type'],
-                                    'id' => $row['current_copy'],
-                                    'location' => $row['lib_name'],
-                                    'expire' => $exp_time,
-                                    'create' => $req_time];
+                $holdList[] = [
+                    'type' => $row['hold_type'],
+                    'id' => $row['bib_record'],
+                    'reqnum' => $row['hold_id'],
+                    'location' => $row['lib_name'],
+                    'expire' => $this->formatDate($row['expire_time']),
+                    'last_pickup_date' =>
+                        $this->formatDate($row['shelf_expire_time']),
+                    'available' => $row['shelf_time'],
+                    'frozen' => $row['frozen'],
+                    'frozenThrough' => $this->formatDate($row['thaw_date']),
+                    'create' => $this->formatDate($row['request_time']),
+                    'in_transit' =>
+                        $row['copy_status'] == self::EVG_ITEM_STATUS_IN_TRANSIT,
+                ];
             }
-            return $holdList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $holdList;
     }
 
     /**
@@ -523,15 +597,16 @@ HERE;
     public function getMyProfile($patron)
     {
         $sql = <<<HERE
-SELECT usr.family_name, usr.first_given_name, usr.day_phone,
-    usr.evening_phone, usr.other_phone, aua.street1,
-    aua.street2, aua.post_code, pgt.name AS usrgroup
-FROM actor.usr
-    FULL JOIN actor.usr_address aua ON aua.id = usr.mailing_address
-    INNER JOIN permission.grp_tree pgt ON pgt.id = usr.profile
-WHERE usr.active = true
-     AND usr.id = ?
-HERE;
+            SELECT usr.family_name, usr.first_given_name, usr.day_phone,
+                usr.evening_phone, usr.other_phone, aua.street1,
+                aua.street2, aua.post_code, pgt.name AS usrgroup,
+                aua.city, aua.country, usr.expire_date
+            FROM actor.usr
+                FULL JOIN actor.usr_address aua ON aua.id = usr.mailing_address
+                INNER JOIN permission.grp_tree pgt ON pgt.id = usr.profile
+            WHERE usr.active = true
+                 AND usr.id = ?
+            HERE;
 
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -553,17 +628,19 @@ HERE;
                     'lastname' => $row['family_name'],
                     'address1' => $row['street1'],
                     'address2' => $row['street2'],
+                    'city' => $row['city'],
                     'zip' => $row['post_code'],
+                    'country' => $row['country'],
                     'phone' => $phone,
-                    'group' => $row['usrgroup']
+                    'group' => $row['usrgroup'],
+                    'expiration_date' => $this->formatDate($row['expire_date']),
                 ];
                 return $patron;
-            } else {
-                return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return null;
     }
 
     /**
@@ -602,7 +679,7 @@ HERE;
         $sqlStmt = $this->db->prepare($sql);
         $sqlStmt->execute();
     } catch (PDOException $e) {
-        throw new ILSException($e->getMessage());
+        $this->throwAsIlsException($e);
     }
     */
     //}
@@ -647,19 +724,14 @@ HERE;
     {
         $items = [];
 
-        // Prevent unnecessary load
-        // (Taken from Voyager driver - does Evergreen need this?)
-        if ($daysOld > 30) {
-            $daysOld = 30;
-        }
-
         $enddate = date('Y-m-d', strtotime('now'));
         $startdate = date('Y-m-d', strtotime("-$daysOld day"));
 
-        $sql = "select count(distinct copy.id) as count " .
-               "from asset.copy " .
+        $sql = 'select count(distinct copy.id) as count ' .
+               'from asset.copy ' .
                "where copy.create_date >= '$startdate' " .
-               "and copy.create_date < '$enddate'";
+               'and copy.status = 0 ' .
+               "and copy.create_date < '$enddate' LIMIT 50";
 
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -667,7 +739,7 @@ HERE;
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['count'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // TODO: implement paging support
@@ -676,20 +748,22 @@ HERE;
         //$startRow = (($page-1)*$limit)+1;
         //$endRow = ($page*$limit);
 
-        $sql = "select copy.id from asset.copy " .
+        $sql = 'select copy.id, call_number.record from asset.copy ' .
+               'join asset.call_number on (call_number.id = copy.call_number) ' .
                "where copy.create_date >= '$startdate' " .
-               "and copy.create_date < '$enddate'";
+               'and copy.status = 0 ' .
+               "and copy.create_date < '$enddate' LIMIT 50";
 
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $items['results'][]['id'] = $row['id'];
+                $items['results'][]['id'] = $row['record'];
             }
-            return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        return $items;
     }
 
     /**
@@ -702,9 +776,9 @@ HERE;
      */
     public function getFunds()
     {
-        /*
-        $list = array();
+        $list = [];
 
+        /* TODO:
         $sql = "";
 
         try {
@@ -714,11 +788,11 @@ HERE;
                 $list[] = $row['name'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
+        */
 
         return $list;
-        */
     }
 
     /**
@@ -731,9 +805,9 @@ HERE;
     {
         $list = [];
 
-        $sql = "select copy.id as id " .
+        $sql = 'select copy.id as id ' .
                "from $this->dbName.asset " .
-               "where copy.opac_visible = false";
+               'where copy.opac_visible = false';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -742,7 +816,7 @@ HERE;
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -810,5 +884,23 @@ HERE;
     {
         // TODO
         return [];
+    }
+
+    /**
+     * Format date
+     *
+     * This formats a date coming from Evergreen for display
+     *
+     * @param string $date The date string to format; may be null
+     *
+     * @throws ILSException
+     * @return string The formatted date
+     */
+    protected function formatDate($date)
+    {
+        if (!$date) {
+            return '';
+        }
+        return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
     }
 }

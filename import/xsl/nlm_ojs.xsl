@@ -9,6 +9,9 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">OJS</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="nlm:article">
         <add>
             <doc>
@@ -89,32 +92,28 @@
                 </xsl:for-each>
 
                 <!-- SUBJECT -->
-                <xsl:if test="//nlm:kwd-group">
-                    <xsl:for-each select="//nlm:kwd-group">
-                        <xsl:if test="position()=1">
-                            <xsl:for-each select="./nlm:kwd">
-                                <xsl:if test="normalize-space()">
-                                    <field name="topic">
-                                        <xsl:value-of select="normalize-space()"/>
-                                    </field>
-                                    <field name="topic_facet">
-                                        <xsl:value-of select="normalize-space()"/>
-                                    </field>
-                                </xsl:if>
-                            </xsl:for-each>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
-                <xsl:if test="//nlm:subject">
-                    <xsl:for-each select="//nlm:subject">
-                        <field name="topic">
-                            <xsl:value-of select="normalize-space()"/>
-                        </field>
-                        <field name="topic_facet">
-                            <xsl:value-of select="normalize-space()"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="//nlm:kwd-group">
+                    <xsl:if test="position()=1">
+                        <xsl:for-each select="./nlm:kwd">
+                            <xsl:if test="normalize-space()">
+                                <field name="topic">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                                <field name="topic_facet">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </xsl:if>
+                </xsl:for-each>
+                <xsl:for-each select="//nlm:subject">
+                    <field name="topic">
+                        <xsl:value-of select="normalize-space()"/>
+                    </field>
+                    <field name="topic_facet">
+                        <xsl:value-of select="normalize-space()"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- DESCRIPTION -->
                 <xsl:if test="//nlm:abstract/nlm:p">
@@ -141,7 +140,7 @@
                         <!-- use first author value for sorting -->
                         <xsl:if test="position()=1">
                             <field name="author_sort">
-                                <xsl:value-of select="normalize-space()"/>
+                                <xsl:value-of select="nlm:surname[normalize-space()]" />, <xsl:value-of select="nlm:given-names[normalize-space()]" />
                             </field>
                         </xsl:if>
                     </xsl:if>
@@ -158,7 +157,7 @@
                     <xsl:value-of select="//nlm:article-title[normalize-space()]"/>
                 </field>
                 <field name="title_sort">
-                    <xsl:value-of select="php:function('VuFind::stripArticles', string(//nlm:article-title[normalize-space()]))"/>
+                    <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string(//nlm:article-title[normalize-space()])))"/>
                 </field>
                 <field name="title_alt">
                     <xsl:value-of select="//nlm:trans-title[normalize-space()]"/>
@@ -209,6 +208,13 @@
                 <field name="fullrecord">
                     <xsl:copy-of select="php:function('VuFind::removeTagAndReturnXMLasText', ., 'body')"/>
                 </field>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', ///nlm:article-title[normalize-space()], php:function('VuFind::stripArticles', string(///nlm:article-title[normalize-space()])), //nlm:contrib[@contrib-type='author']/nlm:name, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>

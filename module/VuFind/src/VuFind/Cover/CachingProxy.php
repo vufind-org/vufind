@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Caching Proxy for Cover Images
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use Laminas\Http\Client;
 use Laminas\Http\Response;
+
+use function dirname;
 
 /**
  * Caching Proxy for Cover Images
@@ -60,20 +64,20 @@ class CachingProxy
      *
      * @var array
      */
-    protected $cacheWhitelist;
+    protected $allowedHosts;
 
     /**
      * Constructor
      *
-     * @param Client $client         HTTP client
-     * @param string $cache          Base directory for cache
-     * @param array  $cacheWhitelist Array of regular expressions for hosts to cache
+     * @param Client $client       HTTP client
+     * @param string $cache        Base directory for cache
+     * @param array  $allowedHosts Array of regular expressions for hosts to cache
      */
-    public function __construct(Client $client, $cache, array $cacheWhitelist = [])
+    public function __construct(Client $client, $cache, array $allowedHosts = [])
     {
         $this->client = $client;
         $this->cache = $cache;
-        $this->cacheWhitelist = $cacheWhitelist;
+        $this->allowedHosts = $allowedHosts;
     }
 
     /**
@@ -86,7 +90,7 @@ class CachingProxy
     public function fetch($url)
     {
         $file = $this->getCacheFile($url);
-        $cacheAllowed = $this->onWhitelist($url);
+        $cacheAllowed = $this->hasLegalHost($url);
         if (!$cacheAllowed || !($response = $this->fetchCache($file))) {
             $response = $this->client->setUri($url)->send();
             if ($cacheAllowed) {
@@ -130,16 +134,16 @@ class CachingProxy
     }
 
     /**
-     * Check if the URL is on the whitelist for caching.
+     * Check if the URL is on the configured list for caching.
      *
      * @param string $url URL to check
      *
      * @return bool
      */
-    protected function onWhitelist($url)
+    protected function hasLegalHost($url)
     {
         $host = parse_url($url, PHP_URL_HOST);
-        foreach ($this->cacheWhitelist as $current) {
+        foreach ($this->allowedHosts as $current) {
             if (preg_match($current, $host)) {
                 return true;
             }

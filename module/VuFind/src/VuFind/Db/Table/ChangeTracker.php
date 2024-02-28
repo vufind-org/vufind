@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for change_tracker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -58,8 +60,12 @@ class ChangeTracker extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'change_tracker'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'change_tracker'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -87,15 +93,28 @@ class ChangeTracker extends Gateway
      * @param int    $offset  Record number to retrieve first.
      * @param int    $limit   Retrieval limit (null for no limit)
      * @param array  $columns Columns to retrieve (null for all)
+     * @param string $order   Sort order
      *
-     * @return \Callable
+     * @return callable
      */
-    public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
-        $limit = null, $columns = null
+    public function getRetrieveDeletedCallback(
+        $core,
+        $from,
+        $until,
+        $offset = 0,
+        $limit = null,
+        $columns = null,
+        $order = null
     ) {
-        $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
-        return function ($select) use ($params) {
-            extract($params);
+        return function ($select) use (
+            $core,
+            $from,
+            $until,
+            $offset,
+            $limit,
+            $columns,
+            $order
+        ) {
             if ($columns !== null) {
                 $select->columns($columns);
             }
@@ -103,7 +122,9 @@ class ChangeTracker extends Gateway
                 ->equalTo('core', $core)
                 ->greaterThanOrEqualTo('deleted', $from)
                 ->lessThanOrEqualTo('deleted', $until);
-            $select->order('deleted');
+            if ($order !== null) {
+                $select->order($order);
+            }
             if ($offset > 0) {
                 $select->offset($offset);
             }
@@ -145,11 +166,21 @@ class ChangeTracker extends Gateway
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function retrieveDeleted($core, $from, $until, $offset = 0,
+    public function retrieveDeleted(
+        $core,
+        $from,
+        $until,
+        $offset = 0,
         $limit = null
     ) {
         $callback = $this->getRetrieveDeletedCallback(
-            $core, $from, $until, $offset, $limit
+            $core,
+            $from,
+            $until,
+            $offset,
+            $limit,
+            null,
+            'deleted'
         );
         return $this->select($callback);
     }
@@ -212,7 +243,7 @@ class ChangeTracker extends Gateway
     {
         $oldTz = date_default_timezone_get();
         date_default_timezone_set('UTC');
-        $date = date($this->dateFormat, null === $ts ? time() : $ts);
+        $date = date($this->dateFormat, $ts ?? time());
         date_default_timezone_set($oldTz);
         return $date;
     }
@@ -265,7 +296,8 @@ class ChangeTracker extends Gateway
         // Are we restoring a previously deleted record, or was the stored
         // record change date before current record change date?  Either way,
         // we need to update the table!
-        if (!empty($row->deleted)
+        if (
+            !empty($row->deleted)
             || $this->strToUtcTime($row->last_record_change) < $change
         ) {
             // Save new values to the object:

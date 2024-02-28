@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OAI Server class for Authority core
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\OAI\Server;
 
 use VuFind\OAI\Server as Base;
@@ -50,8 +52,10 @@ class Auth extends Base
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
+    public function __construct(
+        \VuFind\Search\Results\PluginManager $results,
+        \VuFind\Record\Loader $loader,
+        \VuFind\Db\Table\PluginManager $tables
     ) {
         parent::__construct($results, $loader, $tables);
         $this->core = 'authority';
@@ -59,7 +63,7 @@ class Auth extends Base
     }
 
     /**
-     * Load data from the OAI section of config.ini.  (This is called by the
+     * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *

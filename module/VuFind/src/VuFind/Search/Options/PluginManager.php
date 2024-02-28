@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Search options plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Options;
 
 /**
@@ -44,13 +46,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'blender' => \VuFind\Search\Blender\Options::class,
         'browzine' => \VuFind\Search\BrowZine\Options::class,
         'combined' => \VuFind\Search\Combined\Options::class,
         'eds' => \VuFind\Search\EDS\Options::class,
         'eit' => \VuFind\Search\EIT\Options::class,
+        'epf' => \VuFind\Search\EPF\Options::class,
         'emptyset' => \VuFind\Search\EmptySet\Options::class,
         'favorites' => \VuFind\Search\Favorites\Options::class,
         'libguides' => \VuFind\Search\LibGuides\Options::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Options::class,
         'mixedlist' => \VuFind\Search\MixedList\Options::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Options::class,
         'primo' => \VuFind\Search\Primo\Options::class,
@@ -74,14 +79,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        \VuFind\Search\Blender\Options::class => OptionsFactory::class,
         \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
-        \VuFind\Search\Combined\Options::class => OptionsFactory::class,
+        \VuFind\Search\Combined\Options::class => \VuFind\Search\Combined\OptionsFactory::class,
         \VuFind\Search\EDS\Options::class =>
             \VuFind\Search\EDS\OptionsFactory::class,
         \VuFind\Search\EIT\Options::class => OptionsFactory::class,
+        \VuFind\Search\EPF\Options::class => OptionsFactory::class,
         \VuFind\Search\EmptySet\Options::class => OptionsFactory::class,
         \VuFind\Search\Favorites\Options::class => OptionsFactory::class,
         \VuFind\Search\LibGuides\Options::class => OptionsFactory::class,
+        \VuFind\Search\LibGuidesAZ\Options::class => OptionsFactory::class,
         \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
         \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
         \VuFind\Search\Primo\Options::class => OptionsFactory::class,
@@ -108,7 +116,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

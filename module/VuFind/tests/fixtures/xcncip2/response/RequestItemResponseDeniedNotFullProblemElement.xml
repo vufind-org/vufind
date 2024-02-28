@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:NCIPMessage ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/ncip_v2_0.xsd" xmlns:ns1="http://www.niso.org/2008/ncip">
+    <ns1:RequestItemResponse>
+        <ns1:Problem>
+            <ns1:ProblemType ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/processingerrortype/generalprocessingerror.scm">User Blocked</ns1:ProblemType>
+        </ns1:Problem>
+    </ns1:RequestItemResponse>
+</ns1:NCIPMessage>

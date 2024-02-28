@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OAI Module Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use VuFindApi\Formatter\RecordFormatter;
@@ -60,7 +62,7 @@ class OaiController extends AbstractBase
      */
     public function authserverAction()
     {
-        return $this->handleOAI('VuFind\OAI\Server\Auth');
+        return $this->handleOAI(\VuFind\OAI\Server\Auth::class);
     }
 
     /**
@@ -70,7 +72,7 @@ class OaiController extends AbstractBase
      */
     public function serverAction()
     {
-        return $this->handleOAI('VuFind\OAI\Server');
+        return $this->handleOAI(\VuFind\OAI\Server::class);
     }
 
     /**
@@ -103,8 +105,8 @@ class OaiController extends AbstractBase
             );
             $server = $this->serviceLocator->get($serverClass);
             $server->init($config, $baseURL, $params);
-            $server->setRecordLinkHelper(
-                $this->getViewRenderer()->plugin('recordLink')
+            $server->setRecordLinkerHelper(
+                $this->getViewRenderer()->plugin('recordLinker')
             );
             $server->setRecordFormatter(
                 $this->serviceLocator->get(RecordFormatter::class)

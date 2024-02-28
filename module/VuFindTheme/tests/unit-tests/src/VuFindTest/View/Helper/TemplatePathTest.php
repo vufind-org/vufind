@@ -1,8 +1,9 @@
 <?php
+
 /**
  * TemplatePath view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
-use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\TemplatePath;
 
 /**
@@ -39,8 +40,10 @@ use VuFindTheme\View\Helper\TemplatePath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TemplatePathTest extends \VuFindTest\Unit\TestCase
+class TemplatePathTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Path to theme fixtures
      *
@@ -55,19 +58,19 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../../../fixtures/themes');
+        $this->fixturePath
+            = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
     }
 
     /**
      * Get a populated resource container for testing.
      *
-     * @return ResourceContainer
+     * @return TemplatePath
      */
     protected function getHelper()
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
+        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
             ->disableOriginalConstructor()->getMock();
 
         $return = new \SplStack();
@@ -92,7 +95,7 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
         $helper = $this->getHelper();
         $this->assertEquals(
             "{$this->fixturePath}/parent/templates/everything.phtml",
-            $helper->__invoke('everything.phtml', 'parent')
+            $helper('everything.phtml', 'parent')
         );
     }
 
@@ -107,7 +110,7 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
         $this->expectExceptionMessage('emplate not found in missing: file.phtml');
 
         $helper = $this->getHelper();
-        $helper->__invoke('file.phtml', 'missing');
+        $helper('file.phtml', 'missing');
     }
 
     /**
@@ -121,6 +124,6 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
         $this->expectExceptionMessage('emplate not found in parent: missing.phtml');
 
         $helper = $this->getHelper();
-        $helper->__invoke('missing.phtml', 'parent');
+        $helper('missing.phtml', 'parent');
     }
 }

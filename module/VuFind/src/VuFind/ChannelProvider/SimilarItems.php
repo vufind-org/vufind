@@ -1,10 +1,11 @@
 <?php
+
 /**
  * "Similar items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2016, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -32,6 +34,11 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
+use VuFindSearch\Command\RetrieveCommand;
+use VuFindSearch\Command\SimilarCommand;
+
+use function count;
+use function is_object;
 
 /**
  * "Similar items" channel provider.
@@ -42,8 +49,7 @@ use VuFind\Search\Base\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SimilarItems extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -90,8 +96,11 @@ class SimilarItems extends AbstractChannelProvider
      * @param RecordRouter          $router  Record router
      * @param array                 $options Settings (optional)
      */
-    public function __construct(\VuFindSearch\Service $search, Url $url,
-        RecordRouter $router, array $options = []
+    public function __construct(
+        \VuFindSearch\Service $search,
+        Url $url,
+        RecordRouter $router,
+        array $options = []
     ) {
         $this->searchService = $search;
         $this->url = $url;
@@ -143,6 +152,7 @@ class SimilarItems extends AbstractChannelProvider
      */
     public function getFromSearch(Results $results, $channelToken = null)
     {
+        $driver = null;
         $channels = [];
         foreach ($results->getResults() as $driver) {
             // If we have a token and it doesn't match the current driver, skip
@@ -161,13 +171,18 @@ class SimilarItems extends AbstractChannelProvider
         }
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
-        if (empty($channels)
+        if (
+            empty($channels)
             && is_object($driver ?? null)
             && $channelToken !== null
         ) {
-            $driver = $this->searchService->retrieve(
-                $driver->getSourceIdentifier(), $channelToken
-            )->first();
+            $command = new RetrieveCommand(
+                $driver->getSourceIdentifier(),
+                $channelToken
+            );
+            $driver = $this->searchService->invoke(
+                $command
+            )->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
             }
@@ -185,36 +200,40 @@ class SimilarItems extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannelFromRecord(RecordDriver $driver,
+    protected function buildChannelFromRecord(
+        RecordDriver $driver,
         $tokenOnly = false
     ) {
         $heading = $this->translate('Similar Items');
         $retVal = [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
         } else {
             $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
-            $similar = $this->searchService->similar(
-                $driver->getSourceIdentifier(), $driver->getUniqueID(), $params
+            $command = new SimilarCommand(
+                $driver->getSourceIdentifier(),
+                $driver->getUniqueID(),
+                $params
             );
+            $similar = $this->searchService->invoke($command)->getResult();
             $retVal['contents'] = $this->summarizeRecordDrivers($similar);
             $route = $this->recordRouter->getRouteDetails($driver);
             $retVal['links'][] = [
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
         }
         return $retVal;

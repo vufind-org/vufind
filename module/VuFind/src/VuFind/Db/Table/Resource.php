@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,13 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
+
+use function in_array;
 
 /**
  * Table Definition for resource
@@ -69,8 +74,13 @@ class Resource extends Gateway
      * @param Loader        $loader    Record loader
      * @param string        $table     Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, DateConverter $converter, Loader $loader,
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj,
+        DateConverter $converter,
+        Loader $loader,
         $table = 'resource'
     ) {
         $this->dateConverter = $converter;
@@ -92,8 +102,11 @@ class Resource extends Gateway
      * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
      */
-    public function findResource($id, $source = DEFAULT_SEARCH_BACKEND,
-        $create = true, $driver = null
+    public function findResource(
+        $id,
+        $source = DEFAULT_SEARCH_BACKEND,
+        $create = true,
+        $driver = null
     ) {
         if (empty($id)) {
             throw new \Exception('Resource ID cannot be empty');
@@ -151,23 +164,28 @@ class Resource extends Gateway
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getFavorites($user, $list = null, $tags = [],
-        $sort = null, $offset = 0, $limit = null
+    public function getFavorites(
+        $user,
+        $list = null,
+        $tags = [],
+        $sort = null,
+        $offset = 0,
+        $limit = null
     ) {
         // Set up base query:
-        $obj = & $this;
         return $this->select(
-            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $obj) {
-                $s->columns(
-                    [
-                        new Expression(
-                            'DISTINCT(?)', ['resource.id'],
-                            [Expression::TYPE_IDENTIFIER]
-                        ), '*'
-                    ]
-                );
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
+                $columns = [
+                    new Expression(
+                        'DISTINCT(?)',
+                        ['resource.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ), Select::SQL_STAR,
+                ];
+                $s->columns($columns);
                 $s->join(
-                    ['ur' => 'user_resource'], 'resource.id = ur.resource_id',
+                    ['ur' => 'user_resource'],
+                    'resource.id = ur.resource_id',
                     []
                 );
                 $s->where->equalTo('ur.user_id', $user);
@@ -186,7 +204,7 @@ class Resource extends Gateway
 
                 // Adjust for tags if necessary:
                 if (!empty($tags)) {
-                    $linkingTable = $obj->getDbTable('ResourceTags');
+                    $linkingTable = $this->getDbTable('ResourceTags');
                     foreach ($tags as $tag) {
                         $matches = $linkingTable
                             ->getResourcesForTag($tag, $user, $list)->toArray();
@@ -199,7 +217,7 @@ class Resource extends Gateway
 
                 // Apply sorting, if necessary:
                 if (!empty($sort)) {
-                    Resource::applySort($s, $sort);
+                    Resource::applySort($s, $sort, 'resource', $columns);
                 }
             }
         );
@@ -232,16 +250,17 @@ class Resource extends Gateway
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
-        if ($oldId !== $newId
-            && $resource = $this->findResource($oldId, $source)
+        if (
+            $oldId !== $newId
+            && $resource = $this->findResource($oldId, $source, false)
         ) {
+            $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
-            if ($newResource = $this->findResource($newId, $source)) {
+            if ($newResource = $this->findResource($newId, $source, false)) {
                 // Special case: merge new ID and old ID:
-                $tableObjects = [];
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
                     $tableObjects[$table] = $this->getDbTable($table);
                     $tableObjects[$table]->update(
@@ -252,7 +271,7 @@ class Resource extends Gateway
                 $resource->delete();
             } else {
                 // Default case: just update the record ID:
-                $resource->record_id = $newId();
+                $resource->record_id = $newId;
                 $resource->save();
             }
             // Done -- commit the transaction:
@@ -272,19 +291,20 @@ class Resource extends Gateway
     /**
      * Apply a sort parameter to a query on the resource table.
      *
-     * @param \Laminas\Db\Sql\Select $query Query to modify
-     * @param string                 $sort  Field to use for sorting (may include
+     * @param \Laminas\Db\Sql\Select $query   Query to modify
+     * @param string                 $sort    Field to use for sorting (may include
      * 'desc' qualifier)
-     * @param string                 $alias Alias to the resource table (defaults to
+     * @param string                 $alias   Alias to the resource table (defaults to
      * 'resource')
+     * @param array                  $columns Existing list of columns to select
      *
      * @return void
      */
-    public static function applySort($query, $sort, $alias = 'resource')
+    public static function applySort($query, $sort, $alias = 'resource', $columns = [])
     {
         // Apply sorting, if necessary:
         $legalSorts = [
-            'title', 'title desc', 'author', 'author desc', 'year', 'year desc'
+            'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
         ];
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             // Strip off 'desc' to obtain the raw field name -- we'll need it
@@ -298,10 +318,13 @@ class Resource extends Gateway
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
-                $order[] = new Expression(
-                    'isnull(?)', [$alias . '.' . $rawField],
+                $expression = new Expression(
+                    'case when ? is null then 1 else 0 end',
+                    [$alias . '.' . $rawField],
                     [Expression::TYPE_IDENTIFIER]
                 );
+                $query->columns(array_merge($columns, [$expression]));
+                $order[] = $expression;
             }
 
             // Apply the user-specified sort:

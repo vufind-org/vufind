@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR delete document class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,13 +23,14 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Document;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 
 /**
@@ -38,6 +39,7 @@ use VuFindSearch\Backend\Solr\Document\DeleteDocument;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -53,7 +55,11 @@ class DeleteDocumentTest extends TestCase
         $document = new DeleteDocument();
         $document->addKey('foobar');
         $document->addQuery('timestamp:[* TO NOW-12HOUR]');
-        $xml = $document->asXML();
+        $this->assertEquals(
+            'text/xml; charset=UTF-8',
+            $document->getContentType()
+        );
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<delete><id>foobar</id><query>timestamp:[* TO NOW-12HOUR]</query></delete>',
             $xml
@@ -69,7 +75,7 @@ class DeleteDocumentTest extends TestCase
     {
         $document = new DeleteDocument();
         $document->addKeys(['foo', 'bar']);
-        $xml = $document->asXML();
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<delete><id>foo</id><id>bar</id></delete>',
             $xml

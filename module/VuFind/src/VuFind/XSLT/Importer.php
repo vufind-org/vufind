@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind XSLT importer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\XSLT;
 
 use DOMDocument;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
+
+use function is_array;
 
 /**
  * VuFind XSLT importer
@@ -72,7 +75,10 @@ class Importer
      * @throws \Exception
      * @return string            Transformed XML
      */
-    public function save($xmlFile, $properties, $index = 'Solr',
+    public function save(
+        $xmlFile,
+        $properties,
+        $index = 'Solr',
         $testMode = false
     ) {
         // Process the file:
@@ -98,34 +104,33 @@ class Importer
     protected function generateXML($xmlFile, $properties)
     {
         // Load properties file:
-        $properties = ConfigLocator::getConfigPath($properties, 'import');
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $properties = $resolver->getConfigPath($properties, 'import');
         if (!file_exists($properties)) {
             throw new \Exception("Cannot load properties file: {$properties}.");
         }
         $options = parse_ini_file($properties, true);
 
         // Make sure required parameter is set:
-        if (!isset($options['General']['xslt'])) {
+        if (!($filename = $options['General']['xslt'] ?? '')) {
             throw new \Exception(
                 "Properties file ({$properties}) is missing General/xslt setting."
             );
         }
-        $xslFile = ConfigLocator::getConfigPath(
-            $options['General']['xslt'], 'import/xsl'
-        );
+        $xslFile = $resolver->getConfigPath($filename, 'import/xsl');
 
         // Initialize the XSL processor:
         $xsl = $this->initProcessor($options);
 
         // Load up the style sheet
-        $style = new DOMDocument;
+        $style = new DOMDocument();
         if (!$style->load($xslFile)) {
             throw new \Exception("Problem loading XSL file: {$xslFile}.");
         }
         $xsl->importStyleSheet($style);
 
         // Load up the XML document
-        $xml = new DOMDocument;
+        $xml = new DOMDocument();
         if (!$xml->load($xmlFile)) {
             throw new \Exception("Problem loading XML file: {$xmlFile}.");
         }
@@ -133,7 +138,7 @@ class Importer
         // Process and return the XML through the style sheet
         $result = $xsl->transformToXML($xml);
         if (!$result) {
-            throw new \Exception("Problem transforming XML.");
+            throw new \Exception('Problem transforming XML.');
         }
         return $result;
     }
@@ -170,7 +175,7 @@ class Importer
             $truncate = $options['General']['truncate_custom_class'] ?? true;
             foreach ($classes as $class) {
                 // Add a default namespace if none was provided:
-                if (false === strpos($class, '\\')) {
+                if (!str_contains($class, '\\')) {
                     $class = 'VuFind\XSLT\Import\\' . $class;
                 }
                 // If necessary, dynamically generate the truncated version of the

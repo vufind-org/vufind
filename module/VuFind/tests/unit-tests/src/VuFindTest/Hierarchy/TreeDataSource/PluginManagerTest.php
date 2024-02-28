@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Tree Data Source Plugin Manager Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataSource\PluginManager;
@@ -38,8 +40,10 @@ use VuFind\Hierarchy\TreeDataSource\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PluginManagerTest extends \VuFindTest\Unit\TestCase
+class PluginManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test results.
      *
@@ -47,9 +51,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testShareByDefault()
     {
-        $pm = new PluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
-        );
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
     }
 
@@ -61,11 +63,11 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
     public function testExpectedInterface()
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
-        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Hierarchy\\TreeDataSource\\AbstractBase');
-
-        $pm = new PluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
+        $this->expectExceptionMessage(
+            'Plugin ArrayObject does not belong to VuFind\\Hierarchy\\TreeDataSource\\AbstractBase'
         );
+
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());
     }
 }

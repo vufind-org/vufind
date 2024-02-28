@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS\Response;
 
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
 
 /**
  * Factory for record collection.
@@ -44,7 +51,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Factory to turn data into a record object.
      *
-     * @var Callable
+     * @var callable
      */
     protected $recordFactory;
 
@@ -58,7 +65,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Record factory callback
+     * @param callable $recordFactory   Record factory callback
      * @param string   $collectionClass Class of collection
      *
      * @return void
@@ -69,9 +76,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
-        $this->collectionClass = (null === $collectionClass)
-            ? 'VuFindSearch\Backend\EDS\Response\RecordCollection'
-            : $collectionClass;
+        $this->collectionClass = $collectionClass ?? RecordCollection::class;
     }
 
     /**

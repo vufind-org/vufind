@@ -3,7 +3,7 @@
 /**
  * Unit tests for terms information.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
+
+use function get_class;
 
 /**
  * Unit tests for terms information.
@@ -54,11 +57,11 @@ class TermsTest extends TestCase
             [
                 'terms' => [
                     'field1' => $field1,
-                ]
+                ],
             ]
         );
 
-        $this->assertEquals('ArrayIterator', get_class($terms->getIterator()));
+        $this->assertEquals(\ArrayIterator::class, get_class($terms->getIterator()));
         $this->assertNull($terms->getFieldTerms('field2'));
         $fieldTerms = $terms->getFieldTerms('field1');
         $this->assertCount(3, $fieldTerms);

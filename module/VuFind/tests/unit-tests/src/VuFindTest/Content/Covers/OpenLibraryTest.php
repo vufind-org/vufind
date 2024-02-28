@@ -3,7 +3,7 @@
 /**
  * Unit tests for OpenLibrary cover loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Content\Covers;
 
 use VuFind\Content\Covers\OpenLibrary;
@@ -35,7 +36,7 @@ use VuFindCode\ISBN;
  * Unit tests for OpenLibrary cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -47,13 +48,15 @@ class OpenLibraryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $ol = new OpenLibrary();
         $this->assertEquals(
             'http://covers.openlibrary.org/b/isbn/9780739313121-S.jpg?default=false',
             $ol->getUrl(
-                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
+                'mykey',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -63,9 +66,9 @@ class OpenLibraryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $ol = new OpenLibrary();
-        $this->assertEquals(false, $ol->getUrl('mykey', 'small', []));
+        $this->assertFalse($ol->getUrl('mykey', 'small', []));
     }
 }

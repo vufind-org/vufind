@@ -1,0 +1,16 @@
+<?php
+// Load Javascript dependencies into header:
+$this->headScript()->appendFile('check_item_statuses.js');
+$this->headScript()->appendFile('check_save_statuses.js');
+if ($this->displayVersions) {
+    $this->headScript()->appendFile('record_versions.js');
+    $this->headScript()->appendFile('combined-search.js');
+}
+// Load only if list view parameter is NOT full:
+if (($this->listViewOption ?? 'full') !== 'full') {
+    $this->headScript()->appendFile('record.js');
+    $this->headScript()->appendFile('embedded_record.js');
+}
+if ($this->jsResults ?? false) {
+    $this->headScript()->appendFile('search.js');
+}

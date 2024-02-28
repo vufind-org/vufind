@@ -3,7 +3,7 @@
 /**
  * Unit tests for WorldCat query builder
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\WorldCat;
 
 use PHPUnit\Framework\TestCase;
@@ -42,6 +43,8 @@ use VuFindSearch\Backend\WorldCat\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test query parsing.
      *
@@ -51,20 +54,20 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
             ['basic', '(srw.au all "john smith" OR srw.pn all "john smith" OR srw.cn all "john smith")'],
-            ['advanced', '((srw.ti all "bananas" OR srw.se all "bananas")) AND ((srw.su all "oranges") OR (srw.su all "apples")) NOT (((srw.se all "pears")))']
+            [
+                'advanced',
+                '((srw.ti all "bananas" OR srw.se all "bananas")) AND ((srw.su all "oranges") OR (srw.su all "apples"))'
+                . ' NOT (((srw.se all "pears")))',
+            ],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
+            [$input, $output] = $test;
             $q = unserialize(
-                file_get_contents(
-                    PHPUNIT_SEARCH_FIXTURES . '/worldcat/query/' . $input
-                )
+                $this->getFixture("worldcat/query/$input", 'VuFindSearch')
             );
             $response = $qb->build($q);
             $processedQ = $response->get('query');
@@ -81,7 +84,7 @@ class QueryBuilderTest extends TestCase
     {
         $qb = new QueryBuilder('TEST');
         $q = unserialize(
-            file_get_contents(PHPUNIT_SEARCH_FIXTURES . '/worldcat/query/basic')
+            $this->getFixture('worldcat/query/basic', 'VuFindSearch')
         );
         $response = $qb->build($q);
         $processedQ = $response->get('query');

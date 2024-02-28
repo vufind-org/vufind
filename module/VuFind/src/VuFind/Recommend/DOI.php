@@ -1,8 +1,9 @@
 <?php
+
 /**
  * DOI Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
@@ -57,6 +59,13 @@ class DOI implements RecommendInterface
     protected $prefix;
 
     /**
+     * Are we configured to redirect to the resolver when a full match is found?
+     *
+     * @var bool
+     */
+    protected $redirectFullMatch = true;
+
+    /**
      * Does the DOI in $match exactly match the user's query?
      *
      * @var bool
@@ -72,11 +81,22 @@ class DOI implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        $this->prefix = $settings;
+        // Find the last colon in the configuration that is not part of a URL:
+        $breakPoint = strrpos($settings, ':');
+        if ($breakPoint && substr($settings, $breakPoint + 1, 2) !== '//') {
+            $prefix = substr($settings, 0, $breakPoint);
+            $redirect = substr($settings, $breakPoint + 1);
+        } else {
+            $prefix = $settings;
+            $redirect = true;       // no redirect setting; use default
+        }
+        $this->prefix = $prefix;
+        $this->redirectFullMatch = ($redirect && strtolower($redirect) !== 'false');
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -92,7 +112,7 @@ class DOI implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -137,5 +157,15 @@ class DOI implements RecommendInterface
     public function isFullMatch()
     {
         return $this->exact;
+    }
+
+    /**
+     * Are we configured to redirect to the resolver when a full match is found?
+     *
+     * @return bool
+     */
+    public function redirectFullMatch()
+    {
+        return $this->redirectFullMatch;
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait for tables that support expiration
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -27,9 +28,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
-use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 
 /**
@@ -47,63 +48,56 @@ trait ExpirationTrait
     /**
      * Update the select statement to find records to delete.
      *
-     * @param Select $select  Select clause
-     * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
      */
-    abstract protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    );
+    abstract protected function expirationCallback($select, $dateLimit);
 
     /**
      * Delete expired records. Allows setting of 'from' and 'to' ID's so that rows
      * can be deleted in small batches.
      *
-     * @param int $daysOld Age in days of an "expired" record.
-     * @param int $idFrom  Lowest id of rows to delete.
-     * @param int $idTo    Highest id of rows to delete.
+     * @param string   $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
+     * @param int|null $limit     Maximum number of rows to delete or null for no
+     * limit.
      *
      * @return int Number of rows deleted
      */
-    public function deleteExpired($daysOld = 2, $idFrom = null, $idTo = null)
+    public function deleteExpired($dateLimit, $limit = null)
     {
-        // Determine the expiration date:
-        $callback = function ($select) use ($daysOld, $idFrom, $idTo) {
-            $this->expirationCallback($select, $daysOld, $idFrom, $idTo);
+        // Determine the expiration parameters:
+        $lastId = $limit ? $this->getExpiredBatchLastId($dateLimit, $limit) : null;
+        $callback = function ($select) use ($dateLimit, $lastId) {
+            $this->expirationCallback($select, $dateLimit);
+            if (null !== $lastId) {
+                $select->where->and->lessThanOrEqualTo('id', $lastId);
+            }
         };
         return $this->delete($callback);
     }
 
     /**
-     * Get the lowest id and highest id for expired records.
+     * Get the highest id to delete in a batch.
      *
-     * @param int $daysOld Age in days of an "expired" record.
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
+     * @param int    $limit     Maximum number of rows to delete.
      *
-     * @return array|bool Array of lowest id and highest id or false if no expired
-     * records found
+     * @return int|null Highest id value to delete or null if a limiting id is not
+     * available
      */
-    public function getExpiredIdRange($daysOld = 2)
+    protected function getExpiredBatchLastId($dateLimit, $limit)
     {
         // Determine the expiration date:
-        $callback = function ($select) use ($daysOld) {
-            $this->expirationCallback($select, $daysOld);
+        $callback = function ($select) use ($dateLimit, $limit) {
+            $this->expirationCallback($select, $dateLimit);
+            $select->columns(['id'])->order('id')->offset($limit - 1)->limit(1);
         };
-        $select = $this->getSql()->select();
-        $select->columns(
-            [
-                'id' => new Expression('1'), // required for TableGateway
-                'minId' => new Expression('MIN(id)'),
-                'maxId' => new Expression('MAX(id)'),
-            ]
-        );
-        $select->where($callback);
-        $result = $this->selectWith($select)->current();
-        if (null === $result->minId) {
-            return false;
-        }
-        return [$result->minId, $result->maxId];
+        $result = $this->select($callback)->current();
+        return $result ? $result->id : null;
     }
 }

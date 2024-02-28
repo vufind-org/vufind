@@ -1,0 +1,143 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/xml;charset=UTF-8
+Date: Thu, 21 Aug 2014 12:15:53 GMT
+Connection: close
+
+<sear:SEGMENTS xmlns:sear="http://www.exlibrisgroup.com/xsd/jaguar/search"><sear:JAGROOT>
+    <sear:RESULT>
+      <sear:QUERYTRANSFORMS/>
+      <sear:FACETLIST ACCURATE_COUNTERS="true">
+        <sear:FACET NAME="creator" COUNT="1">
+          <sear:FACET_VALUES KEY="Test, Test" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="lang" COUNT="1">
+          <sear:FACET_VALUES KEY="eng" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="rtype" COUNT="1">
+          <sear:FACET_VALUES KEY="articles" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="pfilter" COUNT="1">
+          <sear:FACET_VALUES KEY="articles" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="creationdate" COUNT="1">
+          <sear:FACET_VALUES KEY="2010" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="domain" COUNT="1">
+          <sear:FACET_VALUES KEY="Berkeley Electronic Press (CrossRef)" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="jtitle" COUNT="1">
+          <sear:FACET_VALUES KEY="Statistics, Politics, And Policy" VALUE="1"/>
+        </sear:FACET>
+      </sear:FACETLIST>
+      <sear:DOCSET HIT_TIME="20" TOTALHITS="1" FIRSTHIT="1" LASTHIT="1" TOTAL_TIME="49">
+        <sear:DOC ID="393082004" RANK="0.0014491501" NO="1" SEARCH_ENGINE="PrimoCentralThirdNode" SEARCH_ENGINE_TYPE="Primo Central Search Engine" LOCAL="false">
+          <PrimoNMBib xmlns="http://www.exlibrisgroup.com/xsd/primo/primo_nm_bib">
+            <record>
+              <control>
+                <sourcerecordid>10.2202/2151-7509.1009</sourcerecordid>
+                <sourceid>crossref</sourceid>
+                <recordid>TN_crossref10.2202/2151-7509.1009</recordid>
+                <sourceformat>XML</sourceformat>
+                <sourcesystem>Other</sourcesystem>
+              </control>
+              <display>
+                <type>article</type>
+                <title>Abstract Test</title>
+                <creator>Test, Test</creator>
+                <ispartof>Statistics, Politics, and Policy, 2010, Vol.1(1)</ispartof>
+                <identifier>&lt;b>E-ISSN:&lt;/b> 2151-7509 ; &lt;b>DOI:&lt;/b> http://dx.doi.org/10.2202/2151-7509.1009</identifier>
+                <language>eng</language>
+                <source>Berkeley Electronic Press (via CrossRef)</source>
+                <lds40>20100101</lds40>
+                <lds42>20100101</lds42>
+                <lds44>2010</lds44>
+                <lds45>20100602</lds45>
+              </display>
+              <links>
+                <openurl>$$Topenurl_article</openurl>
+                <openurlfulltext>$$Topenurlfull_article</openurlfulltext>
+                <addlink>$$Uhttps://exlibris-pub.s3.amazonaws.com/aboutCrossref.html$$DView CrossRef copyright notice</addlink>
+              </links>
+              <search>
+                <creatorcontrib>test, test</creatorcontrib>
+                <title>Abstract Test</title>
+                <general>English</general>
+                <general>10.2202/2151-7509.1009</general>
+                <sourceid>crossref</sourceid>
+                <recordid>crossref10.2202/2151-7509.1009</recordid>
+                <issn>2151-7509</issn>
+                <issn>21517509</issn>
+                <rsrctype>article</rsrctype>
+                <creationdate>2010</creationdate>
+                <addtitle>Statistics, Politics, and Policy</addtitle>
+                <searchscope>crossref_bep</searchscope>
+                <searchscope>CrossRef</searchscope>
+                <searchscope>Crossref</searchscope>
+                <searchscope>crossref</searchscope>
+                <scope>crossref_bep</scope>
+                <scope>CrossRef</scope>
+                <scope>Crossref</scope>
+                <scope>crossref</scope>
+              </search>
+              <sort>
+                <title>Abstract Test</title>
+                <author>Test, Test</author>
+                <creationdate>20100101</creationdate>
+              </sort>
+              <facets>
+                <frbrgroupid>913808301187942230</frbrgroupid>
+                <frbrtype>6</frbrtype>
+                <language>eng</language>
+                <creationdate>2010</creationdate>
+                <collection>Berkeley Electronic Press (CrossRef)</collection>
+                <prefilter>articles</prefilter>
+                <rsrctype>articles</rsrctype>
+                <creatorcontrib>Test, Test</creatorcontrib>
+                <jtitle>Statistics, Politics, And Policy</jtitle>
+              </facets>
+              <frbr>
+                <t>2</t>
+                <k1>2010</k1>
+                <k2>21517509</k2>
+                <k3>10.2202/2151-7509.1009</k3>
+                <k4>1</k4>
+                <k5>1</k5>
+                <k7>statistics politics policy</k7>
+                <k8>abstract test</k8>
+                <k9>abstracttest</k9>
+                <k15>testtest</k15>
+                <k16>testtest</k16>
+              </frbr>
+              <delivery>
+                <delcategory>Remote Search Resource</delcategory>
+                <fulltext>no_fulltext</fulltext>
+              </delivery>
+              <ranking>
+                <booster1>1</booster1>
+                <booster2>1</booster2>
+                <pcg_type>aggregator_crossref</pcg_type>
+              </ranking>
+              <addata>
+                <aulast>test</aulast>
+                <aufirst>test</aufirst>
+                <au>Test, Test</au>
+                <atitle>Abstract Test</atitle>
+                <jtitle>Statistics, Politics, and Policy</jtitle>
+                <date>20100101</date>
+                <risdate>20100101</risdate>
+                <volume>1</volume>
+                <issue>1</issue>
+                <issn>2151-7509</issn>
+                <eissn>2151-7509</eissn>
+                <genre>article</genre>
+                <ristype>JOUR</ristype>
+                <doi>10.2202/2151-7509.1009</doi>
+              </addata>
+            </record>
+          </PrimoNMBib>
+        <sear:GETIT deliveryCategory="Remote Search Resource" GetIt1="http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&amp;ctx_enc=info:ofi/enc:UTF-8&amp;ctx_tim=2014-08-21T08%3A15%3A53IST&amp;url_ver=Z39.88-2004&amp;url_ctx_fmt=infofi/fmt:kev:mtx:ctx&amp;rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:&amp;rft.genre=article&amp;rft.atitle=Abstract%20Test&amp;rft.jtitle=Statistics%2C%20Politics%2C%20and%20Policy&amp;rft.btitle=&amp;rft.aulast=test&amp;rft.auinit=&amp;rft.auinit1=&amp;rft.auinitm=&amp;rft.ausuffix=&amp;rft.au=Test%2C%20Test&amp;rft.aucorp=&amp;rft.date=20100101&amp;rft.volume=1&amp;rft.issue=1&amp;rft.part=&amp;rft.quarter=&amp;rft.ssn=&amp;rft.spage=&amp;rft.epage=&amp;rft.pages=&amp;rft.artnum=&amp;rft.issn=2151-7509&amp;rft.eissn=2151-7509&amp;rft.isbn=&amp;rft.sici=&amp;rft.coden=&amp;rft_id=info:doi/10.2202/2151-7509.1009&amp;rft.object_id=&amp;rft.eisbn=&amp;rft_dat=&lt;crossref>10.2202/2151-7509.1009&lt;/crossref>&lt;grp_id>913808301187942230&lt;/grp_id>&lt;oa>&lt;/oa>&amp;rft_id=info:oai/&amp;req.language=" GetIt2=""/><sear:LINKS><sear:openurl><![CDATA[http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-21T08%3A15%3A53IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Abstract%20Test&rft.jtitle=Statistics%2C%20Politics%2C%20and%20Policy&rft.btitle=&rft.aulast=test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test&rft.aucorp=&rft.date=20100101&rft.volume=1&rft.issue=1&rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&rft.issn=2151-7509&rft.eissn=2151-7509&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.2202/2151-7509.1009&rft.object_id=&rft.eisbn=&rft_dat=<crossref>10.2202/2151-7509.1009</crossref><grp_id>913808301187942230</grp_id><oa></oa>&rft_id=info:oai/&req.language=]]></sear:openurl><sear:thumbnail/><sear:openurlfulltext><![CDATA[http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-21T08%3A15%3A53IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Abstract%20Test&rft.jtitle=Statistics%2C%20Politics%2C%20and%20Policy&rft.btitle=&rft.aulast=test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test&rft.aucorp=&rft.date=20100101&rft.volume=1&rft.issue=1&rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&rft.issn=2151-7509&rft.eissn=2151-7509&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.2202/2151-7509.1009&rft.object_id=&svc_val_fmt=info:ofi/fmt:kev:mtx:sch_svc&svc.fulltext=yes&rft.eisbn=&rft_dat=<crossref>10.2202/2151-7509.1009</crossref><grp_id>913808301187942230</grp_id><oa></oa>&rft_id=info:oai/&req.language=]]></sear:openurlfulltext><sear:addlink>https://exlibris-pub.s3.amazonaws.com/aboutCrossref.html</sear:addlink></sear:LINKS></sear:DOC>
+      </sear:DOCSET>
+    </sear:RESULT>
+    <sear:searchToken>0</sear:searchToken>
+  </sear:JAGROOT></sear:SEGMENTS>

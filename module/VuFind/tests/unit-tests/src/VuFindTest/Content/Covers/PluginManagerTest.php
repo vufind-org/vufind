@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Content Covers Plugin Manager Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Covers\Content;
 
 use VuFind\Content\Covers\PluginManager;
@@ -38,18 +40,18 @@ use VuFind\Content\Covers\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PluginManagerTest extends \VuFindTest\Unit\TestCase
+class PluginManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test results.
      *
      * @return void
      */
-    public function testShareByDefault()
+    public function testShareByDefault(): void
     {
-        $pm = new PluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
-        );
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
     }
 
@@ -58,14 +60,12 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testExpectedInterface()
+    public function testExpectedInterface(): void
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
         $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Content\\AbstractCover');
 
-        $pm = new PluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
-        );
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());
     }
 }

@@ -1,0 +1,23 @@
+{
+  "total": 1,
+  "records": [
+    {
+      "ID": [
+        {
+          "display": "fake.user.fake.com"
+        }
+      ],
+      "Name": [
+        {
+          "display": "User, Fake"
+        }
+      ],
+      "Email": [
+        {
+          "display": "fake.user@fake.com"
+        }
+      ],
+      "_uri": "https://foo"
+    }
+  ]
+}

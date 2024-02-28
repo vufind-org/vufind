@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Alma controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -113,7 +115,8 @@ class AlmaController extends AbstractBase
 
         // Get request body if method is POST and is not empty
         $requestBodyJson = null;
-        if ($request->getContent() != null
+        if (
+            $request->getContent() != null
             && !empty($request->getContent())
             && $requestMethod == 'POST'
         ) {
@@ -122,7 +125,8 @@ class AlmaController extends AbstractBase
             } catch (\VuFind\Exception\Forbidden $ex) {
                 return $this->createJsonResponse(
                     'Access to Alma Webhook is forbidden. ' .
-                    'The message signature is not correct.', 403
+                    'The message signature is not correct.',
+                    403
                 );
             }
             $requestBodyJson = json_decode($request->getContent());
@@ -133,40 +137,42 @@ class AlmaController extends AbstractBase
 
         // Perform webhook action
         switch ($webhookAction) {
+            case 'USER':
+                $accessPermission = 'access.alma.webhook.user';
+                try {
+                    $this->checkPermission($accessPermission);
+                } catch (\VuFind\Exception\Forbidden $ex) {
+                    return $this->createJsonResponse(
+                        'Access to Alma Webhook \'' . $webhookAction .
+                        '\' forbidden. Set permission \'' . $accessPermission .
+                        '\' in \'permissions.ini\'.',
+                        403
+                    );
+                }
 
-        case 'USER':
-            $accessPermission = 'access.alma.webhook.user';
-            try {
-                $this->checkPermission($accessPermission);
-            } catch (\VuFind\Exception\Forbidden $ex) {
-                return $this->createJsonResponse(
-                    'Access to Alma Webhook \'' . $webhookAction . '\' forbidden. ' .
-                    'Set permission \'' . $accessPermission .
-                    '\' in \'permissions.ini\'.', 403
-                );
-            }
-
-            return $this->webhookUser($requestBodyJson);
+                return $this->webhookUser($requestBodyJson);
                 break;
-        case 'JOB_END':
-        case 'NOTIFICATION':
-        case 'LOAN':
-        case 'REQUEST':
-        case 'BIB':
-        case 'ITEM':
-            return $this->webhookNotImplemented($webhookAction);
+            case 'JOB_END':
+            case 'NOTIFICATION':
+            case 'LOAN':
+            case 'REQUEST':
+            case 'BIB':
+            case 'ITEM':
+                return $this->webhookNotImplemented($webhookAction);
                 break;
-        default:
-            $accessPermission = 'access.alma.webhook.challenge';
-            try {
-                $this->checkPermission($accessPermission);
-            } catch (\VuFind\Exception\Forbidden $ex) {
-                return $this->createJsonResponse(
-                    'Access to Alma Webhook challenge forbidden. Set permission \'' .
-                    $accessPermission . '\' in \'permissions.ini\'.', 403
-                );
-            }
-            return $this->webhookChallenge();
+            default:
+                $accessPermission = 'access.alma.webhook.challenge';
+                try {
+                    $this->checkPermission($accessPermission);
+                } catch (\VuFind\Exception\Forbidden $ex) {
+                    return $this->createJsonResponse(
+                        'Access to Alma Webhook challenge forbidden. Set ' .
+                        'permission \'' . $accessPermission .
+                        '\' in \'permissions.ini\'.',
+                        403
+                    );
+                }
+                return $this->webhookChallenge();
                 break;
         }
     }
@@ -180,7 +186,6 @@ class AlmaController extends AbstractBase
      */
     protected function webhookUser($requestBodyJson)
     {
-
         // Initialize user variable that should hold the user table row
         $user = null;
 
@@ -196,12 +201,13 @@ class AlmaController extends AbstractBase
         if ($method == 'CREATE' || $method == 'UPDATE') {
             // Get username (could e. g. be the barcode)
             $username = null;
-            $userIdentifiers = $requestBodyJson->webhook_user->user->user_identifier
-                               ?? null;
+            $userIdentifiers
+                = $requestBodyJson->webhook_user->user->user_identifier ?? null;
             $idTypeConfig = $this->configAlma->NewUser->idType ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = $userIdentifier->id_type->value ?? null;
-                if ($idTypeHook != null
+                if (
+                    $idTypeHook != null
                     && $idTypeHook == $idTypeConfig
                     && $username == null
                 ) {
@@ -217,8 +223,8 @@ class AlmaController extends AbstractBase
             $firstname = $requestBodyJson->webhook_user->user->first_name ?? null;
             $lastname = $requestBodyJson->webhook_user->user->last_name ?? null;
 
-            $allEmails = $requestBodyJson->webhook_user->user->contact_info->email
-                         ?? null;
+            $allEmails
+                = $requestBodyJson->webhook_user->user->contact_info->email ?? null;
             $email = null;
             foreach ($allEmails as $currentEmail) {
                 $preferred = $currentEmail->preferred ?? false;
@@ -251,7 +257,8 @@ class AlmaController extends AbstractBase
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully ' . strtolower($method) .
                         'd user with primary ID \'' . $primaryId .
-                        '\' | username \'' . $username . '\'.', 200
+                        '\' | username \'' . $username . '\'.',
+                        200
                     );
                 } catch (\Exception $ex) {
                     $jsonResponse = $this->createJsonResponse(
@@ -277,7 +284,8 @@ class AlmaController extends AbstractBase
                 if ($rowsAffected == 1) {
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully deleted use with primary ID \'' . $primaryId .
-                        '\' in VuFind.', 200
+                        '\' in VuFind.',
+                        200
                     );
                 } else {
                     $jsonResponse = $this->createJsonResponse(
@@ -285,13 +293,15 @@ class AlmaController extends AbstractBase
                         '\' in VuFind. It is expected that only 1 row of the ' .
                         'VuFind user table is affected by the deletion. But ' .
                         $rowsAffected . ' were affected. Please check the status ' .
-                        'of the user in the VuFind database.', 400
+                        'of the user in the VuFind database.',
+                        400
                     );
                 }
             } else {
                 $jsonResponse = $this->createJsonResponse(
                     'User with primary ID \'' . $primaryId . '\' was not found in ' .
-                    'VuFind database and therefore could not be deleted.', 404
+                    'VuFind database and therefore could not be deleted.',
+                    404
                 );
             }
         }
@@ -363,18 +373,20 @@ class AlmaController extends AbstractBase
 
                 // Custom template for emails (text-only)
                 $message = $renderer->render(
-                    'Email/new-user-welcome.phtml', [
-                    'library' => $config->Site->title,
-                    'firstname' => $user->firstname,
-                    'lastname' => $user->lastname,
-                    'username' => $user->username,
-                    'url' => $this->getServerUrl('myresearch-verify') . '?hash=' .
-                        $user->verify_hash . '&auth_method=' . $method
+                    'Email/new-user-welcome.phtml',
+                    [
+                        'library' => $config->Site->title,
+                        'firstname' => $user->firstname,
+                        'lastname' => $user->lastname,
+                        'username' => $user->username,
+                        'url' => $this->getServerUrl('myresearch-verify') . '?hash='
+                            . $user->verify_hash . '&auth_method=' . $method,
                     ]
                 );
                 // Send the email
                 $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
-                    $user->email, $config->Site->email,
+                    $user->email,
+                    $config->Site->email,
                     $this->translate(
                         'new_user_welcome_subject',
                         ['%%library%%' => $config->Site->title]
@@ -423,7 +435,8 @@ class AlmaController extends AbstractBase
     protected function webhookNotImplemented($webhookType)
     {
         return $this->createJsonResponse(
-            $webhookType . ' Alma Webhook is not (yet) implemented in VuFind.', 400
+            $webhookType . ' Alma Webhook is not (yet) implemented in VuFind.',
+            400
         );
     }
 
@@ -494,7 +507,7 @@ class AlmaController extends AbstractBase
                         JSON_UNESCAPED_SLASHES
                 ) . '"'
             );
-            throw new \VuFind\Exception\Forbidden;
+            throw new \VuFind\Exception\Forbidden();
         }
     }
 }

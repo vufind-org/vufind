@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Record Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
+
+use function in_array;
+use function intval;
+use function is_array;
+use function is_object;
 
 /**
  * VuFind Record Controller
@@ -65,11 +73,25 @@ class AbstractRecord extends AbstractBase
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
+     * Array of background tabs
+     *
+     * @var array
+     */
+    protected $backgroundTabs = null;
+
+    /**
+     * Array of extra scripts for tabs
+     *
+     * @var array
+     */
+    protected $tabsExtraScripts = null;
+
+    /**
      * Type of record to display
      *
      * @var string
      */
-    protected $searchClassId = 'Solr';
+    protected $sourceId = 'Solr';
 
     /**
      * Record driver
@@ -88,8 +110,9 @@ class AbstractRecord extends AbstractBase
     protected function createViewModel($params = null)
     {
         $view = parent::createViewModel($params);
-        $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
         $view->driver = $this->loadRecord();
+        $this->layout()->searchClassId = $view->searchClassId
+            = $view->driver->getSearchBackendIdentifier();
         return $view;
     }
 
@@ -116,7 +139,8 @@ class AbstractRecord extends AbstractBase
 
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, ['comment' => $this->params()->fromPost('comment')]
+                null,
+                ['comment' => $this->params()->fromPost('comment')]
             );
         }
 
@@ -140,9 +164,21 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
+                $driver->getUniqueId(),
+                $driver->getSourceIdentifier(),
+                true,
+                $driver
             );
             $resource->addComment($comment, $user);
+
+            // Save rating if allowed:
+            if (
+                $driver->isRatingAllowed()
+                && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
+            ) {
+                $driver->addOrUpdateRating($user->id, intval($rating));
+            }
+
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
@@ -238,12 +274,57 @@ class AbstractRecord extends AbstractBase
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
-                    'tokens' => ['%count%' => 1]
-                ], 'success'
+                    'tokens' => ['%count%' => 1],
+                ],
+                'success'
             );
         }
 
         return $this->redirectToRecord();
+    }
+
+    /**
+     * Display and add ratings
+     *
+     * @return mixed
+     */
+    public function ratingAction()
+    {
+        // Obtain the current record object:
+        $driver = $this->loadRecord();
+
+        // Make sure ratings are allowed for the record:
+        if (!$driver->isRatingAllowed()) {
+            throw new ForbiddenException('rating_disabled');
+        }
+
+        // Save rating, if any, and user has logged in:
+        $user = $this->getUser();
+        if ($user && null !== ($rating = $this->params()->fromPost('rating'))) {
+            if (
+                '' === $rating
+                && !($this->getConfig()->Social->remove_rating ?? true)
+            ) {
+                throw new BadRequestException('error_inconsistent_parameters');
+            }
+            $driver->addOrUpdateRating(
+                $user->id,
+                '' === $rating ? null : intval($rating)
+            );
+            $this->flashMessenger()->addSuccessMessage('rating_add_success');
+            if ($this->inLightbox()) {
+                return $this->getRefreshResponse();
+            }
+            return $this->redirectToRecord();
+        }
+
+        // Display the "add rating" form:
+        $view = $this->createViewModel(
+            [
+                'currentRating' => $user ? $driver->getRatingData($user->id) : null,
+            ]
+        );
+        return $view;
     }
 
     /**
@@ -270,8 +351,16 @@ class AbstractRecord extends AbstractBase
                 if (true === $driver->tryMethod('isCollection')) {
                     $params = $this->params()->fromQuery()
                         + $this->params()->fromRoute();
+                    // Disable path normalization since it can unencode e.g. encoded
+                    // slashes in record id's
+                    $options = [
+                        'normalize_path' => false,
+                    ];
+                    if ($sid = $this->getSearchMemory()->getCurrentSearchId()) {
+                        $options['query'] = compact('sid');
+                    }
                     $collectionUrl = $this->url()
-                        ->fromRoute($collectionRoute, $params);
+                        ->fromRoute($collectionRoute, $params, $options);
                     return $this->redirect()->toUrl($collectionUrl);
                 }
             }
@@ -289,11 +378,14 @@ class AbstractRecord extends AbstractBase
      */
     public function ajaxtabAction()
     {
+        $this->disableSessionWrites();
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
+        $this->layout()->setVariable('layoutContext', 'tabs');
         return $this->showTab(
-            $this->params()->fromPost('tab', $this->getDefaultTab()), true
+            $this->params()->fromPost('tab', $this->getDefaultTab()),
+            true
         );
     }
 
@@ -325,13 +417,12 @@ class AbstractRecord extends AbstractBase
             'html' => true,
             'msg' => $this->translate('bulk_save_success') . '. '
             . '<a href="' . $listUrl . '" class="gotolist">'
-            . $this->translate('go_to_list') . '</a>.'
+            . $this->translate('go_to_list') . '</a>.',
         ];
         $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($url);
         }
 
@@ -375,7 +466,8 @@ class AbstractRecord extends AbstractBase
         // in these cases, we will simply push the user to record view
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (substr($referer, -5) != '/Save'
+        if (
+            !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
         ) {
             $this->setFollowupUrlToReferer();
@@ -389,7 +481,9 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
+            $driver->getUniqueId(),
+            null,
+            $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
@@ -401,20 +495,16 @@ class AbstractRecord extends AbstractBase
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $containingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $containingLists[] = $list->toArray();
             } else {
-                $nonContainingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $nonContainingLists[] = $list->toArray();
             }
         }
 
         $view = $this->createViewModel(
             [
                 'containingLists' => $containingLists,
-                'nonContainingLists' => $nonContainingLists
+                'nonContainingLists' => $nonContainingLists,
             ]
         );
         $view->setTemplate('record/save');
@@ -430,7 +520,8 @@ class AbstractRecord extends AbstractBase
     {
         // Force login if necessary:
         $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+        if (
+            (!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
             return $this->forceLogin();
@@ -442,7 +533,8 @@ class AbstractRecord extends AbstractBase
         // Create view
         $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(
-            null, $mailer->getDefaultRecordSubject($driver)
+            null,
+            $mailer->getDefaultRecordSubject($driver)
         );
         $mailer->setMaxRecipients($view->maxRecipients);
 
@@ -455,13 +547,18 @@ class AbstractRecord extends AbstractBase
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
                 $mailer->sendRecord(
-                    $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer(), $view->subject, $cc
+                    $view->to,
+                    $view->from,
+                    $view->message,
+                    $driver,
+                    $this->getViewRenderer(),
+                    $view->subject,
+                    $cc
                 );
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
@@ -504,11 +601,18 @@ class AbstractRecord extends AbstractBase
         $view->validation = $sms->getValidationType();
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('sms');
+        // Send parameters back to view so form can be re-populated:
+        $view->to = $this->params()->fromPost('to');
+        $view->provider = $this->params()->fromPost('provider');
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->provider = $this->params()->fromPost('provider');
+            // Do CSRF check
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
 
             // Attempt to send the email and show an appropriate flash message:
             try {
@@ -520,7 +624,7 @@ class AbstractRecord extends AbstractBase
                 $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
@@ -538,6 +642,18 @@ class AbstractRecord extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->setTemplate('record/cite');
+        return $view;
+    }
+
+    /**
+     * Show permanent link for the current record.
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function permalinkAction()
+    {
+        $view = $this->createViewModel();
+        $view->setTemplate('record/permalink');
         return $view;
     }
 
@@ -565,7 +681,8 @@ class AbstractRecord extends AbstractBase
 
         // If this is an export format that redirects to an external site, perform
         // the redirect now (unless we're being called back from that service!):
-        if ($export->needsRedirect($format)
+        if (
+            $export->needsRedirect($format)
             && !$this->params()->fromQuery('callback')
         ) {
             // Build callback URL:
@@ -577,22 +694,29 @@ class AbstractRecord extends AbstractBase
         }
 
         $recordHelper = $this->getViewRenderer()->plugin('record');
+        try {
+            $exportedRecord = $recordHelper($driver)->getExport($format);
+        } catch (\VuFind\Exception\FormatUnavailable $e) {
+            $this->flashMessenger()->addErrorMessage('export_unsupported_format');
+            return $this->redirectToRecord();
+        }
 
         $exportType = $export->getBulkExportType($format);
         if ('post' === $exportType) {
             $params = [
                 'exportType' => 'post',
                 'postField' => $export->getPostField($format),
-                'postData' => $recordHelper($driver)->getExport($format),
+                'postData' => $exportedRecord,
                 'targetWindow' => $export->getTargetWindow($format),
                 'url' => $export->getRedirectUrl($format, ''),
-                'format' => $format
+                'format' => $format,
             ];
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', $params
-                )
+                    'cart/export-success.phtml',
+                    $params
+                ),
             ];
             $this->flashMessenger()->addSuccessMessage($msg);
             return $this->redirectToRecord();
@@ -603,7 +727,7 @@ class AbstractRecord extends AbstractBase
         $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
-        $response->setContent($recordHelper($driver)->getExport($format));
+        $response->setContent($exportedRecord);
         return $response;
     }
 
@@ -619,6 +743,34 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Show explanation for why a record was found and how its relevancy is computed
+     *
+     * @return mixed
+     */
+    public function explainAction()
+    {
+        $record = $this->loadRecord();
+
+        $view = $this->createViewModel();
+        $view->setTemplate('record/explain');
+        if (!$record->tryMethod('explainEnabled')) {
+            $view->disabled = true;
+            return $view;
+        }
+
+        $explanation = $this->serviceLocator
+            ->get(\VuFind\Search\Explanation\PluginManager::class)
+            ->get($record->getSourceIdentifier());
+
+        $params = $explanation->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $explanation->performRequest($record->getUniqueID());
+
+        $view->explanation = $explanation;
+        return $view;
+    }
+
+    /**
      * Load the record requested by the user; note that this is not done in the
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
@@ -631,7 +783,7 @@ class AbstractRecord extends AbstractBase
      */
     protected function loadRecord(ParamBag $params = null, bool $force = false)
     {
-        // Only load the record if it has not already been loaded.  Note that
+        // Only load the record if it has not already been loaded. Note that
         // when determining record ID, we check both the route match (the most
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
@@ -643,7 +795,7 @@ class AbstractRecord extends AbstractBase
             }
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
-                $this->searchClassId,
+                $this->sourceId,
                 false,
                 $params
             );
@@ -683,6 +835,7 @@ class AbstractRecord extends AbstractBase
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
         $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
+        $this->tabsExtraScripts = $manager->getExtraScripts();
     }
 
     /**
@@ -726,6 +879,28 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Get extra scripts required by tabs.
+     *
+     * @param array $tabs Tab names to consider
+     *
+     * @return array
+     */
+    protected function getTabsExtraScripts($tabs)
+    {
+        if (null === $this->tabsExtraScripts) {
+            $this->loadTabDetails();
+        }
+        $allScripts = [];
+        foreach (array_keys($tabs) as $tab) {
+            if (!empty($this->tabsExtraScripts[$tab])) {
+                $allScripts
+                    = array_merge($allScripts, $this->tabsExtraScripts[$tab]);
+            }
+        }
+        return array_unique($allScripts);
+    }
+
+    /**
      * Is the result scroller active?
      *
      * @return bool
@@ -749,11 +924,13 @@ class AbstractRecord extends AbstractBase
         // Special case -- handle login request (currently needed for holdings
         // tab when driver-based holds mode is enabled, but may also be useful
         // in other circumstances):
-        if ($this->params()->fromQuery('login', 'false') == 'true'
+        if (
+            $this->params()->fromQuery('login', 'false') == 'true'
             && !$this->getUser()
         ) {
             return $this->forceLogin(null);
-        } elseif ($this->params()->fromQuery('catalogLogin', 'false') == 'true'
+        } elseif (
+            $this->params()->fromQuery('catalogLogin', 'false') == 'true'
             && !is_array($patron = $this->catalogLogin())
         ) {
             return $patron;
@@ -766,6 +943,7 @@ class AbstractRecord extends AbstractBase
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
+        $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
@@ -776,9 +954,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = isset($config->Item_Status->callnumber_handler)
-            ? $config->Item_Status->callnumber_handler
-            : false;
+        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

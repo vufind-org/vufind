@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Plugin Manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\AbstractPluginManager as Base;
@@ -54,12 +56,13 @@ abstract class AbstractPluginManager extends Base
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
         $this->addInitializer(
-            \VuFind\ServiceManager\ServiceInitializer::class, false
+            \VuFind\ServiceManager\ServiceInitializer::class
         );
     }
 
@@ -79,7 +82,7 @@ abstract class AbstractPluginManager extends Base
         $expectedInterface = $this->getExpectedInterface();
         if (!$plugin instanceof $expectedInterface) {
             throw new InvalidServiceException(
-                'Plugin ' . get_class($plugin) . ' does not belong to '
+                'Plugin ' . $plugin::class . ' does not belong to '
                 . $expectedInterface
             );
         }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Config SearchSpecsReader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
-use VuFind\Config\Locator;
 use VuFind\Config\SearchSpecsReader;
 
 /**
@@ -40,50 +41,11 @@ use VuFind\Config\SearchSpecsReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
+class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Flag -- did writing config files fail?
-     *
-     * @var bool
-     */
-    protected static $writeFailed = false;
-
-    /**
-     * Array of files to clean up after test.
-     *
-     * @var array
-     */
-    protected static $filesToDelete = [];
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass(): void
-    {
-        // Create test files:
-        $parentPath = Locator::getLocalConfigPath('top.yaml', null, true);
-        $parent = "top: foo";
-        $childPath = Locator::getLocalConfigPath('middle.yaml', null, true);
-        $child = "\"@parent_yaml\": $parentPath\nmiddle: bar";
-        $grandchildPath = Locator::getLocalConfigPath('bottom.yaml', null, true);
-        $grandchild = "\"@parent_yaml\": $childPath\nbottom: baz";
-
-        // Fail if we are unable to write files:
-        if (null === $parentPath || null === $childPath || null === $grandchildPath
-            || !file_put_contents($parentPath, $parent)
-            || !file_put_contents($childPath, $child)
-            || !file_put_contents($grandchildPath, $grandchild)
-        ) {
-            self::$writeFailed = true;
-            return;
-        }
-
-        // Mark for cleanup:
-        self::$filesToDelete = [$parentPath, $childPath, $grandchildPath];
-    }
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test loading of a YAML file.
@@ -94,12 +56,9 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = $this->getServiceManager()->get(\VuFind\Config\SearchSpecsReader::class);
+        $reader = new SearchSpecsReader();
         $specs = $reader->get('searchspecs.yaml');
-        $this->assertTrue(
-            isset($specs['Author']['DismaxFields'])
-            && !empty($specs['Author']['DismaxFields'])
-        );
+        $this->assertTrue(!empty($specs['Author']['DismaxFields']));
     }
 
     /**
@@ -109,7 +68,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingFileRead()
     {
-        $reader = $this->getServiceManager()->get(\VuFind\Config\SearchSpecsReader::class);
+        $reader = new SearchSpecsReader();
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }
@@ -122,8 +81,8 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     public function testYamlLoad()
     {
         $reader = new SearchSpecsReader();
-        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
+        $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'bar'],
@@ -148,8 +107,8 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     public function testYamlMerge()
     {
         $reader = new SearchSpecsReader();
-        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
+        $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'xyzzy'],
@@ -167,30 +126,46 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testParentYaml()
     {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-        $reader = new SearchSpecsReader();
-        $core = Locator::getLocalConfigPath('middle.yaml', null, true);
-        $local = Locator::getLocalConfigPath('bottom.yaml', null, true);
+        $reader = new SearchSpecsReader(
+            null,
+            $this->getPathResolver($this->getFixtureDir() . 'configs/inheritance')
+        );
+
+        $this->assertEquals(
+            [
+                'top' => 'foo',
+                'middle' => 'bar',
+            ],
+            $reader->get('middle.yaml')
+        );
+
         $this->assertEquals(
             [
                 'top' => 'foo',
                 'middle' => 'bar',
                 'bottom' => 'baz',
             ],
-            $this->callMethod($reader, 'getFromPaths', [$core, $local])
+            $reader->get('bottom.yaml')
         );
-    }
 
-    /**
-     * Standard teardown method.
-     *
-     * @return void
-     */
-    public static function tearDownAfterClass(): void
-    {
-        // Clean up test files:
-        array_map('unlink', self::$filesToDelete);
+        $this->assertEquals(
+            [
+                'top' => 'foo',
+                'middle' => 'bar',
+                'bottom' => 'baz',
+            ],
+            $this->callMethod(
+                $reader,
+                'getFromPaths',
+                [
+                    $this->getFixturePath(
+                        'configs/inheritance/config/vufind/middle.yaml'
+                    ),
+                    $this->getFixturePath(
+                        'configs/inheritance/config/vufind/bottom.yaml'
+                    ),
+                ]
+            )
+        );
     }
 }

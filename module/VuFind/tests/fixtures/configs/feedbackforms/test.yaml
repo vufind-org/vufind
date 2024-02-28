@@ -20,7 +20,7 @@ forms:
              - option-1
              - option-2
         label: select2
-        
+
       - name: select3
         type: select
         options:
@@ -68,3 +68,190 @@ forms:
           - option-1
           - option-2
         label: checkbox2
+
+  TestCheckboxWithAllOptionsRequired:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+          - option-2
+        label: checkbox
+        required: true
+
+  TestCheckboxWithOneOptionRequired:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+          - option-2
+        label: checkbox
+        requireOne: true
+
+  TestCheckboxWithOneOptionThatIsRequired:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+        label: checkbox
+        required: true
+
+  TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+        label: checkbox
+        requireOne: true
+
+  TestCheckboxWithAllOptionsRequired-2:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+          - label: Option 2
+            value: option-2
+        label: checkbox
+        required: true
+
+  TestCheckboxWithOneOptionRequired-2:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+          - label: Option 2
+            value: option-2
+        label: checkbox
+        requireOne: true
+
+  TestCheckboxWithOneOptionThatIsRequired-2:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+        label: checkbox
+        required: true
+
+  TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne-2:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+        label: checkbox
+        requireOne: true
+
+  TestSenderFields:
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: phone
+        type: text
+        label: Phone Number
+        group: __sender__
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments
+        required: true
+
+  TestSenderFieldsWithSettings:
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+        settings:
+        - size: 100
+      - name: phone
+        type: text
+        label: Phone Number
+        group: __sender__
+      - name: email
+        type: email
+        label: feedback_email
+        settings:
+        - [aria-label, Test label]
+      - name: message
+        type: textarea
+        label: Comments
+        required: true
+
+  TestSubjectEmailWithPlaceholders:
+    emailSubject: Subject %%text1%% %%text2%% %%checkbox%%
+    fields:
+      - name: text1
+        type: text
+        label: Sender Name
+      - name: text2
+        type: text
+        label: Topic
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+        label: checkbox
+
+  TestSubjectEmailWithoutPlaceholders:
+    emailSubject: Subject without placeholders
+    fields:
+      - name: text1
+        type: text
+        label: Sender Name
+      - name: text2
+        type: text
+        label: Topic
+      - name: checkbox
+        type: checkbox
+        options:
+          - label: Option 1
+            value: option-1
+        label: checkbox
+
+  TestPrefill:
+    prefillFields:
+      - message
+      - secret_code
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments
+      - name: phone
+        type: text
+        label: Phone Number
+      - name: secret_code
+        type: hidden
+        settings:
+          - value: default_secret
+
+  TestPrefillProtectedFields:
+    reportUserAgent: true
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments

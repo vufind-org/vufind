@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Secure session delegator factory
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
  *
- * PHP version 7
+ * PHP version 8
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,11 +28,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use Psr\Container\ContainerInterface;
+
+use function call_user_func;
 
 /**
  * Secure session delegator factory
@@ -58,7 +61,9 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
-        ContainerInterface $container, $name, callable $callback,
+        ContainerInterface $container,
+        $name,
+        callable $callback,
         array $options = null
     ): HandlerInterface {
         /**
@@ -81,26 +86,10 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
      * @return HandlerInterface
      */
     protected function delegate(
-        ContainerInterface $container, HandlerInterface $handler
+        ContainerInterface $container,
+        HandlerInterface $handler
     ): HandlerInterface {
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
-        $config = $container->get(\ProxyManager\Configuration::class);
-        $factory = new LazyLoadingValueHolderFactory($config);
-        $delegator = new SecureDelegator($cookieManager, $handler);
-        /**
-         * The handler proxy.
-         *
-         * @var HandlerInterface $handler
-         */
-        $handler = $factory->createProxy(
-            HandlerInterface::class, function (
-                &$target, $proxy, $method, array $params, &$init
-            ) use ($delegator) {
-                $init = null;
-                $target = $delegator;
-                return true;
-            }
-        );
-        return $handler;
+        return new SecureDelegator($cookieManager, $handler);
     }
 }

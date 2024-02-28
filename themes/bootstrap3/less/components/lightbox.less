@@ -1,11 +1,31 @@
 #modal { background-color: rgba(0,0,0,.2); }
 
+#modal .modal-dialog {
+  width: 100%;
+  margin-inline: auto;
+  margin-block: 1rem;
+  padding-inline: 1rem;
+}
+@media (min-width: 768px) {
+  #modal .modal-dialog {
+    width: fit-content;
+/* #SCSS>
+    max-width: #{'min(1200px, calc(100vw - 200px))'};
+<#SCSS */
+/* #LESS> */
+    max-width: ~"min(1200px, calc(100vw - 200px))";
+/* <#LESS */
+    min-width: 600px;
+    padding: 0;
+  }
+}
+
 #modal .modal-content > .close {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 2;
-  padding: .5rem 1rem;
+  padding: 0.5rem;
   opacity: 1;
 
   body.rtl & {
@@ -13,15 +33,23 @@
     right: auto;
   }
 }
+#modal .close svg {
+  width: 1em;
+  vertical-align: bottom;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
 @media (min-width: 768px) {
   #modal .modal-content > .close { // Fancy side X button
-    right: -60px;
+    right: -1.75em;
     font-size: 32pt;
     color: #fff;
     background-color: rgba(0,0,0,0);
     border-radius: 6px;
     body.rtl & {
-      left: -60px;
+      left: -1.75em;
       right: auto;
     }
   }
@@ -35,13 +63,29 @@
 }
 
 #modal .cart-controls .btn { margin-bottom: 4px; }
-#modal .cart-controls .checkbox { padding-bottom: 1rem; }
 #modal .cart-controls ~ hr { margin-top: 0; }
 .lightbox-scroll { overflow-y: auto; }
 
 // Loading spinner
-.modal-loading { float: right; }
-body.rtl .modal-loading { float: left; }
+.modal-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  font-size: 150%;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.2);
+
+  .loading-spinner {
+    padding: 2rem;
+    background-color: rgba(0,0,0,0.6);
+    border-radius: @border-radius-large;
+    color: @gray-lighter;
+  }
+}
 
 // Utility classes
 .lightbox-only { display: none; }

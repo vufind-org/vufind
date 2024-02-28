@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Authentication manager test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
@@ -33,6 +35,8 @@ use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
+
+use function get_class;
 
 /**
  * Authentication manager test class.
@@ -43,8 +47,10 @@ use VuFind\Db\Table\User as UserTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ManagerTest extends \VuFindTest\Unit\TestCase
+class ManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test that database is the default method.
      *
@@ -64,7 +70,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('getSessionInitiator')->with($this->equalTo('foo'))->will($this->returnValue('bar'));
+        $db->expects($this->once())->method('getSessionInitiator')
+            ->with($this->equalTo('foo'))->will($this->returnValue('bar'));
         $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals('bar', $manager->getSessionInitiator('foo'));
     }
@@ -135,7 +142,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('logout')
+            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
         $sm = $this->getMockSessionManager();
         $sm->expects($this->once())->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
@@ -151,7 +159,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('logout')
+            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
         $sm = $this->getMockSessionManager();
         $sm->expects($this->exactly(0))->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
@@ -499,18 +508,42 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $user = $this->getMockUser();
         $userArray = new \ArrayObject();
         $userArray->append($user);
-        $table->expects($this->once())->method('select')->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
+        $table->expects($this->once())->method('select')
+            ->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
         $manager = $this->getManager([], $table);
 
         // Fake the session inside the manager:
         $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
-        $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
-        $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));
+        $mockSession->expects($this->any())->method('__isset')
+            ->with($this->equalTo('userId'))->will($this->returnValue(true));
+        $mockSession->expects($this->any())->method('__get')
+            ->with($this->equalTo('userId'))->will($this->returnValue('foo'));
         $this->setProperty($manager, 'session', $mockSession);
 
         $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
+     * Confirm default setting of allowsUserIlsLogin().
+     *
+     * @return void
+     */
+    public function testAllowsUserIlsLoginDefault(): void
+    {
+        $this->assertTrue($this->getManager()->allowsUserIlsLogin());
+    }
+
+    /**
+     * Confirm configurability of allowsUserIlsLogin().
+     *
+     * @return void
+     */
+    public function testAllowsUserIlsLoginConfiguration(): void
+    {
+        $config = ['Catalog' => ['allowUserLogin' => false]];
+        $this->assertFalse($this->getManager($config)->allowsUserIlsLogin());
     }
 
     /**
@@ -536,14 +569,30 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             $pm = $this->getMockPluginManager();
         }
         $cookies = new \VuFind\Cookie\CookieManager([]);
-        $csrf = new \VuFind\Validator\Csrf(
+        $csrf = new \VuFind\Validator\SessionCsrf(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),
-                'salt' => 'csrftest'
+                'salt' => 'csrftest',
             ]
         );
+        $loginTokenManager = $this->getMockBuilder(\VuFind\Auth\LoginTokenManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $ils = $this->getMockBuilder(\VuFind\ILS\Connection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $ils->expects($this->any())
+            ->method('loginIsHidden')
+            ->willReturn(false);
         return new Manager(
-            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+            $config,
+            $userTable,
+            $sessionManager,
+            $pm,
+            $cookies,
+            $csrf,
+            $loginTokenManager,
+            $ils
         );
     }
 
@@ -578,11 +627,12 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager($this->getServiceManager());
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
+        $mockChoice->expects($this->any())
+            ->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
         $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -594,10 +644,10 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('VuFind\Auth\ChoiceAuth', $mockChoice);
-        $pm->setService('VuFind\Auth\Database', $mockDb);
-        $pm->setService('VuFind\Auth\MultiILS', $mockMulti);
-        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
+        $pm->setService(\VuFind\Auth\ChoiceAuth::class, $mockChoice);
+        $pm->setService(\VuFind\Auth\Database::class, $mockDb);
+        $pm->setService(\VuFind\Auth\MultiILS::class, $mockMulti);
+        $pm->setService(\VuFind\Auth\Shibboleth::class, $mockShib);
         return $pm;
     }
 

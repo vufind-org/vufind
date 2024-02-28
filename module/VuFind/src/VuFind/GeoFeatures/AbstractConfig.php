@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract Configuration Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -23,8 +24,9 @@
  * @package  GeoFeatures
  * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\GeoFeatures;
 
 use Laminas\Config\Config;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Translate view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -36,23 +38,25 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Translate extends \Laminas\View\Helper\AbstractHelper
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class Translate extends \Laminas\View\Helper\AbstractHelper implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Translate a string
      *
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
+    public function __invoke($str, $tokens = [], $default = null, $useIcuFormatter = false)
     {
-        return $this->translate($str, $tokens, $default);
+        return $this->translate($str, $tokens, $default, $useIcuFormatter);
     }
 }

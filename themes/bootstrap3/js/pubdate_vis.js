@@ -1,4 +1,3 @@
-/*global htmlEncode */
 /*exported loadVis */
 
 function PadDigits(number, totalDigits) {
@@ -126,10 +125,14 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
 
       if (hasFilter) {
         var newdiv = document.createElement('span');
-        var text = document.getElementById("clearButtonText").innerHTML;
         newdiv.setAttribute('id', 'clearButton' + key);
-        newdiv.innerHTML = '<a href="' + htmlEncode(val.removalURL) + '">' + text + '</a>';
-        newdiv.className += "dateVisClear";
+        newdiv.className = "dateVisClear";
+
+        var link = document.createElement("a");
+        link.textContent = document.getElementById("clearButtonText").innerText;
+        link.setAttribute("href", val.removalURL);
+        newdiv.append(link);
+
         placeholder.before(newdiv);
       }
     });

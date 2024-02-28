@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: delete from Solr
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,14 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
-use File_MARC;
-use File_MARCXML;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Marc\MarcCollectionFile;
+
+use function count;
+use function strlen;
 
 /**
  * Console command: delete from Solr
@@ -70,18 +75,23 @@ class DeletesCommand extends AbstractSolrCommand
                 'format',
                 InputArgument::OPTIONAL,
                 "the format of the file -- it may be one of the following:\n"
-                . "flat - flat text format "
+                . 'flat - flat text format '
                 . "(deletes all IDs in newline-delimited file)\n"
-                . "marc - binary MARC format (delete all record IDs from 001 "
-                . "fields)\n"
-                . "marcxml - MARC-XML format (delete all record IDs from 001 "
-                . "fields)\n",
+                . 'marc - MARC record in binary or MARCXML format (deletes all '
+                . "record IDs from 001 fields)\n"
+                . "marcxml - DEPRECATED; use marc instead\n",
                 'marc'
             )->addArgument(
                 'index',
                 InputArgument::OPTIONAL,
                 'Name of Solr core/backend to update',
                 'Solr'
+            )->addOption(
+                'id-prefix',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Prefix to prepend to all IDs',
+                ''
             );
     }
 
@@ -107,26 +117,30 @@ class DeletesCommand extends AbstractSolrCommand
      * Load IDs from a MARC file
      *
      * @param string          $filename MARC file
-     * @param string          $mode     Type of file (marc or marcxml)
      * @param OutputInterface $output   Output object
      *
      * @return array
      */
-    protected function getIdsFromMarcFile(string $filename, string $mode,
+    protected function getIdsFromMarcFile(
+        string $filename,
         OutputInterface $output
     ): array {
         $ids = [];
-        // MARC file mode...  We need to load the MARC record differently if it's
-        // XML or binary:
-        $collection = ($mode == 'marcxml')
-            ? new File_MARCXML($filename) : new File_MARC($filename);
+        // MARC file mode:
+        $messageCallback = function (string $msg, int $level) use ($output) {
+            if ($output->isVerbose() || $level !== E_NOTICE) {
+                $output->writeln(
+                    '<comment>' . OutputFormatter::escape($msg) . '</comment>'
+                );
+            }
+        };
+        $collection = new MarcCollectionFile($filename, $messageCallback);
 
         // Once the records are loaded, the rest of the logic is always the same:
         $missingIdCount = 0;
-        while ($record = $collection->next()) {
-            $idField = $record->getField('001');
-            if ($idField) {
-                $ids[] = (string)$idField->getData();
+        foreach ($collection as $record) {
+            if ($id = $record->getField('001')) {
+                $ids[] = $id;
             } else {
                 $missingIdCount++;
             }
@@ -152,6 +166,7 @@ class DeletesCommand extends AbstractSolrCommand
         $filename = $input->getArgument('filename');
         $mode = $input->getArgument('format');
         $index = $input->getArgument('index');
+        $prefix = $input->getOption('id-prefix');
 
         // File doesn't exist?
         if (!file_exists($filename)) {
@@ -160,23 +175,32 @@ class DeletesCommand extends AbstractSolrCommand
         }
 
         $output->writeln(
-            "Loading IDs in {$mode} mode.", OutputInterface::VERBOSITY_VERBOSE
+            "Loading IDs in {$mode} mode.",
+            OutputInterface::VERBOSITY_VERBOSE
         );
 
         // Build list of records to delete:
         $ids = ($mode == 'flat')
             ? $this->getIdsFromFlatFile($filename)
-            : $this->getIdsFromMarcFile($filename, $mode, $output);
+            : $this->getIdsFromMarcFile($filename, $output);
 
         // Delete, Commit and Optimize if necessary:
         if (!empty($ids)) {
             $output->writeln(
                 'Attempting to delete ' . count($ids) . ' record(s): '
-                . implode(', ', $ids), OutputInterface::VERBOSITY_VERBOSE
+                . implode(', ', $ids),
+                OutputInterface::VERBOSITY_VERBOSE
             );
+            if (!empty($prefix)) {
+                $callback = function ($id) use ($prefix) {
+                    return $prefix . $id;
+                };
+                $ids = array_map($callback, $ids);
+            }
             $this->solr->deleteRecords($index, $ids);
             $output->writeln(
-                'Delete operation completed.', OutputInterface::VERBOSITY_VERBOSE
+                'Delete operation completed.',
+                OutputInterface::VERBOSITY_VERBOSE
             );
         } elseif ($output->isVerbose()) {
             $output->writeln('Nothing to delete.');

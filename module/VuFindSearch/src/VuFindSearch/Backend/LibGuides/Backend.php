@@ -3,7 +3,7 @@
 /**
  * LibGuides backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,17 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\LibGuides;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function in_array;
 
 /**
  * LibGuides backend.
@@ -80,8 +80,10 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function __construct(Connector $connector,
-        RecordCollectionFactoryInterface $factory = null, $defaultSearch = null
+    public function __construct(
+        Connector $connector,
+        RecordCollectionFactoryInterface $factory = null,
+        $defaultSearch = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -101,7 +103,10 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit,
+    public function search(
+        AbstractQuery $query,
+        $offset,
+        $limit,
         ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Tag autocomplete test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Autocomplete;
 
 use VuFind\Autocomplete\Tag;
@@ -38,7 +40,7 @@ use VuFind\Autocomplete\Tag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class TagTest extends \VuFindTest\Unit\DbTestCase
+class TagTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that missing plugin manager causes exception.
@@ -69,12 +71,12 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
 
         // Fake services:
         $tagTable = $this->getMockBuilder(\VuFind\Db\Table\Tags::class)
-            ->disableOriginalConstructor()->setMethods(['matchText'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['matchText'])->getMock();
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
         $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
-            ->disableOriginalConstructor()->setMethods(['get'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))
             ->will($this->returnValue($tagTable));

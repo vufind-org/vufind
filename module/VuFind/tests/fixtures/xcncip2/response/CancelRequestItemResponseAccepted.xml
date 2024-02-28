@@ -1,0 +1,19 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">
+    <ns1:CancelRequestItemResponse>
+        <ns1:RequestId>
+            <ns1:AgencyId ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">CBA001</ns1:AgencyId>
+            <ns1:RequestIdentifierType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">IDX</ns1:RequestIdentifierType>
+            <ns1:RequestIdentifierValue>cbvk_trx*13512707</ns1:RequestIdentifierValue>
+        </ns1:RequestId>
+        <ns1:UserId>
+            <ns1:AgencyId ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">CBA001</ns1:AgencyId>
+            <ns1:UserIdentifierType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">INSTITUTION_ID_NUMBER</ns1:UserIdentifierType>
+            <ns1:UserIdentifierValue>0059085</ns1:UserIdentifierValue>
+        </ns1:UserId>
+    </ns1:CancelRequestItemResponse>
+</ns1:NCIPMessage>

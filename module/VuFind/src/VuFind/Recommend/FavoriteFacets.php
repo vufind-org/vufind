@@ -1,8 +1,9 @@
 <?php
+
 /**
  * FavoriteFacets Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-namespace VuFind\Recommend;
 
-use VuFind\Search\Solr\HierarchicalFacetHelper;
+namespace VuFind\Recommend;
 
 /**
  * FavoriteFacets Recommendations Module
@@ -53,16 +53,13 @@ class FavoriteFacets extends SideFacets
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
-     * hierarchical facets
      * @param string                       $tagSetting   Tag capability setting
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper = null,
         $tagSetting = 'enabled'
     ) {
-        parent::__construct($configLoader, $facetHelper);
+        parent::__construct($configLoader);
         $this->tagSetting = $tagSetting;
     }
 

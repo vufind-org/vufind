@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Reviews content loader plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Content\Reviews;
 
 use VuFind\Content\Deprecated;
@@ -63,8 +65,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Amazon::class => \VuFind\Content\AbstractAmazonFactory::class,
-        AmazonEditorial::class => \VuFind\Content\AbstractAmazonFactory::class,
         Booksite::class => BooksiteFactory::class,
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Deprecated::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,

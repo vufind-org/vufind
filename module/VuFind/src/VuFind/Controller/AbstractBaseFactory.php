@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic controller factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Controller;
 
-use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Generic controller factory.
@@ -55,10 +60,10 @@ class AbstractBaseFactory implements FactoryInterface
             ->get('permissionBehavior');
         $permissions = $config->global->controllerAccess ?? [];
 
-        if (!empty($permissions)) {
+        if (!empty($permissions) && $controller instanceof Feature\AccessPermissionInterface) {
             // Iterate through parent classes until we find the most specific
             // class access permission defined (if any):
-            $class = get_class($controller);
+            $class = $controller::class;
             do {
                 if (isset($permissions[$class])) {
                     $controller->setAccessPermission($permissions[$class]);
@@ -71,7 +76,8 @@ class AbstractBaseFactory implements FactoryInterface
             // or a string), that means it has no internally configured default, and
             // setAccessPermission was not called above; thus, we should apply the
             // default value:
-            if (isset($permissions['*'])
+            if (
+                isset($permissions['*'])
                 && $controller->getAccessPermission() === null
             ) {
                 $controller->setAccessPermission($permissions['*']);
@@ -93,14 +99,16 @@ class AbstractBaseFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        return $this->applyPermissions($container, new $requestedName($container));
+        return $this->applyPermissions(
+            $container,
+            new $requestedName($container, ...($options ?: []))
+        );
     }
 }

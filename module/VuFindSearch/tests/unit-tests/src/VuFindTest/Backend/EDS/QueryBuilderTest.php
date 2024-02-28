@@ -3,7 +3,7 @@
 /**
  * Unit tests for EDS query builder
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EDS;
 
 use PHPUnit\Framework\TestCase;
@@ -42,6 +43,8 @@ use VuFindSearch\Backend\EDS\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Given a response, decode the JSON query objects for easier reading.
      *
@@ -76,7 +79,7 @@ class QueryBuilderTest extends TestCase
                         'field' => null,
                         'bool' => 'AND',
                     ],
-                ]
+                ],
             ],
             $response
         );
@@ -104,22 +107,19 @@ class QueryBuilderTest extends TestCase
                         'term' => 'test',
                         'field' => 'SU',
                         'bool' => 'AND',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
-            $q = unserialize(
-                file_get_contents(
-                    PHPUNIT_SEARCH_FIXTURES . '/eds/query/' . $input
-                )
-            );
+            [$input, $output] = $test;
+            $q = unserialize($this->getFixture("eds/query/$input", 'VuFindSearch'));
             $response = $qb->build($q);
             $this->assertEquals(
-                $output, $this->decodeResponse($response->get('query'))
+                $output,
+                $this->decodeResponse($response->get('query'))
             );
         }
     }

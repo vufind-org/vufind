@@ -1,13 +1,15 @@
 <?php
+
 /**
  * Redis session handler
  *
  * Note: Using phpredis extension (see https://github.com/phpredis/phpredis) is
  * optional, this class use Credis in standalone mode by default
  *
- * PHP version 7
+ * PHP version 8
  *
- * Coypright (C) Moravian Library 2019.
+ * Copyright (C) Moravian Library 2019.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,15 +22,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
@@ -40,11 +44,14 @@ use Laminas\Config\Config;
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class Redis extends AbstractBase
 {
+    use \VuFind\Service\Feature\RetryTrait;
+
     /**
      * Redis connection
      *
@@ -71,6 +78,7 @@ class Redis extends AbstractBase
         parent::__construct($config);
         $this->redisVersion = (int)($config->redis_version ?? 3);
         $this->connection = $connection;
+        $this->retryOptions['retryCount'] = 2;
     }
 
     /**
@@ -81,10 +89,14 @@ class Redis extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId)
+    public function read($sessId): string
     {
-        $session = $this->connection->get("vufind_sessions/{$sessId}");
-        return $session !== false ? $session : '';
+        return $this->callWithRetry(
+            function () use ($sessId): string {
+                $session = $this->connection->get("vufind_sessions/{$sessId}");
+                return $session !== false ? $session : '';
+            }
+        );
     }
 
     /**
@@ -95,10 +107,16 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data)
+    protected function saveSession($sessId, $data): bool
     {
-        return $this->connection->setex(
-            "vufind_sessions/{$sessId}", $this->lifetime, $data
+        return $this->callWithRetry(
+            function () use ($sessId, $data): bool {
+                return $this->connection->setex(
+                    "vufind_sessions/{$sessId}",
+                    $this->lifetime,
+                    $data
+                );
+            }
         );
     }
 
@@ -110,15 +128,18 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId)
+    public function destroy($sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);
 
         // Perform Redis-specific cleanup
         $unlinkMethod = ($this->redisVersion >= 4) ? 'unlink' : 'del';
-        $return = $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
-
-        return $return > 0;
+        return $this->callWithRetry(
+            function () use ($unlinkMethod, $sessId): bool {
+                $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
+                return true;
+            }
+        );
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generate/DynamicRoute command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Route\RouteGenerator;
 use VuFindConsole\Command\Generate\DynamicRouteCommand;
@@ -44,6 +46,8 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test that missing parameters yield an error message.
      *
@@ -73,7 +77,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $configFixturePath = __DIR__ . '/../../../../../fixtures/empty.config.php';
+        $configFixturePath = $this->getFixtureDir('VuFindConsole') . 'empty.config.php';
         $expectedConfig = include $configFixturePath;
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
@@ -120,7 +124,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -135,7 +139,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(RouteGenerator::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

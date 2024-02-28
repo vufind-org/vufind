@@ -1,8 +1,9 @@
 <?php
+
 /**
  * PermissionProvider User Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
@@ -38,22 +40,34 @@ use LmcRbacMvc\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserTest extends \VuFindTest\Unit\TestCase
+class UserTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Current test user
+     *
+     * @var string
+     */
+    protected $testuser = 'testuser1';
+
+    /**
+     * User test data for testing.
+     *
+     * @var array
+     */
     protected $userValueMap = [
         'testuser1' =>
         [
                 ['username','mbeh'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
-                ['college', 'Albert Ludwigs Universität Freiburg']
+                ['college', 'Albert Ludwigs Universität Freiburg'],
         ],
         'testuser2' =>
         [
                 ['username','mbeh2'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
                 ['college', 'Villanova University'],
-                ['major', 'alumni']
-        ]
+                ['major', 'alumni'],
+        ],
     ];
 
     /**
@@ -71,7 +85,7 @@ class UserTest extends \VuFindTest\Unit\TestCase
 
         $this->check(
             'testuser2',
-            ["college .*Freiburg"],
+            ['college .*Freiburg'],
             []
         );
     }
@@ -107,12 +121,11 @@ class UserTest extends \VuFindTest\Unit\TestCase
             : 'testuser1';
 
         $auth = $this->getMockAuthorizationService();
-        $this->permissionProvider
-            = new \VuFind\Role\PermissionProvider\User($auth);
+        $permissionProvider = new \VuFind\Role\PermissionProvider\User($auth);
 
         $this->assertEquals(
             $roles,
-            $this->permissionProvider->getPermissions($options)
+            $permissionProvider->getPermissions($options)
         );
     }
 
@@ -137,9 +150,9 @@ class UserTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a mock user object
      *
-     * @return UserRow
+     * @return \VuFind\Db\Row\User
      */
-    protected function getMockUser()
+    protected function getMockUser(): \VuFind\Db\Row\User
     {
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()

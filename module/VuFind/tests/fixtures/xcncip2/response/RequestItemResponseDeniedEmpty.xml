@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><NCIPMessage xmlns="http://www.niso.org/2008/ncip"/>

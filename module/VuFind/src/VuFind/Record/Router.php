@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record route generator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
+
+use function count;
+use function is_object;
 
 /**
  * Record route generator
@@ -82,7 +87,9 @@ class Router
     public function getTabRouteDetails($driver, $tab = null, $query = [])
     {
         $route = $this->getRouteDetails(
-            $driver, '', empty($tab) ? [] : ['tab' => $tab]
+            $driver,
+            '',
+            empty($tab) ? [] : ['tab' => $tab]
         );
         // Add the options and query elements only if we need a query to avoid
         // an empty element in the route definition:
@@ -128,7 +135,9 @@ class Router
      *
      * @return array
      */
-    public function getRouteDetails($driver, $routeSuffix = '',
+    public function getRouteDetails(
+        $driver,
+        $routeSuffix = '',
         $extraParams = []
     ) {
         // Extract source and ID from driver or string:
@@ -136,7 +145,7 @@ class Router
             $source = $driver->getSourceIdentifier();
             $id = $driver->getUniqueId();
         } else {
-            list($source, $id) = $this->extractSourceAndId($driver);
+            [$source, $id] = $this->extractSourceAndId($driver);
         }
 
         // Build URL parameters:
@@ -151,13 +160,13 @@ class Router
         // Disable path normalization since it can unencode e.g. encoded slashes in
         // record id's
         $options = [
-            'normalize_path' => false
+            'normalize_path' => false,
         ];
 
         return [
             'params' => $params,
             'route' => $routeBase . $routeSuffix,
-            'options' => $options
+            'options' => $options,
         ];
     }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Check Request is Valid" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+
+use function is_array;
 
 /**
  * "Check Request is Valid" AJAX handler
@@ -69,14 +73,10 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
     {
         // If successful, return success message:
         if ($results) {
-            return isset($this->statuses[$requestType]['success'])
-                ? $this->statuses[$requestType]['success']
-                : 'request_place_text';
+            return $this->statuses[$requestType]['success'] ?? 'request_place_text';
         }
         // If unsuccessful, return failure message:
-        return isset($this->statuses[$requestType]['failure'])
-            ? $this->statuses[$requestType]['failure']
-            : 'hold_error_blocked';
+        return $this->statuses[$requestType]['failure'] ?? 'hold_error_blocked';
     }
 
     /**
@@ -110,17 +110,21 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
             $patron = $this->ilsAuthenticator->storedCatalogLogin();
             if ($patron) {
                 switch ($requestType) {
-                case 'ILLRequest':
-                    $results = $this->ils
-                        ->checkILLRequestIsValid($id, $data, $patron);
-                    break;
-                case 'StorageRetrievalRequest':
-                    $results = $this->ils
-                        ->checkStorageRetrievalRequestIsValid($id, $data, $patron);
-                    break;
-                default:
-                    $results = $this->ils->checkRequestIsValid($id, $data, $patron);
-                    break;
+                    case 'ILLRequest':
+                        $results = $this->ils
+                            ->checkILLRequestIsValid($id, $data, $patron);
+                        break;
+                    case 'StorageRetrievalRequest':
+                        $results = $this->ils->checkStorageRetrievalRequestIsValid(
+                            $id,
+                            $data,
+                            $patron
+                        );
+                        break;
+                    default:
+                        $results = $this->ils
+                            ->checkRequestIsValid($id, $data, $patron);
+                        break;
                 }
                 if (is_array($results)) {
                     $msg = $results['status'];
@@ -137,7 +141,8 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
         }
 
         return $this->formatResponse(
-            $this->translate('An error has occurred'), self::STATUS_HTTP_ERROR
+            $this->translate('An error has occurred'),
+            self::STATUS_HTTP_ERROR
         );
     }
 }

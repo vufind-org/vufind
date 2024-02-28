@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Base62 Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Crypt;
 
 use VuFind\Crypt\Base62;
@@ -38,7 +40,7 @@ use VuFind\Crypt\Base62;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class Base62Test extends \VuFindTest\Unit\TestCase
+class Base62Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test encoding.
@@ -77,7 +79,7 @@ class Base62Test extends \VuFindTest\Unit\TestCase
      *
      * @return array
      */
-    public function exampleProvider()
+    public static function exampleProvider()
     {
         // format: base 10 number, base 62 number
         return [

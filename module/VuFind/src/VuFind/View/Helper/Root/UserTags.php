@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Tag view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -48,13 +50,22 @@ class UserTags extends AbstractHelper
     protected $mode;
 
     /**
+     * List tag mode (enabled or disabled)
+     *
+     * @var string
+     */
+    protected $listMode;
+
+    /**
      * Constructor
      *
-     * @param string $mode Tag mode (enabled or disabled)
+     * @param string $mode     Tag mode (enabled or disabled)
+     * @param string $listMode List tag mode (enabled or disabled)
      */
-    public function __construct($mode = 'enabled')
+    public function __construct($mode = 'enabled', $listMode = 'disabled')
     {
         $this->mode = $mode;
+        $this->listMode = $listMode;
     }
 
     /**
@@ -65,5 +76,15 @@ class UserTags extends AbstractHelper
     public function getMode()
     {
         return $this->mode;
+    }
+
+    /**
+     * Get list mode
+     *
+     * @return string
+     */
+    public function getListMode()
+    {
+        return $this->listMode;
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract factory for building AbstractContent tabs.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,11 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordTab;
 
-use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Content\PluginManager as ContentManager;
+
+use function in_array;
 
 /**
  * Abstract factory for building AbstractContent tabs.
@@ -40,8 +47,7 @@ use VuFind\Content\PluginManager as ContentManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractContentFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * The name of the tab being constructed.
@@ -62,11 +68,13 @@ abstract class AbstractContentFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -91,7 +99,8 @@ abstract class AbstractContentFactory
     protected function getHideSetting(\Laminas\Config\Config $config)
     {
         $setting = $config->Content->hide_if_empty ?? false;
-        if ($setting === true || $setting === false
+        if (
+            $setting === true || $setting === false
             || $setting === 1 || $setting === 0
         ) {
             return (bool)$setting;

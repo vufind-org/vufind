@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Import/ImportXsl command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Import;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -82,11 +84,12 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'XML_file' => 'foo.xml',
-                'properties_file' => 'bar.properties'
+                'properties_file' => 'bar.properties',
             ]
         );
         $this->assertEquals(
-            "Successfully imported foo.xml...\n", $commandTester->getDisplay()
+            "Successfully imported foo.xml...\n",
+            $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -133,9 +136,11 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockImporter($methods = [])
     {
-        return $this->getMockBuilder(Importer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(Importer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

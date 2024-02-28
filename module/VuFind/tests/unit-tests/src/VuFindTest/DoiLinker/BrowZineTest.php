@@ -1,8 +1,9 @@
 <?php
+
 /**
  * BrowZine Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\DoiLinker;
 
 use VuFind\DoiLinker\BrowZine;
+use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 
 /**
@@ -39,15 +42,33 @@ use VuFindSearch\Backend\BrowZine\Connector;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class BrowZineTest extends \VuFindTest\Unit\TestCase
+class BrowZineTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\SearchServiceTrait;
+
+    /**
+     * Given a connector, wrap it up in a backend and backend manager
+     *
+     * @param Connector $connector Connector
+     *
+     * @return BackendManager
+     */
+    protected function getBackendManager(Connector $connector): BackendManager
+    {
+        $backend = new \VuFindSearch\Backend\BrowZine\Backend($connector);
+        $registry = new \VuFindTest\Container\MockContainer($this);
+        $registry->set('BrowZine', $backend);
+        return new BackendManager($registry);
+    }
+
     /**
      * Get a mock connector
      *
      * @param string $doi      DOI expected by connector
      * @param array  $response Response for connector to return
      *
-     * @return void
+     * @return Connector
      */
     protected function getMockConnector($doi, $response)
     {
@@ -68,11 +89,7 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
      */
     public function testApiSuccess()
     {
-        $fixture = realpath(
-            __DIR__
-            . '/../../../../../tests/fixtures/browzine/doi.json'
-        );
-        $rawData = json_decode(file_get_contents($fixture), true);
+        $rawData = $this->getJsonFixture('browzine/doi.json');
         $testData = [
             [
                 'config' => [],
@@ -89,9 +106,9 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'config' => ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
@@ -102,9 +119,9 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'config' => ['filterType' => 'include', 'filter' => ['browzineWebLink']],
@@ -115,16 +132,17 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
         ];
 
         foreach ($testData as $data) {
             $dois = array_keys($data['response']);
             $connector = $this->getMockConnector($dois[0], $rawData);
-            $browzine = new BrowZine($connector, $data['config']);
+            $ss = $this->getSearchService($this->getBackendManager($connector));
+            $browzine = new BrowZine($ss, $data['config']);
             $this->assertEquals(
                 $data['response'],
                 $browzine->getLinks($dois)

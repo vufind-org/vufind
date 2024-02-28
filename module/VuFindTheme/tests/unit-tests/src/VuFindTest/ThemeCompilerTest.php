@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ThemeCompiler Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use VuFindTheme\ThemeCompiler;
@@ -39,14 +41,9 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeCompilerTest extends Unit\TestCase
+class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Path to theme fixtures
-     *
-     * @var string
-     */
-    protected $fixturePath;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * ThemeInfo object for tests
@@ -69,8 +66,10 @@ class ThemeCompilerTest extends Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
-        $this->info = new ThemeInfo($this->fixturePath, 'parent');
+        $this->info = new ThemeInfo(
+            $this->getFixtureDir('VuFindTheme') . 'themes',
+            'parent'
+        );
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
         if (is_dir($this->targetPath)) {
@@ -96,9 +95,9 @@ class ThemeCompilerTest extends Unit\TestCase
         $this->assertTrue($result);
 
         // Was the target directory created with the expected files?
-        $this->assertTrue(is_dir($this->targetPath));
-        $this->assertTrue(file_exists("{$this->targetPath}/parent.txt"));
-        $this->assertTrue(file_exists("{$this->targetPath}/child.txt"));
+        $this->assertDirectoryExists($this->targetPath);
+        $this->assertFileExists("{$this->targetPath}/parent.txt");
+        $this->assertFileExists("{$this->targetPath}/child.txt");
 
         // Did the right version of the  file that exists in both parent and child
         // get copied over?
@@ -123,8 +122,9 @@ class ThemeCompilerTest extends Unit\TestCase
                 ],
                 'aliases' => [
                     'xyzzy' => 'Xyzzy',
-                ]
+                ],
             ],
+            'doctype' => 'HTML5',
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);
@@ -149,10 +149,10 @@ class ThemeCompilerTest extends Unit\TestCase
         $this->assertTrue($result);
 
         // Was the target directory created with the expected files?
-        $this->assertTrue(is_dir($this->targetPath));
-        $this->assertTrue(file_exists("{$this->targetPath}/parent.txt"));
-        $this->assertTrue(file_exists("{$this->targetPath}/child.txt"));
-        $this->assertTrue(file_exists("{$this->targetPath}/js/mixin.js"));
+        $this->assertDirectoryExists($this->targetPath);
+        $this->assertFileExists("{$this->targetPath}/parent.txt");
+        $this->assertFileExists("{$this->targetPath}/child.txt");
+        $this->assertFileExists("{$this->targetPath}/js/mixin.js");
 
         // Did the right version of the  file that exists in both parent and child
         // get copied over?
@@ -176,13 +176,14 @@ class ThemeCompilerTest extends Unit\TestCase
             'js' => ['hello.js', 'extra.js', 'mixin.js'],
             'helpers' => [
                 'factories' => [
-                    'foo' => 'fooOverrideFactory',
+                    'foo' => 'fooMixinFactory',
                     'bar' => 'barFactory',
                 ],
                 'aliases' => [
                     'xyzzy' => 'Xyzzy',
-                ]
+                ],
             ],
+            'doctype' => 'HTML5',
         ];
         $mergedConfig = include "{$this->targetPath}/theme.config.php";
         $this->assertEquals($expectedConfig, $mergedConfig);
@@ -211,12 +212,12 @@ class ThemeCompilerTest extends Unit\TestCase
         // removed when we force a recompile:
         $markerFile = $this->targetPath . '/fake-marker.txt';
         file_put_contents($markerFile, 'junk');
-        $this->assertTrue(file_exists($markerFile));
+        $this->assertFileExists($markerFile);
 
         // Now recompile with "force" set to true, confirm that this succeeds,
         // and make sure the marker file is now gone:
         $this->assertTrue($compiler->compile('child', 'compiled', true));
-        $this->assertFalse(file_exists($markerFile));
+        $this->assertFileDoesNotExist($markerFile);
     }
 
     /**
@@ -232,7 +233,7 @@ class ThemeCompilerTest extends Unit\TestCase
     /**
      * Get a test ThemeCompiler object
      *
-     * @return ThemeInfo
+     * @return ThemeCompiler
      */
     protected function getThemeCompiler()
     {

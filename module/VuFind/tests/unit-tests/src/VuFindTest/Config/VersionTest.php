@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Version Reader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
 use VuFind\Config\Version;
@@ -39,8 +41,10 @@ use VuFind\Config\Version;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VersionTest extends \VuFindTest\Unit\TestCase
+class VersionTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test the default directory parameter.
      *
@@ -75,7 +79,7 @@ class VersionTest extends \VuFindTest\Unit\TestCase
      */
     public function testKnownVersion()
     {
-        $fixture = __DIR__ . '/../../../../fixtures/configs/buildxml-2.5';
+        $fixture = $this->getFixtureDir() . 'configs/buildxml-2.5';
         $this->assertEquals('2.5', Version::getBuildVersion($fixture));
     }
 }

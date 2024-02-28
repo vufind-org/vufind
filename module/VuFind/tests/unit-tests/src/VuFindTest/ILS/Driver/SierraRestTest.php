@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SierraRest ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\SierraRest;
@@ -40,6 +42,8 @@ use VuFind\ILS\Driver\SierraRest;
  */
 class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test bib IDs (raw value => formatted value)
      *
@@ -65,7 +69,8 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
             return new \Laminas\Session\Container($namespace);
         };
         $this->driver = new SierraRest(
-            new \VuFind\Date\Converter(), $sessionFactory
+            new \VuFind\Date\Converter(),
+            $sessionFactory
         );
     }
 
@@ -80,10 +85,12 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
             // Extraction should return the same result whether we extract from
             // the raw value or the formatted value:
             $this->assertEquals(
-                $raw, $this->callMethod($this->driver, 'extractBibId', [$raw])
+                $raw,
+                $this->callMethod($this->driver, 'extractBibId', [$raw])
             );
             $this->assertEquals(
-                $raw, $this->callMethod($this->driver, 'extractBibId', [$formatted])
+                $raw,
+                $this->callMethod($this->driver, 'extractBibId', [$formatted])
             );
         }
     }

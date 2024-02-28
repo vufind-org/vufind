@@ -3,7 +3,7 @@
 /**
  * SOLR backend handler map.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 use RuntimeException;
-
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 
@@ -99,7 +99,8 @@ class HandlerMap extends AbstractHandlerMap
                     throw new InvalidArgumentException(
                         sprintf(
                             'Duplicate fallback handler definition: %s, %s',
-                            $handler, $fallback
+                            $handler,
+                            $fallback
                         )
                     );
                 }
@@ -111,7 +112,8 @@ class HandlerMap extends AbstractHandlerMap
                         throw new InvalidArgumentException(
                             sprintf(
                                 'Handler for function already defined: %s, %s',
-                                $function, $handler
+                                $function,
+                                $handler
                             )
                         );
                     }
@@ -120,17 +122,23 @@ class HandlerMap extends AbstractHandlerMap
             }
             if (isset($definition['invariants'])) {
                 $this->setParameters(
-                    $handler, 'invariants', (array)$definition['invariants']
+                    $handler,
+                    'invariants',
+                    (array)$definition['invariants']
                 );
             }
             if (isset($definition['defaults'])) {
                 $this->setParameters(
-                    $handler, 'defaults', (array)$definition['defaults']
+                    $handler,
+                    'defaults',
+                    (array)$definition['defaults']
                 );
             }
             if (isset($definition['appends'])) {
                 $this->setParameters(
-                    $handler, 'appends', (array)$definition['appends']
+                    $handler,
+                    'appends',
+                    (array)$definition['appends']
                 );
             }
         }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OpenLibrarySubjects Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use VuFind\Connection\OpenLibrary;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function intval;
+use function is_object;
 
 /**
  * OpenLibrarySubjects Recommendations Module
@@ -44,7 +49,8 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class OpenLibrarySubjects implements RecommendInterface,
+class OpenLibrarySubjects implements
+    RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -121,7 +127,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         if (isset($params[3])) {
             $this->subjectTypes = explode(',', $params[3]);
         } else {
-            $this->subjectTypes = ["topic"];
+            $this->subjectTypes = ['topic'];
         }
 
         // A 4th parameter is not specified in searches.ini, if it exists
@@ -133,7 +139,8 @@ class OpenLibrarySubjects implements RecommendInterface,
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -152,13 +159,15 @@ class OpenLibrarySubjects implements RecommendInterface,
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
             $this->publishedIn = $this->getPublishedDates(
-                $this->pubFilter, $params, $request
+                $this->pubFilter,
+                $params,
+                $request
             );
         }
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -173,13 +182,19 @@ class OpenLibrarySubjects implements RecommendInterface,
             $result = [];
             $ol = new OpenLibrary($this->httpService->createClient());
             $result = $ol->getSubjects(
-                $this->subject, $this->publishedIn, $this->subjectTypes, true, false,
-                $this->limit, null, true
+                $this->subject,
+                $this->publishedIn,
+                $this->subjectTypes,
+                true,
+                false,
+                $this->limit,
+                null,
+                true
             );
 
             if (!empty($result)) {
                 $this->result = [
-                    'worksArray' => $result, 'subject' => $this->subject
+                    'worksArray' => $result, 'subject' => $this->subject,
                 ];
             }
         }
@@ -199,6 +214,7 @@ class OpenLibrarySubjects implements RecommendInterface,
      */
     protected function getPublishedDates($field, $params, $request)
     {
+        $range = null;
         // Try to extract range details from request parameters or SearchObject:
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');

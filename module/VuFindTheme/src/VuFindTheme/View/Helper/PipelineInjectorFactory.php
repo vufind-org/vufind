@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for helpers relying on asset pipeline configuration.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,11 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme\View\Helper;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
+
+use function count;
 
 /**
  * Factory for helpers relying on asset pipeline configuration.
@@ -83,9 +90,11 @@ class PipelineInjectorFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -94,10 +103,12 @@ class PipelineInjectorFactory implements FactoryInterface
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
         $nonce = $nonceGenerator->getNonce();
+        $config = $configManager->get('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
-            $this->getPipelineConfig($configManager->get('config')),
-            $nonce
+            $this->getPipelineConfig($config),
+            $nonce,
+            $config['Site']['asset_pipeline_max_css_import_size'] ?? null
         );
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Factory for LibGuides backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,15 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
-use Interop\Container\ContainerInterface;
-
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
-
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
 /**
@@ -46,21 +44,24 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class LibGuidesBackendFactory implements FactoryInterface
+class LibGuidesBackendFactory extends AbstractBackendFactory
 {
+    /**
+     * Return the service name.
+     *
+     * @return string
+     */
+    protected function getServiceName()
+    {
+        return 'LibGuides';
+    }
+
     /**
      * Logger.
      *
      * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * LibGuides configuration
@@ -82,10 +83,10 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $sm;
+        $this->setup($sm);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
-        $this->libGuidesConfig = $configReader->get('LibGuides');
+        $this->libGuidesConfig = $configReader->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
@@ -105,7 +106,9 @@ class LibGuidesBackendFactory implements FactoryInterface
     {
         $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
         $backend = new Backend(
-            $connector, $this->createRecordCollectionFactory(), $defaultSearch
+            $connector,
+            $this->createRecordCollectionFactory(),
+            $defaultSearch
         );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
@@ -128,12 +131,17 @@ class LibGuidesBackendFactory implements FactoryInterface
         // Get base URI, if available:
         $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
-        // Build HTTP client:
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient($baseUrl);
-        $timeout = $this->libGuidesConfig->General->timeout ?? 30;
-        $client->setOptions(['timeout' => $timeout]);
-        $connector = new Connector($iid, $client, $ver, $baseUrl);
+        // Optionally parse the resource description
+        $displayDescription = $this->libGuidesConfig->General->displayDescription ?? false;
+
+        // Create connector:
+        $connector = new Connector(
+            $iid,
+            $this->createHttpClient($this->libGuidesConfig->General->timeout ?? 30),
+            $ver,
+            $baseUrl,
+            $displayDescription
+        );
         $connector->setLogger($this->logger);
         return $connector;
     }
@@ -159,7 +167,7 @@ class LibGuidesBackendFactory implements FactoryInterface
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
-            $driver = $manager->get('LibGuides');
+            $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);
             return $driver;
         };

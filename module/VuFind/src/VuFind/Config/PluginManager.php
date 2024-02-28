@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Config Manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Laminas\ServiceManager\AbstractPluginManager as Base;
@@ -49,7 +51,8 @@ class PluginManager extends Base
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
@@ -64,7 +67,6 @@ class PluginManager extends Base
      *
      * @param mixed $plugin Plugin to validate
      *
-     * @throws ServiceManagerRuntimeException if invalid
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -85,7 +87,7 @@ class PluginManager extends Base
     {
         $oldOverrideSetting = $this->getAllowOverride();
         $this->setAllowOverride(true);
-        $this->setService($id, $this->create($id));
+        $this->setService($id, $this->build($id));
         $this->setAllowOverride($oldOverrideSetting);
         return $this->get($id);
     }

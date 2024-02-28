@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait to allow AJAX response generation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
@@ -46,18 +48,9 @@ use VuFind\AjaxHandler\PluginManager;
 trait AjaxResponseTrait
 {
     /**
-     * Array of PHP errors captured during execution. Add this code to your
-     * constructor in order to populate the array:
-     *     set_error_handler([static::class, 'storeError']);
-     *
-     * @var array
-     */
-    protected static $php_errors = [];
-
-    /**
      * AJAX Handler plugin manager
      *
-     * @var PluginManager;
+     * @var PluginManager
      */
     protected $ajaxManager = null;
 
@@ -74,19 +67,16 @@ trait AjaxResponseTrait
     protected function formatContent($type, $data, $httpCode)
     {
         switch ($type) {
-        case 'application/javascript':
-            $output = ['data' => $data];
-            if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
-                $output['php_errors'] = self::$php_errors;
-            }
-            return json_encode($output);
-        case 'text/plain':
-            return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ')
-                . $data;
-        case 'text/html':
-            return $data ?: '';
-        default:
-            throw new \Exception("Unsupported content type: $type");
+            case 'application/javascript':
+            case 'application/json':
+                return json_encode(compact('data'));
+            case 'text/plain':
+                return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ')
+                    . $data;
+            case 'text/html':
+                return $data ?: '';
+            default:
+                throw new \Exception("Unsupported content type: $type");
         }
     }
 
@@ -141,7 +131,7 @@ trait AjaxResponseTrait
      *
      * @return \Laminas\Http\Response
      */
-    protected function callAjaxMethod($method, $type = 'application/javascript')
+    protected function callAjaxMethod($method, $type = 'application/json')
     {
         // Check the AJAX handler plugin manager for the method.
         if (!$this->ajaxManager) {
@@ -151,7 +141,8 @@ trait AjaxResponseTrait
             try {
                 $handler = $this->ajaxManager->get($method);
                 return $this->getAjaxResponse(
-                    $type, ...$handler->handleRequest($this->params())
+                    $type,
+                    ...$handler->handleRequest($this->params())
                 );
             } catch (\Exception $e) {
                 return $this->getExceptionResponse($type, $e);
@@ -164,22 +155,5 @@ trait AjaxResponseTrait
             $this->translate('Invalid Method'),
             Ajax::STATUS_HTTP_BAD_REQUEST
         );
-    }
-
-    /**
-     * Store the errors for later, to be added to the output
-     *
-     * @param string $errno   Error code number
-     * @param string $errstr  Error message
-     * @param string $errfile File where error occurred
-     * @param string $errline Line number of error
-     *
-     * @return bool           Always true to cancel default error handling
-     */
-    public static function storeError($errno, $errstr, $errfile, $errline)
-    {
-        self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br />\n"
-            . " Occurred in " . $errfile . " on line " . $errline . ".";
-        return true;
     }
 }

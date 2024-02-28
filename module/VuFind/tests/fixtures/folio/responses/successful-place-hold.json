@@ -1,0 +1,20 @@
+[
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "comment": "Version check",
+        "expectedMethod": "GET",
+        "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
+        "expectedParams": [],
+        "body": [ {"id":"mod-circulation-24.0.0"} ],
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "POST",
+        "expectedPath": "/circulation/requests",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2022-01-01\",\"pickupServicePointId\":\"desk1\",\"requestType\":\"Page\"}/",
+        "body": "{ \"status\": \"success\" }"
+    }
+]

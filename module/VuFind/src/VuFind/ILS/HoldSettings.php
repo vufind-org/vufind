@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ILS Hold Settings Class
  *
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
 
 /**
@@ -73,7 +75,7 @@ class HoldSettings
      */
     public function getHoldsMode()
     {
-        return isset($this->config->holds_mode) ? $this->config->holds_mode : 'all';
+        return $this->config->holds_mode ?? 'all';
     }
 
     /**
@@ -85,7 +87,6 @@ class HoldSettings
      */
     public function getTitleHoldsMode()
     {
-        return isset($this->config->title_level_holds_mode)
-            ? $this->config->title_level_holds_mode : 'disabled';
+        return $this->config->title_level_holds_mode ?? 'disabled';
     }
 }

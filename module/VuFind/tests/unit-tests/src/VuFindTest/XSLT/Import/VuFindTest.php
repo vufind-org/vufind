@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT helper tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFind;
+
+use function chr;
 
 /**
  * XSLT helper tests.
@@ -38,8 +42,27 @@ use VuFind\XSLT\Import\VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VuFindTest extends \VuFindTest\Unit\DbTestCase
+class VuFindTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
+    /**
+     * Support method -- set up a mock container for testing the class.
+     *
+     * @return \VuFindTest\Container\MockContainer
+     */
+    protected function getMockContainer()
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $tableManager = new \VuFindTest\Container\MockDbTablePluginManager($this);
+        $tableManager->set(
+            'ChangeTracker',
+            $tableManager->get(\VuFind\Db\Table\ChangeTracker::class)
+        );
+        $container->set(\VuFind\Db\Table\PluginManager::class, $tableManager);
+        return $container;
+    }
+
     /**
      * Test the getChangeTracker helper.
      *
@@ -47,10 +70,9 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testGetChangeTracker()
     {
-        VuFind::setServiceLocator($this->getServiceManager());
-        $this->assertEquals(
-            \VuFind\Db\Table\ChangeTracker::class,
-            get_class(VuFind::getChangeTracker())
+        VuFind::setServiceLocator($this->getMockContainer());
+        $this->assertTrue(
+            VuFind::getChangeTracker() instanceof \VuFind\Db\Table\ChangeTracker
         );
     }
 
@@ -61,10 +83,13 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testGetConfig()
     {
-        VuFind::setServiceLocator($this->getServiceManager());
-        $this->assertEquals(
-            \Laminas\Config\Config::class, get_class(VuFind::getConfig())
-        );
+        $container = $this->getMockContainer();
+        $this->addPathResolverToContainer($container);
+        $config = new \Laminas\Config\Config([]);
+        $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
+            ->method('get')->with('config')->will($this->returnValue($config));
+        VuFind::setServiceLocator($container);
+        $this->assertEquals($config, VuFind::getConfig());
     }
 
     /**
@@ -98,7 +123,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
     public function testMapString()
     {
         $this->assertEquals(
-            'CD', VuFind::mapString('SoundDisc', 'format_map.properties')
+            'CD',
+            VuFind::mapString('SoundDisc', 'format_map.properties')
         );
     }
 
@@ -141,7 +167,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         $node->appendChild(new \DOMElement('xyzzy', 'baz'));
         $expected = '<?xml version="1.0"?>' . "\n<bar>foo</bar>\n";
         $this->assertEquals(
-            $expected, VuFind::removeTagAndReturnXMLasText([$node], 'xyzzy')
+            $expected,
+            VuFind::removeTagAndReturnXMLasText([$node], 'xyzzy')
         );
     }
 
@@ -155,7 +182,8 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<part>a</part>\n<part>b</part>\n";
         $this->assertEquals(
-            $expected, simplexml_import_dom(VuFind::explode(',', 'a,b'))->asXml()
+            $expected,
+            simplexml_import_dom(VuFind::explode(',', 'a,b'))->asXml()
         );
     }
 
@@ -166,7 +194,7 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testImplode()
     {
-        $domify = function ($input) {
+        $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
         $this->assertEquals(
@@ -187,12 +215,13 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
             '1990-1991' => ['foo', '1990-1991', '1992'],
             'foo' => ['foo', 'bar', 'baz'],
         ];
-        $domify = function ($input) {
+        $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
         foreach ($data as $output => $input) {
             $this->assertEquals(
-                $output, VuFind::extractBestDateOrRange(
+                $output,
+                VuFind::extractBestDateOrRange(
                     array_map($domify, $input)
                 )
             );
@@ -215,10 +244,129 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         ];
         foreach ($data as $input => $output) {
             $this->assertEquals(
-                $output, VuFind::extractEarliestYear(
+                $output,
+                VuFind::extractEarliestYear(
                     [new \DOMElement('foo', $input)]
                 )
             );
         }
+    }
+
+    /**
+     * DataProvider for name-related tests
+     *
+     * @return array
+     */
+    public static function nameProvider(): array
+    {
+        return [
+            'single name' => ['foo', 'foo'],
+            'two-part name' => ['foo bar', 'bar, foo'],
+            'long name' => ['foo bar baz xyzzy', 'xyzzy, foo bar baz'],
+        ];
+    }
+
+    /**
+     * DataProvider for testIsInvertedName().
+     *
+     * @return array
+     */
+    public static function isInvertedNameProvider(): array
+    {
+        return [
+            ['foo bar', false],
+            ['foo bar, jr.', false],
+            ['bar, foo', true],
+            ['bar, foo, jr.', true],
+        ];
+    }
+
+    /**
+     * Test the isInvertedName helper.
+     *
+     * @param string $input  Input to test
+     * @param bool   $output Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider isInvertedNameProvider
+     */
+    public function testIsInvertedName(string $input, bool $output): void
+    {
+        $this->assertEquals($output, VuFind::isInvertedName($input));
+    }
+
+    /**
+     * Test the invertName helper.
+     *
+     * @param string $input  Input to test
+     * @param string $output Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider nameProvider
+     */
+    public function testInvertName(string $input, string $output): void
+    {
+        $this->assertEquals($output, VuFind::invertName($input));
+    }
+
+    /**
+     * Test the invertNames helper.
+     *
+     * @return void
+     */
+    public function testInvertNames(): void
+    {
+        $input = [];
+        $output = new \DOMDocument('1.0', 'utf-8');
+        // Leverage the data provider to create an array of input elements and
+        // an expected output document to compare against real output:
+        foreach ($this->nameProvider() as $current) {
+            $input[] = new \DOMElement('name', $current[0]);
+            $output->appendChild(new \DOMElement('name', $current[1]));
+        }
+        $this->assertEquals(
+            $output->saveXML(),
+            VuFind::invertNames($input)->saveXML()
+        );
+    }
+
+    /**
+     * Data provider for testTitleSortLower().
+     *
+     * @return array
+     */
+    public static function titleSortLowerProvider(): array
+    {
+        return [
+            'basic lowercasing' => ['ABCDEF', 'abcdef'],
+            'Latin accent stripping' => ['çèñüĂ', 'cenua'],
+            'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
+            'Japanese text' => ['日本語テキスト', '日本語テキスト'],
+            'Leading bracket' => ['[foo', 'foo'],
+            'Trailing bracket' => ['foo]', 'foo'],
+            'Outer brackets' => ['[foo]', 'foo'],
+            'Stacked outer brackets' => ['[[foo]]', 'foo'],
+            'Tons of brackets' => ['[]foo][[', 'foo'],
+            'Inner brackets' => ['foo[]foo', 'foo foo'],
+            'Trailing whitespace' => ['foo   ', 'foo'],
+            'Trailing punctuation' => ['foo /.', 'foo'],
+        ];
+    }
+
+    /**
+     * Test the titleSortLower helper.
+     *
+     * @param string $input    Input to test
+     * @param string $expected Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider titleSortLowerProvider
+     */
+    public function testTitleSortLower($input, $expected): void
+    {
+        $this->assertEquals($expected, VuFind::titleSortLower($input));
     }
 }

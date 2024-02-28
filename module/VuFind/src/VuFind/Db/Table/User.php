@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for user
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Row\User as UserRow;
 
 /**
  * Table Definition for user
@@ -69,8 +72,13 @@ class User extends Gateway
      * (optional; used for privacy mode)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, Config $config, Container $session = null,
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj,
+        Config $config,
+        Container $session = null,
         $table = 'user'
     ) {
         $this->config = $config;
@@ -113,7 +121,7 @@ class User extends Gateway
      *
      * @param string $catId Catalog ID.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByCatalogId($catId)
     {
@@ -131,7 +139,10 @@ class User extends Gateway
      */
     public function getByUsername($username, $create = true)
     {
-        $row = $this->select(['username' => $username])->current();
+        $callback = function ($select) use ($username) {
+            $select->where->literal('lower(username) = lower(?)', [$username]);
+        };
+        $row = $this->select($callback)->current();
         return ($create && empty($row))
             ? $this->createRowForUsername($username) : $row;
     }

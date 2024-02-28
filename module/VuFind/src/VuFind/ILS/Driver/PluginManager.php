@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -49,24 +51,24 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'aleph' => Aleph::class,
         'alma' => Alma::class,
         'amicus' => Amicus::class,
+        'composeddriver' => ComposedDriver::class,
         'daia' => DAIA::class,
         'demo' => Demo::class,
         'evergreen' => Evergreen::class,
         'folio' => Folio::class,
+        'genieplus' => GeniePlus::class,
         'horizon' => Horizon::class,
         'horizonxmlapi' => HorizonXMLAPI::class,
         'innovative' => Innovative::class,
         'koha' => Koha::class,
         'kohailsdi' => KohaILSDI::class,
         'koharest' => KohaRest::class,
-        'lbs4' => LBS4::class,
         'multibackend' => MultiBackend::class,
         'newgenlib' => NewGenLib::class,
         'noils' => NoILS::class,
         'paia' => PAIA::class,
         'polaris' => Polaris::class,
         'sample' => Sample::class,
-        'sierra' => Sierra::class,
         'sierrarest' => SierraRest::class,
         'symphony' => Symphony::class,
         'unicorn' => Unicorn::class,
@@ -83,33 +85,33 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Aleph::class => AlephFactory::class,
-        Alma::class => AlmaFactory::class,
+        Alma::class => DriverWithDateConverterFactory::class,
         Amicus::class => InvokableFactory::class,
+        ComposedDriver::class => AbstractMultiDriverFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Demo::class => DemoFactory::class,
-        Evergreen::class => InvokableFactory::class,
+        Evergreen::class => DriverWithDateConverterFactory::class,
         Folio::class => FolioFactory::class,
+        GeniePlus::class => GeniePlusFactory::class,
         Horizon::class => DriverWithDateConverterFactory::class,
         HorizonXMLAPI::class => DriverWithDateConverterFactory::class,
         Innovative::class => InvokableFactory::class,
         Koha::class => DriverWithDateConverterFactory::class,
         KohaILSDI::class => DriverWithDateConverterFactory::class,
         KohaRest::class => KohaRestFactory::class,
-        LBS4::class => DriverWithDateConverterFactory::class,
         MultiBackend::class => MultiBackendFactory::class,
         NewGenLib::class => InvokableFactory::class,
         NoILS::class => NoILSFactory::class,
         PAIA::class => PAIAFactory::class,
         Polaris::class => InvokableFactory::class,
         Sample::class => InvokableFactory::class,
-        Sierra::class => InvokableFactory::class,
         SierraRest::class => SierraRestFactory::class,
         Symphony::class => SymphonyFactory::class,
-        Unicorn::class => DriverWithDateConverterFactory::class,
+        Unicorn::class => UnicornFactory::class,
         Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
         VoyagerRestful::class => VoyagerRestfulFactory::class,
-        XCNCIP2::class => InvokableFactory::class,
+        XCNCIP2::class => XCNCIP2Factory::class,
     ];
 
     /**
@@ -121,7 +123,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

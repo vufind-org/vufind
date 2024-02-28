@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for auth_hash
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2019.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -46,7 +48,7 @@ class AuthHash extends Gateway
 {
     use ExpirationTrait;
 
-    const TYPE_EMAIL = 'email'; // EmailAuthenticator
+    public const TYPE_EMAIL = 'email'; // EmailAuthenticator
 
     /**
      * Constructor
@@ -57,8 +59,12 @@ class AuthHash extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'auth_hash'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'auth_hash'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -71,7 +77,7 @@ class AuthHash extends Gateway
      * @param string $type   Hash type
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return \VuFind\Db\Row\AuthHash
+     * @return ?\VuFind\Db\Row\AuthHash
      */
     public function getByHashAndType($hash, $type, $create = true)
     {
@@ -102,44 +108,16 @@ class AuthHash extends Gateway
     }
 
     /**
-     * Get a query representing expired sessions (this can be passed
-     * to select() or delete() for further processing).
-     *
-     * @param int $daysOld Age in days of an "expired" session.
-     *
-     * @return function
-     */
-    public function getExpiredQuery($daysOld = 2)
-    {
-        // Determine the expiration date:
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $callback = function ($select) use ($expireDate) {
-            $select->where->lessThan('created', date('Y-m-d H:i:s', $expireDate));
-        };
-        return $callback;
-    }
-
-    /**
      * Update the select statement to find records to delete.
      *
-     * @param Select $select  Select clause
-     * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    ) {
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $where = $select->where
-            ->lessThan('created', date('Y-m-d H:i:s', $expireDate));
-        if (null !== $idFrom) {
-            $where->and->greaterThanOrEqualTo('id', $idFrom);
-        }
-        if (null !== $idTo) {
-            $where->and->lessThanOrEqualTo('id', $idTo);
-        }
+    protected function expirationCallback($select, $dateLimit)
+    {
+        $select->where->lessThan('created', $dateLimit);
     }
 }

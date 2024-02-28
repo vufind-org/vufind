@@ -1,8 +1,9 @@
 <?php
+
 /**
  * List view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Session\Container;
@@ -85,6 +87,6 @@ class UserList extends AbstractHelper
      */
     public function lastUsed()
     {
-        return isset($this->session->lastUsed) ? $this->session->lastUsed : null;
+        return $this->session->lastUsed ?? null;
     }
 }

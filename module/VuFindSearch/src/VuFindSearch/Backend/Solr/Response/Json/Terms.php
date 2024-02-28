@@ -3,7 +3,7 @@
 /**
  * SOLR Terms component.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use ArrayObject;
@@ -59,7 +60,8 @@ class Terms implements IteratorAggregate
     public function __construct(array $terms)
     {
         $terms = array_replace(
-            ['responseHeader' => [], 'terms' => []], $terms
+            ['responseHeader' => [], 'terms' => []],
+            $terms
         );
         $this->terms = new ArrayObject();
         foreach ($terms['terms'] as $field => $info) {
@@ -72,7 +74,7 @@ class Terms implements IteratorAggregate
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->terms->getIterator();
     }

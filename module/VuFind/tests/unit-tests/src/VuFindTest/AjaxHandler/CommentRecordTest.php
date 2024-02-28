@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CommentRecord test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\CommentRecord;
@@ -33,6 +35,8 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Row\Resource;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource as ResourceTable;
+use VuFind\Record\Loader as RecordLoader;
+use VuFind\RecordDriver\DefaultRecord;
 
 /**
  * CommentRecord test class.
@@ -43,7 +47,7 @@ use VuFind\Db\Table\Resource as ResourceTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
+class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CommentRecord handler for testing.
@@ -57,12 +61,13 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
-        $this->container->set('VuFind\Db\Table\PluginManager', $this->container);
+        $this->container
+            ->set(\VuFind\Db\Table\PluginManager::class, $this->container);
         $this->container->set('ControllerPluginManager', $this->container);
 
         // Set up auth manager with user:
         $authManager = $this->getMockAuthManager($user);
-        $this->container->set('VuFind\Auth\Manager', $authManager);
+        $this->container->set(\VuFind\Auth\Manager::class, $authManager);
 
         // Set up capability configuration:
         $cfg = new \Laminas\Config\Config(
@@ -142,21 +147,41 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testSuccessfulTransaction()
     {
-        $user = $this->getMockUser();
+        $user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+        $user->id = 1;
         $table = $this->container
             ->createMock(ResourceTable::class, ['findResource']);
         $table->expects($this->once())->method('findResource')
             ->with($this->equalTo('foo'), $this->equalTo('Solr'))
             ->will($this->returnValue($this->getMockResource('bar', $user)));
         $this->container->set(ResourceTable::class, $table);
+
+        $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
+        $driver->expects($this->once())
+            ->method('isRatingAllowed')
+            ->will($this->returnValue(true));
+        $driver->expects($this->once())
+            ->method('addOrUpdateRating')
+            ->with($user->id, 100);
+        $recordLoader = $this->container->createMock(RecordLoader::class, ['load']);
+        $recordLoader->expects($this->once())
+            ->method('load')
+            ->with('foo', DEFAULT_SEARCH_BACKEND)
+            ->will($this->returnValue($driver));
+        $this->container->set(RecordLoader::class, $recordLoader);
+
         $handler = $this->getHandler(true, $user);
         $post = [
             'id' => 'foo',
             'comment' => 'bar',
+            'rating' => '100',
         ];
         $this->assertEquals(
             [
-                ['commentId' => true]
+                ['commentId' => true],
             ],
             $handler->handleRequest($this->getParamsHelper([], $post))
         );

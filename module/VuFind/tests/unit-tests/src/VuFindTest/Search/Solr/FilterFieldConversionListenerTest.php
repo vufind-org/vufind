@@ -3,7 +3,7 @@
 /**
  * Unit tests for FilterFieldConversionListener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -26,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for FilterFieldConversionListener.
@@ -43,8 +43,10 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class FilterFieldConversionListenerTest extends TestCase
+class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\MockSearchCommandTrait;
+
     /**
      * Test attaching listener.
      *
@@ -76,10 +78,10 @@ class FilterFieldConversionListenerTest extends TestCase
                     'foo:value',
                     'baz:"foo:value"',
                     'foofoo:value',
-                    "foo\\:value",
+                    'foo\\:value',
                     'baz:value OR foo:value',
                     '(foo:value)',
-                ]
+                ],
             ]
         );
         $listener = new FilterFieldConversionListener(
@@ -88,7 +90,12 @@ class FilterFieldConversionListenerTest extends TestCase
 
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $event = new Event('pre', $backend, ['params' => $params]);
+        $command = $this->getMockSearchCommand($params);
+        $event = new Event(
+            Service::EVENT_PRE,
+            $backend,
+            ['params' => $params, 'command' => $command]
+        );
         $listener->onSearchPre($event);
 
         $fq   = $params->get('fq');
@@ -96,7 +103,7 @@ class FilterFieldConversionListenerTest extends TestCase
             'bar:value',
             'boo:"foo:value"',
             'foofoo:value',
-            "foo\\:value",
+            'foo\\:value',
             'boo:value OR bar:value',
             '(bar:value)',
         ];

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Permission Manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,9 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\Role;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+
+use function in_array;
+use function is_array;
 
 /**
  * Permission Manager
@@ -64,11 +69,12 @@ class PermissionManager
     /**
      * Determine if the user is authorized in a certain context or not
      *
-     * @param string $context Context for the permission behavior
+     * @param string $permission Permission
+     * @param mixed  $context    Context for the permission behavior (optional)
      *
      * @return bool
      */
-    public function isAuthorized($context)
+    public function isAuthorized($permission, $context = null)
     {
         $authService = $this->getAuthorizationService();
 
@@ -77,7 +83,7 @@ class PermissionManager
             return false;
         }
 
-        if ($authService->isGranted($context)) {
+        if ($authService->isGranted($permission, $context)) {
             return true;
         }
 
@@ -85,23 +91,24 @@ class PermissionManager
     }
 
     /**
-     * Check if a permission rule exists for a given context
+     * Check if a permission rule exists
      *
-     * @param string $context Context for the permission behavior
+     * @param string $permission Permission
      *
      * @return bool
      */
-    public function permissionRuleExists($context)
+    public function permissionRuleExists($permission)
     {
         foreach ($this->config as $value) {
             if (!isset($value['permission'])) {
                 continue;
             }
-            if ($value['permission'] == $context) {
+            if ($value['permission'] == $permission) {
                 return true;
             }
-            if (is_array($value['permission'])
-                && in_array($context, $value['permission'])
+            if (
+                is_array($value['permission'])
+                && in_array($permission, $value['permission'])
             ) {
                 return true;
             }

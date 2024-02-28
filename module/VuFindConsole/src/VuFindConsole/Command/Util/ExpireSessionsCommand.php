@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: expire sessions.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 /**
@@ -38,6 +40,20 @@ namespace VuFindConsole\Command\Util;
  */
 class ExpireSessionsCommand extends AbstractExpireCommand
 {
+    /**
+     * Minimum legal age of rows to delete.
+     *
+     * @var int
+     */
+    protected $minAge = 0.1;
+
+    /**
+     * Default age of rows to delete. $minAge is used $defaultAge is null.
+     *
+     * @var int
+     */
+    protected $defaultAge = 2;
+
     /**
      * Help description for the command.
      *

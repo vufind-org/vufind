@@ -3,7 +3,7 @@
 /**
  * Solr hierarchical facet listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2014.
@@ -28,13 +28,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\I18n\TranslatableString;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -56,7 +61,7 @@ class HierarchicalFacetListener
     protected $backend;
 
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ServiceLocatorInterface
      */
@@ -91,6 +96,20 @@ class HierarchicalFacetListener
     protected $separators;
 
     /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $translatedFacets = [];
+
+    /**
+     * Text domains for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsTextDomains = [];
+
+    /**
      * Constructor.
      *
      * @param BackendInterface        $backend        Search backend
@@ -121,6 +140,16 @@ class HierarchicalFacetListener
             = isset($specialFacets->hierarchicalFacetSeparators)
             ? $specialFacets->hierarchicalFacetSeparators->toArray()
             : [];
+
+        $translatedFacets = $this->facetConfig->Advanced_Settings->translated_facets
+            ?? [];
+        foreach ($translatedFacets as $current) {
+            $parts = explode(':', $current);
+            $this->translatedFacets[] = $parts[0];
+            if (isset($parts[1])) {
+                $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+        }
     }
 
     /**
@@ -133,7 +162,11 @@ class HierarchicalFacetListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search',
+            Service::EVENT_POST,
+            [$this, 'onSearchPost']
+        );
     }
 
     /**
@@ -145,13 +178,14 @@ class HierarchicalFacetListener
      */
     public function onSearchPost(EventInterface $event)
     {
-        $backend = $event->getParam('backend');
+        $command = $event->getParam('command');
 
-        if ($backend != $this->backend->getIdentifier()) {
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
             return $event;
         }
-        $context = $event->getParam('context');
-        if ($context == 'search' || $context == 'retrieve'
+        $context = $command->getContext();
+        if (
+            $context == 'search' || $context == 'retrieve'
             || $context == 'retrieveBatch' || $context == 'similar'
         ) {
             $this->processHierarchicalFacets($event);
@@ -171,7 +205,7 @@ class HierarchicalFacetListener
         if (empty($this->facetConfig->SpecialFacets->hierarchical)) {
             return;
         }
-        $result = $event->getTarget();
+        $result = $event->getParam('command')->getResult();
         foreach ($result->getRecords() as $record) {
             $fields = $record->getRawData();
             foreach ($this->facetConfig->SpecialFacets->hierarchical as $facetName) {
@@ -179,12 +213,26 @@ class HierarchicalFacetListener
                     continue;
                 }
                 if (is_array($fields[$facetName])) {
-                    $lastElem = end($fields[$facetName]);
+                    $allLevels = ($this->displayStyles[$facetName] ?? '') === 'full';
                     foreach ($fields[$facetName] as &$value) {
-                        $value = $this->formatFacetField(
-                            $facetName, $value, $value == $lastElem
-                        );
+                        // Include a translation for each value only if we don't
+                        // display full hierarchy or this is the deepest hierarchy
+                        // level available
+                        if (
+                            !$allLevels
+                            || $this->facetHelper->isDeepestFacetLevel(
+                                $fields[$facetName],
+                                $value
+                            )
+                        ) {
+                            $value = $this->formatFacetField($facetName, $value);
+                        } else {
+                            $value
+                                = new TranslatableString((string)$value, '', false);
+                        }
                     }
+                    // Unset the reference:
+                    unset($value);
                     $fields[$facetName] = array_unique($fields[$facetName]);
                 } else {
                     $fields[$facetName]
@@ -201,27 +249,20 @@ class HierarchicalFacetListener
      *
      * @param string $facet Facet field
      * @param string $value Facet value
-     * @param bool   $last  Whether this is the last of multiple values
      *
      * @return string Formatted field
      */
-    protected function formatFacetField($facet, $value, $last)
+    protected function formatFacetField($facet, $value)
     {
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'
             : false;
-        $separator = isset($this->separators[$facet])
-            ? $this->separators[$facet]
-            : '/';
-        $value = $this->facetHelper->formatDisplayText(
-            $value, $allLevels, $separator
-        );
-
-        // If full display style is used, clear out default display text for all but
-        // the last value:
-        if ($allLevels && !$last) {
-            $value = new \VuFind\I18n\TranslatableString((string)$value, '');
-        }
+        $separator = $this->separators[$facet] ?? '/';
+        $domain = in_array($facet, $this->translatedFacets)
+            ? ($this->translatedFacetsTextDomains[$facet] ?? 'default')
+            : false;
+        $value = $this->facetHelper
+            ->formatDisplayText($value, $allLevels, $separator, $domain);
 
         return $value;
     }

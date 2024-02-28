@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Driver Factory Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
-use Laminas\ServiceManager\ServiceManager;
+use Psr\Container\ContainerInterface;
 
 /**
  * Hierarchy Driver Factory Class
@@ -47,15 +49,17 @@ class ConfigurationBasedFactory
     /**
      * This constructs a hierarchy driver using VuFind's service setup.
      *
-     * @param ServiceManager $sm            Top-level service m.
-     * @param string         $requestedName Service being built
-     * @param array|null     $options       Name of driver class
+     * @param ContainerInterface $container     Service container
+     * @param string             $requestedName Service being built
+     * @param array|null         $options       Name of driver class
      *
      * @return object
      *
      * @throws Exception if options is populated
      */
-    public function __invoke(ServiceManager $sm, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -65,10 +69,10 @@ class ConfigurationBasedFactory
         $parts = explode('\\', $requestedName);
         $config = end($parts);
         // Set up options based on global VuFind settings:
-        $configReader = $sm->get(\VuFind\Config\PluginManager::class);
+        $configReader = $container->get(\VuFind\Config\PluginManager::class);
         $globalConfig = $configReader->get('config');
         $options = [
-            'enabled' => $globalConfig->Hierarchy->showTree ?? false
+            'enabled' => $globalConfig->Hierarchy->showTree ?? false,
         ];
 
         // Load driver-specific configuration:
@@ -77,8 +81,8 @@ class ConfigurationBasedFactory
         // Build object:
         return new ConfigurationBased(
             $driverConfig,
-            $sm->get(\VuFind\Hierarchy\TreeDataSource\PluginManager::class),
-            $sm->get(\VuFind\Hierarchy\TreeRenderer\PluginManager::class),
+            $container->get(\VuFind\Hierarchy\TreeDataSource\PluginManager::class),
+            $container->get(\VuFind\Hierarchy\TreeRenderer\PluginManager::class),
             $options
         );
     }

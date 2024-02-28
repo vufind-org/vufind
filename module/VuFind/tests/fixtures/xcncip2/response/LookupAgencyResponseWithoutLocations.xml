@@ -1,0 +1,40 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<NCIPMessage xmlns="http://www.niso.org/2008/ncip">
+    <LookupAgencyResponse>
+        <AgencyId>My University</AgencyId>
+        <OrganizationNameInformation>
+            <OrganizationNameType>Official Name</OrganizationNameType>
+            <OrganizationName>My University library</OrganizationName>
+        </OrganizationNameInformation>
+        <AgencyAddressInformation>
+            <physicalAddress>
+                <UnstructuredAddress>
+                    <UnstructuredAddressType>Newline-Delimited Text</UnstructuredAddressType>
+                    <UnstructuredAddressData>Some Street 58, Some City</UnstructuredAddressData>
+                </UnstructuredAddress>
+            </physicalAddress>
+        </AgencyAddressInformation>
+        <AgencyAddressInformation>
+            <electronicAddress>
+                <ElectronicAddressType>tel</ElectronicAddressType>
+                <ElectronicAddressData>475 209 126</ElectronicAddressData>
+            </electronicAddress>
+        </AgencyAddressInformation>
+        <AgencyAddressInformation>
+            <electronicAddress>
+                <ElectronicAddressType>http</ElectronicAddressType>
+                <ElectronicAddressData>library.myuniverity.edu</ElectronicAddressData>
+            </electronicAddress>
+        </AgencyAddressInformation>
+        <AgencyAddressInformation>
+            <electronicAddress>
+                <ElectronicAddressType>mailto</ElectronicAddressType>
+                <ElectronicAddressData>library@myuniversity.edu</ElectronicAddressData>
+            </electronicAddress>
+        </AgencyAddressInformation>
+    </LookupAgencyResponse>
+</NCIPMessage>

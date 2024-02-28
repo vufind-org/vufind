@@ -1,10 +1,11 @@
 <?php
+
 /**
  * ILS Pagination Helper
  *
  * This class helps build paginators for ILS-provided data.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,7 +29,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
+
+use function in_array;
 
 /**
  * ILS Pagination Helper
@@ -68,8 +72,7 @@ class PaginationHelper
         if (isset($functionConfig['default_sort'])) {
             return $functionConfig['default_sort'];
         }
-        reset($functionConfig['sort']);
-        return key($functionConfig['sort']);
+        return array_key_first($functionConfig['sort']);
     }
 
     /**
@@ -88,7 +91,7 @@ class PaginationHelper
                 $sortList[$key] = [
                     'desc' => $value,
                     'url' => '?sort=' . urlencode($key),
-                    'selected' => $sort == $key
+                    'selected' => $sort == $key,
                 ];
             }
         }
@@ -105,7 +108,10 @@ class PaginationHelper
      *
      * @return array
      */
-    public function getOptions($page, $sort, $defaultPageSize,
+    public function getOptions(
+        $page,
+        $sort,
+        $defaultPageSize,
         $functionConfig
     ) {
         // Get page and page size:
@@ -122,12 +128,15 @@ class PaginationHelper
             $ilsPaging = false;
         }
         // Collect ILS call params
-        $ilsParams = ['sort' => $this->validateSort($functionConfig, $sort)];
+        $ilsParams = [];
+        if ($sort = $this->validateSort($functionConfig, $sort)) {
+            $ilsParams['sort'] = $sort;
+        }
         if ($ilsPaging) {
             $ilsParams['page'] = $page >= 1 ? $page : 1;
             $ilsParams['limit'] = $limit;
         }
-        $sortList = $this->getSortList($functionConfig, $ilsParams['sort']);
+        $sortList = $this->getSortList($functionConfig, $sort);
         return compact('page', 'limit', 'ilsPaging', 'ilsParams', 'sortList');
     }
 

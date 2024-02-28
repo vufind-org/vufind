@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+ <record>
+  <leader>01051cam a22002654i 4500</leader>
+  <controlfield tag="001">1282732</controlfield>
+  <controlfield tag="005">20160322063313.0</controlfield>
+  <controlfield tag="008">960726s1984    ru |||||||||||||||||rus||</controlfield>
+  <datafield tag="041" ind1="0" ind2=" ">
+   <subfield code="a">rus</subfield>
+  </datafield>
+  <datafield tag="066" ind1=" " ind2=" ">
+   <subfield code="c">(N)Q</subfield>
+  </datafield>
+  <datafield tag="245" ind1="0" ind2="0">
+   <subfield code="6">880-01</subfield>
+   <subfield code="a">Russkaâ narodnaâ poèziâ :</subfield>
+   <subfield code="b">liričeskaâ poèziâ /</subfield>
+   <subfield code="c">sost. i podgot. teksta Al. Gorelova.</subfield>
+   <subfield code="n">1</subfield>
+  </datafield>
+  <datafield tag="260" ind1=" " ind2=" ">
+   <subfield code="6">880-02</subfield>
+   <subfield code="a">Leningrad :</subfield>
+   <subfield code="b">Hudožestvennaâ literatura,</subfield>
+   <subfield code="c">1984.</subfield>
+  </datafield>
+  <datafield tag="700" ind1="1" ind2=" ">
+   <subfield code="6">880-03</subfield>
+   <subfield code="a">Gorelov, Al.</subfield>
+  </datafield>
+  <datafield tag="880" ind1="0" ind2="0">
+   <subfield code="6">245-01/(N</subfield>
+   <subfield code="a">Русская народная поэзия :</subfield>
+   <subfield code="b">лирическая поэзия /</subfield>
+   <subfield code="c">сост. и подгот. текста Ал. Горелова.</subfield>
+   <subfield code="n">1</subfield>
+  </datafield>
+  <datafield tag="880" ind1=" " ind2=" ">
+   <subfield code="6">260-02/(N</subfield>
+   <subfield code="a">Ленинград :</subfield>
+   <subfield code="b">Художественная литература,</subfield>
+   <subfield code="c">1984.</subfield>
+  </datafield>
+  <datafield tag="880" ind1="1" ind2=" ">
+   <subfield code="6">700-03/(N</subfield>
+   <subfield code="a">Горелов, Ал.</subfield>
+  </datafield>
+ </record>
+</collection>

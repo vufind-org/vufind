@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SwitchDbHashCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Locator;
 use VuFind\Config\Writer;
 use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
@@ -47,6 +48,23 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
  */
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
+    /**
+     * Expected path to config.ini
+     *
+     * @var string
+     */
+    protected $expectedConfigIniPath;
+
+    /**
+     * Encryption algorithm to use
+     *
+     * @var string
+     */
+    protected $encryptionAlgorithm = 'aes';
+
     /**
      * Prepare a mock object
      *
@@ -76,6 +94,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config Config settings
      * @param User  $table  User table gateway
+     *
+     * @return SwitchDbhashCommand
      */
     protected function getMockCommand(array $config = [], $table = null)
     {
@@ -85,7 +105,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     new Config($config),
                     $table ?? $this->getMockTable(),
                 ]
-            )->setMethods(['getConfigWriter'])
+            )->onlyMethods(['getConfigWriter'])
             ->getMock();
     }
 
@@ -97,6 +117,17 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockConfigWriter()
     {
         return $this->prepareMock(Writer::class);
+    }
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->expectedConfigIniPath = $this->getPathResolver()
+            ->getLocalConfigPath('config.ini', null, true);
     }
 
     /**
@@ -126,7 +157,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish']);
+        $commandTester->execute(['newmethod' => $this->encryptionAlgorithm]);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
             "Please specify a key as the second parameter.\n",
@@ -145,13 +176,15 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'Authentication' => [
                     'encrypt_ils_password' => true,
-                    'ils_encryption_algo' => 'blowfish',
+                    'ils_encryption_algo' => $this->encryptionAlgorithm,
                     'ils_encryption_key' => 'bar',
-                ]
+                ],
             ]
         );
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'bar']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'bar']
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertEquals(
             "No changes requested -- no action needed.\n",
@@ -173,11 +206,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tWrite failed!\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
             $commandTester->getDisplay()
         );
     }
@@ -190,24 +224,19 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessNoUsers()
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->at(0))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('encrypt_ils_password'),
-                $this->equalTo(true)
-            );
-        $writer->expects($this->at(1))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_algo'),
-                $this->equalTo('blowfish')
-            );
-        $writer->expects($this->at(2))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_key'),
-                $this->equalTo('foo')
-            );
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
+                ['Authentication', 'encrypt_ils_password', true],
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm,
+                ],
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
         $table = $this->getMockTable();
@@ -217,12 +246,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 0 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
     }
@@ -245,7 +275,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->setConstructorArgs([$adapter])
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
         $user->populate($data, true);
         return $user;
@@ -253,10 +283,16 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Decode a hash to confirm that it was encoded correctly.
+     *
+     * @param string $hash Hash to decode
+     *
+     * @return string
      */
     protected function decode($hash)
     {
-        $cipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+        $cipher = new BlockCipher(
+            new Openssl(['algorithm' => $this->encryptionAlgorithm])
+        );
         $cipher->setKey('foo');
         return $cipher->decrypt($hash);
     }
@@ -269,24 +305,19 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessWithUser()
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->at(0))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('encrypt_ils_password'),
-                $this->equalTo(true)
-            );
-        $writer->expects($this->at(1))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_algo'),
-                $this->equalTo('blowfish')
-            );
-        $writer->expects($this->at(2))->method('set')
-            ->with(
-                $this->equalTo('Authentication'),
-                $this->equalTo('ils_encryption_key'),
-                $this->equalTo('foo')
-            );
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
+                ['Authentication', 'encrypt_ils_password', true],
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm,
+                ],
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
         $user = $this->getMockUserObject();
@@ -298,12 +329,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $user['cat_password']);

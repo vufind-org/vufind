@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console runner.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole;
 
-use Laminas\ServiceManager\ServiceManager;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 
 /**
@@ -51,16 +53,16 @@ class ConsoleRunner
     /**
      * Plugin manager (to retrieve commands)
      *
-     * @var ServiceManager
+     * @var ContainerInterface
      */
     protected $pluginManager;
 
     /**
      * Constructor
      *
-     * @param ServiceManager $pm Plugin manager (to retrieve commands)
+     * @param ContainerInterface $pm Plugin manager (to retrieve commands)
      */
-    public function __construct(ServiceManager $pm)
+    public function __construct(ContainerInterface $pm)
     {
         $this->pluginManager = $pm;
     }

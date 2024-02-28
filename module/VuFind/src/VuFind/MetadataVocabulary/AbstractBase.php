@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Metadata vocabulary base class
  * (provides results from available RecordDriver methods in a standardized form)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Tübingen 2019.
  *
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\MetadataVocabulary;
+
+use function is_array;
 
 /**
  * Metadata vocabulary base class

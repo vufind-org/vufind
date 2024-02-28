@@ -3,7 +3,7 @@
 /**
  * SOLR delete document class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,9 +23,11 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Document;
 
 use XMLWriter;
@@ -36,52 +38,42 @@ use XMLWriter;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class DeleteDocument extends AbstractDocument
+class DeleteDocument implements DocumentInterface
 {
     /**
      * Unique keys to delete.
      *
-     * @var array
+     * @var string[]
      */
-    protected $keys;
+    protected $keys = [];
 
     /**
      * Delete queries.
      *
-     * @var array
+     * @var string[]
      */
-    protected $queries;
+    protected $queries = [];
 
     /**
-     * Constructor.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->keys    = [];
-        $this->queries = [];
-    }
-
-    /**
-     * Return serialized JSON representation.
+     * Return content MIME type.
      *
      * @return string
      */
-    public function asJSON()
+    public function getContentType(): string
     {
-        // @todo Implement
+        return 'text/xml; charset=UTF-8';
     }
 
     /**
-     * Return serialize XML representation.
+     * Return serialized representation.
      *
      * @return string
      */
-    public function asXML()
+    public function getContent(): string
     {
         $writer = new XMLWriter();
         $writer->openMemory();
@@ -105,7 +97,7 @@ class DeleteDocument extends AbstractDocument
      *
      * @return void
      */
-    public function addKey($key)
+    public function addKey(string $key): void
     {
         $this->keys[] = $key;
     }
@@ -113,11 +105,11 @@ class DeleteDocument extends AbstractDocument
     /**
      * Add array of unique keys to delete.
      *
-     * @param array $keys Unique keys
+     * @param string[] $keys Unique keys
      *
      * @return void
      */
-    public function addKeys($keys)
+    public function addKeys(array $keys): void
     {
         $this->keys = array_merge($this->keys, $keys);
     }
@@ -129,7 +121,7 @@ class DeleteDocument extends AbstractDocument
      *
      * @return void
      */
-    public function addQuery($query)
+    public function addQuery(string $query): void
     {
         $this->queries[] = $query;
     }

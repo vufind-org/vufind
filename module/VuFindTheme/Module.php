@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
@@ -58,6 +60,38 @@ class Module
     }
 
     /**
+     * Return generic configuration
+     *
+     * @return array
+     */
+    public function getConfig()
+    {
+        return [
+            'vufind' => [
+                // VuFind's theme system overrides the default Laminas template
+                // loading behavior based on template name prefixes, which usually
+                // correspond to module names. By default, VuFind will apply the
+                // theme system to all loaded modules. If you need to apply theming
+                // to a controller whose namespace does not directly correspond to a
+                // loaded module, you will need to add it as a prefix in
+                // extra_theme_prefixes (e.g. 'MyNamespace/'). Conversely, if you
+                // are loading a Laminas module that includes templates and does not
+                // follow VuFind's theme conventions, you should add that module name
+                // as a prefix in excluded_theme_prefixes to allow the default
+                // behavior to take effect.
+                //
+                // By default, VuFind assumes that any modules loaded from the
+                // Laminas ecosystem use default Laminas template inflection, and
+                // all other modules follow VuFind conventions. If you need different
+                // behavior, just override the below settings in your local module's
+                // module.config.php configuration.
+                'excluded_theme_prefixes' => ['Laminas'],
+                'extra_theme_prefixes' => [],
+            ],
+        ];
+    }
+
+    /**
      * Return service configuration.
      *
      * @return array
@@ -69,12 +103,13 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                InjectTemplateListener::class => InvokableFactory::class,
+                InjectTemplateListener::class =>
+                    InjectTemplateListenerFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,
                 ThemeCompiler::class => ThemeInfoInjectorFactory::class,
-                ThemeGenerator::class => ThemeInfoInjectorFactory::class,
+                ThemeGenerator::class => ThemeGeneratorFactory::class,
                 ThemeInfo::class => ThemeInfoFactory::class,
             ],
         ];
@@ -89,8 +124,8 @@ class Module
     {
         return [
             'factories' => [
-                View\Helper\HeadThemeResources::class =>
-                    View\Helper\HeadThemeResourcesFactory::class,
+                View\Helper\FootScript::class =>
+                    View\Helper\PipelineInjectorFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\HeadLink::class =>
                     View\Helper\PipelineInjectorFactory::class,
@@ -104,9 +139,13 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\TemplatePath::class =>
                     View\Helper\TemplatePathFactory::class,
+                View\Helper\SetupThemeResources::class =>
+                    View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
-                'headThemeResources' => View\Helper\HeadThemeResources::class,
+                'footScript' => View\Helper\FootScript::class,
+                // Legacy alias for compatibility with pre-8.0 templates:
+                'headThemeResources' => View\Helper\SetupThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
                 \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
                 \Laminas\View\Helper\HeadScript::class =>
@@ -116,6 +155,7 @@ class Module
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,
+                'setupThemeResources' => View\Helper\SetupThemeResources::class,
             ],
         ];
     }

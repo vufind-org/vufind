@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Get Resolver Links" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Config\Config;
@@ -82,8 +84,11 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      * @param RendererInterface $renderer View renderer
      * @param Config            $config   Top-level VuFind configuration (config.ini)
      */
-    public function __construct(SessionSettings $ss, ResolverManager $pm,
-        RendererInterface $renderer, Config $config
+    public function __construct(
+        SessionSettings $ss,
+        ResolverManager $pm,
+        RendererInterface $renderer,
+        Config $config
     ) {
         $this->sessionSettings = $ss;
         $this->pluginManager = $pm;
@@ -104,8 +109,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         $openUrl = $params->fromQuery('openurl', '');
         $searchClassId = $params->fromQuery('searchClassId', '');
 
-        $resolverType = isset($this->config->OpenURL->resolver)
-            ? $this->config->OpenURL->resolver : 'generic';
+        $resolverType = $this->config->OpenURL->resolver ?? 'generic';
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
@@ -121,21 +125,24 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch ($link['service_type'] ?? '') {
-            case 'getHolding':
-                $print[] = $link;
-                break;
-            case 'getWebService':
-                $services[] = $link;
-                break;
-            case 'getDOI':
-                // Special case -- modify DOI text for special display:
+            $serviceType = $link['service_type'] ?? '';
+            // Special case -- modify DOI text for special display, then apply
+            // default $electronic behavior below:
+            if ($serviceType === 'getDOI') {
                 $link['title'] = $this->translate('Get full text');
                 $link['coverage'] = '';
-            case 'getFullTxt':
-            default:
-                $electronic[] = $link;
-                break;
+            }
+            switch ($serviceType) {
+                case 'getHolding':
+                    $print[] = $link;
+                    break;
+                case 'getWebService':
+                    $services[] = $link;
+                    break;
+                case 'getFullTxt':
+                default:
+                    $electronic[] = $link;
+                    break;
             }
         }
 
@@ -143,7 +150,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         if (isset($this->config->OpenURL->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            list($base) = explode('?', $this->config->OpenURL->url);
+            [$base] = explode('?', $this->config->OpenURL->url);
         } else {
             $base = false;
         }
@@ -156,7 +163,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
             'searchClassId' => $searchClassId,
-            'moreOptionsLink' => $moreOptionsLink
+            'moreOptionsLink' => $moreOptionsLink,
         ];
         $html = $this->renderer->render('ajax/resolverLinks.phtml', $view);
 

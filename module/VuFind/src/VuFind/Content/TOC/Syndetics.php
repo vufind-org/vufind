@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics TOC content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -17,24 +18,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   John Jung <jej@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\TOC;
 
 /**
  * Syndetics TOC content loader.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   John Jung <jej@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
@@ -47,8 +49,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'TOC' => [
             'title' => 'TOC',
             'file' => 'TOC.XML',
-            'div' => '<div id="syn_toc"></div>'
-        ]
+            'div' => '<div id="syn_toc"></div>',
+        ],
     ];
 
     /**
@@ -110,7 +112,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $toc = $sourceInfo['div'];
                 } else {
                     // Get the marc field for toc (970)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld970");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
 
                     foreach ($nodes as $node) {
                         $li = '';
@@ -118,7 +120,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         // Chapter labels.
                         $nodeList = $node->getElementsByTagName('l');
                         if ($nodeList->length > 0) {
-                            $li .= sprintf("%s. ", $nodeList->item(0)->nodeValue);
+                            $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
                         }
 
                         // Chapter title.
@@ -128,7 +130,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         }
 
                         $toc[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/', '',
+                            '/<a>|<a [^>]*>|<\/a>/',
+                            '',
                             html_entity_decode($li)
                         );
                     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink cart test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -37,12 +39,9 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
-class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
+class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Get a reference to a standard search results page.
      *
@@ -58,6 +57,8 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Make sure the page works, channels exists, search
+     *
+     * @return void
      */
     public function testBasic()
     {
@@ -66,34 +67,39 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, 'div.channel-wrapper');
         // Check number of channels
         $channels = $page->findAll('css', 'div.channel-wrapper');
-        $this->assertEquals(6, count($channels));
+        $this->assertCount(6, $channels);
         // Make sure search input matches url
         $this->assertEquals(
             'building:"weird_ids.mrc"',
-            $this->findCss($page, '[action*="Channels/Search"] .form-control')->getValue()
+            $this->findCssAndGetValue($page, '[action*="Channels/Search"] .form-control')
         );
     }
 
     /**
      * Add channels button
+     *
+     * @return void
      */
     public function testAddChannels()
     {
         $page = $this->getChannelsPage();
         $channel = $this->findCss($page, 'div.channel-wrapper');
         // Initial counts
-        $this->assertEquals(6, count($page->findAll('css', 'div.channel-wrapper')));
-        $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
+        $this->assertCount(6, $page->findAll('css', 'div.channel-wrapper'));
+        $this->assertCount(8, $channel->findAll('css', '.channel-add-menu .dropdown-menu li'));
         // Click first add button
         $this->clickCss($channel, '.add-btn');
-        $this->snooze();
         // Post count
-        $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
-        $this->assertEquals(6, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
+        $this->waitStatement('$("div.channel-wrapper").length === 8');
+        $this->waitStatement('$(".channel-add-menu:first .dropdown-menu li").length === 6');
+        $this->assertCount(8, $page->findAll('css', 'div.channel-wrapper'));
+        $this->assertCount(6, $channel->findAll('css', '.channel-add-menu .dropdown-menu li'));
     }
 
     /**
      * Switch to search
+     *
+     * @return void
      */
     public function testSwitchToSearch()
     {
@@ -101,23 +107,21 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         $channel = $this->findCss($page, 'div.channel-wrapper');
         // Click dropdown to display links
         $this->clickCss($channel, '.dropdown');
-        $this->snooze();
         // Click link to go to search results
         $this->clickCss($channel, '.channel_search');
-        $this->snooze();
         // Make sure the search translated
         $this->assertEquals(
             'building:"weird_ids.mrc"',
-            $this->findCss($page, '#searchForm_lookfor')->getValue()
+            $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
         // Check facet
         $this->assertEquals(
             'Suggested Topics:',
-            $this->findCss($page, '.filters .filters-title')->getText()
+            $this->findCssAndGetText($page, '.filters .filters-title')
         );
         $this->assertEquals(
-            'Adult children of aging parents',
-            $this->findCss($page, '.filters .filter-value')->getText()
+            'Remove Filter Adult children of aging parents',
+            $this->findCssAndGetText($page, '.filters .filter-value')
         );
     }
 }

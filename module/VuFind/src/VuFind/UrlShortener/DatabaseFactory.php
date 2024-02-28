@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for local database-driven URL shortener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\UrlShortener;
 
 use Exception;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for local database-driven URL shortener.
@@ -50,15 +52,17 @@ class DatabaseFactory
      *
      * @return object
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new Exception('Unexpected options passed to factory.');
         }
         $router = $container->get('HttpRouter');
-        $baseUrl = $container->get('ViewRenderer')->plugin('serverurl')
-            ->__invoke($router->assemble([], ['name' => 'home']));
+        $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
+        $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         $table = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('shortlinks');
         $config = $container->get(\VuFind\Config\PluginManager::class)

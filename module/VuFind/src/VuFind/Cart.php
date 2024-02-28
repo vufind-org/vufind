@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cart Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
+
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
 
 /**
  * Cart Class
@@ -84,9 +92,9 @@ class Cart
      */
     protected $cookieManager;
 
-    const CART_COOKIE = 'vufind_cart';
-    const CART_COOKIE_SOURCES = 'vufind_cart_src';
-    const CART_COOKIE_DELIM = "\t";
+    public const CART_COOKIE = 'vufind_cart';
+    public const CART_COOKIE_SOURCES = 'vufind_cart_src';
+    public const CART_COOKIE_DELIM = "\t";
 
     /**
      * Constructor
@@ -98,9 +106,12 @@ class Cart
      * @param bool                  $togglesInSearch Is cart configured to toggles
      * in search results?
      */
-    public function __construct(\VuFind\Record\Loader $loader,
+    public function __construct(
+        \VuFind\Record\Loader $loader,
         \VuFind\Cookie\CookieManager $cookieManager,
-        $maxSize = 100, $active = true, $togglesInSearch = true
+        $maxSize = 100,
+        $active = true,
+        $togglesInSearch = true
     ) {
         $this->recordLoader = $loader;
         $this->cookieManager = $cookieManager;
@@ -202,7 +213,7 @@ class Cart
     /**
      * Get cart size.
      *
-     * @return string The maximum cart size
+     * @return int The maximum cart size
      */
     public function getMaxSize()
     {
@@ -272,7 +283,8 @@ class Cart
             } else {
                 // Default case for VuFind 2.x carts -- decompress source data:
                 $sources = explode(
-                    self::CART_COOKIE_DELIM, $cookies[self::CART_COOKIE_SOURCES]
+                    self::CART_COOKIE_DELIM,
+                    $cookies[self::CART_COOKIE_SOURCES]
                 );
                 for ($i = 0; $i < count($items); $i++) {
                     $sourceIndex = ord(substr($items[$i], 0, 1)) - 65;
@@ -297,7 +309,7 @@ class Cart
 
         foreach ($this->items as $item) {
             // Break apart the source and the ID:
-            list($source, $id) = explode('|', $item, 2);
+            [$source, $id] = explode('|', $item, 2);
 
             // Add the source to the source array if it is not already there:
             $sourceIndex = array_search($source, $sources);
@@ -335,6 +347,16 @@ class Cart
     public function getCookiePath()
     {
         return $this->cookieManager->getPath();
+    }
+
+    /**
+     * Get cookie SameSite attribute.
+     *
+     * @return string
+     */
+    public function getCookieSameSite()
+    {
+        return $this->cookieManager->getSameSite();
     }
 
     /**

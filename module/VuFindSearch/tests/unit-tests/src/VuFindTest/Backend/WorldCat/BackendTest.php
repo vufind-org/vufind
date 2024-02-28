@@ -3,7 +3,7 @@
 /**
  * Unit tests for WorldCat backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\WorldCat;
 
 use InvalidArgumentException;
@@ -44,6 +45,8 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -63,7 +66,7 @@ class BackendTest extends TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('690250223', $rec->getMarc()->getField('001')->getData());
+        $this->assertEquals('690250223', $rec->getMarc()->getField('001'));
     }
 
     /**
@@ -85,12 +88,12 @@ class BackendTest extends TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('793503125', $rec->getMarc()->getField('001')->getData());
+        $this->assertEquals('793503125', $rec->getMarc()->getField('001'));
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
-        $this->assertEquals('798169104', $recs[1]->getMarc()->getField('001')->getData());
+        $this->assertEquals('798169104', $recs[1]->getMarc()->getField('001'));
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
-        $this->assertEquals('44310183', $recs[2]->getMarc()->getField('001')->getData());
+        $this->assertEquals('44310183', $recs[2]->getMarc()->getField('001'));
     }
 
     /**
@@ -133,11 +136,9 @@ class BackendTest extends TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/worldcat/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return unserialize(file_get_contents($file));
+        return unserialize(
+            $this->getFixture("worldcat/response/$fixture", 'VuFindSearch')
+        );
     }
 
     /**
@@ -151,7 +152,7 @@ class BackendTest extends TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['fake', $client])
             ->getMock();
     }

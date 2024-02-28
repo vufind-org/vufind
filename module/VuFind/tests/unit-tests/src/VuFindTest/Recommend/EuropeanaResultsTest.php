@@ -3,7 +3,7 @@
 /**
  * EuropeanaResults tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use VuFind\Recommend\EuropeanaResults;
 use VuFindHttp\HttpService;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * EuropeanaResults tests.
@@ -42,8 +42,10 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EuropeanaResultsTest extends TestCase
+class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test that the module properly parses a sample response.
      *
@@ -62,32 +64,38 @@ class EuropeanaResultsTest extends TestCase
         $query = new \Laminas\Stdlib\Parameters(['lookfor' => 'test']);
         $europeana->init($results->getParams(), $query);
         $europeana->process($results);
+        $expectedBaseLink = 'http://www.europeana.eu/portal/record/92099';
         $this->assertEquals(
             [
                 'worksArray' => [
                     [
-                        'title' => 'Guiard des Moulins , Petite Bible historiale de Charles V. [Paris, BnF, MSS Français 5707]',
-                        'link' => 'http://www.europeana.eu/portal/record/92099/BibliographicResource_2000068736886.html',
+                        'title' => 'Guiard des Moulins , Petite Bible historiale de Charles V. [Paris, '
+                            . 'BnF, MSS Français 5707]',
+                        'link' => $expectedBaseLink . '/BibliographicResource_2000068736886.html',
                         'enclosure' => null,
                     ],
                     [
-                        'title' => 'Guiard des Moulins , Bible Historiale de Jean de Berry. [Paris, BnF, MSS Français 20090]',
-                        'link' => 'http://www.europeana.eu/portal/record/92099/BibliographicResource_2000060239235.html',
+                        'title' => 'Guiard des Moulins , Bible Historiale de Jean de Berry. [Paris, BnF, '
+                            . 'MSS Français 20090]',
+                        'link' => $expectedBaseLink . '/BibliographicResource_2000060239235.html',
                         'enclosure' => null,
                     ],
                     [
-                        'title' => 'Saint Augustin , De civitate Dei (Livres XI-XXII) , traduit en français par Raoul de Presle. [Paris, BnF, MSS Français 173]',
-                        'link' => 'http://www.europeana.eu/portal/record/92099/BibliographicResource_1000157170726.html',
+                        'title' => 'Saint Augustin , De civitate Dei (Livres XI-XXII) , traduit en français '
+                            . 'par Raoul de Presle. [Paris, BnF, MSS Français 173]',
+                        'link' => $expectedBaseLink . '/BibliographicResource_1000157170726.html',
                         'enclosure' => null,
                     ],
                     [
-                        'title' => 'Saint Augustin , La cité de Dieu [De Civitate Dei] , (Livres XI-XXII), traduit en français par Raoul de Presles. [Paris, BnF, MSS Français 174]',
-                        'link' => 'http://www.europeana.eu/portal/record/92099/BibliographicResource_1000157170711.html',
+                        'title' => 'Saint Augustin , La cité de Dieu [De Civitate Dei] , (Livres XI-XXII), '
+                            . 'traduit en français par Raoul de Presles. [Paris, BnF, MSS Français 174]',
+                        'link' => $expectedBaseLink . '/BibliographicResource_1000157170711.html',
                         'enclosure' => null,
                     ],
                     [
-                        'title' => 'Saint Augustin , De Civitate Dei , traduit en français par Raoul de Presles (Livre I-X). [Paris, BnF, MSS Français 22912]',
-                        'link' => 'http://www.europeana.eu/portal/record/92099/BibliographicResource_1000157170710.html',
+                        'title' => 'Saint Augustin , De Civitate Dei , traduit en français par Raoul de Presles '
+                            . '(Livre I-X). [Paris, BnF, MSS Français 22912]',
+                        'link' => $expectedBaseLink . '/BibliographicResource_1000157170710.html',
                         'enclosure' => null,
                     ],
                 ],
@@ -110,22 +118,11 @@ class EuropeanaResultsTest extends TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $adapter->setResponse($this->loadResponse($fixture));
+            $adapter->setResponse($this->getFixture("recommend/$fixture"));
         }
         $service = new HttpService();
         $service->setDefaultAdapter($adapter);
         return $service;
-    }
-
-    /**
-     * Get a fixture response
-     *
-     * @return string
-     */
-    protected function loadResponse($file)
-    {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/recommend') . '/';
-        return file_get_contents($fixturePath . $file);
     }
 
     /**

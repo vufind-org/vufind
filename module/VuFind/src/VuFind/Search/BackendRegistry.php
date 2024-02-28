@@ -3,7 +3,7 @@
 /**
  * Registry for search backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 /**
@@ -59,20 +60,23 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'BrowZine' => 'VuFind\Search\Factory\BrowZineBackendFactory',
-        'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
-        'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
-        'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
-        'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
-        'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
-        'Search2' => 'VuFind\Search\Factory\Search2BackendFactory',
-        'Search2Collection' => 'VuFind\Search\Factory\Search2BackendFactory',
-        'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
-        'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
-        'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
-        'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
-        'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
-        'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
+        'Blender' => Factory\BlenderBackendFactory::class,
+        'BrowZine' => Factory\BrowZineBackendFactory::class,
+        'EDS' => Factory\EdsBackendFactory::class,
+        'EIT' => Factory\EITBackendFactory::class,
+        'EPF' => Factory\EPFBackendFactory::class,
+        'LibGuides' => Factory\LibGuidesBackendFactory::class,
+        'LibGuidesAZ' => Factory\LibGuidesAZBackendFactory::class,
+        'Pazpar2' => Factory\Pazpar2BackendFactory::class,
+        'Primo' => Factory\PrimoBackendFactory::class,
+        'Search2' => Factory\Search2BackendFactory::class,
+        'Search2Collection' => Factory\Search2BackendFactory::class,
+        'Solr' => Factory\SolrDefaultBackendFactory::class,
+        'SolrAuth' => Factory\SolrAuthBackendFactory::class,
+        'SolrReserves' => Factory\SolrReservesBackendFactory::class,
+        'SolrWeb' => Factory\SolrWebBackendFactory::class,
+        'Summon' => Factory\SummonBackendFactory::class,
+        'WorldCat' => Factory\WorldCatBackendFactory::class,
     ];
 
     /**
@@ -83,6 +87,6 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFindSearch\Backend\BackendInterface';
+        return \VuFindSearch\Backend\BackendInterface::class;
     }
 }

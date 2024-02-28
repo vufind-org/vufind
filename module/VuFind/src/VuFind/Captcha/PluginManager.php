@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CAPTCHA plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -47,8 +49,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'demo' => Demo::class,
+        'dumb' => Dumb::class,
         'figlet' => Figlet::class,
         'image' => Image::class,
+        'interval' => Interval::class,
         'recaptcha' => ReCaptcha::class,
     ];
 
@@ -59,8 +63,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Demo::class => InvokableFactory::class,
+        Dumb::class => DumbFactory::class,
         Figlet::class => FigletFactory::class,
         Image::class => ImageFactory::class,
+        Interval::class => IntervalFactory::class,
         ReCaptcha::class => ReCaptchaFactory::class,
     ];
 

@@ -3,7 +3,7 @@
 /**
  * Unit tests for QueryGroup class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Query;
 
 use PHPUnit\Framework\TestCase;
@@ -94,13 +95,14 @@ class QueryGroupTest extends TestCase
      */
     public function testReplaceTermWithNormalization()
     {
+        $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         // Without normalization we only replace the accented instance of "query":
         $q = $this->getSampleQueryGroupWithWeirdCharacters();
-        $q->replaceTerm('quéry', 'quéstion', false);
+        $q->replaceTerm('quéry', 'quéstion');
         $this->assertEquals('tést quéstion multi WORD query', $q->getAllTerms());
         // With normalization, we replace both instances of "query":
         $q = $this->getSampleQueryGroupWithWeirdCharacters();
-        $q->replaceTerm('quéry', 'quéstion', true);
+        $q->replaceTerm('quéry', 'quéstion', $normalizer);
         $this->assertEquals('test quéstion multi word quéstion', $q->getAllTerms());
     }
 
@@ -154,13 +156,14 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testContainsNormalizedTerm()
+    public function testContainsTermWithNormalization()
     {
+        $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $q = $this->getSampleQueryGroupWithWeirdCharacters();
         // regular contains will fail because of the accent:
         $this->assertFalse($q->containsTerm('test'));
         // normalized contains will succeed:
-        $this->assertTrue($q->containsNormalizedTerm('test'));
+        $this->assertTrue($q->containsTerm('test', $normalizer));
     }
 
     /**

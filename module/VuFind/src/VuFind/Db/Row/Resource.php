@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Row Definition for resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,10 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Row;
 
 use VuFind\Date\DateException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
+
+use function intval;
+use function is_object;
+use function strlen;
 
 /**
  * Row Definition for resource
@@ -38,6 +44,14 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property string  $record_id
+ * @property string  $title
+ * @property ?string $author
+ * @property ?int    $year
+ * @property string  $source
+ * @property ?string $extra_metadata
  */
 class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
@@ -65,7 +79,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     public function deleteTags($user, $list_id = null)
     {
         $unlinker = $this->getDbTable('ResourceTags');
-        $unlinker->destroyLinks($this->id, $user->id, $list_id);
+        $unlinker->destroyResourceLinks($this->id, $user->id, $list_id);
     }
 
     /**
@@ -87,7 +101,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
             $linker = $this->getDbTable('ResourceTags');
             $linker->createLink(
-                $this->id, $tag->id, is_object($user) ? $user->id : null, $list_id
+                $this->id,
+                $tag->id,
+                is_object($user) ? $user->id : null,
+                $list_id
             );
         }
     }
@@ -113,8 +130,11 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             }
             if (!empty($tagIds)) {
                 $linker = $this->getDbTable('ResourceTags');
-                $linker->destroyLinks(
-                    $this->id, $user->id, $list_id, $tagIds
+                $linker->destroyResourceLinks(
+                    $this->id,
+                    $user->id,
+                    $list_id,
+                    $tagIds
                 );
             }
         }
@@ -148,7 +168,51 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Use a record driver to assign metadata to the current row.  Return the
+     * Add or update user's rating for the current resource.
+     *
+     * @param int  $userId User ID
+     * @param ?int $rating Rating (null to delete)
+     *
+     * @throws LoginRequiredException
+     * @throws \Exception
+     * @return int ID of rating added, deleted or updated
+     */
+    public function addOrUpdateRating(int $userId, ?int $rating): int
+    {
+        if (null !== $rating && ($rating < 0 || $rating > 100)) {
+            throw new \Exception('Rating value out of range');
+        }
+
+        $ratings = $this->getDbTable('Ratings');
+        $callback = function ($select) use ($userId) {
+            $select->where->equalTo('ratings.resource_id', $this->id);
+            $select->where->equalTo('ratings.user_id', $userId);
+        };
+        if ($existing = $ratings->select($callback)->current()) {
+            if (null === $rating) {
+                $existing->delete();
+            } else {
+                $existing->rating = $rating;
+                $existing->save();
+            }
+            return $existing->id;
+        }
+
+        if (null === $rating) {
+            return 0;
+        }
+
+        $row = $ratings->createRow();
+        $row->user_id = $userId;
+        $row->resource_id = $this->id;
+        $row->rating = $rating;
+        $row->created = date('Y-m-d H:i:s');
+        $row->save();
+        return $row->id;
+    }
+
+    /**
+     * Use a record driver to assign metadata to the current row. Return the
      * current object to allow fluent interface.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver    The record driver
@@ -163,7 +227,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $driver->tryMethod('getSortTitle'),
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (empty($this->title)) {
             $this->title = $driver->getBreadcrumb();
@@ -174,7 +238,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $driver->tryMethod('getPrimaryAuthor'),
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (!empty($author)) {
             $this->author = $author;

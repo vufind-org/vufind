@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics Summaries content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -17,24 +18,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   John Jung <jej@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Summaries;
 
 /**
  * Syndetics Summaries content loader.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   John Jung <jej@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
@@ -47,12 +49,12 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'AVSUMMARY' => [
             'title' => 'Summaries',
             'file' => 'AVSUMMARY.XML',
-            'div' => '<div id="syn_avsummary"></div>'
+            'div' => '<div id="syn_avsummary"></div>',
         ],
         'SUMMARY' => [
             'title' => 'Summaries',
             'file' => 'SUMMARY.XML',
-            'div' => '<div id="syn_summary"></div>'
+            'div' => '<div id="syn_summary"></div>',
         ],
     ];
 
@@ -111,10 +113,11 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $summaries[] = $sourceInfo['div'];
                 } else {
                     // Get the marc field for summaries. (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
                     foreach ($nodes as $node) {
                         $summaries[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/', '',
+                            '/<a>|<a [^>]*>|<\/a>/',
+                            '',
                             html_entity_decode($node->nodeValue)
                         );
                     }

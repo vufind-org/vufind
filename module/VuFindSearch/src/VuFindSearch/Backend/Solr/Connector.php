@@ -3,7 +3,7 @@
 /**
  * SOLR connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,25 +28,25 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
-use InvalidArgumentException;
-
-use Laminas\Http\Client\Adapter\AdapterInterface;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
-
+use Laminas\Uri\Http;
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-use VuFindSearch\Backend\Solr\Document\AbstractDocument;
+use VuFindSearch\Backend\Solr\Document\DocumentInterface;
+use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
 
-use VuFindSearch\Query\Query;
+use function call_user_func_array;
+use function count;
+use function is_callable;
+use function strlen;
 
 /**
  * SOLR connector.
@@ -62,6 +62,7 @@ use VuFindSearch\Query\Query;
 class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * Maximum length of a GET url.
@@ -72,7 +73,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @var int
      */
-    const MAX_GET_URL_LENGTH = 2048;
+    public const MAX_GET_URL_LENGTH = 2048;
+
+    /**
+     * HTTP client factory
+     *
+     * @var callable
+     */
+    protected $clientFactory;
 
     /**
      * URL or an array of alternative URLs of the SOLR core.
@@ -96,42 +104,38 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $uniqueKey;
 
     /**
-     * HTTP read timeout.
+     * Url of the last request
      *
-     * @var int
+     * @var ?Http
      */
-    protected $timeout = 30;
-
-    /**
-     * Proxy service
-     *
-     * @var mixed
-     */
-    protected $proxy;
-
-    /**
-     * HTTP client adapter.
-     *
-     * Either the class name or a adapter instance.
-     *
-     * @var string|AdapterInterface
-     */
-    protected $adapter = 'Laminas\Http\Client\Adapter\Socket';
+    protected $lastUrl = null;
 
     /**
      * Constructor
      *
-     * @param string|array $url       SOLR core URL or an array of alternative URLs
-     * @param HandlerMap   $map       Handler map
-     * @param string       $uniqueKey Solr field used to store unique identifier
-     *
-     * @return void
+     * @param string|array        $url       SOLR core URL or an array of alternative
+     * URLs
+     * @param HandlerMap          $map       Handler map
+     * @param callable|HttpClient $cf        HTTP client factory or a client to clone
+     * @param string              $uniqueKey Solr field used to store unique
+     * identifier
      */
-    public function __construct($url, HandlerMap $map, $uniqueKey = 'id')
-    {
+    public function __construct(
+        $url,
+        HandlerMap $map,
+        $cf,
+        $uniqueKey = 'id'
+    ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
+        if ($cf instanceof HttpClient) {
+            $this->clientFactory = function () use ($cf) {
+                return clone $cf;
+            };
+        } else {
+            $this->clientFactory = $cf;
+        }
     }
 
     /// Public API
@@ -167,6 +171,26 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the last request url.
+     *
+     * @return ?Http
+     */
+    public function getLastUrl()
+    {
+        return $this->lastUrl;
+    }
+
+    /**
+     * Clears the last url
+     *
+     * @return void
+     */
+    public function resetLastUrl()
+    {
+        $this->lastUrl = null;
+    }
+
+    /**
      * Return document specified by id.
      *
      * @param string   $id     The document to retrieve from Solr
@@ -183,7 +207,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
 
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -203,7 +227,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -217,7 +241,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -232,42 +256,31 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
 
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
      * Write to the SOLR index.
      *
-     * @param AbstractDocument $document Document to write
-     * @param string           $format   Serialization format, either 'json' or 'xml'
-     * @param string           $handler  Update handler
-     * @param ParamBag         $params   Update handler parameters
+     * @param DocumentInterface $document Document to write
+     * @param string            $handler  Update handler
+     * @param ParamBag          $params   Update handler parameters
      *
      * @return string Response body
      */
-    public function write(AbstractDocument $document, $format = 'xml',
-        $handler = 'update', ParamBag $params = null
+    public function write(
+        DocumentInterface $document,
+        $handler = 'update',
+        ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document, $format) {
-            switch ($format) {
-            case 'xml':
-                $client->setEncType('text/xml; charset=UTF-8');
-                $body = $document->asXML();
-                break;
-            case 'json':
-                $client->setEncType('application/json');
-                $body = $document->asJSON();
-                break;
-            default:
-                throw new InvalidArgumentException(
-                    "Unable to serialize to selected format: {$format}"
-                );
-            }
+        $callback = function ($client) use ($document) {
+            $client->setEncType($document->getContentType());
+            $body = $document->getContent();
             $client->setRawBody($body);
             $client->getRequest()->getHeaders()
                 ->addHeaderLine('Content-Length', strlen($body));
@@ -275,76 +288,18 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return $this->trySolrUrls('POST', $urlSuffix, $callback);
     }
 
-    /**
-     * Set the HTTP proxy service.
-     *
-     * @param mixed $proxy Proxy service
-     *
-     * @return void
-     *
-     * @todo Typehint on ProxyInterface
-     */
-    public function setProxy($proxy)
-    {
-        $this->proxy = $proxy;
-    }
-
-    /**
-     * Get the HTTP connect timeout.
-     *
-     * @return int
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
-    }
-
-    /**
-     * Set the HTTP connect timeout.
-     *
-     * @param int $timeout Timeout in seconds
-     *
-     * @return void
-     */
-    public function setTimeout($timeout)
-    {
-        $this->timeout = $timeout;
-    }
-
-    /**
-     * Set HTTP client adapter.
-     *
-     * Keep in mind that a proxy service might replace the client adapter by a
-     * Proxy adapter if necessary.
-     *
-     * @param string|AdapterInterface $adapter Adapter or name of adapter class
-     *
-     * @return void
-     */
-    public function setAdapter($adapter)
-    {
-        if (is_object($adapter) && (!$adapter instanceof AdapterInterface)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'HTTP client adapter must implement AdapterInterface: %s',
-                    get_class($adapter)
-                )
-            );
-        }
-        $this->adapter = $adapter;
-    }
-
     /// Internal API
 
     /**
      * Send query to SOLR and return response body.
      *
-     * @param string   $handler SOLR request handler to use
-     * @param ParamBag $params  Request parameters
+     * @param string   $handler   SOLR request handler to use
+     * @param ParamBag $params    Request parameters
+     * @param bool     $cacheable Whether the query is cacheable
      *
      * @return string Response body
      */
-    public function query($handler, ParamBag $params)
+    public function query($handler, ParamBag $params, bool $cacheable = false)
     {
         $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
@@ -362,7 +317,44 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         }
 
         $this->debug(sprintf('Query %s', $paramString));
-        return $this->trySolrUrls($method, $urlSuffix, $callback);
+        return $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
+    }
+
+    /**
+     * Call a method with provided options for the HTTP client
+     *
+     * @param array  $options HTTP client options
+     * @param string $method  Method to call
+     * @param array  ...$args Method parameters
+     *
+     * @return mixed
+     */
+    public function callWithHttpOptions(
+        array $options,
+        string $method,
+        ...$args
+    ) {
+        $reflectionMethod = new \ReflectionMethod($this, $method);
+        if (!$reflectionMethod->isPublic()) {
+            throw new InvalidArgumentException("Method '$method' is not public");
+        }
+        if (empty($options)) {
+            return call_user_func_array([$this, $method], $args);
+        }
+        $originalFactory = $this->clientFactory;
+        try {
+            $this->clientFactory = function (string $url) use (
+                $originalFactory,
+                $options
+            ) {
+                $client = $originalFactory($url);
+                $client->setOptions($options);
+                return $client;
+            };
+            return call_user_func_array([$this, $method], $args);
+        } finally {
+            $this->clientFactory = $originalFactory;
+        }
     }
 
     /**
@@ -389,13 +381,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function forceToBackendException($ex)
     {
         // Don't wrap specific backend exceptions....
-        if ($ex instanceof RemoteErrorException
+        if (
+            $ex instanceof RemoteErrorException
             || $ex instanceof RequestErrorException
             || $ex instanceof HttpErrorException
         ) {
             return $ex;
         }
-        return new BackendException('Problem connecting to Solr.', null, $ex);
+        return
+            new BackendException('Problem connecting to Solr.', $ex->getCode(), $ex);
     }
 
     /**
@@ -403,27 +397,46 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string   $method    HTTP method to use
      * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param Callable $callback  Callback to configure client (null for none)
+     * @param callable $callback  Callback to configure client (null for none)
+     * @param bool     $cacheable Whether the request is cacheable
      *
      * @return string Response body
      *
      * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
      * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
      */
-    protected function trySolrUrls($method, $urlSuffix, $callback = null)
-    {
+    protected function trySolrUrls(
+        $method,
+        $urlSuffix,
+        $callback = null,
+        bool $cacheable = false
+    ) {
         // This exception should never get thrown; it's just a safety in case
         // something unanticipated occurs.
         $exception = new \Exception('Unexpected exception.');
 
         // Loop through all base URLs and try them in turn until one works.
+        $cacheKey = null;
         foreach ((array)$this->url as $base) {
-            $client = $this->createClient($base . $urlSuffix, $method);
+            $client = ($this->clientFactory)($base . $urlSuffix);
+            $client->setMethod($method);
             if (is_callable($callback)) {
                 $callback($client);
             }
+            // Always create the cache key from the first server, and only after any
+            // callback has been called above.
+            if ($cacheable && $this->cache && null === $cacheKey) {
+                $cacheKey = $this->getCacheKey($client);
+                if ($result = $this->getCachedData($cacheKey)) {
+                    return $result;
+                }
+            }
             try {
-                return $this->send($client);
+                $result = $this->send($client);
+                if ($cacheKey) {
+                    $this->putCachedData($cacheKey, $result);
+                }
+                return $result;
             } catch (\Exception $ex) {
                 if ($this->isRethrowableSolrException($ex)) {
                     throw $this->forceToBackendException($ex);
@@ -435,6 +448,18 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         // If we got this far, everything failed -- throw a BackendException with
         // the most recent exception caught above set as the previous exception.
         throw $this->forceToBackendException($exception);
+    }
+
+    /**
+     * Extract the Solr core from the connector's URL.
+     *
+     * @return string
+     */
+    public function getCore(): string
+    {
+        $url = rtrim($this->getUrl(), '/');
+        $parts = explode('/', $url);
+        return array_pop($parts);
     }
 
     /**
@@ -453,41 +478,24 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
         );
 
+        $this->lastUrl = $client->getUri();
+
         $time     = microtime(true);
         $response = $client->send();
         $time     = microtime(true) - $time;
 
         $this->debug(
             sprintf(
-                '<= %s %s', $response->getStatusCode(),
+                '<= %s %s',
+                $response->getStatusCode(),
                 $response->getReasonPhrase()
-            ), ['time' => $time]
+            ),
+            ['time' => $time]
         );
 
         if (!$response->isSuccess()) {
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();
-    }
-
-    /**
-     * Create the HTTP client.
-     *
-     * @param string $url    Target URL
-     * @param string $method Request method
-     *
-     * @return HttpClient
-     */
-    protected function createClient($url, $method)
-    {
-        $client = new HttpClient();
-        $client->setAdapter($this->adapter);
-        $client->setOptions(['timeout' => $this->timeout]);
-        $client->setUri($url);
-        $client->setMethod($method);
-        if ($this->proxy) {
-            $this->proxy->proxify($client);
-        }
-        return $client;
     }
 }

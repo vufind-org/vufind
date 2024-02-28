@@ -1,8 +1,9 @@
 <?php
+
 /**
  * API Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
+
+use function in_array;
 
 /**
  * API Controller
@@ -67,7 +71,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
     /**
      * Index action
      *
-     * Return Swagger specification or redirect to Swagger UI
+     * Return API specification or redirect to Swagger UI
      *
      * @return \Laminas\Http\Response
      */
@@ -76,55 +80,72 @@ class ApiController extends \VuFind\Controller\AbstractBase
         // Disable session writes
         $this->disableSessionWrites();
 
-        if (null === $this->getRequest()->getQuery('swagger')) {
+        if (
+            null === $this->getRequest()->getQuery('swagger')
+            && null === $this->getRequest()->getQuery('openapi')
+        ) {
             $urlHelper = $this->getViewRenderer()->plugin('url');
             $base = rtrim($urlHelper('home'), '/');
-            $url = "$base/swagger-ui/?url="
-                . urlencode("$base/api?swagger");
+            $url = "$base/swagger-ui/?url=" . urlencode("$base/api?openapi");
             return $this->redirect()->toUrl($url);
         }
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'application/json');
-        $config = $this->getConfig();
-        $params = [
-            'config' => $config,
-            'version' => \VuFind\Config\Version::getBuildVersion(),
-            'specs' => $this->getApiSpecs()
-        ];
-        $json = $this->getViewRenderer()->render('api/swagger', $params);
+        $json = json_encode($this->getApiSpecs(), JSON_PRETTY_PRINT);
         $response->setContent($json);
         return $response;
     }
 
     /**
-     * Get specification fragments from all APIs as JSON
+     * Get API specification JSON fragment for the root nodes
      *
      * @return string
      */
-    protected function getApiSpecs()
+    protected function getApiSpecFragment()
+    {
+        $config = $this->getConfig();
+        $params = [
+            'config' => $config,
+            'version' => \VuFind\Config\Version::getBuildVersion(),
+        ];
+        return $this->getViewRenderer()->render('api/openapi', $params);
+    }
+
+    /**
+     * Merge specification fragments from all APIs to an array
+     *
+     * @return array
+     */
+    protected function getApiSpecs(): array
     {
         $results = [];
 
-        foreach ($this->apiControllers as $controller) {
-            $api = $controller->getSwaggerSpecFragment();
+        foreach (array_merge([$this], $this->apiControllers) as $controller) {
+            $api = $controller->getApiSpecFragment();
             $specs = json_decode($api, true);
             if (null === $specs) {
                 throw new \Exception(
-                    'Could not parse Swagger spec fragment of '
-                    . get_class($controller)
+                    'Could not parse API spec fragment of '
+                    . $controller::class . ': ' . json_last_error_msg()
                 );
             }
             foreach ($specs as $key => $spec) {
                 if (isset($results[$key])) {
-                    $results[$key] = array_merge($results[$key], $spec);
+                    if ('components' === $key) {
+                        $results['components']['schemas'] = array_merge(
+                            $results['components']['schemas'] ?? [],
+                            $spec['schemas'] ?? []
+                        );
+                    } else {
+                        $results[$key] = array_merge($results[$key], $spec);
+                    }
                 } else {
                     $results[$key] = $spec;
                 }
             }
         }
 
-        // Return the fragment without the enclosing curly brackets
-        return substr(trim(json_encode($results, JSON_PRETTY_PRINT)), 1, -1);
+        return $results;
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Database table plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
+
 namespace VuFind\Db\Table;
 
 /**
@@ -44,10 +46,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'accesstoken' => AccessToken::class,
         'changetracker' => ChangeTracker::class,
         'comments' => Comments::class,
         'externalsession' => ExternalSession::class,
+        'logintoken' => LoginToken::class,
         'oairesumption' => OaiResumption::class,
+        'ratings' => Ratings::class,
         'record' => Record::class,
         'resource' => Resource::class,
         'resourcetags' => ResourceTags::class,
@@ -67,11 +72,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        AccessToken::class => GatewayFactory::class,
         AuthHash::class => GatewayFactory::class,
         ChangeTracker::class => GatewayFactory::class,
         Comments::class => GatewayFactory::class,
         ExternalSession::class => GatewayFactory::class,
+        Feedback::class => GatewayFactory::class,
+        LoginToken::class => GatewayFactory::class,
         OaiResumption::class => GatewayFactory::class,
+        Ratings::class => GatewayFactory::class,
         Record::class => GatewayFactory::class,
         Resource::class => ResourceFactory::class,
         ResourceTags::class => CaseSensitiveTagsFactory::class,
@@ -94,7 +103,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

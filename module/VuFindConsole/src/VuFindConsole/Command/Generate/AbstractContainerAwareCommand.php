@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for generator commands relying on the service container.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use VuFindConsole\Generator\GeneratorTools;
 
 /**
@@ -56,7 +58,9 @@ class AbstractContainerAwareCommand extends AbstractCommand
      * @param string|null        $name      The name of the command; passing null
      * means it must be set in configure()
      */
-    public function __construct(GeneratorTools $tools, ContainerInterface $container,
+    public function __construct(
+        GeneratorTools $tools,
+        ContainerInterface $container,
         $name = null
     ) {
         $this->container = $container;

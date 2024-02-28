@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Auth handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -58,6 +60,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'multiils' => MultiILS::class,
         'openidconnect' => OpenIDConnect::class,
         'shibboleth' => Shibboleth::class,
+        'simulatedsso' => SimulatedSSO::class,
         'sip2' => SIP2::class,
         // for legacy 1.x compatibility
         'db' => Database::class,
@@ -82,6 +85,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         MultiILS::class => ILSFactory::class,
         OpenIDConnect::class => OpenIDConnectFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
+        SimulatedSSO::class => SimulatedSSOFactory::class,
         SIP2::class => InvokableFactory::class,
     ];
 
@@ -94,7 +98,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @param array $v3config                  If $configOrContainerInstance is a
      * container, this value will be passed to the parent constructor.
      */
-    public function __construct($configOrContainerInstance = null,
+    public function __construct(
+        $configOrContainerInstance = null,
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);

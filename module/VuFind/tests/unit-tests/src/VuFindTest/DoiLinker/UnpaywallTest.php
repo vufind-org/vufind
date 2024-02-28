@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Unpaywall Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\DoiLinker;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -40,8 +42,10 @@ use VuFind\DoiLinker\Unpaywall;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UnpaywallTest extends \VuFindTest\Unit\TestCase
+class UnpaywallTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test configuration validation.
      *
@@ -65,39 +69,30 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $adapter = new TestAdapter();
         $testData = [
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/unpaywall/goodresponsepdf'
-                ),
+                'fixture' => $this->getFixture('unpaywall/goodresponsepdf'),
                 'response' => [
                     '10.7553/66-4-1434' => [
                         [
                             'link' => 'http://sajlis.journals.ac.za/pub/article/download/1434/1332',
                             'label' => 'PDF Full Text',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/unpaywall/goodresponseonline'
-                ),
+                'fixture' => $this->getFixture('unpaywall/goodresponseonline'),
                 'response' => [
                     '10.7553/66-4-1434' => [
                         [
                             'link' => 'https://doi.org/10.7553/66-4-1434',
                             'label' => 'online_resources',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/unpaywall/badresponse'
-                ),
-                'response' => []
+                'fixture' => $this->getFixture('unpaywall/badresponse'),
+                'response' => [],
             ],
         ];
 
@@ -107,8 +102,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $unpaywall = new Unpaywall(new \Laminas\Config\Config($config));
 
         foreach ($testData as $data) {
-            $response = file_get_contents($data['filename']);
-            $responseObj = HttpResponse::fromString($response);
+            $responseObj = HttpResponse::fromString($data['fixture']);
             $adapter->setResponse($responseObj);
             $service = new \VuFindHttp\HttpService();
             $service->setDefaultAdapter($adapter);

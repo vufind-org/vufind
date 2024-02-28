@@ -3,7 +3,7 @@
 /**
  * Abstract base class for ILS driver test cases.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Unit;
 
 /**
@@ -37,7 +38,7 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class ILSDriverTestCase extends TestCase
+abstract class ILSDriverTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * ILS driver

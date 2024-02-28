@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cover Loader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Cover;
 
 use Laminas\Config\Config;
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
+
+use function strlen;
 
 /**
  * Cover Loader Test Class
@@ -40,7 +44,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoaderTest extends \VuFindTest\Unit\TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Theme to use for testing purposes.
@@ -61,7 +65,10 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
 
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
-        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
+        $theme->expects($this->once())
+            ->method('findContainingTheme')
+            ->with($this->equalTo(['images/noCover2.gif']))
+            ->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
     }
@@ -121,7 +128,8 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
-        $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/' . $this->testTheme . '/' . $badfile . "'";
+        $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
+            . $this->testTheme . '/' . $badfile . "'";
         $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
         $loader->loadUnavailable();
         $this->assertEquals('368', strlen($loader->getImage()));
@@ -136,7 +144,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param \VuFindHttp\HttpService              $httpService HTTP client factory
      * @param array|bool                           $mock        Array of functions to mock, or false for real object
      *
-     * @return Loader
+     * @return Loader|\PHPUnit\Framework\MockObject\MockObject
      */
     protected function getLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
     {
@@ -151,10 +159,12 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
         }
         if ($mock) {
-            return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
-                ->setMethods($mock)
+            $mock = array_unique(array_merge($mock, ['debug']));
+            $mockLoader = $this->getMockBuilder(Loader::class)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
+            return $mockLoader;
         }
         return new Loader($config, $manager, $theme, $httpService);
     }
@@ -167,12 +177,5 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     protected function getThemeDir()
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
-    }
-}
-
-class MockLoader extends \VuFind\Cover\Loader
-{
-    public function debug($msg, array $context = [], $prependClass = true)
-    {
     }
 }

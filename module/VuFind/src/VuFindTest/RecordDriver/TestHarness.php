@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test harness for simulating record drivers (ignore outside of test suite!)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 /**
@@ -39,6 +41,14 @@ namespace VuFindTest\RecordDriver;
 class TestHarness extends \VuFind\RecordDriver\AbstractBase
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setSourceIdentifiers('Solr');
+    }
+
+    /**
      * Magic method to set/retrieve fields.
      *
      * @param string $method Method name being called.
@@ -48,10 +58,10 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      */
     public function __call($method, $params)
     {
-        if (substr($method, 0, 3) == 'get') {
+        if (str_starts_with($method, 'get')) {
             $index = substr($method, 3);
-            return isset($this->fields[$index]) ? $this->fields[$index] : null;
-        } elseif (substr($method, 0, 3) == 'set') {
+            return $this->fields[$index] ?? null;
+        } elseif (str_starts_with($method, 'set')) {
             $index = substr($method, 3);
             $this->fields[$index] = $params[0];
         }
@@ -77,5 +87,20 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
     public function getUniqueID()
     {
         return $this->__call('getUniqueID', []);
+    }
+
+    /**
+     * Return the source backend identifier.
+     *
+     * @return string
+     */
+    public function getSourceIdentifier()
+    {
+        // For consistency with other methods, allow SourceIdentifier to be
+        // overridden via rawData (but also allow the "normal" method as a
+        // fallback):
+        return isset($this->fields['SourceIdentifier'])
+            ? $this->__call('getSourceIdentifier', $this->sourceIdentifier)
+            : parent::getSourceIdentifier();
     }
 }

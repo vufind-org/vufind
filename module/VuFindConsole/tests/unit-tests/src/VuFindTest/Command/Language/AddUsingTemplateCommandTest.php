@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Language/AddUsingTemplate command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Language;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -43,12 +45,24 @@ use VuFindConsole\Command\Language\AddUsingTemplateCommand;
  */
 class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Language fixture directory
      *
      * @var string
      */
-    protected $languageFixtureDir = __DIR__ . '/../../../../../fixtures/language';
+    protected $languageFixtureDir = null;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->languageFixtureDir = $this->getFixtureDir('VuFindConsole') . 'language';
+    }
 
     /**
      * Test that missing parameters yield an error message.
@@ -111,8 +125,10 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return AddUsingTemplateCommand
      */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
+    protected function getMockCommand(
+        ExtendedIniNormalizer $normalizer = null,
+        ExtendedIniReader $reader = null,
+        $languageDir = null,
         array $methods = ['addLineToFile']
     ) {
         return $this->getMockBuilder(AddUsingTemplateCommand::class)
@@ -122,7 +138,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
                     $reader ?? $this->getMockReader(),
                     $languageDir ?? $this->languageFixtureDir,
                 ]
-            )->setMethods($methods)
+            )->onlyMethods($methods)
             ->getMock();
     }
 
@@ -135,10 +151,12 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -150,9 +168,11 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockReader($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniReader::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

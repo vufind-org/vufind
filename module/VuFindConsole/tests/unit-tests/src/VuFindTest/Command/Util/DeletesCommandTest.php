@@ -1,8 +1,9 @@
 <?php
+
 /**
  * DeletesCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -41,6 +43,8 @@ use VuFindConsole\Command\Util\DeletesCommand;
  */
 class DeletesCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Get mock Solr writer.
      *
@@ -85,7 +89,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(['filename' => '/does/not/exist']);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
-            "Cannot find file: /does/not/exist\n", $commandTester->getDisplay()
+            "Cannot find file: /does/not/exist\n",
+            $commandTester->getDisplay()
         );
     }
 
@@ -101,7 +106,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('Solr'), $this->equalTo(['rec1', 'rec2', 'rec3']));
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
-        $fixture = __DIR__ . '/../../../../../fixtures/deletes';
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
         $commandTester->execute(
             [
                 'filename' => $fixture,
@@ -109,7 +114,31 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
+    }
+
+    /**
+     * Test success with a flat file, ID prefix and default index.
+     *
+     * @return void
+     */
+    public function testSuccessWithFlatFileIdPrefixAndDefaultIndex()
+    {
+        $writer = $this->getMockWriter();
+        $writer->expects($this->once())->method('deleteRecords')
+            ->with($this->equalTo('Solr'), $this->equalTo(['x.rec1', 'x.rec2', 'x.rec3']));
+        $command = new DeletesCommand($writer);
+        $commandTester = new CommandTester($command);
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
+        $commandTester->execute(
+            [
+                'filename' => $fixture,
+                'format' => 'flat',
+                '--id-prefix' => 'x.',
+            ]
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 
     /**
@@ -132,6 +161,6 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 }

@@ -1,0 +1,22 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:NCIPMessage  xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">
+    <ns1:RequestItemResponse>
+        <ns1:RequestId>
+            <ns1:RequestIdentifierValue>14112472</ns1:RequestIdentifierValue>
+        </ns1:RequestId>
+        <ns1:UserId>
+            <ns1:AgencyId>OPG001</ns1:AgencyId>
+            <ns1:UserIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleuseridentifiertype/visibleuseridentifiertype.scm">Institution Id Number</ns1:UserIdentifierType>
+            <ns1:UserIdentifierValue>99045</ns1:UserIdentifierValue>
+        </ns1:UserId>
+        <ns1:RequestType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm">Hold</ns1:RequestType>
+        <ns1:RequestScopeType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/requestscopetype/requestscopetype.scm">Item</ns1:RequestScopeType>
+        <ns1:ItemOptionalFields>
+            <ns1:DateDue>2020-08-16T22:00:00Z</ns1:DateDue>
+        </ns1:ItemOptionalFields>
+    </ns1:RequestItemResponse>
+</ns1:NCIPMessage>

@@ -1,9 +1,9 @@
 /*global VuFind */
 /*exported setUpILLRequestForm */
 function setUpILLRequestForm(recordId) {
-  $("#ILLRequestForm #pickupLibrary").change(function illPickupChange() {
+  $("#ILLRequestForm #pickupLibrary").on("change", function illPickupChange() {
     $("#ILLRequestForm #pickupLibraryLocation option").remove();
-    $("#ILLRequestForm #pickupLibraryLocationLabel i").addClass("fa fa-spinner icon-spin");
+    $("#ILLRequestForm #pickupLibraryLocationLabel .loading-icon").show();
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
       id: recordId,
       method: 'getLibraryPickupLocations',
@@ -22,11 +22,11 @@ function setUpILLRequestForm(recordId) {
           }
           $("#ILLRequestForm #pickupLibraryLocation").append(option);
         });
-        $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
+        $("#ILLRequestForm #pickupLibraryLocationLabel .loading-icon").hide();
       })
       .fail(function illPickupLocationsFail(/*response*/) {
-        $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
+        $("#ILLRequestForm #pickupLibraryLocationLabel .loading-icon").hide();
       });
   });
-  $("#ILLRequestForm #pickupLibrary").change();
+  $("#ILLRequestForm #pickupLibrary").trigger("change");
 }

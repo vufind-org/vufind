@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait to add facet limiting settings to a Params object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Params;
 
 use Laminas\Config\Config;
+
+use function in_array;
 
 /**
  * Trait to add facet limiting settings to a Params object.
@@ -57,9 +61,11 @@ trait FacetLimitTrait
     /**
      * Hierarchical facet limit when facets are requested.
      *
-     * @var int|null
+     * -1 = unlimited
+     *
+     * @var int
      */
-    protected $hierarchicalFacetLimit = null;
+    protected $hierarchicalFacetLimit = -1;
 
     /**
      * Initialize facet limit from a Config object.
@@ -136,10 +142,7 @@ trait FacetLimitTrait
         $limit = $this->facetLimitByField[$field] ?? $this->facetLimit;
 
         // Check for a different limit for hierarchical facets:
-        if (null !== $this->hierarchicalFacetLimit
-            && $limit !== $this->hierarchicalFacetLimit
-            && is_callable([$this->getOptions(), 'getHierarchicalFacets'])
-        ) {
+        if ($limit !== $this->hierarchicalFacetLimit) {
             $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
             if (in_array($field, $hierarchicalFacets)) {
                 $limit = $this->hierarchicalFacetLimit;

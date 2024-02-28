@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GeoCoords view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Base\Options;
+
+use function is_array;
 
 /**
  * GeoCoords view helper

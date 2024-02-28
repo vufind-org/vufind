@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ExtendedIni translation loader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\I18n\Translator\Loader;
 
 use VuFind\I18n\Translator\Loader\ExtendedIni;
@@ -39,18 +41,20 @@ use VuFind\I18n\Translator\Loader\ExtendedIni;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExtendedIniTest extends \VuFindTest\Unit\TestCase
+class ExtendedIniTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test translations.
      *
      * @return void
      */
-    public function testTranslations()
+    public function testTranslations(): void
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-            realpath(__DIR__ . '/../../../../../../fixtures/language/overrides')
+            realpath($this->getFixtureDir() . 'language/base'),
+            realpath($this->getFixtureDir() . 'language/overrides'),
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);
@@ -70,10 +74,10 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testFallback()
+    public function testFallback(): void
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
@@ -94,10 +98,10 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testFallbackToSelf()
+    public function testFallbackToSelf(): void
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
@@ -114,10 +118,10 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testSelfAsParent()
+    public function testSelfAsParent(): void
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('self-parent', null);
@@ -135,10 +139,10 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testParentChain()
+    public function testParentChain(): void
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('child2', null);
@@ -158,12 +162,106 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testMissingPathStack()
+    public function testMissingPathStack(): void
     {
         $this->expectException(\Laminas\I18n\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Ini file \'en.ini\' not found');
 
         $loader = new ExtendedIni();
         $loader->load('en', null);
+    }
+
+    /**
+     * Test alias behavior.
+     *
+     * @return void
+     */
+    public function testAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'baz' => 'Domain Translation',
+                'foo' => 'Translation',
+                'xyzzy' => 'Domain Translation',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test circular alias infinite loop prevention.
+     *
+     * @return void
+     */
+    public function testCircularAliasSafety(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/circularaliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $this->expectExceptionMessage('Circular alias detected resolving Domain::baz');
+        $result = $loader->load('en', null);
+    }
+
+    /**
+     * Test inheriting aliases from a parent file.
+     *
+     * @return void
+     */
+    public function testInheritedAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en-gb', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'baz' => 'Domain Translation',
+                'foo' => 'Translation',
+                'xyzzy' => 'Child Overriding Alias',
+                '@parent_ini' => 'en.ini',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test that alias behavior can be disabled.
+     *
+     * @return void
+     */
+    public function testDisabledAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $loader->disableAliases();
+        $result = $loader->load('en', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+            ],
+            (array)$result
+        );
+        $result = $loader->load('en-gb', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'xyzzy' => 'Child Overriding Alias',
+                '@parent_ini' => 'en.ini',
+            ],
+            (array)$result
+        );
     }
 }

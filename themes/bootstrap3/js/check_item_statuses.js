@@ -1,18 +1,29 @@
-/*global Hunt, VuFind */
+/*global AjaxRequestQueue, VuFind, unwrapJQuery */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
-  function linkCallnumbers(callnumber, callnumber_handler) {
-    if (callnumber_handler) {
-      var cns = callnumber.split(',\t');
-      for (var i = 0; i < cns.length; i++) {
-        cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+  function formatCallnumbers(callnumber, callnumber_handler) {
+    var cns = callnumber.split(',\t');
+    for (var i = 0; i < cns.length; i++) {
+      // If the call number has a special delimiter, it indicates a prefix that
+      // should be used for display but not for sorting/searching.
+      var actualCallNumber = cns[i];
+      var displayCallNumber = cns[i];
+      var parts = cns[i].split('::::');
+      if (parts.length > 1) {
+        displayCallNumber = parts[0] + " " + parts[1];
+        actualCallNumber = parts[1];
       }
-      return cns.join(',\t');
+
+      cns[i] = callnumber_handler
+        ? '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(actualCallNumber) + '">' + displayCallNumber + '</a>'
+        : displayCallNumber;
     }
-    return callnumber;
+    return cns.join(',\t');
   }
-  function displayItemStatus(result, $item) {
-    $item.addClass('js-item-done').removeClass('js-item-pending');
+
+  function displayItemStatus(result, el) {
+    const $item = $(el); // todo: remove jQuery
+
     $item.find('.status').empty().append(result.availability_message);
     $item.find('.ajax-availability').removeClass('ajax-availability hidden');
     if (typeof(result.error) != 'undefined'
@@ -25,7 +36,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           && $item.find('.callnumAndLocation').length > 0
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
-      $item.find('.callnumAndLocation').empty().append(result.full_status);
+      $item.find('.callnumAndLocation').empty().append(VuFind.updateCspNonce(result.full_status));
       $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
     } else if (typeof(result.missing_data) !== 'undefined'
           && result.missing_data
@@ -39,159 +50,191 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       for (var x = 0; x < result.locationList.length; x++) {
         locationListHTML += '<div class="groupLocation">';
         if (result.locationList[x].availability) {
-          locationListHTML += '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML += '<span class="text-success">'
+            + VuFind.icon("status-available")
+            + result.locationList[x].location
+            + '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
                   && result.locationList[x].status_unknown
         ) {
           if (result.locationList[x].location) {
-            locationListHTML += '<span class="text-warning"><i class="fa fa-status-unknown" aria-hidden="true"></i> '
-                          + result.locationList[x].location + '</span> ';
+            locationListHTML += '<span class="text-warning">'
+              + VuFind.icon("status-unknown")
+              + result.locationList[x].location
+              + '</span> ';
           }
         } else {
-          locationListHTML += '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> '
-                      + result.locationList[x].location + '</span> ';
+          locationListHTML += '<span class="text-danger">'
+            + VuFind.icon("status-unavailable")
+            + result.locationList[x].location
+            + '</span> ';
         }
         locationListHTML += '</div>';
         locationListHTML += '<div class="groupCallnumber">';
         locationListHTML += (result.locationList[x].callnumbers)
-          ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
+          ? formatCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
         locationListHTML += '</div>';
       }
       $item.find('.locationDetails').removeClass('hidden');
       $item.find('.locationDetails').html(locationListHTML);
     } else {
       // Default case -- load call number and location into appropriate containers:
-      $item.find('.callnumber').empty().append(linkCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
+      $item.find('.callnumber').empty().append(formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
       $item.find('.location').empty().append(
         result.reserve === 'true'
           ? result.reserve_message
           : result.location
       );
     }
+    $item.addClass('js-item-done').removeClass('js-item-pending');
   }
 
-  var ItemStatusHandler = {
-    name: "default",
-    //array to hold IDs and elements
-    itemStatusIds: [], itemStatusEls: [],
-    url: '/AJAX/JSON?method=getItemStatuses',
-    itemStatusRunning: false,
-    dataType: 'json',
-    method: 'POST',
-    itemStatusTimer: null,
-    itemStatusDelay: 200,
+  function itemStatusAjaxSuccess(items, response) {
+    let idMap = {};
 
-    checkItemStatusDone: function checkItemStatusDone(response) {
-      var data = response.data;
-      for (var j = 0; j < data.statuses.length; j++) {
-        var status = data.statuses[j];
-        displayItemStatus(status, this.itemStatusEls[status.id]);
-        this.itemStatusIds.splice(this.itemStatusIds.indexOf(status.id), 1);
+    // make map of ids to element arrays
+    items.forEach(function mapItemId(item) {
+      if (typeof idMap[item.id] === "undefined") {
+        idMap[item.id] = [];
       }
-    },
-    itemStatusFail: function itemStatusFail(response, textStatus) {
-      if (textStatus === 'error' || textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
+
+      idMap[item.id].push(item.el);
+    });
+
+    // display data
+    response.data.statuses.forEach(function displayItemStatusResponse(status) {
+      if (typeof idMap[status.id] === "undefined") {
         return;
       }
-      // display the error message on each of the ajax status place holder
-      $('.js-item-pending .callnumAndLocation').addClass('text-danger').empty().removeClass('hidden')
-        .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
-    },
-    itemQueueAjax: function itemQueueAjax(id, el) {
-      clearTimeout(this.itemStatusTimer);
-      this.itemStatusIds.push(id);
-      this.itemStatusEls[id] = el;
-      this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
-      el.addClass('js-item-pending').removeClass('hidden');
-      el.find('.callnumAndLocation').removeClass('hidden');
-      el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
-      el.find('.status').removeClass('hidden');
-    },
 
-    runItemAjaxForQueue: function runItemAjaxForQueue() {
-      if (this.itemStatusRunning) {
-        this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
-        return;
-      }
-      $.ajax({
-        dataType: this.dataType,
-        method: this.method,
-        url: VuFind.path + this.url,
-        context: this,
-        data: { 'id': this.itemStatusIds }
-      })
-        .done(this.checkItemStatusDone)
-        .fail( this.itemStatusFail)
-        .always(function queueAjaxAlways() {
-          this.itemStatusRunning = false;
+      idMap[status.id].forEach((el) => displayItemStatus(status, el));
+    });
+
+    VuFind.emit("item-status-done");
+  }
+
+  function itemStatusAjaxFailure(items, response, textStatus) {
+    if (
+      textStatus === "error" ||
+      textStatus === "abort" ||
+      typeof response.responseJSON === "undefined"
+    ) {
+      VuFind.emit("item-status-done");
+
+      return;
+    }
+
+    // display the error message on each of the ajax status place holder
+    items.forEach(function displayItemStatusFailure(item) {
+      $(item.el)
+        .find(".callnumAndLocation")
+        .addClass("text-danger")
+        .empty()
+        .removeClass("hidden")
+        .append(
+          typeof response.responseJSON.data === "string"
+            ? response.responseJSON.data
+            : VuFind.translate("error_occurred")
+        );
+    });
+
+    VuFind.emit("item-status-done");
+  }
+
+  function makeItemStatusQueue({
+    url = "/AJAX/JSON?method=getItemStatuses",
+    dataType = "json",
+    method = "POST",
+    delay = 200,
+  } = {}) {
+    return new AjaxRequestQueue({
+      run: function runItemAjaxQueue(items) {
+        return new Promise(function runItemAjaxPromise(done, error) {
+          const sid = VuFind.getCurrentSearchId();
+
+          $.ajax({
+            // todo: replace with fetch
+            url: VuFind.path + url,
+            data: { id: items.map((item) => item.id), sid },
+            dataType,
+            method,
+          })
+            .done(done)
+            .catch(error);
         });
-    }//end runItemAjax
-  };
-
-  //add you own overridden handler here
-  var OdItemStatusHandler = Object.create(ItemStatusHandler);
-  OdItemStatusHandler.url = '/Overdrive/getStatus';
-  OdItemStatusHandler.itemStatusDelay = 200;
-  OdItemStatusHandler.name = "overdrive";
-  OdItemStatusHandler.itemStatusIds = [];
-  OdItemStatusHandler.itemStatusEls = [];
+      },
+      success: itemStatusAjaxSuccess,
+      failure: itemStatusAjaxFailure,
+      delay,
+    });
+  }
 
   //store the handlers in a "hash" obj
   var checkItemHandlers = {
-    'ils': ItemStatusHandler,
-    'overdrive': OdItemStatusHandler,
+    ils: makeItemStatusQueue(),
+    overdrive: makeItemStatusQueue({ url: "/Overdrive/getStatus" }),
   };
 
   function checkItemStatus(el) {
-    var $item = $(el);
-    if ($item.hasClass('js-item-pending') || $item.hasClass('js-item-done')) {
+    const hiddenIdEl = el.querySelector(".hiddenId");
+
+    if (
+      hiddenIdEl === null ||
+      el.classList.contains("js-item-pending") ||
+      el.classList.contains("js-item-done")
+    ) {
       return;
     }
-    if ($item.find('.hiddenId').length === 0) {
-      return false;
+
+    // update element to reflect lookup
+    el.classList.add("js-item-pending");
+    el.classList.remove("hidden");
+    const callnumAndLocationEl = el.querySelector(".callnumAndLocation");
+    if (callnumAndLocationEl) {
+      callnumAndLocationEl.classList.remove("hidden");
     }
-    var id = $item.find('.hiddenId').val();
-    var handlerName = 'ils';
-    if ($item.find('.handler-name').length > 0) {
-      handlerName = $item.find('.handler-name').val();
+    el.querySelectorAll(".callnumAndLocation .ajax-availability").forEach(
+      (ajaxEl) => ajaxEl.classList.remove("hidden")
+    );
+
+    const statusEl = el.querySelector(".status");
+    if (statusEl) {
+      statusEl.classList.remove("hidden");
     }
 
-    //queue the element into the handler
-    checkItemHandlers[handlerName].itemQueueAjax(id, $item);
-  }
-
-  function checkItemStatuses(_container) {
-    var container = typeof _container === 'undefined'
-      ? document.body
-      : _container;
-
-    var ajaxItems = $(container).find('.ajaxItem');
-    for (var i = 0; i < ajaxItems.length; i++) {
-      var id = $(ajaxItems[i]).find('.hiddenId').val();
-      var handlerName = 'ils';
-      if ($(ajaxItems[i]).find('.handler-name').length > 0) {
-        handlerName = $(ajaxItems[i]).find('.handler-name').val();
-      }
-      if ($(ajaxItems[i]).data("handler-name")) {
-        handlerName = $(ajaxItems[i]).data("handler-name");
-      }
-      checkItemHandlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
-    }
-  }
-  function init(_container) {
-    if (typeof Hunt === 'undefined') {
-      checkItemStatuses(_container);
+    // get proper handler
+    let handlerName = "ils";
+    if (el.dataset.handlerName) {
+      handlerName = el.dataset.handlerName;
     } else {
-      var container = typeof _container === 'undefined'
-        ? document.body
-        : _container;
-      new Hunt(
-        $(container).find('.ajaxItem').toArray(),
-        { enter: checkItemStatus }
+      const handlerNameEl = el.querySelector(".handler-name");
+
+      if (handlerNameEl !== null) {
+        handlerName = handlerNameEl.value;
+      }
+    }
+
+    // queue the element into the queue
+    checkItemHandlers[handlerName].add({ el, id: hiddenIdEl.value });
+  }
+
+  function checkAllItemStatuses(container = document) {
+    container.querySelectorAll(".ajaxItem").forEach(checkItemStatus);
+  }
+
+  function init($container = document) {
+    const container = unwrapJQuery($container);
+
+    if (VuFind.isPrinting()) {
+      checkAllItemStatuses(container);
+    } else {
+      VuFind.observerManager.createIntersectionObserver(
+        'itemStatuses',
+        checkItemStatus,
+        container.querySelectorAll('.ajaxItem')
       );
     }
   }
 
-  return { init: init, check: checkItemStatuses };
+  return { init: init, check: checkAllItemStatuses, checkRecord: checkItemStatus };
 });

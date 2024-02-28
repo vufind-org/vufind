@@ -21,16 +21,17 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.VariableField;
 import org.solrmarc.index.SolrIndexer;
 import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,6 +45,10 @@ public class CreatorTools
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = RelatorContainer.instance().getSynonymLookup();
     private Set<String> knownRelators = RelatorContainer.instance().getKnownRelators();
+    private Set<String> relatorPrefixesToStrip = RelatorContainer.instance().getRelatorPrefixesToStrip();
+    private Set<Pattern> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
+    private Set<String> punctuationPairs = PunctuationContainer.instance().getPunctuationPairs();
+    private Set<String> untrimmedAbbreviations = PunctuationContainer.instance().getUntrimmedAbbreviations();
 
     /**
      * Extract all valid relator terms from a list of subfields using a whitelist.
@@ -136,7 +141,7 @@ public class CreatorTools
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
-            List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+            List<String> permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
             relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {
@@ -151,31 +156,39 @@ public class CreatorTools
     }
 
     /**
-     * Parse a SolrMarc fieldspec into a map of tag name to set of subfield strings
-     * (note that we need to map to a set rather than a single string, because the
-     * same tag may repeat with different subfields to extract different sections
-     * of the same field into distinct values).
+     * Fix trailing punctuation on a name string.
      *
-     * @param tagList The field specification to parse
-     * @return HashMap
+     * @param name Name to fix
+     *
+     * @return Stripped name
      */
-    protected HashMap<String, Set<String>> getParsedTagList(String tagList)
+    protected String fixTrailingPunctuation(String name)
     {
-        String[] tags = tagList.split(":");//convert string input to array
-        HashMap<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
-        //cut tags array up into key/value pairs in hash map
-        Set<String> currentSet;
-        for(int i = 0; i < tags.length; i++){
-            String tag = tags[i].substring(0, 3);
-            if (!tagMap.containsKey(tag)) {
-                currentSet = new LinkedHashSet<String>();
-                tagMap.put(tag, currentSet);
-            } else {
-                currentSet = tagMap.get(tag);
-            }
-            currentSet.add(tags[i].substring(3));
+        // First, apply regular expressions:
+        for (Pattern regex : punctuationRegEx) {
+            name = regex.matcher(name).replaceAll("");
         }
-        return tagMap;
+
+        // Strip periods, except when they follow an initial or abbreviation:
+        int nameLength = name.length();
+        if (name.endsWith(".") && nameLength > 3 && !name.substring(nameLength - 3, nameLength - 2).startsWith(" ")) {
+            int p = name.lastIndexOf(" ");
+            String lastWord = (p > 0) ? name.substring(p + 1) : name;
+            if (!untrimmedAbbreviations.contains(lastWord.toLowerCase())) {
+                name = name.substring(0, nameLength - 1);
+                nameLength--;
+            }
+        }
+
+        // Remove trailing close characters with no corresponding open characters:
+        for (String pair : punctuationPairs) {
+            String left = pair.substring(0, 1);
+            String right = pair.substring(1);
+            if (name.endsWith(right) && !name.contains(left)) {
+                name = name.substring(0, nameLength - 1);
+            }
+        }
+        return name;
     }
 
     /**
@@ -202,27 +215,22 @@ public class CreatorTools
         List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
-        List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null){
-            DataField authorField;
-            while (fieldsIter.hasNext()){
-                authorField = (DataField) fieldsIter.next();
-                // add all author types to the result set; if we have multiple relators, repeat the authors
-                for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
-                    for (String subfields : parsedTagList.get(authorField.getTag())) {
-                        String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
-                        // TODO: we may eventually be able to use this line instead,
-                        // but right now it's not handling separation between the
-                        // subfields correctly, so it's commented out until that is
-                        // fixed.
-                        //String current = authorField.getSubfieldsAsString(subfields);
-                        if (null != current) {
-                            result.add(current);
-                            if (firstOnly) {
-                                return result;
-                            }
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField authorField = (DataField) variableField;
+            // add all author types to the result set; if we have multiple relators, repeat the authors
+            for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
+                for (String subfields : parsedTagList.get(authorField.getTag())) {
+                    String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                    // TODO: we may eventually be able to use this line instead,
+                    // but right now it's not handling separation between the
+                    // subfields correctly, so it's commented out until that is
+                    // fixed.
+                    //String current = authorField.getSubfieldsAsString(subfields);
+                    if (null != current) {
+                        result.add(fixTrailingPunctuation(current));
+                        if (firstOnly) {
+                            return result;
                         }
                     }
                 }
@@ -412,23 +420,18 @@ public class CreatorTools
      * @param firstOnly            Return first result only?
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly
     ) {
-        List result = new LinkedList();
+        List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
-        HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
-        List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null){
-            DataField authorField;
-            while (fieldsIter.hasNext()){
-                authorField = (DataField) fieldsIter.next();
-                //add all author types to the result set
-                result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
-            }
+        HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField authorField = (DataField) variableField;
+            //add all author types to the result set
+            result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
         }
         return result;
     }
@@ -450,7 +453,7 @@ public class CreatorTools
      * in the MARC or "false" to index mapped versions.
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators, String indexRawRelators
     ) {
@@ -476,7 +479,7 @@ public class CreatorTools
      * should be indexed even if they are not listed in author-classification.ini.
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators
     ) {
@@ -500,7 +503,7 @@ public class CreatorTools
      * defines which relator terms are acceptable (or a colon-delimited list)
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig
     ) {
         // default firstOnly to false!
@@ -588,8 +591,14 @@ public class CreatorTools
      */
     protected String normalizeRelatorString(String string)
     {
+        string = string.trim();
+        for (String prefix : relatorPrefixesToStrip) {
+            if (string.startsWith(prefix)) {
+                string = string.substring(prefix.length());
+                break;
+            }
+        }
         return string
-            .trim()
             .toLowerCase()
             .replaceAll("\\p{Punct}+", "");    //POSIX character class Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     }

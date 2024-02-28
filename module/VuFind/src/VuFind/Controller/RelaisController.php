@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Relais Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
+
+use function is_array;
 
 /**
  * Relais Controller
@@ -62,11 +66,27 @@ class RelaisController extends AbstractBase
         $q = $this->params()->fromQuery('query');
         $url = $baseUrl . '?LS=' . urlencode($symbol)
             . '&dest=discovery&group=patron&PI='
-            . urlencode($patron['cat_username']);
+            . urlencode($this->getRelaisUserIdentifier($patron));
         if (!empty($q)) {
             $url .= '&query=' . rawurlencode($q);
         }
         return $this->redirect()->toUrl($url);
+    }
+
+    /**
+     * Given patron data from the catalogLogin() method, return the appropriate
+     * identifer for use with Relais.
+     *
+     * @param array $patron Patron details
+     *
+     * @return string
+     */
+    protected function getRelaisUserIdentifier($patron)
+    {
+        // By default we assume the cat_username field provides the appropriate
+        // username... but if you have a more complex situation at your local
+        // institution, you can extend the controller and override this method.
+        return $patron['cat_username'];
     }
 
     /**

@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *
  * Based on the proof-of-concept-driver by Till Kinstler, GBV.
  * Relaunch of the daia driver developed by Oliver Goldschmidt.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Jochen Lienhard 2014.
  *
@@ -30,12 +31,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
 use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -49,9 +56,10 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class DAIA extends AbstractBase implements
-    HttpServiceAwareInterface, LoggerAwareInterface
+    HttpServiceAwareInterface,
+    LoggerAwareInterface
 {
-    use CacheTrait {
+    use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -187,7 +195,8 @@ class DAIA extends AbstractBase implements
         } else {
             $this->debug('Caching not enabled, disabling it by default.');
         }
-        if (isset($this->config['General'])
+        if (
+            isset($this->config['General'])
             && isset($this->config['General']['cacheLifetime'])
         ) {
             $this->cacheLifetime = $this->config['General']['cacheLifetime'];
@@ -218,12 +227,15 @@ class DAIA extends AbstractBase implements
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = [])
     {
-        return isset($this->config[$function]) ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -261,7 +273,8 @@ class DAIA extends AbstractBase implements
     public function getStatus($id)
     {
         // check ids for existing availability data in cache and skip these ids
-        if ($this->daiaCacheEnabled
+        if (
+            $this->daiaCacheEnabled
             && $item = $this->getCachedData($this->generateURI($id))
         ) {
             if ($item != null) {
@@ -315,7 +328,8 @@ class DAIA extends AbstractBase implements
 
         // check cache for given ids and skip these ids if availability data is found
         foreach ($ids as $key => $id) {
-            if ($this->daiaCacheEnabled
+            if (
+                $this->daiaCacheEnabled
                 && $item = $this->getCachedData($this->generateURI($id))
             ) {
                 if ($item != null) {
@@ -467,13 +481,14 @@ class DAIA extends AbstractBase implements
         try {
             $result = $this->httpService->get(
                 $this->baseUrl,
-                $params, $this->daiaTimeout, $http_headers
+                $params,
+                $this->daiaTimeout,
+                $http_headers
             );
         } catch (\Exception $e) {
-            throw new ILSException(
-                'HTTP request exited with Exception ' . $e->getMessage() .
-                ' for record: ' . $id
-            );
+            $msg = 'HTTP request exited with Exception ' . $e->getMessage() .
+                ' for record: ' . $id;
+            $this->throwAsIlsException($e, $msg);
         }
 
         if (!$result->isSuccess()) {
@@ -493,7 +508,7 @@ class DAIA extends AbstractBase implements
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     )
                 );
-                list($responseMediaType) = array_pad(
+                [$responseMediaType] = array_pad(
                     explode(
                         ';',
                         $result->getHeaders()->get('Content-type')->getFieldValue(),
@@ -595,7 +610,7 @@ class DAIA extends AbstractBase implements
             try {
                 $docs = $this->convertDaiaXmlToJson($daiaResponse);
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
         } elseif ($this->daiaResponseFormat == 'json') {
             $docs = json_decode($daiaResponse, true);
@@ -612,7 +627,8 @@ class DAIA extends AbstractBase implements
                 // now loop through the found DAIA documents
                 foreach ($docs['document'] as $doc) {
                     // DAIA documents should use URIs as value for id
-                    if (isset($doc['id'])
+                    if (
+                        isset($doc['id'])
                         && $doc['id'] == $this->generateURI($id)
                     ) {
                         // we've found the document element with the matching URI
@@ -657,7 +673,8 @@ class DAIA extends AbstractBase implements
                 if ($node->hasChildNodes()) {
                     $prepare($node);
                 } else {
-                    if (($domNode->hasAttributes() && strlen($domNode->nodeValue))
+                    if (
+                        ($domNode->hasAttributes() && strlen($domNode->nodeValue))
                         || (in_array(
                             $domNode->nodeName,
                             ['storage', 'limitation', 'department', 'institution']
@@ -700,13 +717,14 @@ class DAIA extends AbstractBase implements
         $restructure = function ($array) use (&$restructure) {
             $elements = [
                 'document', 'item', 'available', 'unavailable', 'limitation',
-                'message'
+                'message',
             ];
             foreach ($array as $key => $value) {
                 if (is_array($value)) {
                     $value = $restructure($value);
                 }
-                if (in_array($key, $elements, true)
+                if (
+                    in_array($key, $elements, true)
                     && !isset($array[$key][0])
                 ) {
                     unset($array[$key]);
@@ -732,6 +750,7 @@ class DAIA extends AbstractBase implements
      */
     protected function parseDaiaArray($id, $daiaArray)
     {
+        $result = [];
         $doc_id = null;
         $doc_href = null;
         if (isset($daiaArray['id'])) {
@@ -797,6 +816,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemStatus($item)
     {
+        $return = [];
         $availability = false;
         $duedate = null;
         $serviceLink = '';
@@ -808,13 +828,15 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
                 }
                 // attribute service can be set once or not
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array(
                         $available['service'],
                         ['loan', 'presentation', 'openaccess']
@@ -823,7 +845,8 @@ class DAIA extends AbstractBase implements
                     // set item available if service is loan, presentation or
                     // openaccess
                     $availability = true;
-                    if ($available['service'] == 'loan'
+                    if (
+                        $available['service'] == 'loan'
                         && isset($available['href'])
                     ) {
                         // save the link to the ils if we have a href for loan
@@ -853,19 +876,22 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
                 }
                 // attribute service can be set once or not
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array(
                         $unavailable['service'],
                         ['loan', 'presentation', 'openaccess']
                     )
                 ) {
-                    if ($unavailable['service'] == 'loan'
+                    if (
+                        $unavailable['service'] == 'loan'
                         && isset($unavailable['href'])
                     ) {
                         //save the link to the ils if we have a href for loan service
@@ -891,7 +917,8 @@ class DAIA extends AbstractBase implements
                     try {
                         $duedate = $this->dateConverter
                             ->convertToDisplayDate(
-                                'Y-m-d', $unavailable['expected']
+                                'Y-m-d',
+                                $unavailable['expected']
                             );
                     } catch (\Exception $e) {
                         $this->debug('Date conversion failed: ' . $e->getMessage());
@@ -991,7 +1018,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
@@ -1001,7 +1029,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
@@ -1035,7 +1064,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
@@ -1048,7 +1078,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
@@ -1288,7 +1319,8 @@ class DAIA extends AbstractBase implements
         $availableServices = [];
         if (isset($services['available'])) {
             foreach ($services['available'] as $service) {
-                if (!isset($services['unavailable'])
+                if (
+                    !isset($services['unavailable'])
                     || !in_array($service, $services['unavailable'])
                 ) {
                     $availableServices[] = $service;

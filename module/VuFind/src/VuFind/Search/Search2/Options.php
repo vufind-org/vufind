@@ -3,7 +3,7 @@
 /**
  * Search Options for second Solr index
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Search2;
 
 /**
@@ -59,6 +60,16 @@ class Options extends \VuFind\Search\Solr\Options
     public function getFacetListAction()
     {
         return 'search2-facetlist';
+    }
+
+    /**
+     * Return the route name for the versions search action or false if disabled.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
+    {
+        return $this->displayRecordVersions ? 'search2-versions' : false;
     }
 
     /**

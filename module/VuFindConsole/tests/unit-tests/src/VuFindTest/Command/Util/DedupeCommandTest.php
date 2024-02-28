@@ -1,8 +1,9 @@
 <?php
+
 /**
  * DedupeCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,6 +45,9 @@ use VuFindConsole\Command\Util\DedupeCommand;
  */
 class DedupeCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Get a mocked-out command object.
      *
@@ -57,32 +62,34 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             'closeOutputFile',
         ];
         return $this->getMockBuilder(DedupeCommand::class)
-            ->setMethods($mockMethods)
+            ->onlyMethods($mockMethods)
             ->getMock();
     }
 
     /**
      * Set up basic expectations on a command.
      *
-     * @param DedupeCommand $command  Mock command
-     * @param string        $output   Output filename
-     * @param int           $sequence Expectation sequence number
+     * @param DedupeCommand $command Mock command
+     * @param string        $output  Output filename
      *
      * @return void
      */
-    protected function setSuccessfulExpectations($command, $output, $sequence = 0)
+    protected function setSuccessfulExpectations($command, $output)
     {
         $fakeHandle = 7;    // arbitrary number for test purposes
-        $command->expects($this->at($sequence++))->method('openOutputFile')
+        $command->expects($this->once())->method('openOutputFile')
             ->with($this->equalTo($output))
             ->will($this->returnValue($fakeHandle));
-        $command->expects($this->at($sequence++))->method('writeToOutputFile')
-            ->with($this->equalTo($fakeHandle), $this->equalTo("foo\n"));
-        $command->expects($this->at($sequence++))->method('writeToOutputFile')
-            ->with($this->equalTo($fakeHandle), $this->equalTo("bar\n"));
-        $command->expects($this->at($sequence++))->method('writeToOutputFile')
-            ->with($this->equalTo($fakeHandle), $this->equalTo("baz\n"));
-        $command->expects($this->at($sequence++))->method('closeOutputFile')
+        $this->expectConsecutiveCalls(
+            $command,
+            'writeToOutputFile',
+            [
+                [$fakeHandle, "foo\n"],
+                [$fakeHandle, "bar\n"],
+                [$fakeHandle, "baz\n"],
+            ]
+        );
+        $command->expects($this->once())->method('closeOutputFile')
             ->with($this->equalTo($fakeHandle));
     }
 
@@ -114,7 +121,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $this->setSuccessfulExpectations($command, $outputFilename);
         $commandTester = new CommandTester($command);
-        $fixture = __DIR__ . '/../../../../../fixtures/fileWithDuplicateLines';
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'fileWithDuplicateLines';
         $commandTester->execute(
             [
                 'input' => $fixture,
@@ -122,7 +129,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 
     /**
@@ -132,29 +139,30 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithoutArguments()
     {
-        $fixture = __DIR__ . '/../../../../../fixtures/fileWithDuplicateLines';
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'fileWithDuplicateLines';
         $outputFilename = '/fake/outfile';
         $command = $this->getMockCommand();
-        $command->expects($this->at(0))->method('getInput')
-            ->with(
-                $this->isInstanceOf(InputInterface::class),
-                $this->isInstanceOf(OutputInterface::class),
-                $this->equalTo(
-                    'Please specify an input file: '
-                )
-            )->will($this->returnValue($fixture));
-        $command->expects($this->at(1))->method('getInput')
-            ->with(
-                $this->isInstanceOf(InputInterface::class),
-                $this->isInstanceOf(OutputInterface::class),
-                $this->equalTo(
-                    'Please specify an output file: '
-                )
-            )->will($this->returnValue($outputFilename));
-        $this->setSuccessfulExpectations($command, $outputFilename, 2);
+        $this->expectConsecutiveCalls(
+            $command,
+            'getInput',
+            [
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
+                    'Please specify an input file: ',
+                ],
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
+                    'Please specify an output file: ',
+                ],
+            ],
+            [$fixture, $outputFilename]
+        );
+        $this->setSuccessfulExpectations($command, $outputFilename);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 }

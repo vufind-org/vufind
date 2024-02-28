@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ContentBlock view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -36,8 +38,10 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ContentBlock extends AbstractClassBasedTemplateRenderer
+class ContentBlock extends \Laminas\View\Helper\AbstractHelper
 {
+    use ClassBasedTemplateRendererTrait;
+
     /**
      * Render the output of a ContentBlock plugin.
      *
@@ -49,7 +53,7 @@ class ContentBlock extends AbstractClassBasedTemplateRenderer
     public function __invoke($block)
     {
         $template = 'ContentBlock/%s.phtml';
-        $className = get_class($block);
+        $className = $block::class;
         $context = $block->getContext();
         return $this->renderClassTemplate($template, $className, $context);
     }

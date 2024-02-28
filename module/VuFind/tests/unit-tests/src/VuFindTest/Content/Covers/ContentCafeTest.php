@@ -3,7 +3,7 @@
 /**
  * Unit tests for ContentCafe cover loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Content\Covers;
 
 use Laminas\Config\Config;
@@ -36,7 +37,7 @@ use VuFindCode\ISBN;
  * Unit tests for ContentCafe cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -48,14 +49,16 @@ class ContentCafeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
         $this->assertEquals(
             'http://contentcafe2.btol.com/ContentCafe/Jacket.aspx?UserID=mykey'
             . '&Password=fakepw&Return=1&Type=S&Value=9780739313121&erroroverride=1',
             $loader->getUrl(
-                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
+                'mykey',
+                'small',
+                ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -65,9 +68,9 @@ class ContentCafeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
-        $this->assertEquals(false, $loader->getUrl('mykey', 'small', []));
+        $this->assertFalse($loader->getUrl('mykey', 'small', []));
     }
 }

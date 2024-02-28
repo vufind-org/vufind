@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr Auth Connection Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration\Connection;
 
 use VuFindSearch\Query\Query;
@@ -38,8 +40,11 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrAuthTest extends \VuFindTest\Unit\DbTestCase
+class SolrAuthTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\LiveDetectionTrait;
+    use \VuFindTest\Feature\LiveSolrTrait;
+
     /**
      * Standard setup method.
      *
@@ -61,12 +66,11 @@ class SolrAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testSimpleSearch()
     {
-        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
-            ->get('SolrAuth');
+        $solr = $this->getBackend('SolrAuth');
 
         // Search for a term known to exist in the sample data; request just one
         // record -- we should get a single record back.
         $result = $solr->search(new Query('Dublin Society', 'AllFields'), 0, 1);
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
     }
 }

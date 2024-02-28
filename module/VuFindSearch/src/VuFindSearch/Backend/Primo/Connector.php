@@ -3,7 +3,7 @@
 /**
  * Primo Central connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,9 +31,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Primo;
 
 use Laminas\Http\Client as HttpClient;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Primo Central connector.
@@ -48,13 +55,16 @@ use Laminas\Http\Client as HttpClient;
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
+ *
+ * @deprecated Use RestConnector instead
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * The HTTP_Request object used for API transactions
+     * HTTP client used for API transactions
      *
      * @var HttpClient
      */
@@ -83,7 +93,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         'recordCount' => 0,
         'documents' => [],
         'facets' => [],
-        'error' => 'empty_search_disallowed'
+        'error' => 'empty_search_disallowed',
     ];
 
     /**
@@ -156,17 +166,17 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         // defaults for params
         $args = [
-            "phrase" => false,
-            "onCampus" => true,
-            "didYouMean" => false,
-            "filterList" => null,
-            "pcAvailability" => false,
-            "pageNumber" => 1,
-            "limit" => 20,
-            "sort" => null,
-            "highlight" => false,
-            "highlightStart" => '',
-            "highlightEnd" => '',
+            'phrase' => false,
+            'onCampus' => true,
+            'didYouMean' => false,
+            'filterList' => null,
+            'pcAvailability' => false,
+            'pageNumber' => 1,
+            'limit' => 20,
+            'sort' => null,
+            'highlight' => false,
+            'highlightStart' => '',
+            'highlightEnd' => '',
         ];
         if (isset($params)) {
             $args = array_merge($args, $params);
@@ -201,42 +211,42 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         //   to primo and they will interpret it correctly.
         //   leaving this flag in b/c it's not hurting anything, but we
         //   don't currently have a situation where we need to use "exact"
-        $precision = "contains";
-        if ($args["phrase"]) {
-            $precision = "exact";
+        $precision = 'contains';
+        if ($args['phrase']) {
+            $precision = 'exact';
         }
         // determine which primo index to search
 
         //default index is any and initialize lookfor to an empty string
-        $lookin  = "any";
-        $lookfor = "";
+        $lookin  = 'any';
+        $lookfor = '';
 
         if (is_array($terms)) {
             foreach ($terms as $thisTerm) {
                 //set the index to search
                 switch ($thisTerm['index']) {
-                case "AllFields":
-                    $lookin = "any";
-                    break;
-                case "Title":
-                    $lookin = "title";
-                    break;
-                case "Author":
-                    $lookin = "creator";
-                    break;
-                case "Subject":
-                    $lookin = "sub";
-                    break;
-                case "Abstract":
-                    $lookin = "desc";
-                    break;
-                case "ISSN":
-                    $lookin = "issn";
-                    break;
+                    case 'AllFields':
+                        $lookin = 'any';
+                        break;
+                    case 'Title':
+                        $lookin = 'title';
+                        break;
+                    case 'Author':
+                        $lookin = 'creator';
+                        break;
+                    case 'Subject':
+                        $lookin = 'sub';
+                        break;
+                    case 'Abstract':
+                        $lookin = 'desc';
+                        break;
+                    case 'ISSN':
+                        $lookin = 'issn';
+                        break;
                 }
 
                 //set the lookfor terms to search
-                $lookfor = preg_replace('/,/', '+', $thisTerm['lookfor']);
+                $lookfor = str_replace(',', ' ', $thisTerm['lookfor']);
 
                 //set precision
                 if (array_key_exists('op', $thisTerm) && !empty($thisTerm['op'])) {
@@ -256,17 +266,17 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $qs[] = "institution=$institution";
 
             // QUERYSTRING: onCampus
-            if ($args["onCampus"]) {
-                $qs[] = "onCampus=true";
+            if ($args['onCampus']) {
+                $qs[] = 'onCampus=true';
             } else {
-                $qs[] = "onCampus=false";
+                $qs[] = 'onCampus=false';
             }
 
             // QUERYSTRING: didYouMean
-            if ($args["didYouMean"]) {
-                $qs[] = "dym=true";
+            if ($args['didYouMean']) {
+                $qs[] = 'dym=true';
             } else {
-                $qs[] = "dym=false";
+                $qs[] = 'dym=false';
             }
 
             // QUERYSTRING: query (filter list)
@@ -274,16 +284,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             //   - provide additional support / processing for [x to y] limits?
             //   - sys/Summon.php messes with publication date to enable date
             //     range facet control in the interface. look for injectPubDate
-            if (!empty($args["filterList"])) {
-                foreach ($args["filterList"] as $facet => $values) {
-                    $facetOp = 'AND';
-                    if (isset($values['values'])) {
-                        $facetOp = $values['facetOp'];
-                        $values = $values['values'];
-                    }
-                    array_map(
+            if (!empty($args['filterList'])) {
+                foreach ($args['filterList'] as $current) {
+                    $facet = $current['field'];
+                    $facetOp = $current['facetOp'];
+                    $values = $current['values'];
+                    $values = array_map(
                         function ($value) {
-                            return urlencode(preg_replace('/,/', '+', $value));
+                            return urlencode(str_replace(',', ' ', $value));
                         },
                         $values
                     );
@@ -308,25 +316,25 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // By setting this value to true, also matches, which
             // are NOT available via Holdingsfile are returned
             // (yes, right, set this to true - thats ExLibris Logic)
-            if ($args["pcAvailability"]) {
-                $qs[] = "pcAvailability=true";
+            if ($args['pcAvailability']) {
+                $qs[] = 'pcAvailability=true';
             }
 
             // QUERYSTRING: indx (start record)
-            $recordStart = ($args["pageNumber"] - 1) * $args['limit'] + 1;
+            $recordStart = ($args['pageNumber'] - 1) * $args['limit'] + 1;
             $qs[] = "indx=$recordStart";
 
             // TODO: put bulksize in conf file?  set a reasonable cap...
             //   or is it better to grab each set of 20 through this api module?
             //   Look at how vufind/Summon does this...
             // QUERYSTRING: bulkSize (limit, # of records to return)
-            $qs[] = "bulkSize=" . $args["limit"];
+            $qs[] = 'bulkSize=' . $args['limit'];
 
             // QUERYSTRING: sort
             // Looks like the possible values are "popularity" or "scdate"
             // omit the field for default sorting
-            if (isset($args["sort"]) && ($args["sort"] != 'relevance')) {
-                $qs[] = "sortField=" . $args["sort"];
+            if (isset($args['sort']) && ($args['sort'] != 'relevance')) {
+                $qs[] = 'sortField=' . $args['sort'];
             }
 
             // Highlighting
@@ -334,7 +342,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
             // QUERYSTRING: loc
             // all primocentral queries need this
-            $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            $qs[] = 'loc=adaptor,primo_central_multiple_fe';
 
             // Send Request
             $result = $this->call(implode('&', $qs), $args);
@@ -348,39 +356,55 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Small wrapper for sendRequest, process to simplify error handling.
      *
-     * @param string $qs     Query string
-     * @param array  $params Request parameters
-     * @param string $method HTTP method
+     * @param string $qs        Query string
+     * @param array  $params    Request parameters
+     * @param string $method    HTTP method
+     * @param bool   $cacheable Whether the request is cacheable
      *
      * @return object    The parsed primo data
      * @throws \Exception
      */
-    protected function call($qs, $params = [], $method = 'GET')
+    protected function call($qs, $params = [], $method = 'GET', $cacheable = true)
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
+        $baseUrl = null;
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;
         } elseif ($method == 'POST') {
             throw new \Exception('POST not supported');
         }
 
-        // Send Request
         $this->client->setUri($baseUrl);
-        $result = $this->client->setMethod($method)->send();
-        if (!$result->isSuccess()) {
-            throw new \Exception($result->getBody());
+        $this->client->setMethod($method);
+        // Check cache:
+        $resultBody = null;
+        $cacheKey = null;
+        if ($cacheable && $this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            $resultBody = $this->getCachedData($cacheKey);
         }
-        return $this->process($result->getBody(), $params);
+        if (null === $resultBody) {
+            // Send request:
+            $result = $this->client->send();
+            $resultBody = $result->getBody();
+            if (!$result->isSuccess()) {
+                throw new \Exception($resultBody);
+            }
+            if ($cacheKey) {
+                $this->putCachedData($cacheKey, $resultBody);
+            }
+        }
+        return $this->process($resultBody, $params);
     }
 
     /**
      * Translate Primo's XML into array of arrays.
      *
-     * @param array $data   The raw xml from Primo
-     * @param array $params Request parameters
+     * @param string $data   The raw xml from Primo
+     * @param array  $params Request parameters
      *
-     * @return array      The processed response from Primo
+     * @return array The processed response from Primo
      */
     protected function process($data, $params = [])
     {
@@ -397,14 +421,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         }
 
         // some useful data about these results
-        $totalhitsarray = $sxe->xpath("//@TOTALHITS");
+        $totalhitsarray = $sxe->xpath('//@TOTALHITS');
 
         // if totalhits is missing but we have a message, this is an error
         // situation.
         if (!isset($totalhitsarray[0])) {
-            $messages = $sxe->xpath("//@MESSAGE");
+            $messages = $sxe->xpath('//@MESSAGE');
             $message = isset($messages[0])
-                ? (string)$messages[0] : "TOTALHITS attribute missing.";
+                ? (string)$messages[0] : 'TOTALHITS attribute missing.';
             throw new \Exception($message);
         } else {
             $totalhits = (int)$totalhitsarray[0];
@@ -415,7 +439,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         // Register the 'sear' namespace at the top level to avoid problems:
         $sxe->registerXPathNamespace(
-            'sear', 'http://www.exlibrisgroup.com/xsd/jaguar/search'
+            'sear',
+            'http://www.exlibrisgroup.com/xsd/jaguar/search'
         );
 
         // Get the available namespaces. The Primo API uses multiple namespaces.
@@ -452,12 +477,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 = substr((string)$prefix->PrimoNMBib->record->control->recordid, 3);
             $item['title']
                 = (string)$prefix->PrimoNMBib->record->display->title;
-            // format
-            $item['format'] = ucwords(
-                str_replace(
-                    '_', ' ', (string)$prefix->PrimoNMBib->record->display->type
-                )
-            );
+            $item['format'] = [(string)$prefix->PrimoNMBib->record->display->type];
             // creators
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
@@ -521,6 +541,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 if (!in_array((string)$issn, $item['issn'])) {
                     $item['issn'][] = (string)$issn;
                 }
+            }
+            foreach ($addata->doi as $doi) {
+                $item['doi_str_mv'][] = (string)$doi;
             }
 
             // Remove dash-less ISSNs if there are corresponding dashed ones
@@ -592,52 +615,50 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             'recordCount' => $totalhits,
             'documents' => $items,
             'facets' => $facets,
-            'didYouMean' => $didYouMean
+            'didYouMean' => $didYouMean,
         ];
     }
 
     /**
      * Retrieves a document specified by the ID.
      *
-     * @param string $recordId  The document to retrieve from the Primo API
-     * @param string $inst_code Institution code (optional)
-     * @param bool   $onCampus  Whether the user is on campus
+     * @param string  $recordId  The document to retrieve from the Primo API
+     * @param ?string $inst_code Institution code (optional)
+     * @param bool    $onCampus  Whether the user is on campus
      *
      * @throws \Exception
-     * @return string    The requested resource
+     * @return array             An array of query results
      */
-    public function getRecord($recordId, $inst_code = null, $onCampus = false)
+    public function getRecord(string $recordId, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
-        // Query String Parameters
-        if (isset($recordId)) {
-            $qs   = [];
-            // There is currently (at 2015-12-17) a problem with Primo fetching
-            // records that have colons in the id (e.g.
-            // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
-            // According to Ex Libris support we must use contains search without
-            // quotes for the time being.
-            // Escaping the - character causes problems getting records like
-            // wj10.1111/j.1475-679X.2011.00421.x
-            $qs[] = 'query=rid,contains,'
-                . urlencode(addcslashes($recordId, '":()'));
-            $qs[] = "institution=$inst_code";
-            $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
-            $qs[] = "indx=1";
-            $qs[] = "bulkSize=1";
-            $qs[] = "loc=adaptor,primo_central_multiple_fe";
-            // pcAvailability=true is needed for records, which
-            // are NOT in the PrimoCentral Holdingsfile.
-            // It won't hurt to have this parameter always set to true.
-            // But it'd hurt to have it not set in case you want to get
-            // a record, which is not in the Holdingsfile.
-            $qs[] = "pcAvailability=true";
-
-            // Send Request
-            $result = $this->call(implode('&', $qs));
-        } else {
+        if ('' === $recordId) {
             return self::$emptyQueryResponse;
         }
+        // Query String Parameters
+        $qs   = [];
+        // There is currently (at 2015-12-17) a problem with Primo fetching
+        // records that have colons in the id (e.g.
+        // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
+        // According to Ex Libris support we must use contains search without
+        // quotes for the time being.
+        // Escaping the - character causes problems getting records like
+        // wj10.1111/j.1475-679X.2011.00421.x
+        $qs[] = 'query=rid,contains,'
+            . urlencode(addcslashes($recordId, '":()'));
+        $qs[] = "institution=$inst_code";
+        $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
+        $qs[] = 'indx=1';
+        $qs[] = 'bulkSize=1';
+        $qs[] = 'loc=adaptor,primo_central_multiple_fe';
+        // pcAvailability=true is needed for records, which
+        // are NOT in the PrimoCentral Holdingsfile.
+        // It won't hurt to have this parameter always set to true.
+        // But it'd hurt to have it not set in case you want to get
+        // a record, which is not in the Holdingsfile.
+        $qs[] = 'pcAvailability=true';
+
+        // Send Request
+        $result = $this->call(implode('&', $qs));
 
         return $result;
     }
@@ -645,16 +666,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Retrieves multiple documents specified by the ID.
      *
-     * @param array  $recordIds The documents to retrieve from the Primo API
-     * @param string $inst_code Institution code (optional)
-     * @param bool   $onCampus  Whether the user is on campus
+     * @param array   $recordIds The documents to retrieve from the Primo API
+     * @param ?string $inst_code Institution code (optional)
+     * @param bool    $onCampus  Whether the user is on campus
      *
      * @throws \Exception
-     * @return string    The requested resource
+     * @return array             An array of query results
      */
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
             return addcslashes($id, '":()');
@@ -667,15 +687,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $qs[] = 'query=rid,contains,' . urlencode(implode(' OR ', $recordIds));
             $qs[] = "institution=$inst_code";
             $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
-            $qs[] = "indx=1";
-            $qs[] = "bulkSize=" . count($recordIds);
-            $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            $qs[] = 'indx=1';
+            $qs[] = 'bulkSize=' . count($recordIds);
+            $qs[] = 'loc=adaptor,primo_central_multiple_fe';
             // pcAvailability=true is needed for records, which
             // are NOT in the PrimoCentral Holdingsfile.
             // It won't hurt to have this parameter always set to true.
             // But it'd hurt to have it not set in case you want to get
             // a record, which is not in the Holdingsfile.
-            $qs[] = "pcAvailability=true";
+            $qs[] = 'pcAvailability=true';
 
             // Send Request
             $result = $this->call(implode('&', $qs));
@@ -714,7 +734,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $highlightFields = [
             'title' => 'title',
             'creator' => 'author',
-            'description' => 'description'
+            'description' => 'description',
         ];
 
         $hilightDetails = [];
@@ -737,7 +757,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                         // Account for double tags. Yes, it's possible.
                         $value = preg_replace(
                             $this->highlightRegEx,
-                            "$1",
+                            '$1',
                             $value
                         );
                         $highlightedValues[] = $value;
@@ -752,16 +772,18 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             foreach ($values as &$value) {
                 $value = preg_replace(
                     $this->highlightRegEx,
-                    "$1",
+                    '$1',
                     $value
                 );
                 // Account for double tags. Yes, it's possible.
                 $value = preg_replace(
                     $this->highlightRegEx,
-                    "$1",
+                    '$1',
                     $value
                 );
             }
+            // Unset reference:
+            unset($value);
             $record[$field] = is_array($fieldData) ? $values : $values[0];
 
             if ($highlight) {

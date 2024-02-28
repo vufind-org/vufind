@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Content block loader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\ContentBlock;
 
 use Laminas\Config\Config;
@@ -72,7 +74,9 @@ class BlockLoader
      * @param ConfigManager  $cm Config manager
      * @param BlockManager   $bm Block manager
      */
-    public function __construct(OptionsManager $om, ConfigManager $cm,
+    public function __construct(
+        OptionsManager $om,
+        ConfigManager $cm,
         BlockManager $bm
     ) {
         $this->optionsManager = $om;
@@ -114,7 +118,9 @@ class BlockLoader
      *
      * @return array
      */
-    public function getFromConfig($name, $section = 'HomePage',
+    public function getFromConfig(
+        $name,
+        $section = 'HomePage',
         $setting = 'content'
     ) {
         $config = $this->configManager->get($name);
@@ -130,7 +136,9 @@ class BlockLoader
      *
      * @return array
      */
-    public function getFromConfigObject(Config $config, $section = 'HomePage',
+    public function getFromConfigObject(
+        Config $config,
+        $section = 'HomePage',
         $setting = 'content'
     ) {
         $blocks = [];
@@ -138,7 +146,7 @@ class BlockLoader
             foreach ($config->$section->$setting as $current) {
                 $parts = explode(':', $current, 2);
                 $block = $this->blockManager->get($parts[0]);
-                $block->setConfig($parts[1] ?? null);
+                $block->setConfig($parts[1] ?? '');
                 $blocks[] = $block;
             }
         }

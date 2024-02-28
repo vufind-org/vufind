@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generate/NonTabRecordAction command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -42,6 +44,8 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test that missing parameters yield an error message.
      *
@@ -71,7 +75,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $configFixturePath = __DIR__ . '/../../../../../fixtures/empty.config.php';
+        $configFixturePath = $this->getFixtureDir('VuFindConsole') . 'empty.config.php';
         $expectedConfig = [
             'router' => [
                 'routes' => [
@@ -86,11 +90,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Foo',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
@@ -119,11 +123,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Home',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $command = new NonTabRecordActionCommand($tools, $config);
         $commandTester = new CommandTester($command);
@@ -147,7 +151,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

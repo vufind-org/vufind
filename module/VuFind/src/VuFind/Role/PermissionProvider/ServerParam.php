@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ServerParam permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -27,9 +28,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
+
+use function count;
+use function in_array;
 
 /**
  * ServerParam permission provider for VuFind.
@@ -42,7 +47,8 @@ use Laminas\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ServerParam implements PermissionProviderInterface,
+class ServerParam implements
+    PermissionProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -99,10 +105,10 @@ class ServerParam implements PermissionProviderInterface,
         foreach ((array)$options as $option) {
             $this->debug("getPermissions: option '{$option}'");
             if (!$this->checkServerParam($option)) {
-                $this->debug("getPermissions: result = false");
+                $this->debug('getPermissions: result = false');
                 return [];
             }
-            $this->debug("getPermissions: result = true");
+            $this->debug('getPermissions: result = true');
         }
         return ['guest', 'loggedin'];
     }
@@ -150,7 +156,9 @@ class ServerParam implements PermissionProviderInterface,
             return false;
         }
         $serverParams = $this->splitString(
-            $serverParamString, $this->serverParamDelimiter, $this->serverParamEscape
+            $serverParamString,
+            $this->serverParamDelimiter,
+            $this->serverParamEscape
         );
 
         $result = false;
@@ -198,7 +206,8 @@ class ServerParam implements PermissionProviderInterface,
         }
 
         return str_replace(
-            $escape . $delimiter, $delimiter,
+            $escape . $delimiter,
+            $delimiter,
             preg_split('/' . $pattern . '/', $string)
         );
     }

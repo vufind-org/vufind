@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "List items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
+
+use function count;
 
 /**
  * "List items" channel provider.
@@ -54,7 +57,22 @@ class ListItems extends AbstractChannelProvider
     protected $ids;
 
     /**
-     * Should we pull in public list results in addition to the whitelist in $ids?
+     * Tags of lists to display
+     *
+     * @var array
+     */
+    protected $tags;
+
+    /**
+     * Whether to use AND operator when filtering by tag.
+     *
+     * @var bool
+     */
+    protected $andTags;
+
+    /**
+     * Should we pull in public list results in addition to the inclusion list in
+     * $ids?
      *
      * @var bool
      */
@@ -75,6 +93,13 @@ class ListItems extends AbstractChannelProvider
     protected $userList;
 
     /**
+     * UserList table
+     *
+     * @var \VuFind\Db\Table\UserList
+     */
+    protected $resourceTags;
+
+    /**
      * Results manager
      *
      * @var \VuFind\Search\Results\PluginManager
@@ -92,15 +117,21 @@ class ListItems extends AbstractChannelProvider
      * Constructor
      *
      * @param \VuFind\Db\Table\UserList            $userList       UserList table
+     * @param \VuFind\Db\Table\ResourceTags        $resourceTags   ResourceTags table
      * @param Url                                  $url            URL helper
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
      * @param array                                $options        Settings
      * (optional)
      */
-    public function __construct(\VuFind\Db\Table\UserList $userList, Url $url,
-        \VuFind\Search\Results\PluginManager $resultsManager, array $options = []
+    public function __construct(
+        \VuFind\Db\Table\UserList $userList,
+        \VuFind\Db\Table\ResourceTags $resourceTags,
+        Url $url,
+        \VuFind\Search\Results\PluginManager $resultsManager,
+        array $options = []
     ) {
         $this->userList = $userList;
+        $this->resourceTags = $resourceTags;
         $this->url = $url;
         $this->resultsManager = $resultsManager;
         $this->setOptions($options);
@@ -116,6 +147,10 @@ class ListItems extends AbstractChannelProvider
     public function setOptions(array $options)
     {
         $this->ids = $options['ids'] ?? [];
+        $this->tags = $options['tags'] ?? [];
+        $this->andTags
+            = 'or' !== trim(strtolower($options['tagsOperator'] ?? 'AND'));
+
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
         $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
@@ -196,30 +231,92 @@ class ListItems extends AbstractChannelProvider
     }
 
     /**
-     * Get a list of public lists to display:
+     * Given an array of lists, add public lists if configured to do so.
+     *
+     * @param array $lists List to expand.
      *
      * @return array
      */
-    protected function getLists()
+    protected function addPublicLists($lists)
     {
-        // First fetch hard-coded IDs:
-        $lists = $this->getListsById($this->ids);
-
-        // Next add public lists if necessary:
         if ($this->displayPublicLists) {
-            $ids = $this->ids;
-            $callback = function ($select) use ($ids) {
+            $resultIds = [];
+            foreach ($lists as $list) {
+                $resultIds[] = $list->id;
+            }
+            $callback = function ($select) use ($resultIds) {
                 $select->where->equalTo('public', 1);
-                foreach ($ids as $id) {
-                    $select->where->notEqualTo('id', $id);
+                if (!empty($resultIds)) {
+                    $select->where->notIn('id', $resultIds);
                 }
             };
             foreach ($this->userList->select($callback) as $list) {
                 $lists[] = $list;
             }
         }
-
         return $lists;
+    }
+
+    /**
+     * Get a list of public lists to display:
+     *
+     * @return array
+     */
+    protected function getLists()
+    {
+        // Depending on whether tags are configured, we use different methods to
+        // fetch the base list of lists...
+        $baseLists = $this->tags
+            ? $this->getListsByTagAndId()
+            : $this->getListsById($this->ids);
+
+        // Next, we add other public lists if necessary:
+        return $this->addPublicLists($baseLists);
+    }
+
+    /**
+     * Get a list of public lists, identified by ID and tag.
+     *
+     * @return array
+     */
+    protected function getListsByTagAndId()
+    {
+        // Get public lists by search criteria
+        $lists = $this->resourceTags->getListsForTag(
+            $this->tags,
+            $this->ids,
+            true,
+            $this->andTags
+        );
+
+        // Format result set into an array:
+        $result = $resultIds = [];
+        if ($lists->count()) {
+            foreach ($lists as $list) {
+                $resultIds[] = $list->list_id;
+            }
+
+            $callback = function ($select) use ($resultIds) {
+                $select->where->in('id', $resultIds);
+            };
+
+            foreach ($this->userList->select($callback) as $list) {
+                $result[] = $list;
+            }
+        }
+
+        // Sort lists by ID list, if necessary:
+        if (!empty($result) && $this->ids) {
+            $orderIds = (array)$this->ids;
+            $sortFn = function ($left, $right) use ($orderIds) {
+                return
+                    array_search($left->id, $orderIds)
+                    <=> array_search($right->id, $orderIds);
+            };
+            usort($result, $sortFn);
+        }
+
+        return $result;
     }
 
     /**
@@ -236,7 +333,7 @@ class ListItems extends AbstractChannelProvider
             'title' => $list->title,
             'providerId' => $this->providerId,
             'token' => $list->id,
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -247,31 +344,8 @@ class ListItems extends AbstractChannelProvider
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',
-            'url' => $this->url->fromRoute('userList', ['id' => $list->id])
+            'url' => $this->url->fromRoute('userList', ['id' => $list->id]),
         ];
-        return $retVal;
-    }
-
-    /**
-     * Add a new filter to an existing search results object to populate a
-     * channel.
-     *
-     * @param Params $params Search parameter object
-     *
-     * @return array
-     */
-    protected function buildChannelFromParams(Params $params)
-    {
-        $retVal = [
-            'title' => $this->translate('random_recommendation_title'),
-            'providerId' => $this->providerId,
-        ];
-        $query = $params->getQuery();
-        $paramBag = $params->getBackendParameters();
-        $random = $this->searchService->random(
-            $params->getSearchClassId(), $query, $this->channelSize, $paramBag
-        )->getRecords();
-        $retVal['contents'] = $this->summarizeRecordDrivers($random);
         return $retVal;
     }
 }

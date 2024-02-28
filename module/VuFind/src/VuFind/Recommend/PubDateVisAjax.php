@@ -1,8 +1,9 @@
 <?php
+
 /**
  * PubDateVisAjax Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Till Kinstler 2011.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
+
+use function array_slice;
 
 /**
  * PubDateVisAjax Recommendations Module
@@ -82,17 +86,18 @@ class PubDateVisAjax implements RecommendInterface
 
         // Parse the additional settings:
         $params = explode(':', $settings);
-        if ($params[0] == "true" || $params[0] == "false") {
+        if ($params[0] == 'true' || $params[0] == 'false') {
             $this->zooming = $params[0];
             $this->dateFacets = array_slice($params, 1);
         } else {
-            $this->zooming = "false";
+            $this->zooming = 'false';
             $this->dateFacets = $params;
         }
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
@@ -109,7 +114,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -130,7 +135,7 @@ class PubDateVisAjax implements RecommendInterface
     public function getVisFacets()
     {
         // Don't bother processing if the result set is empty:
-        if ($this->searchObject->getResultTotal() == 0) {
+        if ($this->searchObject->getResultTotal() <= 0) {
             return [];
         }
         return $this->processDateFacets(

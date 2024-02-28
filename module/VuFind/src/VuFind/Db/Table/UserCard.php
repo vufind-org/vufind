@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for user_card
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -50,8 +52,12 @@ class UserCard extends Gateway
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
-    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'user_card'
+    public function __construct(
+        Adapter $adapter,
+        PluginManager $tm,
+        $cfg,
+        ?RowGateway $rowObj = null,
+        $table = 'user_card'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

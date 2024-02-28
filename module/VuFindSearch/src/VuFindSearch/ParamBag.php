@@ -3,7 +3,7 @@
 /**
  * Parameter bag.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Lightweight wrapper for request parameters.
@@ -81,7 +86,7 @@ class ParamBag implements \Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->params);
     }
@@ -238,7 +243,9 @@ class ParamBag implements \Countable
                     array_map(
                         function ($value) use ($name) {
                             return sprintf(
-                                '%s=%s', urlencode($name), urlencode($value)
+                                '%s=%s',
+                                urlencode($name),
+                                urlencode($value ?? '')
                             );
                         },
                         $values

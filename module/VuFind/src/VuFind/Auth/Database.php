@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Database authentication class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Crypt\Password\Bcrypt;
@@ -35,6 +37,9 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+
+use function in_array;
+use function is_object;
 
 /**
  * Database authentication class
@@ -64,7 +69,7 @@ class Database extends AbstractBase
     protected $password;
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -74,8 +79,8 @@ class Database extends AbstractBase
     public function authenticate($request)
     {
         // Make sure the credentials are non-blank:
-        $this->username = trim($request->getPost()->get('username'));
-        $this->password = trim($request->getPost()->get('password'));
+        $this->username = trim($request->getPost()->get('username', ''));
+        $this->password = trim($request->getPost()->get('password', ''));
         if ($this->username == '' || $this->password == '') {
             throw new AuthException('authentication_error_blank');
         }
@@ -101,8 +106,20 @@ class Database extends AbstractBase
     protected function passwordHashingEnabled()
     {
         $config = $this->getConfig();
-        return isset($config->Authentication->hash_passwords)
-            ? $config->Authentication->hash_passwords : false;
+        return $config->Authentication->hash_passwords ?? false;
+    }
+
+    /**
+     * Does the provided exception indicate that a duplicate key value has been
+     * created?
+     *
+     * @param \Exception $e Exception to check
+     *
+     * @return bool
+     */
+    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
+    {
+        return strstr($e->getMessage(), 'Duplicate entry') !== false;
     }
 
     /**
@@ -119,7 +136,8 @@ class Database extends AbstractBase
         $params = $this->collectParamsFromRequest($request);
 
         // Validate username and password
-        $this->validateUsernameAndPassword($params);
+        $this->validateUsername($params);
+        $this->validatePassword($params);
 
         // Get the user table
         $userTable = $this->getUserTable();
@@ -129,7 +147,19 @@ class Database extends AbstractBase
 
         // If we got this far, we're ready to create the account:
         $user = $this->createUserFromParams($params, $userTable);
-        $user->save();
+        try {
+            $user->save();
+        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+            // In a scenario where the unique key of the user table is
+            // shorter than the username field length, it is possible that
+            // a user will pass validation but still get rejected due to
+            // the inability to generate a unique key. This is a very
+            // unlikely scenario, but if it occurs, we will treat it the
+            // same as a duplicate username. Other unexpected database
+            // errors will be passed through unmodified.
+            throw $this->exceptionIndicatesDuplicateKey($e)
+                ? new AuthException('That username is already taken') : $e;
+        }
 
         // Verify email address:
         $this->checkEmailVerified($user);
@@ -150,14 +180,16 @@ class Database extends AbstractBase
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
         $params = [
-            'username' => '', 'password' => '', 'password2' => ''
+            'username' => '', 'password' => '', 'password2' => '',
         ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
 
-        // Validate Input
-        $this->validateUsernameAndPassword($params);
+        // Validate username and password, but skip validation of username policy
+        // since the account already exists):
+        $this->validateUsername($params, false);
+        $this->validatePassword($params);
 
         // Create the row and send it back to the caller:
         $table = $this->getUserTable();
@@ -173,19 +205,35 @@ class Database extends AbstractBase
     }
 
     /**
-     * Make sure username and password aren't blank
-     * Make sure passwords match
+     * Make sure username isn't blank and matches the policy.
      *
-     * @param array $params request parameters
+     * @param array $params      Request parameters
+     * @param bool  $checkPolicy Whether to check the policy as well (default is
+     * true)
      *
      * @return void
      */
-    protected function validateUsernameAndPassword($params)
+    protected function validateUsername($params, $checkPolicy = true)
     {
         // Needs a username
         if (trim($params['username']) == '') {
             throw new AuthException('Username cannot be blank');
         }
+        if ($checkPolicy) {
+            // Check username policy
+            $this->validateUsernameAgainstPolicy($params['username']);
+        }
+    }
+
+    /**
+     * Make sure password isn't blank, matches the policy and passwords match.
+     *
+     * @param array $params Request parameters
+     *
+     * @return void
+     */
+    protected function validatePassword($params)
+    {
         // Needs a password
         if (trim($params['password']) == '') {
             throw new AuthException('Password cannot be blank');
@@ -194,7 +242,7 @@ class Database extends AbstractBase
         if ($params['password'] != $params['password2']) {
             throw new AuthException('Passwords do not match');
         }
-        // Password policy
+        // Check password policy
         $this->validatePasswordAgainstPolicy($params['password']);
     }
 
@@ -241,7 +289,7 @@ class Database extends AbstractBase
             }
 
             $bcrypt = new Bcrypt();
-            return $bcrypt->verify($password, $userRow->pass_hash);
+            return $bcrypt->verify($password, $userRow->pass_hash ?? '');
         }
 
         // Default case: unencrypted passwords:
@@ -249,7 +297,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Check that an email address is legal based on whitelist (if configured).
+     * Check that an email address is legal based on inclusion list (if configured).
      *
      * @param string $email Email address to check (assumed to be valid/well-formed)
      *
@@ -257,28 +305,29 @@ class Database extends AbstractBase
      */
     protected function emailAllowed($email)
     {
-        // If no whitelist is configured, all emails are allowed:
-        $config = $this->getConfig();
-        if (!isset($config->Authentication->domain_whitelist)
-            || empty($config->Authentication->domain_whitelist)
-        ) {
+        // If no inclusion list is configured, all emails are allowed:
+        $fullConfig = $this->getConfig();
+        $config = isset($fullConfig->Authentication)
+            ? $fullConfig->Authentication->toArray() : [];
+        $rawIncludeList = $config['legal_domains']
+            ?? $config['domain_whitelist']  // deprecated configuration
+            ?? null;
+        if (empty($rawIncludeList)) {
             return true;
         }
 
-        // Normalize the whitelist:
-        $whitelist = array_map(
+        // Normalize the allowed list:
+        $includeList = array_map(
             'trim',
-            array_map(
-                'strtolower', $config->Authentication->domain_whitelist->toArray()
-            )
+            array_map('strtolower', $rawIncludeList)
         );
 
         // Extract the domain from the email address:
         $parts = explode('@', $email);
         $domain = strtolower(trim(array_pop($parts)));
 
-        // Match domain against whitelist:
-        return in_array($domain, $whitelist);
+        // Match domain against allowed list:
+        return in_array($domain, $includeList);
     }
 
     /**
@@ -312,6 +361,21 @@ class Database extends AbstractBase
     }
 
     /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getUsernamePolicy()
+    {
+        $policy = parent::getUsernamePolicy();
+        // Limit maxLength to the database limit
+        if (!isset($policy['maxLength']) || $policy['maxLength'] > 255) {
+            $policy['maxLength'] = 255;
+        }
+        return $policy;
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array
@@ -339,7 +403,7 @@ class Database extends AbstractBase
         // in the code below.
         $params = [
             'firstname' => '', 'lastname' => '', 'username' => '',
-            'password' => '', 'password2' => '', 'email' => ''
+            'password' => '', 'password2' => '', 'email' => '',
         ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
@@ -366,7 +430,7 @@ class Database extends AbstractBase
             throw new AuthException('Email address is invalid');
         }
 
-        // Check if Email is on whitelist (if applicable)
+        // Check if Email is on allowed list (if applicable)
         if (!$this->emailAllowed($params['email'])) {
             throw new AuthException('authentication_error_creation_blocked');
         }

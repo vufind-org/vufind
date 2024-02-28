@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Default ILS driver base class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
+
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Default ILS driver base class.
@@ -60,5 +64,21 @@ abstract class AbstractBase implements DriverInterface
     public function setConfig($config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * Rethrow the provided exception as an ILS exception.
+     *
+     * @param \Throwable $exception Exception to rethrow
+     * @param string     $msg       Override exception message (optional)
+     *
+     * @throws ILSException
+     * @return never
+     */
+    protected function throwAsIlsException(
+        \Throwable $exception,
+        string $msg = null
+    ): void {
+        throw new ILSException($msg ?? $exception->getMessage(), 0, $exception);
     }
 }

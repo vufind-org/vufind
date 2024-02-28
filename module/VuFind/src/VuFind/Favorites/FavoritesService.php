@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Favorites service
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Favorites;
 
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Db\Table\UserList as UserListTable;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -73,7 +76,9 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param ResourceTable $resource Resource table object
      * @param RecordCache   $cache    Record cache
      */
-    public function __construct(UserListTable $userList, ResourceTable $resource,
+    public function __construct(
+        UserListTable $userList,
+        ResourceTable $resource,
         RecordCache $cache = null
     ) {
         $this->recordCache = $cache;
@@ -91,7 +96,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @throws \VuFind\Exception\ListPermission
      */
-    protected function getListObject($listId, \VuFind\Db\Row\User $user)
+    public function getListObject($listId, \VuFind\Db\Row\User $user)
     {
         if (empty($listId) || $listId == 'NEW') {
             $list = $this->userListTable->getNew($user);
@@ -116,13 +121,15 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @return void
      */
-    protected function persistToCache(RecordDriver $driver,
+    protected function persistToCache(
+        RecordDriver $driver,
         \VuFind\Db\Row\Resource $resource
     ) {
         if ($this->recordCache) {
             $this->recordCache->setContext(RecordCache::CONTEXT_FAVORITE);
             $this->recordCache->createOrUpdate(
-                $resource->record_id, $resource->source,
+                $resource->record_id,
+                $resource->source,
                 $driver->getRawData()
             );
         }
@@ -142,7 +149,9 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @return array list information
      */
-    public function save(array $params, \VuFind\Db\Row\User $user,
+    public function save(
+        array $params,
+        \VuFind\Db\Row\User $user,
         RecordDriver $driver
     ) {
         // Validate incoming parameters:
@@ -158,7 +167,10 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         // Get or create a resource object as needed:
         $resource = $this->resourceTable->findResource(
-            $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
+            $driver->getUniqueId(),
+            $driver->getSourceIdentifier(),
+            true,
+            $driver
         );
 
         // Persist record in the database for "offline" use
@@ -166,7 +178,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         // Add the information to the user's account:
         $user->saveResource(
-            $resource, $list,
+            $resource,
+            $list,
             $params['mytags'] ?? [],
             $params['notes'] ?? ''
         );

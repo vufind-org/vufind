@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cart factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind;
 
-use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Cart factory.
@@ -53,9 +58,11 @@ class CartFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
@@ -65,14 +72,14 @@ class CartFactory implements FactoryInterface
             ->get('config');
         $active = isset($config->Site->showBookBag)
             ? (bool)$config->Site->showBookBag : false;
-        $size = isset($config->Site->bookBagMaxSize)
-            ? $config->Site->bookBagMaxSize : 100;
-        $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
-            ? $config->Site->bookbagTogglesInSearch : true;
+        $size = $config->Site->bookBagMaxSize ?? 100;
+        $activeInSearch = $config->Site->bookbagTogglesInSearch ?? true;
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $size, $active, $activeInSearch
+            $size,
+            $active,
+            $activeInSearch
         );
     }
 }
