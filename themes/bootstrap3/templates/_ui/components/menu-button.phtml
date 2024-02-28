@@ -1,29 +1,27 @@
 <?php
   $wrapperTag = $this->wrapperTag ?? 'div';
   $showSelectedValue = $this->showSelectedValue ?? false;
+  $selected = $this->defaultSelectedValue ?? '';
 
-  // defaults
-  $toggleAttrs = [
+  $toggleTag = $this->toggleTag ?? 'button';
+  $defaultAttrs = [
     'id' => uniqid('toggle-'),
     'type' => 'button', // Accessible default
+    'class' => 'dropdown-toggle', // Bootstrap class
     'data-toggle' => 'dropdown', // Bootstrap data-attr
     'aria-expanded' => 'false',
     'aria-haspopup' => 'true',
   ];
 
-  $toggleTag = $this->toggleTag ?? 'button';
-  $toggleAttrs = $toggleAttrs + ($this->toggleAttrs ?? []);
-  // Bootstrap class
-  $toggleAttrs['class'] = trim('dropdown-toggle ' . ($toggleAttrs['class'] ?? ''));
-
   // An anchor tag with an href should only be used as
   // a non-js fallback to open the menu on another page
   if ($this->href ?? false) {
     $toggleTag = 'a';
-    $toggleAttrs['href'] = $this->href;
-    $toggleAttrs['type'] = null;
+    $defaultAttrs['href'] = $this->href;
+    $defaultAttrs['type'] = null;
   }
-  $selected = $this->defaultSelectedValue ?? '';
+
+  $toggleAttrs = array_merge($defaultAttrs, $this->toggleAttrs ?? []);
 ?>
 <?php ob_start(); ?>
   <ul class="dropdown-menu dropdown-menu-right">
@@ -54,10 +52,10 @@
   ?>
   <?=
     $this->makeTag(
-        $toggleTag,
-        $buttonText . $this->icon('dropdown-caret'),
-        $toggleAttrs,
-        ['escapeContent' => false]
+      $toggleTag,
+      $buttonText . $this->icon('dropdown-caret'),
+      $toggleAttrs,
+      ['escapeContent' => false]
     )
   ?>
 <?php $menuContents = ob_get_contents(); ?>
@@ -71,10 +69,10 @@
       . $this->escapeHtml($label)
       . '</label>'
       . $this->makeTag(
-          'div',
-          $menuContents,
-          'dropdown',
-          ['escapeContent' => false]
+        'div',
+        $menuContents,
+        'dropdown',
+        ['escapeContent' => false]
       );
     $wrapperClass = trim(($this->wrapperClass ?? '') . ' dropdown-container');
   ?>

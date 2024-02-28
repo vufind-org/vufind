@@ -47,6 +47,7 @@ return [
         ['file' => 'trigger_print.js', 'priority' => 350],
         ['file' => 'observer_manager.js', 'priority' => 360],
         ['file' => 'openurl.js', 'priority' => 370],
+        ['file' => 'list_item_selection.js', 'priority' => 380],
     ],
     /**
      * Configuration for a single or multiple favicons.

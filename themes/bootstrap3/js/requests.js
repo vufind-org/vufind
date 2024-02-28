@@ -31,7 +31,7 @@ $(function setupRequests() {
       $('#cancelSelected').attr('disabled', 'disabled');
     }
   };
-  $('form[name="updateForm"] .result .checkbox input[type=checkbox]').on('change', checkCheckboxes);
+  $('form[name="updateForm"] .checkbox input[type=checkbox]').on('change', checkCheckboxes);
   $('#update_selected').removeClass('hidden');
   checkCheckboxes();
 });

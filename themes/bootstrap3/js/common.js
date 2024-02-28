@@ -629,8 +629,7 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  let numberOfSelected = document.querySelectorAll('.checkbox-select-item:checked').length;
-
+  let numberOfSelected = VuFind.listItemSelection.getAllSelected(event.target).length;
   if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
@@ -708,6 +707,16 @@ function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
 
+function setupJumpMenus(_container) {
+  var container = _container || $('body');
+  container.find('select.jumpMenu').on("change", function jumpMenu() {
+    // Check if jumpMenu is still enabled (search.js may have disabled it):
+    if ($(this).hasClass('jumpMenu')) {
+      $(this).parent('form').trigger("submit");
+    }
+  });
+}
+
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
   $(searchPrefix + 'target').on("change", function onChangeLoginTarget() {
@@ -742,6 +751,8 @@ $(function commonDocReady() {
   setupOffcanvas();
   // Keyboard shortcuts in detail view
   keyboardShortcuts();
+  // support "jump menu" dropdown boxes
+  setupJumpMenus();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
