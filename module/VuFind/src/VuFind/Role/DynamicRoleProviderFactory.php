@@ -53,7 +53,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * @param string             $name    Requested service name (unused)
      * @param array              $options Extra options (unused)
      *
-     * @return DynamicRoleProvider
+     * @return object
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -61,7 +61,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
     {
         $config = $sm->get('config');
         $rbacConfig = $config['lmc_rbac'];
-        return new DynamicRoleProvider(
+        return new $name(
             $this->getPermissionProviderPluginManager($sm, $rbacConfig),
             $this->getPermissionConfiguration($sm, $rbacConfig)
         );

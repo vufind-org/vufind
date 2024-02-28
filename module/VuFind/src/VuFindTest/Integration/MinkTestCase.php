@@ -32,7 +32,7 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
-use PHPUnit\Util\Test;
+use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -54,7 +54,6 @@ use function strlen;
  */
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\PathResolverTrait;
 
@@ -95,7 +94,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->getName(false);
+        return $this::class . '::' . $this->name();
     }
 
     /**
@@ -219,11 +218,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        $snoozeMultiplier = $this->getSnoozeMultiplier();
         if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
         usleep(1000000 * $secs * $snoozeMultiplier);
+    }
+
+    /**
+     * Get the snooze multiplier.
+     *
+     * @return float
+     */
+    protected function getSnoozeMultiplier(): float
+    {
+        return floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
     }
 
     /**
@@ -312,6 +321,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $base = 'http://localhost/vufind';
         }
         return $base . $path;
+    }
+
+    /**
+     * Load the Search/Home page as a foundation for searching.
+     *
+     * @param ?Session $session Mink session (will be automatically established if not provided).
+     *
+     * @return Element
+     */
+    protected function getSearchHomePage(?Session $session = null): Element
+    {
+        $session ??= $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        return $session->getPage();
     }
 
     /**
@@ -516,11 +539,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Set a value within an element selected via CSS; retry if set fails
      * due to browser bugs.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param string  $value    Value to set
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page        Page element
+     * @param string  $selector    CSS selector
+     * @param string  $value       Value to set
+     * @param int     $timeout     Wait timeout for CSS selection (in ms)
+     * @param int     $retries     Retry count for set loop
+     * @param bool    $verifyValue Whether to verify that the value was written
      *
      * @return mixed
      */
@@ -529,38 +553,142 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $selector,
         $value,
         $timeout = null,
-        $retries = 6
+        $retries = 6,
+        $verifyValue = true
     ) {
         $timeout ??= $this->getDefaultTimeout();
-        $field = $this->findCss($page, $selector, $timeout, 0);
-
-        $session = $this->getMinkSession();
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
-        );
-        $results = $page->findAll('css', $selector);
-        $this->assertIsArray($results, "Selector not found: $selector");
-        $field = $results[0];
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
         for ($i = 1; $i <= $retries; $i++) {
-            $field->setValue($value);
+            try {
+                $field = $this->findCss($page, $selector, $timeout, 0);
+                $field->setValue($value);
+                if (!$verifyValue) {
+                    return;
+                }
 
-            // Did it work? If so, we're done and can leave....
-            if ($field->getValue() === $value) {
-                return;
+                // Did it work? If so, we're done and can leave....
+                if ($field->getValue() === $value) {
+                    return;
+                }
+                $this->logWarning(
+                    'RETRY setValue after failure in ' . $this->getTestName()
+                    . " (try $i)."
+                );
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY setValue after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
             }
-            $this->logWarning(
-                'RETRY setValue after failure in ' . $this->getTestName()
-                . " (try $i)."
-            );
 
             $this->snooze();
         }
 
         throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetText(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get value of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetValue(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $retries);
+    }
+
+    /**
+     * Get text of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $index    Index of the element (0-based)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndGetHtml(
+        Element $page,
+        $selector,
+        $timeout = null,
+        $index = 0,
+        $retries = 6
+    ) {
+        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $retries);
+    }
+
+    /**
+     * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
+     *
+     * @param Element  $page     Page element
+     * @param string   $selector CSS selector
+     * @param callable $method   Method to call
+     * @param int      $timeout  Wait timeout for CSS selection (in ms)
+     * @param int      $index    Index of the element (0-based)
+     * @param int      $retries  Retry count for set loop
+     *
+     * @return string
+     */
+    protected function findCssAndCallMethod(
+        Element $page,
+        $selector,
+        $method,
+        $timeout = null,
+        $index = 0,
+        $retries = 6,
+    ) {
+        $timeout ??= $this->getDefaultTimeout();
+
+        for ($i = 1; $i <= $retries; $i++) {
+            try {
+                $element = $this->findCss($page, $selector, $timeout, $index);
+                return call_user_func([$element, $method]);
+            } catch (\Exception $e) {
+                $this->logWarning(
+                    'RETRY findCssAndGetText after exception in ' . $this->getTestName()
+                    . " (try $i): " . (string)$e
+                );
+            }
+
+            $this->snooze();
+        }
+
+        throw new \Exception('Failed to get text after ' . $retries . ' attempts.');
     }
 
     /**
@@ -618,12 +746,23 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout ??= $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
+        $exception = null;
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
-            $result = $callback();
-            if (call_user_func($compareFunc, $expected, $result)) {
-                break;
+            try {
+                $result = $callback();
+                if (call_user_func($compareFunc, $expected, $result)) {
+                    // Ignore any previous exception since the callback succeeded eventually:
+                    $exception = null;
+                    break;
+                }
+            } catch (\Exception $e) {
+                // Defer throwing the exception:
+                $exception = $e;
             }
             usleep(100000);
+        }
+        if ($exception) {
+            throw $exception;
         }
         call_user_func($assertion, $expected, $result);
     }
@@ -692,9 +831,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         if ($handler) {
-            $this->findCss($page, '#searchForm_type')->setValue($handler);
+            $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
@@ -717,7 +856,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Wait for any AJAX requests to complete:
+        // Wait for any AJAX requests to complete (and that jQuery is loaded):
         $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $.active === 0"
@@ -727,28 +866,30 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Wait for page load to complete again in case it was triggered by
         // lightbox refresh or similar:
         $session->wait($timeout, "document.readyState === 'complete'");
-        // Make sure any loading spinners are not visible:
+        // Make sure any loading spinners are not visible (and jQuery is still loaded):
         $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
         );
-        // Make sure nothing is being animated:
-        $session->wait(
+        // Make sure nothing is being animated (and jQuery is still loaded):
+        $jqueryOk = $session->wait(
             $timeout,
             "typeof $ !== 'undefined' && $(':animated').length === 0"
         );
-        // Finally, make sure all jQuery ready handlers are done:
-        $session->evaluateScript(
-            <<<EOS
-                if (window.__documentIsReady !== true) {
-                    $(document).ready(function() { window.__documentIsReady = true; });
-                }
-                EOS
-        );
-        $session->wait(
-            $timeout,
-            'window.__documentIsReady === true'
-        );
+        if ($jqueryOk) {
+            // Finally, make sure all jQuery ready handlers are done:
+            $session->evaluateScript(
+                <<<EOS
+                    if (window.__documentIsReady !== true) {
+                        $(document).ready(function() { window.__documentIsReady = true; });
+                    }
+                    EOS
+            );
+            $session->wait(
+                $timeout,
+                'window.__documentIsReady === true'
+            );
+        }
     }
 
     /**
@@ -828,10 +969,32 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function logWarning(string $consoleMsg, string $logMsg = ''): void
     {
-        echo PHP_EOL . $consoleMsg . PHP_EOL;
+        file_put_contents('php://stderr', PHP_EOL . $consoleMsg . PHP_EOL);
         if ($logMsg) {
             error_log($logMsg);
         }
+    }
+
+    /**
+     * Extract the first parameter of the first attribute matching the specified
+     * criteria.
+     *
+     * @param string $method    Method name to check for attributes
+     * @param string $attribute Attribute class name to look up
+     * @param mixed  $default   Default value to use if no match found
+     *
+     * @return mixed
+     * @throws ReflectionException
+     */
+    protected function getFirstMethodAttributeValue(
+        string $method,
+        string $attribute,
+        mixed $default = null
+    ): mixed {
+        $reflection = new \ReflectionObject($this);
+        $matches = $reflection->getMethod($method)->getAttributes($attribute);
+        $args = ($matches[0] ?? null)?->getArguments() ?? [];
+        return $args[0] ?? $default;
     }
 
     /**
@@ -846,19 +1009,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function validateHtml(?Element $page = null): void
     {
-        if (
-            (!$this->session && !$page)
-            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
-        ) {
-            return;
-        }
-        $annotations = Test::parseTestMethodAnnotations(
-            static::class,
-            $this->getName(false)
+        $validatorEnabled = $this->getFirstMethodAttributeValue(
+            $this->name(),
+            \VuFindTest\Attribute\HtmlValidation::class,
+            true
         );
         if (
-            ($annotations['method']['skip_html_validation'][0] ?? false)
-            || ($annotations['class']['skip_html_validation'][0] ?? false)
+            !$validatorEnabled
+            || (!$this->session && !$page)
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
         }
@@ -1005,15 +1164,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     public function tearDown(): void
     {
-        // Take screenshot of failed test, if we have a screenshot directory set
-        // and we have run out of retries ($this->retriesLeft is set by the
-        // AutoRetryTrait):
+        // Take screenshot of failed test, if we have a screenshot directory set:
         if (
-            $this->hasFailed()
+            ($this->status()->isError() || $this->status()->isFailure())
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
-            $filename = $this->getName() . '-' . $this->retriesLeft . '-'
-                . hrtime(true);
+            $filename = $this->name() . '-' . hrtime(true);
 
             // Save HTML snapshot
             $snapshot = $this->getMinkSession()->getPage()->getOuterHtml();
@@ -1037,7 +1193,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         }
 
         $htmlValidationException = null;
-        if (!$this->hasFailed()) {
+        if (!$this->status()->isFailure()) {
             try {
                 $this->validateHtml();
             } catch (\Exception $e) {

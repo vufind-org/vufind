@@ -42,7 +42,7 @@ jobs:
         if: ${{ matrix.phing_tasks == 'qa-console' }}
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Cache NPM dependencies
         if: ${{ matrix.phing_tasks == 'qa-console' }}
@@ -89,6 +89,13 @@ jobs:
           path: .phpstan_cache
           key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpstan-"
+
+      - name: Cache PHP_CodeSniffer data
+        uses: actions/cache@v3
+        with:
+          path: tests/phpcs.cache.json
+          key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpcs-"
 
       - name: Install composer dependencies
         run: composer install

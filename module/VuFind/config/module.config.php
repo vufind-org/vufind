@@ -34,16 +34,14 @@ $config = [
                 ],
             ],
             'content-page' => [
-                'type'    => 'Laminas\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'route'    => '/Content/:page',
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
                     ],
+                    'spec' => '/Content/%page%',
                 ],
             ],
             'shortlink' => [
@@ -182,7 +180,7 @@ $config = [
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MissingrecordController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OaiController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OAuth2Controller' => 'VuFind\Controller\OAuth2ControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -374,10 +372,10 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
-            'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
+            'VuFind\Auth\LoginTokenManager' => 'VuFind\Auth\LoginTokenManagerFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -431,6 +429,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
+            'VuFind\Http\GuzzleService' => 'VuFind\Http\GuzzleServiceFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
@@ -547,7 +546,6 @@ $config = [
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Logger' => 'VuFind\Log\Logger',
             'VuFind\Mailer' => 'VuFind\Mailer\Mailer',
-            'VuFind\ProxyConfig' => 'ProxyManager\Configuration',
             'VuFind\Recaptcha' => 'VuFind\Service\ReCaptcha',
             'VuFind\RecommendPluginManager' => 'VuFind\Recommend\PluginManager',
             'VuFind\RecordCache' => 'VuFind\Record\Cache',
@@ -622,6 +620,7 @@ $config = [
             'user_card'        => ['id', 'user_card_id_seq'],
             'user_list'        => ['id', 'user_list_id_seq'],
             'user_resource'    => ['id', 'user_resource_id_seq'],
+            'login_token'      => ['id', 'login_token_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -755,9 +754,10 @@ $staticRoutes = [
     'LibraryCards/ConnectCard', 'LibraryCards/ConnectCardLogin',
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
-    'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
-    'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
+    'MyResearch/CheckedOut', 'MyResearch/CompleteLogin', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
+    'MyResearch/DeleteList', 'MyResearch/DeleteUserLoginTokens',
+    'MyResearch/DeleteLoginToken', 'MyResearch/Edit',
+    'MyResearch/Email', 'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
     'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
     'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',

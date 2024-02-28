@@ -1,5 +1,5 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -239,19 +239,106 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url, data, success) {
-    var $elem = $(_element);
-    if ($elem.length === 0) {
-      return;
-    }
-    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
-      if ('success' === textStatus || 'notmodified' === textStatus) {
-        $elem.html(updateCspNonce(responseText));
-      }
-      if (typeof success !== 'undefined') {
-        success(responseText, textStatus, jqXhr);
+  /**
+   * Set element contents and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm      Target element
+   * @param {string}  html     HTML
+   * @param {Object}  attrs    Any additional attributes
+   * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
+   */
+  function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
+    // Extract any scripts from the HTML and add them separately so that they are executed properly:
+    const scripts = [];
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = html;
+    tmpDiv.querySelectorAll('script').forEach((el) => {
+      const type = el.getAttribute('type');
+      if (!type || 'text/javascript' === type) {
+        scripts.push(el.cloneNode(true));
+        el.remove();
       }
     });
+
+    let newElm = elm;
+    if (property === 'innerHTML') {
+      elm.innerHTML = tmpDiv.innerHTML;
+    } else if (property === 'outerHTML') {
+      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
+      const nextElm = elm.nextElementSibling;
+      const parentElm = elm.parentElement ? elm.parentElement : null;
+      elm.outerHTML = tmpDiv.innerHTML;
+      // Try to find a new reference, leave as is if not possible:
+      if (nextElm) {
+        newElm = nextElm.previousElementSibling;
+      } else if (parentElm) {
+        newElm = parentElm.lastElementChild;
+      }
+    }
+
+    // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
+    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
+
+    // Append any scripts:
+    scripts.forEach((script) => {
+      const scriptEl = document.createElement('script');
+      scriptEl.innerHTML = script.innerHTML;
+      scriptEl.setAttribute('nonce', getCspNonce());
+      newElm.appendChild(scriptEl);
+    });
+  }
+
+  /**
+   * Set innerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setInnerHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'innerHTML');
+  }
+
+  /**
+   * Set outerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setOuterHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'outerHTML');
+  }
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);
+    if (!element) {
+      return;
+    }
+
+    fetch(url, {
+      method: 'GET',
+      body: data ? JSON.stringify(data) : null
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(VuFind.translate('error_occurred'));
+        }
+        return response.text();
+      })
+      .then(htmlContent => {
+        setInnerHtml(element, htmlContent);
+        if (typeof success === 'function') {
+          success(htmlContent);
+        }
+      })
+      .catch(error => {
+        console.error('Request failed:', error);
+        setInnerHtml(element, VuFind.translate('error_occurred'));
+        if (typeof success === 'function') {
+          success(null, error);
+        }
+      });
   };
 
   var isPrinting = function() {
@@ -356,7 +443,10 @@ var VuFind = (function VuFind() {
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
-    setupQRCodeLinks: setupQRCodeLinks
+    setupQRCodeLinks: setupQRCodeLinks,
+    setInnerHtml: setInnerHtml,
+    setOuterHtml: setOuterHtml,
+    setElementContents: setElementContents
   };
 })();
 
@@ -430,8 +520,8 @@ function escapeHtmlAttr(str) {
   });
 }
 
-function extractClassParams(selector) {
-  var str = $(selector).attr('class');
+function extractClassParams(el) {
+  var str = el.className;
   if (typeof str === "undefined") {
     return [];
   }
@@ -445,6 +535,7 @@ function extractClassParams(selector) {
   }
   return params;
 }
+
 // Turn GET string into array
 function deparam(url) {
   if (!url.match(/\?|&/)) {
@@ -538,10 +629,23 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
+  let numberOfSelected = document.querySelectorAll('.checkbox-select-item:checked').length;
+
+  if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
+  if (event.originalEvent !== undefined) {
+    let limit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfSelected > limit) {
+      VuFind.lightbox.alert(
+        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
+        'danger'
+      );
+      return false;
+    }
+  }
+
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;
@@ -557,116 +661,6 @@ function setupOffcanvas() {
       $('body.offcanvas').toggleClass('active');
     });
   }
-}
-
-function setupAutocomplete() {
-  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var $searchboxes = $('input.autocomplete');
-  $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
-    const $searchbox = $(searchboxElement);
-    const formattingRules = $searchbox.data('autocompleteFormattingRules');
-    const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
-    const typePrefix = $searchbox.data('autocompleteTypePrefix');
-    const getFormattingRule = function getAutocompleteFormattingRule(type) {
-      if (typeof(formattingRules) !== "undefined") {
-        if (typeof(formattingRules[type]) !== "undefined") {
-          return formattingRules[type];
-        }
-        // If we're using combined handlers, we may need to use a backend-specific wildcard:
-        const typeParts = type.split("|");
-        if (typeParts.length > 1) {
-          const backendWildcard = typeParts[0] + "|*";
-          if (typeof(formattingRules[backendWildcard]) !== "undefined") {
-            return formattingRules[backendWildcard];
-          }
-        }
-        // Special case: alphabrowse options in combined handlers:
-        const alphabrowseRegex = /^External:.*\/Alphabrowse.*\?source=([^&]*)/;
-        const alphabrowseMatches = alphabrowseRegex.exec(type);
-        if (alphabrowseMatches && alphabrowseMatches.length > 1) {
-          const alphabrowseKey = "VuFind:Solr|alphabrowse_" + alphabrowseMatches[1];
-          if (typeof(formattingRules[alphabrowseKey]) !== "undefined") {
-            return formattingRules[alphabrowseKey];
-          }
-        }
-        // Global wildcard fallback:
-        if (typeof(formattingRules["*"]) !== "undefined") {
-          return formattingRules["*"];
-        }
-      }
-      return "none";
-    };
-    const typeahead = new Autocomplete({
-      rtl: $(document.body).hasClass("rtl"),
-      maxResults: 10,
-      loadingString: VuFind.translate('loading_ellipsis'),
-    });
-
-    let cache = {};
-    const input = $searchbox[0];
-    typeahead(input, function vufindACHandler(query, callback) {
-      const classParams = extractClassParams(input);
-      const searcher = classParams.searcher;
-      const selectedType = classParams.type
-        ? classParams.type
-        : $(typeFieldSelector ? typeFieldSelector : '#searchForm_type').val();
-      const type = (typePrefix ? typePrefix : "") + selectedType;
-      const formattingRule = getFormattingRule(type);
-
-      const cacheKey = searcher + "|" + type;
-      if (typeof cache[cacheKey] === "undefined") {
-        cache[cacheKey] = {};
-      }
-
-      if (typeof cache[cacheKey][query] !== "undefined") {
-        callback(cache[cacheKey][query]);
-        return;
-      }
-
-      var hiddenFilters = [];
-      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-        hiddenFilters.push($(this).val());
-      });
-
-      $.ajax({
-        url: VuFind.path + '/AJAX/JSON',
-        data: {
-          q: query,
-          method: 'getACSuggestions',
-          searcher: searcher,
-          type: type,
-          hiddenFilters,
-        },
-        dataType: 'json',
-        success: function autocompleteJSON(json) {
-          const highlighted = json.data.suggestions.map(
-            (item) => ({
-              text: item.replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll(query, `<b>${query}</b>`),
-              value: formattingRule === 'phrase'
-                ? '"' + item.replaceAll('"', '\\"') + '"'
-                : item,
-            })
-          );
-          cache[cacheKey][query] = highlighted;
-          callback(highlighted);
-        }
-      });
-    });
-
-    // Bind autocomplete auto submit
-    if ($searchbox.hasClass("ac-auto-submit")) {
-      input.addEventListener("ac-select", (event) => {
-        const value = typeof event.detail === "string"
-          ? event.detail
-          : event.detail.value;
-        input.value = value;
-        input.form.submit();
-      });
-    }
-  });
 }
 
 /**
@@ -754,8 +748,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 $(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
-  // Setup search autocomplete
-  setupAutocomplete();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
