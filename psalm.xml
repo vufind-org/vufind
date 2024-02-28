@@ -23,4 +23,14 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <PossiblyUnusedMethod errorLevel="info" />
+        <PossiblyUnusedParam errorLevel="info" />
+        <PossiblyUnusedProperty errorLevel="info" />
+        <PossiblyUnusedReturnValue errorLevel="info" />
+        <UndefinedConstant errorLevel="suppress" />
+        <UndefinedDocblockClass errorLevel="info" />
+        <UnusedClass errorLevel="info" />
+    </issueHandlers>
 </psalm>
