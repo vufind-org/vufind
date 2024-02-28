@@ -264,10 +264,16 @@ var VuFind = (function VuFind() {
     if (property === 'innerHTML') {
       elm.innerHTML = tmpDiv.innerHTML;
     } else if (property === 'outerHTML') {
-      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling as reference:
+      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
       const nextElm = elm.nextElementSibling;
+      const parentElm = elm.parentElement ? elm.parentElement : null;
       elm.outerHTML = tmpDiv.innerHTML;
-      newElm = nextElm ? nextElm.previousElementSibling : elm.parentElement.lastElementChild;
+      // Try to find a new reference, leave as is if not possible:
+      if (nextElm) {
+        newElm = nextElm.previousElementSibling;
+      } else if (parentElm) {
+        newElm = parentElm.lastElementChild;
+      }
     }
 
     // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
@@ -623,8 +629,7 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  let numberOfSelected = document.querySelectorAll('.checkbox-select-item:checked').length;
-
+  let numberOfSelected = VuFind.listItemSelection.getAllSelected(event.target).length;
   if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
@@ -749,29 +754,6 @@ $(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // Checkbox select all
-  $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
-    var $form = this.form ? $(this.form) : $(this).closest('form');
-    if (this.checked) {
-      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
-    } else {
-      $form.find('.checkbox-select-item:checked').trigger('click');
-    }
-    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
-    $form.find('.checkbox-select-all').prop('checked', this.checked);
-    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
-  });
-  $('.checkbox-select-item').on('change', function selectAllDisable() {
-    var $form = this.form ? $(this.form) : $(this).closest('form');
-    if ($form.length === 0) {
-      return;
-    }
-    if (!$(this).prop('checked')) {
-      $form.find('.checkbox-select-all').prop('checked', false);
-      $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
-    }
-  });
 
   // Print
   var url = window.location.href;
