@@ -14,7 +14,7 @@
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>
 <?php else: ?>
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="<?=$this->inLightbox ? '' : $this->layoutClass('mainbody')?>">
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <?=$this->flashmessages()?>
     <p>
@@ -55,9 +55,11 @@
     </form>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->accountMenu()->render('')?>
-  </div>
+  <?php if (!$this->inLightbox): ?>
+    <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+      <?=$this->accountMenu()->render('')?>
+    </div>
+  <?php endif; ?>
   <?php
     if (null !== $this->targets) {
       $methods = json_encode($this->loginMethods);
