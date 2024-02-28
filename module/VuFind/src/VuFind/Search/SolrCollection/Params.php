@@ -67,7 +67,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initFromRecordDriver($driver, bool $hasSearch = false)
     {
-        $this->collectionID = $driver->getCollectionSearchId();
+        $this->collectionID = $driver->tryMethod('getCollectionSearchId') ?? $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
             $this->collectionField = $hierarchyDriver->getCollectionField($hasSearch);
         }
