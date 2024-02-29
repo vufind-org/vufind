@@ -167,6 +167,7 @@ trait LiveDatabaseTrait
         // Set up the bare minimum services to actually load real configs:
         $config = $this->getMergedConfig();
         $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
         $container->set('config', $config);
         $configManager = new \VuFind\Config\PluginManager(
             $container,
