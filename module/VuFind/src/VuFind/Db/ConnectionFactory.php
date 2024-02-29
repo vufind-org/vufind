@@ -32,7 +32,6 @@ namespace VuFind\Db;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Types\Type;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
@@ -103,8 +102,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $this->config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $this->config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $this->container = $container;
         return $this->getConnection();
     }
@@ -125,6 +123,9 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!isset($this->config->Database->database)) {
             throw new \Exception('"database" setting missing');
         }
+        // Make sure object cache is initialized; Doctrine needs it:
+        $this->container->get(\VuFind\Cache\Manager::class)->getCache('object');
+        // Now we can safely build the connection:
         return $this->getConnectionFromConnectionString(
             $this->config->Database->database,
             $overrideUser,
@@ -277,9 +278,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
             $options['port'] = $port;
         }
         // Get extra custom options from config:
-        $extraOptions = isset($this->config->Database->extra_options)
-            ? $this->config->Database->extra_options->toArray()
-            : [];
+        $extraOptions = $this?->config?->Database?->extra_options?->toArray() ?? [];
+
         // Note: $options takes precedence over $extraOptions -- we don't want users
         // using extended settings to override values from core settings.
         return $this->getConnectionFromOptions($options + $extraOptions);
