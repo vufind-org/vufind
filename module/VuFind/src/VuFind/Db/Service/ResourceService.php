@@ -435,7 +435,7 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
      * @param int          $offset Offset for results
      * @param int          $limit  Limit for results (null for none)
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return mixed
      */
     public function getFavorites(
         $user,

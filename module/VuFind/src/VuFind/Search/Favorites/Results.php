@@ -215,8 +215,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
-            return $result['source'] . '|' . $result['record_id'];
-        }, $rawResults->toArray());
+            return $result[0]->getSource() . '|' . $result[0]->getRecordId();
+        }, $rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
