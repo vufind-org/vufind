@@ -57,11 +57,11 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
         switch ($class) {
             case 'mainbody':
                 if (!$hasSidebar) {
-                    $direction = $this->rtl ? 'right' : 'left';
+                    $side = $this->rtl ? 'right' : 'left';
                 } else {
-                    $direction = $this->sidebarOnLeft ? 'right' : 'left';
+                    $side = $this->sidebarOnLeft ? 'right' : 'left';
                 }
-                return "mainbody $direction";
+                return "mainbody $side";
             case 'sidebar':
                 return $this->sidebarOnLeft
                     ? 'sidebar left hidden-print'
