@@ -49,6 +49,8 @@ use function is_array;
  */
 class YamlReader
 {
+    use \VuFind\Feature\MergeRecursiveTrait;
+
     /**
      * Cache directory name
      *
@@ -213,7 +215,7 @@ class YamlReader
                     $resultElemRef
                         = &$this->getArrayElemRefByPath($results, $path, true);
                     $resultElemRef
-                        = array_merge_recursive($parentElem, $resultElemRef);
+                        = $this->mergeRecursive($parentElem, $resultElemRef);
                     unset($parentElem);
                     unset($resultElemRef);
                 }

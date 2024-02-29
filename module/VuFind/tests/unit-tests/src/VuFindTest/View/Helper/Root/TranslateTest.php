@@ -433,5 +433,48 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 true
             )
         );
+
+        $translate->setTranslator(
+            $this->getMockTranslator(
+                ['default' => ['foo' => '{bar, plural, =1 {jeden} few {několik} other {mnoho = #}}']],
+                'cs-CZ'
+            )
+        );
+        $this->assertEquals(
+            'jeden',
+            $translate(
+                'foo',
+                ['bar' => '1'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '2'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '3'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'mnoho = 12',
+            $translate(
+                'foo',
+                ['bar' => '12'],
+                'failure',
+                true
+            )
+        );
     }
 }

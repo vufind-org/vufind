@@ -2087,4 +2087,17 @@ class Params
         }
         return $retVal;
     }
+
+    /**
+     * Check whether a specific facet supports filtering
+     *
+     * @param string $facet The facet to check
+     *
+     * @return bool
+     */
+    public function supportsFacetFiltering($facet)
+    {
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        return method_exists($this, 'setFacetContains') && !in_array($facet, $translatedFacets);
+    }
 }

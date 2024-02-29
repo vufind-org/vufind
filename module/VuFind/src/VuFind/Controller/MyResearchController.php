@@ -34,6 +34,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -69,6 +70,7 @@ class MyResearchController extends AbstractBase
     use Feature\BulkActionControllerTrait;
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
+    use ListItemSelectionTrait;
 
     /**
      * Configuration loader
@@ -853,9 +855,7 @@ class MyResearchController extends AbstractBase
             : $this->url()->fromRoute('userList', ['id' => $listID]);
 
         // Fail if we have nothing to delete:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', [])
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
 
         $actionLimit = $this->getBulkActionLimit('delete');
         if (!is_array($ids) || empty($ids)) {

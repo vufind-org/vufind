@@ -41,7 +41,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -84,8 +83,6 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test saving and clearing a search.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
     public function testSaveSearch(): void
@@ -100,7 +97,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'Search saved successfully.',
-            $this->findCss($page, '.alert.alert-success')->getText()
+            $this->findCssAndGetText($page, '.alert.alert-success')
         );
     }
 
@@ -225,8 +222,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
-     * @depends       testSaveSearch
-     * @retryCallback removeUsername2
+     * @depends testSaveSearch
      *
      * @return void
      */
@@ -388,8 +384,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Let's confirm that if we repeat the search, the alert will now be set:
         $page = $this->performSearch('employment');
-        $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals('Alert schedule: Weekly', $link->getText());
+        $this->assertEquals('Alert schedule: Weekly', $this->findCssAndGetText($page, '.searchtools .manageSchedule'));
     }
 
     /**
@@ -422,7 +417,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // setting we set in the previous test, and with login deduplication, we
         // should now see the "7" option already selected:
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertEquals(7, $this->findCss($page, $scheduleSelector)->getValue());
+        $this->assertEquals(7, $this->findCssAndGetValue($page, $scheduleSelector));
     }
 
     /**
@@ -476,17 +471,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
             2,
             $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(1, $this->findCss($page, $scheduleSelector)->getValue());
-    }
-
-    /**
-     * Retry cleanup method in case of failure during testSavedSearchSecurity.
-     *
-     * @return void
-     */
-    protected function removeUsername2(): void
-    {
-        static::removeUsers(['username2']);
+        $this->assertEquals(1, $this->findCssAndGetValue($page, $scheduleSelector));
     }
 
     /**

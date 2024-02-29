@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -81,7 +80,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(
                 $title,
-                $this->findCss($page, "$container a.title")->getText()
+                $this->findCssAndGetText($page, "$container a.title")
             );
             // Check for sample driver location/call number in output (this will
             // only appear after AJAX returns):
@@ -89,11 +88,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->unFindCss($page, '.location.ajax-availability');
             $this->assertEquals(
                 'A1234.567',
-                $this->findCss($page, "$container .callnumber")->getText()
+                $this->findCssAndGetText($page, "$container .callnumber")
             );
             $this->assertEquals(
                 '3rd Floor Main Library',
-                $this->findCss($page, "$container .location")->getText()
+                $this->findCssAndGetText($page, "$container .location")
             );
         }
     }

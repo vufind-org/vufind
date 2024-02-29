@@ -47,6 +47,7 @@ return [
         ['file' => 'trigger_print.js', 'priority' => 350],
         ['file' => 'observer_manager.js', 'priority' => 360],
         ['file' => 'openurl.js', 'priority' => 370],
+        ['file' => 'list_item_selection.js', 'priority' => 380],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -143,6 +144,8 @@ return [
             'cart-empty' => 'FontAwesome:times',
             'cart-remove' => 'FontAwesome:minus-circle',
             'cite' => 'FontAwesome:asterisk',
+            'cites' => 'Unicode:275D',
+            'cited-by' => 'Unicode:275E',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',

@@ -26,6 +26,15 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
 
+  // Set up search controls (avoiding unnecessary rendering):
+  if (!$this->slot('search-controls')->isset()) {
+      $this->slot('search-controls')->set(
+          $this->render('search/controls/limit.phtml')
+          . ' ' . $this->render('search/controls/sort.phtml')
+          . ' ' . $this->render('search/controls/view.phtml')
+      );
+  }
+
   // Store search id:
   $this->layout()->searchId = $this->results->getSearchId();
 
@@ -68,9 +77,7 @@
 
     <?php if ($recordTotal > 0): ?>
       <div class="search-controls">
-        <?=$this->render('search/controls/limit.phtml')?>
-        <?=$this->render('search/controls/sort.phtml')?>
-        <?=$this->render('search/controls/view.phtml')?>
+        <?=$this->slot('search-controls')?>
       </div>
     <?php endif; ?>
   </div>
@@ -98,7 +105,7 @@
     <?php endforeach; ?>
   <?php else: ?>
     <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'full'): ?>
-      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => ($this->paginationOptions ?? []) + ['className' => 'pagination-top']])?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination-top.phtml', ['results' => $this->results, 'options' => $this->paginationOptions ?? []])?>
     <?php endif; ?>
     <form id="search-cart-form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
@@ -112,9 +119,11 @@
 <?php /* End Main Listing */ ?>
 
 <?php /* Refine Search Options */ ?>
-<div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
-  <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
-    <?=$this->recommend($current, 'side', $index)?>
-  <?php endforeach; ?>
-</div>
+<?php if ($recommendations = $this->results->getRecommendations('side')): ?>
+  <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+    <?php foreach ($recommendations as $index => $current): ?>
+      <?=$this->recommend($current, 'side', $index)?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
 <?php /* End Refine Search Options */ ?>

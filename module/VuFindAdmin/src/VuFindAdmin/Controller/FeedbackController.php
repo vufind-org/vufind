@@ -75,7 +75,7 @@ class FeedbackController extends AbstractAdmin
      * @param bool   $prioritizePost If true, check the POST params first
      * @param mixed  $default        Default value if no value found
      *
-     * @return string
+     * @return string|string[]
      */
     protected function getParam($param, $prioritizePost = false, $default = null)
     {

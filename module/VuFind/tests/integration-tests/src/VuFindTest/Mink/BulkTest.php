@@ -41,7 +41,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -103,11 +102,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page): void
     {
-        $warning = $this->findCss($page, '.modal-body .alert-danger');
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
-            $warning->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
     }
 
@@ -123,11 +121,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
     {
-        $warning = $this->findCss($page, '.modal-body .alert-danger');
         $this->assertEquals(
             'Selection of ' . $count . ' items exceeds the limit of '
             . $limit . ' for this action. Please select fewer items.',
-            $warning->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
     }
 
@@ -150,8 +147,6 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test that the email control works.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -187,7 +182,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal-body .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
     }
 
@@ -220,10 +215,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submit]');
-        $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
-            $result->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
@@ -270,7 +264,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm contents of confirmation box:
         $this->assertEquals(
             'Title: Journal of rational emotive therapy : Title: Rational living.',
-            $page->find('css', '#modal ul.record-list')->getText()
+            $this->findCssAndGetText($page, '#modal ul.record-list')
         );
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->waitForPageLoad($page);
@@ -279,7 +273,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // lightbox, and delete button should be gone after lightbox is closed.
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCss($page, '.modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal .alert-success')
         );
         $this->closeLightbox($page, true);
         $this->unfindCss($page, 'button[name="delete"]');
@@ -403,10 +397,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submit]');
-        $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
-            $result->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
 
         // check export limit exceeded
@@ -427,8 +420,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('MARC');
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
-        $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
-        $this->assertEquals('Download File', $result->getText());
+        $this->assertEquals(
+            'Download File',
+            $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn')
+        );
 
         // check delete limit exceeded
         $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');

@@ -34,16 +34,14 @@ $config = [
                 ],
             ],
             'content-page' => [
-                'type'    => 'Laminas\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'route'    => '/Content/:page',
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
                     ],
+                    'spec' => '/Content/%page%',
                 ],
             ],
             'shortlink' => [
@@ -434,6 +432,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
+            'VuFind\Http\GuzzleService' => 'VuFind\Http\GuzzleServiceFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
@@ -812,7 +811,7 @@ $staticRoutes = [
     'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
     'Overdrive/MyContent','Overdrive/Hold',
     'Pazpar2/Home', 'Pazpar2/Search',
-    'Primo/Advanced', 'Primo/Home', 'Primo/Search',
+    'Primo/Advanced', 'Primo/CitedBy', 'Primo/Cites', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
     'Search/Advanced',
