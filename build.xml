@@ -106,6 +106,7 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+    <phingcall target="psalm-checkstyle"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
@@ -190,6 +191,9 @@
   </target>
 
   <!-- Psalm -->
+  <target name="psalm-checkstyle">
+    <exec command="${srcdir}/vendor/bin/psalm --report=${builddir}/reports/psalm-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
   <target name="psalm-console">
     <exec command="${srcdir}/vendor/bin/psalm --diff" escape="false" passthru="true" checkreturn="true" />
   </target>
