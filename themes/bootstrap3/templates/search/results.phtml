@@ -68,9 +68,11 @@
         <?php else: ?>
           <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <?php endif; ?>
-        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
-          <?=$this->transEsc('Refine Results') ?>
-        </a>
+        <?php if ($recommendations): ?>
+          <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
+            <?=$this->transEsc('Refine Results') ?>
+          </a>
+        <?php endif; ?>
       <?php else: ?>
         <h2><?=$this->transEsc('nohit_heading')?></h2>
       <?php endif; ?>
