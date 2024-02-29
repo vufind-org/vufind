@@ -76,7 +76,7 @@ class CommentRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $tablePluginManager->get(\VuFind\Db\Table\Resource::class),
             $controllerPluginManager
                 ->get(\VuFind\Controller\Plugin\Captcha::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $capabilities->getCommentSetting() !== 'disabled',
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Config\AccountCapabilities::class)
