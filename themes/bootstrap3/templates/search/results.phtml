@@ -47,11 +47,12 @@
           'jsResults' => $options->loadResultsWithJsEnabled(),
       ]
   );
+  $recommendations = $this->results->getRecommendations('side');
 ?>
 
 <h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
+<div class="<?=$this->layoutClass('mainbody', (bool)$recommendations)?>">
   <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
     <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
@@ -119,7 +120,7 @@
 <?php /* End Main Listing */ ?>
 
 <?php /* Refine Search Options */ ?>
-<?php if ($recommendations = $this->results->getRecommendations('side')): ?>
+<?php if ($recommendations): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
     <?php foreach ($recommendations as $index => $current): ?>
       <?=$this->recommend($current, 'side', $index)?>
