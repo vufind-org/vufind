@@ -187,7 +187,7 @@ trait TranslatorAwareTrait
     /**
      * Get translation for a string
      *
-     * @param string $str             String to translate
+     * @param string $rawStr          String to translate
      * @param array  $tokens          Tokens to inject into the translated string
      * @param string $default         Default value to use if no translation is found
      *                                (null for no default).
