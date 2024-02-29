@@ -64,7 +64,7 @@ class DatabaseTest extends TestCase
         $serviceMock = $this->getMockBuilder(
             \VuFind\Db\Service\ShortlinksService::class
         )
-            ->setMethods(['createEntity'])
+            ->onlyMethods(['createEntity'])
             ->setConstructorArgs([$entityManager, $pluginManager])
             ->getMock();
         if ($shortlink) {
@@ -147,10 +147,7 @@ class DatabaseTest extends TestCase
         $queryBuilder->expects($this->once())->method('setParameter')
             ->with($this->equalTo('hash'), $this->equalTo($parameter))
             ->willReturn($queryBuilder);
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getResult'])
-            ->getMockForAbstractClass();
+        $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $query->expects($this->once())->method('getResult')
             ->willReturn($result);
         $queryBuilder->expects($this->once())->method('getQuery')
