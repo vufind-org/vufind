@@ -184,6 +184,11 @@
       <code><![CDATA[break;]]></code>
     </UnevaluatedCode>
   </file>
+  <file src="module/VuFind/src/VuFind/Controller/PrimoController.php">
+    <UnusedClosureParam>
+      <code><![CDATA[$searchId]]></code>
+    </UnusedClosureParam>
+  </file>
   <file src="module/VuFind/src/VuFind/Controller/SearchController.php">
     <UnusedVariable>
       <code><![CDATA[$query]]></code>
@@ -1262,7 +1267,7 @@
   </file>
   <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadLink.php">
     <UndefinedClass>
-      <code><![CDATA[$item->href]]></code>
+      <code><![CDATA[{]]></code>
     </UndefinedClass>
   </file>
   <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadScript.php">
