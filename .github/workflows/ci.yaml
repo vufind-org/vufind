@@ -97,6 +97,13 @@ jobs:
           key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpcs-"
 
+      - name: Cache Psalm data
+        uses: actions/cache@v3
+        with:
+          path: .psalm_cache
+          key: "php-${{ matrix.php-version }}-psalm-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-psalm-"
+
       - name: Install composer dependencies
         run: composer install
 

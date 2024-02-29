@@ -106,6 +106,7 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+    <phingcall target="psalm-checkstyle"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
@@ -129,6 +130,7 @@
     <phingcall target="phpcs-console"/>
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpstan-console"/>
+    <phingcall target="psalm-console"/>
   </target>
 
   <!-- Fix PHP Tasks -->
@@ -186,6 +188,14 @@
   </target>
   <target name="phpstan-console">
     <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G analyse" escape="false" passthru="true" checkreturn="true" />
+  </target>
+
+  <!-- Psalm -->
+  <target name="psalm-checkstyle">
+    <exec command="${srcdir}/vendor/bin/psalm --report=${builddir}/reports/psalm-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
+  <target name="psalm-console">
+    <exec command="${srcdir}/vendor/bin/psalm --diff" escape="false" passthru="true" checkreturn="true" />
   </target>
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->

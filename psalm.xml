@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<psalm
+    cacheDirectory=".psalm_cache"
+    errorLevel="8"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorBaseline="tests/psalm-baseline.xml"
+>
+    <projectFiles>
+        <file name="install.php" />
+        <directory name="util" />
+        <directory name="public" />
+        <directory name="import" />
+        <directory name="config" />
+        <directory name="harvest" />
+        <directory name="module" />
+        <directory name="themes" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <PossiblyUnusedMethod errorLevel="info" />
+        <PossiblyUnusedParam errorLevel="info" />
+        <PossiblyUnusedProperty errorLevel="info" />
+        <PossiblyUnusedReturnValue errorLevel="info" />
+        <UndefinedConstant errorLevel="suppress" />
+        <UndefinedDocblockClass errorLevel="info" />
+        <UnusedClass errorLevel="info" />
+    </issueHandlers>
+</psalm>
