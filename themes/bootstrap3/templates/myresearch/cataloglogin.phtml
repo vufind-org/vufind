@@ -7,6 +7,9 @@
 
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
+
+    // We should show the account menu unless it's been switched off or we're in the lightbox:
+    $showMenu = ($this->showMenu ?? true) && !$this->inLightbox;
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
@@ -14,7 +17,7 @@
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>
 <?php else: ?>
-  <div class="<?=$this->inLightbox ? '' : $this->layoutClass('mainbody')?>">
+  <div class="<?=$showMenu ? $this->layoutClass('mainbody') : ''?>">
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <?=$this->flashmessages()?>
     <p>
@@ -55,7 +58,7 @@
     </form>
   </div>
 
-  <?php if (!$this->inLightbox): ?>
+  <?php if ($showMenu): ?>
     <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
       <?=$this->accountMenu()->render('')?>
     </div>
