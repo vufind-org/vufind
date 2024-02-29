@@ -75,6 +75,6 @@ class OpenIDConnectFactory implements FactoryInterface
             $container->get(\Laminas\Session\SessionManager::class)
         );
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('OpenIDConnect');
-        return new OpenIDConnect($session, $config);
+        return new $requestedName($session, $config);
     }
 }
