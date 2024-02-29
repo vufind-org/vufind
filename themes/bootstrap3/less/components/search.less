@@ -120,9 +120,8 @@ header .container.navbar { margin-bottom: 0; }
   padding: 0;
 }
 .bulkActionButtons,
-.action-toolbar {
-  display: flex;
-  flex-wrap: wrap;
+.action-toolbar,
+.selection-controls-bar {
   gap: 0.25rem;
   align-items: center;
 }
@@ -131,23 +130,13 @@ header .container.navbar { margin-bottom: 0; }
 }
 .bulk-checkbox {
   padding-inline-end: 1rem;
-  /* wrap below */
-  order: 1;
-  flex-basis: 100%;
+  margin-top: .25rem;
 }
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
 
-@media (min-width: 1200px) {
-  .bulk-checkbox {
-    /* place inline */
-    order: unset;
-    flex-basis: auto;
-  }
-}
-
-.action-toolbar {
-  display: inline-block;
+.action-toolbar,
+.selection-controls-bar {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -157,7 +146,8 @@ header .container.navbar { margin-bottom: 0; }
     padding-left: 1em;
   }
 }
-.action-toolbar li {
+.action-toolbar li,
+.selection-controls-bar li {
   display: inline-block;
 
   .popover li {
@@ -309,6 +299,10 @@ header .container.navbar { margin-bottom: 0; }
   &:extend(.alert);
   &:extend(.alert-info);
   display: none;
+}
+
+.result-citation-links {
+  margin: 0.5rem 0;
 }
 
 @media (min-width: 768px) {
@@ -624,13 +618,8 @@ body.rtl {
 .toolbar-btn,
 .record-nav .cart-add,
 .record-nav .cart-remove,
-.reset-filters-btn {
-  &:extend(.icon-link all);
-  gap: 0.25rem;
-
-  margin-bottom: 4px;
-  margin-top: 4px;
-  padding: .5rem 1rem;
+.reset-filters-btn,
+.clear-selection {
   border: 0;
   color: #555;
   text-decoration: none;
@@ -641,8 +630,25 @@ body.rtl {
     background-color: rgba(0,0,0,.1);
   }
 }
+
+.toolbar-btn,
+.record-nav .cart-add,
+.record-nav .cart-remove,
+.reset-filters-btn {
+  &:extend(.icon-link all);
+  gap: 0.25rem;
+  margin-bottom: 4px;
+  margin-top: 4px;
+  padding: .5rem 1rem;
+}
 .reset-filters-btn {
   flex: none;
+}
+
+.clear-selection{
+  font-weight: 700;
+  padding: .25rem .4rem .15rem .4rem;
+  flex-basis: 100%;
 }
 
 .active-filters .filters a.filter-value:hover,

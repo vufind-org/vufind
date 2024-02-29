@@ -44,12 +44,6 @@
       <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
       <?php if ($purgeSelectedAllowed || $purgeAllAllowed): ?>
         <div class="toolbar">
-          <div class="bulk-checkbox">
-            <label>
-              <input type="checkbox" name="selectAll" class="checkbox-select-all">
-              <?=$this->transEsc('select_all_on_page')?>
-            </label>
-          </div>
           <ul class="action-toolbar">
             <?php if ($purgeSelectedAllowed): ?>
               <li class="btn-group">
@@ -72,6 +66,14 @@
                 </ul>
               </li>
             <?php endif; ?>
+          </ul>
+          <ul class="selection-controls-bar">
+            <li class="bulk-checkbox">
+              <label>
+                <input type="checkbox" name="selectAll" class="checkbox-select-all">
+                <?=$this->transEsc('select_all_on_page')?>
+              </label>
+            </li>
           </ul>
         </div>
         <?php endif; ?>

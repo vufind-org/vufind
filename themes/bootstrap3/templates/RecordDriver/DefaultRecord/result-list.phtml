@@ -162,6 +162,15 @@
         <?php endif; ?>
       <?php endif; ?>
 
+      <?php if (
+        $this->searchOptions($this->driver->getSourceIdentifier())->displayCitationLinksInResults()
+        && $links = $driver->tryMethod('getCitations')
+      ): ?>
+        <div class="result-citation-links">
+          <?=$this->record($this->driver)->renderTemplate('data-citations.phtml', ['data' => $links])?>
+        </div>
+      <?php endif; ?>
+
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
         <?=$this->record($this->driver)->getLabelList() ?>
