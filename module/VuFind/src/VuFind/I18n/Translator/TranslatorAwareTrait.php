@@ -280,6 +280,6 @@ trait TranslatorAwareTrait
         // platform, so they should not be allowed in our code. We'll replace them
         // with underscores so that translations can still be provided if the input
         // cannot be changed (e.g. if it comes from a third-party system).
-        return preg_replace('/[()!?]/', '_', $key);
+        return str_replace(['(', ')', '!', '?'], '_', $key);
     }
 }
