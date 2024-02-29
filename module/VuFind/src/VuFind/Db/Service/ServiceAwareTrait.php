@@ -68,7 +68,7 @@ trait ServiceAwareTrait
     public function getDbServiceManager()
     {
         if (null === $this->serviceManager) {
-            throw new \Exception('service manager missing.');
+            throw new \Exception('Service manager missing in ' . static::class . '.');
         }
         return $this->serviceManager;
     }

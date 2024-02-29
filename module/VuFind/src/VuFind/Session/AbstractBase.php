@@ -32,7 +32,6 @@
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
-use VuFind\Db\Service\ServiceAwareInterface;
 use VuFind\Db\Service\ServiceAwareTrait;
 
 /**
@@ -45,11 +44,14 @@ use VuFind\Db\Service\ServiceAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
-abstract class AbstractBase implements HandlerInterface, ServiceAwareInterface
+abstract class AbstractBase implements HandlerInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait {
         getDbTable as getTable;
     }
+    // Note that we intentionally omit the ServiceAwareInterface above; the service
+    // manager is injected by AbstractBaseFactory explicitly for compatibility with
+    // the secure delegator factor, so we don't need to auto-inject it.
     use ServiceAwareTrait;
 
     /**
