@@ -43,11 +43,11 @@ abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param bool $left      Does the sidebar go on the left?
-     * @param bool $offcanvas Is offcanvas menu active?
+     * @param bool $sidebarOnLeft Does the sidebar go on the left?
+     * @param bool $offcanvas     Is offcanvas menu active?
      */
     public function __construct(
-        protected bool $left = false,
+        protected bool $sidebarOnLeft = false,
         protected bool $offcanvas = false
     ) {
     }
