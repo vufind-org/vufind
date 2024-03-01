@@ -189,7 +189,7 @@ class ContentPages extends AbstractGeneratorPlugin
         foreach (array_keys($nonLanguageFiles) as $fileName) {
             $url = $this->baseUrl . $this->router->assemble(
                 ['page' => $fileName],
-                ['name' => 'content-page'],
+                ['name' => 'content-page']
             );
             $this->verboseMsg("Adding content page $url");
             yield $url;

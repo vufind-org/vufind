@@ -569,13 +569,13 @@
 
     <!-- Add templates to a minktest theme for tests -->
     <property name="themedir" value="${srcdir}/themes/minktest" />
-    <property name="templatedir" value="${themedir}/templates/content" />
+    <property name="contentdir" value="${themedir}/templates/content" />
     <if>
       <not>
-        <available file="${templatedir}/test" type="dir" />
+        <available file="${contentdir}/test/sub" type="dir" />
       </not>
       <then>
-        <mkdir dir="${templatedir}/test" />
+        <mkdir dir="${contentdir}/test/sub" />
       </then>
     </if>
     <echo file="${themedir}/theme.config.php">&lt;?php
@@ -583,10 +583,11 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
-    <echo file="${templatedir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
-    <echo file="${templatedir}/test_fi.phtml">&lt;h1&gt;FINNISH TEST&lt;/h1&gt;</echo>
-    <echo file="${templatedir}/test/test.phtml">&lt;h1&gt;SUB LEVEL PHTML&lt;/h1&gt;</echo>
-    <echo file="${templatedir}/test/testmd.md"># SUB LEVEL MD</echo>
+    <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
+    <echo file="${contentdir}/test_fi.phtml">&lt;h1&gt;FINNISH TEST&lt;/h1&gt;</echo>
+    <echo file="${contentdir}/test/test.phtml">&lt;h1&gt;SUB LEVEL PHTML&lt;/h1&gt;</echo>
+    <echo file="${contentdir}/test/testmd.md"># SUB LEVEL MD</echo>
+    <echo file="${contentdir}/test/sub/test.phtml">&lt;h1&gt;SUB SUB LEVEL PHTML&lt;/h1&gt;</echo>
   </target>
 
   <target name="setup_database" description="setup demo database">

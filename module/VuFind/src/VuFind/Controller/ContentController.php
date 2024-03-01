@@ -71,14 +71,15 @@ class ContentController extends AbstractBase
         if (str_contains($page, '..')) {
             return $this->notFoundAction();
         }
-        if (false !== ($p = strpos($page, '/'))) {
+        // Find last slash and add preceding part to path if found:
+        if (false !== ($p = strrpos($page, '/'))) {
             $subPath = substr($page, 0, $p + 1);
             $pathPrefix .= $subPath;
-            $page = substr($page, $p + 1);
-            // Ensure the the page does not start with a slash as an extra precaution:
-            if (str_starts_with($page, '/')) {
+            // Ensure the the path prefix does not contain extra slashes:
+            if (str_ends_with($pathPrefix, '//')) {
                 return $this->notFoundAction();
             }
+            $page = substr($page, $p + 1);
         }
         $pageLocator = $this->serviceLocator->get(\VuFind\Content\PageLocator::class);
         $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);

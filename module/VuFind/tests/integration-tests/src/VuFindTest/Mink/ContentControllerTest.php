@@ -125,7 +125,17 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
                 'test/testmd',
                 'SUB LEVEL MD',
             ],
-            'bad path' => [
+            'sub sub path phtml' => [
+                'en',
+                'test/sub/test',
+                'SUB SUB LEVEL PHTML',
+            ],
+            'bad sub path phtml' => [
+                'en',
+                'test/sub/bad/test',
+                'An error has occurred',
+            ],
+            'bad path 1' => [
                 'en',
                 'test//testmd',
                 'An error has occurred',
