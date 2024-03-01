@@ -1,4 +1,7 @@
-<?php $this->treeContext = 'Collection'; ?>
+<?php
+  $this->treeContext = 'Collection';
+  $this->treePreviewElement = '#tree-preview';
+?>
 
 <div class="collection-hierarchytree">
   <div class="tree-panel">
@@ -9,7 +12,7 @@
       <?php if ($collectionRecord === null): ?>
         <?=$this->render('collection/collection-record-error.phtml')?>
       <?php else: ?>
-        <?=html_entity_decode($this->record($collectionRecord)->getCollectionBriefRecord())?>
+        <?=$this->record($collectionRecord)->getCollectionBriefRecord()?>
       <?php endif; ?>
     <?php endif; ?>
   </div>

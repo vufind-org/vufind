@@ -1,0 +1,34 @@
+<div class="consortialVuFind">
+  <?php $results = $this->recommend->getResults() ?>
+  <?php $records = $results['records'] ?? [] ?>
+  <?php $resultCount = $results['resultCount'] ?? 0; ?>
+  <?php $moreResultsUrl = $this->recommend->getMoreResultsUrl(); ?>
+
+  <?php if (!empty($records)): ?>
+    <h2><?=$this->transEsc('consortial_vufind_recommend_heading')?></h2>
+    <?php if (!$this->translationEmpty('consortial_vufind_recommend_intro_html')): ?>
+      <p>
+        <?=$this->translate('consortial_vufind_recommend_intro_html', [
+          '%%result_count%%' => $this->localizedNumber($resultCount),
+          '%%url%%' => $moreResultsUrl,
+        ])?>
+      </p>
+    <?php endif; ?>
+    <ul class="list-group">
+      <?php foreach ($records as $record): ?>
+        <li class="list-group-item">
+          <span>
+            <a href="<?=$record['url']?>" class="title icon-link" target="_blank">
+              <?=$this->icon('external-link', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->escapeHtml($record['title'])?></span>
+            </a>
+          </span>
+        </li>
+      <?php endforeach; ?>
+      <a class="list-group-item" href="<?=$moreResultsUrl?>">
+        <?=$this->icon('external-link', 'icon-link__icon') ?>
+        <?=$this->transEsc('more_results_ellipsis')?>
+      </a>
+    </ul>
+  <?php endif; ?>
+</div>

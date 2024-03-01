@@ -197,9 +197,7 @@ class UpgradeController extends AbstractBase
     public function establishversionsAction()
     {
         $this->cookie->newVersion = Version::getBuildVersion();
-        $this->cookie->oldVersion = Version::getBuildVersion(
-            $this->cookie->sourceDir
-        );
+        $this->cookie->oldVersion = Version::getBuildVersion($this->getSourceDir());
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
@@ -234,7 +232,7 @@ class UpgradeController extends AbstractBase
     {
         $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
-            ? $this->cookie->sourceDir . '/web/conf'
+            ? $this->getSourceDir() . '/web/conf'
             : $localConfig;
         $upgrader = new Upgrade(
             $this->cookie->oldVersion,
@@ -809,7 +807,7 @@ class UpgradeController extends AbstractBase
         // Process form submission:
         $dir = $this->params()->fromPost('sourcedir');
         if (!empty($dir)) {
-            if (!is_dir($dir)) {
+            if (!$this->isSourceDirValid($dir)) {
                 $this->flashMessenger()
                     ->addMessage($dir . ' does not exist.', 'error');
             } elseif (!file_exists($dir . '/build.xml')) {
@@ -819,7 +817,7 @@ class UpgradeController extends AbstractBase
                     'error'
                 );
             } else {
-                $this->cookie->sourceDir = rtrim($dir, '\/');
+                $this->setSourceDir(rtrim($dir, '\/'));
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourcedir', '');
                 return $this->forwardTo('Upgrade', 'Home');
@@ -864,7 +862,7 @@ class UpgradeController extends AbstractBase
                 );
             } else {
                 $this->cookie->oldVersion = $version;
-                $this->cookie->sourceDir = realpath(APPLICATION_PATH);
+                $this->setSourceDir(realpath(APPLICATION_PATH));
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourceversion', '');
                 $this->processSkipParam();
@@ -890,6 +888,50 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Validate a source directory string.
+     *
+     * @param string $dir Directory string to check
+     *
+     * @return bool
+     */
+    protected function isSourceDirValid(string $dir): bool
+    {
+        // Prevent abuse of stream wrappers:
+        if (empty($dir) || str_contains($dir, '://')) {
+            return false;
+        }
+        return is_dir($dir);
+    }
+
+    /**
+     * Set the source directory for the upgrade
+     *
+     * @param string $dir Directory to set
+     *
+     * @return void
+     */
+    protected function setSourceDir(string $dir): void
+    {
+        $this->cookie->sourceDir = $dir;
+    }
+
+    /**
+     * Get the source directory for the upgrade
+     *
+     * @param bool $validate Should we validate the directory?
+     *
+     * @return string
+     */
+    protected function getSourceDir($validate = true): string
+    {
+        $sourceDir = $this->cookie->sourceDir ?? '';
+        if ($validate && !$this->isSourceDirValid($sourceDir)) {
+            throw new \Exception('Unexpected source directory value!');
+        }
+        return $sourceDir;
+    }
+
+    /**
      * Display summary of installation status
      *
      * @return mixed
@@ -904,10 +946,7 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (
-            !isset($this->cookie->sourceDir)
-            || !is_dir($this->cookie->sourceDir)
-        ) {
+        if (!$this->isSourceDirValid($this->getSourceDir(false))) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 

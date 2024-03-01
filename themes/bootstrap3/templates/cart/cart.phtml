@@ -9,6 +9,7 @@
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value">
+  <input type="hidden" name="redirectInLightbox" value="true">
   <?php if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls">
       <div class="checkbox">
@@ -19,34 +20,50 @@
       </div>
       <ul class="cart-control-btns">
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li>
-            <button type="submit" class="toolbar-btn" name="saveCart" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
-              <?=$this->icon('user-list-add', 'icon-link__icon') ?>
-              <span class="icon-link__label"><?=$this->transEsc('Save')?></span>
-            </button>
-          </li>
+          <?=
+            $this->bulkAction()->button(
+                'saveCart',
+                'user-list-add',
+                'Save',
+                [
+                  'title' => $this->translate('bulk_save_cart'),
+                ]
+            )
+          ?>
         <?php endif; ?>
-        <li>
-          <button type="submit" class="toolbar-btn" name="email" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
-            <?=$this->icon('send-email', 'icon-link__icon') ?>
-            <span class="icon-link__label"><?=$this->transEsc('Email')?></span>
-          </button>
-        </li>
+        <?=
+          $this->bulkAction()->button(
+              'email',
+              'send-email',
+              'Email',
+              [
+                'title' => $this->translate('bulk_email_cart'),
+              ]
+          )
+        ?>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
         <?php if (count($exportOptions) > 0): ?>
-          <li>
-            <button type="submit" class="toolbar-btn" name="export" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
-              <?=$this->icon('export', 'icon-link__icon') ?>
-              <span class="icon-link__label"><?=$this->transEsc('Export')?></span>
-            </button>
-          </li>
+          <?=
+            $this->bulkAction()->button(
+                'export',
+                'export',
+                'Export',
+                [
+                  'title' => $this->translate('bulk_export_cart'),
+                ]
+            )
+          ?>
         <?php endif; ?>
-        <li>
-          <button type="submit" class="toolbar-btn" name="print" title="<?=$this->transEscAttr('print_selected')?>" value="1">
-            <?=$this->icon('print', 'icon-link__icon') ?>
-            <span class="icon-link__label"><?=$this->transEsc('Print')?></span>
-          </button>
-        </li>
+        <?=
+          $this->bulkAction()->button(
+              'print',
+              'print',
+              'Print',
+              [
+                'title' => $this->translate('bulk_print_cart'),
+              ]
+          )
+        ?>
         <li class="btn-group" id="cartDelete">
           <button type="submit" name="delete" class="toolbar-btn dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
             <?=$this->icon('cart-remove', 'icon-link__icon') ?>

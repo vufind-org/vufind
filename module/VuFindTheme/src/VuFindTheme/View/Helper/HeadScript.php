@@ -221,7 +221,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
     {
         $data = $this->getBaseMinifiedData($details, $concatPath);
         // Play it safe by terminating a script with a semicolon
-        if (substr(trim($data), -1, 1) !== ';') {
+        if (!str_ends_with(trim($data), ';')) {
             $data .= ';';
         }
         return $data;

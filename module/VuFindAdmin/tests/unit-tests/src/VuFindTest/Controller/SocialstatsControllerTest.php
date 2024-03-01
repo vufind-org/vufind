@@ -69,6 +69,13 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
         $ratings->expects($this->once())->method('getStatistics')->will($this->returnValue(['ratings-data']));
         $tables->set('ratings', $ratings);
+        $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
+            ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
+        $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
+            ->will($this->returnValue(function ($input) {
+                return 'url';
+            }));
+        $container->set('ViewRenderer', $viewRenderer);
 
         // Confirm properly-constructed view object:
         $view = $c->homeAction();

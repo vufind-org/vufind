@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Config;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Config\YamlReader;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
@@ -59,8 +59,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testCacheWrite()
     {
         $yamlData = ['foo' => 'bar'];
-        $cache = $this->getMockBuilder(AbstractAdapter::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->once())->method('getItem')
             ->will($this->returnValue(null));
         $cache->expects($this->once())->method('setItem')
@@ -92,8 +91,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testCacheRead()
     {
         $yamlData = ['foo' => 'bar'];
-        $cache = $this->getMockBuilder(AbstractAdapter::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->once())->method('getItem')
             ->will($this->returnValue($yamlData));
         $cache->expects($this->never())->method('setItem');
@@ -122,8 +120,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testCacheForcedReload()
     {
         $yamlData = ['foo' => 'bar'];
-        $cache = $this->getMockBuilder(AbstractAdapter::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
             ->will($this->returnValue($yamlData));
         $cache->expects($this->never())->method('setItem');
@@ -166,6 +163,12 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                         'Foo' => ['Foo', 'Bar'],
                         'Baz' => ['Bar', 'Bar', 'ChildBaz'],
                         'Child' => ['Foo', 'Baz'],
+                    ],
+                    'Replaced' => [
+                        'ParentOnly' => 'Will exist',
+                        'Original' => 'Replaces parent',
+                        'Boolean' => false,
+                        'ChildOnly' => 'From child',
                     ],
                     'NonMerged' => [
                         'Original' => 'Not so original either',

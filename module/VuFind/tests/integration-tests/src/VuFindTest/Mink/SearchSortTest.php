@@ -43,7 +43,6 @@ use function count;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -87,7 +86,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
 
         // Go to second page:
-        $this->clickCss($page, '.pagination li > a');
+        $this->clickCss($page, '.pagination li:not(.active) > a');
         $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 20, 'Test Publication 20021', 'Test Publication 20040');
 
@@ -100,6 +99,45 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
         $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
+    }
+
+    /**
+     * Test the sort control
+     *
+     * @return void
+     */
+    public function testHiddenSort(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_sort' => 'title',
+                    ],
+                    'Sorting' => [
+                        'title' => 'Title',
+                    ],
+                    'HiddenSorting' => [
+                        'pattern' => [
+                            '.* desc',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=title');
+        $page = $session->getPage();
+
+        // Check expected first and last record on first page:
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
+
+        // Change sort to title reversed (hidden option) and verify:
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=title desc');
+        $page = $session->getPage();
+
+        // Check expected first and last record:
+        $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
     }
 
     /**

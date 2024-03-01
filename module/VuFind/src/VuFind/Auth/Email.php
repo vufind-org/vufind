@@ -75,7 +75,7 @@ class Email extends AbstractBase
         // a login link.
         // Second, log the user in with the hash from the login link.
 
-        $email = trim($request->getPost()->get('username'));
+        $email = trim($request->getPost()->get('username', ''));
         $hash = $request->getQuery('hash');
         if (!$email && !$hash) {
             throw new AuthException('authentication_error_blank');
@@ -102,7 +102,18 @@ class Email extends AbstractBase
         if (isset($loginData['vufind_id'])) {
             return $this->getUserTable()->getById($loginData['vufind_id']);
         } else {
-            return $this->processUser($loginData);
+            // Check if we have more granular data available:
+            if (isset($loginData['userData'])) {
+                $userData = $loginData['userData'];
+                if ($loginData['rememberMe'] ?? false) {
+                    // TODO: This is not a very nice way of carrying this information
+                    // over to the authentication manager:
+                    $request->getPost()->set('remember_me', '1');
+                }
+            } else {
+                $userData = $loginData;
+            }
+            return $this->processUser($userData);
         }
 
         // If we got this far, we have a problem:

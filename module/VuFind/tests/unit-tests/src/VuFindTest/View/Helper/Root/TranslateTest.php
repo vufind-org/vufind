@@ -51,7 +51,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateWithoutTranslator()
+    public function testTranslateWithoutTranslator(): void
     {
         $translate = new Translate();
         // Simple case that tests default values and tokens in a single pass:
@@ -70,7 +70,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateWithEmptyArray()
+    public function testTranslateWithEmptyArray(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected value sent to translator!');
@@ -84,7 +84,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateWithOverfilledArray()
+    public function testTranslateWithOverfilledArray(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected value sent to translator!');
@@ -98,7 +98,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateWithTranslator()
+    public function testTranslateWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -155,7 +155,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateTranslatableStringDefaultValues()
+    public function testTranslateTranslatableStringDefaultValues(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -170,11 +170,42 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test translation of a key with illegal characters.
+     *
+     * @return void
+     */
+    public function testTranslationWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => ['_28_29_3F_21' => 'success']])
+        );
+
+        $this->assertEquals('success', $translate('()?!'));
+    }
+
+    /**
+     * Test default fallback after translation of a key with illegal characters when
+     * no matching translations are found.
+     *
+     * @return void
+     */
+    public function testTranslationDefaultsWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => []])
+        );
+
+        $this->assertEquals('()?!', $translate('()?!'));
+    }
+
+    /**
      * Test translation of a TranslatableString object with a loaded translator
      *
      * @return void
      */
-    public function testTranslateTranslatableStringWithTranslator()
+    public function testTranslateTranslatableStringWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -247,7 +278,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateTranslatableStringAndTextDomainsWithTranslator()
+    public function testTranslateTranslatableStringAndTextDomainsWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -314,7 +345,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateTextDomainWithTranslator()
+    public function testTranslateTextDomainWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -347,7 +378,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateNestedTextDomainWithConflict()
+    public function testTranslateNestedTextDomainWithConflict(): void
     {
         $translations = [
             'd1' => ['foo' => 'bar', 'failure' => 'success'],
@@ -369,7 +400,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLocaleWithoutTranslator()
+    public function testLocaleWithoutTranslator(): void
     {
         $translate = new Translate();
         $this->assertEquals('foo', $translate->getTranslatorLocale('foo'));
@@ -380,7 +411,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLocaleWithTranslator()
+    public function testLocaleWithTranslator(): void
     {
         $translate = new Translate();
         $translator = $this->createMock(\Laminas\I18n\Translator\Translator::class);
@@ -395,11 +426,86 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTranslator()
+    public function testGetTranslator(): void
     {
         $translate = new Translate();
         $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
+    }
+
+    /**
+     * Test ICU translation with a translator object.
+     *
+     * @return void
+     */
+    public function testIcuMessageTranslation(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => ['foo' => '{bar, plural, =1 {one} other {many = #}}']])
+        );
+
+        $this->assertEquals(
+            'one',
+            $translate(
+                'foo',
+                ['bar' => '1'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'many = 7',
+            $translate(
+                'foo',
+                ['bar' => '7'],
+                'failure',
+                true
+            )
+        );
+
+        $translate->setTranslator(
+            $this->getMockTranslator(
+                ['default' => ['foo' => '{bar, plural, =1 {jeden} few {několik} other {mnoho = #}}']],
+                'cs-CZ'
+            )
+        );
+        $this->assertEquals(
+            'jeden',
+            $translate(
+                'foo',
+                ['bar' => '1'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '2'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '3'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'mnoho = 12',
+            $translate(
+                'foo',
+                ['bar' => '12'],
+                'failure',
+                true
+            )
+        );
     }
 }

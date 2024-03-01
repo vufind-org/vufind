@@ -150,7 +150,13 @@ class Primo extends DefaultRecord
      */
     public function getFormats()
     {
-        return (array)($this->fields['format'] ?? []);
+        // Convert to displayable words and return as an array:
+        return array_map(
+            function ($s) {
+                return ucwords(str_replace('_', ' ', $s));
+            },
+            (array)($this->fields['format'])
+        );
     }
 
     /**
@@ -270,6 +276,19 @@ class Primo extends DefaultRecord
     public function getUniqueID()
     {
         return $this->fields['recordid'];
+    }
+
+    /**
+     * Get citation references
+     *
+     * @return array
+     */
+    public function getCitations(): array
+    {
+        return [
+            'cites' => $this->fields['cites'] ?? [],
+            'cited_by' => $this->fields['cited_by'] ?? [],
+        ];
     }
 
     /**

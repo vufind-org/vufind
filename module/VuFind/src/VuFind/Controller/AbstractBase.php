@@ -34,7 +34,9 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -72,7 +74,7 @@ use function is_object;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -81,7 +83,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * restriction, null to use configured default (which is usually the same
      * as false)).
      *
-     * @var string|bool
+     * @var string|bool|null
      */
     protected $accessPermission = null;
 
@@ -134,9 +136,10 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
-     * Getter for access permission.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null to use default permission).
      *
-     * @return string|bool
+     * @return string|bool|null
      */
     public function getAccessPermission()
     {
@@ -146,7 +149,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     /**
      * Getter for access permission.
      *
-     * @param string $ap Permission to require for access to the controller (false
+     * @param string|false $ap Permission to require for access to the controller (false
      * for no requirement)
      *
      * @return void
@@ -202,6 +205,14 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
+        }
+        $lightboxParentUrl = new Http($this->getServerUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
+        if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
+            $this->layout()->lightboxChild = $lightboxChild;
         }
         return new ViewModel($params);
     }
@@ -349,16 +360,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $msg = 'You must be logged in first';
         }
 
-        // We don't want to return to the lightbox
-        $serverUrl = $this->getServerUrl();
-        $serverUrl = str_replace(
-            ['?layout=lightbox', '&layout=lightbox'],
-            ['?', '&'],
-            $serverUrl
-        );
+        // store parent url of lightboxes
+        $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras, $serverUrl);
+        $this->followup()->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -673,11 +679,12 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
-     * @param bool $allowCurrentUrl Whether the current URL is valid for followup
+     * @param bool  $allowCurrentUrl Whether the current URL is valid for followup
+     * @param array $extras          Extra data for the followup
      *
      * @return void
      */
-    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true)
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = [])
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -722,8 +729,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             return;
         }
 
+        // Clear previously stored lightboxParent.
+        $this->followup()->clear('lightboxParent');
+
         // If we got this far, we want to store the referer:
-        $this->followup()->store([], $referer);
+        $this->followup()->store($extras, $referer);
     }
 
     /**
@@ -741,15 +751,43 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
+     * Checks if a followup url is set
+     *
+     * @return bool
+     */
+    protected function hasFollowupUrl()
+    {
+        return null !== $this->followup()->retrieve('url');
+    }
+
+    /**
      * Retrieve a referer to keep post-login redirect pointing
      * to an appropriate location.
      * Unset the followup before returning.
      *
+     * @param bool $checkRedirect Whether the query should be checked for param 'redirect'
+     *
      * @return string
      */
-    protected function getFollowupUrl()
+    protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        return $this->followup()->retrieve('url', '');
+        if ($url = $this->followup()->retrieveAndClear('url')) {
+            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
+                if (null !== $lightboxParent && !$this->inLightbox()) {
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
+                    $params['lightboxChild'] = $url;
+                    $parentUrl->setQuery($params);
+                    return $parentUrl;
+                }
+                return $url;
+            }
+        }
+        return null;
     }
 
     /**
@@ -759,6 +797,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function clearFollowupUrl()
     {
+        $this->followup()->clear('isReferrer');
+        $this->followup()->clear('lightboxParent');
         $this->followup()->clear('url');
     }
 

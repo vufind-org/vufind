@@ -678,7 +678,7 @@ class Loader extends \VuFind\ImageLoader
     protected function processImageURL($url, $cache = true)
     {
         // Check to see if url is a file path
-        if (substr($url, 0, 7) == 'file://') {
+        if (str_starts_with($url, 'file://')) {
             $imagePath = substr($url, 7);
 
             // Display the image:

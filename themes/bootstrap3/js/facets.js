@@ -1,204 +1,129 @@
 /*global VuFind */
-/*exported initFacetTree */
-function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, counter, locale)
-{
-  // Helper function to create elements
-  function el(tagName, className = null) {
-    const node = document.createElement(tagName);
 
-    if (className !== null) {
-      node.className = className;
-    }
-
-    return node;
+/* --- Facet List --- */
+VuFind.register('facetList', function FacetList() {
+  function getCurrentContainsValue() {
+    const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
+    return containsEl ? containsEl.value : null;
   }
 
-  // Build a UL
-  let facetList = el('ul');
-
-  // Elements
-  for (let i = 0; i < data.length; i++) {
-    let facet = data[i];
-
-    const hasChildren = typeof facet.children !== 'undefined' && facet.children.length > 0;
-
-    // Create badge
-    let badgeEl = null;
-    if (showCounts && !facet.isApplied && facet.count) {
-      badgeEl = el('span', 'badge');
-      badgeEl.innerText = facet.count.toLocaleString(locale);
-    }
-
-    // Create exclude link
-    let excludeEl = null;
-    if (allowExclude && !facet.isApplied) {
-      excludeEl = el('a', 'exclude');
-      excludeEl.innerHTML = VuFind.icon('facet-exclude');
-      excludeEl.setAttribute('href', currentPath + facet.exclude);
-      excludeEl.setAttribute('title', excludeTitle);
-    }
-
-    // Create facet text element
-    const orFacet = facet.operator === 'OR';
-    let valueEl = el('span', 'facet-value');
-    valueEl.innerText = facet.displayText;
-    let textEl = el('span', 'text');
-    if (orFacet) {
-      valueEl.className += ' icon-link__label';
-      textEl.innerHTML = facet.isApplied
-        ? VuFind.icon('facet-checked', { title: VuFind.translate('Selected'), class: 'icon-link__icon' })
-        : VuFind.icon('facet-unchecked', 'icon-link__icon');
-    }
-    textEl.append(valueEl);
-
-    // Create link element
-    const linkEl = el('a', (orFacet ? ' icon-link' : ''));
-    linkEl.setAttribute('href', currentPath + facet.href);
-    linkEl.setAttribute('title', facet.displayText);
-    linkEl.append(textEl);
-
-    // Create facet element
-    const classes = 'facet js-facet-item'
-      + (facet.isApplied ? ' active' : '')
-      + (orFacet ? ' facetOR' : ' facetAND');
-    let facetEl;
-    if (excludeEl) {
-      linkEl.className += ' text';
-      facetEl = el('div', classes);
-      facetEl.append(linkEl);
-      if (badgeEl) {
-        facetEl.append(badgeEl);
-      }
-      facetEl.append(excludeEl);
-    } else {
-      if (badgeEl) {
-        linkEl.append(badgeEl);
-      }
-      linkEl.className = classes + ' ' + linkEl.className;
-      facetEl = linkEl;
-    }
-
-    // Create toggle button
-    const toggleButton = el('button', 'facet-tree__toggle-expanded');
-    toggleButton.setAttribute('aria-expanded', facet.hasAppliedChildren ? 'true' : 'false');
-    toggleButton.setAttribute('data-toggle-aria-expanded', '');
-    toggleButton.setAttribute('aria-label', facet.displayText);
-
-    let itemContainerEl = el('span', 'facet-tree__item-container' + (allowExclude ? ' facet-tree__item-container--exclude' : ''));
-    itemContainerEl.append(facetEl);
-
-    // Create an li node with or without children
-    const liEl = el('li');
-    if (hasChildren) {
-      liEl.className = 'facet-tree__parent';
-      const childUlId = 'facet_' + facetName + '_' + (++counter.count);
-
-      toggleButton.setAttribute('aria-controls', childUlId);
-      toggleButton.innerHTML = VuFind.icon('facet-expand', 'facet-tree__expand') + VuFind.icon('facet-collapse', 'facet-tree__collapse');
-
-      const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, counter, locale);
-      childrenEl.id = childUlId;
-
-      liEl.append(toggleButton, itemContainerEl, childrenEl);
-    } else {
-      toggleButton.innerHTML = VuFind.icon('facet-noncollapsible', 'facet-tree__noncollapsible');
-      toggleButton.setAttribute('disabled', '');
-
-      liEl.append(toggleButton, itemContainerEl);
-    }
-
-    // Append to the UL
-    facetList.append(liEl);
-  }
-
-  return facetList;
-}
-
-function buildFacetTree(treeNode, facetData, inSidebar) {
-  var currentPath = treeNode.data('path');
-  var allowExclude = treeNode.data('exclude');
-  var excludeTitle = treeNode.data('exclude-title');
-  var facetName = treeNode.data('facet');
-  var locale = $('html').attr('lang');
-  if (locale) {
-    locale = locale.replace('_', '-');
-  }
-
-  var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, { count: 0 }, locale);
-  treeNode[0].replaceChildren(facetList);
-
-  if (inSidebar) {
-    treeNode.find('a').click(VuFind.sideFacets.showLoadingOverlay);
-    if (treeNode.parent().hasClass('truncate-hierarchy')) {
-      VuFind.truncate.initTruncate(treeNode.parent(), 'div > ul > li');
+  function setCurrentContainsValue(val) {
+    const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
+    if (containsEl) {
+      containsEl.value = val;
     }
   }
-}
 
-function loadFacetTree(treeNode, inSidebar)
-{
-  var loaded = treeNode.data('loaded');
-  if (loaded) {
-    return;
-  }
-  treeNode.data('loaded', true);
-
-  if (inSidebar) {
-    treeNode.prepend('<li class="jstree-node list-group-item facet-load-indicator">' + VuFind.loading() + '</li>');
-  } else {
-    treeNode.prepend('<div>' + VuFind.loading() + '<div>');
-  }
-  var request = {
-    method: "getFacetData",
-    source: treeNode.data('source'),
-    facetName: treeNode.data('facet'),
-    facetSort: treeNode.data('sort'),
-    facetOperator: treeNode.data('operator'),
-    query: treeNode.data('query'),
-    querySuppressed: treeNode.data('querySuppressed'),
-    extraFields: treeNode.data('extraFields')
-  };
-  $.getJSON(VuFind.path + '/AJAX/JSON?' + request.query,
-    request,
-    function getFacetData(response/*, textStatus*/) {
-      buildFacetTree(treeNode, response.data.facets, inSidebar);
-    }
-  );
-}
-
-function initFacetTree(treeNode, inSidebar)
-{
-  // Defer init if the facet is collapsed:
-  let $collapse = treeNode.parents('.facet-group').find('.collapse');
-  if (!$collapse.hasClass('in')) {
-    $collapse.on('show.bs.collapse', function onExpand() {
-      loadFacetTree(treeNode, inSidebar);
+  function overrideHref(selector, overrideParams = {}) {
+    $(selector).each(function overrideHrefEach() {
+      const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
+      let url = new URL(dummyDomain + $(this).attr('href'));
+      Object.entries(overrideParams).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+      url = url.href;
+      url = url.replaceAll(dummyDomain, '');
+      $(this).attr('href', url);
     });
-    return;
-  } else {
-    loadFacetTree(treeNode, inSidebar);
   }
-}
+
+  function updateHrefContains() {
+    const overrideParams = { contains: getCurrentContainsValue() };
+    overrideHref('.js-facet-sort', overrideParams);
+    overrideHref('.js-facet-next-page', overrideParams);
+    overrideHref('.js-facet-prev-page', overrideParams);
+  }
+
+  function getContent(overrideParams = {}) {
+    const ajaxParams = $('.ajax_params').data('params');
+    let url = ajaxParams.urlBase;
+
+    for (let [key, val] of Object.entries(ajaxParams)) {
+      if (key in overrideParams) {
+        val = overrideParams[key];
+      }
+      url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+    }
+
+    const contains = getCurrentContainsValue();
+    if (contains) {
+      url += '&contains=' + encodeURIComponent(contains);
+    }
+
+    if (!("facetsort" in overrideParams)) {
+      const sort = $('.js-facet-sort.active').data('sort');
+      if (sort !== undefined) {
+        url += '&facetsort=' + encodeURIComponent(sort);
+      }
+    }
+
+    url += '&ajax=1';
+
+    return Promise.resolve($.ajax({
+      url: url
+    }));
+  }
+
+  function updateContent(overrideParams = {}) {
+    $('#facet-info-result').html(VuFind.loading());
+    getContent(overrideParams).then(html => {
+      let htmlList = '';
+      $(VuFind.updateCspNonce(html)).find('.full-facet-list').each(function itemEach() {
+        htmlList += $(this).prop('outerHTML');
+      });
+      $('#facet-info-result').html(htmlList);
+      updateHrefContains();
+      VuFind.lightbox_facets.setup();
+    });
+  }
+
+  // Useful function to delay callbacks, e.g. when using a keyup event
+  // to detect when the user stops typing.
+  // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
+  var inputCallbackTimeout = null;
+  function registerCallbacks() {
+    $('.facet-lightbox-filter').removeClass('hidden');
+
+    $('.ajax_param[data-name="contains"]').on('input', function onInputChangeFacetList(event) {
+      clearTimeout(inputCallbackTimeout);
+      if (event.target.value.length < 1) {
+        $('#btn-reset-contains').addClass('hidden');
+      } else {
+        $('#btn-reset-contains').removeClass('hidden');
+      }
+      inputCallbackTimeout = setTimeout(function onInputTimeout() {
+        updateContent({facetpage: 1});
+      }, 500);
+    });
+
+    $('#btn-reset-contains').on('click', function onResetClick() {
+      setCurrentContainsValue('');
+      $('#btn-reset-contains').addClass('hidden');
+      updateContent({facetpage: 1});
+    });
+  }
+
+  function setup() {
+    if ($.isReady) {
+      registerCallbacks();
+    } else {
+      $(function ready() {
+        registerCallbacks();
+      });
+    }
+  }
+
+  return { setup: setup, getContent: getContent, updateContent: updateContent };
+});
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
-  function showLoadingOverlay(e, data) {
-    e.preventDefault();
+  function showLoadingOverlay() {
     var overlay = '<div class="facet-loading-overlay">'
       + '<span class="facet-loading-overlay-label">'
       + VuFind.loading()
       + "</span></div>";
     $(this).closest(".collapse").append(overlay);
-    if (typeof data !== "undefined") {
-      // Remove jstree-clicked class from JSTree links to avoid the color change:
-      data.instance.get_node(data.node, true).children().removeClass('jstree-clicked');
-    }
-    // This callback operates both as a click handler and a JSTree callback;
-    // if the data element is undefined, we assume we are handling a click.
-    var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"
-      ? $(this).attr('href') : data.node.data.url;
-    window.location.assign(href);
-    return false;
   }
 
   function activateFacetBlocking(context) {
@@ -245,11 +170,6 @@ VuFind.register('sideFacets', function SideFacets() {
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
             activateFacetBlocking($facetContainer);
-          } else {
-            var treeNode = $facetContainer.find('.jstree-facet');
-            VuFind.emit('VuFind.sidefacets.treenodeloaded', {node: treeNode});
-
-            buildFacetTree(treeNode, facetData.list, true);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
@@ -330,20 +250,12 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     var sortButtons = $('.js-facet-sort');
     function sortAjax(button) {
       var sort = $(button).data('sort');
-      var list = $('#facet-list-' + sort);
-      if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').html(VuFind.translate('loading_ellipsis'));
-        $.ajax(button.href + '&layout=lightbox')
-          .done(function facetSortTitleDone(data) {
-            list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').html(VuFind.translate('more_ellipsis'));
-          });
-      }
+      VuFind.facetList.updateContent({facetsort: sort});
       $('.full-facet-list').addClass('hidden');
-      list.removeClass('hidden');
       sortButtons.removeClass('active');
     }
-    sortButtons.click(function facetSortButton() {
+    sortButtons.off('click');
+    sortButtons.on('click', function facetSortButton() {
       sortAjax(this);
       $(this).addClass('active');
       return false;
@@ -353,30 +265,32 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   function setup() {
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
-      var button = $(this);
-      var page = parseInt(button.attr('data-page'), 10);
+      let button = $(this);
+      const page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
       }
       button.attr('disabled', 1);
       button.html(VuFind.translate('loading_ellipsis'));
-      $.ajax(this.href + '&layout=lightbox')
-        .done(function facetLightboxMoreDone(data) {
-          var htmlDiv = $('<div>' + data + '</div>');
-          var list = htmlDiv.find('.js-facet-item');
-          button.before(list);
-          if (list.length && htmlDiv.find('.js-facet-next-page').length) {
-            button.attr('data-page', page + 1);
-            button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.html(VuFind.translate('more_ellipsis'));
-            button.removeAttr('disabled');
-          } else {
-            button.remove();
-          }
+
+      const overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
+      VuFind.facetList.getContent(overrideParams).then(data => {
+        $(data).find('.js-facet-item').each(function eachItem() {
+          button.before($(this).prop('outerHTML'));
         });
+        const list = $(data).find('.js-facet-item');
+        if (list.length && $(data).find('.js-facet-next-page').length) {
+          button.attr('data-page', page + 1);
+          button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
+          button.html(VuFind.translate('more_ellipsis'));
+          button.removeAttr('disabled');
+        } else {
+          button.remove();
+        }
+      });
       return false;
     });
-    var margin = 230;
+    const margin = 230;
     $('#modal').on('show.bs.modal', function facetListHeight() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });
@@ -390,6 +304,8 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
 function registerSideFacetTruncation() {
   VuFind.truncate.initTruncate('.truncate-facets', '.facet__list__item');
+  // Only top level is truncatable with hierarchical facets:
+  VuFind.truncate.initTruncate('.truncate-hierarchical-facets', '> li');
 }
 
 VuFind.listen('VuFind.sidefacets.loaded', registerSideFacetTruncation);

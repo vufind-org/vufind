@@ -183,13 +183,13 @@ class SearchRequestModel
                 case 'filters':
                     $cnt = 1;
                     foreach ($values as $filter) {
-                        if (substr($filter, 0, 6) == 'LIMIT|') {
+                        if (str_starts_with($filter, 'LIMIT|')) {
                             $this->addLimiter(substr($filter, 6));
-                        } elseif (substr($filter, 0, 7) == 'EXPAND:') {
+                        } elseif (str_starts_with($filter, 'EXPAND:')) {
                             $this->addExpander(substr($filter, 7));
-                        } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
+                        } elseif (str_starts_with($filter, 'SEARCHMODE:')) {
                             $this->searchMode = substr($filter, 11, null);
-                        } elseif (substr($filter, 0, 15) == 'PublicationDate') {
+                        } elseif (str_starts_with($filter, 'PublicationDate')) {
                             $this->addLimiter($this->formatDateLimiter($filter));
                         } else {
                             $this->addFilter("$cnt,$filter");
@@ -377,21 +377,6 @@ class SearchRequestModel
     }
 
     /**
-     * Verify whether or not a string ends with certain characters
-     *
-     * @param string $valueToCheck    Value to check the ending characters of
-     * @param string $valueToCheckFor Characters to check for
-     *
-     * @return bool
-     */
-    protected static function endsWith(
-        string $valueToCheck,
-        string $valueToCheckFor
-    ): bool {
-        return substr($valueToCheck, -strlen($valueToCheckFor)) === $valueToCheckFor;
-    }
-
-    /**
      * Determines whether or not a querystring parameter is indexed
      *
      * @param string $value parameter key to check
@@ -400,8 +385,8 @@ class SearchRequestModel
      */
     public static function isParameterIndexed($value)
     {
-        //Indexed parameter names end with '-x'
-        return static::endsWith($value, '-x');
+        // Indexed parameter names end with '-x'
+        return str_ends_with($value, '-x');
     }
 
     /**

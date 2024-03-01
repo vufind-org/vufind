@@ -45,7 +45,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @var string
      */
-    protected $defaultTreeRenderer = 'JSTree';
+    protected $defaultTreeRenderer = 'HTMLTree';
 
     /**
      * Show Tree

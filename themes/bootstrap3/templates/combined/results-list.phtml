@@ -14,31 +14,65 @@
   $advancedSearchUrl = $advancedSearchAction
     ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
     : false;
-?>
-<?php
-    $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
-    $countsJs = <<<JS
-        function updateJumpLink_$classId() {
-          let count = $recordTotal;
-          count = count.toLocaleString();
 
-          const template = document.createElement('template');
-          template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
-          const span = template.content.children[0];
+  // Generate JS code that will move a given recommendation module over to the sidebar
+  $generateMoveRecommendationToSidebarJavascript = function ($recommendationClass) {
+    return <<<JS
+        function addRecommendation_$recommendationClass() {
+          const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
+          if (!recommendationContainer) {
+            console.error("Cannot find recommendation container for $recommendationClass");
+            return;
+          }
 
-          const link = document.querySelector('.combined-jump-links .$classId');
-          link.append(span);
+          const recommendation = document.getElementById('recommendation__$recommendationClass');
+          if (!recommendation) {
+            console.error("Cannot find recommendation for $recommendationClass");
+            return;
+          }
+
+          recommendationContainer.append(recommendation);
+          recommendation.style.display = 'inherit';
         }
 
         if (document.readyState != 'loading') {
-          updateJumpLink_$classId();
-        }
-        else {
-          document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
+          addRecommendation_$recommendationClass();
+        } else {
+          document.addEventListener('DOMContentLoaded', addRecommendation_$recommendationClass);
         }
         JS;
+  };
+
+  // Update result counts in jump links
+  $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+  $countsJs = <<<JS
+      function updateJumpLink_$classId() {
+        let count = $recordTotal;
+        count = count.toLocaleString();
+
+        const template = document.createElement('template');
+        template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
+        const span = template.content.children[0];
+
+        const combinedJumpLinks = document.querySelector('.combined-jump-links');
+        const link = combinedJumpLinks?.querySelector('.$classId');
+        if (link) {
+          link.append(span);
+          link.style.display = "inline";
+          combinedJumpLinks.style.visibility = "inherit";
+        }
+      }
+
+      if (document.readyState != 'loading') {
+        updateJumpLink_$classId();
+      }
+      else {
+        document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
+      }
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
+
 <?php if ($currentSearch['more_link'] ?? false): ?>
   <div class="pull-right flip">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
@@ -70,30 +104,7 @@
       <?php endforeach; ?>
       <?php foreach (($results->getRecommendations('side')) as $current):
         $recommendationClass = str_replace('\\', '_', $current::class);
-        $recommendationJs = <<<JS
-            function addRecommendation_$recommendationClass() {
-              const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
-              if (!recommendationContainer) {
-                console.error("Cannot find recommendation container for $recommendationClass");
-                return;
-              }
-
-              const recommendation = document.getElementById('recommendation__$recommendationClass');
-              if (!recommendation) {
-                console.error("Cannot find recommendation for $recommendationClass");
-                return;
-              }
-
-              recommendationContainer.append(recommendation);
-              recommendation.style.display = 'inherit';
-            }
-
-            if (document.readyState != 'loading') {
-              addRecommendation_$recommendationClass();
-            } else {
-              document.addEventListener('DOMContentLoaded', addRecommendation_$recommendationClass);
-            }
-            JS;
+        $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
         ?>
         <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
         <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
@@ -128,14 +139,25 @@
       <?=$this->recommend($current)?>
     <?php endif; ?>
   <?php endforeach; ?>
+  <?php foreach ($results->getRecommendations('noresults_side') as $current): ?>
+    <?php if (!in_array($current, $top)):
+      $recommendationClass = str_replace('\\', '_', $current::class);
+      $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
+      ?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+      <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
+        <?=$this->recommend($current)?>
+      </div>
+    <?php endif; ?>
+  <?php endforeach; ?>
 <?php else: ?>
   <?php
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
     $viewParams = [
       'results' => $results,
+      'request' => $view->request,
       'params' => $params,
-      'showCheckboxes' => $this->showCartControls || $this->showBulkOptions,
       'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
       'combined' => true, // Flag that we're in combined mode; may be useful to customize template behavior
     ];
