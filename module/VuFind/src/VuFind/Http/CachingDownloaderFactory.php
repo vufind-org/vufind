@@ -29,8 +29,8 @@
 
 namespace VuFind\Http;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Caching downloader factory.
