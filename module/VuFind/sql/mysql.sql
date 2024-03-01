@@ -410,6 +410,10 @@ CREATE TABLE `access_token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `notifications_broadcasts`
+--
+
 CREATE TABLE `notifications_broadcasts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `broadcast_id` int(11) DEFAULT NULL,
@@ -427,6 +431,10 @@ CREATE TABLE `notifications_broadcasts` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `notifications_pages`
+--
+
 CREATE TABLE `notifications_pages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `page_id` int(11) DEFAULT NULL,
@@ -441,3 +449,25 @@ CREATE TABLE `notifications_pages` (
   `language` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `login_token`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `login_token` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `series` varchar(255) NOT NULL,
+  `last_login` datetime NOT NULL,
+  `browser` varchar(255) NULL,
+  `platform` varchar(255) NULL,
+  `expires` int NOT NULL,
+  `last_session_id` varchar(255) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id_series` (`user_id`, `series`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;

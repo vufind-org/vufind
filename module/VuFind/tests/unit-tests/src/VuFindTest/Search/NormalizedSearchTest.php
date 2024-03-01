@@ -63,9 +63,10 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
      */
     protected function getResults(): Results
     {
+        $allMethods = get_class_methods(\VuFind\Search\Solr\Results::class);
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()
-            ->setMethodsExcept(['getUrlQuery', 'getUrlQueryHelperFactory'])
+            ->onlyMethods(array_diff($allMethods, ['getUrlQuery', 'getUrlQueryHelperFactory', 'minify', 'deminify']))
             ->getMock();
         $results->expects($this->any())
             ->method('getParams')

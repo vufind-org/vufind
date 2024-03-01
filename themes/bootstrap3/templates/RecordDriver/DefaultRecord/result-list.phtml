@@ -162,6 +162,15 @@
         <?php endif; ?>
       <?php endif; ?>
 
+      <?php if (
+        $this->searchOptions($this->driver->getSourceIdentifier())->displayCitationLinksInResults()
+        && $links = $driver->tryMethod('getCitations')
+      ): ?>
+        <div class="result-citation-links">
+          <?=$this->record($this->driver)->renderTemplate('data-citations.phtml', ['data' => $links])?>
+        </div>
+      <?php endif; ?>
+
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
         <?=$this->record($this->driver)->getLabelList() ?>
@@ -198,6 +207,16 @@
         <div class="savedLists">
           <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
+      <?php endif; ?>
+
+      <?php if ($this->driver->tryMethod('explainEnabled')): ?>
+        <?=
+          $this->record($this->driver)->renderTemplate('result-list-explain.phtml', [
+            'driver' => $this->driver,
+            'request' => $this->request,
+            'result' => $this->result,
+          ]);
+        ?>
       <?php endif; ?>
 
       <?php /* Hierarchy tree link */ ?>

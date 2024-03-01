@@ -44,7 +44,7 @@ use VuFind\DoiLinker\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
+class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
 
@@ -160,7 +160,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return array
      */
-    public function getTestSingleLookupData(): array
+    public static function getTestSingleLookupData(): array
     {
         return [
             [

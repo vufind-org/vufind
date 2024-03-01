@@ -51,6 +51,8 @@ return [
         ['file' => 'trigger_print.js', 'priority' => 350],
         ['file' => 'observer_manager.js', 'priority' => 360],
         ['file' => 'notifications.js', 'priority' => 370],
+        ['file' => 'openurl.js', 'priority' => 380],
+        ['file' => 'list_item_selection.js', 'priority' => 390],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -79,6 +81,7 @@ return [
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
+            'VuFind\View\Helper\Bootstrap3\BulkAction' => 'VuFind\View\Helper\Root\BulkActionFactory',
             'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -87,6 +90,7 @@ return [
             'VuFind\View\Helper\Notifications\Notifications' => 'VuFind\View\Helper\Notifications\NotificationsFactory',
         ],
         'aliases' => [
+            'bulkAction' => 'VuFind\View\Helper\Bootstrap3\BulkAction',
             'copyToClipboardButton' => 'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton',
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
@@ -147,6 +151,8 @@ return [
             'cart-empty' => 'FontAwesome:times',
             'cart-remove' => 'FontAwesome:minus-circle',
             'cite' => 'FontAwesome:asterisk',
+            'cites' => 'Unicode:275D',
+            'cited-by' => 'Unicode:275E',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
@@ -223,6 +229,11 @@ return [
             'format-videocassette' => 'FontAwesome:video-camera',
             'format-videodisc' => 'FontAwesome:laptop',
             'format-videoreel' => 'FontAwesome:video-camera',
+            'hierarchy-collapse' => 'Alias:facet-collapse',
+            'hierarchy-collection' => 'FontAwesome:folder-open-o',
+            'hierarchy-expand' => 'Alias:facet-expand',
+            'hierarchy-noncollapsible' => 'Alias:facet-noncollapsible',
+            'hierarchy-record' => 'FontAwesome:file-o',
             'hierarchy-tree' => 'FontAwesome:sitemap',
             'lightbox-close' => 'FontAwesome:times',
             'more' => 'FontAwesome:chevron-circle-right',

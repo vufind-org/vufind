@@ -32,6 +32,8 @@ namespace VuFind\Search\Primo;
 
 use VuFindSearch\ParamBag;
 
+use function in_array;
+
 /**
  * Primo Central Search Parameters
  *
@@ -151,11 +153,49 @@ class Params extends \VuFind\Search\Base\Params
                 $facetOp = '~' === $prefix ? 'OR' : 'NOT';
                 $field = substr($field, 1);
             }
-            $result[$field] = [
+            $result[] = [
+                'field' => $field,
                 'facetOp' => $facetOp,
                 'values' => $filter,
             ];
         }
         return $result;
+    }
+
+    /**
+     * Return an array structure containing information about all current filters.
+     *
+     * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
+     * the list (to be used as a complement to getCheckboxFacets()).
+     *
+     * @return array                       Field, values and translation status
+     */
+    public function getFilterList($excludeCheckboxFilters = false)
+    {
+        $result = parent::getFilterList($excludeCheckboxFilters);
+        if (isset($result['citing'])) {
+            unset($result['citing']);
+        }
+        if (isset($result['citedby'])) {
+            unset($result['citedby']);
+        }
+        return $result;
+    }
+
+    /**
+     * Get a user-friendly string to describe the provided facet field.
+     *
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
+     *
+     * @return string         Human-readable description of field.
+     */
+    public function getFacetLabel($field, $value = null, $default = null)
+    {
+        if (in_array($field, ['citing', 'citedby'])) {
+            return $field;
+        }
+        return parent::getFacetLabel($field, $value, $default);
     }
 }

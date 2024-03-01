@@ -3,71 +3,67 @@
   $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
-  $translations = $this->jsTranslations()->getJSONFromArray(
-      [
-        'showTree' => 'hierarchy_show_tree',
-        'hideTree' => 'hierarchy_hide_tree',
-      ]
-  );
-
-  $this->inlineScript(
-      \Laminas\View\Helper\HeadScript::SCRIPT,
-      "var hierarchySettings = {\n"
-      . '    lightboxMode: ' . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
-      . '    fullHierarchy: ' . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
-      . "};\n"
-      . "VuFind.addTranslations($translations);\n",
-      'SET'
-  );
-  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
-  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
-  echo $this->inlineScript();
 ?>
-<?php if (count($hierarchyTreeList) > 0): ?>
-  <div id="treeSelector">
-    <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
-      <?php if ($activeTree == $hierarchy): ?>
-        <?=$this->icon('hierarchy-tree') ?>
-        <?=$this->escapeHtml($hierarchyTitle)?>
-      <?php else: ?>
-        <?=$this->icon('hierarchy-tree', ['class' => 'text-muted']) ?>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
-      <?php endif; ?>
-    <?php endforeach; ?>
-  </div>
-<?php endif; ?>
-<?php if ($activeTree): ?>
-  <div id="hierarchyTreeHolder">
+<div class="hierarchy-tree-container js-hierarchy-tree-container">
+  <?php if (count($hierarchyTreeList) > 0): ?>
+    <div class="hierarchy-tree-selector<?=count($hierarchyTreeList) === 1 ? ' hierarchy-tree-selector__single' : ''?>">
+      <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
+        <?php if ($activeTree == $hierarchy): ?>
+          <?=$this->icon('hierarchy-tree') ?>
+          <?=$this->escapeHtml($hierarchyTitle)?>
+        <?php else: ?>
+          <?=$this->icon('hierarchy-tree', ['class' => 'text-muted']) ?>
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($activeTree): ?>
+    <?php if (!$this->tab->isFullHierarchyVisible()): ?>
+      <div class="hierarchy-tree-toggle-full">
+        <label class="js-toggle-full-tree hidden">
+          <input type="checkbox" class="js-show-full-tree">
+          <?=$this->transEsc('hierarchy_show_tree')?>
+        </label>
+      </div>
+    <?php endif; ?>
     <?php if ($this->tab->searchActive()): ?>
-      <div id="treeSearch" class="form-inline hidden">
-        <input type="text" id="treeSearchText" class="form-control search-query" value="">
-        <select class="form-control" id="treeSearchType" name="type">
+      <div class="form-inline hidden hierarchy-tree-search-form js-tree-search">
+        <input type="text" class="form-control search-query js-search-text" value="">
+        <select class="form-control js-search-type" name="type">
           <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
           <option value="Title"><?=$this->transEsc('Title')?></option>
         </select>
-        <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Search') ?>">
-        <?=$this->icon('spinner', ['class' => 'hidden', 'id' => 'treeSearchLoadingImg']) ?>
+        <input type="submit" class="btn btn-default js-submit" value="<?=$this->transEscAttr('Search') ?>">
+        <?=$this->icon('spinner', 'js-load-indicator hidden') ?>
       </div>
-      <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->transEsc('nohit_heading')?></div>
-      <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', ['%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()])?></div>
+      <div class="js-search-error alert alert-danger hidden"><?=$this->transEsc('An error has occurred')?></div>
+      <div class="js-no-results alert alert-danger hidden"><?=$this->transEsc('nohit_heading')?></div>
+      <div class="js-limit-reached alert alert-danger hidden">
+        <?=$this->translate('tree_search_limit_reached_html', ['%%limit%%' => $this->tab->getSearchLimit()])?>
+      </div>
     <?php endif; ?>
-    <div id="hierarchyLoading" class="hide"><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></div>
-    <div id="hierarchyTree" class="hierarchy-tree">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenRecordId">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($activeTree)?>" class="hiddenHierarchyId">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenHierarchySource">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->treeContext ?? 'Record')?>" class="hiddenContext">
-      <?php if ($this->layout()->getTemplate() != 'layout/lightbox'): ?>
-        <noscript>
-          <?php if ($this->config()->nonJavascriptSupportEnabled()): ?>
-            <ul class="fa-ul">
-              <?=$this->tab->renderTree($this->url('home'))?>
-            </ul>
-          <?php else: ?>
-            <?=$this->transEsc('Please enable JavaScript.')?>
-          <?php endif; ?>
-        </noscript>
-      <?php endif; ?>
-    </div>
-  </div>
-<?php endif; ?>
+    <div class="js-tree-loading hidden"><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></div>
+    <?php
+      $treeContainerAttrs = $this->htmlAttributes([
+        'class' => 'js-hierarchy-tree-placeholder',
+        'data-id' => $this->driver->getUniqueId(),
+        'data-source-id' => $this->driver->getSourceIdentifier(),
+        'data-hierarchy-id' => $activeTree,
+        'data-context' => $this->treeContext ?? 'Record',
+        'data-preview-element' => $this->treePreviewElement ?? '',
+        'data-lightbox' => $this->layout()->getTemplate() === 'layout/lightbox',
+        'data-full-hierarchy' => $this->tab->isFullHierarchyVisible(),
+      ]);
+    ?>
+    <div<?=$treeContainerAttrs?>></div>
+  <?php endif; ?>
+</div>
+<?php
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchy_tree.js');
+  $js = <<<JS
+        document.querySelectorAll('.js-hierarchy-tree-container').forEach((el) => VuFind.hierarchyTree.initTree(el));
+      JS;
+  echo $this->inlineScript()->appendScript($js);
+?>

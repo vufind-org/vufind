@@ -1,6 +1,8 @@
 /* #SCSS>
 $fa-font-path: "../../bootstrap3/css/fonts";
-@import "vendor/bootstrap";
+// Load bootstrap via include path to silence deprecation warnings
+// (see vendor subdirectory for the actual contents)
+@import "bootstrap/bootstrap";
 <#SCSS */
 /* #LESS> */
 @import "vendor/bootstrap/bootstrap";
@@ -9,7 +11,16 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "variables";
 // Import custom (non-vendor) mixins
 @import "mixins/mixins";
+
+/* #SCSS>
+$fa-font-path: "../../bootstrap3/css/fonts";
+// Load font-awesome via include path to silence deprecation warnings
+// (see vendor subdirectory for the actual contents)
+@import "font-awesome/font-awesome";
+<#SCSS */
+/* #LESS> */
 @import "vendor/font-awesome/font-awesome";
+/* <#LESS */
 
 @import "components/accessibility";
 @import "components/variables";
@@ -20,9 +31,9 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/channels";
 @import "components/cookie-consent/index";
 @import "components/devtools";
+@import "components/explain";
 @import "components/form";
 @import "components/icons";
-@import "components/js-tree";
 @import "components/keyboard";
 @import "components/lightbox";
 @import "components/offcanvas";
@@ -31,6 +42,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/trees";
 
 /**
  * Notes
@@ -107,7 +119,7 @@ label { cursor: pointer; }
 .navbar-nav button.dropdown-toggle {
   .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
   appearance: none;
-  padding: 15px;
+  padding: @navbar-padding-vertical;
   border: 0;
   color: inherit;
   background-color: transparent;
@@ -413,15 +425,32 @@ ul.list-group {
 }
 
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
-#login-dropdown a {
-  margin-right: .5rem;
-  padding-left: .5rem;
-  padding-right: .5rem;
+#login-dropdown {
+  a {
+    margin-right: .5rem;
+  }
+
+  .dropdown-menu {
+    width: 250px;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+
+    .account-menu {
+      display: block;
+    }
+
+    h3 {
+      margin-left: 0.5rem;
+    }
+  }
 }
-#login-dropdown .dropdown-menu { width: 250px; }
-#login-dropdown .dropdown-menu h4 { display: none; }
-#login-dropdown .dropdown-menu .myresearch-menu { display: none; }
+#login-dropdown
 #login-dropdown .dropdown-menu .account-menu { display: block; }
+.login-tokens-table {
+  margin-bottom: 0.5rem;
+  tbody > tr > td {
+    vertical-align: middle;
+  }
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { .clearfix(); }
@@ -451,7 +480,7 @@ ul.list-group {
 @media screen and (max-width: 768px) {
   .table-responsive {
     border: none;
-    thead {
+    thead, tfoot > tr > th {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -461,14 +490,14 @@ ul.list-group {
       clip: rect(0, 0, 0, 0);
       border: 0;
     }
-    tr {
+    tbody > tr {
       display: block;
       margin-bottom: @line-height-computed;
       border-left: 1px solid @table-border-color;
       border-right: 1px solid @table-border-color;
       border-bottom: 4px solid @table-border-color;
     }
-    td {
+    td, tbody > tr > th {
       display: flex;
       align-items: first baseline;
       background: #fff;
@@ -480,8 +509,11 @@ ul.list-group {
         content: attr(data-label);
       }
     }
-    td:nth-child(even) {
+    tbody > tr > td:nth-child(even) {
       background-color: @table-bg-accent;
+    }
+    tfoot > tr > td {
+      border-top: none;
     }
   }
 }
@@ -613,4 +645,12 @@ div.holding-notes {
   list-style-type: none;
   margin-bottom: 1rem;
   padding: 0;
+}
+
+/* --- Pagination --- */
+.pagination {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }

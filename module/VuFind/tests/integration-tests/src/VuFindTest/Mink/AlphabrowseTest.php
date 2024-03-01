@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -46,7 +45,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function titleSearchNormalizationProvider(): array
+    public static function titleSearchNormalizationProvider(): array
     {
         return [
             'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],
@@ -78,7 +77,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             $expectedFirstTitle,
-            $this->findCss($page, 'table.alphabrowse td.title')->getText()
+            $this->findCssAndGetText($page, 'table.alphabrowse td.title')
         );
     }
 
@@ -92,8 +91,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=lcc&from=PS3552.R878+T47+2011');
         $page = $session->getPage();
-        $extras = $this->findCss($page, 'table.alphabrowse td.lcc ~ td');
-        $text = $extras->getText();
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.lcc ~ td');
         $this->assertStringContainsString('<HTML> The Basics', $text);
     }
 }

@@ -29,9 +29,7 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
-use Laminas\Config\Config;
-use VuFind\Connection\LibGuides;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function count;
 use function intval;
@@ -128,6 +126,12 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     protected $useLibGuidesAlternateNames = true;
 
     /**
+     * URL to a list of all available databases, for display in the results list,
+     * or false to omit.
+     */
+    protected $linkToAllDatabases = false;
+
+    /**
      * Callable for LibGuides connector
      *
      * @var callable
@@ -197,6 +201,9 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
 
             $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames
                 ?? $this->useLibGuidesAlternateNames;
+
+            $this->linkToAllDatabases = $databasesConfig->linkToAllDatabases
+                ?? $this->linkToAllDatabases;
         }
     }
 
@@ -339,5 +346,15 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             $this->putCachedData('libGuidesAZ-nameToDatabase', $nameToDatabase);
         }
         return $nameToDatabase;
+    }
+
+    /**
+     * Get a URL to a list of all available databases, if configured.
+     *
+     * @return string The URL, or null.
+     */
+    public function getLinkToAllDatabases()
+    {
+        return $this->linkToAllDatabases;
     }
 }

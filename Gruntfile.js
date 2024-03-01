@@ -1,6 +1,9 @@
 module.exports = function(grunt) {
   const fs = require("fs");
 
+  // Load dart-sass
+  grunt.loadNpmTasks('grunt-dart-sass');
+
   // Local custom tasks
   if (fs.existsSync("./Gruntfile.local.js")) {
     require("./Gruntfile.local.js")(grunt);
@@ -16,6 +19,7 @@ module.exports = function(grunt) {
     // initialize search path with directory containing LESS file
     var retVal = [];
     retVal.push(parts.join('/'));
+    retVal.push(parts.join('/') + '/vendor/');
 
     // Iterate through theme.config.php files collecting parent themes in search path:
     while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
@@ -39,6 +43,7 @@ module.exports = function(grunt) {
 
       parts[1] = matches[1];
       retVal.push(parts.join('/') + '/');
+      retVal.push(parts.join('/') + '/vendor/');
     }
     return retVal;
   }
@@ -72,15 +77,19 @@ module.exports = function(grunt) {
       }
     },
     // SASS compilation
-    scss: {
-      sass: {
+    'scss': {
+      'dart-sass': {
         options: {
           outputStyle: 'compressed',
+          quietDeps: true
         }
       }
     },
     'check:scss': {
-      sass: {
+      'dart-sass': {
+        options: {
+          quietDeps: true
+        }
       }
     },
 
@@ -207,13 +216,13 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('scss', function sassScan() {
-    grunt.config.set('sass', getSassConfig(this.data.options, false));
-    grunt.task.run('sass');
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, false));
+    grunt.task.run('dart-sass');
   });
 
   grunt.registerMultiTask('check:scss', function sassCheck() {
-    grunt.config.set('sass', getSassConfig(this.data.options, true));
-    grunt.task.run('sass');
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, true));
+    grunt.task.run('dart-sass');
   });
 
   grunt.registerTask('default', function help() {
@@ -240,9 +249,7 @@ module.exports = function(grunt) {
     for (var i in themeList) {
       if (Object.prototype.hasOwnProperty.call(themeList, i)) {
         var config = {
-          options: {
-            implementation: require("node-sass"),
-          },
+          options: {},
           files: [{
             expand: true,
             cwd: path.join('themes', themeList[i], 'scss'),
@@ -257,6 +264,8 @@ module.exports = function(grunt) {
           }
         }
         config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+        // This allows loading of styles from composer dependencies:
+        config.options.includePaths.push('vendor/');
 
         sassConfig[themeList[i]] = config;
       }

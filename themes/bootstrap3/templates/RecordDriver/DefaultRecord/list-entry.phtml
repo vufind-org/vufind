@@ -74,11 +74,11 @@
               <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
             <?php endif; ?>
             <?php $summInCollection = $this->driver->getContainingCollections(); ?>
-            <?php if (false && !empty($summInCollection)): ?>
+            <?php if (!empty($summInCollection)): ?>
               <?php foreach ($summInCollection as $collId => $collText): ?>
                 <div>
                   <b><?=$this->transEsc('in_collection_label')?></b>
-                  <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collid)?>">
+                  <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                     <?=$this->escapeHtml($collText)?>
                   </a>
                 </div>
@@ -187,6 +187,15 @@
             <?php endif; ?>
           <?php endif; ?>
           <br>
+
+          <?php if (
+            $this->searchOptions($this->driver->getSourceIdentifier())->displayCitationLinksInResults()
+            && $links = $driver->tryMethod('getCitations')
+          ): ?>
+            <div class="result-citation-links">
+              <?=$this->record($this->driver)->renderTemplate('data-citations.phtml', ['data' => $links])?>
+            </div>
+          <?php endif; ?>
 
           <?=$this->record($this->driver)->getFormatList() ?>
 

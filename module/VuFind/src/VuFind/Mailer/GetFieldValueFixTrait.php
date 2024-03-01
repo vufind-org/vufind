@@ -50,7 +50,9 @@ trait GetFieldValueFixTrait
      *
      * Overrides the original implementation to always enclose name in quotes.
      *
-     * @param HeaderInterface::FORMAT_* $format Return the value in Mime::Encoded or in Raw format
+     * @param bool $format Return the value in Mime::Encoded (HeaderInterface::FORMAT_ENCODED) or
+     * in Raw format (HeaderInterface::FORMAT_RAW). Using a constant from HeaderInterface is
+     * recommended instead of a raw boolean value.
      *
      * @return string
      */
