@@ -91,4 +91,97 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '#content a')
         );
     }
+
+    /**
+     * Data provider for testDirectoryHandling().
+     *
+     * @return array
+     */
+    public static function requestPathProvider(): array
+    {
+        return [
+            'main path en' => [
+                'en',
+                'test',
+                'MAIN LEVEL TEST',
+            ],
+            'main path de' => [
+                'de',
+                'test',
+                'MAIN LEVEL TEST',
+            ],
+            'main path fi' => [
+                'fi',
+                'test',
+                'FINNISH TEST',
+            ],
+            'sub path phtml' => [
+                'en',
+                'test/test',
+                'SUB LEVEL PHTML',
+            ],
+            'sub path md' => [
+                'en',
+                'test/testmd',
+                'SUB LEVEL MD',
+            ],
+            'sub sub path phtml' => [
+                'en',
+                'test/sub/test',
+                'SUB SUB LEVEL PHTML',
+            ],
+            'bad sub path phtml' => [
+                'en',
+                'test/sub/bad/test',
+                'An error has occurred',
+            ],
+            'bad path 1' => [
+                'en',
+                'test//testmd',
+                'An error has occurred',
+            ],
+            'bad path 2' => [
+                'en',
+                'test/.testmd',
+                'An error has occurred',
+            ],
+            'bad path 3' => [
+                'en',
+                '../../../local_theme_example/templates/content/example',
+                'Not Found',
+            ],
+        ];
+    }
+
+    /**
+     * Test directory handling.
+     *
+     * @param string $language Language
+     * @param string $path     Path to request
+     * @param string $expected Expected heading
+     *
+     * @dataProvider requestPathProvider
+     *
+     * @return void
+     */
+    public function testDirectoryHandling(string $language, string $path, string $expected): void
+    {
+        // Switch to the minktest theme:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'theme' => 'minktest',
+                        'language' => $language,
+                    ],
+                ],
+            ]
+        );
+        // Open the page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . "/Content/$path");
+        $page = $session->getPage();
+        // Confirm that the correct page was retrieved:
+        $this->assertEquals($expected, $this->findCssAndGetText($page, 'h1'));
+    }
 }

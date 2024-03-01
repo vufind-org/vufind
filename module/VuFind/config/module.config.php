@@ -36,7 +36,8 @@ $config = [
             'content-page' => [
                 'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
+                    // Note: %2F is needed for encoded slashes to match the route regex:
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z]([a-zA-Z0-9/_-]|%2[fF])*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
