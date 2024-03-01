@@ -266,7 +266,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         sort($tvals);
         $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
         // Remove a tag
-        $tags[0]->find('css', 'button')->click();
+        $this->clickCss($tags[0], 'button');
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         // Count tags with missing
