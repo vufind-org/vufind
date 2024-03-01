@@ -3,7 +3,7 @@
 /**
  * Factory for pages table.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) effective WEBWORK GmbH 2023.
  *
