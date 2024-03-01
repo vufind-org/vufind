@@ -178,7 +178,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     {
         $translate = new Translate();
         $translate->setTranslator(
-            $this->getMockTranslator(['default' => ['____' => 'success']])
+            $this->getMockTranslator(['default' => ['_28_29_3F_21' => 'success']])
         );
 
         $this->assertEquals('success', $translate('()?!'));
