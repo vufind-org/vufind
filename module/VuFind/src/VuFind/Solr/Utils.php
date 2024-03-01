@@ -29,6 +29,7 @@
 
 namespace VuFind\Solr;
 
+use function extension_loaded;
 use function strlen;
 
 /**
@@ -68,11 +69,12 @@ class Utils
      * Convert a raw string date (as, for example, from a MARC record) into a legal
      * Solr date string. Return null if conversion is impossible.
      *
-     * @param string $date Date to convert.
+     * @param string $date     Date to convert.
+     * @param bool   $rangeEnd Is this the end of a range?
      *
      * @return string|null
      */
-    public static function sanitizeDate($date)
+    public static function sanitizeDate($date, $rangeEnd = false)
     {
         // Strip brackets; we'll assume guesses are correct.
         $date = str_replace(['[', ']'], '', $date);
@@ -96,16 +98,25 @@ class Utils
                 // strtotime can only handle a limited range of dates; let's extract
                 // a year from the string and temporarily replace it with a known
                 // good year; we'll swap it back after the conversion.
+                $goodYear = '1999';
+
                 $year = preg_match('/[0-9]{4}/', $date, $matches)
                     ? $matches[0] : false;
-                if ($year) {
-                    $date = str_replace($year, '1999', $date);
+                if (false !== $year) {
+                    // Check for a leap year:
+                    if (extension_loaded('intl')) {
+                        $calendar = new \IntlGregorianCalendar();
+                        if ($calendar->isLeapYear($year)) {
+                            $goodYear = '1996';
+                        }
+                    }
+                    $date = str_replace($year, $goodYear, $date);
                 }
                 $time = @strtotime($date);
                 if ($time) {
                     $date = @date('Y-m-d', $time);
                     if ($year) {
-                        $date = str_replace('1999', $year, $date);
+                        $date = str_replace($goodYear, $year, $date);
                     }
                 } elseif ($year) {
                     // If the best we can do is extract a 4-digit year, that's better
@@ -159,6 +170,6 @@ class Utils
             }
         }
 
-        return "{$year}-{$month}-{$day}T00:00:00Z";
+        return "{$year}-{$month}-{$day}T" . ($rangeEnd ? '23:59:59Z' : '00:00:00Z');
     }
 }
