@@ -61,7 +61,7 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
                         'baz' => '',
                     ],
                     'fallback' => [
-                        'nonexistent' => 'actually exists'
+                        'nonexistent' => 'actually exists',
                     ],
                 ]
             )
