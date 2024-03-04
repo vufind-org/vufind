@@ -1335,6 +1335,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string      Formatted year.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function formatYearForDateRange($year, $rangeEnd = false)
     {
@@ -1375,6 +1377,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string     Formatted number.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function formatValueForNumericRange($num, $rangeEnd = false)
     {
