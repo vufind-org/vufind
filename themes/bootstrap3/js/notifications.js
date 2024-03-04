@@ -100,12 +100,6 @@ $(function() {
     }
 
     function toggleFormExternalUrl () {
-        /*$('.is_external_url_fields').each(function(){
-            $(this).prop('disabled', !isExternalUrl());
-        });
-        $('.is_not_external_url_fields').each(function(){
-            $(this).prop('disabled', isExternalUrl());
-        });*/
         if (isExternalUrl()) {
             $('.not_external_url_content').css('display', 'none');
             $('.external_url_content').css('display', 'block');
