@@ -16,4 +16,9 @@ await copyFile('node_modules/simple-keyboard-layouts/build/index.js', 'js/vendor
 // vanilla-cookieconsent
 await copyFile('node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js', 'js/vendor/cookieconsent.umd.js');
 
+// datatables.net-dt
+await copyFile('node_modules/datatables.net/js/jquery.dataTables.min.js', 'js/vendor/jquery.dataTables.min.js');
+await copyFile('node_modules/datatables.net-dt/css/jquery.dataTables.min.css', 'css/vendor/jquery.dataTables.min.css');
+await copyFile('node_modules/datatables.net-rowreorder/js/dataTables.rowReorder.min.js', 'js/vendor/dataTables.rowReorder.min.js');
+
 console.log('Done copying dependencies.');
