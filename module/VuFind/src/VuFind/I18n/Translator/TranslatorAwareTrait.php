@@ -173,7 +173,7 @@ trait TranslatorAwareTrait
         // Default case: deal with ordinary strings (or string-castable objects):
         $translation = $this->translateString((string)$str, $tokens, $default, $domain, $useIcuFormatter);
         // If we have fallback domains, apply them now:
-        while ($translation === (string)$str && !empty($fallbackDomains)) {
+        while ($translation === (string)($default ?? $str) && !empty($fallbackDomains)) {
             $domain = array_shift($fallbackDomains);
             $translation = $this->translateString(
                 (string)$str,

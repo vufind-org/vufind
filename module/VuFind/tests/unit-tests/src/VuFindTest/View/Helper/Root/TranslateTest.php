@@ -194,11 +194,16 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 'success',
                 $translate((string)$x, fallbackDomains: ['domain1', 'domain2', 'domain3'])
             );
-            // String format:
-            $this->assertEquals(
-                'success',
-                $translate("domain1::$x", fallbackDomains: ['domain2', 'domain3', 'default'])
-            );
+            // String format with no default:
+                $this->assertEquals(
+                    'success',
+                    $translate("domain1::$x", fallbackDomains: ['domain2', 'domain3', 'default'])
+                );
+            // String format with default set:
+                $this->assertEquals(
+                    'success',
+                    $translate("domain1::$x", default: 'foo', fallbackDomains: ['domain2', 'domain3', 'default'])
+                );
             // Array format:
             $this->assertEquals(
                 'success',
