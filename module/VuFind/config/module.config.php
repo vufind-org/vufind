@@ -36,7 +36,8 @@ $config = [
             'content-page' => [
                 'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
+                    // Note: %2F is needed for encoded slashes to match the route regex:
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z]([a-zA-Z0-9/_-]|%2[fF])*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
@@ -767,7 +768,7 @@ $staticRoutes = [
     'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
     'Overdrive/MyContent','Overdrive/Hold',
     'Pazpar2/Home', 'Pazpar2/Search',
-    'Primo/Advanced', 'Primo/Home', 'Primo/Search',
+    'Primo/Advanced', 'Primo/CitedBy', 'Primo/Cites', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
     'Search/Advanced',

@@ -22,7 +22,7 @@
 
   // Convenience variable:
   $account = $this->auth()->getManager();
-  $user = $this->auth()->isLoggedIn();
+  $user = $this->auth()->getUserObject();
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
@@ -56,7 +56,7 @@
     </div>
     <div class="search-controls">
       <?php if (isset($list)): ?>
-        <?php if ($list->editAllowed($account->isLoggedIn())): ?>
+        <?php if ($list->editAllowed($account->getUserObject())): ?>
           <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link icon-link">
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
@@ -87,8 +87,10 @@
     <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
   <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
-    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+    <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
+    <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->id)) ? '-' . $list->id : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
+      <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
       <ul class="record-list">
         <?php foreach ($this->results->getResults() as $i => $current): ?>
           <?=$this->record($current)->getListEntry($list, $user)?>

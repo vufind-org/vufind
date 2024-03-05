@@ -19,7 +19,7 @@
   <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->transactions)): ?>
     <nav class="search-header hidden-print">

@@ -2,12 +2,13 @@
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
 <?php endif; ?>
-<?php $user = $this->auth()->isLoggedIn(); ?>
+<?php $user = $this->auth()->getUserObject(); ?>
 <nav class="bulkActionButtons">
-  <div class="bulk-checkbox">
-    <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
-    <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
-  </div>
+  <?php
+  $socialConfig = $this->config()->get('config')['Social'];
+  $multiPageSelection = $socialConfig['multi_page_favorites_selection'] ?? true;
+  $checkboxSelectAllType = $socialConfig['checkbox_select_all_favorites_type'] ?? 'both';
+  ?>
   <ul class="action-toolbar">
     <?=
       $this->bulkAction()->button(
@@ -67,6 +68,27 @@
             ]
         )
       ?>
+    <?php endif; ?>
+  </ul>
+  <ul class="selection-controls-bar">
+    <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+      <li class="bulk-checkbox">
+        <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
+        <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
+      </li>
+    <?php endif; ?>
+    <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+      <li class="bulk-checkbox">
+        <div class="select-all-global hidden">
+          <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
+          <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
+        </div>
+      </li>
+    <?php endif; ?>
+    <?php if($multiPageSelection): ?>
+      <li>
+        <button type="button" class="clear-selection hidden"></button>
+      </li>
     <?php endif; ?>
   </ul>
 </nav>

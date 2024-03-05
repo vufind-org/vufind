@@ -1574,6 +1574,22 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'Catalog' => [
                     'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => 'Test agency',
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'itemUseRestrictionTypesForStatus' => 'In Library Use Only',
+                ],
+            ]
+        );
+        $driver->init();
+        $property = new \ReflectionProperty(\VuFind\ILS\Driver\XCNCIP2::class, 'itemUseRestrictionTypesForStatus');
+        $property->setAccessible(true);
+        $this->assertEquals(['In Library Use Only'], $property->getValue($driver));
+
+        $driver->setConfig(
+            [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
                     'agency' => 'Test agency',
                 ],
             ]

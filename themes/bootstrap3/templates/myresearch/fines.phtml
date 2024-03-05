@@ -14,7 +14,7 @@
   <h2><?=$this->transEsc('Your Fines')?></h2>
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>

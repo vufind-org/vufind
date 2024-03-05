@@ -163,16 +163,7 @@ VuFind.register('cart', function Cart() {
       : $(_form);
     $("#updateCart, #bottom_updateCart").off("click").on("click", function cartUpdate() {
       var elId = this.id;
-      var selected = [];
-      var addToSelected = function processCartFormValues() {
-        if (-1 === selected.indexOf(this.value)) {
-          selected.push(this.value);
-        }
-      };
-      var selectedInForm = $form.find('input[name="ids[]"]:checked');
-      var selectedFormAttr = $('input[form="' + $form.attr('id') + '"][name="ids[]"]:checked');
-      $(selectedInForm).each(addToSelected);
-      $(selectedFormAttr).each(addToSelected);
+      var selected = VuFind.listItemSelection.getAllSelected($form[0]);
       if (selected.length > 0) {
         var orig = getFullItems();
         $(selected).each(function cartCheckedItemsAdd() {
