@@ -35,14 +35,15 @@ var VuFind = (function VuFind() {
       listeners[event] = [];
     }
 
-    const listenFn = !once ? fn : (...args) => {
-      fn(...args);
-      // Automatically remove a listener we only want to run once
-      unlisten(event, arguments.callee);
-    };
+    listeners[event].push(fn);
 
-    listeners[event].push(listenFn);
-    return () => unlisten(event, listenFn);
+    if (once) {
+      listeners[event].push(() => {
+        unlisten(event, fn);
+      });
+    }
+
+    return () => unlisten(event, fn);
   }
 
   function emit(event, ...args) {
@@ -50,7 +51,12 @@ var VuFind = (function VuFind() {
       return;
     }
 
-    listeners[event].forEach((fn) => fn(...args));
+    // iterate over a copy of the listeners array
+    // this prevents listeners from being skipped
+    // if the listener before it is removed during execution
+    for (const fn of Array.from(listeners[event])) {
+      fn(...args);
+    }
   }
 
   // Module control
