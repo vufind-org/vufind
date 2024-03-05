@@ -771,7 +771,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test disable renewals configutaion
+     * Test disable renewals configuration
      *
      * @return void
      */

@@ -146,7 +146,7 @@ class Permission extends AbstractPlugin implements
                     // login" denied permission requirement, there is probably a
                     // configuration error somewhere; throw an exception rather than
                     // triggering an infinite login redirection loop.
-                    if ($this->authManager->isLoggedIn()) {
+                    if ($this->getIdentity()) {
                         throw new ForbiddenException(
                             'Trying to prompt login due to denied ' . $permission
                             . ' permission, but a user is already logged in; '

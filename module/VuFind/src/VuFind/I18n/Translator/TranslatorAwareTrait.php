@@ -93,6 +93,29 @@ trait TranslatorAwareTrait
     }
 
     /**
+     * Build a debug-mode translation
+     *
+     * @param string $domain Text domain
+     * @param string $str    String to translate
+     * @param array  $tokens Tokens to inject into the translated string
+     *
+     * @return string
+     */
+    protected function getDebugTranslation(string $domain, string $str, array $tokens): string
+    {
+        $targetString = $domain !== 'default' ? "$domain::$str" : $str;
+        $keyValueToString = function ($key, $val) {
+            return "$key = $val";
+        };
+        $tokenDetails = empty($tokens)
+            ? ''
+            : ' | [' .
+            implode(', ', array_map($keyValueToString, array_keys($tokens), array_values($tokens))) .
+            ']';
+        return "*$targetString$tokenDetails*";
+    }
+
+    /**
      * Translate a string (or string-castable object)
      *
      * @param string|object|array $target          String to translate or an array of text
@@ -102,25 +125,23 @@ trait TranslatorAwareTrait
      *                                             found (null for no default).
      * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
      * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function translate($target, $tokens = [], $default = null, $useIcuFormatter = false)
-    {
+    public function translate(
+        $target,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
 
         if ($this->getTranslatorLocale() == 'debug') {
-            $targetString = $domain !== 'default' ? "$domain::$str" : $str;
-            $keyValueToString = function ($key, $val) {
-                return "$key = $val";
-            };
-            $tokenDetails = empty($tokens)
-                ? ''
-                : ' | [' .
-                implode(', ', array_map($keyValueToString, array_keys($tokens), array_values($tokens))) .
-                ']';
-            return "*$targetString$tokenDetails*";
+            return $this->getDebugTranslation($domain, $str, $tokens);
         }
 
         // Special case: deal with objects with a designated display value:
@@ -150,7 +171,19 @@ trait TranslatorAwareTrait
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
-        return $this->translateString((string)$str, $tokens, $default, $domain, $useIcuFormatter);
+        $translation = $this->translateString((string)$str, $tokens, $default, $domain, $useIcuFormatter);
+        // If we have fallback domains, apply them now:
+        while ($translation === (string)($default ?? $str) && !empty($fallbackDomains)) {
+            $domain = array_shift($fallbackDomains);
+            $translation = $this->translateString(
+                (string)$str,
+                $tokens,
+                $default,
+                $domain,
+                $useIcuFormatter
+            );
+        }
+        return $translation;
     }
 
     /**
@@ -165,6 +198,8 @@ trait TranslatorAwareTrait
      *                                             found (null for no default).
      * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
      * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
@@ -173,7 +208,8 @@ trait TranslatorAwareTrait
         $target,
         $tokens = [],
         $default = null,
-        $useIcuFormatter = false
+        $useIcuFormatter = false,
+        $fallbackDomains = []
     ) {
         if (is_string($target)) {
             if (null === $default) {
@@ -181,7 +217,7 @@ trait TranslatorAwareTrait
             }
             $target = $prefix . $target;
         }
-        return $this->translate($target, $tokens, $default, $useIcuFormatter);
+        return $this->translate($target, $tokens, $default, $useIcuFormatter, $fallbackDomains);
     }
 
     /**

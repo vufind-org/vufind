@@ -108,7 +108,7 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->getAuthManager()->isLoggedIn()) && !empty($user->cat_username)) {
+        if (($user = $this->getAuthManager()->getUserObject()) && !empty($user->cat_username)) {
             return [
                 'cat_username' => $user->cat_username,
                 'cat_password' => $user->cat_password,
@@ -130,7 +130,7 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->getAuthManager()->isLoggedIn()) && !empty($user->cat_username)) {
+        if (($user = $this->getAuthManager()->getUserObject()) && !empty($user->cat_username)) {
             // Do we have a previously cached ILS account?
             if (isset($this->ilsAccount[$user->cat_username])) {
                 return $this->ilsAccount[$user->cat_username];
@@ -237,7 +237,7 @@ class ILSAuthenticator
      */
     protected function updateUser($catUsername, $catPassword, $patron)
     {
-        $user = $this->getAuthManager()->isLoggedIn();
+        $user = $this->getAuthManager()->getUserObject();
         if ($user) {
             $user->saveCredentials($catUsername, $catPassword);
             $this->getAuthManager()->updateSession($user);

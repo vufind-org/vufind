@@ -31,6 +31,7 @@ namespace VuFind\Auth;
 
 use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
+use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
@@ -379,7 +380,7 @@ class Manager implements
             // settings in config.ini. However, if the user is not logged in,
             // they are probably attempting something nasty and should be given
             // an error message.
-            if (!$this->isLoggedIn()) {
+            if (!$this->getIdentity()) {
                 throw $e;
             }
             $this->logout('');
@@ -581,8 +582,20 @@ class Manager implements
      * Checks whether the user is logged in.
      *
      * @return UserRow|false Object if user is logged in, false otherwise.
+     *
+     * @deprecated Use getIdentity() or getUserObject() instead.
      */
     public function isLoggedIn()
+    {
+        return $this->getUserObject();
+    }
+
+    /**
+     * Checks whether the user is logged in.
+     *
+     * @return UserRow|false Object if user is logged in, false otherwise.
+     */
+    public function getUserObject()
     {
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
@@ -639,13 +652,13 @@ class Manager implements
     }
 
     /**
-     * Get the identity
+     * Get the logged-in user's identity (null if not logged in)
      *
-     * @return \LmcRbacMvc\Identity\IdentityInterface|null
+     * @return ?IdentityInterface
      */
     public function getIdentity()
     {
-        return $this->isLoggedIn() ?: null;
+        return $this->getUserObject() ?: null;
     }
 
     /**
@@ -655,7 +668,7 @@ class Manager implements
      */
     public function checkForExpiredCredentials()
     {
-        if ($this->isLoggedIn() && $this->getAuth()->isExpired()) {
+        if ($this->getIdentity() && $this->getAuth()->isExpired()) {
             $this->logout(null, false);
             return true;
         }

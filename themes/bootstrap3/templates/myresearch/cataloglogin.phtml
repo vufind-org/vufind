@@ -21,7 +21,7 @@
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <?=$this->flashmessages()?>
     <p>
-      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
     </p>
     <p><?=$this->transEsc('cat_establish_account')?></p>
     <form method="post" action="<?=$this->serverUrl(true)?>" class="form-catalog-login">

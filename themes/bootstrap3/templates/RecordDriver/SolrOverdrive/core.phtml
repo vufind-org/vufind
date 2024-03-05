@@ -1,5 +1,5 @@
 <?php
-$user = $this->auth()->isLoggedIn();
+$user = $this->auth()->getUserObject();
 $avail = $this->driver->getOverdriveAvailability();
 $previews = $this->driver->getPreviewLinks();
 $od_id = $this->driver->getOverdriveID();

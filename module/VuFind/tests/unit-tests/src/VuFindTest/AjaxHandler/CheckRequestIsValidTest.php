@@ -49,7 +49,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Set up a CheckRequestIsValid handler for testing.
      *
-     * @param User|bool $user Return value for isLoggedIn() in auth manager
+     * @param User|bool $user Return value for getUserObject() in auth manager
      *
      * @return CheckRequestIsValid
      */

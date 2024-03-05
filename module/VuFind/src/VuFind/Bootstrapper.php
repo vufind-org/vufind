@@ -218,7 +218,7 @@ class Bootstrapper
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
         if (
-            ($user = $authManager->isLoggedIn())
+            ($user = $authManager->getUserObject())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);
