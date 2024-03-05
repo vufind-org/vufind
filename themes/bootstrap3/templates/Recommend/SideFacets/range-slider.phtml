@@ -2,7 +2,7 @@
   // Sanitize inputs:
   $sanitize = 'fulldate' === $this->facet['type']
     ? function ($val) {
-      return $this->dateTime()->convertToDisplayDate('U', strtotime(substr($val, 0, 10)));
+      return empty($val) ? $val : $this->dateTime()->convert('U', 'Y-m-d', strtotime(substr($val, 0, 10)));
     }
     : function ($val) {
       return preg_replace('/[^\d]*/', '', $val);
