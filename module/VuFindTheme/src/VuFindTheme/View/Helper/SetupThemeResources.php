@@ -29,6 +29,8 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\HeadMeta;
+
 use function count;
 use function in_array;
 use function is_array;
@@ -80,18 +82,37 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
      */
     protected function addMetaTags()
     {
-        // Set up encoding:
         $headMeta = $this->getView()->plugin('headMeta');
-        $headMeta()->prependHttpEquiv(
-            'Content-Type',
-            'text/html; charset=' . $this->container->getEncoding()
-        );
+        $headMeta->setAutoEscape(false);
+
+        $this->addHttpEquivMeta($headMeta);
 
         // Set up generator:
         $generator = $this->container->getGenerator();
         if (!empty($generator)) {
-            $headMeta()->appendName('Generator', $generator);
+            $headMeta()->appendName(
+                'Generator',
+                $headMeta->getEscaper()->escapeHtmlAttr($generator)
+            );
         }
+    }
+
+    /**
+     * Adding this meta tag is redundant, since we already include appropriate values
+     * in the real HTTP headers. However, Google Scholar support has requested that
+     * we retain this tag to help with their crawling process, and that escaping
+     * should be skipped for this attribute.
+     *
+     * @param HeadMeta $headMeta HeadMeta view helper
+     *
+     * @return void
+     */
+    protected function addHttpEquivMeta(HeadMeta $headMeta)
+    {
+        $headMeta()->prependHttpEquiv(
+            'Content-Type',
+            'text/html; charset=' . $this->container->getEncoding()
+        );
     }
 
     /**
