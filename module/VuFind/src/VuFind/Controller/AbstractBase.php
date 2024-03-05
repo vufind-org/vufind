@@ -331,7 +331,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getUser()
     {
-        return $this->getAuthManager()->isLoggedIn();
+        return $this->getAuthManager()->getUserObject();
     }
 
     /**
@@ -390,7 +390,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
-        if ($account->isLoggedIn() == false) {
+        if (!$account->getIdentity()) {
             return $this->forceLogin();
         }
 

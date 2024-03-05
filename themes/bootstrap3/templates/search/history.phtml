@@ -13,7 +13,7 @@
     = $parentBreadcrumb . '<li class="active">' . $this->transEsc('Search History') . '</li>';
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
-  $loggedInUser = $this->auth()->isLoggedIn();
+  $loggedInUser = $this->auth()->getUserObject();
 ?>
 
 <?php if ($saveSupported): // do not show menu toggle if not showing menu! ?>
