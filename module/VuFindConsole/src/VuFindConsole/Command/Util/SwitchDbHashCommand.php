@@ -171,12 +171,9 @@ class SwitchDbHashCommand extends Command
      */
     protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
     {
-        $pass = null;
-        if ($oldcipher && $row['cat_pass_enc'] ?? null !== null) {
-            $pass = $oldcipher->decrypt($row['cat_pass_enc']);
-        } else {
-            $pass = $row['cat_password'];
-        }
+        $pass = ($oldcipher && $row['cat_pass_enc'] ?? null !== null)
+            ? $oldcipher->decrypt($row['cat_pass_enc'])
+            : $row['cat_password'];
         $row['cat_password'] = null;
         $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
         $row->save();
