@@ -170,7 +170,7 @@ class Aleph extends AbstractBase implements
     protected $dlfport;
 
     /**
-     * Statuse considered as available
+     * Statuses considered as available
      *
      * @var array
      */

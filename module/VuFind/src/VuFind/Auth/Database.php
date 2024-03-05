@@ -447,7 +447,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Create a user row object from given parametes.
+     * Create a user row object from given parameters.
      *
      * @param string[]  $params Parameters returned from collectParamsFromRequest()
      * @param UserTable $table  The VuFind user table

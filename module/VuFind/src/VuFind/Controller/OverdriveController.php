@@ -174,7 +174,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      * @return array|bool|\Laminas\View\Model\ViewModel
      * @todo   Deal with situation that an unlogged in user requests
      *     an action but the action is no longer valid since they
-     *     already have the content on hold/checked out or do not have acceess
+     *     already have the content on hold/checked out or do not have access
      */
     public function holdAction()
     {
