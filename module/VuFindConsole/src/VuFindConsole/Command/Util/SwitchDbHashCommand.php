@@ -163,13 +163,13 @@ class SwitchDbHashCommand extends Command
      * Re-encrypt a row.
      *
      * @param UserRow|UserCardRow $row       Row to update
-     * @param BlockCipher         $oldcipher Old cipher
+     * @param ?BlockCipher        $oldcipher Old cipher (null for none)
      * @param BlockCipher         $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixRow($row, BlockCipher $oldcipher, BlockCipher $newcipher): void
+    protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
     {
         $pass = null;
         if ($oldcipher && $row['cat_pass_enc'] ?? null !== null) {

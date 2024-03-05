@@ -35,6 +35,7 @@ use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Config\Writer;
 use VuFind\Db\Table\User;
+use VuFind\Db\Table\UserCard;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
 /**
@@ -79,30 +80,42 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock table object
+     * Get mock user table object
      *
      * @return User
      */
-    protected function getMockTable()
+    protected function getMockUserTable()
     {
         return $this->prepareMock(User::class);
     }
 
     /**
+     * Get mock card table object
+     *
+     * @return UserCard
+     */
+    protected function getMockCardTable()
+    {
+        return $this->prepareMock(UserCard::class);
+    }
+
+    /**
      * Get mock command object
      *
-     * @param array $config Config settings
-     * @param User  $table  User table gateway
+     * @param array    $config    Config settings
+     * @param User     $userTable User table gateway
+     * @param UserCard $cardTable User table gateway
      *
      * @return SwitchDbhashCommand
      */
-    protected function getMockCommand(array $config = [], $table = null)
+    protected function getMockCommand(array $config = [], $userTable = null, $cardTable = null)
     {
         return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
                     new Config($config),
-                    $table ?? $this->getMockTable(),
+                    $userTable ?? $this->getMockUserTable(),
+                    $cardTable ?? $this->getMockCardTable()
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();
@@ -235,10 +248,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
-        $table = $this->getMockTable();
-        $table->expects($this->once())->method('select')
+        $userTable = $this->getMockUserTable();
+        $userTable->expects($this->once())->method('select')
             ->will($this->returnValue([]));
-        $command = $this->getMockCommand([], $table);
+        $cardTable = $this->getMockCardTable();
+        $cardTable->expects($this->once())->method('select')
+            ->will($this->returnValue([]));
+        $command = $this->getMockCommand([], $userTable, $cardTable);
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
@@ -315,10 +331,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $user = $this->getMockUserObject();
         $user->expects($this->once())->method('save');
-        $table = $this->getMockTable();
-        $table->expects($this->once())->method('select')
+        $userTable = $this->getMockUserTable();
+        $userTable->expects($this->once())->method('select')
             ->will($this->returnValue([$user]));
-        $command = $this->getMockCommand([], $table);
+        $cardTable = $this->getMockCardTable();
+        $cardTable->expects($this->once())->method('select')
+            ->will($this->returnValue([]));
+        $command = $this->getMockCommand([], $userTable, $cardTable);
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
