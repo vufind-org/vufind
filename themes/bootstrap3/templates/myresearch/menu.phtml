@@ -1,5 +1,5 @@
 <?php
-  $user = $this->auth()->isLoggedIn();
+  $user = $this->auth()->getUserObject();
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
@@ -31,7 +31,7 @@
         );
         $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
       ?>
-  
+
       <?php $lists = $this->userlist()->getListsForUser($user->id)?>
       <?php foreach ($lists as $current): ?>
         <?php $list = $current[0]; ?>

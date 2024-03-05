@@ -477,7 +477,7 @@ class OverdriveConnector implements
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email       The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notification
      *
      * @return \stdClass Object with result
      */
@@ -1038,7 +1038,7 @@ class OverdriveConnector implements
                     $result->status = true;
                     $result->message = 'hold_place_success_html';
                     $result->data = $response->holds;
-                    // Check for holds ready for chechout
+                    // Check for holds ready for checkout
                     foreach ($response->holds as $key => $hold) {
                         if (
                             !$hold->autoCheckout

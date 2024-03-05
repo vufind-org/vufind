@@ -125,7 +125,7 @@ return [
         ],
         'aliases' => [
             /**
-             * Icons can be assigned or overriden here
+             * Icons can be assigned or overridden here
              *
              * Format: 'icon' => [set:]icon[:extra_classes]
              * Icons assigned without set will use the defaultSet.

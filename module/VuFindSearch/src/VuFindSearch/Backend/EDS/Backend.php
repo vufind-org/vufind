@@ -590,20 +590,6 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Print a message.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     *
-     * @deprecated Use $this->debug directly.
-     */
-    protected function debugPrint($msg)
-    {
-        $this->debug($msg);
-    }
-
-    /**
      * Obtain the session token from the Session container. If it doesn't exist,
      * generate a new one.
      *

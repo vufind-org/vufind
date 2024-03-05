@@ -257,7 +257,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @param array $postParams Posted form data
      *
-     * @return array of reciepients, each consisting of an array with
+     * @return array of recipients, each consisting of an array with
      * name, email or null if not configured
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -345,7 +345,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return reponse that is shown after successful form submit.
+     * Return response that is shown after successful form submit.
      *
      * @return string
      */

@@ -9,7 +9,7 @@
         <strong><?=null === $comment->getUser()->getId() ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($firstname . ' ' . $lastname))?></strong><br>
         <small>
           <?=$this->escapeHtml($comment->getCreated()->format('Y-m-d H:i:s'))?>
-          <?php if (($user = $this->auth()->isLoggedIn()) && $comment->getUser()->getId() == $user->id): ?>
+          <?php if (($user = $this->auth()->getUserObject()) && $comment->getUser()->getId() == $user->id): ?>
             <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment', ['delete' => $comment->getId()]))?>" id="recordComment<?=$this->escapeHtml($comment->getId())?>" class="delete"><?=$this->transEsc('Delete')?></a>
           <?php endif; ?>
         </small>

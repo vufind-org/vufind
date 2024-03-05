@@ -30,6 +30,7 @@
 namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Webmozart\Glob\Glob;
 
 use function is_array;
 use function strlen;
@@ -354,7 +355,7 @@ class ThemeInfo
             $themePath = "$basePath/$theme/";
             foreach ($allPaths as $currentPath) {
                 $path = $themePath . $currentPath;
-                foreach (glob($path) as $file) {
+                foreach (Glob::glob($path) as $file) {
                     if (filetype($file) === 'dir') {
                         continue;
                     }

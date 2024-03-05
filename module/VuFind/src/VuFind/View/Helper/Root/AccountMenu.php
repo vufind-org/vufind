@@ -382,6 +382,6 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getUser(): User|bool
     {
-        return $this->getAuthHelper()->isLoggedIn();
+        return $this->getAuthHelper()->getUserObject();
     }
 }

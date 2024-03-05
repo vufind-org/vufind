@@ -75,7 +75,7 @@ class DeleteRecordCommentFactory implements \Laminas\ServiceManager\Factory\Fact
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
             $servicePluginManager->get(\VuFind\Db\Service\CommentsService::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $capabilities->getCommentSetting() !== 'disabled'
         );
     }
