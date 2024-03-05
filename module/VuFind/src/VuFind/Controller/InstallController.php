@@ -806,9 +806,9 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
-        $bcrypt = new Bcrypt();
         $userRows = $this->getTable('user')->getInsecureRows();
         if (count($userRows) > 0) {
+            $bcrypt = new Bcrypt();
             foreach ($userRows as $row) {
                 if ($row->password != '') {
                     $row->pass_hash = $bcrypt->create($row->password);
