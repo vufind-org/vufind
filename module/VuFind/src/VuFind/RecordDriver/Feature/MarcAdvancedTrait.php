@@ -1002,7 +1002,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first ISMN found for this record, or false if no one fonund
+     * Return first ISMN found for this record, or false if no one found
      *
      * @return mixed
      */

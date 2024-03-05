@@ -193,7 +193,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test failed configurate write.
+     * Test failed configuration write.
      *
      * @return void
      */

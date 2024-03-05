@@ -40,7 +40,7 @@ Clients:
     # be enabled for non-confidential clients.
     pkce: true
     # Whether the client is confidential (as opposed to a public one such as an
-    # in-browser app). Only condidential clients can be verified by the client
+    # in-browser app). Only confidential clients can be verified by the client
     # secret.
     isConfidential: false
     # Hash of a client secret. You can use the following command to get a hash for a

@@ -75,7 +75,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
     protected $mailer;
 
     /**
-     * Contructor
+     * Constructor
      *
      * @param RendererInterface $viewRenderer View renderer
      * @param Config            $config       Main config

@@ -415,7 +415,7 @@ abstract class AbstractBase implements
 
     /**
      * Verify that a username fulfills the username policy. Throws exception if
-     * the usernmae is invalid.
+     * the username is invalid.
      *
      * @param string $username Password to verify
      *
