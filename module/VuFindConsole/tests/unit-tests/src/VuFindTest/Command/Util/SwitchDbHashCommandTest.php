@@ -103,7 +103,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     new Config($config),
                     $userTable ?? $this->getMockUserTable(),
-                    $cardTable ?? $this->getMockCardTable()
+                    $cardTable ?? $this->getMockCardTable(),
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();
