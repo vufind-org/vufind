@@ -148,8 +148,8 @@ trait MarcAdvancedTrait
                 if (!empty($current)) {
                     if ($extended) {
                         $sourceIndicator = $result['i2'];
-                        $source = (isset($this->subjectSources[$sourceIndicator]))
-                            ? ($this->subjectSources[$sourceIndicator] ?? '')
+                        $source = isset($this->subjectSources[$sourceIndicator])
+                            ? $this->subjectSources[$sourceIndicator]
                             : $this->getSubfield($result, '2');
                         $retval[] = [
                             'heading' => $current,
