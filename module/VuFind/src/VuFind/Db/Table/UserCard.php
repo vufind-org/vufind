@@ -63,7 +63,7 @@ class UserCard extends Gateway
     }
 
     /**
-     * Get user_card rows with insecure passwords and/or catalog passwords
+     * Get user_card rows with insecure catalog passwords
      *
      * @return mixed
      */
