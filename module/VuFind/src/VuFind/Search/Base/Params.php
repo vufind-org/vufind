@@ -1331,11 +1331,14 @@ class Params
      * Support method for initDateFilters() -- normalize a year for use in a
      * year-based date range.
      *
-     * @param ?string $year Value to check for valid year.
+     * @param ?string $year     Value to check for valid year.
+     * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string      Formatted year.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function formatYearForDateRange($year)
+    protected function formatYearForDateRange($year, $rangeEnd = false)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
         $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
@@ -1354,14 +1357,15 @@ class Params
      * Support method for initFullDateFilters() -- normalize a date for use in a
      * year/month/day date range.
      *
-     * @param ?string $date Value to check for valid date.
+     * @param ?string $date     Value to check for valid date.
+     * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string      Formatted date.
      */
-    protected function formatDateForFullDateRange($date)
+    protected function formatDateForFullDateRange($date, $rangeEnd = false)
     {
         // Make sure date is valid; default to wildcard otherwise:
-        $date = $date ? SolrUtils::sanitizeDate($date) : null;
+        $date = $date ? SolrUtils::sanitizeDate($date, $rangeEnd) : null;
         return $date ?? '*';
     }
 
@@ -1369,11 +1373,14 @@ class Params
      * Support method for initNumericRangeFilters() -- normalize a year for use in
      * a date range.
      *
-     * @param ?string $num Value to format into a number.
+     * @param ?string $num      Value to format into a number.
+     * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string     Formatted number.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function formatValueForNumericRange($num)
+    protected function formatValueForNumericRange($num, $rangeEnd = false)
     {
         // empty strings are always wildcards:
         if ($num == '') {
@@ -1445,8 +1452,8 @@ class Params
 
                 // Apply filtering/validation if necessary:
                 if (is_callable($valueFilter)) {
-                    $from = call_user_func($valueFilter, $from);
-                    $to = call_user_func($valueFilter, $to);
+                    $from = call_user_func($valueFilter, $from, false);
+                    $to = call_user_func($valueFilter, $to, true);
                 }
 
                 // Build filter only if necessary:
