@@ -94,6 +94,7 @@
         "vufind-org/vufindhttp": "3.2.0",
         "vufind-org/vufind-marc": "1.1.0",
         "webfontkit/open-sans": "^1.0",
+        "webmozart/glob": "^4.6",
         "wikimedia/composer-merge-plugin": "2.1.0",
         "yajra/laravel-pdo-via-oci8": "3.4.2"
     },

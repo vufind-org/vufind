@@ -170,6 +170,37 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test translation of a key with illegal characters.
+     *
+     * @return void
+     */
+    public function testTranslationWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => ['_28_29_3F_21' => 'success']])
+        );
+
+        $this->assertEquals('success', $translate('()?!'));
+    }
+
+    /**
+     * Test default fallback after translation of a key with illegal characters when
+     * no matching translations are found.
+     *
+     * @return void
+     */
+    public function testTranslationDefaultsWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => []])
+        );
+
+        $this->assertEquals('()?!', $translate('()?!'));
+    }
+
+    /**
      * Test translation of a TranslatableString object with a loaded translator
      *
      * @return void

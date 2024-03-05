@@ -187,7 +187,7 @@ trait TranslatorAwareTrait
     /**
      * Get translation for a string
      *
-     * @param string $str             String to translate
+     * @param string $rawStr          String to translate
      * @param array  $tokens          Tokens to inject into the translated string
      * @param string $default         Default value to use if no translation is found
      *                                (null for no default).
@@ -198,19 +198,24 @@ trait TranslatorAwareTrait
      * @return string
      */
     protected function translateString(
-        $str,
+        $rawStr,
         $tokens = [],
         $default = null,
         $domain = 'default',
         $useIcuFormatter = false
     ) {
-        $msg = (null === $this->translator)
-            ? $str : $this->translator->translate($str, $domain);
+        if (null === $this->translator) {
+            $msg = $str = $rawStr;
+        } else {
+            $str = $this->sanitizeTranslationKey($rawStr);
+            $msg = $this->translator->translate($str, $domain);
+        }
 
         // Did the translation fail to change anything?  If so, use default:
-        if (null !== $default && $msg == $str) {
-            $msg = $default instanceof \VuFind\I18n\TranslatableStringInterface
-                ? $default->getDisplayString() : $default;
+        if ($msg == $str) {
+            $finalDefault = $default ?? $rawStr;
+            $msg = $finalDefault instanceof \VuFind\I18n\TranslatableStringInterface
+                ? $finalDefault->getDisplayString() : $finalDefault;
         }
 
         // Do we need to perform substitutions?
@@ -259,5 +264,27 @@ trait TranslatorAwareTrait
             return $parts;
         }
         return ['default', is_array($target) ? $parts[0] : $target];
+    }
+
+    /**
+     * Make sure there are not any illegal characters in the translation key
+     * that might prevent successful lookup in language files.
+     *
+     * @param string $key Key to sanitize
+     *
+     * @return string Sanitized key
+     */
+    protected function sanitizeTranslationKey(string $key): string
+    {
+        // The characters ()!? are not allowed in keys in the Lokalise translation
+        // platform, so they should not be allowed in our code. We'll replace them
+        // with underscore-prefixed, urlencode-inspired codes so that translations
+        // can still be provided if the input cannot be changed (e.g. if it comes
+        // from a third-party system).
+        return str_replace(
+            ['(', ')', '!', '?'],
+            ['_28', '_29', '_21', '_3F'],
+            $key
+        );
     }
 }

@@ -98,7 +98,7 @@ class PrimoController extends AbstractSearch
      */
     protected function performCitationSearch()
     {
-        if (!$id = $this->params()->fromQuery('lookfor')) {
+        if (!($id = trim($this->params()->fromQuery('lookfor', ''), '"'))) {
             return $this->forwardTo('Primo', 'Home');
         }
         $driver = $this->getRecordLoader()->load($id, $this->searchClassId);
