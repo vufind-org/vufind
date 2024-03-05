@@ -432,9 +432,20 @@ class User extends RowGateway implements
         $row = current($this->getUserCardService()->getLibraryCards($this->id, $id));
         if (!empty($row)) {
             $this->cat_username = $row->getCatUsername();
-            $this->cat_password = $row->getCatPassword();
-            $this->cat_pass_enc = $row->getCatPassEnc();
             $this->home_library = $row->getHomeLibrary();
+
+            // Make sure we're properly encrypting everything:
+            if ($this->getUserService()->passwordEncryptionEnabled()) {
+                $this->cat_password = null;
+                $this->cat_pass_enc = $row->getCatPassEnc();
+                if (empty($this->cat_pass_enc) && $row->getRawCatPassword()) {
+                    throw new \Exception('Unexpected raw password in library card ' . $row->getId());
+                }
+            } else {
+                $this->cat_password = $row->getRawCatPassword();
+                $this->cat_pass_enc = null;
+            }
+
             $this->save();
         }
     }

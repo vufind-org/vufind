@@ -101,21 +101,11 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
                 ->setCardName('')
                 ->setUser($user)
                 ->setCatUsername('')
-                ->setCatPassword('');
+                ->setRawCatPassword('');
         } else {
             $row = current($this->getLibraryCards($user, $id));
-
             if ($row === false) {
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
-            }
-            $userService = $this->getDbService(\VuFind\Db\Service\UserService::class);
-            if ($userService->passwordEncryptionEnabled()) {
-                $row->setCatPassword(
-                    $userService->encryptOrDecrypt(
-                        $row->getCatPassEnc(),
-                        false
-                    )
-                );
             }
         }
         return $row;
@@ -191,10 +181,10 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
         }
 
         if ($userService->passwordEncryptionEnabled()) {
-            $userCard->setCatPassword(null);
-            $userCard->setCatPassEn($userService->encryptOrDecrypt($password, true));
+            $userCard->setRawCatPassword(null);
+            $userCard->setCatPassEnc($userService->encryptOrDecrypt($password, true));
         } else {
-            $userCard->setCatPassword($password);
+            $userCard->setRawCatPassword($password);
             $userCard->setCatPassEnc(null);
         }
         try {
@@ -232,7 +222,7 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
                 ->setCreated(new \DateTime());
         }
         $userCard->setHomeLibrary($user->getHomeLibrary())
-            ->setCatPassword($user->getCatPassword())
+            ->setRawCatPassword($user->getRawCatPassword())
             ->setCatPassEnc($user->getCatPassEnc());
         try {
             $this->persistEntity($userCard);

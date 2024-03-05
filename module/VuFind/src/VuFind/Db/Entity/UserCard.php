@@ -190,9 +190,9 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Cat username setter
+     * Catalog username setter
      *
-     * @param string $catUsername Cat username
+     * @param string $catUsername Catalog username
      *
      * @return UserCard
      */
@@ -203,7 +203,7 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Get cat username.
+     * Get catalog username.
      *
      * @return string
      */
@@ -213,34 +213,34 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Cat password setter
+     * Raw catalog password setter
      *
      * @param ?string $catPassword Cat password
      *
-     * @return UserCard
+     * @return User
      */
-    public function setCatPassword(?string $catPassword): UserCard
+    public function setRawCatPassword(?string $catPassword): UserCard
     {
         $this->catPassword = $catPassword;
         return $this;
     }
 
     /**
-     * Get cat password.
+     * Get raw catalog password.
      *
      * @return ?string
      */
-    public function getCatPassword(): ?string
+    public function getRawCatPassword(): ?string
     {
         return $this->catPassword;
     }
 
     /**
-     * Cat encrypted password setter
+     * Encrypted catalog password setter
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return UserCard
+     * @return User
      */
     public function setCatPassEnc(?string $passEnc): UserCard
     {
@@ -249,7 +249,7 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Get cat encrypted password.
+     * Get encrypted catalog password.
      *
      * @return ?string
      */
@@ -259,9 +259,9 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Home library name setter
+     * Home library setter
      *
-     * @param ?string $homeLibrary Home Library
+     * @param ?string $homeLibrary Home library
      *
      * @return UserCard
      */
@@ -282,7 +282,7 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Created setter.
+     * Created date setter.
      *
      * @param DateTime $dateTime Created date
      *
@@ -295,7 +295,7 @@ class UserCard implements EntityInterface
     }
 
     /**
-     * Get created time.
+     * Get created date.
      *
      * @return DateTime
      */
@@ -330,7 +330,7 @@ class UserCard implements EntityInterface
     /**
      * User setter.
      *
-     * @param User $user User that created request
+     * @param User $user User that owns card
      *
      * @return UserCard
      */
