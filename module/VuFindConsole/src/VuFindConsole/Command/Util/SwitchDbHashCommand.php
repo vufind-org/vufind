@@ -219,7 +219,6 @@ class SwitchDbHashCommand extends Command
         );
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
-            $pass = null;
             if ($oldhash != 'none' && $row['cat_pass_enc'] ?? null !== null) {
                 try {
                     $oldcipher = new BlockCipher($oldCrypt);
