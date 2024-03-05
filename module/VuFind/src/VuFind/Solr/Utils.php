@@ -138,17 +138,17 @@ class Utils
         // If multiple dates are &'ed together, take just the first:
         [$date] = explode('&', $date);
 
-        // Default to January 1 if no month/day present:
+        // Default to start or end of range if no full date present:
         if (strlen($date) < 5) {
-            $month = $day = '01';
+            $month = $day = null;
         } else {
             // If we have year + month, parse that out:
             if (strlen($date) < 8) {
-                $day = '01';
+                $day = null;
                 if (preg_match('/^[0-9]{4}-([0-9]{1,2})/', $date, $matches)) {
                     $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
                 } else {
-                    $month = '01';
+                    $month = null;
                 }
             } else {
                 // If we have year + month + day, parse that out:
@@ -157,8 +157,29 @@ class Utils
                     $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
                     $day = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
                 } else {
-                    $month = $day = '01';
+                    $month = $day = null;
                 }
+            }
+        }
+        // Determine correct values for month and/or day if we don't have valid ones:
+        if (null === $month && null === $day) {
+            if ($rangeEnd) {
+                $month = '12';
+                $day = '31';
+            } else {
+                $month = '01';
+                $day = '01';
+            }
+        } elseif (null === $day) {
+            if ($rangeEnd) {
+                foreach (['31', '30', '29', '28'] as $dayCandidate) {
+                    if (checkdate($month, $dayCandidate, $year)) {
+                        $day = $dayCandidate;
+                        break;
+                    }
+                }
+            } else {
+                $day = '01';
             }
         }
 

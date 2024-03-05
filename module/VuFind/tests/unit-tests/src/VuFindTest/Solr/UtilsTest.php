@@ -95,6 +95,10 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
             ['29.02.2024', true, '2024-02-29T23:59:59Z'],         // leap year
             ['29.02.2023', false, '2023-03-01T00:00:00Z'],        // not a leap year
             ['29.02.2023', true, '2023-03-01T23:59:59Z'],         // not a leap year
+            ['2024', true, '2024-12-31T23:59:59Z'],
+            ['2024-11', true, '2024-11-30T23:59:59Z'],
+            ['2024-02', true, '2024-02-29T23:59:59Z'],            // leap year
+            ['2023-02', true, '2023-02-28T23:59:59Z'],            // not a leap year
         ];
     }
 
