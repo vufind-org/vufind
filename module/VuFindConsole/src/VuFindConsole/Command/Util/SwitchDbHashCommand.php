@@ -101,7 +101,7 @@ class SwitchDbHashCommand extends Command
      * @param UserCardTable $userCardTable UserCard table gateway
      * @param string|null   $name          The name of the command; passing null means
      * it must be set in configure()
-     * @param PathResolver $pathResolver Config file path resolver
+     * @param PathResolver  $pathResolver  Config file path resolver
      */
     public function __construct(
         Config $config,
