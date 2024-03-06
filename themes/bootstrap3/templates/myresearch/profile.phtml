@@ -85,7 +85,7 @@
   </div>
 
   <?php $user = $this->auth()->getUserObject(); ?>
-  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
+  <?php if ($user && $this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
     <h3><?=$this->transEsc('Saved Logins')?></h3>
     <?php $tokens = $user->getLoginTokens($user->id); ?>
     <?php if (!$tokens): ?>
