@@ -270,9 +270,7 @@
     handleSelect=false will use solr1.1 style error formatting
     -->
   <requestDispatcher handleSelect="true" >
-    <!--Make sure your system has some authentication before enabling remote streaming!  -->
-    <requestParsers enableRemoteStreaming="false"
-                    multipartUploadLimitInKB="2048"
+    <requestParsers multipartUploadLimitInKB="2048"
                     formdataUploadLimitInKB="2048"/>
 
     <!-- Set HTTP caching related parameters (for proxy caches and clients).
