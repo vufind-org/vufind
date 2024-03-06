@@ -29,18 +29,23 @@
 
 namespace VuFindTest\Mink;
 
+use VuFindTest\Feature\LiveDatabaseTrait;
+
 /**
  * Mink SSO test class.
+ *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
  * @category VuFind
  * @package  Tests
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
-class SsoTest extends \VuFindTest\Integration\MinkTestCase
+final class SsoTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+
     /**
      * Get config.ini override settings for testing SSO login.
      *
@@ -54,13 +59,16 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
                     'method' => 'SimulatedSSO',
                 ],
             ],
+            'SimulatedSSO' => [
+                'General' => [
+                    'username' => 'ssofakeuser1',
+                ],
+            ],
         ];
     }
 
     /**
      * Test changing a password.
-     *
-     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -131,5 +139,15 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that login link is back
         $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass(): void
+    {
+        static::removeUsers(['ssofakeuser1']);
     }
 }

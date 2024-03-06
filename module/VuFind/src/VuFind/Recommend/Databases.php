@@ -29,9 +29,7 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
-use Laminas\Config\Config;
-use VuFind\Connection\LibGuides;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function count;
 use function intval;

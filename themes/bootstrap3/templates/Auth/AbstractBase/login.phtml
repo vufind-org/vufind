@@ -14,6 +14,13 @@
         <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
       <?php endif; ?>
     </div>
+    <?php if ($account->supportsPersistentLogin()) : ?>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="remember_me"> <?=$this->transEsc('remember_me', ['%%days%%' => $account->getPersistentLoginLifetime()])?>
+        </label>
+      </div>
+    <?php endif; ?>
   </form>
 <?php else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" class="btn btn-link" data-lightbox-ignore><?=$this->transEsc('Institutional Login')?></a>

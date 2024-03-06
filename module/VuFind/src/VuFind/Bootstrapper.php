@@ -34,8 +34,6 @@ use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
-use function is_callable;
-
 /**
  * VuFind Bootstrapper
  *
@@ -246,6 +244,21 @@ class Bootstrapper
     }
 
     /**
+     * The login token manager needs to be informed after the theme has been initialized,
+     * so that it can send warning emails if necessary.
+     *
+     * @return void
+     */
+    protected function initLoginTokenManager(): void
+    {
+        $callback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->themeIsReady();
+        };
+        $this->events->attach('dispatch.error', $callback, 8000);
+        $this->events->attach('dispatch', $callback, 8000);
+    }
+
+    /**
      * Set up custom HTTP status based on exception information.
      *
      * @return void
@@ -297,7 +310,7 @@ class Bootstrapper
         $callback = function ($event) {
             if ($this->container->has(\VuFind\Log\Logger::class)) {
                 $log = $this->container->get(\VuFind\Log\Logger::class);
-                if (is_callable([$log, 'logException'])) {
+                if ($log instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.

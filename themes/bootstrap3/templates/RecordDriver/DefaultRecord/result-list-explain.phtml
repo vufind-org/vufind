@@ -1,0 +1,27 @@
+<?php
+  $recordId = $this->driver->getUniqueID();
+  $score = $this->results?->getScores()[$recordId] ?? false;
+  $maxScore = $this->results?->getMaxScore() ?? null;
+?>
+<?php if (!empty($this->request) && $score && $maxScore !== null && $maxScore > 0):?>
+  <?php
+  $this->headScript()->appendFile('vendor/chart.js');
+  $this->headScript()->appendFile('explain.js');
+  $link = $this->recordLinker()->getActionUrl($this->driver, 'Explain', $this->request);
+  ?>
+  <a class="result-list-explain" target="_blank" href="<?=$this->escapeHtmlAttr($link)?>">
+    <span class="js-result-list-explain" title="<?=$this->transEscAttr('explain_result_list_chart_title', ['%%score%%' => $score])?>">
+      <canvas class="bar-chart"
+              data-chart-label="<?=$this->transEscAttr('explain_relevance_score')?>"
+              data-chart-record-score="<?=$this->transEscAttr('explain_record_score')?>"
+              data-chart-difference-score="<?=$this->transEscAttr('explain_difference_score')?>"
+              data-chart-data="<?=$this->escapeHtmlAttr('[["item"],["value"]]')?>"
+              data-max-score="<?=$maxScore?>"
+              data-score="<?=$score?>"
+      ></canvas>
+    </span>
+    <span title="<?=$this->transEscAttr('explain_result_list_hint')?>">
+      <?= $this->icon('question-circle') ?>
+    </span>
+  </a>
+<?php endif; ?>

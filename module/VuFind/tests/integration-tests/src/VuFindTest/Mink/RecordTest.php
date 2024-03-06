@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class RecordTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -57,6 +56,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
+        $this->waitForPageLoad($page);
         $staffViewTab = $this->findCss($page, '.record-tabs .details a');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();

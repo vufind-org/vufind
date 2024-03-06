@@ -33,8 +33,8 @@ use Laminas\Config\Config;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
+use Laminas\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
-use VuFind\Log\Logger;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
@@ -62,6 +62,7 @@ use function in_array;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Blender config
@@ -604,14 +605,16 @@ class BackendTest extends TestCase
         $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $eds->expects($this->exactly(3))
-            ->method('search')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $eds,
+            'search',
+            [
                 [$query, 0, 20, $edsParams],
                 [$query, 0, 20, $edsParams],
                 [$query, 0, 0, $edsParams],
-            )->will($this->returnValue($collection));
-
+            ],
+            $collection
+        );
         $backends = [
             'EDS' => $eds,
         ];
@@ -811,9 +814,7 @@ class BackendTest extends TestCase
         $backend = $this->getBackend();
         $params = $this->getSearchParams(['blender_backend:Foo']);
 
-        $logger = $this->getMockBuilder(Logger::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('warn')
             ->with(
@@ -821,7 +822,7 @@ class BackendTest extends TestCase
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
             )
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }
@@ -1242,9 +1243,7 @@ class BackendTest extends TestCase
             ->method('call')
             ->will($this->returnCallback($callback));
 
-        $cache = $this->getMockForAbstractClass(
-            \Laminas\Cache\Storage\Adapter\AbstractAdapter::class
-        );
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $container = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         $params = [

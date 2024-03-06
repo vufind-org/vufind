@@ -1,5 +1,5 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -430,8 +430,8 @@ function escapeHtmlAttr(str) {
   });
 }
 
-function extractClassParams(selector) {
-  var str = $(selector).attr('class');
+function extractClassParams(el) {
+  var str = el.className;
   if (typeof str === "undefined") {
     return [];
   }
@@ -445,6 +445,7 @@ function extractClassParams(selector) {
   }
   return params;
 }
+
 // Turn GET string into array
 function deparam(url) {
   if (!url.match(/\?|&/)) {
@@ -538,10 +539,23 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
+  let numberOfSelected = document.querySelectorAll('.checkbox-select-item:checked').length;
+
+  if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
+  if (event.originalEvent !== undefined) {
+    let limit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfSelected > limit) {
+      VuFind.lightbox.alert(
+        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
+        'danger'
+      );
+      return false;
+    }
+  }
+
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;
@@ -557,116 +571,6 @@ function setupOffcanvas() {
       $('body.offcanvas').toggleClass('active');
     });
   }
-}
-
-function setupAutocomplete() {
-  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var $searchboxes = $('input.autocomplete');
-  $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
-    const $searchbox = $(searchboxElement);
-    const formattingRules = $searchbox.data('autocompleteFormattingRules');
-    const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
-    const typePrefix = $searchbox.data('autocompleteTypePrefix');
-    const getFormattingRule = function getAutocompleteFormattingRule(type) {
-      if (typeof(formattingRules) !== "undefined") {
-        if (typeof(formattingRules[type]) !== "undefined") {
-          return formattingRules[type];
-        }
-        // If we're using combined handlers, we may need to use a backend-specific wildcard:
-        const typeParts = type.split("|");
-        if (typeParts.length > 1) {
-          const backendWildcard = typeParts[0] + "|*";
-          if (typeof(formattingRules[backendWildcard]) !== "undefined") {
-            return formattingRules[backendWildcard];
-          }
-        }
-        // Special case: alphabrowse options in combined handlers:
-        const alphabrowseRegex = /^External:.*\/Alphabrowse.*\?source=([^&]*)/;
-        const alphabrowseMatches = alphabrowseRegex.exec(type);
-        if (alphabrowseMatches && alphabrowseMatches.length > 1) {
-          const alphabrowseKey = "VuFind:Solr|alphabrowse_" + alphabrowseMatches[1];
-          if (typeof(formattingRules[alphabrowseKey]) !== "undefined") {
-            return formattingRules[alphabrowseKey];
-          }
-        }
-        // Global wildcard fallback:
-        if (typeof(formattingRules["*"]) !== "undefined") {
-          return formattingRules["*"];
-        }
-      }
-      return "none";
-    };
-    const typeahead = new Autocomplete({
-      rtl: $(document.body).hasClass("rtl"),
-      maxResults: 10,
-      loadingString: VuFind.translate('loading_ellipsis'),
-    });
-
-    let cache = {};
-    const input = $searchbox[0];
-    typeahead(input, function vufindACHandler(query, callback) {
-      const classParams = extractClassParams(input);
-      const searcher = classParams.searcher;
-      const selectedType = classParams.type
-        ? classParams.type
-        : $(typeFieldSelector ? typeFieldSelector : '#searchForm_type').val();
-      const type = (typePrefix ? typePrefix : "") + selectedType;
-      const formattingRule = getFormattingRule(type);
-
-      const cacheKey = searcher + "|" + type;
-      if (typeof cache[cacheKey] === "undefined") {
-        cache[cacheKey] = {};
-      }
-
-      if (typeof cache[cacheKey][query] !== "undefined") {
-        callback(cache[cacheKey][query]);
-        return;
-      }
-
-      var hiddenFilters = [];
-      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-        hiddenFilters.push($(this).val());
-      });
-
-      $.ajax({
-        url: VuFind.path + '/AJAX/JSON',
-        data: {
-          q: query,
-          method: 'getACSuggestions',
-          searcher: searcher,
-          type: type,
-          hiddenFilters,
-        },
-        dataType: 'json',
-        success: function autocompleteJSON(json) {
-          const highlighted = json.data.suggestions.map(
-            (item) => ({
-              text: item.replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll(query, `<b>${query}</b>`),
-              value: formattingRule === 'phrase'
-                ? '"' + item.replaceAll('"', '\\"') + '"'
-                : item,
-            })
-          );
-          cache[cacheKey][query] = highlighted;
-          callback(highlighted);
-        }
-      });
-    });
-
-    // Bind autocomplete auto submit
-    if ($searchbox.hasClass("ac-auto-submit")) {
-      input.addEventListener("ac-select", (event) => {
-        const value = typeof event.detail === "string"
-          ? event.detail
-          : event.detail.value;
-        input.value = value;
-        input.form.submit();
-      });
-    }
-  });
 }
 
 /**
@@ -754,8 +658,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 $(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
-  // Setup search autocomplete
-  setupAutocomplete();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view

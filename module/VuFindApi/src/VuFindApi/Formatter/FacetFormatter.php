@@ -154,7 +154,7 @@ class FacetFormatter extends BaseFormatter
      */
     public function format($request, Results $results, $hierarchicalFacetData)
     {
-        if ($results->getResultTotal() == 0 || empty($request['facet'])) {
+        if ($results->getResultTotal() <= 0 || empty($request['facet'])) {
             return [];
         }
 

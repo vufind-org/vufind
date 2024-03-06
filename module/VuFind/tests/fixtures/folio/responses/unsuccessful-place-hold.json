@@ -8,12 +8,12 @@
         "expectedParams": [],
         "body": [ {"id":"mod-circulation-24.0.0"} ],
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "status": 500,
         "expectedPath": "/circulation/requests",
         "expectedMethod": "POST",
-        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2000-01-01\",\"pickupServicePointId\":\"desk1\"}/",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2000-01-01\",\"pickupServicePointId\":\"desk1\",\"requestType\":\"Page\"}/",
         "body": "{ \"status\": \"failure\", \"success\": false, \"errors\": [ { \"message\" : \"requestExpirationDate cannot be in the past\" } ] }" }
 ]

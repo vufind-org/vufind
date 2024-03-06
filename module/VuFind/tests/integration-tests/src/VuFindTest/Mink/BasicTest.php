@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class BasicTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -46,7 +45,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testHomePage()
+    public function testHomePage(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
@@ -59,7 +58,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAjaxStatus()
+    public function testAjaxStatus(): void
     {
         // Search for a known record:
         $session = $this->getMinkSession();
@@ -89,7 +88,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLanguage()
+    public function testLanguage(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
@@ -111,11 +110,51 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test theme switching by checking for a phrase from the example theme
+     *
+     * @return void
+     */
+    public function testThemeSwitcher(): void
+    {
+        // Turn on theme switcher
+        $themeList = 'sandal:sandal,example:local_theme_example';
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'alternate_themes' => $themeList,
+                        'selectable_themes' => $themeList,
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // Default theme does not have an h1:
+        $this->unfindCss($page, 'h1');
+
+        // Change the theme:
+        $this->clickCss($page, '.theme-selector.dropdown');
+        $this->clickCss($page, '.theme-selector.dropdown li:not(.active) a');
+        $this->waitForPageLoad($page);
+
+        // Check h1 again -- it should exist now
+        $this->assertEquals(
+            'Welcome to your custom theme!',
+            $this->findCss($page, 'h1')->getHTML()
+        );
+    }
+
+    /**
      * Test lightbox jump links
      *
      * @return void
      */
-    public function testLightboxJumps()
+    public function testLightboxJumps(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
