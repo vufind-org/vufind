@@ -230,7 +230,6 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     public function end($method = self::SET)
     {
         $method = strtoupper($method);
-        $ret = null;
         if ($method == self::SET) {
             $ret = $this->set(ob_get_contents());
         } elseif ($method == self::PREPEND) {

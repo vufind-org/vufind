@@ -832,7 +832,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     public function testToolbarVisibilityConfigCombinations()
     {
         $page = $this->getSearchResultsPage();
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,
@@ -840,7 +840,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => false,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => false,
@@ -848,7 +848,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => true,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => false,
@@ -856,7 +856,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => false,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,
@@ -864,7 +864,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => true,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,
@@ -872,7 +872,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => false,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => false,
@@ -880,7 +880,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => true,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,

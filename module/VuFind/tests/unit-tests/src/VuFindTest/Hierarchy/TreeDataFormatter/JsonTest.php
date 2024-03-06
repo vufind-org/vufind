@@ -113,6 +113,6 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         ];
         $json = new Json(true);
         $this->expectException(\Exception::class);
-        $result = $this->callMethod($json, $method, [$fields]);
+        $this->callMethod($json, $method, [$fields]);
     }
 }

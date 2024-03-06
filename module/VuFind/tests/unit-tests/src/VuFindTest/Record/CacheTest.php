@@ -57,7 +57,6 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $cache = $this->getRecordCache();
         $record1 = new Record();
         $record2 = new Record();
         $record3 = new Record();
