@@ -321,7 +321,6 @@ class Generator
                     // Write the current sitemap and clear all entries from it:
                     $writeMap($sitemap, $sitemapName);
                     $sitemap->clear();
-                    $count = 1;
                 }
                 $dataToAdd = (($languages || $frequency) && is_string($url))
                     ? compact('url', 'languages', 'frequency') : $url;
