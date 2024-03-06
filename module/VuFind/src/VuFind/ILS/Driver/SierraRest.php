@@ -1589,6 +1589,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
+                'limit' => 10000,
                 'fields' => 'item,assessedDate,description,chargeType,itemCharge'
                     . ',processingFee,billingFee,paidAmount',
             ],

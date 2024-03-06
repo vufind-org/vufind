@@ -144,6 +144,26 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set ILS login credentials without saving them.
+     *
+     * @param string $username Username to save
+     * @param string $password Password to save
+     *
+     * @return void
+     */
+    public function setCredentials($username, $password)
+    {
+        $this->cat_username = $username;
+        if ($this->passwordEncryptionEnabled()) {
+            $this->cat_password = null;
+            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+        } else {
+            $this->cat_password = $password;
+            $this->cat_pass_enc = null;
+        }
+    }
+
+    /**
      * Save ILS login credentials.
      *
      * @param string $username Username to save
@@ -154,15 +174,7 @@ class User extends RowGateway implements
      */
     public function saveCredentials($username, $password)
     {
-        $this->cat_username = $username;
-        if ($this->passwordEncryptionEnabled()) {
-            $this->cat_password = null;
-            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
-        } else {
-            $this->cat_password = $password;
-            $this->cat_pass_enc = null;
-        }
-
+        $this->setCredentials($username, $password);
         $result = $this->save();
 
         // Update library card entry after saving the user so that we always have a
