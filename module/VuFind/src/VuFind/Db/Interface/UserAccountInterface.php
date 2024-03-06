@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for representing a user account.
+ * Interface for representing a user account record.
  *
  * PHP version 8
  *
@@ -21,19 +21,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Auth;
+namespace VuFind\Db\Interface;
 
 /**
- * Interface for representing a user account.
+ * Interface for representing a user account record.
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site

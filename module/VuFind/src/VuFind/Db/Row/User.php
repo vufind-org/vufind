@@ -69,7 +69,7 @@ use function count;
  * @property string  $last_language
  */
 class User extends RowGateway implements
-    \VuFind\Auth\UserAccountInterface,
+    \VuFind\Db\Interface\UserAccountInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {

@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use LmcRbacMvc\Identity\IdentityInterface;
-use VuFind\Auth\UserAccountInterface;
+use VuFind\Db\Interface\UserAccountInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**

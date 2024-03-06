@@ -33,6 +33,7 @@ use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Cookie\CookieManager;
+use VuFind\Db\Interface\UserAccountInterface;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
