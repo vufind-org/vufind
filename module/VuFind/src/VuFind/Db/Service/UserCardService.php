@@ -64,6 +64,19 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
     }
 
     /**
+     * Get user_card rows with catalog usernames set
+     *
+     * @return array
+     */
+    public function getAllRowsWithUsernames()
+    {
+        $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCard::class)
+            . ' UC WHERE UC.catUsername IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getResult();
+    }
+
+    /**
      * Get all library cards associated with the user.
      *
      * @param int|User $user        User object or identifier

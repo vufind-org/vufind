@@ -34,10 +34,10 @@ use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Config\Writer;
+use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Row\UserCard as UserCardRow;
+use VuFind\Db\Service\UserCardService;
 use VuFind\Db\Table\User;
-use VuFind\Db\Table\UserCard;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
 /**
@@ -81,30 +81,30 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock card table object
      *
-     * @return UserCard
+     * @return UserCardService
      */
-    protected function getMockCardTable(): UserCard
+    protected function getMockCardService(): UserCardService
     {
-        return $this->createMock(UserCard::class);
+        return $this->createMock(UserCardService::class);
     }
 
     /**
      * Get mock command object
      *
-     * @param array     $config    Config settings
-     * @param ?User     $userTable User table gateway
-     * @param ?UserCard $cardTable User table gateway
+     * @param array            $config      Config settings
+     * @param ?User            $userTable   User table gateway
+     * @param ?UserCardService $cardService User table gateway
      *
      * @return SwitchDbhashCommand
      */
-    protected function getMockCommand(array $config = [], ?User $userTable = null, ?UserCard $cardTable = null)
+    protected function getMockCommand(array $config = [], ?User $userTable = null, ?UserCardService $cardService = null)
     {
         return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
                     new Config($config),
                     $userTable ?? $this->getMockUserTable(),
-                    $cardTable ?? $this->getMockCardTable(),
+                    $cardService ?? $this->getMockCardService(),
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();
@@ -243,10 +243,10 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $userTable = $this->getMockUserTable();
         $userTable->expects($this->once())->method('select')
             ->will($this->returnValue([]));
-        $cardTable = $this->getMockCardTable();
-        $cardTable->expects($this->once())->method('select')
+        $cardService = $this->getMockCardService();
+        $cardService->expects($this->once())->method('getAllRowsWithUsernames')
             ->will($this->returnValue([]));
-        $command = $this->getMockCommand([], $userTable, $cardTable);
+        $command = $this->getMockCommand([], $userTable, $cardService);
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
@@ -288,23 +288,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock row representing a card.
      *
-     * @return UserCardRow
+     * @return UserCard
      */
-    protected function getMockUserCardObject(): UserCardRow
+    protected function getUserCardEntity(): UserCard
     {
-        $data = [
-            'id' => 2,
-            'user_id' => 1,
-            'card_name' => 'my card ',
-            'cat_username' => 'foo',
-            'cat_password' => 'mypassword',
-        ];
-        $adapter = $this->createMock(\Laminas\Db\Adapter\Adapter::class);
-        $card = $this->getMockBuilder(\VuFind\Db\Row\UserCard::class)
-            ->setConstructorArgs([$adapter])
-            ->onlyMethods(['save'])
-            ->getMock();
-        $card->populate($data, true);
+        $card = new \VuFind\Db\Entity\UserCard();
+        $card->setRawCatPassword('mypassword');
         return $card;
     }
 
@@ -352,10 +341,10 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $userTable = $this->getMockUserTable();
         $userTable->expects($this->once())->method('select')
             ->will($this->returnValue([$user]));
-        $cardTable = $this->getMockCardTable();
-        $cardTable->expects($this->once())->method('select')
-            ->will($this->returnValue([]));
-        $command = $this->getMockCommand([], $userTable, $cardTable);
+        $cardService = $this->getMockCardService();
+        $cardService->expects($this->once())->method('getAllRowsWithUsernames')
+                ->will($this->returnValue([]));
+        $command = $this->getMockCommand([], $userTable, $cardService);
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
@@ -395,15 +384,16 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         );
         $writer->expects($this->once())->method('save')
             ->will($this->returnValue(true));
-        $card = $this->getMockUserCardObject();
-        $card->expects($this->once())->method('save');
+        $card = $this->getUserCardEntity();
         $userTable = $this->getMockUserTable();
         $userTable->expects($this->once())->method('select')
             ->will($this->returnValue([]));
-        $cardTable = $this->getMockCardTable();
-        $cardTable->expects($this->once())->method('select')
+        $cardService = $this->getMockCardService();
+        $cardService->expects($this->once())->method('getAllRowsWithUsernames')
             ->will($this->returnValue([$card]));
-        $command = $this->getMockCommand([], $userTable, $cardTable);
+        $cardService->expects($this->once())->method('persistEntity')
+            ->with($this->equalTo($card));
+        $command = $this->getMockCommand([], $userTable, $cardService);
         $command->expects($this->once())->method('getConfigWriter')
             ->will($this->returnValue($writer));
         $commandTester = new CommandTester($command);
@@ -416,7 +406,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             . " 0 user(s).\n\tConverting hashes for 1 card(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(null, $card['cat_password']);
-        $this->assertEquals('mypassword', $this->decode($card['cat_pass_enc']));
+        $this->assertEquals(null, $card->getRawCatPassword());
+        $this->assertEquals('mypassword', $this->decode($card->getCatPassEnc()));
     }
 }

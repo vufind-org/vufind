@@ -40,10 +40,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Entity\UserCard as UserCard;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Row\UserCard as UserCardRow;
+use VuFind\Db\Service\AbstractService;
+use VuFind\Db\Service\UserCardService;
 use VuFind\Db\Table\User as UserTable;
-use VuFind\Db\Table\UserCard as UserCardTable;
 
 use function count;
 
@@ -80,11 +81,11 @@ class SwitchDbHashCommand extends Command
     protected $userTable;
 
     /**
-     * UserCard table gateway
+     * UserCard database service
      *
-     * @var UserCardTable
+     * @var UserCardService
      */
-    protected $userCardTable;
+    protected $userCardService;
 
     /**
      * Config file path resolver
@@ -96,23 +97,23 @@ class SwitchDbHashCommand extends Command
     /**
      * Constructor
      *
-     * @param Config        $config        VuFind configuration
-     * @param UserTable     $userTable     User table gateway
-     * @param UserCardTable $userCardTable UserCard table gateway
-     * @param string|null   $name          The name of the command; passing null means
+     * @param Config          $config          VuFind configuration
+     * @param UserTable       $userTable       User table gateway
+     * @param UserCardService $userCardService UserCard database service
+     * @param string|null     $name            The name of the command; passing null means
      * it must be set in configure()
-     * @param PathResolver  $pathResolver  Config file path resolver
+     * @param PathResolver    $pathResolver    Config file path resolver
      */
     public function __construct(
         Config $config,
         UserTable $userTable,
-        UserCardTable $userCardTable,
+        UserCardService $userCardService,
         $name = null,
         PathResolver $pathResolver = null
     ) {
         $this->config = $config;
         $this->userTable = $userTable;
-        $this->userCardTable = $userCardTable;
+        $this->userCardService = $userCardService;
         $this->pathResolver = $pathResolver;
         parent::__construct($name);
     }
@@ -162,9 +163,9 @@ class SwitchDbHashCommand extends Command
     /**
      * Re-encrypt a row.
      *
-     * @param UserRow|UserCardRow $row       Row to update
-     * @param ?BlockCipher        $oldcipher Old cipher (null for none)
-     * @param BlockCipher         $newcipher New cipher
+     * @param UserRow      $row       Row to update
+     * @param ?BlockCipher $oldcipher Old cipher (null for none)
+     * @param BlockCipher  $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
@@ -177,6 +178,28 @@ class SwitchDbHashCommand extends Command
         $row['cat_password'] = null;
         $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
         $row->save();
+    }
+
+    /**
+     * Re-encrypt an entity.
+     *
+     * @param AbstractService $service   Database service
+     * @param UserCard        $entity    Row to update
+     * @param ?BlockCipher    $oldcipher Old cipher (null for none)
+     * @param BlockCipher     $newcipher New cipher
+     *
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    protected function fixEntity($service, $entity, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
+    {
+        $oldEncrypted = $entity->getCatPassEnc();
+        $pass = ($oldcipher && $oldEncrypted !== null)
+            ? $oldcipher->decrypt($oldEncrypted)
+            : $entity->getRawCatPassword();
+        $entity->setRawCatPassword(null);
+        $entity->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
+        $service->persistEntity($entity);
     }
 
     /**
@@ -260,7 +283,7 @@ class SwitchDbHashCommand extends Command
             $select->where->isNotNull('cat_username');
         };
         $users = $this->userTable->select($callback);
-        $cards = $this->userCardTable->select($callback);
+        $cards = $this->userCardService->getAllRowsWithUsernames();
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             try {
@@ -271,11 +294,11 @@ class SwitchDbHashCommand extends Command
         }
         if (count($cards) > 0) {
             $output->writeln("\tConverting hashes for " . count($cards) . ' card(s).');
-            foreach ($cards as $row) {
+            foreach ($cards as $entity) {
                 try {
-                    $this->fixRow($row, $oldcipher, $newcipher);
+                    $this->fixEntity($this->userCardService, $entity, $oldcipher, $newcipher);
                 } catch (\Exception $e) {
-                    $output->writeln("Problem with card {$row['id']}: " . (string)$e);
+                    $output->writeln("Problem with card {$entity->getId()}: " . (string)$e);
                 }
             }
         }
