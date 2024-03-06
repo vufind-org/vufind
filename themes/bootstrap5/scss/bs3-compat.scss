@@ -98,6 +98,14 @@ $line-height-computed: $line-height-base;
   @extend .visually-hidden;
 }
 
+.btn.btn-more {
+  background-color: revert;
+  &:hover {
+    background-color: revert;
+    border-color: #999;
+  }
+}
+
 .btn-default {
   @include button-outline-variant($text-color, $body-bg);
 }
@@ -350,8 +358,7 @@ h6, .h6 {
   @include clearfix;
   li {
     display: inline;
-    > a,
-    > span {
+    > a {
       display: inline-block;
       padding: 5px 14px;
       background-color: $pager-bg;
@@ -365,10 +372,12 @@ h6, .h6 {
       background-color: $pager-hover-bg;
     }
   }
+  .page-item:first-child .page-link, .page-item:last-child .page-link {
+    border-radius: $pager-border-radius;
+  }
 
   .next {
-    > a,
-    > span {
+    > a {
       float: right;
     }
   }
@@ -390,4 +399,8 @@ h6, .h6 {
       background-color: $pager-bg;
     }
   }
+}
+
+.pagination {
+  margin: $line-height-computed 0;
 }

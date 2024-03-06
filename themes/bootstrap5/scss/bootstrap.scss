@@ -686,3 +686,11 @@ div.holding-notes {
   margin-bottom: 1rem;
   padding: 0;
 }
+
+/* --- Pagination --- */
+.pagination {
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 24px 0;
+}

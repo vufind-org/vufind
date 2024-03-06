@@ -26,6 +26,9 @@ $nav-link-padding-y:                1rem !default;
 $navbar-nav-link-padding-x:         1rem !default;
 $navbar-light-color:                $primary !default;
 
+$navbar-padding-x:                  30px !default;
+$navbar-padding-y:                  0 !default;
+
 // Disable transitions to allow the bs3-compat.js to do its work without visual distractions:
 $enable-transitions: false !default;
 
@@ -41,3 +44,5 @@ $form-switch-bg-image-dark:         none !default;
 $navbar-dark-toggler-icon-bg:       none !default;
 $navbar-light-toggler-icon-bg:      none !default;
 
+$pagination-active-bg:              $primary !default;
+$pagination-active-border:          $primary !default;
