@@ -2010,8 +2010,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $inTransit = null;
-            $inTransitDate = null;
-            if ($status == 'In Transit') {
+	    $inTransitDate = null;
+	    if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null)
                 $transit = $avail['unavailabilities']['Item::Transfer'];
                 if (isset($transit['datesent']) && isset($transit['to_library'])) {
                     $inTransit = $this->getLibraryName($transit['to_library']);

@@ -53,7 +53,7 @@
         <?php else: ?>
           <?php /* Begin Unavailable Items (Recalls) */ ?>
           <?php if ($holding['in_transit'] ?? null): ?>
-              <span class="text-danger"><?=$this->transEsc('transit_to', ['%%location%%' => $holding['in_transit'], '%%date%%' => $holding['in_transit_date']])?></span>
+              <span class="text-danger"><?=$this->transEsc(empty($holding['in_transit_date']) ? 'transit_to' : 'transit_to_date', ['%%location%%' => $holding['in_transit'], '%%date%%' => $holding['in_transit_date'] ?? ''])?></span>
 	  <?php else: ?>
               <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
           <?php endif; ?>
