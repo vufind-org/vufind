@@ -32,6 +32,8 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\UserCardService;
+use VuFind\Db\Service\UserService;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -769,7 +771,7 @@ class InstallController extends AbstractBase
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
         $userRows = $this->getTable('user')->getInsecureRows();
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardRows = $this->getDbService(UserCardService::class)->getInsecureRows();
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
@@ -806,6 +808,7 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
+        $userService = $this->getDbService(UserService::class);
         $userRows = $this->getTable('user')->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
@@ -823,15 +826,13 @@ class InstallController extends AbstractBase
             $msg = count($userRows) . ' user row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardService = $this->getDbService(UserCardService::class);
+        $cardRows = $cardService->getInsecureRows();
         if (count($cardRows) > 0) {
-            // Create a dummy user for encryption purposes...
-            $dummyUser = $this->getTable('user')->createRow();
             foreach ($cardRows as $row) {
-                $dummyUser->setCredentials($row->cat_username, $row->cat_password);
-                $row->cat_pass_enc = $dummyUser->cat_pass_enc;
-                $row->cat_password = null;
-                $row->save();
+                $row->setCatPassEnc($userService->encryptOrDecrypt($row->getRawCatPassword()));
+                $row->setRawCatPassword(null);
+                $cardService->persistEntity($row);
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');

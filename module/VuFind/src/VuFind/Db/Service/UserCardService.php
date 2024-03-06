@@ -51,6 +51,19 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
     use \VuFind\Db\Service\ServiceAwareTrait;
 
     /**
+     * Get user_card rows with insecure catalog passwords
+     *
+     * @return array
+     */
+    public function getInsecureRows()
+    {
+        $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCard::class)
+            . ' UC WHERE UC.catPassword IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getResult();
+    }
+
+    /**
      * Get all library cards associated with the user.
      *
      * @param int|User $user        User object or identifier
