@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Abstract Relais Ajax Action
+ * Interface for representing a user account.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\AjaxHandler;
-
-use VuFind\Connection\Relais;
-use VuFind\Db\Row\User;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\Session\Settings as SessionSettings;
+namespace VuFind\Auth;
 
 /**
- * Abstract Relais Ajax Action
+ * Interface for representing a user account.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAwareInterface
+interface UserAccountInterface
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings $ss     Session settings
-     * @param Relais          $relais Relais connector
-     * @param ?User           $user   Logged in user (or null if none)
-     */
-    public function __construct(
-        SessionSettings $ss,
-        protected Relais $relais,
-        protected ?User $user
-    ) {
-        $this->sessionSettings = $ss;
-    }
 }

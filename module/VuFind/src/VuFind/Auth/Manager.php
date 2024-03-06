@@ -131,9 +131,9 @@ class Manager implements
     /**
      * Cache for current logged in user object
      *
-     * @var UserRow
+     * @var ?UserAccountInterface
      */
-    protected $currentUser = false;
+    protected $currentUser = null;
 
     /**
      * CSRF validator
@@ -549,7 +549,7 @@ class Manager implements
         $this->getAuth()->resetState();
 
         // Clear out the cached user object and session entry.
-        $this->currentUser = false;
+        $this->currentUser = null;
         unset($this->session->userId);
         unset($this->session->userDetails);
         $this->cookieManager->set('loggedOut', 1);
@@ -587,15 +587,15 @@ class Manager implements
      */
     public function isLoggedIn()
     {
-        return $this->getUserObject();
+        return $this->getUserObject() ?? false;
     }
 
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|false Object if user is logged in, false otherwise.
+     * @return ?UserAccountInterface Object if user is logged in, null otherwise.
      */
-    public function getUserObject()
+    public function getUserObject(): ?UserAccountInterface
     {
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
@@ -605,9 +605,9 @@ class Manager implements
                 $results = $this->userTable
                     ->select(['id' => $this->session->userId]);
                 $this->currentUser = count($results) < 1
-                    ? false : $results->current();
+                    ? null : $results->current();
                 // End the session since the logged-in user cannot be found:
-                if (false === $this->currentUser) {
+                if (null === $this->currentUser) {
                     $this->logout('');
                 }
             } elseif (isset($this->session->userDetails)) {
@@ -623,11 +623,11 @@ class Manager implements
                     $this->updateUser($user, null);
                     $this->updateSession($user);
                 } else {
-                    $this->currentUser = false;
+                    $this->currentUser = null;
                 }
             } else {
                 // not logged in
-                $this->currentUser = false;
+                $this->currentUser = null;
             }
         }
         return $this->currentUser;
@@ -658,7 +658,7 @@ class Manager implements
      */
     public function getIdentity()
     {
-        return $this->getUserObject() ?: null;
+        return $this->getUserObject();
     }
 
     /**
