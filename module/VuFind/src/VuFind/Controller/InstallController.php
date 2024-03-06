@@ -828,12 +828,10 @@ class InstallController extends AbstractBase
             // Create a dummy user for encryption purposes...
             $dummyUser = $this->getTable('user')->createRow();
             foreach ($cardRows as $row) {
-                if ($row->cat_password) {
-                    $dummyUser->setCredentials($row->cat_username, $row->cat_password);
-                    $row->cat_pass_enc = $dummyUser->cat_pass_enc;
-                    $row->cat_password = null;
-                    $row->save();
-                }
+                $dummyUser->setCredentials($row->cat_username, $row->cat_password);
+                $row->cat_pass_enc = $dummyUser->cat_pass_enc;
+                $row->cat_password = null;
+                $row->save();
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
