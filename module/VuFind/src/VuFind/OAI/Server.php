@@ -1156,17 +1156,17 @@ class Server
     protected function isBadDate($from, $until)
     {
         $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
-        if ($dt === false || array_sum($dt->getLastErrors())) {
+        if ($dt === false || $dt->getLastErrors()) {
             return true;
         }
         $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
-        if ($dt === false || array_sum($dt->getLastErrors())) {
+        if ($dt === false || $dt->getLastErrors()) {
             return true;
         }
-        //check for different date granularity
+        // Check for different date granularity
         if (strpos($from, 'T') && strpos($from, 'Z')) {
             if (strpos($until, 'T') && strpos($until, 'Z')) {
-                //this is good
+                // This is good
             } else {
                 return true;
             }
