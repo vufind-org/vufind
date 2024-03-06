@@ -71,9 +71,9 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/channels";
 @import "components/cookie-consent/index";
 @import "components/devtools";
+@import "components/explain";
 @import "components/form";
 @import "components/icons";
-@import "components/js-tree";
 @import "components/keyboard";
 @import "components/lightbox";
 @import "components/offcanvas";
@@ -82,6 +82,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/trees";
 
 /**
  * Notes
@@ -158,7 +159,7 @@ label { cursor: pointer; }
 .navbar-nav button.dropdown-toggle {
   @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
   appearance: none;
-  padding: 15px;
+  padding: $navbar-padding-y;
   border: 0;
   color: inherit;
   background-color: transparent;
@@ -464,15 +465,32 @@ ul.list-group {
 }
 
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
-#login-dropdown a {
-  margin-right: .5rem;
-  padding-left: .5rem;
-  padding-right: .5rem;
+#login-dropdown {
+  a {
+    margin-right: .5rem;
+  }
+
+  .dropdown-menu {
+    width: 250px;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+
+    .account-menu {
+      display: block;
+    }
+
+    h3 {
+      margin-left: 0.5rem;
+    }
+  }
 }
-#login-dropdown .dropdown-menu { width: 250px; }
-#login-dropdown .dropdown-menu h4 { display: none; }
-#login-dropdown .dropdown-menu .myresearch-menu { display: none; }
+#login-dropdown
 #login-dropdown .dropdown-menu .account-menu { display: block; }
+.login-tokens-table {
+  margin-bottom: 0.5rem;
+  tbody > tr > td {
+    vertical-align: middle;
+  }
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
