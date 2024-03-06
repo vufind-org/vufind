@@ -42,6 +42,8 @@ use Laminas\I18n\Translator\TextDomain;
  */
 class ExtendedIniNormalizer
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Normalize a directory on disk.
      *
@@ -132,14 +134,17 @@ class ExtendedIniNormalizer
     /**
      * Normalize a TextDomain or array to a string that can be written to file.
      *
-     * @param array|TextDomain $input Language values to format.
+     * @param array|TextDomain $rawInput Language values to format.
      *
      * @return string
      */
-    public function formatAsString($input)
+    public function formatAsString($rawInput)
     {
-        // This is easier to work with as an associative array:
-        $input = (array)$input;
+        // Sanitize keys before sorting:
+        $input = [];
+        foreach ($rawInput as $key => $value) {
+            $input[$this->sanitizeTranslationKey($key)] = $value;
+        }
 
         // Perform a case-insensitive sort:
         $sortCallback = function ($a, $b) {

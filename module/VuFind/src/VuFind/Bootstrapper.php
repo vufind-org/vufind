@@ -218,7 +218,7 @@ class Bootstrapper
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
         if (
-            ($user = $authManager->isLoggedIn())
+            ($user = $authManager->getUserObject())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);
@@ -251,11 +251,15 @@ class Bootstrapper
      */
     protected function initLoginTokenManager(): void
     {
-        $callback = function () {
+        $dispatchCallback = function () {
             $this->container->get(\VuFind\Auth\LoginTokenManager::class)->themeIsReady();
         };
-        $this->events->attach('dispatch.error', $callback, 8000);
-        $this->events->attach('dispatch', $callback, 8000);
+        $finishCallback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->requestIsFinished();
+        };
+        $this->events->attach('dispatch.error', $dispatchCallback, 8000);
+        $this->events->attach('dispatch', $dispatchCallback, 8000);
+        $this->events->attach('finish', $finishCallback, 8000);
     }
 
     /**

@@ -17,7 +17,7 @@
 
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->recordList)): ?>
     <?php if ($this->cancelForm || $this->updateForm): ?>
@@ -210,7 +210,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'holds'])?>
+  <?=$this->accountMenu()->render('holds')?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'holds', 'accountStatus' => $this->accountStatus]); ?>

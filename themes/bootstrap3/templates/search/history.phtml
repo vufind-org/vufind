@@ -13,7 +13,7 @@
     = $parentBreadcrumb . '<li class="active">' . $this->transEsc('Search History') . '</li>';
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
-  $loggedInUser = $this->auth()->isLoggedIn();
+  $loggedInUser = $this->auth()->getUserObject();
 ?>
 
 <?php if ($saveSupported): // do not show menu toggle if not showing menu! ?>
@@ -63,7 +63,7 @@
 
 <?php if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'history'])?>
+    <?=$this->accountMenu()->render('history')?>
   </div>
 <?php endif; ?>
 

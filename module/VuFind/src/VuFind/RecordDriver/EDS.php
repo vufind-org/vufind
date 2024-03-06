@@ -955,12 +955,9 @@ class EDS extends DefaultRecord
         foreach ($this->getItems(null, 'Publication Information') as $pub) {
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
-                $placeParts = explode('.', $matches[1]);
-                [$place, $pub, $date]
-                    = [trim($matches[1]), trim($matches[2]), $matches[3]];
+                [$place, $pub, $date] = [trim($matches[1]), trim($matches[2]), $matches[3]];
             } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
-                [$place, $pub, $date]
-                    = [trim($matches[1]), trim($matches[2]), ''];
+                [$place, $pub, $date] = [trim($matches[1]), trim($matches[2]), ''];
             } else {
                 [$place, $pub, $date] = ['', $pub['Data'], ''];
             }

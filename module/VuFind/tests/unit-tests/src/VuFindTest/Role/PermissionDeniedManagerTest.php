@@ -43,7 +43,7 @@ use VuFind\Role\PermissionDeniedManager;
 class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Sample configuration with varios config options.
+     * Sample configuration with various config options.
      *
      * @var array
      */

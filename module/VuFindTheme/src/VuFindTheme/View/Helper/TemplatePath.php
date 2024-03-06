@@ -93,7 +93,7 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
         $path = $this->pathPre . $targetTheme . $this->pathPost . $template;
         if (!file_exists($path)) {
             throw new \Exception(
-                'template not found in ' . $targetTheme . ': ' . $template
+                'Template not found in ' . $targetTheme . ': ' . $template
             );
         }
         return $path;

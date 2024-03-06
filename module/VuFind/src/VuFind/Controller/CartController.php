@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
+use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
@@ -50,6 +51,7 @@ use function strlen;
 class CartController extends AbstractBase
 {
     use Feature\BulkActionControllerTrait;
+    use ListItemSelectionTrait;
 
     /**
      * Session container
@@ -179,9 +181,7 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
 
         // Add items if necessary:
         if (strlen($this->params()->fromPost('empty', '')) > 0) {
@@ -259,9 +259,7 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         // Retrieve ID list:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', [])
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
 
         // Retrieve follow-up information if necessary:
         if (!is_array($ids) || empty($ids)) {
@@ -345,9 +343,7 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
@@ -378,9 +374,7 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', [])
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
 
         // Get export tools:
         $export = $this->export;
@@ -506,9 +500,7 @@ class CartController extends AbstractBase
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids', []))
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }

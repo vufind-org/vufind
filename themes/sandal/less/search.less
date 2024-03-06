@@ -9,6 +9,9 @@
     font-weight: 500;
     color: @mid-gray;
   }
+  .clear-selection {
+    font-weight: 500;
+  }
 }
 .search-header.search-header { padding: 0; } // Duplicate to increase specificity
 .search-stats > h2 { margin: 0; } // No results padding
@@ -157,7 +160,7 @@
   }
   @media (min-width: 768px) {
     height: 300px;
-    padding: 7rem calc(50vw - 50% + .5rem); // Align searchbox with container
+    padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
 }
 .searchHomeContent::after {
@@ -184,9 +187,6 @@
 
 .search { border: 0; }
 #searchForm {
-  padding-top: .5rem;
-  padding-bottom: calc(@search-tab-height + 1.5rem);
-
   .keyboard-selection {
     bottom: 2px;
 
@@ -219,21 +219,25 @@
   color: @input-color;
 }
 
+.nav.searchbox {
+  padding: .5rem 0 1rem 0;
+  margin: 0;
+}
+.navbar-form {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
 .nav.searchbox,
 #searchForm {
   position: relative;
   width: 100%;
 
   .nav-tabs {
-    position: absolute;
-    bottom: 0;
-    margin-top: .5rem;
-    border: 0;
     white-space: nowrap;
-  }
-  .nav-tabs > li {
-    float: none;
-    display: inline-block;
+    margin-bottom: 1rem;
+    border-bottom: none;
   }
   .nav-tabs a,
   .nav-tabs a:hover {
@@ -249,7 +253,6 @@
   }
   .nav-tabs a:hover {
     border-color: @white-50;
-    color: @header-light;
     background-color: transparent;
   }
   .nav-tabs .active a {
@@ -260,7 +263,6 @@
 @media (min-width: 768px) {
   #searchForm_lookfor,
   #searchForm_type { margin-bottom: 0; }
-  #searchForm { padding-bottom: @search-tab-height; }
   .nav.searchbox .nav-tabs a,
   #searchForm .nav-tabs a {
     height: @search-tab-height;
@@ -274,7 +276,6 @@
 .solr-adv-facet:last-child { padding-right: 0; }
 .adv_search_links { margin-bottom: 0; }
 .adv_search_links a { text-decoration: underline; }
-.tab-content .adv_search_links { margin-bottom: 1.5rem; } // Advanced links with search tabs
 
 /* ------ Combined ------ */
 #content > [name="bulkActionForm"] .bulkActionButtons {

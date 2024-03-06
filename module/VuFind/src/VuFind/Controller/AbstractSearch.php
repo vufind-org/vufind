@@ -869,7 +869,18 @@ class AbstractSearch extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
+        $contains = $this->params()->fromQuery('contains', '');
         $page = (int)$this->params()->fromQuery('facetpage', 1);
+        // Has the request been sent in an AJAX context?
+        $ajax = (int)$this->params()->fromQuery('ajax', 0);
+        $urlBase = $this->params()->fromQuery('urlBase', '');
+        $searchAction = $this->params()->fromQuery('searchAction', '');
+        // $urlBase and $searchAction should be relative URLs; if there is an
+        // absolute URL passed in, this may be a sign of malicious activity and
+        // we should fail.
+        if (str_contains($urlBase . $searchAction, '://')) {
+            throw new \Exception('Unexpected absolute URL found.');
+        }
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
@@ -882,6 +893,10 @@ class AbstractSearch extends AbstractBase
             ->get($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
+        if (!empty($contains)) {
+            $params->setFacetContains($contains);
+            $params->setFacetContainsIgnoreCase(true);
+        }
         $facets = $results->getPartialFieldFacets(
             [$facet],
             false,
@@ -893,22 +908,27 @@ class AbstractSearch extends AbstractBase
         $list = $facets[$facet]['data']['list'] ?? [];
         $facetLabel = $params->getFacetLabel($facet);
 
-        $view = $this->createViewModel(
-            [
-                'data' => $list,
-                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
-                'facet' => $facet,
-                'facetLabel' => $facetLabel,
-                'operator' => $this->params()->fromQuery('facetop', 'AND'),
-                'page' => $page,
-                'results' => $results,
-                'anotherPage' => $facets[$facet]['more'] ?? '',
-                'sort' => $sort,
-                'sortOptions' => $facetSortOptions,
-                'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
-            ]
-        );
-        $view->setTemplate('search/facet-list');
+        $viewParams = [
+            'contains' => $contains,
+            'data' => $list,
+            'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
+            'facet' => $facet,
+            'facetLabel' => $facetLabel,
+            'operator' => $this->params()->fromQuery('facetop', 'AND'),
+            'page' => $page,
+            'results' => $results,
+            'anotherPage' => $facets[$facet]['more'] ?? '',
+            'sort' => $sort,
+            'sortOptions' => $facetSortOptions,
+            'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
+            'active' => $sort,
+            'key' => $sort,
+            'urlBase' => $urlBase,
+            'searchAction' => $searchAction,
+        ];
+        $viewParams['delegateParams'] = $viewParams;
+        $view = $this->createViewModel($viewParams);
+        $view->setTemplate($ajax ? 'search/facet-list-content' : 'search/facet-list');
         return $view;
     }
 

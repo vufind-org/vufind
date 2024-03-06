@@ -37,6 +37,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function count;
 use function is_array;
 use function is_int;
 
@@ -260,29 +261,28 @@ class LoggerFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        $hasWriter = false;
+        // Add a no-op writer so fatal errors are not triggered if log messages are
+        // sent during the initialization process.
+        $noOpWriter = new \Laminas\Log\Writer\Noop();
+        $logger->addWriter($noOpWriter);
 
         // DEBUGGER
         if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
-            $hasWriter = true;
             $this->addDebugWriter($logger, $config->System->debug);
         }
 
         // Activate database logging, if applicable:
         if (isset($config->Logging->database)) {
-            $hasWriter = true;
             $this->addDbWriters($logger, $container, $config->Logging->database);
         }
 
         // Activate file logging, if applicable:
         if (isset($config->Logging->file)) {
-            $hasWriter = true;
             $this->addFileWriters($logger, $config->Logging->file);
         }
 
         // Activate email logging, if applicable:
         if (isset($config->Logging->email)) {
-            $hasWriter = true;
             $this->addEmailWriters($logger, $container, $config);
         }
 
@@ -291,26 +291,25 @@ class LoggerFactory implements FactoryInterface
             isset($config->Logging->office365)
             && isset($config->Logging->office365_url)
         ) {
-            $hasWriter = true;
             $this->addOffice365Writers($logger, $container, $config);
         }
 
         // Activate slack logging, if applicable:
         if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
-            $hasWriter = true;
             $this->addSlackWriters($logger, $container, $config);
         }
 
-        // Null (no-op) writer to avoid errors
-        if (!$hasWriter) {
-            $logger->addWriter(new \Laminas\Log\Writer\Noop());
+        // We're done now -- clean out the no-op writer if any other writers
+        // are found.
+        if (count($logger->getWriters()) > 1) {
+            $logger->removeWriter($noOpWriter);
         }
 
         // Add ReferenceId processor, if applicable:
         if ($referenceId = $config->Logging->reference_id ?? false) {
             if ('username' === $referenceId) {
                 $authManager = $container->get(\VuFind\Auth\Manager::class);
-                if ($user = $authManager->isLoggedIn()) {
+                if ($user = $authManager->getUserObject()) {
                     $processor = new \Laminas\Log\Processor\ReferenceId();
                     $processor->setReferenceId($user->username);
                     $logger->addProcessor($processor);

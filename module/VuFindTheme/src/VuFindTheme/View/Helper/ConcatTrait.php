@@ -144,7 +144,7 @@ trait ConcatTrait
     protected $concatIndex = null;
 
     /**
-     * Check if config is enamled for this file type
+     * Check if config is enabled for this file type
      *
      * @param string|bool $config Config for current application environment
      *

@@ -546,6 +546,18 @@ class Connector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
                 $item['doi_str_mv'][] = (string)$doi;
             }
 
+            $processCitations = function ($data): array {
+                $result = [];
+                foreach ($data as $item) {
+                    $result[] = 'cdi_' . (string)$item;
+                }
+                return $result;
+            };
+
+            // These require the cdi_ prefix in search, so add it right away:
+            $item['cites'] = $processCitations($prefix->PrimoNMBib->record->display->cites ?? []);
+            $item['cited_by'] = $processCitations($prefix->PrimoNMBib->record->display->citedby ?? []);
+
             // Remove dash-less ISSNs if there are corresponding dashed ones
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
             // true to the metadata)

@@ -52,9 +52,7 @@ class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Search for a known record:
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testsample1');
         $this->clickCss($page, '.btn.btn-primary');
@@ -69,7 +67,7 @@ class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.ajax-availability');
         $this->assertEquals(
             'Available',
-            $this->findCss($page, '.grid-body .result-formats.status .label.label-success')->getText()
+            $this->findCssAndGetText($page, '.grid-body .result-formats.status .label.label-success')
         );
     }
 }

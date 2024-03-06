@@ -343,20 +343,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Return a canned password policy hint when available
-     *
-     * @param ?string $pattern Current policy pattern
-     *
-     * @return ?string
-     *
-     * @deprecated Use getCannedPolicyHint instead
-     */
-    protected function getCannedPasswordPolicyHint($pattern)
-    {
-        return $this->getCannedPolicyHint('password', $pattern);
-    }
-
-    /**
      * Get a policy configuration
      *
      * @param string $type Policy type (password or username)
@@ -429,7 +415,7 @@ abstract class AbstractBase implements
 
     /**
      * Verify that a username fulfills the username policy. Throws exception if
-     * the usernmae is invalid.
+     * the username is invalid.
      *
      * @param string $username Password to verify
      *
