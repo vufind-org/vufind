@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Row;
 
-use Laminas\Crypt\BlockCipher as BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 
@@ -71,9 +69,11 @@ use function count;
 class User extends RowGateway implements
     \VuFind\Db\Interface\UserAccountInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
-    \LmcRbacMvc\Identity\IdentityInterface
+    \LmcRbacMvc\Identity\IdentityInterface,
+    \VuFind\Db\Service\ServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Service\ServiceAwareTrait;
 
     /**
      * Is encryption enabled?
@@ -225,11 +225,7 @@ class User extends RowGateway implements
      */
     protected function passwordEncryptionEnabled()
     {
-        if (null === $this->encryptionEnabled) {
-            $this->encryptionEnabled
-                = $this->config->Authentication->encrypt_ils_password ?? false;
-        }
-        return $this->encryptionEnabled;
+        return $this->getUserService()->passwordEncryptionEnabled();
     }
 
     /**
@@ -245,49 +241,7 @@ class User extends RowGateway implements
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
-        // Ignore empty text:
-        if (empty($text)) {
-            return $text;
-        }
-
-        $configAuth = $this->config->Authentication;
-
-        // Load encryption key from configuration if not already present:
-        if ($this->encryptionKey === null) {
-            if (empty($configAuth->ils_encryption_key)) {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'ILS password encryption on, but no key set.'
-                );
-            }
-
-            $this->encryptionKey = $configAuth->ils_encryption_key;
-        }
-
-        // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
-
-        // Check if OpenSSL error is caused by blowfish support
-        try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
-            if ($algo == 'blowfish') {
-                trigger_error(
-                    'Deprecated encryption algorithm (blowfish) detected',
-                    E_USER_DEPRECATED
-                );
-            }
-        } catch (\InvalidArgumentException $e) {
-            if ($algo == 'blowfish') {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'The blowfish encryption algorithm ' .
-                    'is not supported by your version of OpenSSL. ' .
-                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
-                );
-            } else {
-                throw $e;
-            }
-        }
-        $cipher->setKey($this->encryptionKey);
-        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+        return $this->getUserService()->encryptOrDecrypt($text, $encrypt);
     }
 
     /**
@@ -737,6 +691,16 @@ class User extends RowGateway implements
         $row->cat_pass_enc = $this->cat_pass_enc;
 
         $row->save();
+    }
+
+    /**
+     * Get a User service object.
+     *
+     * @return \VuFind\Db\Service\UserService
+     */
+    public function getUserService()
+    {
+        return $this->getDbService(\VuFind\Db\Service\UserService::class);
     }
 
     /**
