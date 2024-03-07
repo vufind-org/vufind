@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,15 +44,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/plugin',
+    description: 'Plugin generator'
+)]
 class PluginCommand extends AbstractContainerAwareCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/plugin';
-
     /**
      * Configure the command.
      *
@@ -60,7 +58,6 @@ class PluginCommand extends AbstractContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setDescription('Plugin generator')
             ->setHelp('Creates a new plugin class.')
             ->addArgument(
                 'class_name',
