@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c70e1e59a5f2f71b2cd7bfb35ef1343e",
+    "content-hash": "e4889448b18fc3ee99d7d74e41348c3e",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -6769,16 +6769,16 @@
         },
         {
             "name": "pear/http_request2",
-            "version": "v2.5.1",
+            "version": "v2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/HTTP_Request2.git",
-                "reference": "db4ce7844f838d3adca0513a77420c0fec22ed2d"
+                "reference": "f010a16ccddd1ee7d2ee085e8006ee712c00f706"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/db4ce7844f838d3adca0513a77420c0fec22ed2d",
-                "reference": "db4ce7844f838d3adca0513a77420c0fec22ed2d",
+                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/f010a16ccddd1ee7d2ee085e8006ee712c00f706",
+                "reference": "f010a16ccddd1ee7d2ee085e8006ee712c00f706",
                 "shasum": ""
             },
             "require": {
@@ -6824,7 +6824,7 @@
                 "issues": "https://github.com/pear/HTTP_Request2/issues",
                 "source": "https://github.com/pear/HTTP_Request2"
             },
-            "time": "2022-01-06T18:20:25+00:00"
+            "time": "2023-11-01T19:51:41+00:00"
         },
         {
             "name": "pear/net_url2",
