@@ -46,38 +46,17 @@ use VuFind\Db\Service\TagService as TagService;
 class GetRecordTags extends AbstractBase
 {
     /**
-     * Tags database service
-     *
-     * @var TagService
-     */
-    protected $tagService;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
      * Constructor
      *
      * @param TagService        $tagService Tags database service
-     * @param User|bool         $user       Logged in user (or false)
+     * @param ?User             $user       Logged in user (or null)
      * @param RendererInterface $renderer   View renderer
      */
-    public function __construct(TagService $tagService, $user, RendererInterface $renderer)
-    {
-        $this->tagService = $tagService;
-        $this->user = $user;
-        $this->renderer = $renderer;
+    public function __construct(
+        protected TagService $tagService,
+        protected ?User $user,
+        protected RendererInterface $renderer
+    ) {
     }
 
     /**

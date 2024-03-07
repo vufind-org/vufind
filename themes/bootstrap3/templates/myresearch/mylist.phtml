@@ -56,7 +56,7 @@
     </div>
     <div class="search-controls">
       <?php if (isset($list)): ?>
-        <?php if ($list->editAllowed($user ? $user->id : false)): ?>
+        <?php if ($list->editAllowed($user ? $user->id : null)): ?>
           <a href="<?=$this->url('editList', ['id' => $list->getId()]) ?>" class="btn btn-link icon-link">
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>

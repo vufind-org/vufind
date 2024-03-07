@@ -1230,7 +1230,7 @@ class MyResearchController extends AbstractBase
 
         // User must be logged in to edit list:
         $user = $this->getUser();
-        if ($user == false) {
+        if (!$user) {
             return $this->forceLogin();
         }
 

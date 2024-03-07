@@ -245,13 +245,13 @@ class UserList implements EntityInterface
     /**
      * Is the current user allowed to edit this list?
      *
-     * @param User|int|bool $user Logged-in user (false if none)
+     * @param User|int|null $user Logged-in user (null if none)
      *
      * @return bool
      */
     public function editAllowed($user): bool
     {
-        if ($user instanceof \VuFind\Db\Entity\User && $user->getId() == $this->getUser()->getId()) {
+        if ($user instanceof User && $user->getId() == $this->getUser()->getId()) {
             return true;
         }
         if (is_int($user) && $user == $this->getUser()->getId()) {

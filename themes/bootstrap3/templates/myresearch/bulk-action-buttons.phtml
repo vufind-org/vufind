@@ -20,7 +20,7 @@
           ]
       )
     ?>
-    <?php if ((null !== $this->list && $this->list->editAllowed($user ? $user->id : false)) || null === $this->list && $user): ?>
+    <?php if ((null !== $this->list && $this->list->editAllowed($user ? $user->id : null)) || null === $this->list && $user): ?>
       <?=
         $this->bulkAction()->button(
             'delete',

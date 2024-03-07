@@ -204,7 +204,7 @@ class UserListService extends AbstractService implements LoggerAwareInterface, S
      */
     public function save(UserList $list, $user = false)
     {
-        if (!$list->editAllowed($user)) {
+        if (!$list->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
         }
         if (empty($list->getTitle())) {
@@ -361,8 +361,10 @@ class UserListService extends AbstractService implements LoggerAwareInterface, S
         array $ids,
         string $source = DEFAULT_SEARCH_BACKEND
     ): void {
-        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
-        if (!$list->editAllowed($user)) {
+        if ($user) {
+            $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        }
+        if (!$list->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
         }
 
@@ -395,8 +397,10 @@ class UserListService extends AbstractService implements LoggerAwareInterface, S
      */
     public function delete($list, $user = false, $force = false)
     {
-        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
-        if (!$force && !$list->editAllowed($user)) {
+        if ($user) {
+            $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        }
+        if (!$force && !$list->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
         }
 
