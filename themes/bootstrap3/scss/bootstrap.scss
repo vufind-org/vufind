@@ -270,6 +270,15 @@ footer {
     top: .5rem;
     right: .25rem;
   }
+
+  body.rtl & {
+    padding-left: 3rem;
+    padding-right: 1rem;
+    .badge {
+      left: .25rem;
+      right: auto;
+    }
+  }
 }
 .browse-item.view-record {
   padding: 2px 4px;
@@ -653,60 +662,4 @@ div.holding-notes {
   flex: 1 1 100%;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-/* --- RTL --- */
-body.rtl {
-  /* Customization for advanced search */
-  .group {
-    padding-left: 10px;
-    padding-right: 25px;
-  }
-  .group [class^=col-] {
-    padding-left: 15px;
-    padding-right: 0;
-  }
-  .group .group-close {
-    left: .5em;
-    right: auto;
-  }
-
-  /* Customization for browse */
-  .browse.list-group {padding-left: 15px;}
-  .browse.list-group .list-group-item.view-record {text-align: left;}
-  .browse .fa.fa-angle-right:before {content: "\f104";}
-
-  /* Customization for cart */
-  .cart-controls .checkbox {
-    padding-left: 1em;
-    padding-right: 0;
-  }
-
-  /* Customization for icons */
-  i.fa.fa-cogs,
-  i.fa.fa-gears {
-    /* .fa-flip-horizontal */
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
-    -webkit-transform: scale(-1, 1);
-    -ms-transform: scale(-1, 1);
-    transform: scale(-1, 1);
-  }
-  i.fa.fa-long-arrow-left {content: "\f178";}
-  i.fa.fa-long-arrow-right {content: "\f177";}
-  i.fa.fa-chevron-left {content: "\f054";}
-  i.fa.fa-chevron-right {content: "\f053";}
-
-  /* Customization for search */
-  .result .checkbox { float: right; }
-
-  /* Customization for sidebar */
-  .sidebar .list-group:not(.filters) .title:after {float: left;}
-  .sidebar label:not(.list-group-item) {
-    margin-left: 0;
-    margin-right: 20px;
-  }
-
-  /* Customization for typeahead */
-  span.twitter-typeahead,
-  .search-query {direction: RTL !important;}
 }
