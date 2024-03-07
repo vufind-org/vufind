@@ -25,7 +25,7 @@
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
-<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', compact('user')); ?>
 
 <?php if (!empty($holdings['blocks'])):?>
   <div id="account-block-msg" class="alert alert-danger">
