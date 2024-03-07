@@ -93,6 +93,23 @@ $table-bg-accent: var(--bs-table-accent-bg) !default;
 $line-height-computed: $line-height-base;
 
 
+// *** Mixins ***
+@mixin opacity($opacity) {
+  opacity: $opacity;
+}
+
+@mixin label-variant($color) {
+  background-color: $color;
+
+  &[href] {
+    &:hover,
+    &:focus {
+      background-color: darken($color, 10%);
+    }
+  }
+}
+
+
 // *** Styles ***
 .sr-only {
   @extend .visually-hidden;
@@ -137,7 +154,6 @@ button.list-group-item {
 }
 
 .navbar-form {
-
   .form-control {
     display: block;
     width: 100%;
@@ -248,6 +264,7 @@ h6, .h6 {
 }
 .navbar nav {
   width: 100%;
+  margin-bottom: 7.5px;
 }
 .navbar-right {
   justify-content: right;
@@ -326,27 +343,17 @@ h6, .h6 {
 }
 
 
-// *** Mixins ***
-@mixin opacity($opacity) {
-  opacity: $opacity;
-}
-
-@mixin label-variant($color) {
-  background-color: $color;
-
-  &[href] {
-    &:hover,
-    &:focus {
-      background-color: darken($color, 10%);
-    }
-  }
-}
-
+// clearfix
 .container, .container-fluid {
   &::before, &::after {
     clear: both;
     display: table;
     content: " ";
+
+    // but not in header
+    header & {
+      display: none;
+    }
   }
 }
 

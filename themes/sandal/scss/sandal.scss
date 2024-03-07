@@ -26,7 +26,11 @@ body {
 .mainbody { padding-top: 1rem; }
 
 /* --- Header --- */
-.navbar { border-radius: 0; }
+.navbar {
+  border-radius: 0;
+  --bs-navbar-color: white;
+  --bs-emphasis-color-rgb: white;
+}
 .banner {
   width: auto;
   color: $white;
