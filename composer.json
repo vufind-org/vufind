@@ -87,7 +87,7 @@
         "swagger-api/swagger-ui": "5.9.0",
         "symfony/console": "5.4.28",
         "symfony/yaml": "5.4.23",
-        "vstelmakh/url-highlight": "3.0.2",
+        "vstelmakh/url-highlight": "3.0.3",
         "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.2.0",
         "vufind-org/vufindharvest": "5.2.0",
