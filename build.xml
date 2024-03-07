@@ -932,18 +932,19 @@ ${git_status}
   </target>
 
   <target name="update-bootstrap5-templates">
+    <property name="templatesdir" value="${srcdir}/themes/bootstrap5/templates" />
     <if>
-      <available file="${srcdir}/themes/bootstrap5/templates"></available>
+      <available file="${templatesdir}"></available>
       <then>
-        <delete dir="${srcdir}/themes/bootstrap5/templates" includeemptydirs="true" failonerror="true" />
+        <delete dir="${templatesdir}" includeemptydirs="true" failonerror="true" />
       </then>
     </if>
-    <mkdir dir="${srcdir}/themes/bootstrap5/templates"></mkdir>
-    <copy todir="${srcdir}/themes/bootstrap5/templates">
+    <mkdir dir="${templatesdir}"></mkdir>
+    <copy todir="${templatesdir}">
       <fileset dir="${srcdir}/themes/bootstrap3/templates" defaultexcludes="false" />
     </copy>
     <reflexive>
-      <fileset dir="${srcdir}/themes/bootstrap5/templates">
+      <fileset dir="${templatesdir}">
         <include pattern="**/*.phtml" />
       </fileset>
       <filterchain>
@@ -956,6 +957,7 @@ ${git_status}
         </replaceregexp>
       </filterchain>
     </reflexive>
+    <echo message="NOTE: Any files in git overwritten, check status!" />
   </target>
 
 </project>
