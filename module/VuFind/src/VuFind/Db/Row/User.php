@@ -525,7 +525,7 @@ class User extends RowGateway implements
     /**
      * Get a UserCard service object.
      *
-     * @return \VuFind\Db\Service\AbstractService
+     * @return \VuFind\Db\Service\UserCardService
      */
     public function getUserCardService()
     {
@@ -535,7 +535,7 @@ class User extends RowGateway implements
     /**
      * Get a User service object.
      *
-     * @return \VuFind\Db\Service\AbstractService
+     * @return \VuFind\Db\Service\UserService
      */
     public function getUserService()
     {
