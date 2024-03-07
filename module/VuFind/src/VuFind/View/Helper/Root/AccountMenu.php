@@ -77,7 +77,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
         return [
             [
                 'name' => 'favorites',
-                'label' => 'Favorites',
+                'label' => 'all_saved_items',
                 'route' => 'myresearch-favorites',
                 'icon' => 'user-favorites',
                 'checkMethod' => 'checkFavorites',
