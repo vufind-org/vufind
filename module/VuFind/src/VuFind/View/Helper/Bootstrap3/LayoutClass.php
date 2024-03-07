@@ -71,8 +71,8 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
                     return '';
                 }
                 return $this->sidebarOnLeft
-                    ? 'offcanvas offcanvas-left'
-                    : 'offcanvas offcanvas-right';
+                    ? 'vufind-offcanvas vufind-offcanvas-left'
+                    : 'vufind-offcanvas vufind-offcanvas-right';
         }
         throw new \Exception('Unexpected class: ' . $class);
     }
