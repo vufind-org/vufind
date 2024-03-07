@@ -30,7 +30,7 @@
         "apereo/phpcas": "1.6.1",
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",
-        "colinmollenhour/credis": "1.15.0",
+        "colinmollenhour/credis": "1.16.0",
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.0",
         "endroid/qr-code": "4.8.2",
