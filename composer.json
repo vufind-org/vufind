@@ -103,14 +103,14 @@
         "behat/mink-selenium2-driver": "1.7.0",
         "dmore/chrome-mink-driver": "2.9.2",
         "firebase/php-jwt": "6.8.1",
-        "friendsofphp/php-cs-fixer": "3.49.0",
+        "friendsofphp/php-cs-fixer": "3.51.0",
         "phpmd/phpmd": "2.15.0",
-        "phpstan/phpstan": "1.10.57",
+        "phpstan/phpstan": "1.10.59",
         "phpunit/php-code-coverage": "10.1.11",
         "phpunit/phpcov": "^9.0",
-        "phpunit/phpunit": "10.5.10",
-        "pietercolpaert/hardf": "0.3.1",
-        "squizlabs/php_codesniffer": "3.8.1"
+        "phpunit/phpunit": "10.5.11",
+        "pietercolpaert/hardf": "0.4.0",
+        "squizlabs/php_codesniffer": "3.9.0"
     },
     "extra": {
         "merge-plugin": {
