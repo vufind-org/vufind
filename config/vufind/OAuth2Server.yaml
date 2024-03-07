@@ -15,6 +15,9 @@
 
 # Authorization server configuration
 Server:
+  # User field to be used as identifier in tokens.
+  # Use a unique field like id, username, cat_id or cat_username.
+  userIdentifierField: "id"
   # Create keys e.g. as above and point the following setting to it. The paths can be
   # absolute or relative to the config directory.
   privateKeyPath: "oauth2_private.key"

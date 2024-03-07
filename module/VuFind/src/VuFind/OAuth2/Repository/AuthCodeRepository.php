@@ -32,6 +32,7 @@ namespace VuFind\OAuth2\Repository;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\AuthCodeEntity;
 
 /**
@@ -48,11 +49,13 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
     /**
      * Constructor
      *
-     * @param AccessToken $table Token table
+     * @param array       $config     OAuth2 configuration
+     * @param AccessToken $tokenTable Token table
+     * @param User        $userTable  User table
      */
-    public function __construct(AccessToken $table)
+    public function __construct(array $config, AccessToken $tokenTable, User $userTable)
     {
-        parent::__construct('oauth2_auth_code', AuthCodeEntity::class, $table);
+        parent::__construct('oauth2_auth_code', AuthCodeEntity::class, $config, $tokenTable, $userTable);
     }
 
     /**

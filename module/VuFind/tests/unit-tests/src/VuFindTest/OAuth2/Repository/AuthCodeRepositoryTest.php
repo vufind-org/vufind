@@ -49,12 +49,13 @@ class AuthCodeRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testAuthCodeRepository(): void
     {
-        $repo = new AuthCodeRepository($this->getMockAccessTokenTable());
+        $repo = $this->getAuthCodeRepository();
 
         $token = $repo->getNewAuthCode();
         $tokenId = $this->createTokenId();
         $token->setIdentifier($tokenId);
         $token->setExpiryDateTime($this->createExpiryDateTime());
+        $token->setUserIdentifier(0);
 
         $repo->persistNewAuthCode($token);
         $this->assertEquals(

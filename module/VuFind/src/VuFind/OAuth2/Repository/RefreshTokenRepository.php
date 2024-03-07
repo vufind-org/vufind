@@ -32,6 +32,7 @@ namespace VuFind\OAuth2\Repository;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\RefreshTokenEntity;
 
 /**
@@ -48,14 +49,18 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
     /**
      * Constructor
      *
-     * @param AccessToken $table Token table
+     * @param array       $config     OAuth2 configuration
+     * @param AccessToken $tokenTable Token table
+     * @param User        $userTable  User table
      */
-    public function __construct(AccessToken $table)
+    public function __construct(array $config, AccessToken $tokenTable, User $userTable)
     {
         parent::__construct(
             'oauth2_refresh_token',
             RefreshTokenEntity::class,
-            $table
+            $config,
+            $tokenTable,
+            $userTable
         );
     }
 

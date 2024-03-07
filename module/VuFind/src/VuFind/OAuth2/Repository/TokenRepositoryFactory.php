@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RepositoryWithAccessTokenTableFactory implements FactoryInterface
+class TokenRepositoryFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,8 +68,13 @@ class RepositoryWithAccessTokenTableFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $tablePluginManager = $container
             ->get(\VuFind\Db\Table\PluginManager::class);
-        return new $requestedName($tablePluginManager->get('AccessToken'));
+        return new $requestedName(
+            $yamlReader->get('OAuth2Server.yaml'),
+            $tablePluginManager->get('AccessToken'),
+            $tablePluginManager->get('User')
+        );
     }
 }

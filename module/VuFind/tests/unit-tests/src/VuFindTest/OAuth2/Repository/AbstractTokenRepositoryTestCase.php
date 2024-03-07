@@ -31,8 +31,13 @@ namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\AccessToken as AccessTokenRow;
+use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\ClientEntity;
+use VuFind\OAuth2\Repository\AccessTokenRepository;
+use VuFind\OAuth2\Repository\AuthCodeRepository;
+use VuFind\OAuth2\Repository\RefreshTokenRepository;
 
 /**
  * Abstract base class for OAuth2 token repository tests.
@@ -46,6 +51,58 @@ use VuFind\OAuth2\Entity\ClientEntity;
 abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $accessTokenTable = [];
+
+    /**
+     * Create AccessTokenRepository with mocks.
+     *
+     * @return AccessTokenRepository
+     */
+    protected function getAccessTokenRepository()
+    {
+        return new AccessTokenRepository(
+            $this->getOAuth2Config(),
+            $this->getMockAccessTokenTable(),
+            $this->getMockUserTable()
+        );
+    }
+
+    /**
+     * Create AuthCodeRepository with mocks.
+     *
+     * @return AuthCodeRepository
+     */
+    protected function getAuthCodeRepository()
+    {
+        return new AuthCodeRepository(
+            $this->getOAuth2Config(),
+            $this->getMockAccessTokenTable(),
+            $this->getMockUserTable()
+        );
+    }
+
+    /**
+     * Create RefreshTokenRepository with mocks.
+     *
+     * @return RefreshTokenRepository
+     */
+    protected function getRefreshTokenRepository()
+    {
+        return new RefreshTokenRepository(
+            $this->getOAuth2Config(),
+            $this->getMockAccessTokenTable(),
+            $this->getMockUserTable()
+        );
+    }
+
+    /**
+     * Create OAuth2 Config
+     *
+     * @return array
+     */
+    protected function getOAuth2Config(): array
+    {
+        return ['Server' => ['userIdentifierField' => 'id']];
+    }
 
     /**
      * Create AccessToken table
@@ -87,6 +144,34 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
+     * Create User table
+     *
+     * @return MockObject&User
+     */
+    protected function getMockUserTable(): User
+    {
+        $getByFieldCallback = function (
+            $fieldName,
+            $fieldValue
+        ): ?UserRow {
+            $id = 0;
+            $username = 'test';
+            $$fieldName = $fieldValue;
+            return $this->createUserRow(compact('id', 'username'));
+        };
+
+        $accessTokenTable = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getByField'])
+            ->getMock();
+        $accessTokenTable->expects($this->any())
+            ->method('getByField')
+            ->willReturnCallback($getByFieldCallback);
+
+        return $accessTokenTable;
+    }
+
+    /**
      * Create AccessToken row
      *
      * @param array $data Row data
@@ -120,6 +205,23 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->method('save')
             ->willReturnCallback($save);
 
+        return $result;
+    }
+
+    /**
+     * Create User row
+     *
+     * @param array $data Row data
+     *
+     * @return MockObject&UserRow
+     */
+    protected function createUserRow(array $data): UserRow
+    {
+        $result = $this->getMockBuilder(UserRow::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['initialize'])
+            ->getMock();
+        $result->populate($data);
         return $result;
     }
 

@@ -31,6 +31,7 @@ namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Table\User;
 
 use function is_callable;
 
@@ -53,11 +54,25 @@ class AbstractTokenRepository
     protected $tokenType;
 
     /**
+     * OAuth2 configuration
+     *
+     * @var array
+     */
+    protected $oauth2Config;
+
+    /**
      * Token table
      *
      * @var AccessToken
      */
-    protected $table;
+    protected $tokenTable;
+
+    /**
+     * User table
+     *
+     * @var User
+     */
+    protected $userTable;
 
     /**
      * Entity class
@@ -69,18 +84,24 @@ class AbstractTokenRepository
     /**
      * Constructor
      *
-     * @param string     $tokenType   Token type
-     * @param string     $entityClass Entity class name
-     * @param TokenTable $table       Token table
+     * @param string      $tokenType   Token type
+     * @param string      $entityClass Entity class name
+     * @param array       $config      OAuth2 configuration
+     * @param AccessToken $tokenTable  Token table
+     * @param User        $userTable   User table
      */
     public function __construct(
         string $tokenType,
         string $entityClass,
-        AccessToken $table
+        array $config,
+        AccessToken $tokenTable,
+        User $userTable
     ) {
         $this->tokenType = $tokenType;
         $this->entityClass = $entityClass;
-        $this->table = $table;
+        $this->oauth2Config = $config;
+        $this->tokenTable = $tokenTable;
+        $this->userTable = $userTable;
     }
 
     /**
@@ -98,23 +119,25 @@ class AbstractTokenRepository
             );
         }
 
-        $row = $this->table->getByIdAndType(
+        $row = $this->tokenTable->getByIdAndType(
             $token->getIdentifier(),
             $this->tokenType
         );
         $row->data = json_encode($token);
-        $userId = null;
+        $userIdentifier = null;
         if ($token instanceof RefreshTokenEntityInterface) {
             $accessToken = $token->getAccessToken();
-            $userId = $accessToken->getUserIdentifier();
+            $userIdentifier = $accessToken->getUserIdentifier();
         } elseif (is_callable([$token, 'getUserIdentifier'])) {
-            $userId = $token->getUserIdentifier();
+            $userIdentifier = $token->getUserIdentifier();
         }
-        if ($userId) {
+        if ($userIdentifier) {
             // Drop nonce from user id:
-            [$userId] = explode('|', $userId);
+            [$userIdentifier] = explode('|', $userIdentifier);
         }
-        $row->user_id = $userId;
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        $user = $this->userTable->getByField($userIdentifierField, $userIdentifier);
+        $row->user_id = $user->id;
         $row->save();
     }
 
@@ -127,7 +150,7 @@ class AbstractTokenRepository
      */
     public function revoke($tokenId)
     {
-        $token = $this->table->getByIdAndType($tokenId, $this->tokenType, false);
+        $token = $this->tokenTable->getByIdAndType($tokenId, $this->tokenType, false);
         if ($token) {
             $token->revoked = true;
             $token->save();
@@ -143,7 +166,7 @@ class AbstractTokenRepository
      */
     public function isRevoked($tokenId)
     {
-        $token = $this->table->getByIdAndType($tokenId, $this->tokenType, false);
+        $token = $this->tokenTable->getByIdAndType($tokenId, $this->tokenType, false);
         return $token ? $token->revoked : true;
     }
 

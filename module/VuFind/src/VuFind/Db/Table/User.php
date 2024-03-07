@@ -105,6 +105,19 @@ class User extends Gateway
     }
 
     /**
+     * Retrieve a user object from the database based on the given field name.
+     *
+     * @param string $fieldName  Field name
+     * @param string $fieldValue Field value
+     *
+     * @return UserRow
+     */
+    public function getByField($fieldName, $fieldValue)
+    {
+        return $this->select([$fieldName => $fieldValue])->current();
+    }
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param string $id ID.
