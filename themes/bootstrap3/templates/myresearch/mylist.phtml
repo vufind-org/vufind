@@ -3,10 +3,10 @@
   $list = $this->results->getListObject();
 
   // Set up page title:
-  $this->headTitle(isset($list) ? $list->title : $this->translate('all_saved_items'));
+  $this->headTitle(isset($list) ? $list->title : $this->translate('saved_items'));
 
   // Set up breadcrumbs:
-  $currPage = isset($list) ? 'List' : 'all_saved_items';
+  $currPage = isset($list) ? 'List' : 'saved_items';
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
@@ -30,7 +30,7 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('all_saved_items')?></h2>
+  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('saved_items')?></h2>
 
   <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
     <strong>
