@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
-use Laminas\Crypt\BlockCipher as BlockCipher;
+use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
