@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b25220760f112dfa5b9f31c88be38441",
+    "content-hash": "80dc6fbbf9a64e27cec3668e4dca69c7",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2431,29 +2431,29 @@
         },
         {
             "name": "laminas/laminas-dom",
-            "version": "2.13.0",
+            "version": "2.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-dom.git",
-                "reference": "d30cbc41b970363afb66391ade3dab911487e3c0"
+                "reference": "25a062132573f8e812e298ad046b75fb9eb90461"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-dom/zipball/d30cbc41b970363afb66391ade3dab911487e3c0",
-                "reference": "d30cbc41b970363afb66391ade3dab911487e3c0",
+                "url": "https://api.github.com/repos/laminas/laminas-dom/zipball/25a062132573f8e812e298ad046b75fb9eb90461",
+                "reference": "25a062132573f8e812e298ad046b75fb9eb90461",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
             },
             "conflict": {
                 "zendframework/zend-dom": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "^2.4.0",
-                "phpunit/phpunit": "^9.5.25"
+                "laminas/laminas-coding-standard": "^2.5.0",
+                "phpunit/phpunit": "^9.6.13"
             },
             "type": "library",
             "extra": {
@@ -2491,7 +2491,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-10-16T14:25:01+00:00"
+            "time": "2023-11-20T20:45:23+00:00"
         },
         {
             "name": "laminas/laminas-escaper",
