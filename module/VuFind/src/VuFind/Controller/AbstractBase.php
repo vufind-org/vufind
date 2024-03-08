@@ -331,7 +331,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getUser()
     {
-        return $this->getAuthManager()->getUserObject();
+        return $this->getAuthManager()->getUserObject() ?? false;
     }
 
     /**

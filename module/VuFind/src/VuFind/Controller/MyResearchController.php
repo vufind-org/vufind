@@ -773,6 +773,8 @@ class MyResearchController extends AbstractBase
             }
         } else {
             $view->patronLoginView = $patron;
+            // Turn off account menu in embedded login display:
+            $view->patronLoginView->showMenu = false;
         }
 
         $view->accountDeletion
@@ -1231,7 +1233,7 @@ class MyResearchController extends AbstractBase
 
         // User must be logged in to edit list:
         $user = $this->getUser();
-        if ($user == false) {
+        if (!$user) {
             return $this->forceLogin();
         }
 

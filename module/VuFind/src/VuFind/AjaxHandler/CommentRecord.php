@@ -53,71 +53,23 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Resource database table
-     *
-     * @var Resource
-     */
-    protected $table;
-
-    /**
-     * Captcha controller plugin
-     *
-     * @var Captcha
-     */
-    protected $captcha;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * Are comments enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
-     * Record loader
-     *
-     * @var RecordLoader
-     */
-    protected $recordLoader;
-
-    /**
-     * Account capabilities helper
-     *
-     * @var AccountCapabilities
-     */
-    protected $accountCapabilities;
-
-    /**
      * Constructor
      *
-     * @param Resource            $table   Resource database table
-     * @param Captcha             $captcha Captcha controller plugin
-     * @param User|bool           $user    Logged in user (or false)
-     * @param bool                $enabled Are comments enabled?
-     * @param RecordLoader        $loader  Record loader
-     * @param AccountCapabilities $ac      Account capabilities helper
+     * @param Resource            $table               Resource database table
+     * @param Captcha             $captcha             Captcha controller plugin
+     * @param ?User               $user                Logged in user (or null)
+     * @param bool                $enabled             Are comments enabled?
+     * @param RecordLoader        $recordLoader        Record loader
+     * @param AccountCapabilities $accountCapabilities Account capabilities helper
      */
     public function __construct(
-        Resource $table,
-        Captcha $captcha,
-        $user,
-        $enabled,
-        RecordLoader $loader,
-        AccountCapabilities $ac
+        protected Resource $table,
+        protected Captcha $captcha,
+        protected ?User $user,
+        protected bool $enabled,
+        protected RecordLoader $recordLoader,
+        protected AccountCapabilities $accountCapabilities
     ) {
-        $this->table = $table;
-        $this->captcha = $captcha;
-        $this->user = $user;
-        $this->enabled = $enabled;
-        $this->recordLoader = $loader;
-        $this->accountCapabilities = $ac;
     }
 
     /**
@@ -152,7 +104,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        if ($this->user === false) {
+        if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
                 self::STATUS_HTTP_NEED_AUTH
