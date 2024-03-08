@@ -359,7 +359,7 @@ h6, .h6 {
 
 .pager {
   padding-left: 0;
-  margin: $line-height-base 0;
+  margin: $line-height-base * 1rem 0;
   text-align: center;
   list-style: none;
   @include clearfix;
@@ -409,5 +409,5 @@ h6, .h6 {
 }
 
 .pagination {
-  margin: $line-height-computed 0;
+  margin: $line-height-computed * 1rem 0;
 }
