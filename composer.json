@@ -54,7 +54,7 @@
         "laminas/laminas-form": "3.9.0",
         "laminas/laminas-http": "2.18.0",
         "laminas/laminas-i18n": "2.22.1",
-        "laminas/laminas-loader": "2.9.0",
+        "laminas/laminas-loader": "2.10.0",
         "laminas/laminas-log": "2.16.1",
         "laminas/laminas-mail": "2.22.0",
         "laminas/laminas-modulemanager": "2.14.0",
