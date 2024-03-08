@@ -270,6 +270,15 @@ footer {
     top: .5rem;
     right: .25rem;
   }
+
+  body.rtl & {
+    padding-left: 3rem;
+    padding-right: 1rem;
+    .badge {
+      left: .25rem;
+      right: auto;
+    }
+  }
 }
 .browse-item.view-record {
   padding: 2px 4px;
