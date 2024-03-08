@@ -773,6 +773,8 @@ class MyResearchController extends AbstractBase
             }
         } else {
             $view->patronLoginView = $patron;
+            // Turn off account menu in embedded login display:
+            $view->patronLoginView->showMenu = false;
         }
 
         $view->accountDeletion
