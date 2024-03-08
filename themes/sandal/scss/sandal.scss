@@ -240,7 +240,8 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    padding: 0;
+    border-bottom: 1px solid $list-group-border;
+    border-radius: 0;
   }
 }
 
