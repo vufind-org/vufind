@@ -7,7 +7,7 @@
     . (
         isset($listID)
           ? '<li><a href="' . $this->url('userList', ['id' => $listID]) . '">' . $this->transEsc('List') . '</a></li>'
-          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('Favorites') . '</a></li>'
+          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('saved_items') . '</a></li>'
     ) . '<li class="active">' . $this->transEsc('Edit') . '</li>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
