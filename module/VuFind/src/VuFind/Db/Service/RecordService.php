@@ -46,7 +46,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RecordService extends AbstractService implements LoggerAwareInterface
+class RecordService extends AbstractDbService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

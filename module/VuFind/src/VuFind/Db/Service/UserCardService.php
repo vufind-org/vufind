@@ -45,7 +45,7 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserCardService extends AbstractService implements LoggerAwareInterface, \VuFind\Db\Service\ServiceAwareInterface
+class UserCardService extends AbstractDbService implements LoggerAwareInterface, ServiceAwareInterface
 {
     use LoggerAwareTrait;
     use \VuFind\Db\Service\ServiceAwareTrait;

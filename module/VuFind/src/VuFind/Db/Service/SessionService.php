@@ -45,7 +45,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SessionService extends AbstractService implements LoggerAwareInterface
+class SessionService extends AbstractDbService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

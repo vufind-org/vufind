@@ -78,7 +78,7 @@ trait ServiceAwareTrait
      *
      * @param string $name Name of service to retrieve
      *
-     * @return \VuFind\Db\Service\AbstractService
+     * @return \VuFind\Db\Service\AbstractDbService
      */
     public function getDbService(string $name)
     {

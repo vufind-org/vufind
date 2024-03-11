@@ -42,7 +42,7 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Entity\UserCard as UserCard;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Service\AbstractService;
+use VuFind\Db\Service\AbstractDbService;
 use VuFind\Db\Service\UserCardService;
 use VuFind\Db\Table\User as UserTable;
 
@@ -183,10 +183,10 @@ class SwitchDbHashCommand extends Command
     /**
      * Re-encrypt an entity.
      *
-     * @param AbstractService $service   Database service
-     * @param UserCard        $entity    Row to update
-     * @param ?BlockCipher    $oldcipher Old cipher (null for none)
-     * @param BlockCipher     $newcipher New cipher
+     * @param AbstractDbService $service   Database service
+     * @param UserCard          $entity    Row to update
+     * @param ?BlockCipher      $oldcipher Old cipher (null for none)
+     * @param BlockCipher       $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException

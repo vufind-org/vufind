@@ -68,20 +68,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        ChangeTrackerService::class => AbstractServiceFactory::class,
-        CommentsService::class => AbstractServiceFactory::class,
-        FeedbackService::class => AbstractServiceFactory::class,
-        OaiResumptionService::class => AbstractServiceFactory::class,
-        RatingsService::class => AbstractServiceFactory::class,
-        RecordService::class => AbstractServiceFactory::class,
+        ChangeTrackerService::class => AbstractDbServiceFactory::class,
+        CommentsService::class => AbstractDbServiceFactory::class,
+        FeedbackService::class => AbstractDbServiceFactory::class,
+        OaiResumptionService::class => AbstractDbServiceFactory::class,
+        RatingsService::class => AbstractDbServiceFactory::class,
+        RecordService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
-        SessionService::class => AbstractServiceFactory::class,
-        ShortlinksService::class => AbstractServiceFactory::class,
+        SessionService::class => AbstractDbServiceFactory::class,
+        ShortlinksService::class => AbstractDbServiceFactory::class,
         TagService::class => TagServiceFactory::class,
         UserService::class => UserServiceFactory::class,
-        UserCardService::class => AbstractServiceFactory::class,
+        UserCardService::class => AbstractDbServiceFactory::class,
         UserListService::class => UserListServiceFactory::class,
-        UserResourceService::class => AbstractServiceFactory::class,
+        UserResourceService::class => AbstractDbServiceFactory::class,
     ];
 
     /**
@@ -92,6 +92,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return AbstractService::class;
+        return AbstractDbService::class;
     }
 }

@@ -44,7 +44,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class FeedbackService extends AbstractService
+class FeedbackService extends AbstractDbService
 {
     /**
      * Db column name to Doctrine entity field mapper

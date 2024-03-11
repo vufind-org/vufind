@@ -47,7 +47,7 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RatingsService extends AbstractService implements \VuFind\Db\Service\ServiceAwareInterface, LoggerAwareInterface
+class RatingsService extends AbstractDbService implements \VuFind\Db\Service\ServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Db\Service\ServiceAwareTrait;
     use LoggerAwareTrait;

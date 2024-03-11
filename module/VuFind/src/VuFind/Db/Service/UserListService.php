@@ -55,7 +55,7 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListService extends AbstractService implements LoggerAwareInterface, ServiceAwareInterface
+class UserListService extends AbstractDbService implements LoggerAwareInterface, ServiceAwareInterface
 {
     use LoggerAwareTrait;
     use ServiceAwareTrait;
