@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params as ParamsHelper;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
@@ -138,11 +138,11 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Handle a request.
      *
-     * @param Params $requestParams Parameter helper from controller
+     * @param ParamsHelper $requestParams Parameter helper from controller
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $requestParams)
+    public function handleRequest(ParamsHelper $requestParams)
     {
         $results = $this->getSearchResults($requestParams);
         if (!$results) {
@@ -155,11 +155,11 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Get search results
      *
-     * @param Params $requestParams Request params
+     * @param ParamsHelper $requestParams Request params
      *
      * @return ?Results
      */
-    protected function getSearchResults(Params $requestParams): ?Results
+    protected function getSearchResults(ParamsHelper $requestParams): ?Results
     {
         parse_str($requestParams->fromQuery('querystring', ''), $searchParams);
         $backend = $requestParams->fromQuery('source', DEFAULT_SEARCH_BACKEND);
@@ -183,12 +183,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render page elements
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
      *
      * @return array
      */
-    protected function getElements(Params $requestParams, Results $results): array
+    protected function getElements(ParamsHelper $requestParams, Results $results): array
     {
         $result = [];
         foreach ($this->elements as $selector => $element) {
@@ -207,12 +207,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render search results
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
      *
      * @return ?string
      */
-    protected function renderResults(Params $requestParams, Results $results): ?string
+    protected function renderResults(ParamsHelper $requestParams, Results $results): ?string
     {
         [$baseAction] = explode('-', $results->getOptions()->getSearchAction());
         $templatePath = "$baseAction/results-list.phtml";
@@ -248,16 +248,16 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render pagination
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
-     * @param string  $template      Paginator template
-     * @param string  $ulClass       Additional class for the pagination container
-     * @param string  $navClass      Additional class for the nav element
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
+     * @param string       $template      Paginator template
+     * @param string       $ulClass       Additional class for the pagination container
+     * @param string       $navClass      Additional class for the nav element
      *
      * @return ?string
      */
     protected function renderPagination(
-        Params $requestParams,
+        ParamsHelper $requestParams,
         Results $results,
         string $template = 'search/pagination.phtml',
         string $ulClass = '',
@@ -282,12 +282,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render simple pagination
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
      *
      * @return ?string
      */
-    protected function renderPaginationSimple(Params $requestParams, Results $results): ?string
+    protected function renderPaginationSimple(ParamsHelper $requestParams, Results $results): ?string
     {
         return $this->renderPagination($requestParams, $results, 'search/pagination_simple.phtml');
     }
@@ -295,12 +295,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render top pagination
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
      *
      * @return ?string
      */
-    protected function renderPaginationTop(Params $requestParams, Results $results): ?string
+    protected function renderPaginationTop(ParamsHelper $requestParams, Results $results): ?string
     {
         return $this->renderPagination($requestParams, $results, 'search/pagination-top.phtml');
     }
@@ -308,12 +308,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render search stats
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
      *
      * @return ?string
      */
-    protected function renderSearchStats(Params $requestParams, Results $results): ?string
+    protected function renderSearchStats(ParamsHelper $requestParams, Results $results): ?string
     {
         if (!($statsKey = $requestParams->fromQuery('statsKey'))) {
             return null;
@@ -336,12 +336,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render analytics
      *
-     * @param Params  $requestParams Request params
-     * @param Results $results       Search results
+     * @param ParamsHelper $requestParams Request params
+     * @param Results      $results       Search results
      *
      * @return ?string
      */
-    protected function renderAnalytics(Params $requestParams, Results $results): ?string
+    protected function renderAnalytics(ParamsHelper $requestParams, Results $results): ?string
     {
         // Mimic the typical page structure so that analytics helpers can find the
         // search results:
