@@ -138,38 +138,38 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param Params $requestParams Parameter helper from controller
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(Params $requestParams)
     {
-        $results = $this->getSearchResults($params);
+        $results = $this->getSearchResults($requestParams);
         if (!$results) {
             return $this->formatResponse(['error' => 'Invalid request'], 400);
         }
-        $elements = $this->getElements($params, $results);
+        $elements = $this->getElements($requestParams, $results);
         return $this->formatResponse(compact('elements'));
     }
 
     /**
      * Get search results
      *
-     * @param Params $params Request params
+     * @param Params $requestParams Request params
      *
      * @return ?Results
      */
-    protected function getSearchResults(Params $params): ?Results
+    protected function getSearchResults(Params $requestParams): ?Results
     {
-        parse_str($params->fromQuery('querystring', ''), $searchParams);
-        $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        parse_str($requestParams->fromQuery('querystring', ''), $searchParams);
+        $backend = $requestParams->fromQuery('source', DEFAULT_SEARCH_BACKEND);
 
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->initFromRequest(new Parameters($searchParams));
 
-        if ($params->fromQuery('history')) {
+        if ($requestParams->fromQuery('history')) {
             $this->saveSearchToHistory($results);
         }
 
@@ -183,16 +183,16 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render page elements
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
      *
      * @return array
      */
-    protected function getElements(Params $params, Results $results): array
+    protected function getElements(Params $requestParams, Results $results): array
     {
         $result = [];
         foreach ($this->elements as $selector => $element) {
-            $content = call_user_func([$this, $element['method']], $params, $results);
+            $content = call_user_func([$this, $element['method']], $requestParams, $results);
             if (null !== $content) {
                 $result[$selector] = [
                     'content' => $content,
@@ -207,12 +207,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render search results
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
      *
      * @return ?string
      */
-    protected function renderResults(Params $params, Results $results): ?string
+    protected function renderResults(Params $requestParams, Results $results): ?string
     {
         [$baseAction] = explode('-', $results->getOptions()->getSearchAction());
         $templatePath = "$baseAction/results-list.phtml";
@@ -230,12 +230,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         // Enable bulk options if appropriate:
         $showCheckboxes = $showCartControls || $showBulkOptions;
         // Include request parameters:
-        parse_str($params->fromQuery('querystring', ''), $searchParams);
+        parse_str($requestParams->fromQuery('querystring', ''), $searchQueryParams);
 
         return $this->renderer->render(
             $templatePath,
             [
-                'request' => $searchParams,
+                'request' => $searchQueryParams,
                 'results' => $results,
                 'params' => $results->getParams(),
                 'showBulkOptions' => $showBulkOptions,
@@ -248,16 +248,16 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render pagination
      *
-     * @param Params  $params   Request params
-     * @param Results $results  Search results
-     * @param string  $template Paginator template
-     * @param string  $ulClass  Additional class for the pagination container
-     * @param string  $navClass Additional class for the nav element
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
+     * @param string  $template      Paginator template
+     * @param string  $ulClass       Additional class for the pagination container
+     * @param string  $navClass      Additional class for the nav element
      *
      * @return ?string
      */
     protected function renderPagination(
-        Params $params,
+        Params $requestParams,
         Results $results,
         string $template = 'search/pagination.phtml',
         string $ulClass = '',
@@ -282,40 +282,40 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render simple pagination
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
      *
      * @return ?string
      */
-    protected function renderPaginationSimple(Params $params, Results $results): ?string
+    protected function renderPaginationSimple(Params $requestParams, Results $results): ?string
     {
-        return $this->renderPagination($params, $results, 'search/pagination_simple.phtml');
+        return $this->renderPagination($requestParams, $results, 'search/pagination_simple.phtml');
     }
 
     /**
      * Render top pagination
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
      *
      * @return ?string
      */
-    protected function renderPaginationTop(Params $params, Results $results): ?string
+    protected function renderPaginationTop(Params $requestParams, Results $results): ?string
     {
-        return $this->renderPagination($params, $results, 'search/pagination-top.phtml');
+        return $this->renderPagination($requestParams, $results, 'search/pagination-top.phtml');
     }
 
     /**
      * Render search stats
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
      *
      * @return ?string
      */
-    protected function renderSearchStats(Params $params, Results $results): ?string
+    protected function renderSearchStats(Params $requestParams, Results $results): ?string
     {
-        if (!($statsKey = $params->fromQuery('statsKey'))) {
+        if (!($statsKey = $requestParams->fromQuery('statsKey'))) {
             return null;
         }
 
@@ -336,12 +336,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render analytics
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $requestParams Request params
+     * @param Results $results       Search results
      *
      * @return ?string
      */
-    protected function renderAnalytics(Params $params, Results $results): ?string
+    protected function renderAnalytics(Params $requestParams, Results $results): ?string
     {
         // Mimic the typical page structure so that analytics helpers can find the
         // search results:
