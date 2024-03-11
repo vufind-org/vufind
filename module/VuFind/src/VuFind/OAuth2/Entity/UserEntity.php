@@ -92,7 +92,13 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
         AccessToken $tokenTable
     ) {
         $userIdentifierField = $config['Server']['userIdentifierField'] ?? 'id';
-        $this->setIdentifier($user->$userIdentifierField);
+        $userIdentifier = $user->$userIdentifierField;
+        if ($userIdentifier == null) {
+            throw new \VuFind\Exception\BadConfig(
+                'User identifier is empty. The user identifier field needs to be required.'
+            );
+        }
+        $this->setIdentifier($userIdentifier);
         $this->user = $user;
         $this->ils = $ils;
         $this->oauth2Config = $config;

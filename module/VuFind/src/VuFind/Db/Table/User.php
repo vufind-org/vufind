@@ -110,11 +110,21 @@ class User extends Gateway
      * @param string $fieldName  Field name
      * @param string $fieldValue Field value
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByField($fieldName, $fieldValue)
     {
-        return $this->select([$fieldName => $fieldValue])->current();
+        switch ($fieldName) {
+            case 'id':
+                return $this->getById($fieldValue);
+            case 'username':
+                return $this->getByUsername($fieldValue, false);
+            case 'cat_id':
+                return $this->getByCatalogId($fieldValue);
+            case 'email':
+                return $this->getByEmail($fieldValue);
+        }
+        return null;
     }
 
     /**
@@ -122,7 +132,7 @@ class User extends Gateway
      *
      * @param string $id ID.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getById($id)
     {
@@ -148,7 +158,7 @@ class User extends Gateway
      * @param string $username Username to use for retrieval.
      * @param bool   $create   Should we create users that don't already exist?
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByUsername($username, $create = true)
     {
@@ -165,7 +175,7 @@ class User extends Gateway
      *
      * @param string $email email to use for retrieval.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByEmail($email)
     {
