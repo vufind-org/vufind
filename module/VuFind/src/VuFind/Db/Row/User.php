@@ -143,7 +143,7 @@ class User extends RowGateway implements
         $this->cat_username = $username;
         if ($this->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+            $this->cat_pass_enc = $this->getUserService()->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;
@@ -199,7 +199,7 @@ class User extends RowGateway implements
     {
         if ($this->passwordEncryptionEnabled()) {
             return isset($this->cat_pass_enc)
-                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
+                ? $this->getUserService()->decrypt($this->cat_pass_enc) : null;
         }
         return $this->cat_password ?? null;
     }
@@ -224,10 +224,13 @@ class User extends RowGateway implements
      *
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use $this->getUserService()->encrypt() or $this->getUserService()->decrypt()
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
-        return $this->getUserService()->encryptOrDecrypt($text, $encrypt);
+        $method = $encrypt ? 'encrypt' : 'decrypt';
+        return $this->getUserService()->$method($text);
     }
 
     /**
@@ -505,10 +508,7 @@ class User extends RowGateway implements
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
             if ($this->passwordEncryptionEnabled()) {
-                $row->cat_password = $this->encryptOrDecrypt(
-                    $row->cat_pass_enc,
-                    false
-                );
+                $row->cat_password = $this->getUserService()->decrypt($row->cat_pass_enc);
             }
         }
 
@@ -627,7 +627,7 @@ class User extends RowGateway implements
         }
         if ($this->passwordEncryptionEnabled()) {
             $row->cat_password = null;
-            $row->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+            $row->cat_pass_enc = $this->getUserService()->encrypt($password);
         } else {
             $row->cat_password = $password;
             $row->cat_pass_enc = null;

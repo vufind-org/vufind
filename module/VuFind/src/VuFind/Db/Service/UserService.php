@@ -96,6 +96,32 @@ class UserService extends AbstractService implements LoggerAwareInterface, Servi
     }
 
     /**
+     * Decrypt text.
+     *
+     * @param string $text The text to decrypt
+     *
+     * @return string|bool The decrypted string (or false if invalid)
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function decrypt(string $text)
+    {
+        return $this->encryptOrDecrypt($text, false);
+    }
+
+    /**
+     * Encrypt text.
+     *
+     * @param string $text The text to encrypt
+     *
+     * @return string|bool The encrypted string (or false if invalid)
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function encrypt(string $text)
+    {
+        return $this->encryptOrDecrypt($text, true);
+    }
+
+    /**
      * This is a central function for encrypting and decrypting so that
      * logic is all in one location
      *
@@ -106,7 +132,7 @@ class UserService extends AbstractService implements LoggerAwareInterface, Servi
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function encryptOrDecrypt($text, $encrypt = true)
+    protected function encryptOrDecrypt($text, $encrypt = true)
     {
         // Ignore empty text:
         if (empty($text)) {
