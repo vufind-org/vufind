@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "95cc16536bb6f57abbaa3b448dc843ed",
+    "content-hash": "11a6cff876bc60d0f178ab57f9633ed4",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -3892,37 +3892,37 @@
         },
         {
             "name": "laminas/laminas-paginator",
-            "version": "2.17.0",
+            "version": "2.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-paginator.git",
-                "reference": "d0fca60a32656fe095045d76af7ad3a3bfc297f9"
+                "reference": "6a03499a899fb8ba650594ddf4b4338d4235252a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/d0fca60a32656fe095045d76af7ad3a3bfc297f9",
-                "reference": "d0fca60a32656fe095045d76af7ad3a3bfc297f9",
+                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/6a03499a899fb8ba650594ddf4b4338d4235252a",
+                "reference": "6a03499a899fb8ba650594ddf4b4338d4235252a",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "laminas/laminas-stdlib": "^3.10.1",
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
             },
             "conflict": {
                 "zendframework/zend-paginator": "*"
             },
             "require-dev": {
-                "laminas/laminas-cache": "^3.6.0",
+                "laminas/laminas-cache": "^3.9",
                 "laminas/laminas-cache-storage-adapter-memory": "^2.2.0",
                 "laminas/laminas-coding-standard": "^2.4.0",
                 "laminas/laminas-config": "^3.8.0",
-                "laminas/laminas-filter": "^2.23.0",
-                "laminas/laminas-servicemanager": "^3.19.0",
-                "laminas/laminas-view": "^2.24.0",
-                "phpunit/phpunit": "^9.5.25",
-                "psalm/plugin-phpunit": "^0.18.0",
-                "vimeo/psalm": "^5.0.0"
+                "laminas/laminas-filter": "^2.30",
+                "laminas/laminas-servicemanager": "^3.22",
+                "laminas/laminas-view": "^2.25",
+                "phpunit/phpunit": "^9.5.27",
+                "psalm/plugin-phpunit": "^0.18.4",
+                "vimeo/psalm": "^5.4"
             },
             "suggest": {
                 "laminas/laminas-cache": "Laminas\\Cache component to support cache features",
@@ -3967,7 +3967,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-12-05T16:02:38+00:00"
+            "time": "2024-01-11T11:00:36+00:00"
         },
         {
             "name": "laminas/laminas-paginator-adapter-laminasdb",
