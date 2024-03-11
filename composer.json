@@ -63,7 +63,7 @@
         "laminas/laminas-mvc-plugin-flashmessenger": "1.10.1",
         "laminas/laminas-paginator": "2.18.1",
         "laminas/laminas-paginator-adapter-laminasdb": "1.4.0",
-        "laminas/laminas-psr7bridge": "1.9.0",
+        "laminas/laminas-psr7bridge": "1.11.0",
         "laminas/laminas-recaptcha": "3.7.0",
         "laminas/laminas-serializer": "2.17.0",
         "laminas/laminas-servicemanager": "3.22.1",
