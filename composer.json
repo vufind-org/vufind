@@ -69,7 +69,7 @@
         "laminas/laminas-servicemanager": "3.22.1",
         "laminas/laminas-session": "2.19.1",
         "laminas/laminas-stdlib": "3.19.0",
-        "laminas/laminas-text": "2.10.0",
+        "laminas/laminas-text": "2.11.0",
         "laminas/laminas-validator": "2.49.0",
         "laminas/laminas-view": "2.27.0",
         "league/commonmark": "2.4.2",
