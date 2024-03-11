@@ -830,7 +830,7 @@ class InstallController extends AbstractBase
         $cardRows = $cardService->getInsecureRows();
         if (count($cardRows) > 0) {
             foreach ($cardRows as $row) {
-                $row->setCatPassEnc($userService->encryptOrDecrypt($row->getRawCatPassword()));
+                $row->setCatPassEnc($userService->encrypt($row->getRawCatPassword()));
                 $row->setRawCatPassword(null);
                 $cardService->persistEntity($row);
             }

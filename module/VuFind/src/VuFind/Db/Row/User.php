@@ -156,7 +156,7 @@ class User extends RowGateway implements
         $this->cat_username = $username;
         if ($this->getUserService()->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $this->getUserService()->encryptOrDecrypt($password, true);
+            $this->cat_pass_enc = $this->getUserService()->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;
@@ -212,7 +212,7 @@ class User extends RowGateway implements
     {
         if ($this->getUserService()->passwordEncryptionEnabled()) {
             return isset($this->cat_pass_enc)
-                ? $this->getUserService()->encryptOrDecrypt($this->cat_pass_enc, false) : null;
+                ? $this->getUserService()->decrypt($this->cat_pass_enc) : null;
         }
         return $this->cat_password ?? null;
     }

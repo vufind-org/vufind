@@ -208,7 +208,7 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
 
         if ($userService->passwordEncryptionEnabled()) {
             $userCard->setRawCatPassword(null);
-            $userCard->setCatPassEnc($userService->encryptOrDecrypt($password, true));
+            $userCard->setCatPassEnc($userService->encrypt($password));
         } else {
             $userCard->setRawCatPassword($password);
             $userCard->setCatPassEnc(null);
