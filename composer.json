@@ -41,7 +41,7 @@
         "laminas/laminas-cache-storage-adapter-memcached": "^2.0",
         "laminas/laminas-cache-storage-adapter-memory": "^2.0",
         "laminas/laminas-captcha": "2.17.0",
-        "laminas/laminas-code": "4.7.1",
+        "laminas/laminas-code": "4.13.0",
         "laminas/laminas-config": "3.9.0",
         "laminas/laminas-crypt": "3.11.0",
         "laminas/laminas-db": "2.19.0",
