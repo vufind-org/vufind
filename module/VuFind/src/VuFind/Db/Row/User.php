@@ -69,10 +69,10 @@ class User extends RowGateway implements
     \VuFind\Db\Interface\UserAccountInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface,
-    \VuFind\Db\Service\ServiceAwareInterface
+    \VuFind\Db\Service\DbServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
-    use \VuFind\Db\Service\ServiceAwareTrait;
+    use \VuFind\Db\Service\DbServiceAwareTrait;
 
     /**
      * Is encryption enabled?

@@ -42,9 +42,9 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class CommentsService extends AbstractDbService implements \VuFind\Db\Service\ServiceAwareInterface
+class CommentsService extends AbstractDbService implements DbServiceAwareInterface
 {
-    use \VuFind\Db\Service\ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Create a comments entity object.
@@ -67,7 +67,7 @@ class CommentsService extends AbstractDbService implements \VuFind\Db\Service\Se
      */
     public function getForResource(string $id, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $resource = $this->getDbService(\VuFind\Db\Service\ResourceService::class)
+        $resource = $this->getDbService(ResourceService::class)
             ->findResource($id, $source, false);
 
         if (empty($resource)) {

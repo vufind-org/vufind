@@ -55,10 +55,10 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListService extends AbstractDbService implements LoggerAwareInterface, ServiceAwareInterface
+class UserListService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
 {
     use LoggerAwareTrait;
-    use ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Tag parser.
@@ -103,7 +103,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
     public function getResourceTags($list)
     {
         $user = $list->getUser();
-        $tags = $this->getDbService(\VuFind\Db\Service\TagService::class)
+        $tags = $this->getDbService(TagService::class)
             ->getUserTagsFromFavorites($user, null, $list);
         return $tags;
     }
@@ -178,7 +178,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         $this->save($list, $user);
 
         if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $linker = $this->getDbService(TagService::class);
             $linker->destroyListLinks($list, $user);
             foreach ($this->tagParser->parse($tags) as $tag) {
                 $this->addListTag($tag, $user, $list);
@@ -233,7 +233,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tagService = $this->getDbService(TagService::class);
             $tag = $tagService->getByText($tagText);
             $tagService->createLink(
                 $tag,
@@ -369,7 +369,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         }
 
         // Retrieve a list of resource IDs:
-        $resources = $this->getDbService(\VuFind\Db\Service\ResourceService::class)
+        $resources = $this->getDbService(ResourceService::class)
             ->findResources($ids, $source);
 
         $resourceIDs = [];
@@ -378,7 +378,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+        $userResourceService = $this->getDbService(UserResourceService::class);
         $userResourceService->destroyLinks(
             $user,
             $resourceIDs,
@@ -405,7 +405,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         }
 
         // Remove user_resource and resource_tags rows:
-        $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+        $userResourceService = $this->getDbService(UserResourceService::class);
         $userResourceService->destroyLinks(
             $user,
             null,
@@ -413,7 +413,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         );
 
         // Remove resource_tags rows for list tags:
-        $linker = $this->getDbService(\VuFind\Db\Service\TagService::class);
+        $linker = $this->getDbService(TagService::class);
         $linker->destroyListLinks($list, $user);
 
         // Remove the list itself:

@@ -38,22 +38,22 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface ServiceAwareInterface
+interface DbServiceAwareInterface
 {
     /**
      * Get the plugin manager.  Throw an exception if it is missing.
      *
      * @throws \Exception
-     * @return \VuFind\Db\Service\PluginManager
+     * @return PluginManager
      */
     public function getDbServiceManager();
 
     /**
      * Set the plugin manager.
      *
-     * @param \VuFind\Db\Service\PluginManager $manager Plugin manager
+     * @param PluginManager $manager Plugin manager
      *
      * @return void
      */
-    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager);
+    public function setDbServiceManager(PluginManager $manager);
 }

@@ -55,9 +55,9 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractDbService implements ServiceAwareInterface, LoggerAwareInterface
+class ResourceService extends AbstractDbService implements DbServiceAwareInterface, LoggerAwareInterface
 {
-    use \VuFind\Db\Service\ServiceAwareTrait;
+    use DbServiceAwareTrait;
     use LoggerAwareTrait;
 
     /**
@@ -163,13 +163,13 @@ class ResourceService extends AbstractDbService implements ServiceAwareInterface
             );
         }
         if (is_int($user)) {
-            $userVal = $this->getDbService(\VuFind\Db\Service\UserService::class)
+            $userVal = $this->getDbService(UserService::class)
                 ->getUserById($user);
         } else {
             $userVal = $user;
         }
         $commentsService = $this->getDbService(
-            \VuFind\Db\Service\CommentsService::class
+            CommentsService::class
         );
         $resourceVal = is_int($resource) ? $this->getResourceById($resource)
             : $resource;
@@ -416,9 +416,9 @@ class ResourceService extends AbstractDbService implements ServiceAwareInterface
             }
             // Deduplicate rows where necessary (this can be safely done outside of the transaction):
             if ($deduplicate) {
-                $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+                $tagService = $this->getDbService(TagService::class);
                 $tagService->deduplicateResourceLinks();
-                $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+                $userResourceService = $this->getDbService(UserResourceService::class);
                 $userResourceService->deduplicate();
             }
         }
@@ -462,7 +462,7 @@ class ResourceService extends AbstractDbService implements ServiceAwareInterface
 
         // Adjust for tags if necessary:
         if (!empty($tags)) {
-            $linkingTable = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $linkingTable = $this->getDbService(TagService::class);
             $matches = [];
             foreach ($tags as $tag) {
                 $matches[] = $linkingTable

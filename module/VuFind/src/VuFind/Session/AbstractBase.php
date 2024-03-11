@@ -32,7 +32,7 @@
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
-use VuFind\Db\Service\ServiceAwareTrait;
+use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
  * Base class for session handling
@@ -49,10 +49,10 @@ abstract class AbstractBase implements HandlerInterface
     use \VuFind\Db\Table\DbTableAwareTrait {
         getDbTable as getTable;
     }
-    // Note that we intentionally omit the ServiceAwareInterface above; the service
+    // Note that we intentionally omit the DbServiceAwareInterface above; the service
     // manager is injected by AbstractBaseFactory explicitly for compatibility with
     // the secure delegator factor, so we don't need to auto-inject it.
-    use ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Session lifetime in seconds

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default implementation of ServiceAwareInterface.
+ * Default implementation of DbServiceAwareInterface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 /**
- * Default implementation of ServiceAwareInterface.
+ * Default implementation of DbServiceAwareInterface.
  *
  * @category VuFind
  * @package  Db_Service
@@ -38,39 +38,39 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-trait ServiceAwareTrait
+trait DbServiceAwareTrait
 {
     /**
      * Database service plugin manager
      *
-     * @var \VuFind\Db\Service\PluginManager
+     * @var PluginManager
      */
-    protected $serviceManager;
+    protected $dbServiceManager;
 
     /**
      * Set the service plugin manager.
      *
-     * @param \VuFind\Db\Service\PluginManager $manager Plugin manager
+     * @param PluginManager $manager Plugin manager
      *
      * @return void
      */
-    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager)
+    public function setDbServiceManager(PluginManager $manager)
     {
-        $this->serviceManager = $manager;
+        $this->dbServiceManager = $manager;
     }
 
     /**
      * Get the service plugin manager. Throw an exception if it is missing.
      *
      * @throws \Exception
-     * @return \VuFind\Db\Service\PluginManager
+     * @return PluginManager
      */
     public function getDbServiceManager()
     {
-        if (null === $this->serviceManager) {
+        if (null === $this->dbServiceManager) {
             throw new \Exception('Service manager missing in ' . static::class . '.');
         }
-        return $this->serviceManager;
+        return $this->dbServiceManager;
     }
 
     /**
@@ -78,7 +78,7 @@ trait ServiceAwareTrait
      *
      * @param string $name Name of service to retrieve
      *
-     * @return \VuFind\Db\Service\AbstractDbService
+     * @return AbstractDbService
      */
     public function getDbService(string $name)
     {

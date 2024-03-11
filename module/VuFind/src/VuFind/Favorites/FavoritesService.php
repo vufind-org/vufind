@@ -29,8 +29,8 @@
 
 namespace VuFind\Favorites;
 
-use VuFind\Db\Service\ServiceAwareInterface;
-use VuFind\Db\Service\ServiceAwareTrait;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -44,10 +44,10 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface, ServiceAwareInterface
+class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface, DbServiceAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Record cache

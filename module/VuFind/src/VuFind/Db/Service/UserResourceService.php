@@ -47,10 +47,10 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserResourceService extends AbstractDbService implements LoggerAwareInterface, ServiceAwareInterface
+class UserResourceService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
 {
     use LoggerAwareTrait;
-    use ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Get a list of duplicate rows (this sometimes happens after merging IDs,
@@ -156,7 +156,7 @@ class UserResourceService extends AbstractDbService implements LoggerAwareInterf
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+        $tagService = $this->getDbService(TagService::class);
         $tagService->destroyResourceLinks($resource_id, $user, $list);
 
         $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur ';

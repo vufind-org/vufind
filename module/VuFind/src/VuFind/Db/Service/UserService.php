@@ -48,10 +48,10 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserService extends AbstractDbService implements LoggerAwareInterface, ServiceAwareInterface
+class UserService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
 {
     use LoggerAwareTrait;
-    use ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Is encryption enabled?
@@ -235,19 +235,19 @@ class UserService extends AbstractDbService implements LoggerAwareInterface, Ser
         $replaceExisting = true
     ) {
         // Create the resource link if it doesn't exist and update the notes in any case:
-        $linkService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+        $linkService = $this->getDbService(UserResourceService::class);
         $linkService->createOrUpdateLink($resource, $user, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
-            $unlinker = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $unlinker = $this->getDbService(TagService::class);
             $resourceId = $resource instanceof Resource ? $resource->getId() : $resource;
             $unlinker->destroyResourceLinks($resourceId, $user, $list);
         }
 
         // Add the new tags:
         foreach ($tagArray as $tag) {
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tagService = $this->getDbService(TagService::class);
             $tagService->addTag($resource, $tag, $user, $list);
         }
     }

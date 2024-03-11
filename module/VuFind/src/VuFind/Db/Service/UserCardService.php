@@ -45,10 +45,10 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserCardService extends AbstractDbService implements LoggerAwareInterface, ServiceAwareInterface
+class UserCardService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
 {
     use LoggerAwareTrait;
-    use \VuFind\Db\Service\ServiceAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Get user_card rows with insecure catalog passwords
@@ -119,7 +119,7 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
     {
         if ($id === null) {
             if (is_int($user)) {
-                $user = $this->getDbService(\VuFind\Db\Service\UserService::class)
+                $user = $this->getDbService(UserService::class)
                     ->getUserById($user);
             }
 
@@ -181,7 +181,7 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
         $password,
         $homeLib = ''
     ) {
-        $userService = $this->getDbService(\VuFind\Db\Service\UserService::class);
+        $userService = $this->getDbService(UserService::class);
         if (is_int($user)) {
             $user = $userService->getUserById($user);
         }
@@ -235,7 +235,7 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
     public function updateLibraryCardEntry($user)
     {
         if (is_int($user)) {
-            $user = $this->getDbService(\VuFind\Db\Service\UserService::class)
+            $user = $this->getDbService(UserService::class)
                 ->getUserById($user);
         }
 
