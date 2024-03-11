@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6aced2adf3e3fdbebdfdd13dfc2bff58",
+    "content-hash": "95cc16536bb6f57abbaa3b448dc843ed",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -3823,16 +3823,16 @@
         },
         {
             "name": "laminas/laminas-mvc-plugin-flashmessenger",
-            "version": "1.9.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger.git",
-                "reference": "dc73bb6b56a0d74f9fdc0d24ec55a5f8c87c4cfa"
+                "reference": "852d8c661dfb6492d4ea6d4ab238e72180e82387"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-flashmessenger/zipball/dc73bb6b56a0d74f9fdc0d24ec55a5f8c87c4cfa",
-                "reference": "dc73bb6b56a0d74f9fdc0d24ec55a5f8c87c4cfa",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-flashmessenger/zipball/852d8c661dfb6492d4ea6d4ab238e72180e82387",
+                "reference": "852d8c661dfb6492d4ea6d4ab238e72180e82387",
                 "shasum": ""
             },
             "require": {
@@ -3840,18 +3840,18 @@
                 "laminas/laminas-session": "^2.12.0",
                 "laminas/laminas-stdlib": "^3.6.4",
                 "laminas/laminas-view": "^2.13.1",
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
             },
             "conflict": {
                 "laminas/laminas-mvc": "<3.0.0",
                 "zendframework/zend-mvc-plugin-flashmessenger": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~2.4.0",
+                "laminas/laminas-coding-standard": "~2.5.0",
                 "laminas/laminas-i18n": "^2.19.0",
-                "phpunit/phpunit": "^9.5.25",
-                "psalm/plugin-phpunit": "^0.17.0",
-                "vimeo/psalm": "^4.29.0"
+                "phpunit/phpunit": "^9.5.26",
+                "psalm/plugin-phpunit": "^0.18.0",
+                "vimeo/psalm": "^5.0.0"
             },
             "type": "library",
             "extra": {
@@ -3888,7 +3888,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-10-22T12:47:30+00:00"
+            "time": "2024-01-18T15:07:28+00:00"
         },
         {
             "name": "laminas/laminas-paginator",
