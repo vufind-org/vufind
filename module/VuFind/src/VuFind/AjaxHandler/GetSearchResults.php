@@ -219,7 +219,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         if ('search' !== $baseAction && !$this->renderer->resolver($templatePath)) {
             $templatePath = 'search/results-list.phtml';
         }
-        $params = $results->getParams();
         $options = $results->getOptions();
         $cart = $this->renderer->plugin('cart');
         $showBulkOptions = $options->supportsCart()
@@ -230,16 +229,19 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             && ($showBulkOptions || !$cart()->isActiveInSearch());
         // Enable bulk options if appropriate:
         $showCheckboxes = $showCartControls || $showBulkOptions;
+        // Include request parameters:
+        parse_str($params->fromQuery('querystring', ''), $searchParams);
 
         return $this->renderer->render(
             $templatePath,
-            compact(
-                'results',
-                'params',
-                'showBulkOptions',
-                'showCartControls',
-                'showCheckboxes',
-            )
+            [
+                'request' => $searchParams,
+                'results' => $results,
+                'params' => $results->getParams(),
+                'showBulkOptions' => $showBulkOptions,
+                'showCartControls' => $showCartControls,
+                'showCheckboxes' => $showCheckboxes,
+            ]
         );
     }
 
