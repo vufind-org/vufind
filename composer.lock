@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b39181c89560ec630c262820e52eea6",
+    "content-hash": "e83ad0007a76edc5437602f2e84a9d79",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2554,20 +2554,20 @@
         },
         {
             "name": "laminas/laminas-eventmanager",
-            "version": "3.10.0",
+            "version": "3.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-eventmanager.git",
-                "reference": "5a5114ab2d3fa4424faa46a2fb0a4e49a61f6eba"
+                "reference": "ce5ba8bde378fca5cb0cd514f01823637215b2f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-eventmanager/zipball/5a5114ab2d3fa4424faa46a2fb0a4e49a61f6eba",
-                "reference": "5a5114ab2d3fa4424faa46a2fb0a4e49a61f6eba",
+                "url": "https://api.github.com/repos/laminas/laminas-eventmanager/zipball/ce5ba8bde378fca5cb0cd514f01823637215b2f3",
+                "reference": "ce5ba8bde378fca5cb0cd514f01823637215b2f3",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
             },
             "conflict": {
                 "container-interop/container-interop": "<1.2",
@@ -2575,12 +2575,12 @@
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-stdlib": "^3.15",
-                "phpbench/phpbench": "^1.2.7",
-                "phpunit/phpunit": "^9.5.26",
-                "psalm/plugin-phpunit": "^0.18.0",
+                "laminas/laminas-stdlib": "^3.18",
+                "phpbench/phpbench": "^1.2.15",
+                "phpunit/phpunit": "^10.5.5",
+                "psalm/plugin-phpunit": "^0.18.4",
                 "psr/container": "^1.1.2 || ^2.0.2",
-                "vimeo/psalm": "^5.0.0"
+                "vimeo/psalm": "^5.18"
             },
             "suggest": {
                 "laminas/laminas-stdlib": "^2.7.3 || ^3.0, to use the FilterChain feature",
@@ -2618,7 +2618,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2023-01-11T19:52:45+00:00"
+            "time": "2024-01-03T17:43:50+00:00"
         },
         {
             "name": "laminas/laminas-feed",
