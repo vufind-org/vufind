@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
+ * Default implementation of DbServiceAwareInterface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 /**
- * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
+ * Default implementation of DbServiceAwareInterface.
  *
  * @category VuFind
  * @package  Db_Service
@@ -38,22 +38,50 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface ServiceAwareInterface
+trait DbServiceAwareTrait
 {
     /**
-     * Get the plugin manager.  Throw an exception if it is missing.
+     * Database service plugin manager
      *
-     * @throws \Exception
-     * @return \VuFind\Db\Service\PluginManager
+     * @var \VuFind\Db\Service\PluginManager
      */
-    public function getDbServiceManager();
+    protected $dbServiceManager;
 
     /**
-     * Set the plugin manager.
+     * Set the service plugin manager.
      *
      * @param \VuFind\Db\Service\PluginManager $manager Plugin manager
      *
      * @return void
      */
-    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager);
+    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager)
+    {
+        $this->dbServiceManager = $manager;
+    }
+
+    /**
+     * Get the service plugin manager. Throw an exception if it is missing.
+     *
+     * @throws \Exception
+     * @return \VuFind\Db\Service\PluginManager
+     */
+    public function getDbServiceManager()
+    {
+        if (null === $this->dbServiceManager) {
+            throw new \Exception('Service manager missing in ' . static::class . '.');
+        }
+        return $this->dbServiceManager;
+    }
+
+    /**
+     * Get a database service object.
+     *
+     * @param string $name Name of service to retrieve
+     *
+     * @return \VuFind\Db\Service\AbstractDbService
+     */
+    public function getDbService(string $name)
+    {
+        return $this->getDbServiceManager()->get($name);
+    }
 }

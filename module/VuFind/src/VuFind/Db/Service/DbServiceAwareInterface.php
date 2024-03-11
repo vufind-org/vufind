@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default implementation of ServiceAwareInterface.
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 /**
- * Default implementation of ServiceAwareInterface.
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
  *
  * @category VuFind
  * @package  Db_Service
@@ -38,50 +38,22 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-trait ServiceAwareTrait
+interface DbServiceAwareInterface
 {
     /**
-     * Database service plugin manager
+     * Get the plugin manager.  Throw an exception if it is missing.
      *
-     * @var \VuFind\Db\Service\PluginManager
+     * @throws \Exception
+     * @return \VuFind\Db\Service\PluginManager
      */
-    protected $serviceManager;
+    public function getDbServiceManager();
 
     /**
-     * Set the service plugin manager.
+     * Set the plugin manager.
      *
      * @param \VuFind\Db\Service\PluginManager $manager Plugin manager
      *
      * @return void
      */
-    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager)
-    {
-        $this->serviceManager = $manager;
-    }
-
-    /**
-     * Get the service plugin manager. Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Service\PluginManager
-     */
-    public function getDbServiceManager()
-    {
-        if (null === $this->serviceManager) {
-            throw new \Exception('Service manager missing in ' . static::class . '.');
-        }
-        return $this->serviceManager;
-    }
-
-    /**
-     * Get a database service object.
-     *
-     * @param string $name Name of service to retrieve
-     *
-     * @return \VuFind\Db\Service\AbstractService
-     */
-    public function getDbService(string $name)
-    {
-        return $this->getDbServiceManager()->get($name);
-    }
+    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager);
 }
