@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4869299e870ede322679d00050717e1",
+    "content-hash": "6aced2adf3e3fdbebdfdd13dfc2bff58",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -3745,16 +3745,16 @@
         },
         {
             "name": "laminas/laminas-mvc-i18n",
-            "version": "1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-i18n.git",
-                "reference": "571f3e34afbff14351677c450f872a0dd19f9d28"
+                "reference": "669a00f36dd9fba8ec95516fe4afde7c4d8b8faa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-i18n/zipball/571f3e34afbff14351677c450f872a0dd19f9d28",
-                "reference": "571f3e34afbff14351677c450f872a0dd19f9d28",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-i18n/zipball/669a00f36dd9fba8ec95516fe4afde7c4d8b8faa",
+                "reference": "669a00f36dd9fba8ec95516fe4afde7c4d8b8faa",
                 "shasum": ""
             },
             "require": {
@@ -3765,7 +3765,7 @@
                 "laminas/laminas-servicemanager": "^3.15.1",
                 "laminas/laminas-stdlib": "^3.10.1",
                 "laminas/laminas-validator": "^2.19.0",
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
             },
             "conflict": {
                 "laminas/laminas-mvc": "<3.0.0",
@@ -3773,11 +3773,11 @@
                 "zendframework/zend-mvc-i18n": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~2.4.0",
-                "phpspec/prophecy-phpunit": "^2.0.1",
-                "phpunit/phpunit": "^9.5.26",
-                "psalm/plugin-phpunit": "^0.18.0",
-                "vimeo/psalm": "^5.0.0"
+                "laminas/laminas-coding-standard": "~2.5.0",
+                "phpspec/prophecy-phpunit": "^2.0.2",
+                "phpunit/phpunit": "^9.6.13",
+                "psalm/plugin-phpunit": "^0.18.4",
+                "vimeo/psalm": "^5.15"
             },
             "suggest": {
                 "laminas/laminas-cache": "To enable caching of translation strings"
@@ -3819,7 +3819,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-12-02T15:45:50+00:00"
+            "time": "2023-11-06T09:31:01+00:00"
         },
         {
             "name": "laminas/laminas-mvc-plugin-flashmessenger",
