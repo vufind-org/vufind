@@ -773,6 +773,8 @@ class MyResearchController extends AbstractBase
             }
         } else {
             $view->patronLoginView = $patron;
+            // Turn off account menu in embedded login display:
+            $view->patronLoginView->showMenu = false;
         }
 
         $view->accountDeletion
@@ -923,7 +925,7 @@ class MyResearchController extends AbstractBase
             $listService->removeResourcesById($user->id, $list, [$id], $source);
             $this->flashMessenger()->addMessage('Item removed from list', 'success');
         } else {
-            // ...My Favorites
+            // ...All Saved Items
             $user->removeResourcesById([$id], $source);
             $this->flashMessenger()
                 ->addMessage('Item removed from favorites', 'success');

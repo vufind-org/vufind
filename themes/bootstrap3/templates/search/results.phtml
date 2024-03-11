@@ -69,7 +69,7 @@
           <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <?php endif; ?>
         <?php if ($recommendations): ?>
-          <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
+          <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
             <?=$this->transEsc('Refine Results') ?>
           </a>
         <?php endif; ?>

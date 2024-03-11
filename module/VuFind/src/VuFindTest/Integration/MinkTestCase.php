@@ -1155,6 +1155,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         // Create a pathResolver:
         $this->pathResolver = $this->getPathResolver();
+
+        // Change theme if requested:
+        if ($theme = (string)getenv('VUFIND_TEST_THEME')) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Site' => [
+                            'theme' => $theme,
+                        ],
+                    ],
+                ]
+            );
+        }
     }
 
     /**

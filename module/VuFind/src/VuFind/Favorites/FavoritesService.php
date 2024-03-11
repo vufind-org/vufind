@@ -82,7 +82,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
         if (empty($listId) || $listId == 'NEW') {
             $list = $listService->getNew($user->id);
-            $list->setTitle($this->translate('My Favorites'));
+            $list->setTitle($this->translate('default_list_title'));
             $listService->save($list, $user->id);
         } else {
             $list = $listService->getExisting($listId);
