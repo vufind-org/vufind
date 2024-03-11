@@ -2388,7 +2388,7 @@ class MyResearchController extends AbstractBase
     /**
      * Get userlist database service
      *
-     * @return \VuFind\Db\Service\AbstractService
+     * @return \VuFind\Db\Service\UserListService
      */
     protected function getListService()
     {
