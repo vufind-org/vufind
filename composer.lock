@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b25525653abcb67bbc645a614e718d22",
+    "content-hash": "1e5943d5b424580286759d9acf216bae",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -4028,33 +4028,29 @@
         },
         {
             "name": "laminas/laminas-psr7bridge",
-            "version": "1.9.0",
+            "version": "1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-psr7bridge.git",
-                "reference": "fa4bdcc88727e37d51dedb7ddd0c5e9803d792b4"
+                "reference": "7e2f47596288c490f4888be96d1431acccbe06b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-psr7bridge/zipball/fa4bdcc88727e37d51dedb7ddd0c5e9803d792b4",
-                "reference": "fa4bdcc88727e37d51dedb7ddd0c5e9803d792b4",
+                "url": "https://api.github.com/repos/laminas/laminas-psr7bridge/zipball/7e2f47596288c490f4888be96d1431acccbe06b8",
+                "reference": "7e2f47596288c490f4888be96d1431acccbe06b8",
                 "shasum": ""
             },
             "require": {
-                "laminas/laminas-diactoros": "^2.0",
-                "laminas/laminas-http": "^2.18",
-                "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-                "psr/http-message": "^1.0"
-            },
-            "conflict": {
-                "laminas/laminas-stdlib": "< 3.2.1",
-                "zendframework/zend-psr7bridge": "*"
+                "laminas/laminas-diactoros": "^2.25.2 || ^3.0.0",
+                "laminas/laminas-http": "^2.19.0",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "psr/http-message": "^1.1 || ^2.0"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~2.4.0",
-                "phpunit/phpunit": "^9.5.27",
+                "laminas/laminas-coding-standard": "~2.5.0",
+                "phpunit/phpunit": "^10.4.2",
                 "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.4"
+                "vimeo/psalm": "^5.15.0"
             },
             "type": "library",
             "autoload": {
@@ -4088,7 +4084,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-12-20T12:37:06+00:00"
+            "time": "2023-11-02T16:52:24+00:00"
         },
         {
             "name": "laminas/laminas-recaptcha",
