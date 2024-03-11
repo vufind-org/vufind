@@ -55,7 +55,7 @@
         "laminas/laminas-http": "2.19.0",
         "laminas/laminas-i18n": "2.26.0",
         "laminas/laminas-loader": "2.10.0",
-        "laminas/laminas-log": "2.16.1",
+        "laminas/laminas-log": "2.17.0",
         "laminas/laminas-mail": "2.22.0",
         "laminas/laminas-modulemanager": "2.15.0",
         "laminas/laminas-mvc": "3.7.0",
