@@ -44,7 +44,7 @@
         "laminas/laminas-code": "4.7.1",
         "laminas/laminas-config": "3.9.0",
         "laminas/laminas-crypt": "3.11.0",
-        "laminas/laminas-db": "2.18.0",
+        "laminas/laminas-db": "2.19.0",
         "laminas/laminas-diactoros": "2.25.2",
         "laminas/laminas-dom": "2.14.0",
         "laminas/laminas-escaper": "2.13.0",
