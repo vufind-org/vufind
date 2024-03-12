@@ -176,7 +176,7 @@ class AbstractRecord extends AbstractBase
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $driver->addOrUpdateRating($user->id, intval($rating));
+                $driver->addOrUpdateRating($user->getId(), intval($rating));
             }
 
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -321,7 +321,7 @@ class AbstractRecord extends AbstractBase
         // Display the "add rating" form:
         $view = $this->createViewModel(
             [
-                'currentRating' => $user ? $driver->getRatingData($user->id) : null,
+                'currentRating' => $user ? $driver->getRatingData($user->getId()) : null,
             ]
         );
         return $view;

@@ -248,7 +248,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             // in the access token table so that it can be retrieved for token or
             // user info action:
             $this->accessTokenTable
-                ->storeNonce($user->id, $laminasRequest->getQuery('nonce'));
+                ->storeNonce($user->getId(), $laminasRequest->getQuery('nonce'));
 
             $authRequest->setUser(
                 new UserEntity(

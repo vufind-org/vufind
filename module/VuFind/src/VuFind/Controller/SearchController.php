@@ -34,7 +34,6 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
 
 use function array_slice;
 use function count;
-use function is_object;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -197,7 +196,7 @@ class SearchController extends AbstractSolrSearch
                 ? $this->redirect()->toRoute('search-history')
                 : $this->forceLogin();
         }
-        $userId = is_object($user) ? $user->id : null;
+        $userId = $user?->getId() ?? null;
 
         $searchHistoryHelper = $this->serviceLocator
             ->get(\VuFind\Search\History::class);
@@ -218,7 +217,7 @@ class SearchController extends AbstractSolrSearch
             unset($viewData['schedule']);
         } else {
             $viewData['scheduleOptions'] = $scheduleOptions;
-            $viewData['alertemail'] = is_object($user) ? $user->email : null;
+            $viewData['alertemail'] = $user?->getEmail() ?? null;
         }
         return $this->createViewModel($viewData);
     }

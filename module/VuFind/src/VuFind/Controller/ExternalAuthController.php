@@ -77,7 +77,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
                 $logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
                 $logger->info(
                     "EZproxy login to '" . $config->EZproxy->host
-                    . "' for '" . ($user ? $user->username : 'anonymous')
+                    . "' for '" . ($user ? $user->getUsername() : 'anonymous')
                     . "' from IP address "
                     . $this->request->getServer()->get('REMOTE_ADDR')
                 );
@@ -87,7 +87,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
                 $this->params()->fromQuery('url')
             );
             $username = !empty($config->EZproxy->anonymous_ticket) || !$user
-                ? 'anonymous' : $user->username;
+                ? 'anonymous' : $user->getUsername();
             return $this->redirect()->toUrl(
                 $this->createEzproxyTicketUrl($username, $url)
             );

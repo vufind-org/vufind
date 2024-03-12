@@ -37,6 +37,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -253,28 +254,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Set default values if applicable:
-        if (
-            (!isset($view->to) || empty($view->to)) && $user
-            && isset($config->Mail->user_email_in_to)
-            && $config->Mail->user_email_in_to
-        ) {
-            $view->to = $user->email;
+        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+            $view->to = $user->getEmail();
         }
-        if (!isset($view->from) || empty($view->from)) {
-            if (
-                $user && isset($config->Mail->user_email_in_from)
-                && $config->Mail->user_email_in_from
-            ) {
+        if (empty($view->from)) {
+            if ($user && ($config->Mail->user_email_in_from ?? false)) {
                 $view->userEmailInFrom = true;
-                $view->from = $user->email;
-            } elseif (
-                isset($config->Mail->default_from)
-                && $config->Mail->default_from
-            ) {
+                $view->from = $user->getEmail();
+            } elseif ($config->Mail->default_from ?? false) {
                 $view->from = $config->Mail->default_from;
             }
         }
-        if (!isset($view->subject) || empty($view->subject)) {
+        if (empty($view->subject)) {
             $view->subject = $defaultSubject;
         }
 
@@ -327,11 +318,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Get the user object if logged in, false otherwise.
      *
-     * @return \VuFind\Db\Row\User|bool
+     * @return ?UserEntityInterface
      */
-    protected function getUser()
+    protected function getUser(): ?UserEntityInterface
     {
-        return $this->getAuthManager()->getUserObject() ?? false;
+        return $this->getAuthManager()->getUserObject();
     }
 
     /**
