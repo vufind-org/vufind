@@ -38,6 +38,6 @@ namespace VuFind\Db\Interface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface UserAccountInterface
+interface UserEntityInterface
 {
 }
