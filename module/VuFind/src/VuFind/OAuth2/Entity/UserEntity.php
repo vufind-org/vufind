@@ -30,9 +30,9 @@
 namespace VuFind\OAuth2\Entity;
 
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
-use League\OAuth2\Server\Entities\UserEntityInterface;
+use League\OAuth2\Server\Entities\UserEntityInterface as OAuth2UserEntityInterface;
 use OpenIDConnectServer\Entities\ClaimSetInterface;
-use VuFind\Db\Entity\UserInterface;
+use VuFind\Db\Entity\UserEntityInterface as DbUserEntityInterface;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\ILS\Connection;
 
@@ -45,14 +45,14 @@ use VuFind\ILS\Connection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class UserEntity implements UserEntityInterface, ClaimSetInterface
+class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
 {
     use EntityTrait;
 
     /**
      * User
      *
-     * @var UserInterface
+     * @var DbUserEntityInterface
      */
     protected $user;
 
@@ -80,13 +80,13 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
     /**
      * Constructor
      *
-     * @param UserInterface               $user               User
+     * @param DbUserEntityInterface       $user               User
      * @param ?Connection                 $ils                ILS connection
      * @param array                       $config             OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      */
     public function __construct(
-        UserInterface $user,
+        DbUserEntityInterface $user,
         ?Connection $ils,
         array $config,
         AccessTokenServiceInterface $accessTokenService

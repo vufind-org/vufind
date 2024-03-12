@@ -40,4 +40,47 @@ namespace VuFind\Db\Entity;
  */
 interface UserEntityInterface extends EntityInterface
 {
+    /**
+     * Get ID.
+     *
+     * @return int
+     */
+    public function getId(): int;
+
+    /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string;
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string;
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string;
+
+    /**
+     * Get catalog username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string;
+
+    /**
+     * This is a getter for the Catalog Password. It will return a plaintext version
+     * of the password.
+     *
+     * @return string The Catalog password in plain text
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function getCatPassword();
 }
