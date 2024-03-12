@@ -402,6 +402,9 @@ var VuFind = (function VuFind() {
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
+    if (typeof this.explain !== 'undefined') {
+      this.explain.init();
+    }
   };
 
   var init = function init() {
