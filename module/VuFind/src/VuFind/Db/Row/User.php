@@ -830,6 +830,72 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Get email.
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set pending email.
+     *
+     * @param string $email New pending email
+     *
+     * @return UserEntityInterface
+     */
+    public function setPendingEmail(string $email): UserEntityInterface
+    {
+        $this->pending_email = $email;
+        return $this;
+    }
+
+    /**
+     * Get pending email.
+     *
+     * @return string
+     */
+    public function getPendingEmail(): string
+    {
+        return $this->pending_email;
+    }
+
+    /**
      * Catalog username setter
      *
      * @param ?string $catUsername Catalog username
@@ -919,5 +985,25 @@ class User extends RowGateway implements
     public function getCatPassEnc(): ?string
     {
         return $this->cat_pass_enc;
+    }
+
+    /**
+     * Get verification hash for recovery.
+     *
+     * @return string
+     */
+    public function getVerifyHash(): string
+    {
+        return $this->verify_hash;
+    }
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string
+    {
+        return $this->last_language;
     }
 }

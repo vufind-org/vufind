@@ -64,6 +64,52 @@ interface UserEntityInterface extends EntityInterface
     public function getUsername(): string;
 
     /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string;
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string;
+
+    /**
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface;
+
+    /**
+     * Get email.
+     *
+     * @return string
+     */
+    public function getEmail(): string;
+
+    /**
+     * Set pending email.
+     *
+     * @param string $email New pending email
+     *
+     * @return UserEntityInterface
+     */
+    public function setPendingEmail(string $email): UserEntityInterface;
+
+    /**
+     * Get pending email.
+     *
+     * @return string
+     */
+    public function getPendingEmail(): string;
+
+    /**
      * Catalog username setter
      *
      * @param ?string $catUsername Catalog username
@@ -126,4 +172,18 @@ interface UserEntityInterface extends EntityInterface
      * @return ?string
      */
     public function getCatPassEnc(): ?string;
+
+    /**
+     * Get verification hash for recovery.
+     *
+     * @return string
+     */
+    public function getVerifyHash(): string;
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string;
 }
