@@ -275,9 +275,9 @@ class User implements UserEntityInterface
      *
      * @param string $username Username
      *
-     * @return User
+     * @return UserEntityInterface
      */
-    public function setUsername(string $username): User
+    public function setUsername(string $username): UserEntityInterface
     {
         $this->username = $username;
         return $this;
@@ -298,9 +298,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $catUsername Catalog username
      *
-     * @return User
+     * @return UserEntityInterface
      */
-    public function setCatUsername(?string $catUsername): User
+    public function setCatUsername(?string $catUsername): UserEntityInterface
     {
         $this->catUsername = $catUsername;
         return $this;
@@ -321,9 +321,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return User
+     * @return UserEntityInterface
      */
-    public function setHomeLibrary(?string $homeLibrary): User
+    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface
     {
         $this->homeLibrary = $homeLibrary;
         return $this;
@@ -344,9 +344,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $catPassword Cat password
      *
-     * @return User
+     * @return UserEntityInterface
      */
-    public function setRawCatPassword(?string $catPassword): User
+    public function setRawCatPassword(?string $catPassword): UserEntityInterface
     {
         $this->catPassword = $catPassword;
         return $this;
@@ -367,9 +367,9 @@ class User implements UserEntityInterface
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return User
+     * @return UserEntityInterface
      */
-    public function setCatPassEnc(?string $passEnc): User
+    public function setCatPassEnc(?string $passEnc): UserEntityInterface
     {
         $this->catPassEnc = $passEnc;
         return $this;
