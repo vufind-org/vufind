@@ -43,18 +43,18 @@ trait DbServiceAwareTrait
     /**
      * Database service plugin manager
      *
-     * @var \VuFind\Db\Service\PluginManager
+     * @var PluginManager
      */
     protected $dbServiceManager;
 
     /**
      * Set the service plugin manager.
      *
-     * @param \VuFind\Db\Service\PluginManager $manager Plugin manager
+     * @param PluginManager $manager Plugin manager
      *
      * @return void
      */
-    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager)
+    public function setDbServiceManager(PluginManager $manager)
     {
         $this->dbServiceManager = $manager;
     }
@@ -63,7 +63,7 @@ trait DbServiceAwareTrait
      * Get the service plugin manager. Throw an exception if it is missing.
      *
      * @throws \Exception
-     * @return \VuFind\Db\Service\PluginManager
+     * @return PluginManager
      */
     public function getDbServiceManager()
     {
@@ -78,7 +78,7 @@ trait DbServiceAwareTrait
      *
      * @param string $name Name of service to retrieve
      *
-     * @return \VuFind\Db\Service\AbstractDbService
+     * @return AbstractDbService
      */
     public function getDbService(string $name)
     {
