@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\UserService;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -806,6 +807,7 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
+        $userService = $this->getDbService(UserService::class);
         $userRows = $this->getTable('user')->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
@@ -825,11 +827,8 @@ class InstallController extends AbstractBase
         }
         $cardRows = $this->getTable('usercard')->getInsecureRows();
         if (count($cardRows) > 0) {
-            // Create a dummy user for encryption purposes...
-            $dummyUser = $this->getTable('user')->createRow();
             foreach ($cardRows as $row) {
-                $dummyUser->setCredentials($row->cat_username, $row->cat_password);
-                $row->cat_pass_enc = $dummyUser->cat_pass_enc;
+                $row->cat_pass_enc = $userService->encrypt($row->cat_password);
                 $row->cat_password = null;
                 $row->save();
             }
