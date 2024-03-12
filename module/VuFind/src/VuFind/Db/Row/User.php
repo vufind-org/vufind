@@ -830,19 +830,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Set email.
-     *
-     * @param string $email Email address
-     *
-     * @return UserEntityInterface
-     */
-    public function setEmail(string $email): UserEntityInterface
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    /**
      * Get firstname.
      *
      * @return string
@@ -860,6 +847,19 @@ class User extends RowGateway implements
     public function getLastname(): string
     {
         return $this->lastname;
+    }
+
+    /**
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface
+    {
+        $this->email = $email;
+        return $this;
     }
 
     /**
