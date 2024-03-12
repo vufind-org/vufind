@@ -58,11 +58,12 @@ class AccessToken extends RowGateway implements AccessTokenInterface
      *
      * @param ?string $userId User ID
      *
-     * @return void
+     * @return AccessTokenInterface
      */
-    public function setUserId(?string $userId): void
+    public function setUserId(?string $userId): AccessTokenInterface
     {
         $this->__set('user_id', $userId);
+        return $this;
     }
 
     /**
@@ -70,11 +71,12 @@ class AccessToken extends RowGateway implements AccessTokenInterface
      *
      * @param string $data Data
      *
-     * @return void
+     * @return AccessTokenInterface
      */
-    public function setData(string $data): void
+    public function setData(string $data): AccessTokenInterface
     {
         $this->__set('data', $data);
+        return $this;
     }
 
     /**
@@ -92,10 +94,11 @@ class AccessToken extends RowGateway implements AccessTokenInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return void
+     * @return AccessTokenInterface
      */
-    public function setRevoked(bool $revoked): void
+    public function setRevoked(bool $revoked): AccessTokenInterface
     {
         $this->__set('revoked', $revoked);
+        return $this;
     }
 }
