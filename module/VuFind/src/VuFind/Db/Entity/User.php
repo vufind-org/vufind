@@ -47,7 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\UniqueConstraint(name="username", columns={"username"})})
  * @ORM\Entity
  */
-class User implements EntityInterface
+class User implements UserEntityInterface
 {
     /**
      * Unique ID.
