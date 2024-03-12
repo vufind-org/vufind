@@ -75,20 +75,6 @@ class User extends RowGateway implements
     use \VuFind\Db\Service\DbServiceAwareTrait;
 
     /**
-     * Is encryption enabled?
-     *
-     * @var bool
-     */
-    protected $encryptionEnabled = null;
-
-    /**
-     * Encryption key used for catalog passwords (null if encryption disabled):
-     *
-     * @var string
-     */
-    protected $encryptionKey = null;
-
-    /**
      * VuFind configuration
      *
      * @var \Laminas\Config\Config

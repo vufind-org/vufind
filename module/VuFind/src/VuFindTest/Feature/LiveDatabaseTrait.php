@@ -197,9 +197,14 @@ trait LiveDatabaseTrait
                 $adapterFactory->getAdapter()
             );
             $container->set(\VuFind\Tags::class, new \VuFind\Tags());
+            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
             $container->set(
                 \VuFind\Db\Row\PluginManager::class,
                 new \VuFind\Db\Row\PluginManager($container, [])
+            );
+            $container->set(
+                \VuFind\Db\Service\PluginManager::class,
+                new \VuFind\Db\Service\PluginManager($container, [])
             );
             $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
                 $container,
