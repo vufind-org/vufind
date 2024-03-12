@@ -33,7 +33,7 @@ use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Cookie\CookieManager;
-use VuFind\Db\Interface\UserAccountInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
@@ -132,7 +132,7 @@ class Manager implements
     /**
      * Cache for current logged in user object
      *
-     * @var ?UserAccountInterface
+     * @var ?UserEntityInterface
      */
     protected $currentUser = null;
 
@@ -594,9 +594,9 @@ class Manager implements
     /**
      * Checks whether the user is logged in.
      *
-     * @return ?UserAccountInterface Object if user is logged in, null otherwise.
+     * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
-    public function getUserObject(): ?UserAccountInterface
+    public function getUserObject(): ?UserEntityInterface
     {
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
