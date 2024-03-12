@@ -69,7 +69,7 @@ use function count;
  * @property string  $last_language
  */
 class User extends RowGateway implements
-    \VuFind\Db\Interface\UserAccountInterface,
+    \VuFind\Db\Entity\UserInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
@@ -116,6 +116,46 @@ class User extends RowGateway implements
     public function setConfig(\Laminas\Config\Config $config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * Get ID.
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string
+    {
+        return $this->last_language;
     }
 
     /**
@@ -200,6 +240,16 @@ class User extends RowGateway implements
 
         $this->email_verified = $datetime;
         return $this->save();
+    }
+
+    /**
+     * Get catalog username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string
+    {
+        return $this->cat_username;
     }
 
     /**

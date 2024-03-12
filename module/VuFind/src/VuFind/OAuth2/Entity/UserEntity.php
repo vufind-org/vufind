@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,8 +32,8 @@ namespace VuFind\OAuth2\Entity;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use OpenIDConnectServer\Entities\ClaimSetInterface;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Entity\UserInterface;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\ILS\Connection;
 
 /**
@@ -52,14 +52,14 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
     /**
      * User
      *
-     * @var User
+     * @var UserInterface
      */
     protected $user;
 
     /**
      * ILS connection
      *
-     * @var Connection
+     * @var ?Connection
      */
     protected $ils;
 
@@ -71,31 +71,31 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
     protected $oauth2Config;
 
     /**
-     * Access token table
+     * Access token service
      *
-     * @var AccessToken
+     * @var AccessTokenServiceInterface
      */
-    protected $accessTokenTable;
+    protected $accessTokenService;
 
     /**
      * Constructor
      *
-     * @param User        $user       User
-     * @param Connection  $ils        ILS connection
-     * @param array       $config     OAuth2 configuration
-     * @param AccessToken $tokenTable AccessToken table
+     * @param UserInterface               $user               User
+     * @param ?Connection                 $ils                ILS connection
+     * @param array                       $config             OAuth2 configuration
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
      */
     public function __construct(
-        User $user,
-        Connection $ils,
+        UserInterface $user,
+        ?Connection $ils,
         array $config,
-        AccessToken $tokenTable
+        AccessTokenServiceInterface $accessTokenService
     ) {
         $this->setIdentifier($user->id);
         $this->user = $user;
         $this->ils = $ils;
         $this->oauth2Config = $config;
-        $this->accessTokenTable = $tokenTable;
+        $this->accessTokenService = $accessTokenService;
     }
 
     /**
@@ -108,10 +108,10 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
         // Get catalog information if the user has credentials:
         $profile = [];
         $blocked = null;
-        if (!empty($this->user->cat_username)) {
+        if ($this->ils && !empty($this->user->getCatUsername())) {
             try {
                 $patron = $this->ils->patronLogin(
-                    $this->user->cat_username,
+                    $this->user->getCatUsername(),
                     $this->user->getCatPassword()
                 );
                 $profile = $this->ils->getMyProfile($patron);
@@ -128,7 +128,7 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
         }
 
         $result = [];
-        if ($nonce = $this->accessTokenTable->getNonce($this->user->id)) {
+        if ($nonce = $this->accessTokenService->getNonce($this->user->getId())) {
             $result['nonce'] = $nonce;
         }
 
@@ -170,12 +170,12 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                 case 'full_name':
                     // full_name is a special field for firstname + lastname:
                     $result[$claim] = trim(
-                        $this->user['firstname'] . ' ' . $this->user['lastname']
+                        $this->user->getFirstname() . ' ' . $this->user->getLastname()
                     );
                     break;
                 case 'last_language':
                     // Make sure any country code is in uppercase:
-                    $value = $this->user->last_language;
+                    $value = $this->user->getLastLanguage();
                     $parts = explode('-', $value);
                     if (isset($parts[1])) {
                         $value = $parts[0] . '-' . strtoupper($parts[1]);
@@ -183,7 +183,7 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     $result[$claim] = $value;
                     break;
                 case 'library_user_id_hash':
-                    $id = $profile['cat_id'] ?? $this->user->cat_username ?? null;
+                    $id = $profile['cat_id'] ?? $this->user->getCatUsername() ?? null;
                     if ($id) {
                         $result[$claim] = hash(
                             'sha256',
@@ -193,8 +193,10 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     }
                     break;
                 default:
+                    $fieldGetMethod = sprintf('get%s', ucfirst($field));
                     if (
-                        ($value = $this->user->{$field} ?? null)
+                        (method_exists($this->user, $fieldGetMethod)
+                        && $value = $this->user->{$fieldGetMethod}())
                         || ($value = $profile[$field] ?? null)
                     ) {
                         $result[$claim] = $value;

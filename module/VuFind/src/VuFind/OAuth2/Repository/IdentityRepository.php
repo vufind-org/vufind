@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,8 +30,8 @@
 namespace VuFind\OAuth2\Repository;
 
 use OpenIDConnectServer\Repositories\IdentityProviderInterface;
-use VuFind\Db\Table\AccessToken;
-use VuFind\Db\Table\User;
+use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\OAuth2\Entity\UserEntity;
 
@@ -47,16 +47,16 @@ use VuFind\OAuth2\Entity\UserEntity;
 class IdentityRepository implements IdentityProviderInterface
 {
     /**
-     * User table
+     * User service
      *
-     * @var User
+     * @var UserServiceInterface
      */
-    protected $userTable;
+    protected $userService;
 
     /**
-     * Access token table
+     * Access token service
      *
-     * @var AccessToken
+     * @var AccessTokenServiceInterface
      */
     protected $accessTokenTable;
 
@@ -77,19 +77,19 @@ class IdentityRepository implements IdentityProviderInterface
     /**
      * Constructor
      *
-     * @param User        $userTable  User table
-     * @param AccessToken $tokenTable Access token table
-     * @param Connection  $ils        ILS connection
-     * @param array       $config     OAuth2 configuration
+     * @param UserServiceInterface        $userService        User service
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param Connection                  $ils                ILS connection
+     * @param array                       $config             OAuth2 configuration
      */
     public function __construct(
-        User $userTable,
-        AccessToken $tokenTable,
+        UserServiceInterface $userService,
+        AccessTokenServiceInterface $accessTokenService,
         Connection $ils,
         array $config
     ) {
-        $this->userTable = $userTable;
-        $this->accessTokenTable = $tokenTable;
+        $this->userService = $userService;
+        $this->accessTokenTable = $accessTokenService;
         $this->ils = $ils;
         $this->oauth2Config = $config;
     }
@@ -103,7 +103,7 @@ class IdentityRepository implements IdentityProviderInterface
      */
     public function getUserEntityByIdentifier($identifier)
     {
-        if ($user = $this->userTable->getById($identifier)) {
+        if ($user = $this->userService->getById($identifier)) {
             return new UserEntity(
                 $user,
                 $this->ils,

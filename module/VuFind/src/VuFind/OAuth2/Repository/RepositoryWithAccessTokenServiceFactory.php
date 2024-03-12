@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for repositories requiring the access token table.
+ * Factory for repositories requiring the access token service.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for repositories requiring the access token table.
+ * Factory for repositories requiring the access token service.
  *
  * @category VuFind
  * @package  OAuth2
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RepositoryWithAccessTokenTableFactory implements FactoryInterface
+class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,8 +68,8 @@ class RepositoryWithAccessTokenTableFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $tablePluginManager = $container
-            ->get(\VuFind\Db\Table\PluginManager::class);
-        return new $requestedName($tablePluginManager->get('AccessToken'));
+        $accessTokenService = $container
+            ->get(\VuFind\Db\Service\AccessTokenServiceInterface::class);
+        return new $requestedName($accessTokenService);
     }
 }

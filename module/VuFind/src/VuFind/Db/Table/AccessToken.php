@@ -32,8 +32,10 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use VuFind\Db\Entity\AccessTokenInterface;
 use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 
 /**
  * Table Definition for access_token
@@ -45,7 +47,7 @@ use VuFind\Db\Row\RowGateway;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AccessToken extends Gateway
+class AccessToken extends Gateway implements AccessTokenServiceInterface
 {
     use ExpirationTrait;
 
@@ -124,6 +126,18 @@ class AccessToken extends Gateway
             return $data['nonce'] ?? null;
         }
         return null;
+    }
+
+    /**
+     * Save access token.
+     *
+     * @param AccessTokenInterface $accessToken Access token
+     *
+     * @return void
+     */
+    public function save(AccessTokenRow $accessToken): void
+    {
+        $accessToken->save();
     }
 
     /**

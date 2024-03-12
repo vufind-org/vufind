@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -72,8 +72,8 @@ class IdentityRepositoryFactory implements FactoryInterface
             ->get(\VuFind\Db\Table\PluginManager::class);
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         return new $requestedName(
-            $tablePluginManager->get('User'),
-            $tablePluginManager->get('AccessToken'),
+            $container->get(\VuFind\Db\Service\UserServiceInterface::class),
+            $container->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
             $container->get(\VuFind\ILS\Connection::class),
             $yamlReader->get('OAuth2Server.yaml')
         );
