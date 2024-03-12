@@ -261,7 +261,7 @@ class User implements UserEntityInterface
     protected $lastLanguage = '';
 
     /**
-     * Id getter
+     * Get identifier.
      *
      * @return int
      */
