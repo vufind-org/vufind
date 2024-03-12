@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Interface;
+namespace VuFind\Db\Entity;
 
 /**
  * Interface for representing a user account record.
