@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Row;
 
-use Laminas\Crypt\BlockCipher as BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 
@@ -71,23 +69,11 @@ use function count;
 class User extends RowGateway implements
     \VuFind\Db\Entity\UserEntityInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
-    \LmcRbacMvc\Identity\IdentityInterface
+    \LmcRbacMvc\Identity\IdentityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
-
-    /**
-     * Is encryption enabled?
-     *
-     * @var bool
-     */
-    protected $encryptionEnabled = null;
-
-    /**
-     * Encryption key used for catalog passwords (null if encryption disabled):
-     *
-     * @var string
-     */
-    protected $encryptionKey = null;
+    use \VuFind\Db\Service\DbServiceAwareTrait;
 
     /**
      * VuFind configuration
@@ -157,7 +143,7 @@ class User extends RowGateway implements
         $this->cat_username = $username;
         if ($this->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+            $this->cat_pass_enc = $this->getUserService()->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;
@@ -213,7 +199,7 @@ class User extends RowGateway implements
     {
         if ($this->passwordEncryptionEnabled()) {
             return isset($this->cat_pass_enc)
-                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
+                ? $this->getUserService()->decrypt($this->cat_pass_enc) : null;
         }
         return $this->cat_password ?? null;
     }
@@ -225,11 +211,7 @@ class User extends RowGateway implements
      */
     protected function passwordEncryptionEnabled()
     {
-        if (null === $this->encryptionEnabled) {
-            $this->encryptionEnabled
-                = $this->config->Authentication->encrypt_ils_password ?? false;
-        }
-        return $this->encryptionEnabled;
+        return $this->getUserService()->passwordEncryptionEnabled();
     }
 
     /**
@@ -242,52 +224,13 @@ class User extends RowGateway implements
      *
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use $this->getUserService()->encrypt() or $this->getUserService()->decrypt()
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
-        // Ignore empty text:
-        if (empty($text)) {
-            return $text;
-        }
-
-        $configAuth = $this->config->Authentication;
-
-        // Load encryption key from configuration if not already present:
-        if ($this->encryptionKey === null) {
-            if (empty($configAuth->ils_encryption_key)) {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'ILS password encryption on, but no key set.'
-                );
-            }
-
-            $this->encryptionKey = $configAuth->ils_encryption_key;
-        }
-
-        // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
-
-        // Check if OpenSSL error is caused by blowfish support
-        try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
-            if ($algo == 'blowfish') {
-                trigger_error(
-                    'Deprecated encryption algorithm (blowfish) detected',
-                    E_USER_DEPRECATED
-                );
-            }
-        } catch (\InvalidArgumentException $e) {
-            if ($algo == 'blowfish') {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'The blowfish encryption algorithm ' .
-                    'is not supported by your version of OpenSSL. ' .
-                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
-                );
-            } else {
-                throw $e;
-            }
-        }
-        $cipher->setKey($this->encryptionKey);
-        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+        $method = $encrypt ? 'encrypt' : 'decrypt';
+        return $this->getUserService()->$method($text);
     }
 
     /**
@@ -565,10 +508,7 @@ class User extends RowGateway implements
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
             if ($this->passwordEncryptionEnabled()) {
-                $row->cat_password = $this->encryptOrDecrypt(
-                    $row->cat_pass_enc,
-                    false
-                );
+                $row->cat_password = $this->getUserService()->decrypt($row->cat_pass_enc);
             }
         }
 
@@ -687,7 +627,7 @@ class User extends RowGateway implements
         }
         if ($this->passwordEncryptionEnabled()) {
             $row->cat_password = null;
-            $row->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+            $row->cat_pass_enc = $this->getUserService()->encrypt($password);
         } else {
             $row->cat_password = $password;
             $row->cat_pass_enc = null;
@@ -737,6 +677,16 @@ class User extends RowGateway implements
         $row->cat_pass_enc = $this->cat_pass_enc;
 
         $row->save();
+    }
+
+    /**
+     * Get a User service object.
+     *
+     * @return \VuFind\Db\Service\UserService
+     */
+    public function getUserService()
+    {
+        return $this->getDbService(\VuFind\Db\Service\UserService::class);
     }
 
     /**
