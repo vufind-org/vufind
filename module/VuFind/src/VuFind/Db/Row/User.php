@@ -31,6 +31,7 @@ namespace VuFind\Db\Row;
 
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
 
@@ -67,7 +68,7 @@ use function count;
  * @property string  $last_language
  */
 class User extends RowGateway implements
-    \VuFind\Db\Entity\UserEntityInterface,
+    UserEntityInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface,
     \VuFind\Db\Service\DbServiceAwareInterface
@@ -793,5 +794,130 @@ class User extends RowGateway implements
     {
         $tokenTable = $this->getDbTable('LoginToken');
         return $tokenTable->getByUserId($userId);
+    }
+
+    /**
+     * Get identifier.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Username setter
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function setUsername(string $username): UserEntityInterface
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * Get username.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Catalog username setter
+     *
+     * @param ?string $catUsername Catalog username
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatUsername(?string $catUsername): UserEntityInterface
+    {
+        $this->cat_username = $catUsername;
+        return $this;
+    }
+
+    /**
+     * Get catalog username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string
+    {
+        return $this->cat_username;
+    }
+
+    /**
+     * Home library setter
+     *
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserEntityInterface
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface
+    {
+        $this->home_library = $homeLibrary;
+        return $this;
+    }
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string
+    {
+        return $this->home_library;
+    }
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserEntityInterface
+    {
+        $this->cat_password = $catPassword;
+        return $this;
+    }
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string
+    {
+        return $this->cat_password;
+    }
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserEntityInterface
+    {
+        $this->cat_pass_enc = $passEnc;
+        return $this;
+    }
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string
+    {
+        return $this->cat_pass_enc;
     }
 }

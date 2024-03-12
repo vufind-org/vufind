@@ -40,4 +40,90 @@ namespace VuFind\Db\Entity;
  */
 interface UserEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier.
+     *
+     * @return int
+     */
+    public function getId();
+
+    /**
+     * Username setter
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function setUsername(string $username): UserEntityInterface;
+
+    /**
+     * Get username.
+     *
+     * @return string
+     */
+    public function getUsername(): string;
+
+    /**
+     * Catalog username setter
+     *
+     * @param ?string $catUsername Catalog username
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatUsername(?string $catUsername): UserEntityInterface;
+
+    /**
+     * Get catalog username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string;
+
+    /**
+     * Home library setter
+     *
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserEntityInterface
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface;
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string;
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserEntityInterface;
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string;
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserEntityInterface;
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string;
 }
