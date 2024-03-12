@@ -34,6 +34,7 @@ namespace VuFind\Auth;
 
 use BrowscapPHP\BrowscapInterface;
 use Laminas\Config\Config;
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Cookie\CookieManager;
@@ -42,6 +43,9 @@ use VuFind\Db\Table\LoginToken as LoginTokenTable;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
 
 /**
@@ -54,9 +58,10 @@ use VuFind\Mailer\Mailer;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterface
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use LoggerAwareTrait;
+    use TranslatorAwareTrait;
 
     /**
      * VuFind configuration
@@ -180,12 +185,12 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      *
      * @param string $sessionId Session identifier
      *
-     * @return \VuFind\Db\Row\UserRow Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
-    public function tokenLogin(string $sessionId): ?\VuFind\Db\Row\User
+    public function tokenLogin(string $sessionId): ?User
     {
-        $cookie = $this->getLoginTokenCookie();
         $user = null;
+        $cookie = $this->getLoginTokenCookie();
         if ($cookie) {
             try {
                 if ($token = $this->loginTokenTable->matchToken($cookie)) {
@@ -193,8 +198,18 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
                     // successfully processed:
                     $user = $this->userTable->getById($token->user_id);
                     $this->tokenToUpdate = compact('user', 'token', 'sessionId');
+                    $this->debug(
+                        "Token login successful for user {$token->user_id}"
+                        . ", token {$token->token} series {$token->series}"
+                    );
+                } else {
+                    $this->cookieManager->clear($this->getCookieName());
                 }
             } catch (LoginTokenException $e) {
+                $this->logError(
+                    "Token login failure for user {$cookie['user_id']}"
+                    . ", token {$cookie['token']} series {$cookie['series']}: " . (string)$e
+                );
                 // Delete all login tokens for the user and all sessions
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
@@ -237,12 +252,12 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         // If we have queued a login token update, we can process it now!
         if ($this->tokenToUpdate) {
             $token = $this->tokenToUpdate['token'];
-            $this->loginTokenTable->deleteBySeries($token->series, $token->user_id);
             $this->createToken(
                 $this->tokenToUpdate['user'],
                 $token->series,
                 $this->tokenToUpdate['sessionId'],
-                $token->expires
+                $token->expires,
+                $token->id
             );
             $this->tokenToUpdate = null;
         }
@@ -251,18 +266,22 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
     /**
      * Create a new login token
      *
-     * @param \VuFind\Db\Row\User $user      user
-     * @param string              $series    login token series
-     * @param string              $sessionId Session identifier
-     * @param int                 $expires   Token expiration timestamp
+     * @param User   $user           User
+     * @param string $series         Login token series
+     * @param string $sessionId      Session identifier
+     * @param int    $expires        Token expiration timestamp
+     * @param ?int   $currentTokenId ID of current token to keep intact
      *
      * @throws AuthException
      * @return void
      */
-    public function createToken(\VuFind\Db\Row\User $user, string $series = '', string $sessionId = '', $expires = 0)
-    {
-        $token = bin2hex(random_bytes(32));
-        $series = $series ?: bin2hex(random_bytes(32));
+    public function createToken(
+        User $user,
+        string $series = '',
+        string $sessionId = '',
+        $expires = 0,
+        ?int $currentTokenId = null
+    ): void {
         try {
             $browser = $this->getBrowscap()->getBrowser();
         } catch (\Exception $e) {
@@ -272,7 +291,20 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             $lifetime = $this->getCookieLifetime();
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
+        $token = bin2hex(random_bytes(32));
         try {
+            if ($series) {
+                $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
+                $this->loginTokenTable->deleteBySeries(
+                    $series,
+                    $user->id,
+                    $lenient ? $currentTokenId : null
+                );
+                $this->debug("Updating login token $token series $series for user {$user->id}");
+            } else {
+                $series = bin2hex(random_bytes(32));
+                $this->debug("Creating login token $token series $series for user {$user->id}");
+            }
             $this->loginTokenTable->saveToken(
                 $user->id,
                 $token,
@@ -284,6 +316,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             );
             $this->setLoginTokenCookie($user->id, $token, $series, $expires);
         } catch (\Exception $e) {
+            $this->logError("Failed to save login token $token series $series for user {$user->id}: " . (string)$e);
             throw new AuthException('Failed to save token');
         }
     }
@@ -293,7 +326,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      * sessions associated with the login token.
      *
      * @param string $series Series to identify the token
-     * @param string $userId User identifier
+     * @param int    $userId User identifier
      *
      * @return void
      */
@@ -303,11 +336,11 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
         if (!empty($cookie) && $cookie['series'] === $series) {
             $this->cookieManager->clear($this->getCookieName());
         }
-        if ($token = $this->loginTokenTable->getBySeries($series, $cookie['user_id'])) {
+        if ($token = $this->loginTokenTable->getBySeries($series, $userId)) {
             $handler = $this->sessionManager->getSaveHandler();
             $handler->destroy($token->last_session_id);
         }
-        $this->loginTokenTable->deleteBySeries($series, $cookie['user_id']);
+        $this->loginTokenTable->deleteBySeries($series, $userId);
     }
 
     /**
@@ -320,12 +353,32 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      */
     public function deleteUserLoginTokens($userId)
     {
-        $userTokens = $this->loginTokenTable->getByUserId($userId);
+        $userTokens = $this->loginTokenTable->getByUserId($userId, false);
         $handler = $this->sessionManager->getSaveHandler();
         foreach ($userTokens as $t) {
             $handler->destroy($t->last_session_id);
         }
         $this->loginTokenTable->deleteByUserId($userId);
+    }
+
+    /**
+     * Get login token cookie lifetime (days)
+     *
+     * @return int
+     */
+    public function getCookieLifetime(): int
+    {
+        return (int)($this->config->Authentication->persistent_login_lifetime ?? 14);
+    }
+
+    /**
+     * Get login token cookie name
+     *
+     * @return string
+     */
+    public function getCookieName(): string
+    {
+        return 'loginToken';
     }
 
     /**
@@ -349,7 +402,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      *
      * @return void
      */
-    public function sendLoginTokenWarningEmail(\VuFind\Db\Row\User $user)
+    protected function sendLoginTokenWarningEmail(User $user)
     {
         if (!($this->config->Authentication->send_login_warnings ?? true)) {
             return;
@@ -363,12 +416,16 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
             $subject = $this->config->Authentication->persistent_login_warning_email_subject
                 ?? 'persistent_login_warning_email_subject';
 
-            $this->mailer->send(
-                $user->email,
-                $this->config->Mail->default_from ?? $this->config->Site->email,
-                $this->translate($subject, ['%%title%%' => $title]),
-                $message
-            );
+            try {
+                $this->mailer->send(
+                    $user->email,
+                    $this->config->Mail->default_from ?? $this->config->Site->email,
+                    $this->translate($subject, ['%%title%%' => $title]),
+                    $message
+                );
+            } catch (\Exception $e) {
+                $this->logError('Failed to send login token warning email: ' . (string)$e);
+            }
         }
     }
 
@@ -382,7 +439,7 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      *
      * @return void
      */
-    public function setLoginTokenCookie(int $userId, string $token, string $series, int $expires)
+    protected function setLoginTokenCookie(int $userId, string $token, string $series, int $expires): void
     {
         $token = implode(';', [$series, $userId, $token]);
         $this->cookieManager->set(
@@ -398,38 +455,17 @@ class LoginTokenManager implements \VuFind\I18n\Translator\TranslatorAwareInterf
      *
      * @return array
      */
-    public function getLoginTokenCookie(): array
+    protected function getLoginTokenCookie(): array
     {
-        $result = [];
         if ($cookie = $this->cookieManager->get($this->getCookieName())) {
             $parts = explode(';', $cookie);
-            $result = [
+            return [
                 'series' => $parts[0] ?? '',
                 'user_id' => (int)($parts[1] ?? -1),
                 'token' => $parts[2] ?? '',
             ];
         }
-        return $result;
-    }
-
-    /**
-     * Get login token cookie name
-     *
-     * @return string
-     */
-    public function getCookieName(): string
-    {
-        return 'loginToken';
-    }
-
-    /**
-     * Get login token cookie lifetime (days)
-     *
-     * @return int
-     */
-    public function getCookieLifetime(): int
-    {
-        return (int)($this->config->Authentication->persistent_login_lifetime ?? 14);
+        return [];
     }
 
     /**
