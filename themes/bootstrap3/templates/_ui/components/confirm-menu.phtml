@@ -4,10 +4,10 @@
   }
 
   $attrs = $this->attrs ?? [];
-  $attrs['class'] = trim('confirm-menu ' . $attrs['class']);
+  $attrs['class'] = trim('confirm-menu ' . ($attrs['class'] ?? ''));
 
   $toggleLabelEsc = $this->transEsc($this->label);
-  $toggleClassAttr = trim('confirm__toggle ' . $this->toggleClass ?? '');
+  $toggleClassAttr = trim('confirm__toggle ' . ($this->toggleClass ?? ''));
   $toggleAttrs = $this->toggleAttrs ?? [];
 
   $actionType = $this->action->type ?? 'submit';
