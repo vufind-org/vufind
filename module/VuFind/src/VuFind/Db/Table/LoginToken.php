@@ -175,9 +175,10 @@ class LoginToken extends Gateway
             if ($grouped) {
                 $select->columns(
                     [
+                        // RowGateway requires an id field:
                         'id' => new Expression(
-                            'MAX(?)',
-                            ['id'],
+                            '1',
+                            [],
                             [Expression::TYPE_IDENTIFIER]
                         ),
                         'series',
@@ -192,7 +193,7 @@ class LoginToken extends Gateway
                         'expires',
                     ]
                 );
-                $select->group(['user_id', 'series']);
+                $select->group(['id', 'series', 'user_id', 'browser', 'platform', 'expires']);
             }
         };
         return iterator_to_array($this->select($callback));
