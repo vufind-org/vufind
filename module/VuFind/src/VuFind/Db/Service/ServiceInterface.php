@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service interface for access tokens.
+ * Marker interface for VuFind database services.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\AccessTokenInterface;
-
 /**
- * Database service interface for access tokens.
+ * Marker interface for VuFind database services.
  *
  * @category VuFind
  * @package  Database
@@ -40,40 +38,6 @@ use VuFind\Db\Entity\AccessTokenInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface AccessTokenServiceInterface extends ServiceInterface
+interface ServiceInterface
 {
-    /**
-     * Retrieve an object from the database based on id and type; create a new
-     * row if no existing match is found.
-     *
-     * @param string $id     Token ID
-     * @param string $type   Token type
-     * @param bool   $create Should we create rows that don't already exist?
-     *
-     * @return ?AccessTokenInterface
-     */
-    public function getByIdAndType(
-        string $id,
-        string $type,
-        bool $create = true
-    ): ?AccessTokenInterface;
-
-    /**
-     * Add or replace an OpenID nonce for a user
-     *
-     * @param int     $userId User ID
-     * @param ?string $nonce  Nonce
-     *
-     * @return void
-     */
-    public function storeNonce(int $userId, ?string $nonce);
-
-    /**
-     * Retrieve an OpenID nonce for a user
-     *
-     * @param int $userId User ID
-     *
-     * @return ?string
-     */
-    public function getNonce(int $userId): ?string;
 }

@@ -40,7 +40,7 @@ use VuFind\Db\Row\User as UserRow;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface UserServiceInterface
+interface UserServiceInterface extends ServiceInterface
 {
     /**
      * Retrieve a user object from the database based on ID.
