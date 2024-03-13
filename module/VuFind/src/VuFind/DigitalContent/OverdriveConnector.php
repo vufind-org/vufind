@@ -189,12 +189,11 @@ class OverdriveConnector implements
 
         $odAccess = $this->getSessionContainer()->odAccess;
         if ($refresh || empty($odAccess)) {
-            if (
-                $this->connectToPatronAPI(
-                    $user['cat_username'],
-                    $user['cat_password'],
-                    true
-                )
+            if ($this->connectToPatronAPI(
+                $user['cat_username'],
+                $user['cat_password'],
+                true
+            )
             ) {
                 $result = $this->getSessionContainer()->odAccess
                     = $this->getResultObject(true);
@@ -205,11 +204,10 @@ class OverdriveConnector implements
                 $conf = $this->getConfig();
 
                 if ($conf->noAccessString) {
-                    if (
-                        str_contains(
-                            $this->getSessionContainer()->odAccessMessage,
-                            $conf->noAccessString
-                        )
+                    if (str_contains(
+                        $this->getSessionContainer()->odAccessMessage,
+                        $conf->noAccessString
+                    )
                     ) {
                         // This user should not have access to OD
                         $result->code = 'od_account_noaccess';
@@ -262,7 +260,7 @@ class OverdriveConnector implements
             $availabilityUrl .= "$overDriveId/availability";
             $res = $this->callUrl($availabilityUrl);
 
-            if (isset($res->errorCode) and $res->errorCode == 'NotFound') {
+            if (($res->errorCode ?? '') == 'NotFound') {
                 if ($conf->consortiumSupport && !$this->getUser()) {
                     // Consortium support is turned on but user is not logged in;
                     // if the title is not found it probably means that it's only
@@ -1018,7 +1016,7 @@ class OverdriveConnector implements
      *
      * @return array results of metadata fetch
      *
-     * @todo if more tan 25 passed in, make multiple calls
+     * @todo if more than 25 passed in, make multiple calls
      */
     public function getMetadata($overDriveIds = [])
     {
@@ -1054,8 +1052,6 @@ class OverdriveConnector implements
      *                               you get from getCheckouts and getHolds)
      *
      * @return array initial array with results of metadata attached as "metadata" property
-     *
-     * @todo if more tan 25 passed in, make multiple calls
      */
     public function getMetadataForTitles($overDriveTitles = [])
     {
@@ -1094,10 +1090,9 @@ class OverdriveConnector implements
         if ($result->status) {
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
-                if (
-                    strtolower($checkout->reserveId) == strtolower(
-                        $overDriveId
-                    )
+                if (strtolower($checkout->reserveId) == strtolower(
+                    $overDriveId
+                )
                 ) {
                     return $checkout;
                 }
@@ -1244,16 +1239,11 @@ class OverdriveConnector implements
                     $result->message = 'hold_place_success_html';
 
                     if (isset($response->holds)) {
-                        $result->data = [];
                         $result->data = $response->holds;
                         // Check for holds ready for chechout
                         foreach ($response->holds as $key => $hold) {
                             // check for hold suspension
-                            if (isset($hold->holdSupension)) {
-                                $result->data[$key]->holdSupension = $hold->holdSupension;
-                            } else {
-                                $result->data[$key]->holdSupension = false;
-                            }
+                            $result->data[$key]->holdSupension = $hold->holdSupension ?? false;
                             // check if ready for checkout
                             foreach ($hold->actions as $action => $value) {
                                 if ($action == 'checkout') {
@@ -1324,8 +1314,7 @@ class OverdriveConnector implements
             }
             if ($headers === null) {
                 $headers = [];
-                if (
-                    isset($tokenData->token_type)
+                if (isset($tokenData->token_type)
                     && isset($tokenData->access_token)
                 ) {
                     $headers[] = "Authorization: {$tokenData->token_type} "
@@ -1391,8 +1380,7 @@ class OverdriveConnector implements
     {
         $conf = $this->getConfig();
         $tokenData = $this->getSessionContainer()->tokenData;
-        if (
-            $forceNewConnection || $tokenData == null
+        if ($forceNewConnection || $tokenData == null
             || !isset($tokenData->access_token)
             || time() >= $tokenData->expirationTime
         ) {
@@ -1555,8 +1543,7 @@ class OverdriveConnector implements
                 $returnVal = json_decode($body);
 
                 if ($returnVal != null) {
-                    if (
-                        !isset($returnVal->message)
+                    if (!isset($returnVal->message)
                         || $returnVal->message != 'An unexpected error has occurred.'
                     ) {
                         return $returnVal;
@@ -1595,8 +1582,7 @@ class OverdriveConnector implements
     ) {
         $patronTokenData = $this->getSessionContainer()->patronTokenData;
         $config = $this->getConfig();
-        if (
-            $forceNewConnection
+        if ($forceNewConnection
             || $patronTokenData == null
             || (isset($patronTokenData->expirationTime)
             and time() >= $patronTokenData->expirationTime)
@@ -1676,7 +1662,7 @@ class OverdriveConnector implements
      * @param string $url            URL for client to use
      * @param bool   $allowRedirects Whether to allow the client to follow redirects
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      * @throws Exception
      */
     protected function getHttpClient($url = null, $allowRedirects = true)

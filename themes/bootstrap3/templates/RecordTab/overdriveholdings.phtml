@@ -23,7 +23,7 @@
   <div class="internetDetails">
     <div class="odbrand pull-left media-left">
       <img
-        src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_42x42_rgb.jpg">
+        src=""<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>"">
     </div>
     <h3>
       <?= $this->transEsc('Online Access') ?>
@@ -45,7 +45,7 @@
         <?php else: ?>
           <?= $avail->data->copiesAvailable . '/' . $avail->data->copiesOwned ?>
         <?php endif; ?>
-        <?= $this->transEsc('od_copies_available') ?>
+        <?= $this->transEsc('od_copies_available', ['%%copies%%' => $copies]) ?>
         <?php if ($avail->data->numberOfHolds > 0): ?>
           <?= '; ' . $this->transEsc('od_waiting', ['holds' => $avail->data->numberOfHolds], null, true) ?>
         <?php endif; ?>
@@ -149,7 +149,7 @@
                   </a>
                 </li>
 
-                <li><a class="editEmail" data-lightbox title="{$this->transEsc('edit_hold_email')}"
+                <li><a class="editEmail" data-lightbox title="<?=$this->transEsc('edit_hold_email')?>"
                     href="<?= "$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldEmailConfirm" ?>">
                     <?= $this->icon('overdrive-edit-hold', 'icon-link__icon') ?>
                     <?= $this->transEsc('od_edit_hold_email') ?>
