@@ -207,7 +207,7 @@ class LoginToken extends Gateway
      */
     public function getBySeries(string $series): ResultSetInterface
     {
-        return $this->select(['series' => $series]);
+        return $this->select(compact('series'));
     }
 
     /**

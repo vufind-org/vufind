@@ -228,7 +228,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Rotate login token in given series or create a new series
+     * Create a new login token series
      *
      * @param User   $user      User
      * @param string $sessionId Session identifier
@@ -357,7 +357,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      * @param User   $user           User
      * @param string $sessionId      Session identifier
      * @param string $series         Login token series
-     * @param int    $expires        Token expiration timestamp
+     * @param ?int   $expires        Token expiration timestamp or null for default
      * @param ?int   $currentTokenId ID of current token to keep intact
      *
      * @throws AuthException
@@ -367,7 +367,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         User $user,
         string $sessionId = '',
         string $series = '',
-        $expires = 0,
+        ?int $expires = null,
         ?int $currentTokenId = null
     ): void {
         try {
@@ -375,7 +375,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         } catch (\Exception $e) {
             throw new AuthException('Problem with browscap: ' . (string)$e);
         }
-        if ($expires === 0) {
+        if (null === $expires) {
             $lifetime = $this->getCookieLifetime();
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
