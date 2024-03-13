@@ -132,7 +132,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithAddressObjectInRecipient()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
             return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && 'body' == $message->getBody()
@@ -153,7 +152,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithAddressListObjectInRecipient()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
             return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && 'body' == $message->getBody()

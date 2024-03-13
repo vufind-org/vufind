@@ -392,7 +392,8 @@ class XCNCIP2 extends AbstractBase implements
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
 
-        $this->itemUseRestrictionTypesForStatus = $this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? [];
+        $this->itemUseRestrictionTypesForStatus
+            = (array)($this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? []);
     }
 
     /**
@@ -1599,7 +1600,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Public Function which retrieves Holds, StorageRetrivalRequests, and
+     * Public Function which retrieves Holds, StorageRetrievalRequests, and
      * Consortial settings from the driver ini file.
      *
      * @param string $function The name of the feature to be checked
@@ -2472,7 +2473,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param string $id Bibliographic item id
      *
-     * @return string Get BibiographicId XML element string
+     * @return string Get BibliographicId XML element string
      */
     protected function getBibliographicId($id)
     {
@@ -2774,7 +2775,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param \SimpleXMLElement $xml              XML response
      * @param array|string[]    $elements         Which of Problem subelements
-     * return in desription - defaulting to full list: ProblemType, ProblemDetail,
+     * return in description - defaulting to full list: ProblemType, ProblemDetail,
      * ProblemElement and ProblemValue
      * @param bool              $withElementNames Whether to add element names as
      * value labels (for example for debug purposes)
@@ -2890,7 +2891,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Invalidate L1 cache for responses
      *
-     * @param string $message NCIP message type - curently only 'LookupUser'
+     * @param string $message NCIP message type - currently only 'LookupUser'
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void

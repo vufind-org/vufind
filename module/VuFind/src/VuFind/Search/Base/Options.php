@@ -387,6 +387,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $loadResultsWithJs;
 
     /**
+     * Should we display citation search links in results?
+     *
+     * @var bool
+     */
+    protected $displayCitationLinksInResults;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -422,6 +429,8 @@ abstract class Options implements TranslatorAwareInterface
         $this->topPaginatorStyle = $searchSettings->General->top_paginator
             ?? ($this->loadResultsWithJs ? 'simple' : false);
         $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+        $this->displayCitationLinksInResults
+            = (bool)($searchSettings->Results_Settings->display_citation_links ?? true);
     }
 
     /**
@@ -1286,6 +1295,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getSpellingNormalizer()
     {
         return new \VuFind\Normalizer\DefaultSpellingNormalizer();
+    }
+
+    /**
+     * Should we display citation search links in results?
+     *
+     * @return bool
+     */
+    public function displayCitationLinksInResults(): bool
+    {
+        return $this->displayCitationLinksInResults;
     }
 
     /**

@@ -114,6 +114,16 @@ trait HierarchyAwareTrait
     }
 
     /**
+     * Return the collection search ID for this record.
+     *
+     * @return string
+     */
+    public function getCollectionSearchId(): string
+    {
+        return $this->getUniqueID();
+    }
+
+    /**
      * Get an associative array (id => title) of collections containing this record.
      *
      * @return array

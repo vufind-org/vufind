@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Obsolete Abstract SearchObject Recommendations Module (kept for backward
- * compatibility only).
+ * Marker interface for VuFind entity models.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,26 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Recommend;
+namespace VuFind\Db\Entity;
 
 /**
- * Obsolete Abstract SearchObject Recommendations Module (kept for backward
- * compatibility only).
+ * Marker interface for VuFind entity models.
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
- *
- * @deprecated Use AbstractSearchObject instead
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-abstract class SearchObject extends AbstractSearchObject
+interface EntityInterface
 {
 }

@@ -47,9 +47,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testHomePage(): void
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->assertTrue(false !== strstr($page->getContent(), 'VuFind'));
     }
 
@@ -61,9 +59,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testAjaxStatus(): void
     {
         // Search for a known record:
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testsample1');
         $this->clickCss($page, '.btn.btn-primary');
@@ -90,9 +86,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testLanguage(): void
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         // Check footer help-link
         $this->assertEquals(
             'Search Tips',
@@ -122,6 +116,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Site' => [
+                        'theme' => 'sandal',
                         'alternate_themes' => $themeList,
                         'selectable_themes' => $themeList,
                     ],
@@ -129,9 +124,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
 
         // Default theme does not have an h1:
@@ -156,9 +149,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testLightboxJumps(): void
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         // Open Search tips lightbox
         $this->clickCss($page, 'footer .help-link');
         $this->waitForPageLoad($page);

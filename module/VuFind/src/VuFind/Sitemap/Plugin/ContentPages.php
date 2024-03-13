@@ -32,8 +32,10 @@ namespace VuFind\Sitemap\Plugin;
 use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
 use VuFindTheme\ThemeInfo;
+use Webmozart\Glob\Glob;
 
 use function in_array;
+use function strlen;
 
 /**
  * Content pages generator plugin
@@ -77,15 +79,25 @@ class ContentPages extends AbstractGeneratorPlugin
     /**
      * Patterns of files to be included
      *
+     * @see https://github.com/webmozarts/glob
+     *
      * @var array
      */
     protected $includedFiles = [
-        'templates/content/*.phtml',
-        'templates/content/*.md',
+        [
+            'path' => 'templates/content/',
+            'pattern' => '**/*.phtml',
+        ],
+        [
+            'path' => 'templates/content/',
+            'pattern' => '**/*.md',
+        ],
     ];
 
     /**
-     * Files to be ignored when searching for content pages
+     * Patterns of files to be ignored when searching for content pages
+     *
+     * @see https://github.com/webmozarts/glob
      *
      * @var array
      */
@@ -143,29 +155,35 @@ class ContentPages extends AbstractGeneratorPlugin
      */
     public function getUrls(): \Generator
     {
-        $files = $this->themeInfo->findInThemes($this->includedFiles);
         $nonLanguageFiles = [];
         $languages = isset($this->config->Languages)
             ? array_keys($this->config->Languages->toArray())
             : [];
-        // Check each file for language suffix and combine the files into a
-        // non-language specific array
-        foreach ($files as $fileInfo) {
-            if (
-                in_array($fileInfo['relativeFile'], $this->excludedFiles)
-            ) {
-                continue;
-            }
-            $baseName = pathinfo($fileInfo['relativeFile'], PATHINFO_FILENAME);
-            // Check the filename for a known language suffix
-            $p = strrpos($baseName, '_');
-            if ($p > 0) {
-                $fileLanguage = substr($baseName, $p + 1);
-                if (in_array($fileLanguage, $languages)) {
-                    $baseName = substr($baseName, 0, $p);
+        foreach ($this->includedFiles as $fileSpec) {
+            $files = $this->themeInfo->findInThemes([$fileSpec['path'] . $fileSpec['pattern']]);
+            // Check each file for language suffix and combine the files into a
+            // non-language specific array
+            $pathLen = strlen($fileSpec['path']);
+            foreach ($files as $fileInfo) {
+                if ($this->isExcluded($fileInfo['relativeFile'])) {
+                    continue;
                 }
+                // Get file name relative to the original path
+                $pathInfo = pathinfo($fileInfo['relativeFile']);
+                if ($pagePath = substr($pathInfo['dirname'], $pathLen)) {
+                    $pagePath .= '/';
+                }
+                $pageName = $pagePath . $pathInfo['filename'];
+                // Check the filename for a known language suffix
+                $p = strrpos($pageName, '_');
+                if ($p > 0) {
+                    $fileLanguage = substr($pageName, $p + 1);
+                    if (in_array($fileLanguage, $languages)) {
+                        $pageName = substr($pageName, 0, $p);
+                    }
+                }
+                $nonLanguageFiles[$pageName] = true;
             }
-            $nonLanguageFiles[$baseName] = true;
         }
 
         foreach (array_keys($nonLanguageFiles) as $fileName) {
@@ -176,5 +194,22 @@ class ContentPages extends AbstractGeneratorPlugin
             $this->verboseMsg("Adding content page $url");
             yield $url;
         }
+    }
+
+    /**
+     * Check if the given file should be excluded from sitemap
+     *
+     * @param string $filename Filename
+     *
+     * @return bool
+     */
+    protected function isExcluded(string $filename): bool
+    {
+        foreach ($this->excludedFiles as $pattern) {
+            if (Glob::match($filename, $pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

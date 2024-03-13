@@ -108,7 +108,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
             $parts = $this->container->parseSetting($current);
-            // Special case for media with paretheses
+            // Special case for media with parentheses
             // ie. (min-width: 768px)
             if (count($parts) > 1 && str_starts_with($parts[1], '(')) {
                 $parts[1] .= ':' . $parts[2];

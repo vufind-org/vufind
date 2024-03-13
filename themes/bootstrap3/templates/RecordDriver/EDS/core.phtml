@@ -59,6 +59,13 @@
   <div class="media-body info-col">
     <h1 property="name"><?=$this->driver->getTitle()?></h1>
 
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists">
+        <strong><?=$this->transEsc('Saved in')?>:</strong>
+      </div>
+    <?php endif; ?>
+
     <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
       <div class="alert alert-warning">
         <?=$this->transEsc('cached_record_warning')?>

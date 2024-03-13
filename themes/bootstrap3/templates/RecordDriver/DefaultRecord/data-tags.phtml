@@ -1,5 +1,5 @@
 <?php
-  if ($loggedin = $this->auth()->isLoggedIn()) {
+  if ($loggedin = $this->auth()->getUserObject()) {
     $user_id = $loggedin->id;
     $loggedin = true;
   } else {

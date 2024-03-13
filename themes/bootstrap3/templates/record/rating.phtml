@@ -38,7 +38,7 @@
 <?php else: ?>
   <h2><?=$this->transEsc('rating_add_or_update') ?></h2>
 <?php endif; ?>
-<?php if ($this->auth()->isLoggedIn()): ?>
+<?php if ($this->auth()->getIdentity()): ?>
   <form method="post" name="rateRecord" class="form-add-rating">
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">

@@ -98,15 +98,16 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $view->caches = $this->serviceLocator->get(\VuFind\Cache\Manager::class)
-            ->getCacheList();
+        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $view->caches = $cacheManager->getCacheList();
+        $view->nonPersistentCaches = $cacheManager->getNonPersistentCacheList();
         $view->scripts = $this->getScripts();
         $view->setTemplate('admin/maintenance/home');
         return $view;
     }
 
     /**
-     * Get a list of the names of scripts available to run thorugh the admin panel.
+     * Get a list of the names of scripts available to run through the admin panel.
      *
      * @return array
      */

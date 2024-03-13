@@ -266,7 +266,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         sort($tvals);
         $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
         // Remove a tag
-        $tags[0]->find('css', 'button')->click();
+        $this->clickCss($tags[0], 'button');
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         // Count tags with missing
@@ -381,13 +381,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testTagAutocomplete(): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_type')
-            ->setValue('tag');
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('fiv');
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'five');
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'tag');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -555,7 +550,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.modal .sms-error');
         // Send text to false number
         $this->findCssAndSetValue($page, '.modal #sms_to', '(800) 555-5555');
-        $optionElement = $this->findCss($page, '.modal #sms_provider option');
+        $this->findCss($page, '.modal #sms_provider option');
         $page->selectFieldOption('sms_provider', 'verizon');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
@@ -570,11 +565,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testPrint(): void
     {
         // Go to a record view (manually search so we can access $session)
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCssAndSetValue($page, '#searchForm_lookfor', 'Dewey');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $page = $this->performSearch('Dewey');
         $this->clickCss($page, '.result a.title');
 
         // Click Print

@@ -9,6 +9,9 @@
     font-weight: 500;
     color: @mid-gray;
   }
+  .clear-selection {
+    font-weight: 500;
+  }
 }
 .search-header.search-header { padding: 0; } // Duplicate to increase specificity
 .search-stats > h2 { margin: 0; } // No results padding
@@ -42,12 +45,6 @@
     display: inline-block;
     padding: 4px .75rem;
   }
-  .savedLists {
-    margin-bottom: 0;
-    white-space: nowrap;
-  }
-  .savedLists > ol,
-  .savedLists > ul { padding-left: 1rem; }
 }
 @media (min-width: 768px) {
   .result {
@@ -83,46 +80,6 @@
   .alert { background-color: @search-row-selected-color; }
   .alert a { color: @search-row-selected-color; }
 }
-.result-body,
-.result-links {
-  float: left;
-  margin: 0;
-  padding: 0;
-}
-.result-body { width: 85%; }
-.result-links {
-  width: 15%;
-  text-align: center;
-}
-@media (max-width: 767px) {
-  .result-link-icon,
-  .result .cart-link-icon {
-    width: 100%;
-    margin: 0;
-    padding-top: .5rem;
-    padding-bottom: .5rem;
-    font-size: @result-sm-icon-size;
-    color: @dark-gray;
-  }
-  .result-link-label,
-  .result .cart-link-label { display: none; }
-}
-
-.grid-result .grid-checkbox label { width: 100%; }
-@media (min-width: 768px) {
-  .result-body { width: 75%; }
-  .result-links {
-    width: 25%;
-    text-align: left;
-  }
-  .result-link-icon,
-  .result .cart-link-icon {
-    font-size: inherit;
-    color: @gray-darker;
-  }
-  .result-link-label,
-  .result .cart-link-label { display: inline; }
-}
 
 .search-header {
   padding-top: 1rem;
@@ -157,7 +114,7 @@
   }
   @media (min-width: 768px) {
     height: 300px;
-    padding: 7rem calc(50vw - 50% + .5rem); // Align searchbox with container
+    padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
 }
 .searchHomeContent::after {
@@ -184,9 +141,6 @@
 
 .search { border: 0; }
 #searchForm {
-  padding-top: .5rem;
-  padding-bottom: calc(@search-tab-height + 1.5rem);
-
   .keyboard-selection {
     bottom: 2px;
 
@@ -219,21 +173,25 @@
   color: @input-color;
 }
 
+.nav.searchbox {
+  padding: .5rem 0 1rem 0;
+  margin: 0;
+}
+.navbar-form {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
 .nav.searchbox,
 #searchForm {
   position: relative;
   width: 100%;
 
   .nav-tabs {
-    position: absolute;
-    bottom: 0;
-    margin-top: .5rem;
-    border: 0;
     white-space: nowrap;
-  }
-  .nav-tabs > li {
-    float: none;
-    display: inline-block;
+    margin-bottom: 1rem;
+    border-bottom: none;
   }
   .nav-tabs a,
   .nav-tabs a:hover {
@@ -249,7 +207,6 @@
   }
   .nav-tabs a:hover {
     border-color: @white-50;
-    color: @header-light;
     background-color: transparent;
   }
   .nav-tabs .active a {
@@ -260,7 +217,6 @@
 @media (min-width: 768px) {
   #searchForm_lookfor,
   #searchForm_type { margin-bottom: 0; }
-  #searchForm { padding-bottom: @search-tab-height; }
   .nav.searchbox .nav-tabs a,
   #searchForm .nav-tabs a {
     height: @search-tab-height;
@@ -274,7 +230,6 @@
 .solr-adv-facet:last-child { padding-right: 0; }
 .adv_search_links { margin-bottom: 0; }
 .adv_search_links a { text-decoration: underline; }
-.tab-content .adv_search_links { margin-bottom: 1.5rem; } // Advanced links with search tabs
 
 /* ------ Combined ------ */
 #content > [name="bulkActionForm"] .bulkActionButtons {

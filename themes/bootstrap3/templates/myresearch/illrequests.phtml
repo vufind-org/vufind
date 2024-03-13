@@ -9,7 +9,7 @@
     $this->headScript()->appendFile('requests.js');
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -18,7 +18,7 @@
 
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->recordList)): ?>
     <?php if ($this->cancelForm): ?>
@@ -153,7 +153,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'ILLRequests'])?>
+  <?=$this->accountMenu()->render('ILLRequests')?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'illRequests', 'accountStatus' => $this->accountStatus]); ?>

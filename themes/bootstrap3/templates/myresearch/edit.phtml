@@ -7,12 +7,12 @@
     . (
         isset($listID)
           ? '<li><a href="' . $this->url('userList', ['id' => $listID]) . '">' . $this->transEsc('List') . '</a></li>'
-          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('Favorites') . '</a></li>'
+          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('saved_items') . '</a></li>'
     ) . '<li class="active">' . $this->transEsc('Edit') . '</li>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar"
-    data-toggle="offcanvas" aria-label="<?=$this->transEsc('sidebar_expand')?>">
+    data-toggle="vufind-offcanvas" aria-label="<?=$this->transEsc('sidebar_expand')?>">
     <?=$this->transEsc('Your Account') ?>
   </a>
 
@@ -71,5 +71,5 @@
   </form>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
+  <?=$this->accountMenu()->render(empty($listID) ? 'favorites' : 'list' . $listID)?>
 </div>

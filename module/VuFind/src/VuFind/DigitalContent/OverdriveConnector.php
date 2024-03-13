@@ -488,7 +488,7 @@ class OverdriveConnector implements
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email       The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notification
      *
      * @return \stdClass Object with result
      */
@@ -1237,6 +1237,7 @@ class OverdriveConnector implements
                 if (!empty($response)) {
                     $result->status = true;
                     $result->message = 'hold_place_success_html';
+<<<<<<< HEAD
 
                     if (isset($response->holds)) {
                         $result->data = $response->holds;
@@ -1262,6 +1263,20 @@ class OverdriveConnector implements
                             $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
                             $result->data[$key]->holdPlacedDate
                                 = $holdPlacedDate->format(
+=======
+                    $result->data = $response->holds;
+                    // Check for holds ready for checkout
+                    foreach ($response->holds as $key => $hold) {
+                        if (
+                            !$hold->autoCheckout
+                            && $hold->holdListPosition == 1
+                        ) {
+                            $result->data[$key]->holdReadyForCheckout = true;
+                            // format the expires date.
+                            $holdExpires = new \DateTime($hold->holdExpires);
+                            $result->data[$key]->holdExpires
+                                = $holdExpires->format(
+>>>>>>> master
                                     (string)$config->displayDateFormat
                                 );
                         } // end foreach
