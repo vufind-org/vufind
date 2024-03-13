@@ -137,10 +137,7 @@ class SearchController extends AbstractSolrSearch
 
         // Force login if necessary:
         $config = $this->getConfig();
-        if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
-            && !$this->getUser()
-        ) {
+        if (($config->Mail->require_login ?? true) && !$this->getUser()) {
             return $this->forceLogin(null, ['emailurl' => $view->url]);
         }
 
