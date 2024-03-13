@@ -29,7 +29,7 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\AccessTokenInterface;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
 
 /**
  * Database service interface for access tokens.
@@ -50,13 +50,13 @@ interface AccessTokenServiceInterface extends ServiceInterface
      * @param string $type   Token type
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return ?AccessTokenInterface
+     * @return ?AccessTokenEntityInterface
      */
     public function getByIdAndType(
         string $id,
         string $type,
         bool $create = true
-    ): ?AccessTokenInterface;
+    ): ?AccessTokenEntityInterface;
 
     /**
      * Add or replace an OpenID nonce for a user

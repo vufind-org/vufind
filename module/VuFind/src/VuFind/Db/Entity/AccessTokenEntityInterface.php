@@ -38,25 +38,25 @@ namespace VuFind\Db\Entity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface AccessTokenInterface extends EntityInterface
+interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
      * Set user ID.
      *
      * @param ?string $userId User ID
      *
-     * @return AccessTokenInterface
+     * @return AccessTokenEntityInterface
      */
-    public function setUserId(?string $userId): AccessTokenInterface;
+    public function setUserId(?string $userId): AccessTokenEntityInterface;
 
     /**
      * Set data.
      *
      * @param string $data Data
      *
-     * @return AccessTokenInterface
+     * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenInterface;
+    public function setData(string $data): AccessTokenEntityInterface;
 
     /**
      * Is the access token revoked?
@@ -70,7 +70,7 @@ interface AccessTokenInterface extends EntityInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return AccessTokenInterface
+     * @return AccessTokenEntityInterface
      */
-    public function setRevoked(bool $revoked): AccessTokenInterface;
+    public function setRevoked(bool $revoked): AccessTokenEntityInterface;
 }

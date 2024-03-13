@@ -30,7 +30,7 @@
 
 namespace VuFind\Db\Row;
 
-use VuFind\Db\Entity\AccessTokenInterface;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
 
 /**
  * Row Definition for access_token
@@ -41,7 +41,7 @@ use VuFind\Db\Entity\AccessTokenInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AccessToken extends RowGateway implements AccessTokenInterface
+class AccessTokenEntity extends RowGateway implements AccessTokenEntityInterface
 {
     /**
      * Constructor
@@ -58,9 +58,9 @@ class AccessToken extends RowGateway implements AccessTokenInterface
      *
      * @param ?string $userId User ID
      *
-     * @return AccessTokenInterface
+     * @return AccessTokenEntityInterface
      */
-    public function setUserId(?string $userId): AccessTokenInterface
+    public function setUserId(?string $userId): AccessTokenEntityInterface
     {
         $this->__set('user_id', $userId);
         return $this;
@@ -71,9 +71,9 @@ class AccessToken extends RowGateway implements AccessTokenInterface
      *
      * @param string $data Data
      *
-     * @return AccessTokenInterface
+     * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenInterface
+    public function setData(string $data): AccessTokenEntityInterface
     {
         $this->__set('data', $data);
         return $this;
@@ -94,9 +94,9 @@ class AccessToken extends RowGateway implements AccessTokenInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return AccessTokenInterface
+     * @return AccessTokenEntityInterface
      */
-    public function setRevoked(bool $revoked): AccessTokenInterface
+    public function setRevoked(bool $revoked): AccessTokenEntityInterface
     {
         $this->__set('revoked', $revoked);
         return $this;

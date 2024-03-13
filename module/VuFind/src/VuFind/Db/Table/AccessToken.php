@@ -32,8 +32,8 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
-use VuFind\Db\Entity\AccessTokenInterface;
-use VuFind\Db\Row\AccessToken as AccessTokenRow;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFind\Db\Row\AccessTokenEntity as AccessTokenRow;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 
@@ -131,7 +131,7 @@ class AccessToken extends Gateway implements AccessTokenServiceInterface
     /**
      * Save access token.
      *
-     * @param AccessTokenInterface $accessToken Access token
+     * @param AccessTokenEntityInterface $accessToken Access token
      *
      * @return void
      */
