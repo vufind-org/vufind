@@ -139,6 +139,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 'name' => 'Lib Rarian',
                 'given_name' => 'Lib',
                 'family_name' => 'Rarian',
+                'email' => 'Lib.Rarian@library.not',
                 'age' => 18,
                 'birthdate' => $this->userBirthDate,
                 'locale' => 'en-GB',
@@ -180,6 +181,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 'name' => 'Lib Rarian',
                 'given_name' => 'Lib',
                 'family_name' => 'Rarian',
+                'email' => 'Lib.Rarian@library.not',
                 'locale' => 'en-GB',
                 'nonce' => $nonce,
                 'block_status' => null,
@@ -207,6 +209,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $user->last_language = 'en-gb';
         $user->firstname = 'Lib';
         $user->lastname = 'Rarian';
+        $user->email = 'Lib.Rarian@library.not';
         $user->cat_username = 'user';
         $user->cat_password = 'pass';
         return $user;
