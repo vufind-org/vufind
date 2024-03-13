@@ -41,11 +41,27 @@ namespace VuFind\Db\Entity;
 interface UserEntityInterface extends EntityInterface
 {
     /**
-     * Get ID.
+     * Get identifier.
      *
      * @return int
      */
-    public function getId(): int;
+    public function getId();
+
+    /**
+     * Username setter
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function setUsername(string $username): UserEntityInterface;
+
+    /**
+     * Get username.
+     *
+     * @return string
+     */
+    public function getUsername(): string;
 
     /**
      * Get firstname.
@@ -62,11 +78,45 @@ interface UserEntityInterface extends EntityInterface
     public function getLastname(): string;
 
     /**
-     * Get last language.
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface;
+
+    /**
+     * Get email.
      *
      * @return string
      */
-    public function getLastLanguage(): string;
+    public function getEmail(): string;
+
+    /**
+     * Set pending email.
+     *
+     * @param string $email New pending email
+     *
+     * @return UserEntityInterface
+     */
+    public function setPendingEmail(string $email): UserEntityInterface;
+
+    /**
+     * Get pending email.
+     *
+     * @return string
+     */
+    public function getPendingEmail(): string;
+
+    /**
+     * Catalog username setter
+     *
+     * @param ?string $catUsername Catalog username
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatUsername(?string $catUsername): UserEntityInterface;
 
     /**
      * Get catalog username.
@@ -76,11 +126,64 @@ interface UserEntityInterface extends EntityInterface
     public function getCatUsername(): ?string;
 
     /**
-     * This is a getter for the Catalog Password. It will return a plaintext version
-     * of the password.
+     * Home library setter
      *
-     * @return string The Catalog password in plain text
-     * @throws \VuFind\Exception\PasswordSecurity
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserEntityInterface
      */
-    public function getCatPassword();
+    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface;
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string;
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserEntityInterface;
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string;
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserEntityInterface;
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string;
+
+    /**
+     * Get verification hash for recovery.
+     *
+     * @return string
+     */
+    public function getVerifyHash(): string;
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string;
 }
