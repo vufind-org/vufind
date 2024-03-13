@@ -383,11 +383,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         try {
             if ($series) {
                 $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
-                $this->loginTokenTable->deleteBySeries(
-                    $series,
-                    $user->id,
-                    $lenient ? $currentTokenId : null
-                );
+                $this->loginTokenTable->deleteBySeries($series, $lenient ? $currentTokenId : null);
                 $this->debug("Updating login token $token series $series for user {$user->id}");
             } else {
                 $series = bin2hex(random_bytes(32));
