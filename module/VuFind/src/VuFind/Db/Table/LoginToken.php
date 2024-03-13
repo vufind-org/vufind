@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,6 +30,7 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\ResultSet\ResultSetInterface;
 use Laminas\Db\Sql\Expression;
 use VuFind\Db\Row\LoginToken as LoginTokenRow;
 use VuFind\Db\Row\RowGateway;
@@ -110,9 +111,9 @@ class LoginToken extends Gateway
      */
     public function matchToken(array $token): ?LoginTokenRow
     {
-        $rowsFound = false;
-        foreach ($this->select(['user_id' => $token['user_id'], 'series' => $token['series']]) as $row) {
-            $rowsFound = true;
+        $userId = null;
+        foreach ($this->getBySeries($token['series']) as $row) {
+            $userId = $row->user_id;
             if (hash_equals($row['token'], hash('sha256', $token['token']))) {
                 if (time() > $row['expires']) {
                     $row->delete();
@@ -121,8 +122,8 @@ class LoginToken extends Gateway
                 return $row;
             }
         }
-        if ($rowsFound) {
-            throw new LoginTokenException('Tokens do not match');
+        if ($userId) {
+            throw new LoginTokenException('Tokens do not match', $userId);
         }
         return null;
     }
@@ -131,15 +132,13 @@ class LoginToken extends Gateway
      * Delete all tokens in a given series
      *
      * @param string $series         series
-     * @param int    $userId         User identifier
      * @param ?int   $currentTokenId Current token ID to keep
      *
      * @return void
      */
-    public function deleteBySeries(string $series, int $userId, ?int $currentTokenId = null): void
+    public function deleteBySeries(string $series, ?int $currentTokenId = null): void
     {
-        $callback = function ($select) use ($series, $userId, $currentTokenId) {
-            $select->where->equalTo('user_id', $userId);
+        $callback = function ($select) use ($series, $currentTokenId) {
             $select->where->equalTo('series', $series);
             if ($currentTokenId) {
                 $select->where->notEqualTo('id', $currentTokenId);
@@ -203,13 +202,12 @@ class LoginToken extends Gateway
      * Get token by series
      *
      * @param string $series Series identifier
-     * @param int    $userId User identifier
      *
-     * @return ?LoginTokenRow
+     * @return ResultSetInterface
      */
-    public function getBySeries(string $series, int $userId): ?LoginTokenRow
+    public function getBySeries(string $series): ResultSetInterface
     {
-        return $this->select(['user_id' => $userId, 'series' => $series])->current();
+        return $this->select(['series' => $series]);
     }
 
     /**

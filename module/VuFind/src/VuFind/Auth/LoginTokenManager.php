@@ -207,12 +207,12 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
                 }
             } catch (LoginTokenException $e) {
                 $this->logError(
-                    "Token login failure for user {$cookie['user_id']}"
+                    'Token login failure for user ' . $e->getUserId()
                     . ", token {$cookie['token']} series {$cookie['series']}: " . (string)$e
                 );
                 // Delete all login tokens for the user and all sessions
                 // associated with the tokens and send a warning email to user
-                $user = $this->userTable->getById($cookie['user_id']);
+                $user = $this->userTable->getById($e->getUserId());
                 $this->deleteUserLoginTokens($user->id);
                 // We can't send an email until after the theme has initialized;
                 // if it's not ready yet, save the user for later.
@@ -314,7 +314,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
                 $expires,
                 $sessionId
             );
-            $this->setLoginTokenCookie($user->id, $token, $series, $expires);
+            $this->setLoginTokenCookie($token, $series, $expires);
         } catch (\Exception $e) {
             $this->logError("Failed to save login token $token series $series for user {$user->id}: " . (string)$e);
             throw new AuthException('Failed to save token');
@@ -336,11 +336,11 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         if (!empty($cookie) && $cookie['series'] === $series) {
             $this->cookieManager->clear($this->getCookieName());
         }
-        if ($token = $this->loginTokenTable->getBySeries($series, $userId)) {
-            $handler = $this->sessionManager->getSaveHandler();
+        $handler = $this->sessionManager->getSaveHandler();
+        foreach ($this->loginTokenTable->getBySeries($series) as $token) {
             $handler->destroy($token->last_session_id);
         }
-        $this->loginTokenTable->deleteBySeries($series, $userId);
+        $this->loginTokenTable->deleteBySeries($series);
     }
 
     /**
@@ -389,8 +389,8 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     public function deleteActiveToken()
     {
         $cookie = $this->getLoginTokenCookie();
-        if (!empty($cookie) && $cookie['series'] && $cookie['user_id']) {
-            $this->loginTokenTable->deleteBySeries($cookie['series'], $cookie['user_id']);
+        if (!empty($cookie) && $cookie['series']) {
+            $this->loginTokenTable->deleteBySeries($cookie['series']);
         }
         $this->cookieManager->clear($this->getCookieName());
     }
@@ -432,16 +432,15 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     /**
      * Set login token cookie
      *
-     * @param int    $userId  User identifier
      * @param string $token   Login token
      * @param string $series  Series the token belongs to
      * @param int    $expires Token expiration timestamp
      *
      * @return void
      */
-    protected function setLoginTokenCookie(int $userId, string $token, string $series, int $expires): void
+    protected function setLoginTokenCookie(string $token, string $series, int $expires): void
     {
-        $token = implode(';', [$series, $userId, $token]);
+        $token = implode(';', [$series, $token]);
         $this->cookieManager->set(
             $this->getCookieName(),
             $token,
@@ -459,10 +458,16 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     {
         if ($cookie = $this->cookieManager->get($this->getCookieName())) {
             $parts = explode(';', $cookie);
+            // Account for tokens that have extra content in the middle:
+            if ($part2 = $parts[2] ?? null) {
+                return [
+                    'series' => $parts[0],
+                    'token' => $part2,
+                ];
+            }
             return [
-                'series' => $parts[0] ?? '',
-                'user_id' => (int)($parts[1] ?? -1),
-                'token' => $parts[2] ?? '',
+                'series' => $parts[0],
+                'token' => $parts[1] ?? '',
             ];
         }
         return [];
