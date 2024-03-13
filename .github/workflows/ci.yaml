@@ -33,7 +33,7 @@ jobs:
           ini-values: error_reporting=E_ALL
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
@@ -46,7 +46,7 @@ jobs:
 
       - name: Cache NPM dependencies
         if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('package-lock.json') }}
@@ -70,28 +70,28 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Cache php-cs-fixer data
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .php_cs_cache
           key: "php-${{ matrix.php-version }}-php-cs-fixer-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-php-cs-fixer-"
 
       - name: Cache phpstan data
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .phpstan_cache
           key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpstan-"
 
       - name: Cache PHP_CodeSniffer data
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: tests/phpcs.cache.json
           key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
