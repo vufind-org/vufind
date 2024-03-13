@@ -228,6 +228,20 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
+     * Rotate login token in given series or create a new series
+     *
+     * @param User   $user      User
+     * @param string $sessionId Session identifier
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function createToken(User $user, string $sessionId = ''): void
+    {
+        $this->createOrRotateToken($user, $sessionId);
+    }
+
+    /**
      * Event hook -- called after the theme has initialized.
      *
      * @return void
@@ -252,72 +266,14 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         // If we have queued a login token update, we can process it now!
         if ($this->tokenToUpdate) {
             $token = $this->tokenToUpdate['token'];
-            $this->createToken(
+            $this->createOrRotateToken(
                 $this->tokenToUpdate['user'],
-                $token->series,
                 $this->tokenToUpdate['sessionId'],
+                $token->series,
                 $token->expires,
                 $token->id
             );
             $this->tokenToUpdate = null;
-        }
-    }
-
-    /**
-     * Create a new login token
-     *
-     * @param User   $user           User
-     * @param string $series         Login token series
-     * @param string $sessionId      Session identifier
-     * @param int    $expires        Token expiration timestamp
-     * @param ?int   $currentTokenId ID of current token to keep intact
-     *
-     * @throws AuthException
-     * @return void
-     */
-    public function createToken(
-        User $user,
-        string $series = '',
-        string $sessionId = '',
-        $expires = 0,
-        ?int $currentTokenId = null
-    ): void {
-        try {
-            $browser = $this->getBrowscap()->getBrowser();
-        } catch (\Exception $e) {
-            throw new AuthException('Problem with browscap: ' . (string)$e);
-        }
-        if ($expires === 0) {
-            $lifetime = $this->getCookieLifetime();
-            $expires = time() + $lifetime * 60 * 60 * 24;
-        }
-        $token = bin2hex(random_bytes(32));
-        try {
-            if ($series) {
-                $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
-                $this->loginTokenTable->deleteBySeries(
-                    $series,
-                    $user->id,
-                    $lenient ? $currentTokenId : null
-                );
-                $this->debug("Updating login token $token series $series for user {$user->id}");
-            } else {
-                $series = bin2hex(random_bytes(32));
-                $this->debug("Creating login token $token series $series for user {$user->id}");
-            }
-            $this->loginTokenTable->saveToken(
-                $user->id,
-                $token,
-                $series,
-                $browser->browser,
-                $browser->platform,
-                $expires,
-                $sessionId
-            );
-            $this->setLoginTokenCookie($token, $series, $expires);
-        } catch (\Exception $e) {
-            $this->logError("Failed to save login token $token series $series for user {$user->id}: " . (string)$e);
-            throw new AuthException('Failed to save token');
         }
     }
 
@@ -393,6 +349,64 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
             $this->loginTokenTable->deleteBySeries($cookie['series']);
         }
         $this->cookieManager->clear($this->getCookieName());
+    }
+
+    /**
+     * Create a new login token series or rotate login token in given series
+     *
+     * @param User   $user           User
+     * @param string $sessionId      Session identifier
+     * @param string $series         Login token series
+     * @param int    $expires        Token expiration timestamp
+     * @param ?int   $currentTokenId ID of current token to keep intact
+     *
+     * @throws AuthException
+     * @return void
+     */
+    protected function createOrRotateToken(
+        User $user,
+        string $sessionId = '',
+        string $series = '',
+        $expires = 0,
+        ?int $currentTokenId = null
+    ): void {
+        try {
+            $browser = $this->getBrowscap()->getBrowser();
+        } catch (\Exception $e) {
+            throw new AuthException('Problem with browscap: ' . (string)$e);
+        }
+        if ($expires === 0) {
+            $lifetime = $this->getCookieLifetime();
+            $expires = time() + $lifetime * 60 * 60 * 24;
+        }
+        $token = bin2hex(random_bytes(32));
+        try {
+            if ($series) {
+                $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
+                $this->loginTokenTable->deleteBySeries(
+                    $series,
+                    $user->id,
+                    $lenient ? $currentTokenId : null
+                );
+                $this->debug("Updating login token $token series $series for user {$user->id}");
+            } else {
+                $series = bin2hex(random_bytes(32));
+                $this->debug("Creating login token $token series $series for user {$user->id}");
+            }
+            $this->loginTokenTable->saveToken(
+                $user->id,
+                $token,
+                $series,
+                $browser->browser,
+                $browser->platform,
+                $expires,
+                $sessionId
+            );
+            $this->setLoginTokenCookie($token, $series, $expires);
+        } catch (\Exception $e) {
+            $this->logError("Failed to save login token $token series $series for user {$user->id}: " . (string)$e);
+            throw new AuthException('Failed to save token');
+        }
     }
 
     /**
