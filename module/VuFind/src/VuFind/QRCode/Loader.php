@@ -111,9 +111,9 @@ class Loader extends \VuFind\ImageLoader
             // smartest way to do this, but it seems good enough for VuFind's
             // limited needs.
             $sizeIncrement = ceil(ceil(sqrt(strlen($text))) / 10);
-            if ($level instanceof ErrorCorrectionLevelHigh) {
+            if ($level == ErrorCorrectionLevel::High) {
                 $sizeIncrement *= 38;
-            } elseif ($level instanceof ErrorCorrectionLevelQuartile) {
+            } elseif ($level == ErrorCorrectionLevel::Quartile) {
                 $sizeIncrement *= 34;
             } else {
                 $sizeIncrement *= 30;
