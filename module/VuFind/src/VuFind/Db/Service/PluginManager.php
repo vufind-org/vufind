@@ -46,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'tag' => TagService::class,
         'user' => UserService::class,
     ];
 
@@ -55,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        TagService::class => AbstractDbServiceFactory::class,
         UserService::class => UserServiceFactory::class,
     ];
 
