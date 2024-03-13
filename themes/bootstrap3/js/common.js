@@ -30,23 +30,34 @@ var VuFind = (function VuFind() {
     }
   }
 
+  // Add a function to call when an event is emitted
+  //
+  // Options:
+  // - once: remove this listener after it's been called
   function listen(event, fn, { once = false } = {}) {
     if (typeof listeners[event] === "undefined") {
       listeners[event] = [];
     }
 
     listeners[event].push(fn);
+    const removeListener = () => unlisten(event, fn);
 
     if (once) {
-      listeners[event].push(() => {
-        unlisten(event, fn);
-      });
+      // Remove a "once" listener after calling
+      // Add the function to remove the listener
+      // to the array, listeners are called in order
+      listeners[event].push(removeListener);
     }
 
-    return () => unlisten(event, fn);
+    // Return a function to disable the listener
+    // Makes it easier to control activating and deactivating listeners
+    // This is common for similar libraries
+    return removeListener;
   }
 
+  // Broadcat an event, passing arguments to all listeners
   function emit(event, ...args) {
+    // No listeners for this event
     if (typeof listeners[event] === "undefined") {
       return;
     }
