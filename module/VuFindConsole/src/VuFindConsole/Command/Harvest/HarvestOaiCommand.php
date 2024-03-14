@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Harvest;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\PathResolver;
@@ -43,15 +44,12 @@ use VuFindHarvest\OaiPmh\HarvesterFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'harvest/harvest_oai',
+    description: 'OAI-PMH harvester'
+)]
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
-    /**
-     * The name of the command
-     *
-     * @var string
-     */
-    protected static $defaultName = 'harvest/harvest_oai';
-
     /**
      * Config file path resolver
      *

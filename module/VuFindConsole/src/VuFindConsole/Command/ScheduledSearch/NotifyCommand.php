@@ -31,6 +31,7 @@ namespace VuFindConsole\Command\ScheduledSearch;
 
 use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,17 +55,14 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'scheduledsearch/notify',
+    description: 'Scheduled Search Notifier'
+)]
 class NotifyCommand extends Command implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'scheduledsearch/notify';
 
     /**
      * Output interface
@@ -204,9 +202,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      */
     protected function configure()
     {
-        $this
-            ->setDescription('Scheduled Search Notifier')
-            ->setHelp('Sends scheduled search email notifications.');
+        $this->setHelp('Sends scheduled search email notifications.');
     }
 
     /**
