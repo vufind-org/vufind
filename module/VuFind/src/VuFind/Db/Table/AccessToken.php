@@ -33,7 +33,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Row\AccessTokenEntity as AccessTokenRow;
+use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 

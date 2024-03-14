@@ -32,6 +32,8 @@ namespace VuFind\Db\Service;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Table\User;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -43,7 +45,10 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
+class UserService extends AbstractDbService implements
+    DbServiceAwareInterface,
+    LoggerAwareInterface,
+    UserServiceInterface
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
@@ -70,6 +75,13 @@ class UserService extends AbstractDbService implements LoggerAwareInterface, DbS
     protected $config = null;
 
     /**
+     * User table.
+     *
+     * @var User
+     */
+    protected $userTable;
+
+    /**
      * Configuration setter
      *
      * @param \Laminas\Config\Config $config VuFind configuration
@@ -79,6 +91,18 @@ class UserService extends AbstractDbService implements LoggerAwareInterface, DbS
     public function setConfig(\Laminas\Config\Config $config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * User table setter.
+     *
+     * @param User $userTable User table
+     *
+     * @return void
+     */
+    public function setUserTable(User $userTable): void
+    {
+        $this->userTable = $userTable;
     }
 
     /**
@@ -177,5 +201,17 @@ class UserService extends AbstractDbService implements LoggerAwareInterface, DbS
         }
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+    }
+
+    /**
+     * Retrieve a user object from the database based on ID.
+     *
+     * @param string $id ID.
+     *
+     * @return UserEntityInterface
+     */
+    public function getById($id)
+    {
+        return $this->userTable->getById($id);
     }
 }

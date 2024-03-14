@@ -30,7 +30,7 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Row\AccessTokenEntity as AccessTokenRow;
+use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Entity\ClientEntity;
 

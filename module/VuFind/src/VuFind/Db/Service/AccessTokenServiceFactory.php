@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database user service factory
+ * Database access token service factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -35,15 +35,15 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
- * Database user service factory
+ * Database access token service factory
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserServiceFactory extends AbstractDbServiceFactory
+class AccessTokenServiceFactory extends AbstractDbServiceFactory
 {
     /**
      * Create an object
@@ -67,13 +67,10 @@ class UserServiceFactory extends AbstractDbServiceFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
-          ->get('user');
-        $userService = parent::__invoke($container, $requestedName, $options);
-        $userService->setConfig($config);
-        $userService->setUserTable($userTable);
-        return $userService;
+        $accessTokenTable = $container->get(\VuFind\Db\Table\PluginManager::class)
+            ->get('accesstoken');
+        $accessTokenService = parent::__invoke($container, $requestedName, $options);
+        $accessTokenService->setAccessTokenTable($accessTokenTable);
+        return $accessTokenService;
     }
 }

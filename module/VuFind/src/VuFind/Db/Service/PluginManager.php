@@ -29,11 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Table\AccessToken;
-use VuFind\Db\Table\GatewayFactory;
-use VuFind\Db\Table\User;
-use VuFind\Db\Table\UserFactory;
-
 /**
  * Database service plugin manager
  *
@@ -51,8 +46,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'accesstoken' => AccessToken::class,
-        'user' => User::class,
+        'accesstoken' => AccessTokenService::class,
+        'user' => UserService::class,
     ];
 
     /**
@@ -61,8 +56,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AccessToken::class => GatewayFactory::class,
-        User::class => UserFactory::class,
+        AccessTokenService::class => AccessTokenServiceFactory::class,
+        UserService::class => UserServiceFactory::class,
     ];
 
     /**

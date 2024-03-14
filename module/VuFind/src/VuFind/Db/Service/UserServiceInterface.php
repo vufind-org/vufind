@@ -29,7 +29,7 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Database service interface for users.
@@ -47,7 +47,7 @@ interface UserServiceInterface extends ServiceInterface
      *
      * @param string $id ID.
      *
-     * @return UserRow
+     * @return UserEntityInterface
      */
     public function getById($id);
 }
