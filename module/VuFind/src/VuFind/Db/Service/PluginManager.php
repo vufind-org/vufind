@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Console command: expire sessions.
+ * Database service plugin manager
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,55 +21,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFindConsole\Command\Util;
-
-use Symfony\Component\Console\Attribute\AsCommand;
+namespace VuFind\Db\Service;
 
 /**
- * Console command: expire sessions.
+ * Database service plugin manager
  *
  * @category VuFind
- * @package  Console
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-#[AsCommand(
-    name: 'util/expire_sessions'
-)]
-class ExpireSessionsCommand extends AbstractExpireCommand
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Minimum legal age of rows to delete.
+     * Default plugin aliases.
      *
-     * @var int
+     * @var array
      */
-    protected $minAge = 0.1;
+    protected $aliases = [
+        'user' => UserService::class,
+    ];
 
     /**
-     * Default age of rows to delete. $minAge is used $defaultAge is null.
+     * Default plugin factories.
      *
-     * @var int
+     * @var array
      */
-    protected $defaultAge = 2;
+    protected $factories = [
+        UserService::class => UserServiceFactory::class,
+    ];
 
     /**
-     * Help description for the command.
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
      *
-     * @var string
+     * @return string
      */
-    protected $commandDescription = 'Database session table cleanup';
-
-    /**
-     * Label to use for rows in help messages.
-     *
-     * @var string
-     */
-    protected $rowLabel = 'sessions';
+    protected function getExpectedInterface()
+    {
+        return AbstractDbService::class;
+    }
 }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Console command: expire persistent login tokens.
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,41 +21,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
- * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @package  Db_Service
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFindConsole\Command\Util;
-
-use Symfony\Component\Console\Attribute\AsCommand;
+namespace VuFind\Db\Service;
 
 /**
- * Console command: expire persistent login tokens.
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
  *
  * @category VuFind
- * @package  Console
- * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @package  Db_Service
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-#[AsCommand(
-    name: 'util/expire_login_tokens'
-)]
-class ExpireLoginTokensCommand extends AbstractExpireCommand
+interface DbServiceAwareInterface
 {
     /**
-     * Help description for the command.
+     * Get the plugin manager.  Throw an exception if it is missing.
      *
-     * @var string
+     * @throws \Exception
+     * @return PluginManager
      */
-    protected $commandDescription = 'Database login_token table cleanup';
+    public function getDbServiceManager();
 
     /**
-     * Label to use for rows in help messages.
+     * Set the plugin manager.
      *
-     * @var string
+     * @param PluginManager $manager Plugin manager
+     *
+     * @return void
      */
-    protected $rowLabel = 'login tokens';
+    public function setDbServiceManager(PluginManager $manager);
 }

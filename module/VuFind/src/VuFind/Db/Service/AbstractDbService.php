@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Console command: expire persistent login tokens.
+ * Database service abstract base class
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,41 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
- * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFindConsole\Command\Util;
-
-use Symfony\Component\Console\Attribute\AsCommand;
+namespace VuFind\Db\Service;
 
 /**
- * Console command: expire persistent login tokens.
+ * Database service abstract base class
  *
  * @category VuFind
- * @package  Console
- * @author   Jaro Ravila <jaro.ravila@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-#[AsCommand(
-    name: 'util/expire_login_tokens'
-)]
-class ExpireLoginTokensCommand extends AbstractExpireCommand
+abstract class AbstractDbService
 {
-    /**
-     * Help description for the command.
-     *
-     * @var string
-     */
-    protected $commandDescription = 'Database login_token table cleanup';
-
-    /**
-     * Label to use for rows in help messages.
-     *
-     * @var string
-     */
-    protected $rowLabel = 'login tokens';
 }

@@ -527,6 +527,19 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
+     * Get a database service object.
+     *
+     * @param string $name Name of service to retrieve
+     *
+     * @return \VuFind\Db\Service\AbstractDbService
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\AbstractDbService
+    {
+        return $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
+            ->get($name);
+    }
+
+    /**
      * Get the full URL to one of VuFind's routes.
      *
      * @param bool|string $route Boolean true for current URL, otherwise name of

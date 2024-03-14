@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
 
 use function is_array;
@@ -66,11 +67,12 @@ class InjectConditionalFilterListener
     /**
      * Constructor.
      *
-     * @param array $searchConf Search configuration parameters
+     * @param BackendInterface $backend    Backend
+     * @param array            $searchConf Search configuration parameters
      *
      * @return void
      */
-    public function __construct($searchConf)
+    public function __construct(protected BackendInterface $backend, $searchConf)
     {
         $this->filters = $searchConf;
         $this->filterList = [];
@@ -134,12 +136,17 @@ class InjectConditionalFilterListener
      */
     public function onSearchPre(EventInterface $event)
     {
+        $command = $event->getParam('command');
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
+            return $event;
+        }
+
         // Add conditional filters
         foreach ($this->filters as $fc) {
             $this->addConditionalFilter($fc);
         }
 
-        $params = $event->getParam('command')->getSearchParameters();
+        $params = $command->getSearchParameters();
         $fq = $params->get('fq');
         if (!is_array($fq)) {
             $fq = [];

@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use LmcRbacMvc\Identity\IdentityInterface;
-use VuFind\Db\Interface\UserAccountInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -117,9 +117,9 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     /**
      * Checks whether the user is logged in.
      *
-     * @return ?UserAccountInterface Object if user is logged in, null otherwise.
+     * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
-    public function getUserObject(): ?UserAccountInterface
+    public function getUserObject(): ?UserEntityInterface
     {
         return $this->getManager()->getUserObject();
     }
