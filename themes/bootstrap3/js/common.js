@@ -378,7 +378,7 @@ var VuFind = (function VuFind() {
    * @param {string|JQuery} container
    */
   var initResultScripts = function initResultScripts(container) {
-    let jqContainer = typeof container === 'string' ? document.querySelector(container) : container;
+    let jqContainer = typeof container === 'string' ? $(container) : container;
     if (typeof this.openurl !== 'undefined') {
       this.openurl.init(jqContainer);
     }
