@@ -350,8 +350,6 @@ class FakeOverdriveConnector extends OverdriveConnector
      * @param array $overDriveIds Set of Overdrive IDs
      *
      * @return array results of metadata fetch
-     *
-     * @todo if more tan 25 passed in, make multiple calls
      */
     public function getMetadata($overDriveIds = [])
     {
@@ -366,8 +364,6 @@ class FakeOverdriveConnector extends OverdriveConnector
      *                               you get from getCheckouts and getHolds)
      *
      * @return array inital array with results of metadata attached as "metadata" property
-     *
-     * @todo if more tan 25 passed in, make multiple calls
      */
     public function getMetadataForTitles($overDriveTitles = [])
     {
