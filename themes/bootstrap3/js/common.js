@@ -55,7 +55,7 @@ var VuFind = (function VuFind() {
     return removeListener;
   }
 
-  // Broadcat an event, passing arguments to all listeners
+  // Broadcast an event, passing arguments to all listeners
   function emit(event, ...args) {
     // No listeners for this event
     if (typeof listeners[event] === "undefined") {
