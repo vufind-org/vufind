@@ -294,6 +294,72 @@ class User implements UserEntityInterface
     }
 
     /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * Get email.
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set pending email.
+     *
+     * @param string $email New pending email
+     *
+     * @return UserEntityInterface
+     */
+    public function setPendingEmail(string $email): UserEntityInterface
+    {
+        $this->pendingEmail = $email;
+        return $this;
+    }
+
+    /**
+     * Get pending email.
+     *
+     * @return string
+     */
+    public function getPendingEmail(): string
+    {
+        return $this->pendingEmail;
+    }
+
+    /**
      * Catalog username setter
      *
      * @param ?string $catUsername Catalog username
@@ -383,5 +449,25 @@ class User implements UserEntityInterface
     public function getCatPassEnc(): ?string
     {
         return $this->catPassEnc;
+    }
+
+    /**
+     * Get verification hash for recovery.
+     *
+     * @return string
+     */
+    public function getVerifyHash(): string
+    {
+        return $this->verifyHash;
+    }
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string
+    {
+        return $this->lastLanguage;
     }
 }
