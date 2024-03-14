@@ -207,20 +207,22 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         // How many results were there?
         $userId = null === $list ? $this->user->id : $list->user_id;
         $listId = null === $list ? null : $list->id;
+        // Get results as an array so that we can rewind it:
         $rawResults = $this->resourceTable->getFavorites(
             $userId,
             $listId,
             $this->getTagFilters(),
             $this->getParams()->getSort()
-        );
+        )->toArray();
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
             return $result['source'] . '|' . $result['record_id'];
-        }, $rawResults->toArray());
+        }, $rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
+            // Get results as an array so that we can rewind it:
             $rawResults = $this->resourceTable->getFavorites(
                 $userId,
                 $listId,
@@ -228,16 +230,16 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 $this->getParams()->getSort(),
                 $this->getStartRecord() - 1,
                 $limit
-            );
+            )->toArray();
         }
 
         // Retrieve record drivers for the selected items.
         $recordsToRequest = [];
         foreach ($rawResults as $row) {
             $recordsToRequest[] = [
-                'id' => $row->record_id, 'source' => $row->source,
+                'id' => $row['record_id'], 'source' => $row['source'],
                 'extra_fields' => [
-                    'title' => $row->title,
+                    'title' => $row['title'],
                 ],
             ];
         }
