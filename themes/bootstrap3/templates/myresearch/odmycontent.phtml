@@ -85,8 +85,8 @@
               <a
                 class="btn btn-warning icon-link returnTitle"
                 data-lightbox title="<?=$this->transEsc('od_but_return')?>"
-                href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&edition=" . 
-                urlencode($edition) . "&action=returnTitleConfirm"; ?>"
+                href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&edition=" .
+                urlencode($edition) . '&action=returnTitleConfirm'; ?>"
               >
                 <?=$this->icon('overdrive-return', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc('od_but_return')?></span>
