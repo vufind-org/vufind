@@ -193,7 +193,7 @@ class LoginToken extends Gateway
                         'expires',
                     ]
                 );
-                $select->group(['id', 'series', 'user_id', 'browser', 'platform', 'expires']);
+                $select->group(['series', 'user_id', 'browser', 'platform', 'expires']);
             }
         };
         return iterator_to_array($this->select($callback));
