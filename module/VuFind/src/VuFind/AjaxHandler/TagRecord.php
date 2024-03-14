@@ -93,7 +93,8 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
                 ? 'addTagsToRecord'
                 : 'deleteTagsFromRecord';
             $this->tagService->$serviceMethod(
-                $driver,
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
                 $this->user,
                 $this->tagParser->parse($tag)
             );

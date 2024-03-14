@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * Database service for tags.
@@ -48,19 +47,17 @@ class TagService extends AbstractDbService implements \VuFind\Db\Table\DbTableAw
     /**
      * Add tags to the record.
      *
-     * @param RecordDriver        $driver The record being modified
+     * @param string              $id     Unique record ID
+     * @param string              $source Record source
      * @param UserEntityInterface $user   The user adding the tag(s)
      * @param string[]            $tags   The user-provided tag(s)
      *
      * @return void
      */
-    public function addTagsToRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
     {
         $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
-            $driver->getUniqueId(),
-            $driver->getSourceIdentifier()
-        );
+        $resource = $resources->findResource($id, $source);
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
         }
@@ -69,19 +66,17 @@ class TagService extends AbstractDbService implements \VuFind\Db\Table\DbTableAw
     /**
      * Remove tags from the record.
      *
-     * @param RecordDriver        $driver The record being modified
+     * @param string              $id     Unique record ID
+     * @param string              $source Record source
      * @param UserEntityInterface $user   The user deleting the tag(s)
      * @param string[]            $tags   The user-provided tag(s)
      *
      * @return void
      */
-    public function deleteTagsFromRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
     {
         $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
-            $driver->getUniqueId(),
-            $driver->getSourceIdentifier()
-        );
+        $resource = $resources->findResource($id, $source);
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
         }

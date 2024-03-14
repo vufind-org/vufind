@@ -215,7 +215,8 @@ abstract class AbstractBase implements
      */
     public function addTags($user, $tags)
     {
-        $this->getDbService(TagService::class)->addTagsToRecord($this, $user, $tags);
+        $this->getDbService(TagService::class)
+            ->addTagsToRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
     /**
@@ -230,7 +231,8 @@ abstract class AbstractBase implements
      */
     public function deleteTags($user, $tags)
     {
-        $this->getDbService(TagService::class)->deleteTagsFromRecord($this, $user, $tags);
+        $this->getDbService(TagService::class)
+            ->deleteTagsFromRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
     /**

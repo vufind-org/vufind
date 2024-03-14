@@ -237,7 +237,12 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $this->getDbService(TagService::class)->addTagsToRecord($driver, $user, $tagParser->parse($tags));
+            $this->getDbService(TagService::class)->addTagsToRecord(
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
+                $user,
+                $tagParser->parse($tags)
+            );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
@@ -271,7 +276,12 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->getDbService(TagService::class)->deleteTagsFromRecord($driver, $user, [$tag]);
+            $this->getDbService(TagService::class)->deleteTagsFromRecord(
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
+                $user,
+                [$tag]
+            );
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
