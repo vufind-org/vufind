@@ -62,7 +62,7 @@ trait SearchBackendEventManagerTrait
         // Using the class name as the event namespace is recommended; the
         // VuFind\Search and VuFindSearch values are only retained for backward
         // compatibility.
-        $events->setIdentifiers(\VuFindSearch\Service::class, 'VuFind\Search', 'VuFindSearch']);
+        $events->setIdentifiers([\VuFindSearch\Service::class, 'VuFind\Search', 'VuFindSearch']);
         $this->events = $events;
     }
 
