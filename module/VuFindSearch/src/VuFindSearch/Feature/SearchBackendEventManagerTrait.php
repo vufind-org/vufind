@@ -41,7 +41,7 @@ use Laminas\EventManager\EventManagerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-trait EventManagerTrait
+trait SearchBackendEventManagerTrait
 {
     /**
      * Event manager.
@@ -62,7 +62,7 @@ trait EventManagerTrait
         // Using the class name as the event namespace is recommended; the
         // VuFind\Search and VuFindSearch values are only retained for backward
         // compatibility.
-        $events->setIdentifiers([self::class, 'VuFind\Search', 'VuFindSearch']);
+        $events->setIdentifiers(\VuFindSearch\Service::class, 'VuFind\Search', 'VuFindSearch']);
         $this->events = $events;
     }
 

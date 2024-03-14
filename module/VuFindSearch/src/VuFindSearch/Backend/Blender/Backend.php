@@ -54,7 +54,7 @@ use function intval;
  */
 class Backend extends AbstractBackend
 {
-    use \VuFindSearch\Feature\EventManagerTrait;
+    use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
 
     /**
      * Actual backends

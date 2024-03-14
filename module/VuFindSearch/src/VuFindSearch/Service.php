@@ -50,7 +50,7 @@ use VuFindSearch\Command\CommandInterface;
  */
 class Service
 {
-    use \VuFindSearch\Feature\EventManagerTrait;
+    use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
 
     /**
      * Event identifiers.
