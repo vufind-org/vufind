@@ -72,6 +72,17 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     protected object $provider;
 
     /**
+     * Default attributes mappings
+     *
+     * @var array
+     */
+    protected array $defaultAttributesMappings = [
+        'firstname' => 'given_name',
+        'lastname' => 'family_name',
+        'email' => 'email',
+    ];
+
+    /**
      * Constructor
      *
      * @param SessionContainer       $session    Session container for persisting state information.
@@ -179,19 +190,21 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('authentication_error: not valid claims');
         }
 
-        $access_token = $request_token->access_token;
+        $accessToken = $request_token->access_token;
 
-        $user_info = $this->getUserInfo($access_token);
-        $user = $this->getUserTable()->getByUsername($user_info->sub);
-        if (isset($user_info->given_name)) {
-            $user->firstname = $user_info->given_name;
+        $userInfo = $this->getUserInfo($accessToken);
+        $user = $this->getUserTable()->getByUsername($userInfo->sub);
+        foreach ($this->getAttributesMappings() as $userAttr => $infoAttr) {
+            $attrValue = $this->getAttributeValue($userInfo, $infoAttr);
+            if (!empty($attrValue)) {
+                if ($userAttr === 'email') {
+                    $user->updateEmail($attrValue);
+                    continue;
+                }
+                $user->$userAttr = $attrValue;
+            }
         }
-        if (isset($user_info->family_name)) {
-            $user->lastname = $user_info->family_name;
-        }
-        if (isset($user_info->email)) {
-            $user->updateEmail($user_info->email);
-        }
+
         $user->save();
         return $user;
     }
@@ -330,5 +343,31 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         return (!isset($claims->nonce) || $claims->nonce === $this->session->oidc_nonce)
             && ($claims->aud === $this->getConfig()->OpenIDConnect->client_id)
             && (!isset($claims->exp) || (is_int($claims->exp) && ($claims->exp > time())));
+    }
+
+    /**
+     * Get attributes mappings
+     *
+     * @return array
+     * @throws AuthException
+     */
+    protected function getAttributesMappings(): array
+    {
+        $configMappings = $this->getConfig()->OpenIDConnect?->attributes?->toArray() ?? [];
+        return array_merge($this->defaultAttributesMappings, $configMappings);
+    }
+
+    /**
+     * Get attibute value from user info
+     *
+     * @param object $userInfo  User info claim from OIDC server
+     * @param string $attribute Attribute to get value for
+     *
+     * @return string
+     */
+    protected function getAttributeValue(object $userInfo, string $attribute): string
+    {
+        $attributeName = $this->oidcConfig->attributes[$attribute] ?? $attribute;
+        return $userInfo->$attributeName ?? '';
     }
 }
