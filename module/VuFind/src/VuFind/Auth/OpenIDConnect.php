@@ -221,15 +221,15 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     public function getSessionInitiator($target): bool|string
     {
         $provider = $this->getProvider();
-        if (empty($this->target)) {
-            // Adding the auth_method setting makes it possible to handle logins when
-            // using an auth method that proxies others (e.g. ChoiceAuth)
-            $this->target = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=oidc';
+        // Adding the auth_method setting makes it possible to handle logins when
+        // using an auth method that proxies others (e.g. ChoiceAuth)
+        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=oidc';
+        if (empty($this->session->oidcLastUri) && !empty($target)) {
+            $this->session->oidcLastUri = $targetUri;
         }
-        $this->session->oidcLastUri = $this->target;
         $params = [
             'response_type' => 'code',
-            'redirect_uri' => $target,
+            'redirect_uri' => $targetUri,
             'client_id' => $this->getConfig()->OpenIDConnect->client_id,
             'nonce' => $this->session->oidc_nonce,
             'state' => $this->session->oidc_state,
