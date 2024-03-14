@@ -14,7 +14,6 @@ CREATE TABLE login_token (
   platform varchar(255),
   expires int NOT NULL,
   last_session_id varchar(255),
-  PRIMARY KEY (id),
-  UNIQUE (user_id, series)
+  PRIMARY KEY (id)
 );
-CREATE INDEX login_token_user_id_idx ON login_token (user_id);
+CREATE INDEX login_token_user_id_series_idx ON login_token (user_id, series);

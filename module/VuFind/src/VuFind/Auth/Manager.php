@@ -829,7 +829,7 @@ class Manager implements
 
             if ($request->getPost()->get('remember_me') && $this->supportsPersistentLogin($mainAuthMethod)) {
                 try {
-                    $this->loginTokenManager->createToken($user, '', $this->sessionManager->getId());
+                    $this->loginTokenManager->createToken($user, $this->sessionManager->getId());
                 } catch (\Exception $e) {
                     $this->logError((string)$e);
                     throw new AuthException('authentication_error_technical', 0, $e);
