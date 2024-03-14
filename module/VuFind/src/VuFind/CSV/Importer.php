@@ -279,7 +279,6 @@ class Importer
             }
             $alreadyInjected[$class] = true;
         }
-
     }
 
     /**
