@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,6 +30,8 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\ResultSet\ResultSetInterface;
+use Laminas\Db\Sql\Expression;
 use VuFind\Db\Row\LoginToken as LoginTokenRow;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\LoginToken as LoginTokenException;
@@ -109,16 +111,19 @@ class LoginToken extends Gateway
      */
     public function matchToken(array $token): ?LoginTokenRow
     {
-        $row = $this->getBySeries($token['series'], $token['user_id']);
-        if ($row && hash_equals($row['token'], hash('sha256', $token['token']))) {
-            if (time() > $row['expires']) {
-                $row->delete();
-                return null;
+        $userId = null;
+        foreach ($this->getBySeries($token['series']) as $row) {
+            $userId = $row->user_id;
+            if (hash_equals($row['token'], hash('sha256', $token['token']))) {
+                if (time() > $row['expires']) {
+                    $row->delete();
+                    return null;
+                }
+                return $row;
             }
-            return $row;
-        } elseif ($row) {
-            // Matching series and user id found, but token does not match - throw exception
-            throw new LoginTokenException('Token does not match');
+        }
+        if ($userId) {
+            throw new LoginTokenException('Tokens do not match', $userId);
         }
         return null;
     }
@@ -126,14 +131,20 @@ class LoginToken extends Gateway
     /**
      * Delete all tokens in a given series
      *
-     * @param string $series series
-     * @param int    $userId User identifier
+     * @param string $series         series
+     * @param ?int   $currentTokenId Current token ID to keep
      *
      * @return void
      */
-    public function deleteBySeries(string $series, int $userId): void
+    public function deleteBySeries(string $series, ?int $currentTokenId = null): void
     {
-        $this->delete(['user_id' => $userId, 'series' => $series]);
+        $callback = function ($select) use ($series, $currentTokenId) {
+            $select->where->equalTo('series', $series);
+            if ($currentTokenId) {
+                $select->where->notEqualTo('id', $currentTokenId);
+            }
+        };
+        $this->delete($callback);
     }
 
     /**
@@ -151,15 +162,39 @@ class LoginToken extends Gateway
     /**
      * Get tokens for a given user
      *
-     * @param int $userId User identifier
+     * @param int  $userId  User identifier
+     * @param bool $grouped Whether to return results grouped by series
      *
      * @return array
      */
-    public function getByUserId(int $userId): array
+    public function getByUserId(int $userId, bool $grouped = true): array
     {
-        $callback = function ($select) use ($userId) {
+        $callback = function ($select) use ($userId, $grouped) {
             $select->where->equalTo('user_id', $userId);
             $select->order('last_login DESC');
+            if ($grouped) {
+                $select->columns(
+                    [
+                        // RowGateway requires an id field:
+                        'id' => new Expression(
+                            '1',
+                            [],
+                            [Expression::TYPE_IDENTIFIER]
+                        ),
+                        'series',
+                        'user_id',
+                        'last_login' => new Expression(
+                            'MAX(?)',
+                            ['last_login'],
+                            [Expression::TYPE_IDENTIFIER]
+                        ),
+                        'browser',
+                        'platform',
+                        'expires',
+                    ]
+                );
+                $select->group(['id', 'series', 'user_id', 'browser', 'platform', 'expires']);
+            }
         };
         return iterator_to_array($this->select($callback));
     }
@@ -168,13 +203,12 @@ class LoginToken extends Gateway
      * Get token by series
      *
      * @param string $series Series identifier
-     * @param int    $userId User identifier
      *
-     * @return ?LoginTokenRow
+     * @return ResultSetInterface
      */
-    public function getBySeries(string $series, int $userId): ?LoginTokenRow
+    public function getBySeries(string $series): ResultSetInterface
     {
-        return $this->select(['user_id' => $userId, 'series' => $series])->current();
+        return $this->select(compact('series'));
     }
 
     /**
