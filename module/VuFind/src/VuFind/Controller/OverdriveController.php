@@ -134,7 +134,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // Get the current Overdrive holds for this user and add to
             // our array of IDS
             $holdsResults = $this->connector->getHolds(true);
-            if (!($holdsResults->status ?? false)
+            if (
+                !($holdsResults->status ?? false)
                 && ($checkoutResults->status ?? false) // avoid double errors
             ) {
                 $this->flashMessenger()->addMessage(
@@ -252,13 +253,12 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $listAuthors = $driver->getPrimaryAuthors();
         $result = null;
         $actionTitleCode = '';
-        
+
         if (!$action) {
             // Double check the availability in case it has changed since the page
             // was loaded.
             $avail = $driver->getOverdriveAvailability();
             $action = ($avail->copiesAvailable > 0) ? 'checkoutConfirm' : 'holdConfirm';
-
         }
         $actions = [
             'editSuspendedHold' => ['titleCode' => 'od_susp_hold_edit', 'resMeth' => 'getEditSuspendedRes'],
@@ -278,7 +278,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             'returnTitle' => ['titleCode' => 'od_early_return', 'resMeth' => 'getReturnTitleRes'],
             'getTitle' => ['titleCode' => 'od_get_title', 'resMeth' => 'getDownloadTitleRes'],
         ];
-       
+
         if (isset($actions[$action])) {
             $actionTitleCode = $actions[$action]['titleCode'];
             $result = $actions[$action]['resMeth'] ? $this->{$actions[$action]['resMeth']}() : false;
@@ -351,7 +351,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
-        $formats = $driver->getDigitalFormats();        
+        $formats = $driver->getDigitalFormats();
         // Looks like this is a magazine...
         if (current($formats)->id == 'magazine-overdrive') {
             $isMagazine = true;
@@ -390,7 +390,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         }
         return $result;
     }
-            
+
     /**
      * Checkout Result
      *
@@ -449,7 +449,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $result->data->hold = $hold;
         return $result;
     }
-    
+
     /**
      * Edit Hold Email Result
      *
@@ -514,7 +514,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         }
         return $result;
     }
-    
+
     /**
      * Edit Suspended Hold Result
      *
@@ -524,7 +524,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function getEditSuspendedRes()
     {
-        $od_id = $this->params()->fromQuery('od_id');      
+        $od_id = $this->params()->fromQuery('od_id');
         $suspendValue = $this->params()->fromPost('suspendValue');
         if ($suspendValue == 0) {
             $result = $this->connector->deleteHoldSuspension($od_id);
@@ -534,10 +534,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $suspensionType = $suspendValue == -1 ? 'indefinite' : 'limited';
             $result = $this->connector->editSuspendedHold($od_id, $holdEmail, $suspensionType, $suspendValue);
         }
-        $result->code = $result->status ? 'od_hold_update_success' : 'od_hold_update_failure'; 
+        $result->code = $result->status ? 'od_hold_update_success' : 'od_hold_update_failure';
         return $result;
     }
-    
+
     /**
      * Cancel Hold Result
      *
@@ -547,7 +547,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function getCancelHoldRes()
     {
-        $od_id = $this->params()->fromQuery('od_id');      
+        $od_id = $this->params()->fromQuery('od_id');
         $result = $this->connector->cancelHold($od_id);
         $result->code = $result->status ? 'od_hold_cancel_success' : 'od_hold_cancel_failure';
         return $result;
@@ -567,7 +567,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $result->code = $result->status ? 'od_return_success' : 'od_return_failure';
         return $result;
     }
-    
+
     /**
      * Download Title Result
      *
