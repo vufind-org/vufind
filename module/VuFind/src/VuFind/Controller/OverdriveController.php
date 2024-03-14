@@ -261,7 +261,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $action = ($avail->copiesAvailable > 0) ? 'checkoutConfirm' : 'holdConfirm';
         }
         $actions = [
-            'editSuspendedHold' => ['titleCode' => 'od_susp_hold_edit', 'resMeth' => 'getEditSuspendedRes'],
             'checkoutConfirm' => ['titleCode' => 'od_checkout', 'resMeth' => 'getConfirmCheckoutRes'],
             'holdConfirm' => ['titleCode' => 'od_hold', 'resMeth' => 'getHoldConfirmRes'],
             'cancelHoldConfirm' => ['titleCode' => 'od_cancel_hold', 'resMeth' => false],
