@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,15 +47,12 @@ use VuFind\Db\Service\ResourceService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/purge_cached_record',
+    description: 'Purge a cached record and optionally a resource'
+)]
 class PurgeCachedRecordCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/purge_cached_record';
-
     /**
      * Record service object
      *
@@ -95,7 +93,6 @@ class PurgeCachedRecordCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Purge a cached record and optionally a resource')
             ->setHelp('Removes a record and optionally a resource from the database.')
             ->addOption(
                 'purge-resource',

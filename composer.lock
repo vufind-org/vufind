@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1df3fdc6b7d65a5278cbdb8f32ae4dd7",
+    "content-hash": "37871b2808d935cc5bb475b9789f95a0",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -5399,16 +5399,16 @@
         },
         {
             "name": "laminas/laminas-session",
-            "version": "2.19.1",
+            "version": "2.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-session.git",
-                "reference": "cbcd9f719df26d7b7a2c569f12b7f6357853f8bb"
+                "reference": "16876aa20a6688d06291a972f7e1eb0b74b05d51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/cbcd9f719df26d7b7a2c569f12b7f6357853f8bb",
-                "reference": "cbcd9f719df26d7b7a2c569f12b7f6357853f8bb",
+                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/16876aa20a6688d06291a972f7e1eb0b74b05d51",
+                "reference": "16876aa20a6688d06291a972f7e1eb0b74b05d51",
                 "shasum": ""
             },
             "require": {
@@ -5421,16 +5421,17 @@
                 "zendframework/zend-session": "*"
             },
             "require-dev": {
-                "laminas/laminas-cache": "^3.12.0",
+                "ext-xdebug": "*",
+                "laminas/laminas-cache": "^3.12.1",
                 "laminas/laminas-cache-storage-adapter-memory": "^2.3",
                 "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-db": "^2.18.0",
+                "laminas/laminas-db": "^2.19.0",
                 "laminas/laminas-http": "^2.19",
-                "laminas/laminas-validator": "^2.46.0",
+                "laminas/laminas-validator": "^2.49.0",
                 "mongodb/mongodb": "~1.17.0",
-                "phpunit/phpunit": "^9.6.15",
+                "phpunit/phpunit": "^9.6.17",
                 "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.18"
+                "vimeo/psalm": "^5.22.2"
             },
             "suggest": {
                 "laminas/laminas-cache": "Laminas\\Cache component",
@@ -5476,7 +5477,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-02-29T19:40:20+00:00"
+            "time": "2024-03-08T11:02:36+00:00"
         },
         {
             "name": "laminas/laminas-stdlib",
@@ -5657,16 +5658,16 @@
         },
         {
             "name": "laminas/laminas-validator",
-            "version": "2.49.0",
+            "version": "2.50.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-validator.git",
-                "reference": "d58c2e7d3cd420554400dd8cca694fafa3b8e45f"
+                "reference": "2b1cb3e5249691f2f8cd411fde064fce473b6d24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-validator/zipball/d58c2e7d3cd420554400dd8cca694fafa3b8e45f",
-                "reference": "d58c2e7d3cd420554400dd8cca694fafa3b8e45f",
+                "url": "https://api.github.com/repos/laminas/laminas-validator/zipball/2b1cb3e5249691f2f8cd411fde064fce473b6d24",
+                "reference": "2b1cb3e5249691f2f8cd411fde064fce473b6d24",
                 "shasum": ""
             },
             "require": {
@@ -5737,7 +5738,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-02-22T16:46:06+00:00"
+            "time": "2024-03-11T00:59:46+00:00"
         },
         {
             "name": "laminas/laminas-view",
@@ -8899,16 +8900,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.11.8",
+            "version": "v5.11.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "da3d4a9946a218e1f51e879357bafcf09983aadc"
+                "reference": "227e94f748e67a9e2a07c1f091ebd85e876cb249"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/da3d4a9946a218e1f51e879357bafcf09983aadc",
-                "reference": "da3d4a9946a218e1f51e879357bafcf09983aadc",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/227e94f748e67a9e2a07c1f091ebd85e876cb249",
+                "reference": "227e94f748e67a9e2a07c1f091ebd85e876cb249",
                 "shasum": ""
             },
             "type": "library",
@@ -8954,9 +8955,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.11.8"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.11.10"
             },
-            "time": "2024-02-23T11:46:00+00:00"
+            "time": "2024-03-06T15:08:08+00:00"
         },
         {
             "name": "symfony/console",
@@ -10279,38 +10280,37 @@
         },
         {
             "name": "vufind-org/vufindharvest",
-            "version": "v5.2.0",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindharvest.git",
-                "reference": "aaae1a76198e8403d0436c84465508d5e87ed161"
+                "reference": "4111bf57d372ae382c02f6ba83e749862b972940"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/aaae1a76198e8403d0436c84465508d5e87ed161",
-                "reference": "aaae1a76198e8403d0436c84465508d5e87ed161",
+                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/4111bf57d372ae382c02f6ba83e749862b972940",
+                "reference": "4111bf57d372ae382c02f6ba83e749862b972940",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-http": ">=2.2",
-                "php": ">=7.4.1",
-                "symfony/console": "^4.0||^5.0"
+                "php": ">=8.1",
+                "symfony/console": "^5.3||^6||^7"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "3.14.4",
-                "pear/http_request2": "2.5.1",
+                "friendsofphp/php-cs-fixer": "3.51.0",
+                "pear/http_request2": "2.6.0",
                 "phing/phing": "2.17.4",
-                "phploc/phploc": "7.0.2",
-                "phpmd/phpmd": "2.13.0",
-                "phpstan/phpstan": "1.10.3",
-                "phpunit/phpunit": "9.6.4",
-                "sebastian/phpcpd": "6.0.3",
-                "squizlabs/php_codesniffer": "3.7.2"
+                "phpmd/phpmd": "2.15.0",
+                "phpstan/phpstan": "1.10.59",
+                "phpunit/phpunit": "10.5.11",
+                "squizlabs/php_codesniffer": "3.9.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "VuFindHarvest\\": "src/"
+                    "VuFindHarvest\\": "src/",
+                    "VuFindTest\\Feature\\": "tests/unit-tests/src/VuFindTest/Feature/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -10328,39 +10328,37 @@
             "homepage": "https://vufind.org/",
             "support": {
                 "issues": "https://vufind.org/jira",
-                "source": "https://github.com/vufind-org/vufindharvest/tree/v5.2.0"
+                "source": "https://github.com/vufind-org/vufindharvest/tree/v5.3.0"
             },
-            "time": "2023-03-31T17:56:46+00:00"
+            "time": "2024-03-08T14:53:00+00:00"
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v3.2.0",
+            "version": "v3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "53fe3781e6b2a5043417ee054bc120c63180b936"
+                "reference": "9e1c52164afef48ffc1b6e42859c710b365f0a61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/53fe3781e6b2a5043417ee054bc120c63180b936",
-                "reference": "53fe3781e6b2a5043417ee054bc120c63180b936",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/9e1c52164afef48ffc1b6e42859c710b365f0a61",
+                "reference": "9e1c52164afef48ffc1b6e42859c710b365f0a61",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-http": ">=2.2",
-                "php": ">=7.4.1"
+                "php": ">=8.1"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "3.8.0",
+                "friendsofphp/php-cs-fixer": "3.51.0",
                 "laminas/laminas-uri": ">=2.2",
-                "pear/http_request2": "2.5.1",
-                "phing/phing": "2.17.3",
-                "phploc/phploc": "7.0.2",
-                "phpmd/phpmd": "2.12.0",
-                "phpstan/phpstan": "1.6.8",
-                "phpunit/phpunit": "9.5.20",
-                "sebastian/phpcpd": "6.0.3",
-                "squizlabs/php_codesniffer": "3.6.2"
+                "pear/http_request2": "2.6.0",
+                "phing/phing": "2.17.4",
+                "phpmd/phpmd": "2.15.0",
+                "phpstan/phpstan": "1.10.59",
+                "phpunit/phpunit": "10.5.11",
+                "squizlabs/php_codesniffer": "3.9.0"
             },
             "type": "library",
             "autoload": {
@@ -10388,9 +10386,9 @@
             "homepage": "https://vufind.org/",
             "support": {
                 "issues": "https://vufind.org/jira",
-                "source": "https://github.com/vufind-org/vufindhttp/tree/v3.2.0"
+                "source": "https://github.com/vufind-org/vufindhttp/tree/v3.3.0"
             },
-            "time": "2022-09-15T10:37:23+00:00"
+            "time": "2024-03-11T18:08:01+00:00"
         },
         {
             "name": "webfontkit/open-sans",
