@@ -40,7 +40,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface UserServiceInterface extends ServiceInterface
+interface UserServiceInterface extends DbServiceInterface
 {
     /**
      * Retrieve a user object from the database based on ID.

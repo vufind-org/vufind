@@ -68,6 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return ServiceInterface::class;
+        return DbServiceInterface::class;
     }
 }
