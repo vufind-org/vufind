@@ -586,6 +586,11 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
+    <echo file="${contentdir}/content.phtml">&lt;?=$this->partial("content/$page.phtml", []);?&gt;
+
+&lt;div class="content-footer"&gt;Content page footer&lt;/div&gt;
+</echo>
+    <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test_fi.phtml">&lt;h1&gt;FINNISH TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test/test.phtml">&lt;h1&gt;SUB LEVEL PHTML&lt;/h1&gt;</echo>
