@@ -43,7 +43,7 @@ use OpenIDConnectServer\IdTokenResponse;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Service\AccessTokenService;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
 use VuFind\OAuth2\Repository\ClientRepository;
@@ -77,11 +77,11 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected $oauth2Config;
 
     /**
-     * Access token table
+     * Access token service
      *
-     * @var AccessToken
+     * @var AccessTokenService
      */
-    protected $accessTokenTable;
+    protected $accessTokenService;
 
     /**
      * Config file path resolver
@@ -133,7 +133,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
             OAuth2Controller::SESSION_NAME,
             $container->get(\Laminas\Session\SessionManager::class)
         );
-        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
 
         return $this->applyPermissions(
             $container,
@@ -146,7 +146,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $container->get(\VuFind\Validator\CsrfInterface::class),
                 $session,
                 $container->get(IdentityRepository::class),
-                $tablePluginManager->get('AccessToken'),
+                $dbPluginManager->get(AccessTokenService::class),
                 $this->getClaimExtractor(),
                 $this->pathResolver
             )

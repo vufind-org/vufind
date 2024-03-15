@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Db\RowGateway\AbstractRowGateway;
+use VuFind\Db\Entity\EntityInterface;
+
 /**
  * Database service abstract base class
  *
@@ -40,4 +43,18 @@ namespace VuFind\Db\Service;
  */
 abstract class AbstractDbService implements DbServiceInterface
 {
+    /**
+     * Persist an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function persistEntity(EntityInterface $entity): void
+    {
+        if (!$entity instanceof AbstractRowGateway) {
+            throw new \Exception('Unexpected entity type');
+        }
+        $entity->save();
+    }
 }

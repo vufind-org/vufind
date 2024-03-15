@@ -115,7 +115,7 @@ class AbstractTokenRepository
             [$userId] = explode('|', $userId);
         }
         $row->setUserId($userId);
-        $this->accessTokenService->save($row);
+        $this->accessTokenService->persistEntity($row);
     }
 
     /**
@@ -130,7 +130,7 @@ class AbstractTokenRepository
         $token = $this->accessTokenService->getByIdAndType($tokenId, $this->tokenType, false);
         if ($token) {
             $token->setRevoked(true);
-            $this->accessTokenService->save($token);
+            $this->accessTokenService->persistEntity($token);
         }
     }
 

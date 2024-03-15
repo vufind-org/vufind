@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\EntityInterface;
+
 /**
  * Marker interface for VuFind database services.
  *
@@ -40,4 +42,12 @@ namespace VuFind\Db\Service;
  */
 interface DbServiceInterface
 {
+    /**
+     * Persist an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function persistEntity(EntityInterface $entity): void;
 }

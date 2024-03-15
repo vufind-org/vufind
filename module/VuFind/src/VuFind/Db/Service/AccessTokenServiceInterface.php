@@ -66,7 +66,7 @@ interface AccessTokenServiceInterface extends DbServiceInterface
      *
      * @return void
      */
-    public function storeNonce(int $userId, ?string $nonce);
+    public function storeNonce(int $userId, ?string $nonce): void;
 
     /**
      * Retrieve an OpenID nonce for a user

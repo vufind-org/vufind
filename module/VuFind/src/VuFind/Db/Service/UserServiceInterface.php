@@ -49,5 +49,5 @@ interface UserServiceInterface extends DbServiceInterface
      *
      * @return UserEntityInterface
      */
-    public function getById($id);
+    public function getUserById($id);
 }

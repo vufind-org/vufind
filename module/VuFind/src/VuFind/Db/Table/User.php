@@ -34,7 +34,6 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Table Definition for user
@@ -45,7 +44,7 @@ use VuFind\Db\Service\UserServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class User extends Gateway implements UserServiceInterface
+class User extends Gateway
 {
     /**
      * VuFind configuration

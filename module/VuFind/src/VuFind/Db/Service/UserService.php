@@ -46,12 +46,18 @@ use VuFind\Log\LoggerAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class UserService extends AbstractDbService implements
-    DbServiceAwareInterface,
     LoggerAwareInterface,
     UserServiceInterface
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
+
+    /**
+     * User table.
+     *
+     * @var User
+     */
+    protected $userTable;
 
     /**
      * Is encryption enabled?
@@ -75,11 +81,14 @@ class UserService extends AbstractDbService implements
     protected $config = null;
 
     /**
-     * User table.
+     * Constructor.
      *
-     * @var User
+     * @param User $userTable User table
      */
-    protected $userTable;
+    public function __construct(User $userTable)
+    {
+        $this->userTable = $userTable;
+    }
 
     /**
      * Configuration setter
@@ -91,18 +100,6 @@ class UserService extends AbstractDbService implements
     public function setConfig(\Laminas\Config\Config $config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * User table setter.
-     *
-     * @param User $userTable User table
-     *
-     * @return void
-     */
-    public function setUserTable(User $userTable): void
-    {
-        $this->userTable = $userTable;
     }
 
     /**
@@ -210,7 +207,7 @@ class UserService extends AbstractDbService implements
      *
      * @return UserEntityInterface
      */
-    public function getById($id)
+    public function getUserById($id)
     {
         return $this->userTable->getById($id);
     }

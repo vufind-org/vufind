@@ -45,7 +45,6 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class AccessTokenService extends AbstractDbService implements
     AccessTokenServiceInterface,
-    DbServiceAwareInterface,
     LoggerAwareInterface
 {
     use LoggerAwareTrait;
@@ -59,13 +58,11 @@ class AccessTokenService extends AbstractDbService implements
     protected $accessTokenTable;
 
     /**
-     * Access token table setter.
+     * Constructor.
      *
      * @param AccessToken $accessTokenTable Access token table
-     *
-     * @return void
      */
-    public function setAccessTokenTable(AccessToken $accessTokenTable): void
+    public function __construct(AccessToken $accessTokenTable)
     {
         $this->accessTokenTable = $accessTokenTable;
     }
@@ -96,7 +93,7 @@ class AccessTokenService extends AbstractDbService implements
      *
      * @return void
      */
-    public function storeNonce(int $userId, ?string $nonce)
+    public function storeNonce(int $userId, ?string $nonce): void
     {
         $this->accessTokenTable->storeNonce($userId, $nonce);
     }

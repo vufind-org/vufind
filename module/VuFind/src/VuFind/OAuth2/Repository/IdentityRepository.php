@@ -103,7 +103,7 @@ class IdentityRepository implements IdentityProviderInterface
      */
     public function getUserEntityByIdentifier($identifier)
     {
-        if ($user = $this->userService->getById($identifier)) {
+        if ($user = $this->userService->getUserById($identifier)) {
             return new UserEntity(
                 $user,
                 $this->ils,

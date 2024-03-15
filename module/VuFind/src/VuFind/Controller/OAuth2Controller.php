@@ -39,7 +39,7 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use LmcRbacMvc\Service\AuthorizationService as LmAuthorizationService;
 use OpenIDConnectServer\ClaimExtractor;
 use VuFind\Config\PathResolver;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\OAuth2\Entity\UserEntity;
 use VuFind\OAuth2\Repository\IdentityRepository;
@@ -117,11 +117,11 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     protected $identityRepository;
 
     /**
-     * Access token table
+     * Access token service
      *
-     * @var AccessToken
+     * @var AccessTokenServiceInterface
      */
-    protected $accessTokenTable;
+    protected $accessTokenService;
 
     /**
      * Claim extractor
@@ -140,17 +140,17 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm      Service locator
-     * @param array                   $config  OAuth2 configuration
-     * @param callable                $asf     OAuth2 authorization server factory
-     * @param callable                $rsf     OAuth2 resource server factory
-     * @param LmAuthorizationService  $authSrv Laminas authorization service
-     * @param CsrfInterface           $csrf    CSRF validator
-     * @param SessionContainer        $session Session container
-     * @param IdentityRepository      $ir      Identity repository
-     * @param AccessToken             $at      Access token table
-     * @param ClaimExtractor          $ce      Claim extractor
-     * @param PathResolver            $pr      Config file path resolver
+     * @param ServiceLocatorInterface     $sm      Service locator
+     * @param array                       $config  OAuth2 configuration
+     * @param callable                    $asf     OAuth2 authorization server factory
+     * @param callable                    $rsf     OAuth2 resource server factory
+     * @param LmAuthorizationService      $authSrv Laminas authorization service
+     * @param CsrfInterface               $csrf    CSRF validator
+     * @param SessionContainer            $session Session container
+     * @param IdentityRepository          $ir      Identity repository
+     * @param AccessTokenServiceInterface $at      Access token service
+     * @param ClaimExtractor              $ce      Claim extractor
+     * @param PathResolver                $pr      Config file path resolver
      * path
      */
     public function __construct(
@@ -162,7 +162,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         CsrfInterface $csrf,
         \Laminas\Session\Container $session,
         IdentityRepository $ir,
-        AccessToken $at,
+        AccessTokenServiceInterface $at,
         ClaimExtractor $ce,
         PathResolver $pr
     ) {
@@ -174,7 +174,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $this->csrf = $csrf;
         $this->session = $session;
         $this->identityRepository = $ir;
-        $this->accessTokenTable = $at;
+        $this->accessTokenService = $at;
         $this->claimExtractor = $ce;
         $this->pathResolver = $pr;
     }
@@ -247,7 +247,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             // Store OpenID nonce (or null if not present to clear any existing one)
             // in the access token table so that it can be retrieved for token or
             // user info action:
-            $this->accessTokenTable
+            $this->accessTokenService
                 ->storeNonce($user->id, $laminasRequest->getQuery('nonce'));
 
             $authRequest->setUser(
@@ -255,7 +255,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     $user,
                     $this->getILS(),
                     $this->oauth2Config,
-                    $this->accessTokenTable
+                    $this->accessTokenService
                 )
             );
             $authRequest->setAuthorizationApproved($this->formWasSubmitted('allow'));

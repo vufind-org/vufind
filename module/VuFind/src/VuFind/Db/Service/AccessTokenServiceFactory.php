@@ -69,8 +69,6 @@ class AccessTokenServiceFactory extends AbstractDbServiceFactory
         }
         $accessTokenTable = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('accesstoken');
-        $accessTokenService = parent::__invoke($container, $requestedName, $options);
-        $accessTokenService->setAccessTokenTable($accessTokenTable);
-        return $accessTokenService;
+        return parent::__invoke($container, $requestedName, [$accessTokenTable]);
     }
 }
