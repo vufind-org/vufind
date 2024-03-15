@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
+
 /**
  * Console command: expire authentication hashes.
  *
@@ -38,6 +40,9 @@ namespace VuFindConsole\Command\Util;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/expire_auth_hashes'
+)]
 class ExpireAuthHashesCommand extends AbstractExpireCommand
 {
     /**
@@ -53,11 +58,4 @@ class ExpireAuthHashesCommand extends AbstractExpireCommand
      * @var string
      */
     protected $rowLabel = 'authentication hashes';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/expire_auth_hashes';
 }

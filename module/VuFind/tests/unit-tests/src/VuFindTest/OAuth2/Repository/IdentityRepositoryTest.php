@@ -199,8 +199,10 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     {
         $user = $this->getMockBuilder(UserRow::class)
             ->disableOriginalConstructor()
-            ->onlyMethods([])
+            ->onlyMethods(['getUserService'])
             ->getMock();
+        $user->expects($this->any())->method('getUserService')
+            ->willReturn($this->createMock(\VuFind\Db\Service\UserService::class));
 
         $user->id = 2;
         $user->last_language = 'en-gb';

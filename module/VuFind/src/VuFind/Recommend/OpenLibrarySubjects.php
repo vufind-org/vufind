@@ -179,7 +179,6 @@ class OpenLibrarySubjects implements
     {
         // Only proceed if we have a request parameter value
         if (!empty($this->subject)) {
-            $result = [];
             $ol = new OpenLibrary($this->httpService->createClient());
             $result = $ol->getSubjects(
                 $this->subject,

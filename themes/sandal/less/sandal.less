@@ -71,7 +71,7 @@ header {
     background-color: @header-light;
     border-color: @black;
   }
-  .nav > li > a,
+  .nav.navbar-nav > li > a,
   .nav.navbar-nav button.dropdown-toggle {
     &:hover,
     &:focus {
@@ -93,12 +93,6 @@ header {
   }
   .dropdown-menu .active a,
   .dropdown-menu .active a:hover { background-color: @header-bg; }
-
-  .form-control { border: 0; }
-  .form-control:focus {
-    padding-bottom: 3px; // Smaller font-size means smaller jump
-    border-bottom: 3px solid @gold;
-  }
 
   .navbar-brand {
     width: 200px;
@@ -240,7 +234,8 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    padding: 0;
+    border-bottom: 1px solid @list-group-border;
+    border-radius: 0;
   }
 }
 

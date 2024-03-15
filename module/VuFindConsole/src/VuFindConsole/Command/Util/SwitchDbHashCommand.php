@@ -33,6 +33,7 @@ use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Exception\InvalidArgumentException;
 use Laminas\Crypt\Symmetric\Openssl;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -56,15 +57,12 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/switch_db_hash',
+    description: 'Encryption algorithm switcher'
+)]
 class SwitchDbHashCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/switch_db_hash';
-
     /**
      * VuFind configuration.
      *
@@ -125,7 +123,6 @@ class SwitchDbHashCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Encryption algorithm switcher')
             ->setHelp(
                 'Switches the encryption algorithm in the database '
                 . 'and config. Expects new algorithm and (optional) new key as'

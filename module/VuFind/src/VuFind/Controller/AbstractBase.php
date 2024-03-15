@@ -331,7 +331,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getUser()
     {
-        return $this->getAuthManager()->getUserObject();
+        return $this->getAuthManager()->getUserObject() ?? false;
     }
 
     /**
@@ -524,6 +524,19 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
             ->get($table);
+    }
+
+    /**
+     * Get a database service object.
+     *
+     * @param string $name Name of service to retrieve
+     *
+     * @return \VuFind\Db\Service\AbstractDbService
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\AbstractDbService
+    {
+        return $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
+            ->get($name);
     }
 
     /**

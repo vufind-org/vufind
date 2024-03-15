@@ -29,8 +29,10 @@
 
 namespace VuFindTest\Search\Solr;
 
+use Laminas\Config\Config;
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
@@ -65,7 +67,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected static $emptySearchConfig = [ ];
+    protected static $emptySearchConfig = [];
 
     /**
      * Backend.
@@ -77,13 +79,14 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     /**
      * Construct a mock search backend pre event.
      *
-     * @param ParamBag $params Search backend parameters
+     * @param ParamBag $params    Search backend parameters
+     * @param string   $backendId Backend identifier
      *
      * @return Event
      */
-    protected function getMockPreEvent(ParamBag $params): Event
+    protected function getMockPreEvent(ParamBag $params, string $backendId = 'Solr'): Event
     {
-        $command = $this->getMockSearchCommand($params);
+        $command = $this->getMockSearchCommand($params, null, $backendId);
         return new Event(
             Service::EVENT_PRE,
             $this->backend,
@@ -98,8 +101,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $handlermap    = new HandlerMap(['select' => ['fallback' => true]]);
-        $connector     = new Connector(
+        $handlermap = new HandlerMap(['select' => ['fallback' => true]]);
+        $connector = new Connector(
             'http://localhost/',
             $handlermap,
             function () {
@@ -107,6 +110,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             }
         );
         $this->backend = new Backend($connector);
+        $this->backend->setIdentifier('Solr');
     }
 
     /**
@@ -116,7 +120,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAttach()
     {
-        $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
@@ -134,14 +138,14 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testConditionalFilterWithoutAuthorizationService()
     {
-        $params   = new ParamBag([ ]);
-        $listener = new InjectConditionalFilterListener(self::$searchConfig);
+        $params = new ParamBag([]);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
 
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
-        $this->assertEquals([ ], $fq);
+        $fq = $params->get('fq');
+        $this->assertEquals([], $fq);
     }
 
     /**
@@ -153,17 +157,17 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testConditionalFilterWithoutAuthorizationServiceWithParams()
     {
-        $params   = new ParamBag(
+        $params = new ParamBag(
             [
                 'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
-        $listener = new InjectConditionalFilterListener(self::$searchConfig);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
 
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue'],
@@ -178,18 +182,18 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testConditionalFilterEmptyConfig()
     {
-        $params   = new ParamBag([ ]);
-        $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
+        $params = new ParamBag([]);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
         $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener->setAuthorizationService($mockAuth);
 
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
-        $this->assertEquals([ ], $fq);
+        $fq = $params->get('fq');
+        $this->assertEquals([], $fq);
     }
 
     /**
@@ -200,21 +204,21 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testConditionalFilterEmptyConfigWithFQ()
     {
-        $params   = new ParamBag(
+        $params = new ParamBag(
             [
                 'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
-        $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
         $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener->setAuthorizationService($mockAuth);
 
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue'],
@@ -230,8 +234,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testConditionalFilter()
     {
-        $params   = new ParamBag([ ]);
-        $listener = new InjectConditionalFilterListener(self::$searchConfig);
+        $params = new ParamBag([]);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
         $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -240,14 +244,20 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $listener->setAuthorizationService($mockAuth);
 
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq = $params->get('fq');
         $this->assertEquals(
             [0 => 'institution:"MyInst"'],
             $fq
         );
+
+        // Check that a filter is not added for wrong backend:
+        $params = new ParamBag([]);
+        $event = $this->getMockPreEvent($params, 'Other');
+        $listener->onSearchPre($event);
+        $this->assertEmpty($params->get('fq'));
     }
 
     /**
@@ -258,9 +268,9 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testNegativeConditionalFilter()
     {
-        $params   = new ParamBag([ ]);
+        $params = new ParamBag([]);
 
-        $listener = new InjectConditionalFilterListener(self::$searchConfig);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
         $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -268,10 +278,10 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('conditionalFilter.sample'))
             ->will($this->returnValue(false));
         $listener->setAuthorizationService($mockAuth);
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq = $params->get('fq');
         $this->assertEquals([0 => '(NOT institution:"MyInst")'], $fq);
     }
 
@@ -283,13 +293,13 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testNegativeConditionalFilterWithFQ()
     {
-        $params   = new ParamBag(
+        $params = new ParamBag(
             [
                 'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
 
-        $listener = new InjectConditionalFilterListener(self::$searchConfig);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
         $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -297,10 +307,10 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('conditionalFilter.sample'))
             ->will($this->returnValue(false));
         $listener->setAuthorizationService($mockAuth);
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
@@ -318,13 +328,13 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testConditionalFilterWithFQ()
     {
-        $params   = new ParamBag(
+        $params = new ParamBag(
             [
                 'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
 
-        $listener = new InjectConditionalFilterListener(self::$searchConfig);
+        $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
         $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -332,10 +342,10 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('conditionalFilter.sample'))
             ->will($this->returnValue(true));
         $listener->setAuthorizationService($mockAuth);
-        $event    = $this->getMockPreEvent($params);
+        $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq = $params->get('fq');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',

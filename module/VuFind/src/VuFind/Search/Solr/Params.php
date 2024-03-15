@@ -570,7 +570,6 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($shards as $current) {
                 $selectedShards[$current] = $allShards[$current];
             }
-            $shards = $selectedShards;
             $backendParams->add('shards', implode(',', $selectedShards));
         }
 
