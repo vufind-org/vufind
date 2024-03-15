@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\Db\Service\TagService;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 use function is_callable;
@@ -45,13 +46,13 @@ use function is_callable;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
-    \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
+    \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\Db\Service\DbServiceAwareTrait;
+    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFindSearch\Response\RecordTrait;
 
@@ -211,18 +212,13 @@ abstract class AbstractBase implements
      * @param array               $tags The user-provided tags
      *
      * @return void
+     *
+     * @deprecated Use TagService::addTagsToRecord()
      */
     public function addTags($user, $tags)
     {
-        $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
-        $resource = $resourceService->findResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier()
-        );
-        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-        foreach ($tags as $tag) {
-            $tagService->addTag($resource, $tag, $user->id);
-        }
+        $this->getDbService(TagService::class)
+            ->addTagsToRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
     /**
@@ -232,18 +228,13 @@ abstract class AbstractBase implements
      * @param array               $tags The user-provided tags
      *
      * @return void
+     *
+     * @deprecated Use TagService::deleteTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
-        $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
-        $resource = $resourceService->findResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier()
-        );
-        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-        foreach ($tags as $tag) {
-            $tagService->deleteTag($resource, $tag, $user->id);
-        }
+        $this->getDbService(TagService::class)
+            ->deleteTagsFromRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
     /**

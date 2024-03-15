@@ -38,6 +38,7 @@ use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceTags;
 use VuFind\Db\Entity\Tags;
 use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
@@ -55,8 +56,9 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class TagService extends AbstractDbService implements LoggerAwareInterface
+class TagService extends AbstractDbService implements DbServiceAwareInterface, LoggerAwareInterface
 {
+    use DbServiceAwareTrait;
     use LoggerAwareTrait;
 
     /**
@@ -91,6 +93,24 @@ class TagService extends AbstractDbService implements LoggerAwareInterface
     {
         $class = $this->getEntityClass(ResourceTags::class);
         return new $class();
+    }
+
+    /**
+     * Given a legacy user row, a Doctrine user entity, or an integer ID, return a
+     * user reference that can be used in a query.
+     *
+     * @param UserEntityInterface|int $user Object or identifier representing a user
+     *
+     * @return object
+     */
+    protected function getUserReference($user)
+    {
+        if ($user instanceof User) {
+            return $user; // already a Doctrine entity
+        }
+        // A legacy object or an integer:
+        $userId = is_object($user) ? $user->getId() : $user;
+        return $this->entityManager->getReference(User::class, $userId);
     }
 
     /**
@@ -134,7 +154,7 @@ class TagService extends AbstractDbService implements LoggerAwareInterface
         }
 
         if (null !== $user) {
-            $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+            $user = $this->getUserReference($user);
             $dqlWhere[] = 'rt.user = :user';
             $parameters['user'] = $user;
         } else {
@@ -215,7 +235,7 @@ class TagService extends AbstractDbService implements LoggerAwareInterface
             . 'WHERE ' . ($this->caseSensitive ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
             . 'AND rt.user = :user ';
 
-        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        $user = $this->getUserReference($user);
         $parameters = compact('tag', 'user');
         if (null !== $list) {
             $list = is_object($list) ? $list : $this->entityManager->getReference(UserList::class, $list);
@@ -307,7 +327,7 @@ class TagService extends AbstractDbService implements LoggerAwareInterface
         $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
 
         $dqlWhere = ['rt.user = :user '];
-        $parameters = ['user' => $user];
+        $parameters = ['user' => $this->getUserReference($user)];
         if (null !== $resource) {
             $dqlWhere[] = 'rt.resource IN (:resource) ';
             $parameters['resource'] = (array)$resource;
@@ -1237,6 +1257,44 @@ class TagService extends AbstractDbService implements LoggerAwareInterface
                 $user,
                 $list
             );
+        }
+    }
+
+    /**
+     * Add tags to the record.
+     *
+     * @param string              $id     Unique record ID
+     * @param string              $source Record source
+     * @param UserEntityInterface $user   The user adding the tag(s)
+     * @param string[]            $tags   The user-provided tag(s)
+     *
+     * @return void
+     */
+    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
+    {
+        $resourceService = $this->getDbService(ResourceService::class);
+        $resource = $resourceService->findResource($id, $source);
+        foreach ($tags as $tag) {
+            $this->addTag($resource, $tag, $user);
+        }
+    }
+
+    /**
+     * Remove tags from the record.
+     *
+     * @param string              $id     Unique record ID
+     * @param string              $source Record source
+     * @param UserEntityInterface $user   The user deleting the tag(s)
+     * @param string[]            $tags   The user-provided tag(s)
+     *
+     * @return void
+     */
+    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
+    {
+        $resourceService = $this->getDbService(ResourceService::class);
+        $resource = $resourceService->findResource($id, $source);
+        foreach ($tags as $tag) {
+            $this->deleteTag($resource, $tag, $user);
         }
     }
 }
