@@ -16,7 +16,6 @@ VuFind.register("sticky_elements", function StickyElements() {
     let style = window.getComputedStyle(stickyElement, null);
     let placeholder = stickyElement.parentNode.previousSibling;
     if (sideOnly) {
-      placeholder.style.width = style.width;
       placeholder.style.paddingLeft = style.paddingLeft;
       placeholder.style.paddingRight = style.paddingRight;
       placeholder.style.borderLeft = style.borderLeft;
@@ -25,7 +24,6 @@ VuFind.register("sticky_elements", function StickyElements() {
       placeholder.style.marginRight = style.marginRight;
     } else {
       placeholder.style.height = style.height;
-      placeholder.style.width = style.width;
       placeholder.style.padding = style.padding;
       placeholder.style.border = style.border;
       placeholder.style.margin = style.margin;
@@ -70,7 +68,7 @@ VuFind.register("sticky_elements", function StickyElements() {
             let parentStyle = window.getComputedStyle(stickyContainer.parentNode, null);
             let parentBoundingClientRect = stickyContainer.parentNode.getBoundingClientRect();
             stickyContainer.style.marginLeft = parentBoundingClientRect.left + "px";
-            stickyContainer.style.marginRight = (window.screen.width - parentBoundingClientRect.right) + "px";
+            stickyContainer.style.marginRight = (window.outerWidth - parentBoundingClientRect.right) + "px";
             stickyContainer.style.borderLeft = parentStyle.borderLeft;
             stickyContainer.style.borderRight = parentStyle.borderRight;
             stickyContainer.style.paddingLeft = parentStyle.paddingLeft;
