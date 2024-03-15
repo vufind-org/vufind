@@ -288,16 +288,6 @@ function Autocomplete(_settings) {
           () => _align(lastInput),
           false
         );
-        window.addEventListener(
-          "scroll",
-          function acresize() {
-            if (lastInput === false) {
-              return;
-            }
-            _align(lastInput);
-          },
-          false
-        );
       }
     }
 
