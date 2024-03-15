@@ -121,8 +121,6 @@ class User extends Gateway
                 return $this->getByUsername($fieldValue, false);
             case 'cat_id':
                 return $this->getByCatalogId($fieldValue);
-            case 'email':
-                return $this->getByEmail($fieldValue);
         }
         return null;
     }
