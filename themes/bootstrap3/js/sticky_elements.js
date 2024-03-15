@@ -16,14 +16,24 @@ VuFind.register("sticky_elements", function StickyElements() {
       return;
     }
 
-    function setPlaceholderStyle (stickyElement) {
+    function setPlaceholderStyle (stickyElement, sideOnly = false) {
       let style = window.getComputedStyle(stickyElement, null);
       let placeholder = stickyElement.parentNode.previousSibling;
-      placeholder.style.height = style.height;
-      placeholder.style.width = style.width;
-      placeholder.style.padding = style.padding;
-      placeholder.style.border = style.border;
-      placeholder.style.margin = style.margin;
+      if (sideOnly) {
+          placeholder.style.width = style.width;
+          placeholder.style.paddingLeft = style.paddingLeft;
+          placeholder.style.paddingRight = style.paddingRight;
+          placeholder.style.borderLeft = style.borderLeft;
+          placeholder.style.borderRight = style.borderRight;
+          placeholder.style.marginLeft = style.marginLeft;
+          placeholder.style.marginRight = style.marginRight;
+      } else {
+          placeholder.style.height = style.height;
+          placeholder.style.width = style.width;
+          placeholder.style.padding = style.padding;
+          placeholder.style.border = style.border;
+          placeholder.style.margin = style.margin;
+      }
     }
 
     function getDefaultBackground() {
@@ -121,7 +131,15 @@ VuFind.register("sticky_elements", function StickyElements() {
     window.addEventListener("resize", () => {
       stickyElements.forEach(
         (stickyElement) => {
-          setPlaceholderStyle(stickyElement);
+          setPlaceholderStyle(stickyElement, true);
+        }
+      );
+      handleStickyElements();
+    });
+    window.addEventListener("orientationchange", () => {
+      stickyElements.forEach(
+        (stickyElement) => {
+          setPlaceholderStyle(stickyElement, true);
         }
       );
       handleStickyElements();
