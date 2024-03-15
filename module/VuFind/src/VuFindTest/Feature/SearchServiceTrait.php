@@ -53,7 +53,7 @@ trait SearchServiceTrait
     {
         $shared = new \Laminas\EventManager\SharedEventManager();
         $shared->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_RESOLVE,
             [$bm, 'onResolve']
         );

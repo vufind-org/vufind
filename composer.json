@@ -35,7 +35,7 @@
         "composer/semver": "3.4.0",
         "doctrine/doctrine-orm-module": "^6.0",
         "doctrine/orm": "^2.10.2",
-        "endroid/qr-code": "4.8.2",
+        "endroid/qr-code": "5.0.7",
         "guzzlehttp/guzzle": "7.8.1",
         "laminas/laminas-cache": "3.12.1",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",

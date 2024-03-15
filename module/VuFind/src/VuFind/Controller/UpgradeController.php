@@ -246,7 +246,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->configOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         } catch (Exception $e) {
-            $extra = is_a($e, 'VuFind\Exception\FileAccess')
+            $extra = is_a($e, \VuFind\Exception\FileAccess::class)
                 ? '  Check file permissions.' : '';
             $this->flashMessenger()->addMessage(
                 'Config upgrade failed: ' . $e->getMessage() . $extra,
