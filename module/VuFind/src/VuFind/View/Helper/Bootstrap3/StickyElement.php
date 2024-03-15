@@ -78,12 +78,15 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getElementAttributes($elementName, ?int $pos = null)
+    public function getElementAttributes($elementName, ?int $pos = null, $attributes = [])
     {
         $elementIsEnabled = in_array($elementName, $this->stickyElements);
-        return [
-            'class' => $elementIsEnabled ? 'sticky-element' : '',
-            'posAttr' => $elementIsEnabled && $pos !== null ? 'data-sticky-pos="' . $pos . '"' : '',
-        ];
+        if ($elementIsEnabled) {
+            $attributes['class'] = ($attributes['class'] ? $attributes['class'] . ' '  : '') . 'sticky-element';
+            if ($pos !== null) {
+                $attributes['data-sticky-pos'] = $pos;
+            }
+        }
+        return $attributes;
     }
 }

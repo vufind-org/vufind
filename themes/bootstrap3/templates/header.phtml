@@ -1,6 +1,10 @@
 <?php $account = $this->auth()->getManager(); ?>
-<?php $bannerStickyElement = $this->stickyElement()->getElementAttributes('navbar-banner', 1) ?>
-<div class="banner container navbar <?=$bannerStickyElement['class']?>" <?=$bannerStickyElement['posAttr']?>>
+<?php $bannerAttributes = $this->stickyElement()->getElementAttributes(
+  'navbar-banner',
+  1,
+  ['class' => 'banner container navbar']
+) ?>
+<div <?= $this->htmlAttributes($bannerAttributes) ?>>
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
       <?=$this->icon('ui-menu') ?>
@@ -112,8 +116,12 @@
   <?php endif; ?>
 </div>
 <?php if ($this->layout()->searchbox !== false): ?>
-  <?php $searchStickyElement = $this->stickyElement()->getElementAttributes('navbar-search', 2) ?>
-  <div class="search container navbar <?=$searchStickyElement['class']?>" <?=$searchStickyElement['posAttr']?>>
+  <?php $navbarSearchAttributes = $this->stickyElement()->getElementAttributes(
+    'navbar-search',
+    2,
+    ['class' => 'search container navbar']
+  ) ?>
+  <div <?= $this->htmlAttributes($navbarSearchAttributes) ?>>
     <div class="nav searchbox hidden-print" role="search">
       <?=$this->layout()->searchbox ?>
     </div>
