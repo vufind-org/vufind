@@ -60,3 +60,57 @@ textarea.form-control {
     color: darkgrey;
   }
 }
+
+.notifications-tabs-content {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+ul.notifications-tabs {
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0;
+  overflow: auto;
+
+  li {
+    float: left;
+    border: 1px solid #555555;
+    margin-right: 3px;
+    border-radius: 5px 5px 0 0;
+    padding: 2px;
+    background-color: #265680;
+
+    &.active {
+      background-color: #ffffff;
+      border-bottom: 1px solid #ffffff;
+
+      a {
+        color: #265680;
+      }
+    }
+
+    a {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 10px;
+      cursor: pointer;
+      background-color: transparent;
+      color: #ffffff;
+
+      &:focus{
+        outline: none;
+      }
+    }
+  }
+}
+
+.notifications-tabs-content-wrapper {
+  border: 1px solid #555555;
+  padding: 5px;
+  border-radius: 0 5px 5px 5px;
+  margin-bottom: 15px;
+}

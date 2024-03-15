@@ -28,14 +28,15 @@
       <?= $this->formElementErrors()->render($visibility_global, ['class' => 'help-block']) ?>
   </div>
 
-  <ul>
-      <?php foreach($this->languages as $language): ?>
-        <li><a href="#notifications-tabs-<?=$language?>"><?=$this->transEsc('broadcasts_tab_header')?> (<?=strtoupper($language)?>)</a></li>
+  <ul class="notifications-tabs">
+      <?php foreach($this->languages as $index => $language): ?>
+        <li class="<?=$index == 0 ? ' active' : ''?>"><a href="#" class="notifications-tabs-nav" data-tab="notifications-tabs-<?=$language?>"><?=$this->transEsc('broadcasts_tab_header')?> (<?=strtoupper($language)?>)</a></li>
       <?php endforeach; ?>
   </ul>
 
-    <?php foreach($this->languages as $language): ?>
-      <div id="notifications-tabs-<?=$language?>">
+  <div class="notifications-tabs-content-wrapper">
+    <?php foreach($this->languages as $index => $language): ?>
+      <div id="notifications-tabs-<?=$language?>" class="notifications-tabs-content<?=$index == 0 ? ' active' : ''?>">
         <div class="form-group">
             <?php $content = $form->get('content_' . $language); ?>
             <?php $content->setLabelOptions(['disable_html_escape' => true]); ?>
@@ -45,6 +46,7 @@
         </div>
       </div>
     <?php endforeach; ?>
+  </div>
 
   <div class="form-group">
       <?php $color = $form->get('color'); ?>

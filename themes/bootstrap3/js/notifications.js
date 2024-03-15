@@ -1,5 +1,21 @@
 $(function() {
-    $('#notifications-tabs').tabs();
+    $('.notifications-tabs-nav').on('click', function(e) {
+        e.preventDefault();
+        $this = $(this);
+
+        $('.notifications-tabs-nav').each(function() {
+            $(this).parent().removeClass('active');
+        });
+        $this.parent().addClass('active');
+
+        $('.notifications-tabs-content').each(function() {
+            if ($this.data('tab') === $(this).attr('id')) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+    });
 
     var notificationsTable = $('#notifications-list').DataTable({
         paging: false,
