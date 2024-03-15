@@ -126,6 +126,10 @@ class ContentController extends AbstractBase
         if (str_ends_with($page, '.phtml')) {
             $page = substr($page, 0, -6);
         }
+        // Prevent circular inclusion:
+        if ('content' === $page) {
+            return $this->notFoundAction();
+        }
         return $this->createViewModel(['page' => $page]);
     }
 }
