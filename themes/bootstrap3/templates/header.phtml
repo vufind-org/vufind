@@ -9,6 +9,7 @@
   <?php if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">
       <nav>
+        <?=$this->context($this)->renderInContext('notifications/headermenu.phtml', [])?>
         <ul class="nav navbar-nav navbar-right flip">
           <?php if ($this->feedback()->tabEnabled()): ?>
             <li>
@@ -107,6 +108,10 @@
           <?php endif; ?>
         </ul>
       </nav>
+
+      <?php if(!($this->templateDir == 'search' && $this->templateName == 'home')): ?>
+        <?=$this->context($this)->renderInContext('notifications/headerbroadcasts.phtml', [])?>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
 </div>

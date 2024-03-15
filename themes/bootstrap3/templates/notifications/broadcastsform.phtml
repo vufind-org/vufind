@@ -1,0 +1,78 @@
+<?php
+    $form = $this->form;
+
+    $submit = $form->get('submit');
+    $submit->setValue($this->submitLabel);
+
+    $cancel = $form->get('cancel');
+    $cancel->setValue($this->cancelLabel);
+
+    $form->prepare();
+?>
+
+<?= $this->form()->openTag($form) ?>
+
+<div id="notifications-tabs">
+
+  <div class="form-group">
+      <?php $visibility = $form->get('visibility'); ?>
+      <?= $this->formLabel($visibility) ?>
+      <?= $this->formElement($visibility) ?>
+      <?= $this->formElementErrors()->render($visibility, ['class' => 'help-block']) ?>
+  </div>
+
+  <div class="form-group">
+      <?php $visibility_global = $form->get('visibility_global'); ?>
+      <?= $this->formLabel($visibility_global) ?>
+      <?= $this->formElement($visibility_global) ?>
+      <?= $this->formElementErrors()->render($visibility_global, ['class' => 'help-block']) ?>
+  </div>
+
+  <ul class="notifications-tabs">
+      <?php foreach($this->languages as $index => $language): ?>
+        <li class="<?=$index == 0 ? ' active' : ''?>"><a href="#" class="notifications-tabs-nav" data-tab="notifications-tabs-<?=$language?>"><?=$this->transEsc('broadcasts_tab_header')?> (<?=strtoupper($language)?>)</a></li>
+      <?php endforeach; ?>
+  </ul>
+
+  <div class="notifications-tabs-content-wrapper">
+    <?php foreach($this->languages as $index => $language): ?>
+      <div id="notifications-tabs-<?=$language?>" class="notifications-tabs-content<?=$index == 0 ? ' active' : ''?>">
+        <div class="form-group">
+            <?php $content = $form->get('content_' . $language); ?>
+            <?php $content->setLabelOptions(['disable_html_escape' => true]); ?>
+            <?= $this->formLabel($content) ?>
+            <?= $this->formElement($content) ?>
+            <?= $this->formElementErrors()->render($content, ['class' => 'help-block']) ?>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="form-group">
+      <?php $color = $form->get('color'); ?>
+      <?= $this->formLabel($color) ?>
+      <?= $this->formRadio($color, 'prepend') ?>
+      <?= $this->formElementErrors()->render($color, ['class' => 'help-block']) ?>
+  </div>
+
+  <div class="form-group">
+      <?php $startdate = $form->get('startdate'); ?>
+      <?= $this->formLabel($startdate) ?>
+      <?= $this->formElement($startdate) ?>
+      <?= $this->formElementErrors()->render($startdate, ['class' => 'help-block']) ?>
+  </div>
+
+  <div class="form-group">
+      <?php $enddate = $form->get('enddate'); ?>
+      <?= $this->formLabel($enddate) ?>
+      <?= $this->formElement($enddate) ?>
+      <?= $this->formElementErrors()->render($enddate, ['class' => 'help-block']) ?>
+  </div>
+</div>
+
+<div class="form-group">
+    <?= $this->formSubmit($submit) ?>
+    <?= $this->formSubmit($cancel) ?>
+</div>
+
+<?= $this->form()->closeTag($form) ?>

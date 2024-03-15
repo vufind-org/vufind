@@ -1,0 +1,116 @@
+.form-group label {
+  vertical-align:top;
+}
+textarea.form-control {
+  max-width: none;
+}
+
+.notifications-color {
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.broadcast_wrapper {
+  margin-bottom: 30px;
+}
+
+.broadcast_wrapper {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.broadcast {
+  border: 1px solid;
+  color: #111111;
+  display: inline-block;
+  margin-bottom: 5px;
+  padding: 10px 25px;
+  width: 100%;
+  position: relative;
+}
+
+.broadcast p {
+  margin: 0px;
+}
+
+.broadcast a,
+.broadcast a:hover,
+.broadcast a:active {
+  color: revert;
+}
+
+.broadcast-active {
+  color: #ff0000;
+}
+
+.broadcast-inactive {
+  color: #333333;
+}
+
+.notifications-form-error {
+  border: 1px solid #ff0000;
+}
+
+.close-broadcast {
+  right: 5px;
+  position: absolute;
+  top: 0;
+  span {
+    color: darkgrey;
+  }
+}
+
+.notifications-tabs-content {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+ul.notifications-tabs {
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0;
+  overflow: auto;
+
+  li {
+    float: left;
+    border: 1px solid #555555;
+    margin-right: 3px;
+    border-radius: 5px 5px 0 0;
+    padding: 2px;
+    background-color: #265680;
+
+    &.active {
+      background-color: #ffffff;
+      border-bottom: 1px solid #ffffff;
+
+      a {
+        color: #265680;
+      }
+    }
+
+    a {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 10px;
+      cursor: pointer;
+      background-color: transparent;
+      color: #ffffff;
+
+      &:focus{
+        outline: none;
+      }
+    }
+  }
+}
+
+.notifications-tabs-content-wrapper {
+  border: 1px solid #555555;
+  padding: 5px;
+  border-radius: 0 5px 5px 5px;
+  margin-bottom: 15px;
+}

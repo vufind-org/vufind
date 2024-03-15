@@ -411,6 +411,46 @@ CREATE TABLE `access_token` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `notifications_broadcasts`
+--
+
+CREATE TABLE `notifications_broadcasts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `broadcast_id` int(11) DEFAULT NULL,
+  `visibility` tinyint(1) DEFAULT NULL,
+  `visibility_global` tinyint(1) DEFAULT NULL,
+  `priority` int(11) DEFAULT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  `color` varchar(255) DEFAULT NULL,
+  `startdate` datetime DEFAULT NULL,
+  `endate` datetime DEFAULT NULL,
+  `change_date` datetime DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `notifications_pages`
+--
+
+CREATE TABLE `notifications_pages` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `page_id` int(11) DEFAULT NULL,
+  `visibility` tinyint(1) DEFAULT NULL,
+  `priority` int(11) DEFAULT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `headline` varchar(255) DEFAULT NULL,
+  `nav_title` varchar(255) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  `change_date` datetime DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+--
 -- Table structure for table `login_token`
 --
 

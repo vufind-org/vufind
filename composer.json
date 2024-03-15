@@ -33,6 +33,7 @@
         "colinmollenhour/credis": "1.16.0",
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.0",
+        "elgigi/commonmark-emoji": "2.0.0",
         "endroid/qr-code": "4.8.2",
         "guzzlehttp/guzzle": "7.8.1",
         "laminas/laminas-cache": "3.12.1",

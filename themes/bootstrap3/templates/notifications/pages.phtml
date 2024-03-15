@@ -1,0 +1,50 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Pages Home'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('Notifications Pages') . '</a></li>';
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+    <?=$this->transEsc('Home') ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Pages Home')?></h2>
+  <?=$this->flashmessages()?>
+
+  <table id="notifications-list" class="table table-striped">
+    <thead>
+      <tr>
+        <th><?=$this->transEsc('Pages Actions')?></th>
+        <th><?=$this->transEsc('Pages Nav Title')?></th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach($this->pagesList as $page): ?>
+        <tr data-page-id="<?=$page['page_id']?>">
+          <td>
+            <span class="reorder">
+              <?=$this->icon('notifications-order') ?>
+            </span>
+            <?php if ($page['visibility']): ?>
+              <a href="" class="notifications-visibility" data-visibility="0"><?=$this->icon('notifications-visible') ?></a>
+            <?php else: ?>
+              <a href="" class="notifications-visibility" data-visibility="1"><?=$this->icon('notifications-invisible') ?></a>
+            <?php endif; ?>
+            <a href="<?=$this->url('admin/notifications-pages', ['action' => 'EditPage'])?>?page_id=<?=$page['page_id']?>" title="<?=$this->transEsc('Edit')?>"><?=$this->icon('notifications-edit') ?></a>
+            <a href="<?=$this->url('admin/notifications-pages', ['action' => 'DeletePage'])?>?page_id=<?=$page['page_id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('notifications-delete') ?></a>
+          </td>
+          <td><?=$page['nav_title']?></td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+
+  <a href="<?=$this->url('admin/notifications-pages', ['action' => 'EditPage'])?>?page_id=NEW"><?=$this->transEsc('Add New Page')?></a>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render('admin/menu.phtml')?>
+</div>

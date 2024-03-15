@@ -20,5 +20,5 @@
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
   <?=$this->slot('search-home-hero')->end() ?>
 </div>
-
+<?=$this->context($this)->renderInContext('notifications/searchhomebroadcasts.phtml', [])?>
 <?=implode('', array_map([$this, 'contentBlock'], $blocks ?? []))?>
