@@ -68,9 +68,9 @@ class UserServiceFactory extends AbstractDbServiceFactory
             throw new \Exception('Unexpected options sent to factory!');
         }
         $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
-          ->get('user');
+            ->get('user');
         $config = $container->get(\VuFind\Config\PluginManager::class)
-          ->get('config');
+            ->get('config');
         $userService = parent::__invoke($container, $requestedName, [$userTable]);
         $userService->setConfig($config);
         return $userService;
