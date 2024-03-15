@@ -93,9 +93,9 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
     ) {
         $userIdentifierField = $config['Server']['userIdentifierField'] ?? 'id';
         $userIdentifier = $user->$userIdentifierField;
-        if ($userIdentifier == null) {
+        if ($userIdentifier === null) {
             throw new \VuFind\Exception\BadConfig(
-                'User identifier is empty. The user identifier field needs to be required.'
+                "Required user identifier field $userIdentifierField empty for user {$user->id}"
             );
         }
         $this->setIdentifier($userIdentifier);
