@@ -9,9 +9,7 @@
   $user = $this->auth()->getUserObject();
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
-  <?=$this->transEsc('Your Account') ?>
-</a>
+<?=$this->component('account-offcanvas-show')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if ($user && !empty($user->email)): ?>
