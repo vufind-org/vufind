@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\UserService;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -768,8 +769,9 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $rows = $this->getTable('user')->getInsecureRows();
-        if (count($rows) == 0 || $userConfirmation == 'Yes') {
+        $userRows = $this->getTable('user')->getInsecureRows();
+        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
 
@@ -805,12 +807,11 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
-        $rows = $this->getTable('user')->getInsecureRows();
-        if (count($rows) > 0) {
-            // If we got this far, the user POSTed their confirmation -- go ahead
-            // with the fix:
+        $userService = $this->getDbService(UserService::class);
+        $userRows = $this->getTable('user')->getInsecureRows();
+        if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
-            foreach ($rows as $row) {
+            foreach ($userRows as $row) {
                 if ($row->password != '') {
                     $row->pass_hash = $bcrypt->create($row->password);
                     $row->password = '';
@@ -821,7 +822,17 @@ class InstallController extends AbstractBase
                     $row->save();
                 }
             }
-            $msg = count($rows) . ' user row(s) encrypted.';
+            $msg = count($userRows) . ' user row(s) encrypted.';
+            $this->flashMessenger()->addMessage($msg, 'info');
+        }
+        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        if (count($cardRows) > 0) {
+            foreach ($cardRows as $row) {
+                $row->cat_pass_enc = $userService->encrypt($row->cat_password);
+                $row->cat_password = null;
+                $row->save();
+            }
+            $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
         return $this->redirect()->toRoute('install-home');

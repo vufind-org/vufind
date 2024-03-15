@@ -30,7 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\PrintArrayHtml;
-use VuFindTest\Unit\AbstractMakeTagTest;
+use VuFindTest\Unit\AbstractMakeTagTestCase;
 
 use function call_user_func;
 
@@ -43,7 +43,7 @@ use function call_user_func;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PrintArrayHtmlTest extends AbstractMakeTagTest
+class PrintArrayHtmlTest extends AbstractMakeTagTestCase
 {
     use \VuFindTest\Feature\ViewTrait;
 
@@ -65,7 +65,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
      *
      * @return array
      */
-    public function getPrintArrayHtmlData(): array
+    public static function getPrintArrayHtmlData(): array
     {
         return [
             [ // Set 0
@@ -110,10 +110,10 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 5
                 [
-                    0 => "Escaped vals <>&'\"",
+                    0 => "Escaped values <>&'\"",
                 ],
                 <<<END
-                    <span class="detail">Escaped vals &lt;&gt;&amp;&#039;&quot;</span><br>
+                    <span class="detail">Escaped values &lt;&gt;&amp;&#039;&quot;</span><br>
 
                     END,
             ],

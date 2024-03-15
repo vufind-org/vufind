@@ -1,0 +1,89 @@
+# If this file is empty or missing, default settings will be used, matching
+# the examples provided below. The format of this configuration is as follows:
+# array keys for every menu item could be:
+#   - name: name of an item
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required
+#   - icon: icon used for the item, has to be defined in theme config
+#   - iconMethod: method to dynamically create the icon name; ignored when
+#     icon is explicitly set.
+#   - checkMethod: the name of an AccountMenu view helper method to perform
+#     a check whether to show the item. If omitted, item will always display.
+#   - status: whether to show status label, defaults to false
+
+MenuItems:
+  - name: favorites
+    label: saved_items
+    route: myresearch-favorites
+    icon: user-favorites
+    checkMethod: checkFavorites
+
+  - name: checkedout
+    label: Checked Out Items
+    route: myresearch-checkedout
+    icon: user-checked-out
+    status: true
+    checkMethod: checkCheckedout
+
+  - name: historicloans
+    label: Loan History
+    route: checkouts-history
+    icon: user-loan-history
+    checkMethod: checkHistoricloans
+
+  - name: holds
+    label: Holds and Recalls
+    route: holds-list
+    icon: user-holds
+    status: true
+    checkMethod: checkHolds
+
+  - name: storageRetrievalRequests
+    label: Storage Retrieval Requests
+    route: myresearch-storageretrievalrequests
+    icon: user-storage-retrievals
+    status: true
+    checkMethod: checkStorageRetrievalRequests
+
+  - name: ILLRequests
+    label: Interlibrary Loan Requests
+    route: myresearch-illrequests
+    icon: user-ill-requests
+    status: true
+    checkMethod: checkILLRequests
+
+  - name: fines
+    label: Fines
+    route: myresearch-fines
+    status: true
+    checkMethod: checkFines
+    iconMethod: finesIcon
+
+  - name: profile
+    label: Profile
+    route: myresearch-profile
+    icon: profile
+
+  - name: librarycards
+    label: Library Cards
+    route: librarycards-home
+    icon: barcode
+    checkMethod: checkLibraryCards
+
+  - name: dgcontent
+    label: Overdrive Content
+    route: overdrive-mycontent
+    icon: overdrive
+    checkMethod: checkOverdrive
+
+  - name: history
+    label: Search History
+    route: search-history
+    icon: search
+    checkMethod: checkHistory
+
+  - name: logout
+    label: Log Out
+    route: myresearch-logout
+    icon: sign-out
+    checkMethod: checkLogout

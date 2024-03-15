@@ -45,7 +45,7 @@ use function is_array;
 abstract class AbstractBase implements MetadataVocabularyInterface
 {
     /**
-     * This varriable can be overwritten by child classes
+     * This variable can be overwritten by child classes
      * to define which custom field is filled by which generic fields.
      *
      * @var array

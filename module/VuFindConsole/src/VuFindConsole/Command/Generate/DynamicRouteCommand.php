@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,15 +43,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/dynamicroute',
+    description: 'Dynamic route generator'
+)]
 class DynamicRouteCommand extends AbstractRouteCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/dynamicroute';
-
     /**
      * Configure the command.
      *
@@ -59,7 +57,6 @@ class DynamicRouteCommand extends AbstractRouteCommand
     protected function configure()
     {
         $this
-            ->setDescription('Dynamic route generator')
             ->setHelp('Adds a dynamic route.')
             ->addArgument(
                 'route',

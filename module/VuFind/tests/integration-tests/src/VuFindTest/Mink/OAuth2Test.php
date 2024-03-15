@@ -43,7 +43,6 @@ use const PHP_MAJOR_VERSION;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 {
@@ -144,8 +143,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test OAuth2 authorization.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
     public function testOAuth2Authorization(): void
@@ -196,8 +193,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedPermissions as $index => $permission) {
             $this->assertEquals(
                 $permission,
-                $this->findCss($page, 'div.oauth2-prompt li', null, $index)
-                    ->getText()
+                $this->findCssAndGetText($page, 'div.oauth2-prompt li', null, $index)
             );
         }
 
@@ -430,7 +426,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'An error has occurred',
-            $this->findCss($page, '.alert-danger p')->getText()
+            $this->findCssAndGetText($page, '.alert-danger p')
         );
     }
 

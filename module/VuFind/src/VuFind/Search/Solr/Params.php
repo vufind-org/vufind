@@ -398,6 +398,19 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Initialize facet settings for the new items page.
+     *
+     * @return void
+     */
+    public function initNewItemsFacets()
+    {
+        // Load Advanced settings if NewItems settings are missing (fallback to defaults):
+        if (!$this->initFacetList('NewItems', 'NewItems_Settings')) {
+            $this->initAdvancedFacets();
+        }
+    }
+
+    /**
      * Add filters to the object based on values found in the request object.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
@@ -557,7 +570,6 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($shards as $current) {
                 $selectedShards[$current] = $allShards[$current];
             }
-            $shards = $selectedShards;
             $backendParams->add('shards', implode(',', $selectedShards));
         }
 
@@ -641,7 +653,7 @@ class Params extends \VuFind\Search\Base\Params
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
             // Simple case: [X TO Y]
-            $filter['displayText'] = $matches[1] . '-' . $matches[2];
+            $filter['displayText'] = $matches[1] . ' - ' . $matches[2];
         } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
@@ -649,7 +661,7 @@ class Params extends \VuFind\Search\Base\Params
                 strtolower($matches[3]) == strtolower($matches[1])
                 && strtolower($matches[4]) == strtolower($matches[2])
             ) {
-                $filter['displayText'] = $matches[1] . '-' . $matches[2];
+                $filter['displayText'] = $matches[1] . ' - ' . $matches[2];
             }
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely

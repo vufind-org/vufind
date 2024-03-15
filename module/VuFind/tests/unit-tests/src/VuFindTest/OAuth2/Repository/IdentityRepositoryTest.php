@@ -45,7 +45,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IdentityRepositoryTest extends AbstractTokenRepositoryTest
+class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * OAuth2 configuration
@@ -98,7 +98,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
      *
      * @return array
      */
-    public function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): array
     {
         return [
             [null],
@@ -198,8 +198,10 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     {
         $user = $this->getMockBuilder(UserRow::class)
             ->disableOriginalConstructor()
-            ->onlyMethods([])
+            ->onlyMethods(['getUserService'])
             ->getMock();
+        $user->expects($this->any())->method('getUserService')
+            ->willReturn($this->createMock(\VuFind\Db\Service\UserService::class));
 
         $user->id = 2;
         $user->last_language = 'en-gb';

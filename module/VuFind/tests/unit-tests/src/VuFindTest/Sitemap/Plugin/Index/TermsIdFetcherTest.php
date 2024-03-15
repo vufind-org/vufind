@@ -48,6 +48,8 @@ use function array_slice;
  */
 class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Unique key field to use in tests
      *
@@ -169,27 +171,29 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     public function testFetching(): void
     {
-        $context1 = ['offset' => null, 'countPerPage' => $this->countPerPage];
         $expectedIds1 = range(0, $this->countPerPage - 1);
         $expectedResponse1 = $this->getTermsResponse($expectedIds1);
-        $context2 = ['offset' => 99, 'countPerPage' => $this->countPerPage];
         $expectedIds2 = [];
         $expectedResponse2 = $this->getTermsResponse($expectedIds2);
         $service = $this->getMockService();
 
         // Set up all the expected commands...
-        $service->expects($this->any())->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation(''))],
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation('99'))],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $this->getMockKeyCommand(),
                 $this->getMockTermsCommand($expectedResponse1),
                 $this->getMockKeyCommand(),
-                $this->getMockTermsCommand($expectedResponse2)
-            );
+                $this->getMockTermsCommand($expectedResponse2),
+            ]
+        );
         $fetcher = new TermsIdFetcher($service);
         $this->assertEquals(
             ['ids' => $expectedIds1, 'nextOffset' => 99],

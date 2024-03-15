@@ -29,7 +29,6 @@
 
 namespace VuFind\Search\EDS;
 
-use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
@@ -49,41 +48,20 @@ use function count;
 class QueryAdapter extends \VuFind\Search\QueryAdapter
 {
     /**
-     * Convert a Query or QueryGroup into a human-readable display query.
-     *
-     * @param AbstractQuery $query     Query to convert
-     * @param callable      $translate Callback to translate strings
-     * @param callable      $showName  Callback to translate field names
-     *
-     * @return string
-     */
-    public static function display(AbstractQuery $query, $translate, $showName)
-    {
-        // Simple case -- basic query:
-        if ($query instanceof Query) {
-            return $query->getString();
-        }
-
-        // Complex case -- advanced query:
-        return self::displayAdvanced($query, $translate, $showName);
-    }
-
-    /**
      * Support method for display() -- process advanced queries.
      *
-     * @param AbstractQuery $query     Query to convert
-     * @param callable      $translate Callback to translate strings
-     * @param callable      $showName  Callback to translate field names
+     * @param QueryGroup $query     Query to convert
+     * @param callable   $translate Callback to translate strings
+     * @param callable   $showName  Callback to translate field names
      *
      * @return string
      */
-    protected static function displayAdvanced(
-        AbstractQuery $query,
-        $translate,
-        $showName
+    protected function displayAdvanced(
+        QueryGroup $query,
+        callable $translate,
+        callable $showName
     ) {
-        $output = '';
-        //There should only ever be 1 group with EDS queries.
+        // There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {
             if ($search instanceof QueryGroup) {
@@ -107,8 +85,6 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                 throw new \Exception('Unexpected ' . $search::class);
             }
         }
-        $output = '(' . implode(' ', $all) . ')';
-
-        return $output;
+        return '(' . implode(' ', $all) . ')';
     }
 }

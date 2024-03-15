@@ -137,10 +137,7 @@ class SearchController extends AbstractSolrSearch
 
         // Force login if necessary:
         $config = $this->getConfig();
-        if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
-            && !$this->getUser()
-        ) {
+        if (($config->Mail->require_login ?? true) && !$this->getUser()) {
             return $this->forceLogin(null, ['emailurl' => $view->url]);
         }
 
@@ -235,12 +232,20 @@ class SearchController extends AbstractSolrSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
-        return $this->createViewModel(
+        $view = $this->createViewModel(
             [
+                'defaultSort' => $this->newItems()->getDefaultSort(),
                 'fundList' => $this->newItems()->getFundList(),
                 'ranges' => $this->newItems()->getRanges(),
             ]
         );
+        if ($this->newItems()->includeFacets()) {
+            $view->options = $this->serviceLocator
+                ->get(\VuFind\Search\Options\PluginManager::class)
+                ->get($this->searchClassId);
+            $this->addFacetDetailsToView($view, 'NewItems');
+        }
+        return $view;
     }
 
     /**

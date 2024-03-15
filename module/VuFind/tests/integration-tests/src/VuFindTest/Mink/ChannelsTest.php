@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -72,7 +71,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure search input matches url
         $this->assertEquals(
             'building:"weird_ids.mrc"',
-            $this->findCss($page, '[action*="Channels/Search"] .form-control')->getValue()
+            $this->findCssAndGetValue($page, '[action*="Channels/Search"] .form-control')
         );
     }
 
@@ -113,16 +112,16 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure the search translated
         $this->assertEquals(
             'building:"weird_ids.mrc"',
-            $this->findCss($page, '#searchForm_lookfor')->getValue()
+            $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
         // Check facet
         $this->assertEquals(
             'Suggested Topics:',
-            $this->findCss($page, '.filters .filters-title')->getText()
+            $this->findCssAndGetText($page, '.filters .filters-title')
         );
         $this->assertEquals(
             'Remove Filter Adult children of aging parents',
-            $this->findCss($page, '.filters .filter-value')->getText()
+            $this->findCssAndGetText($page, '.filters .filter-value')
         );
     }
 }

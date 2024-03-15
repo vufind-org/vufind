@@ -54,7 +54,7 @@ class DefaultParametersListener
     protected $backend;
 
     /**
-     * Default parameteres
+     * Default parameters
      *
      * @var array
      */

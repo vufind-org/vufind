@@ -45,7 +45,7 @@ use function call_user_func_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ComposedDriverTest extends AbstractMultiDriverTest
+class ComposedDriverTest extends AbstractMultiDriverTestCase
 {
     /**
      * Test that driver handles missing main ILS driver configuration properly.
@@ -1539,7 +1539,7 @@ class ComposedDriverTest extends AbstractMultiDriverTest
     }
 
     /**
-     * Testing method with cmbioneMultipleArraysOfAssociativeArrays and overwritten main driver with support
+     * Testing method with combineMultipleArraysOfAssociativeArrays and overwritten main driver with support
      *
      * @return void
      */
@@ -1672,7 +1672,7 @@ class ComposedDriverTest extends AbstractMultiDriverTest
     }
 
     /**
-     * Method to get an initialized Compsed Driver.
+     * Method to get an initialized Composed Driver.
      *
      * @param array   $constructorArgs   Optional constructor arguments
      * @param array   $drivers           List of used drivers
@@ -1715,7 +1715,7 @@ class ComposedDriverTest extends AbstractMultiDriverTest
      * @param string $function       Function name
      * @param array  $params         Function parameters
      * @param array  $functionConfig Config for the given function
-     * @param array  $driverConfigs  Associative array wich maps driver names to class, number of calls and result
+     * @param array  $driverConfigs  Associative array which maps driver names to class, number of calls and result
      *
      * @return object MultiBackend driver
      */

@@ -49,6 +49,7 @@ use function is_array;
 class RecordTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Theme to use for testing purposes.
@@ -71,14 +72,17 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
 
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
-        $record->getView()->resolver()->expects($this->exactly(4))->method('resolve')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $record->getView()->resolver(),
+            'resolve',
+            [
                 ['RecordDriver/SolrMarc/core.phtml'],
                 ['RecordDriver/SolrDefault/core.phtml'],
                 ['RecordDriver/DefaultRecord/core.phtml'],
-                ['RecordDriver/AbstractBase/core.phtml']
-            )
-            ->willReturnOnConsecutiveCalls(false, false, false, false);
+                ['RecordDriver/AbstractBase/core.phtml'],
+            ],
+            false
+        );
         $record->getView()->expects($this->any())->method('render')
             ->will($this->throwException(new RuntimeException('boom')));
         $record->getCoreMetadata();
@@ -108,9 +112,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $tpl = 'RecordDriver/SolrDefault/collection-record.phtml';
-        $record->getView()->resolver()->expects($this->exactly(2))->method('resolve')
-            ->withConsecutive(['RecordDriver/SolrMarc/collection-record.phtml'], [$tpl])
-            ->willReturnOnConsecutiveCalls(false, true);
+        $this->expectConsecutiveCalls(
+            $record->getView()->resolver(),
+            'resolve',
+            [['RecordDriver/SolrMarc/collection-record.phtml'], [$tpl]],
+            [false, true]
+        );
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
             ->will($this->returnValue('success'));
@@ -226,9 +233,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         // include an arbitrary class name in the template path; we need to make
         // that one fail so we can load the parent class' template instead:
         $tpl = 'RecordDriver/AbstractBase/list-entry.phtml';
-        $record->getView()->resolver()->expects($this->exactly(2))->method('resolve')
-            ->withConsecutive([/* anything */], [$tpl])
-            ->willReturnOnConsecutiveCalls(false, true);
+        $this->expectConsecutiveCalls(
+            $record->getView()->resolver(),
+            'resolve',
+            [[/* anything */], [$tpl]],
+            [false, true]
+        );
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
             ->will($this->returnValue('success'));
@@ -297,7 +307,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getLinkProvider(): array
+    public static function getLinkProvider(): array
     {
         return [
             'no hidden filters' => ['http://foo', '?', '', 'http://foo'],
@@ -363,8 +373,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetCheckbox()
     {
         $context = $this->getMockContext();
-        $context->expects($this->exactly(2))->method('renderInContext')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $context,
+            'renderInContext',
+            [
                 [
                     'record/checkbox.phtml',
                     ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
@@ -372,9 +384,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 [
                     'record/checkbox.phtml',
                     ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ]
-            )
-            ->willReturnOnConsecutiveCalls('success', 'success');
+                ],
+            ],
+            'success'
+        );
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],

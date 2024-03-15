@@ -31,9 +31,11 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
+use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
+use function count;
 use function is_array;
 use function strlen;
 
@@ -48,6 +50,9 @@ use function strlen;
  */
 class CartController extends AbstractBase
 {
+    use Feature\BulkActionControllerTrait;
+    use ListItemSelectionTrait;
+
     /**
      * Session container
      *
@@ -56,15 +61,37 @@ class CartController extends AbstractBase
     protected $session;
 
     /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Export support class
+     *
+     * @var \VuFind\Export
+     */
+    protected $export;
+
+    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm        Service manager
-     * @param Container               $container Session container
+     * @param ServiceLocatorInterface      $sm           Service manager
+     * @param Container                    $container    Session container
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Export               $export       Export support class
      */
-    public function __construct(ServiceLocatorInterface $sm, Container $container)
-    {
+    public function __construct(
+        ServiceLocatorInterface $sm,
+        Container $container,
+        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Export $export
+    ) {
         parent::__construct($sm);
         $this->session = $container;
+        $this->configLoader = $configLoader;
+        $this->export = $export;
     }
 
     /**
@@ -154,9 +181,7 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
 
         // Add items if necessary:
         if (strlen($this->params()->fromPost('empty', '')) > 0) {
@@ -234,16 +259,27 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         // Retrieve ID list:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
 
         // Retrieve follow-up information if necessary:
         if (!is_array($ids) || empty($ids)) {
-            $ids = $this->followup()->retrieveAndClear('cartIds');
+            $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
+        $actionLimit = $this->getBulkActionLimit('email');
         if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
+            }
+            $submitDisabled = true;
+        } elseif (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
+            }
+            $submitDisabled = true;
         }
 
         // Force login if necessary:
@@ -267,7 +303,7 @@ class CartController extends AbstractBase
         $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -291,7 +327,7 @@ class CartController extends AbstractBase
                     $view->subject,
                     $cc
                 );
-                return $this->redirectToSource('success', 'bulk_email_success');
+                return $this->redirectToSource('success', 'bulk_email_success', true);
             } catch (MailException $e) {
                 $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
@@ -307,28 +343,27 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
+
+        // Check if id limit is exceeded
+        $actionLimit = $this->getBulkActionLimit('print');
+        if (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            return $this->redirectToSource('error', $errorMsg);
+        }
+
         $callback = function ($i) {
             return 'id[]=' . urlencode($i);
         };
         $query = '?print=true&' . implode('&', array_map($callback, $ids));
         $url = $this->url()->fromRoute('records-home') . $query;
         return $this->redirect()->toUrl($url);
-    }
-
-    /**
-     * Access export tools.
-     *
-     * @return \VuFind\Export
-     */
-    protected function getExport()
-    {
-        return $this->serviceLocator->get(\VuFind\Export::class);
     }
 
     /**
@@ -339,19 +374,28 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
-        }
+        $ids = $this->getSelectedIds();
 
         // Get export tools:
-        $export = $this->getExport();
+        $export = $this->export;
 
-        // Process form submission if necessary:
-        if ($this->formWasSubmitted('submit')) {
-            $format = $this->params()->fromPost('format');
+        // Get id limit
+        $format = $this->params()->fromPost('format');
+        $actionLimit = $format ? $this->getExportActionLimit($format) : $this->getBulkActionLimit('export');
+
+        if (!is_array($ids) || empty($ids)) {
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
+            }
+        } elseif (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
+            }
+        } elseif ($this->formWasSubmitted()) {
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
@@ -383,7 +427,7 @@ class CartController extends AbstractBase
                     $params
                 ),
             ];
-            return $this->redirectToSource('success', $msg);
+            return $this->redirectToSource('success', $msg, true);
         }
 
         // Load the records:
@@ -419,9 +463,15 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
+        // Check if id limit is exceeded
+        $actionLimit = $this->getExportActionLimit($format);
+        if (count($ids) > $actionLimit) {
+            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+        }
+
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
-        $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
+        $response->getHeaders()->addHeaders($this->export->getHeaders($format));
 
         // Actually export the records
         $records = $this->getRecordLoader()->loadBatch($ids);
@@ -432,7 +482,7 @@ class CartController extends AbstractBase
         }
 
         // Process and display the exported records
-        $response->setContent($this->getExport()->processGroup($format, $parts));
+        $response->setContent($this->export->processGroup($format, $parts));
         return $response;
     }
 
@@ -450,14 +500,25 @@ class CartController extends AbstractBase
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
-            $ids = $this->followup()->retrieveAndClear('cartIds');
+            $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
+        $actionLimit = $this->getBulkActionLimit('saveCart');
         if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
+            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
+                return $redirect;
+            }
+            $submitDisabled = true;
+        } elseif (count($ids) > $actionLimit) {
+            $errorMsg = $this->translate(
+                'bulk_limit_exceeded',
+                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            );
+            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
+                return $redirect;
+            }
+            $submitDisabled = true;
         }
 
         // Make sure user is logged in:
@@ -469,7 +530,7 @@ class CartController extends AbstractBase
         }
 
         // Process submission if necessary:
-        if ($this->formWasSubmitted('submit')) {
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
             $results = $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
@@ -493,33 +554,5 @@ class CartController extends AbstractBase
                 'lists' => $user->getLists(),
             ]
         );
-    }
-
-    /**
-     * Support method: redirect to the page we were on when the bulk action was
-     * initiated.
-     *
-     * @param string $flashNamespace Namespace for flash message (null for none)
-     * @param string $flashMsg       Flash message to set (ignored if namespace null)
-     *
-     * @return mixed
-     */
-    public function redirectToSource($flashNamespace = null, $flashMsg = null)
-    {
-        // Set flash message if requested:
-        if (null !== $flashNamespace && !empty($flashMsg)) {
-            $this->flashMessenger()->addMessage($flashMsg, $flashNamespace);
-        }
-
-        // If we entered the controller in the expected way (i.e. via the
-        // myresearchbulk action), we should have a source set in the followup
-        // memory. If that's missing for some reason, just forward to MyResearch.
-        if (isset($this->session->url)) {
-            $target = $this->session->url;
-            unset($this->session->url);
-        } else {
-            $target = $this->url()->fromRoute('myresearch-home');
-        }
-        return $this->redirect()->toUrl($target);
     }
 }

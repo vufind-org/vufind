@@ -82,7 +82,7 @@
           }
         }
         $this->headScript()->prependScript(
-            'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+            'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
         );
       }
 
@@ -105,7 +105,7 @@
       $root = rtrim($this->url('home'), '/');
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $cspNonce = $this->cspNonce();
+      $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($this->layout()->searchId);
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
@@ -143,13 +143,13 @@
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
-      <div class="container">
-        <?php if (!empty($this->layout()->showBreadcrumbs ?? true) && !empty($this->layout()->breadcrumbs)): ?>
+    <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
+      <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
+        <div class="container">
           <ul class="breadcrumb hidden-print"><?=$this->layout()->breadcrumbs ?></ul>
-        <?php endif; ?>
-      </div>
-    </nav>
+        </div>
+      </nav>
+    <?php endif; ?>
     <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>
@@ -167,11 +167,8 @@
         </div>
       </div>
     </div>
-    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
-    <?=$this->googleTagManager()->getBodyCode()?>
-    <?=$this->googleanalytics()?>
-    <?=$this->piwik()?>
-    <?=$this->matomo()?>
+    <div class="vufind-offcanvas-overlay" data-toggle="vufind-offcanvas"></div>
+    <?=$this->render('Helpers/analytics.phtml')?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
     <?php endforeach; ?>

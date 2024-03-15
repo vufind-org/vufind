@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Service\TagService;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
@@ -236,7 +237,12 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $driver->addTags($user, $tagParser->parse($tags));
+            $this->getDbService(TagService::class)->addTagsToRecord(
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
+                $user,
+                $tagParser->parse($tags)
+            );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
@@ -270,7 +276,12 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $driver->deleteTags($user, [$tag]);
+            $this->getDbService(TagService::class)->deleteTagsFromRecord(
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
+                $user,
+                [$tag]
+            );
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
@@ -740,6 +751,34 @@ class AbstractRecord extends AbstractBase
     {
         $this->getRequest()->getQuery()->set('style', 'RDF');
         return $this->exportAction();
+    }
+
+    /**
+     * Show explanation for why a record was found and how its relevancy is computed
+     *
+     * @return mixed
+     */
+    public function explainAction()
+    {
+        $record = $this->loadRecord();
+
+        $view = $this->createViewModel();
+        $view->setTemplate('record/explain');
+        if (!$record->tryMethod('explainEnabled')) {
+            $view->disabled = true;
+            return $view;
+        }
+
+        $explanation = $this->serviceLocator
+            ->get(\VuFind\Search\Explanation\PluginManager::class)
+            ->get($record->getSourceIdentifier());
+
+        $params = $explanation->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $explanation->performRequest($record->getUniqueID());
+
+        $view->explanation = $explanation;
+        return $view;
     }
 
     /**

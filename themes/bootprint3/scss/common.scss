@@ -63,20 +63,9 @@ input[type=checkbox] {
   margin-bottom: .5rem;
 }
 .pagination {
-  display: table;
   margin: 18px auto;
 }
-.pagination > li > a,
-.pagination > li > span { padding: 4px 12px 3px; }
-.pagination > .active > a,
-.pagination > .active > a:focus,
-.pagination > .active > a:hover,
-.pagination > .active > span,
-.pagination > .active > span:focus,
-.pagination > .active > span:hover {
-  background: $brand-primary;
-  border-color: $brand-primary;
-}
+.pagination > li > a { padding: 4px 12px 3px; }
 .panel-heading { padding: 0; }
 .panel-heading a {
   cursor: pointer;

@@ -34,6 +34,7 @@ use Laminas\View\Helper\Layout;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\View\Helper\Root\CookieConsent;
 use VuFind\View\Helper\Root\Url;
@@ -226,11 +227,22 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 }
             );
 
+        $mockLoginTokenManager = $this->getMockBuilder(LoginTokenManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockLoginTokenManager->expects($this->any())
+            ->method('getCookieName')
+            ->willReturn('loginToken');
+        $mockLoginTokenManager->expects($this->any())
+            ->method('getCookieLifetime')
+            ->willReturn(321);
+
         $helper = new CookieConsent(
             $config,
             $this->getConsentConfig($consentConfigName),
             $this->getCookieManager($config, $cookies),
-            new \VuFind\Date\Converter()
+            new \VuFind\Date\Converter(),
+            $mockLoginTokenManager
         );
         $helper->setView($view);
         return $helper;
@@ -362,6 +374,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 '{{current_host_name}}' => 'localhost',
                 '{{vufind_cookie_domain}}' => 'localhost',
                 '{{vufind_session_cookie}}' => 'vufindsession',
+                '{{vufind_login_token_cookie_name}}' => 'loginToken',
+                '{{vufind_login_token_cookie_expiration}}' => 321,
             ],
             'cookieManager' => $this->getCookieManager($config, $cookies),
             'consentDialogConfig' => [
