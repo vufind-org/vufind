@@ -586,7 +586,7 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
-    <echo file="${contentdir}/content.phtml">&lt;?=$this->partial("content/$page.phtml", []);?&gt;
+    <echo file="${contentdir}/content.phtml">&lt;?php include $this-&gt;parentTemplate('content/content.phtml');?&gt;
 
 &lt;div class="content-footer"&gt;Content page footer&lt;/div&gt;
 </echo>
