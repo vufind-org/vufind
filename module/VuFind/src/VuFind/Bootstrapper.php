@@ -179,15 +179,12 @@ class Bootstrapper
                 // figure out the current template context.
                 $children = $viewModel->getChildren();
                 if (!empty($children)) {
-                    $parts = explode('/', $children[0]->getTemplate(), 2);
+                    $parts = explode('/', $children[0]->getTemplate());
                     $viewModel->setVariable('templateDir', $parts[0]);
-                    if ($templateName = $parts[1] ?? null) {
-                        // Strip any file extension from template name:
-                        if (($p = strrpos($templateName, '.')) && $p > strrpos($templateName, '/')) {
-                            $templateName = substr($templateName, 0, $p);
-                        }
-                    }
-                    $viewModel->setVariable('templateName', $templateName);
+                    $viewModel->setVariable(
+                        'templateName',
+                        $parts[1] ?? null
+                    );
                 }
             }
         };

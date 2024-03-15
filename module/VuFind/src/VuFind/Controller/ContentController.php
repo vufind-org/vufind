@@ -118,8 +118,14 @@ class ContentController extends AbstractBase
      */
     protected function getViewForPhtml(string $page, string $relPath, string $path): ViewModel
     {
-        $view = $this->createViewModel(['page' => $page]);
-        $view->setTemplate($relPath);
-        return $view;
+        // Convert relative path to page name:
+        $page = $relPath;
+        if (str_starts_with($page, 'content/')) {
+            $page = substr($page, 8);
+        }
+        if (str_ends_with($page, '.phtml')) {
+            $page = substr($page, 0, -6);
+        }
+        return $this->createViewModel(['page' => $page]);
     }
 }
