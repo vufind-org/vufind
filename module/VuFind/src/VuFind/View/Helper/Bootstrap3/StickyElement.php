@@ -75,6 +75,7 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $elementName Name of the element
      * @param ?int   $pos         Sticky position of the element
+     * @param array  $attributes  Attributes that the sticky attributes should be added to
      *
      * @return array
      */
@@ -82,7 +83,7 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
     {
         $elementIsEnabled = in_array($elementName, $this->stickyElements);
         if ($elementIsEnabled) {
-            $attributes['class'] = ($attributes['class'] ? $attributes['class'] . ' '  : '') . 'sticky-element';
+            $attributes['class'] = ($attributes['class'] ? $attributes['class'] . ' ' : '') . 'sticky-element';
             if ($pos !== null) {
                 $attributes['data-sticky-pos'] = $pos;
             }
