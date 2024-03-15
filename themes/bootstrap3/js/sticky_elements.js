@@ -52,7 +52,7 @@ VuFind.register("sticky_elements", function StickyElements() {
       return getInheritedBackgroundColor(el.parentElement);
     }
 
-    function handleStickyElements() {
+    function handleStickyElements(forceStyleCalculation = false) {
       let num = 0;
       let count = stickyElements.length;
       let currentOffset = 0;
@@ -67,26 +67,28 @@ VuFind.register("sticky_elements", function StickyElements() {
             (!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
             || (isSticky && window.scrollY + currentOffset >= placeholder.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
           ) {
-            stickyContainer.classList.add("sticky");
-            placeholder.classList.remove("hidden");
-            gapFiller.classList.remove("hidden");
-            let parentStyle = window.getComputedStyle(stickyContainer.parentNode, null);
-            let parentBoundingClientRect = stickyContainer.parentNode.getBoundingClientRect();
-            stickyContainer.style.top = (currentOffset - 1) + "px";
-            stickyContainer.style.marginLeft = parentBoundingClientRect.left + "px";
-            stickyContainer.style.marginRight = (window.screen.width - parentBoundingClientRect.right) + "px";
-            stickyContainer.style.borderLeft = parentStyle.borderLeft;
-            stickyContainer.style.borderRight = parentStyle.borderRight;
-            stickyContainer.style.paddingLeft = parentStyle.paddingLeft;
-            stickyContainer.style.paddingRight = parentStyle.paddingRight;
-            stickyContainer.style.width = parentBoundingClientRect.width + "px";
+            if (forceStyleCalculation || !isSticky) {
+              stickyContainer.classList.add("sticky");
+              placeholder.classList.remove("hidden");
+              gapFiller.classList.remove("hidden");
+              let parentStyle = window.getComputedStyle(stickyContainer.parentNode, null);
+              let parentBoundingClientRect = stickyContainer.parentNode.getBoundingClientRect();
+              stickyContainer.style.marginLeft = parentBoundingClientRect.left + "px";
+              stickyContainer.style.marginRight = (window.screen.width - parentBoundingClientRect.right) + "px";
+              stickyContainer.style.borderLeft = parentStyle.borderLeft;
+              stickyContainer.style.borderRight = parentStyle.borderRight;
+              stickyContainer.style.paddingLeft = parentStyle.paddingLeft;
+              stickyContainer.style.paddingRight = parentStyle.paddingRight;
+              stickyContainer.style.width = parentBoundingClientRect.width + "px";
+              gapFiller.style.width = stickyElementStyle.width;
+              gapFiller.style.marginLeft = stickyElementStyle.marginLeft;
+              gapFiller.style.borderLeft = stickyElementStyle.borderLeft;
+              gapFiller.style.paddingLeft = stickyElementStyle.paddingLeft;
+            }
             stickyContainer.style.zIndex = 10 + count - num;
-            gapFiller.style.width = stickyElementStyle.width;
-            gapFiller.style.marginLeft = stickyElementStyle.marginLeft;
-            gapFiller.style.borderLeft = stickyElementStyle.borderLeft;
-            gapFiller.style.paddingLeft = stickyElementStyle.paddingLeft;
+            stickyContainer.style.top = (currentOffset - 1) + "px";
             currentOffset -= 1;
-          } else {
+          } else if (forceStyleCalculation || isSticky) {
             stickyContainer.classList.remove("sticky");
             placeholder.classList.add("hidden");
             gapFiller.classList.add("hidden");
@@ -126,7 +128,7 @@ VuFind.register("sticky_elements", function StickyElements() {
         stickyElement.previousSibling.style.backgroundColor = getInheritedBackgroundColor(stickyElement);
       }
     );
-    handleStickyElements();
+    handleStickyElements(true);
 
     window.addEventListener("resize", () => {
       stickyElements.forEach(
@@ -134,7 +136,7 @@ VuFind.register("sticky_elements", function StickyElements() {
           setPlaceholderStyle(stickyElement, true);
         }
       );
-      handleStickyElements();
+      handleStickyElements(true);
     });
     window.addEventListener("orientationchange", () => {
       stickyElements.forEach(
@@ -142,9 +144,9 @@ VuFind.register("sticky_elements", function StickyElements() {
           setPlaceholderStyle(stickyElement, true);
         }
       );
-      handleStickyElements();
+      handleStickyElements(true);
     });
-    document.addEventListener("scroll", handleStickyElements);
+    document.addEventListener("scroll", () => handleStickyElements());
   }
 
   return { init };
