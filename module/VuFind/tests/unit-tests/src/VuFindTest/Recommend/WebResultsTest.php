@@ -49,7 +49,7 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $class = new \ReflectionClass('VuFind\Recommend\WebResults');
+        $class = new \ReflectionClass(WebResults::class);
         $method = $class->getMethod('getSearchClassId');
         $method->setAccessible(true);
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
