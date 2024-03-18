@@ -951,7 +951,7 @@ ${git_status}
       <filterchain>
         <replaceregexp>
           <!-- HTML attributes -->
-          <regexp pattern=" data-(dismiss|target|toggle)=" replace=" data-bs-\1=" />
+          <regexp pattern=" data-(dismiss|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
 
           <!-- HTMLAttributes helper -->
           <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />
