@@ -30,6 +30,7 @@
 namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 
 use function is_callable;
@@ -88,6 +89,7 @@ class AbstractTokenRepository
      *
      * @param Object $token Token
      *
+     * @throws InvalidArgumentException
      * @return void
      */
     public function persistNew($token)

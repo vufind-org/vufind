@@ -33,6 +33,7 @@ use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
+use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\OAuth2\Entity\AccessTokenEntity;
 
@@ -87,7 +88,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @return void
      *
-     * @throws UniqueTokenIdentifierConstraintViolationException
+     * @throws InvalidArgumentException
      */
     public function persistNewAccessToken(AccessTokenEntityInterface $entity)
     {

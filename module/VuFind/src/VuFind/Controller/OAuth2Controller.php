@@ -29,8 +29,10 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -185,7 +187,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException
+     * @throws InvalidArgumentException
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {

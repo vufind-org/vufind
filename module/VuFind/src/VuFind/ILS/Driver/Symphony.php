@@ -366,7 +366,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * SymWS. In such a case it will produce a potentially more helpful error
      * message than the original error would have.
      *
-     * @throws Exception if the SymWS version is too old
+     * @throws \Exception if the SymWS version is too old
      * @return void
      */
     protected function checkSymwsVersion()

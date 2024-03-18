@@ -29,6 +29,7 @@
 
 namespace VuFindTest;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Cookie\CookieManager;
 
 /**
@@ -47,7 +48,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock record loader
      *
-     * @param \VuFind\Record\Loader
+     * @var MockObject&\VuFind\Record\Loader
      */
     protected $loader;
 

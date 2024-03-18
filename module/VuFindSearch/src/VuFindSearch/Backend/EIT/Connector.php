@@ -30,7 +30,6 @@
 namespace VuFindSearch\Backend\EIT;
 
 use Laminas\Http\Client;
-use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\ParamBag;
 
@@ -136,7 +135,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param \Laminas\Http\Response $result The response to check.
      *
-     * @throws BackendException
+     * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
     public function checkForHttpError($result)

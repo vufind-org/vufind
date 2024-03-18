@@ -31,6 +31,7 @@ namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
+use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\OAuth2\Entity\AuthCodeEntity;
 
@@ -72,7 +73,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return void
      *
-     * @throws UniqueTokenIdentifierConstraintViolationException
+     * @throws InvalidArgumentException
      */
     public function persistNewAuthCode(AuthCodeEntityInterface $entity)
     {

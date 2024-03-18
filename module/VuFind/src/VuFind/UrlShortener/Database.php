@@ -138,6 +138,7 @@ class Database implements UrlShortenerInterface
      * @param int    $length Minimum number of characters from hash to use for
      * lookups (may be increased to enforce uniqueness)
      *
+     * @throws Exception
      * @return string
      */
     protected function saveAndShortenHash($path, $hash, $length)
