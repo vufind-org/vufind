@@ -654,10 +654,10 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
-    $('[data-toggle="offcanvas"]').on("click", function offcanvasClick(e) {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
+    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
       e.preventDefault();
-      $('body.offcanvas').toggleClass('active');
+      $('body.vufind-offcanvas').toggleClass('active');
     });
   }
 }
