@@ -63,7 +63,7 @@ class IdentityRepository implements IdentityProviderInterface
     /**
      * ILS connection
      *
-     * @var Connection
+     * @var ?Connection
      */
     protected $ils;
 
@@ -79,13 +79,13 @@ class IdentityRepository implements IdentityProviderInterface
      *
      * @param UserServiceInterface        $userService        User service
      * @param AccessTokenServiceInterface $accessTokenService Access token service
-     * @param Connection                  $ils                ILS connection
+     * @param ?Connection                 $ils                ILS connection
      * @param array                       $config             OAuth2 configuration
      */
     public function __construct(
         UserServiceInterface $userService,
         AccessTokenServiceInterface $accessTokenService,
-        Connection $ils,
+        ?Connection $ils,
         array $config
     ) {
         $this->userService = $userService;
