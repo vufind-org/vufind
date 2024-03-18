@@ -298,7 +298,7 @@ class OverdriveConnector implements
      *
      * @return object|bool see getAvailability
      *
-     * @todo if more tan 25 passed in, make multiple calls
+     * @todo if more than 25 passed in, make multiple calls
      */
     public function getAvailabilityBulk($overDriveIds = [])
     {
