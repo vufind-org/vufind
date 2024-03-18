@@ -158,7 +158,7 @@ button.list-group-item {
     display: block;
     width: 100%;
 
-    @media (min-width: $screen-md-min) {
+    @media (min-width: $screen-sm-min) {
       display: inline-block;
       width: auto;
     }
