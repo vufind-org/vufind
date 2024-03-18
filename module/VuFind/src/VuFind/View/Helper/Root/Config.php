@@ -130,7 +130,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @return ?string 'left', 'right' or null for no offcanvas
      */
-    public function offcanvasSide(): string
+    public function offcanvasSide(): ?string
     {
         $config = $this->get('config');
         if (!($config->Site->offcanvas ?? false)) {

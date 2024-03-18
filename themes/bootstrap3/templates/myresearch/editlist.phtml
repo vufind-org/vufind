@@ -12,7 +12,7 @@
 
 <?php if ($this->auth()->getIdentity() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('account-offcanvas-show')?>
+  <?=$this->component('show-account-menu')?>
 <?php endif; ?>
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
