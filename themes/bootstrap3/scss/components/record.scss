@@ -106,7 +106,9 @@
 
 /* ------ Tags ------ */
 .tag-record {
-  @extend .toolbar-btn;
+  float: right;
+  margin: 2px 0 1rem 1rem;
+  padding: $padding-base-vertical $padding-base-horizontal;
 
   &:hover {
     text-decoration: none;
@@ -125,16 +127,16 @@
   padding: 3px 7px;
   font-weight: normal;
 }
-.tagList button .fa-close { margin-top: 3px; }
 .tagList {
   .tag {
     display: inline-block;
-    margin: 0 1px 1px;
-    border-radius: 4px;
+    margin: 2px 1px 1px;
+    border: 1px solid $btn-default-border;
     // Use bootstrap mixin to make tags look like buttons
     @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $line-height-base, $border-radius-base);
     &.selected {
       background-color: $btn-primary-bg;
+      border-color: $btn-primary-border;
       a { color: #fff; }
       .badge {
         color: $gray-darker;
