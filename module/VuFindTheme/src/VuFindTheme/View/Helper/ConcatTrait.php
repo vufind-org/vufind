@@ -243,7 +243,7 @@ trait ConcatTrait
             mkdir($cacheDir);
         }
         return $cacheDir;
-}
+    }
 
     /**
      * Using the concatKey, return the path of the concatenated file.
