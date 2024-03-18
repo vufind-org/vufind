@@ -48,7 +48,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock record loader
      *
-     * @var MockObject
+     * @var MockObject&\VuFind\Record\Loader
      */
     protected $loader;
 

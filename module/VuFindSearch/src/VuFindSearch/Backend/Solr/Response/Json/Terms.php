@@ -30,8 +30,8 @@
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use ArrayObject;
-use Iterator;
 use IteratorAggregate;
+use Traversable;
 
 /**
  * SOLR Terms component.
@@ -73,9 +73,9 @@ class Terms implements IteratorAggregate
     /**
      * Return aggregated iterator.
      *
-     * @return Iterator
+     * @return Traversable
      */
-    public function getIterator(): Iterator
+    public function getIterator(): Traversable
     {
         return $this->terms->getIterator();
     }
