@@ -192,6 +192,10 @@ button.list-group-item {
   padding-bottom: 0.525rem;
 }
 
+textarea.form-control {
+  height: auto;
+}
+
 @media (min-width: map-get($grid-breakpoints, "sm")) {
   .form-inline .form-control {
     display: inline-block;
