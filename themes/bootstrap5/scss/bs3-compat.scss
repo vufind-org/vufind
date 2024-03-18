@@ -92,6 +92,9 @@ $table-bg-accent: var(--bs-table-accent-bg) !default;
 
 $line-height-computed: $line-height-base;
 
+$legend-color:                   $gray-dark !default;
+$legend-border-color:            #e5e5e5 !default;
+
 
 // *** Mixins ***
 @mixin opacity($opacity) {
@@ -111,6 +114,16 @@ $line-height-computed: $line-height-base;
 
 
 // *** Styles ***
+label {
+  margin-bottom: 5px;
+}
+
+legend {
+  float: none;
+  border: 0;
+  border-bottom: 1px solid $legend-border-color;
+}
+
 .sr-only {
   @extend .visually-hidden;
 }
