@@ -91,7 +91,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
         array $config,
         AccessTokenServiceInterface $accessTokenService
     ) {
-        $this->setIdentifier($user->id);
+        $this->setIdentifier($user->getId());
         $this->user = $user;
         $this->ils = $ils;
         $this->oauth2Config = $config;
