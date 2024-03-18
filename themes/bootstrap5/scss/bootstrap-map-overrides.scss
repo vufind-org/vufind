@@ -1,5 +1,5 @@
-// Override the grid with everything one notch larger
-/*$grid-breakpoints: (
+// Override the grid with everything one notch larger (required e.g. for vufind-offcanvas)
+$grid-breakpoints: (
   xs: 0,
   sm: 768px,
   md: 1024px,
