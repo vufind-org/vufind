@@ -238,6 +238,7 @@ trait ConcatTrait
                 'Asset pipeline feature depends on the LOCAL_CACHE_DIR constant.'
             );
         }
+        // TODO: it might be better to use \VuFind\Cache\Manager here.
         $cacheDir = LOCAL_CACHE_DIR . '/public/';
         if (!is_dir($cacheDir) && !file_exists($cacheDir)) {
             if (!mkdir($cacheDir)) {
