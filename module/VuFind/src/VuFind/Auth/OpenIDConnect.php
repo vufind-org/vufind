@@ -51,13 +51,6 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Current login target
-     *
-     * @var string
-     */
-    protected string $target;
-
-    /**
      * Request token
      *
      * @var object
