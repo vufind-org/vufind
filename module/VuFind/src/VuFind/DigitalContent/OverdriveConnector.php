@@ -1453,7 +1453,7 @@ class OverdriveConnector implements
      * @param string $url URL for client to use
      *
      * @return \Laminas\Http\Client
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getHttpClient($url = null)
     {

@@ -147,7 +147,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock command (with file writing stubbed out).
      *
-     * @return ImportLokaliseCommmand
+     * @return ImportLokaliseCommand
      */
     protected function getMockCommand(): ImportLokaliseCommand
     {

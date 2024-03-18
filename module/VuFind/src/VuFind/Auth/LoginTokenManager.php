@@ -185,7 +185,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      *
      * @param string $sessionId Session identifier
      *
-     * @return User Object representing logged-in user.
+     * @return ?User Object representing logged-in user.
      */
     public function tokenLogin(string $sessionId): ?User
     {

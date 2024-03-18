@@ -145,8 +145,8 @@ class Search extends RowGateway
      * Utility function for generating a token for unsubscribing a
      * saved search.
      *
-     * @param VuFind\Crypt\HMAC $hmac HMAC hash generator
-     * @param object            $user User object
+     * @param HMAC   $hmac HMAC hash generator
+     * @param object $user User object
      *
      * @return string token
      */

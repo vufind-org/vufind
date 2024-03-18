@@ -31,7 +31,9 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response as HttpResponse;
+use RuntimeException;
 use VuFind\ILS\Driver\Aleph;
 
 /**
@@ -156,7 +158,8 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string|array|null $fixture Fixture file
      *
      * @return void
-     * @throws InvalidArgumentException Fixture file does not exist
+     * @throws InvalidArgumentException Fixture file could not be loaded as HTTP response
+     * @throws RuntimeException         Fixture file does not exist
      */
     protected function mockResponse($fixture = null)
     {
@@ -183,6 +186,8 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $filename File name of raw HTTP response
      *
      * @return HttpResponse Response object
+     * @throws InvalidArgumentException Fixture file could not be loaded as HTTP response
+     * @throws RuntimeException         Fixture file does not exist
      */
     protected function loadResponse($filename)
     {
