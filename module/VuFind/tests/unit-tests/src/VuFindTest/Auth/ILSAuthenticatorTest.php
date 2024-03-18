@@ -74,7 +74,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testNewCatalogFailure()
     {
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn(false);
+        $manager->expects($this->any())->method('getUserObject')->willReturn(null);
         $details = false;
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
@@ -110,7 +110,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testLoggedOutStoredLoginAttempt()
     {
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn(false);
+        $manager->expects($this->any())->method('getUserObject')->willReturn(null);
         $auth = $this->getAuthenticator($manager);
         $this->assertEquals(false, $auth->storedCatalogLogin());
     }

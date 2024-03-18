@@ -159,7 +159,7 @@ legend {
 
 /* --- Combined --- */
 .template-dir-combined.template-name-results {
-  &.offcanvas {
+  &.vufind-offcanvas {
     margin-left: .5rem;
     margin-right: .5rem;
   }
@@ -196,7 +196,7 @@ legend {
 @media (min-width: 768px) {
   .template-dir-combined.template-name-results {
     &,
-    &.offcanvas { // overcoming specificity
+    &.vufind-offcanvas { // overcoming specificity
       margin-left: 1rem;
       margin-right: 1rem;
     }

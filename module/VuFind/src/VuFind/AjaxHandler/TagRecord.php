@@ -51,38 +51,14 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader
-     *
-     * @var Loader
-     */
-    protected $loader;
-
-    /**
-     * Tag parser
-     *
-     * @var Tags
-     */
-    protected $tagParser;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
      * Constructor
      *
-     * @param Loader    $loader Record loader
-     * @param Tags      $parser Tag parser
-     * @param User|bool $user   Logged in user (or false)
+     * @param Loader $loader    Record loader
+     * @param Tags   $tagParser Tag parser
+     * @param ?User  $user      Logged in user (or null)
      */
-    public function __construct(Loader $loader, Tags $parser, $user)
+    public function __construct(protected Loader $loader, protected Tags $tagParser, protected ?User $user)
     {
-        $this->loader = $loader;
-        $this->tagParser = $parser;
-        $this->user = $user;
     }
 
     /**

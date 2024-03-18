@@ -75,7 +75,6 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
 
         $this->setOptionsFromConfig();
-        $facetConf = $configLoader->get($this->facetsIni);
     }
 
     /**
