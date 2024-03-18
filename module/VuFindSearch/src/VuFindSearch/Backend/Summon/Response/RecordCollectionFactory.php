@@ -29,8 +29,8 @@
 
 namespace VuFindSearch\Backend\Summon\Response;
 
-use VuFindSearch\Backend\Solr\Response\Json\Record;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\JsonRecord as Record;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use function call_user_func;

@@ -50,12 +50,16 @@ class JsonRecord implements RecordInterface
     /**
      * Constructor.
      *
-     * @param array $fields Document fields
+     * @param array   $fields   Document fields
+     * @param ?string $sourceId Record source identifier (optional)
      *
      * @return void
      */
-    public function __construct(protected array $fields)
+    public function __construct(protected array $fields, ?string $sourceId = null)
     {
+        if ($sourceId) {
+            $this->setSourceIdentifiers($sourceId);
+        }
     }
 
     /**

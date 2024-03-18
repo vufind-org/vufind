@@ -54,7 +54,6 @@ class Record extends JsonRecord
      */
     public function __construct(array $fields)
     {
-        parent::__construct($fields);
-        $this->setSourceIdentifiers('Solr');
+        parent::__construct($fields, 'Solr');
     }
 }
