@@ -586,7 +586,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Permanent Link to the resource on your institutions Overdrive site
+     * Get Permanent Link to the resource on your institution's OverDrive site
      *
      * @return string the permanent link to the resource
      */
