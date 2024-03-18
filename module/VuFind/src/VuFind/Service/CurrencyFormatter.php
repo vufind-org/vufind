@@ -63,18 +63,19 @@ class CurrencyFormatter
      *
      * @param string $defaultCurrency Default currency format (ISO 4217) to use (null
      * for default from locale)
+     * @param string $locale          Locale to use for number formatting (null for
+     * default system locale)
      */
-    public function __construct($defaultCurrency = null)
+    public function __construct($defaultCurrency = null, $locale = null)
     {
         // Initialize number formatter:
-        $locale = setlocale(LC_MONETARY, 0);
+        $locale ??= setlocale(LC_MONETARY, 0);
         $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
 
         // Initialize default currency:
         if (null === $defaultCurrency) {
             $localeInfo = localeconv();
-            $defaultCurrency = isset($localeInfo['int_curr_symbol'])
-                ? trim($localeInfo['int_curr_symbol']) : '';
+            $defaultCurrency = trim($localeInfo['int_curr_symbol'] ?? '');
         }
         $this->defaultCurrency = empty($defaultCurrency) ? 'USD' : $defaultCurrency;
     }
