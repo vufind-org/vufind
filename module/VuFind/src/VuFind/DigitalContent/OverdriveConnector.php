@@ -1669,7 +1669,7 @@ class OverdriveConnector implements
      * @param bool   $allowRedirects Whether to allow the client to follow redirects
      *
      * @return \Laminas\Http\Client
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getHttpClient($url = null, $allowRedirects = true)
     {
