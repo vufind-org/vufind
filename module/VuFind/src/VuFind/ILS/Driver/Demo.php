@@ -751,12 +751,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     /**
      * Set Status
      *
-     * @param array $id      id for record
-     * @param array $holding associative array with options to specify
+     * @param string $id      id for record
+     * @param array  $holding associative array with options to specify
      *      number, barcode, availability, status, location,
      *      reserve, callnumber, duedate, is_holdable, and addLink
-     * @param bool  $append  add another record or replace current record
-     * @param array $patron  Patron data
+     * @param bool   $append  add another record or replace current record
+     * @param array  $patron  Patron data
      *
      * @return array
      */
