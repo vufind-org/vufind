@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Simple, schema-less SOLR record.
+ * Simple, schema-less JSON record.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,38 +23,50 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 
-namespace VuFindSearch\Backend\Solr\Response\Json;
-
-use VuFindSearch\Response\JsonRecord;
+namespace VuFindSearch\Response;
 
 /**
- * Simple, schema-less SOLR record.
+ * Simple, schema-less JSON record.
  *
  * This record primarily serves as an example or blueprint for a schema-less
- * record. All SOLR fields are exposed via object properties.
+ * record. All fields are exposed via object properties.
  *
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Record extends JsonRecord
+class JsonRecord implements RecordInterface
 {
+    use RecordTrait;
+
     /**
      * Constructor.
      *
-     * @param array $fields SOLR document fields
+     * @param array $fields Document fields
      *
      * @return void
      */
-    public function __construct(array $fields)
+    public function __construct(protected array $fields)
     {
-        parent::__construct($fields);
-        $this->setSourceIdentifiers('Solr');
+    }
+
+    /**
+     * __get()
+     *
+     * @param string $name Field name
+     *
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->fields[$name] ?? null;
     }
 }
