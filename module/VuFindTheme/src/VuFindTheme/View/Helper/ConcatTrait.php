@@ -240,7 +240,9 @@ trait ConcatTrait
         }
         $cacheDir = LOCAL_CACHE_DIR . '/public/';
         if (!is_dir($cacheDir) && !file_exists($cacheDir)) {
-            mkdir($cacheDir);
+            if (!mkdir($cacheDir)) {
+                throw new \Exception("Unexpected problem creating cache directory: $cacheDir");
+            }
         }
         return $cacheDir;
     }
