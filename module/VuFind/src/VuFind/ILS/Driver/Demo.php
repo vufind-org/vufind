@@ -760,9 +760,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array
      */
-    protected function setStatus($id, $holding = [], $append = true, $patron = null)
+    protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
     {
-        $id = (string)$id;
         $session = $this->getSession($patron['id'] ?? null);
         $i = isset($session->statuses[$id])
             ? count($session->statuses[$id]) + 1 : 1;
