@@ -33,7 +33,9 @@ namespace VuFind\Auth;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\PasswordSecurity as PasswordSecurityException;
 
 use function in_array;
 use function is_int;
@@ -164,9 +166,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
-    public function authenticate($request): \VuFind\Db\Row\User
+    public function authenticate($request): User
     {
         $code = $request->getQuery()->get('code');
 
@@ -193,20 +195,58 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         }
 
         $accessToken = $request_token->access_token;
-
         $userInfo = $this->getUserInfo($accessToken);
+        return $this->setUserAttributes($userInfo);
+    }
+
+    /**
+     * Set user attributes from user info claim
+     *
+     * @param object $userInfo User info claim object
+     *
+     * @return User
+     * @throws AuthException
+     * @throws PasswordSecurityException
+     */
+    protected function setUserAttributes(object $userInfo): User
+    {
+        $availableAttributes = [
+            'firstname',
+            'lastname',
+            'email',
+            'cat_id',
+            'cat_username',
+            'cat_password',
+            'college',
+            'major',
+            'home_library',
+        ];
         $user = $this->getUserTable()->getByUsername($userInfo->sub);
-        foreach ($this->getAttributesMappings() as $userAttr => $infoAttr) {
+        $attrMappings = array_filter(
+            $this->getAttributesMappings(),
+            function ($key) use ($availableAttributes) {
+                return in_array($key, $availableAttributes);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+        $catPassword = null;
+        foreach ($attrMappings as $userAttr => $infoAttr) {
             $attrValue = $this->getAttributeValue($userInfo, $infoAttr);
             if (!empty($attrValue)) {
                 if ($userAttr === 'email') {
                     $user->updateEmail($attrValue);
                     continue;
                 }
+                if ($userAttr === 'cat_password') {
+                    $catPassword = $attrValue;
+                    continue;
+                }
                 $user->$userAttr = $attrValue;
             }
         }
-
+        if (!empty($user->cat_username)) {
+            $user->saveCredentials($user->cat_username, $catPassword ?? $user->getCatPassword());
+        }
         $user->save();
         return $user;
     }
