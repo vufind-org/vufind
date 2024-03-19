@@ -109,7 +109,7 @@
         </ul>
       </nav>
 
-      <?php if(!($this->templateDir == 'search' && $this->templateName == 'home')): ?>
+      <?php if($this->layout()->notifications !== false): ?>
         <?=$this->context($this)->renderInContext('notifications/headerbroadcasts.phtml', [])?>
       <?php endif; ?>
     </div>
