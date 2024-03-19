@@ -47,51 +47,19 @@ use VuFind\OAuth2\Entity\UserEntity;
 class IdentityRepository implements IdentityProviderInterface
 {
     /**
-     * User service
-     *
-     * @var UserServiceInterface
-     */
-    protected $userService;
-
-    /**
-     * Access token service
-     *
-     * @var AccessTokenServiceInterface
-     */
-    protected $accessTokenTable;
-
-    /**
-     * ILS connection
-     *
-     * @var ?Connection
-     */
-    protected $ils;
-
-    /**
-     * OAuth2 configuration
-     *
-     * @var array
-     */
-    protected $oauth2Config;
-
-    /**
      * Constructor
      *
      * @param UserServiceInterface        $userService        User service
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      * @param ?Connection                 $ils                ILS connection
-     * @param array                       $config             OAuth2 configuration
+     * @param array                       $oauth2Config       OAuth2 configuration
      */
     public function __construct(
-        UserServiceInterface $userService,
-        AccessTokenServiceInterface $accessTokenService,
-        ?Connection $ils,
-        array $config
+        protected UserServiceInterface $userService,
+        protected AccessTokenServiceInterface $accessTokenService,
+        protected ?Connection $ils,
+        protected array $oauth2Config
     ) {
-        $this->userService = $userService;
-        $this->accessTokenTable = $accessTokenService;
-        $this->ils = $ils;
-        $this->oauth2Config = $config;
     }
 
     /**
@@ -108,7 +76,7 @@ class IdentityRepository implements IdentityProviderInterface
                 $user,
                 $this->ils,
                 $this->oauth2Config,
-                $this->accessTokenTable
+                $this->accessTokenService
             );
         }
         return null;

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2023.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -70,13 +70,6 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     public const SESSION_NAME = 'OAuth2Server';
 
     /**
-     * OAuth2 configuration
-     *
-     * @var array
-     */
-    protected $oauth2Config;
-
-    /**
      * OAuth2 authorization server factory
      *
      * @var callable
@@ -91,94 +84,37 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     protected $resourceServerFactory;
 
     /**
-     * Laminas authorization service
-     *
-     * @var LmAuthorizationService
-     */
-    protected $authService;
-
-    /**
-     * CSRF validator
-     *
-     * @var CsrfInterface
-     */
-    protected $csrf;
-
-    /**
-     * Session container
-     *
-     * @var SessionContainer
-     */
-    protected $session;
-
-    /**
-     * Identity repository
-     *
-     * @var IdentityRepository
-     */
-    protected $identityRepository;
-
-    /**
-     * Access token service
-     *
-     * @var AccessTokenServiceInterface
-     */
-    protected $accessTokenService;
-
-    /**
-     * Claim extractor
-     *
-     * @var ClaimExtractor
-     */
-    protected $claimExtractor;
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface     $sm      Service locator
-     * @param array                       $config  OAuth2 configuration
-     * @param callable                    $asf     OAuth2 authorization server factory
-     * @param callable                    $rsf     OAuth2 resource server factory
-     * @param LmAuthorizationService      $authSrv Laminas authorization service
-     * @param CsrfInterface               $csrf    CSRF validator
-     * @param SessionContainer            $session Session container
-     * @param IdentityRepository          $ir      Identity repository
-     * @param AccessTokenServiceInterface $at      Access token service
-     * @param ClaimExtractor              $ce      Claim extractor
-     * @param PathResolver                $pr      Config file path resolver
+     * @param ServiceLocatorInterface     $sm                 Service locator
+     * @param array                       $oauth2Config       OAuth2 configuration
+     * @param callable                    $asf                OAuth2 authorization server factory
+     * @param callable                    $rsf                OAuth2 resource server factory
+     * @param LmAuthorizationService      $authService        Laminas authorization service
+     * @param CsrfInterface               $csrf               CSRF validator
+     * @param SessionContainer            $session            Session container
+     * @param IdentityRepository          $identityRepository Identity repository
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param ClaimExtractor              $claimExtractor     Claim extractor
+     * @param PathResolver                $pathResolver       Config file path resolver
      * path
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        array $config,
+        protected array $oauth2Config,
         callable $asf,
         callable $rsf,
-        LmAuthorizationService $authSrv,
-        CsrfInterface $csrf,
-        \Laminas\Session\Container $session,
-        IdentityRepository $ir,
-        AccessTokenServiceInterface $at,
-        ClaimExtractor $ce,
-        PathResolver $pr
+        protected LmAuthorizationService $authService,
+        protected CsrfInterface $csrf,
+        protected \Laminas\Session\Container $session,
+        protected IdentityRepository $identityRepository,
+        protected AccessTokenServiceInterface $accessTokenService,
+        protected ClaimExtractor $claimExtractor,
+        protected PathResolver $pathResolver
     ) {
         parent::__construct($sm);
-        $this->oauth2Config = $config;
         $this->oauth2ServerFactory = $asf;
         $this->resourceServerFactory = $rsf;
-        $this->authService = $authSrv;
-        $this->csrf = $csrf;
-        $this->session = $session;
-        $this->identityRepository = $ir;
-        $this->accessTokenService = $at;
-        $this->claimExtractor = $ce;
-        $this->pathResolver = $pr;
     }
 
     /**
@@ -251,7 +187,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             // in the access token table so that it can be retrieved for token or
             // user info action:
             $this->accessTokenService
-                ->storeNonce($user->id, $laminasRequest->getQuery('nonce'));
+                ->storeNonce($user->getId(), $laminasRequest->getQuery('nonce'));
 
             $authRequest->setUser(
                 new UserEntity(

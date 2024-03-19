@@ -47,17 +47,11 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class UserService extends AbstractDbService implements
     LoggerAwareInterface,
+    DbServiceInterface,
     UserServiceInterface
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
-
-    /**
-     * User table.
-     *
-     * @var User
-     */
-    protected $userTable;
 
     /**
      * Is encryption enabled?
@@ -85,9 +79,8 @@ class UserService extends AbstractDbService implements
      *
      * @param User $userTable User table
      */
-    public function __construct(User $userTable)
+    public function __construct(protected User $userTable)
     {
-        $this->userTable = $userTable;
     }
 
     /**

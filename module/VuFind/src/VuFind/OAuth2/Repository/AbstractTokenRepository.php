@@ -47,27 +47,6 @@ use function is_callable;
 class AbstractTokenRepository
 {
     /**
-     * Token type.
-     *
-     * @var string
-     */
-    protected $tokenType;
-
-    /**
-     * Access token service
-     *
-     * @var AccessTokenServiceInterface
-     */
-    protected $accessTokenService;
-
-    /**
-     * Entity class
-     *
-     * @var string
-     */
-    protected $entityClass;
-
-    /**
      * Constructor
      *
      * @param string                      $tokenType          Token type
@@ -75,13 +54,10 @@ class AbstractTokenRepository
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      */
     public function __construct(
-        string $tokenType,
-        string $entityClass,
-        AccessTokenServiceInterface $accessTokenService
+        protected string $tokenType,
+        protected string $entityClass,
+        protected AccessTokenServiceInterface $accessTokenService
     ) {
-        $this->tokenType = $tokenType;
-        $this->entityClass = $entityClass;
-        $this->accessTokenService = $accessTokenService;
     }
 
     /**

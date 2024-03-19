@@ -50,52 +50,20 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
     use EntityTrait;
 
     /**
-     * User
-     *
-     * @var DbUserEntityInterface
-     */
-    protected $user;
-
-    /**
-     * ILS connection
-     *
-     * @var ?Connection
-     */
-    protected $ils;
-
-    /**
-     * OAuth2 configuration
-     *
-     * @var array
-     */
-    protected $oauth2Config;
-
-    /**
-     * Access token service
-     *
-     * @var AccessTokenServiceInterface
-     */
-    protected $accessTokenService;
-
-    /**
      * Constructor
      *
      * @param DbUserEntityInterface       $user               User
      * @param ?Connection                 $ils                ILS connection
-     * @param array                       $config             OAuth2 configuration
+     * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      */
     public function __construct(
-        DbUserEntityInterface $user,
-        ?Connection $ils,
-        array $config,
-        AccessTokenServiceInterface $accessTokenService
+        protected DbUserEntityInterface $user,
+        protected ?Connection $ils,
+        protected array $oauth2Config,
+        protected AccessTokenServiceInterface $accessTokenService
     ) {
         $this->setIdentifier($user->getId());
-        $this->user = $user;
-        $this->ils = $ils;
-        $this->oauth2Config = $config;
-        $this->accessTokenService = $accessTokenService;
     }
 
     /**
