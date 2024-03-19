@@ -4,7 +4,7 @@
     $this->headScript()->appendFile('vendor/dataTables.rowReorder.min.js');
 
     // Set up page title:
-    $this->headTitle($this->translate('Broadcasts Home'));
+    $this->headTitle($this->translate('Broadcasts'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-broadcasts', ['action' => 'Broadcasts']) . '">' . $this->transEsc('Notifications Broadcasts') . '</a></li>';
@@ -15,13 +15,13 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Broadcasts Home')?></h2>
+  <h2><?=$this->transEsc('Broadcasts')?></h2>
     <?=$this->flashmessages()?>
 
   <table id="notifications-list" class="table table-striped">
     <thead>
     <tr>
-      <th style="width:100px;"><?=$this->transEsc('Broadcasts Actions')?></th>
+      <th style="width:100px;"><?=$this->transEsc('Edit')?></th>
       <th><?=$this->transEsc('Broadcast')?></th>
     </tr>
     </thead>
@@ -54,7 +54,7 @@
     </tbody>
   </table>
 
-  <a href="<?=$this->url('admin/notifications-broadcasts', ['action' => 'EditBroadcast'])?>?broadcast_id=NEW"><?=$this->transEsc('Add New Broadcast')?></a>
+  <a href="<?=$this->url('admin/notifications-broadcasts', ['action' => 'EditBroadcast'])?>?broadcast_id=NEW"><?=$this->transEsc('Add New Notification')?></a>
 
 </div>
 

@@ -4,7 +4,7 @@
     $this->headScript()->appendFile('vendor/dataTables.rowReorder.min.js');
 
     // Set up page title:
-    $this->headTitle($this->translate('Pages Home'));
+    $this->headTitle($this->translate('Pages'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('Notifications Pages') . '</a></li>';
@@ -15,13 +15,13 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Pages Home')?></h2>
+  <h2><?=$this->transEsc('Pages')?></h2>
   <?=$this->flashmessages()?>
 
   <table id="notifications-list" class="table table-striped">
     <thead>
       <tr>
-        <th><?=$this->transEsc('Pages Actions')?></th>
+        <th><?=$this->transEsc('Edit')?></th>
         <th><?=$this->transEsc('Pages Nav Title')?></th>
       </tr>
     </thead>
@@ -46,7 +46,7 @@
     </tbody>
   </table>
 
-  <a href="<?=$this->url('admin/notifications-pages', ['action' => 'EditPage'])?>?page_id=NEW"><?=$this->transEsc('Add New Page')?></a>
+  <a href="<?=$this->url('admin/notifications-pages', ['action' => 'EditPage'])?>?page_id=NEW"><?=$this->transEsc('Add New Notification')?></a>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

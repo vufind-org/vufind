@@ -30,7 +30,7 @@
 
   <ul class="notifications-tabs">
       <?php foreach($this->languages as $index => $language): ?>
-        <li class="<?=$index == 0 ? ' active' : ''?>"><a href="#" class="notifications-tabs-nav" data-tab="notifications-tabs-<?=$language?>"><?=$this->transEsc('broadcasts_tab_header')?> (<?=strtoupper($language)?>)</a></li>
+        <li class="<?=$index == 0 ? ' active' : ''?>"><a href="#" class="notifications-tabs-nav" data-tab="notifications-tabs-<?=$language?>"><?=$this->transEsc('notifications_tab_header')?> (<?=strtoupper($language)?>)</a></li>
       <?php endforeach; ?>
   </ul>
 
