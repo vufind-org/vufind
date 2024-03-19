@@ -133,6 +133,16 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
         }
 
         foreach ($this->oauth2Config['ClaimMappings'] as $claim => $field) {
+            // Map legacy table field names to entity interface methods
+            $field = match ($field) {
+                'id' => 'getId',
+                'firstname' => 'getFirstname',
+                'lastname' => 'getLastname',
+                'email' => 'getEmail',
+                'last_language' => 'getLastLanguage',
+                default => $field
+            };
+
             switch ($field) {
                 case 'age':
                     if ($birthDate = $profile['birthdate'] ?? '') {
@@ -173,7 +183,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
                         $this->user->getFirstname() . ' ' . $this->user->getLastname()
                     );
                     break;
-                case 'last_language':
+                case 'getLastLanguage':
                     // Make sure any country code is in uppercase:
                     $value = $this->user->getLastLanguage();
                     $parts = explode('-', $value);
@@ -187,16 +197,14 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
                     if ($id) {
                         $result[$claim] = hash(
                             'sha256',
-                            $id
-                            . $this->oauth2Config['Server']['hashSalt']
+                            $id . $this->oauth2Config['Server']['hashSalt']
                         );
                     }
                     break;
                 default:
-                    $fieldGetMethod = sprintf('get%s', ucfirst($field));
                     if (
-                        (method_exists($this->user, $fieldGetMethod)
-                        && $value = $this->user->{$fieldGetMethod}())
+                        (method_exists($this->user, $field)
+                        && $value = $this->user->{$field}())
                         || ($value = $profile[$field] ?? null)
                     ) {
                         $result[$claim] = $value;
