@@ -30,6 +30,8 @@
 
 namespace VuFind\Auth;
 
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Exception\Auth as AuthException;
 
@@ -63,6 +65,13 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @var object
      */
     protected object $provider;
+
+    /**
+     * Open Id connect JWKs
+     *
+     * @var array
+     */
+    protected array $jwks = [];
 
     /**
      * Default attributes mappings
@@ -172,7 +181,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('authentication_error_admin: bad state');
         }
 
-        $claims = $this->decodeJWT($request_token->id_token, 1);
+        $claims = $this->decodeJWT($request_token->id_token);
 
         if (!$this->validateIssuer($claims->iss)) {
             throw new AuthException('authentication_error_admin: wrong issuer');
@@ -300,16 +309,17 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Decode JSON Web Token
      *
-     * @param string $jwt     JWT string
-     * @param int    $section number of part to decode
+     * @param string $jwt JWT string
      *
      * @return object
+     * @throws AuthException
      */
-    protected function decodeJWT(string $jwt, int $section = 0): object
+    protected function decodeJWT(string $jwt): object
     {
-        $parts = explode('.', $jwt);
-        $base64 = strtr($parts[$section], '-_', '+/');
-        return json_decode(base64_decode($base64));
+        [$headerEncoded, ] = explode('.', $jwt);
+        $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
+        $key = JWK::parseKey($this->getJwk($header->kid), $header->alg);
+        return JWT::decode($jwt, $key);
     }
 
     /**
@@ -362,5 +372,35 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         $attributeName = $this->oidcConfig->attributes[$attribute] ?? $attribute;
         return $userInfo->$attributeName ?? '';
+    }
+
+    /**
+     * Get JWKs from provider
+     *
+     * @return array
+     * @throws AuthException
+     */
+    protected function getJwks(): array
+    {
+        if (empty($this->jwks)) {
+            $jwks = json_decode($this->httpService->get($this->getProvider()->jwks_uri)->getBody(), true);
+            foreach ($jwks['keys'] as $jwk) {
+                $this->jwks[$jwk['kid']] = $jwk;
+            }
+        }
+        return $this->jwks;
+    }
+
+    /**
+     * Get JWK data
+     *
+     * @param string $kid Key id
+     *
+     * @return array
+     * @throws AuthException
+     */
+    protected function getJwk(string $kid): array
+    {
+        return $this->getJwks()[$kid];
     }
 }
