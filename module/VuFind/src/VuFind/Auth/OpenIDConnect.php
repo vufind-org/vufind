@@ -30,9 +30,15 @@
 
 namespace VuFind\Auth;
 
+use DomainException;
+use Firebase\JWT\BeforeValidException;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
+use InvalidArgumentException;
 use Laminas\Session\Container as SessionContainer;
+use UnexpectedValueException;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\PasswordSecurity as PasswordSecurityException;
@@ -131,14 +137,39 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $url .= str_ends_with($url, '/') ? '' : '/';
             $url .= '.well-known/openid-configuration';
             try {
-                $this->provider = json_decode($this->httpService->get($url)->getBody());
+                $provider = json_decode($this->httpService->get($url)->getBody());
             } catch (\Exception $e) {
                 throw new AuthException(
                     'Cannot fetch provider configuration: ' . $e->getMessage()
                 );
             }
+            $this->validateProviderMetadata($provider);
+            $this->provider = $provider;
         }
         return $this->provider;
+    }
+
+    /**
+     * Validate provider metadata
+     *
+     * @param object $provider Provider metadata
+     *
+     * @return bool
+     * @throws AuthException
+     */
+    protected function validateProviderMetadata(object $provider): bool
+    {
+        $required = ['authorization_endpoint', 'token_endpoint', 'userinfo_endpoint', 'issuer', 'jwks_uri'];
+        $missing = [];
+        foreach ($required as $item) {
+            if (!isset($provider->$item)) {
+                $missing[] = $item;
+            }
+        }
+        if (!empty($missing)) {
+            throw new AuthException('Missing required provider metadata: ' . implode(', ', $missing));
+        }
+        return true;
     }
 
     /**
@@ -259,10 +290,10 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * may override this).
      *
      * @return bool|string
+     * @throws AuthException
      */
     public function getSessionInitiator($target): bool|string
     {
-        $provider = $this->getProvider();
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)
         $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=oidc';
@@ -277,7 +308,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'state' => $this->session->oidc_state,
             'scope' => 'openid profile email',
         ];
-        return $provider->authorization_endpoint . '?' . http_build_query($params);
+        return $this->getProvider()->authorization_endpoint . '?' . http_build_query($params);
     }
 
     /**
@@ -286,13 +317,15 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param string $code Code to look up.
      *
      * @return object
+     * @throws AuthException
      */
     protected function getRequestToken(string $code): object
     {
         if (isset($this->requestToken)) {
             return $this->requestToken;
         }
-        $url = $this->getProvider()->token_endpoint;
+        $provider = $this->getProvider();
+        $url = $provider->token_endpoint;
         $params = [
            'grant_type' => 'authorization_code',
            'code' => $code,
@@ -300,9 +333,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
            'client_id' => $this->getConfig()->OpenIDConnect->client_id,
            'client_secret' => $this->getConfig()->OpenIDConnect->client_secret,
         ];
-        $authMethods = $this->getProvider()->token_endpoint_auth_methods_supported;
+        $authMethods = $provider->token_endpoint_auth_methods_supported ?? null;
         $headers = [];
-        if (in_array('client_secret_basic', $authMethods)) {
+        if (in_array('client_secret_basic', $authMethods) || null === $authMethods) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
                     urlencode($this->getConfig()->OpenIDConnect->client_id) . ':'
@@ -333,6 +366,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param string $access_token Access token
      *
      * @return object
+     * @throws AuthException
      */
     protected function getUserInfo(string $access_token): object
     {
@@ -353,6 +387,12 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      *
      * @return object
      * @throws AuthException
+     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
+     * @throws DomainException
+     * @throws SignatureInvalidException
+     * @throws BeforeValidException
+     * @throws ExpiredException
      */
     protected function decodeJWT(string $jwt): object
     {
@@ -368,10 +408,11 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param string $iss Issuer
      *
      * @return bool
+     * @throws AuthException
      */
     protected function validateIssuer(string $iss): bool
     {
-        return $iss === ($this->getProvider()?->issuer ?? '');
+        return $iss === $this->getProvider()->issuer;
     }
 
     /**
@@ -380,6 +421,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @param object $claims Claims from authentication response
      *
      * @return bool
+     * @throws AuthException
      */
     protected function verifyJwtClaims(object $claims): bool
     {
