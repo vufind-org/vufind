@@ -2,7 +2,7 @@
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>">
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
 <?php endif; ?>
-<?php $user = $this->auth()->isLoggedIn(); ?>
+<?php $user = $this->auth()->getUserObject(); ?>
 <nav class="bulkActionButtons">
   <?php
   $socialConfig = $this->config()->get('config')['Social'];

@@ -34,7 +34,7 @@ chdir(APPLICATION_PATH);
 
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
-    $loader = include 'vendor/autoload.php';
+    include 'vendor/autoload.php';
     $loader = new Composer\Autoload\ClassLoader();
     $loader->addClassMap(['minSO' => __DIR__ . '/../src/VuFind/Search/minSO.php']);
     $loader->add('VuFindTest', __DIR__ . '/unit-tests/src');

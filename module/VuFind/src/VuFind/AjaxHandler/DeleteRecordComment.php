@@ -48,38 +48,14 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Comments database table
-     *
-     * @var Comments
-     */
-    protected $table;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * Are comments enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
      * Constructor
      *
-     * @param Comments  $table   Comments database table
-     * @param User|bool $user    Logged in user (or false)
-     * @param bool      $enabled Are comments enabled?
+     * @param Comments $table   Comments database table
+     * @param ?User    $user    Logged in user (or null)
+     * @param bool     $enabled Are comments enabled?
      */
-    public function __construct(Comments $table, $user, $enabled = true)
+    public function __construct(protected Comments $table, protected ?User $user, protected $enabled = true)
     {
-        $this->table = $table;
-        $this->user = $user;
-        $this->enabled = $enabled;
     }
 
     /**
@@ -99,7 +75,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
             );
         }
 
-        if ($this->user === false) {
+        if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
                 self::STATUS_HTTP_NEED_AUTH

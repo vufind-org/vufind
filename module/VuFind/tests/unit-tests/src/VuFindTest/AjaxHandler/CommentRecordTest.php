@@ -52,12 +52,12 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Set up a CommentRecord handler for testing.
      *
-     * @param bool      $enabled Are comments enabled?
-     * @param User|bool $user    Return value for isLoggedIn() in auth manager
+     * @param bool  $enabled Are comments enabled?
+     * @param ?User $user    Return value for getUserObject() in auth manager
      *
      * @return CommentRecord
      */
-    protected function getHandler($enabled = true, $user = false)
+    protected function getHandler($enabled = true, $user = null)
     {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:

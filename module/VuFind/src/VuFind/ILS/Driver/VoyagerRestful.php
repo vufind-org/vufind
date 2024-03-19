@@ -208,7 +208,7 @@ class VoyagerRestful extends Voyager implements
     protected $checkLoans;
 
     /**
-     * Item locations exluded from item availability check.
+     * Item locations excluded from item availability check.
      *
      * @var string
      */

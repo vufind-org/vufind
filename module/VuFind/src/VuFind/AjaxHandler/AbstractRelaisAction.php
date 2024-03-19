@@ -48,33 +48,17 @@ abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAw
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Relais connector
-     *
-     * @var Relais
-     */
-    protected $relais;
-
-    /**
-     * Logged-in user (or null if none)
-     *
-     * @var User
-     */
-    protected $user;
-
-    /**
      * Constructor
      *
      * @param SessionSettings $ss     Session settings
      * @param Relais          $relais Relais connector
-     * @param User            $user   Logged in user (or null if none)
+     * @param ?User           $user   Logged in user (or null if none)
      */
     public function __construct(
         SessionSettings $ss,
-        Relais $relais,
-        User $user = null
+        protected Relais $relais,
+        protected ?User $user
     ) {
         $this->sessionSettings = $ss;
-        $this->relais = $relais;
-        $this->user = $user;
     }
 }

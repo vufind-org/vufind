@@ -103,9 +103,6 @@ class AlmaDatabase extends Database
             return parent::create($request);
         }
 
-        // User variable
-        $user = null;
-
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
 

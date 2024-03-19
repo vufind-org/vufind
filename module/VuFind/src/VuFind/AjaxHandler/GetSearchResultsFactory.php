@@ -74,7 +74,7 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn() ?: null,
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $container->get(\Laminas\Session\SessionManager::class)->getId(),
             $container->get(\VuFind\Search\SearchNormalizer::class),
             $container->get(\VuFind\Db\Table\PluginManager::class)->get(\VuFind\Db\Table\Search::class),

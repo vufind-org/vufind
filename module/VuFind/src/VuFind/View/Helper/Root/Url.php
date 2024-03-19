@@ -65,23 +65,22 @@ class Url extends \Laminas\View\Helper\Url
     /**
      * Generates a url given the name of a route.
      *
-     * @param string            $name               Name of the route
-     * @param array             $params             Parameters for the link
-     * @param array|Traversable $options            Options for the route
-     * @param bool              $reuseMatchedParams Whether to reuse matched
+     * @param string             $name               Name of the route
+     * @param array              $params             Parameters for the link
+     * @param array|\Traversable $options            Options for the route
+     * @param bool               $reuseMatchedParams Whether to reuse matched
      * parameters
      *
-     * @see Laminas\Mvc\Router\RouteInterface::assemble()
-     * @see Laminas\Router\RouteInterface::assemble()
+     * @see \Laminas\Router\RouteInterface::assemble()
      *
-     * @throws Exception\RuntimeException If no RouteStackInterface was provided
-     * @throws Exception\RuntimeException If no RouteMatch was provided
-     * @throws Exception\RuntimeException If RouteMatch didn't contain a matched
+     * @throws \Laminas\View\Exception\RuntimeException If no RouteStackInterface was provided
+     * @throws \Laminas\View\Exception\RuntimeException If no RouteMatch was provided
+     * @throws \Laminas\View\Exception\RuntimeException If RouteMatch didn't contain a matched
      * route name
-     * @throws Exception\InvalidArgumentException If the params object was not an
+     * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an
      * array or Traversable object.
      *
-     * @return string Url For the link href attribute
+     * @return self|string Url For the link href attribute
      */
     public function __invoke(
         $name = null,

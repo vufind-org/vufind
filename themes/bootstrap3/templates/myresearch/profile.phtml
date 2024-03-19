@@ -9,7 +9,7 @@
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -84,8 +84,8 @@
     <?php endif; ?>
   </div>
 
-  <?php $user = $this->auth()->isLoggedIn(); ?>
-  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
+  <?php $user = $this->auth()->getUserObject(); ?>
+  <?php if ($user && $this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
     <h3><?=$this->transEsc('Saved Logins')?></h3>
     <?php $tokens = $user->getLoginTokens($user->id); ?>
     <?php if (!$tokens): ?>

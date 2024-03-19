@@ -402,6 +402,9 @@ var VuFind = (function VuFind() {
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
+    if (typeof this.explain !== 'undefined') {
+      this.explain.init();
+    }
   };
 
   var init = function init() {
@@ -654,10 +657,10 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
-    $('[data-toggle="offcanvas"]').on("click", function offcanvasClick(e) {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
+    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
       e.preventDefault();
-      $('body.offcanvas').toggleClass('active');
+      $('body.vufind-offcanvas').toggleClass('active');
     });
   }
 }
@@ -744,7 +747,7 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-$(function commonDocReady() {
+document.addEventListener('DOMContentLoaded', () => {
   // Start up all of our submodules
   VuFind.init();
   // Off canvas
@@ -758,6 +761,9 @@ $(function commonDocReady() {
   // Print
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
-    $("link[media='print']").attr("media", "all");
+    var printStylesheets = document.querySelectorAll('link[media="print"]');
+    printStylesheets.forEach((stylesheet) => {
+      stylesheet.media = 'all';
+    });
   }
 });

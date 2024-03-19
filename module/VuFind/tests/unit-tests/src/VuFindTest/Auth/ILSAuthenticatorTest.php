@@ -55,8 +55,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser(['saveCredentials']);
         $user->expects($this->once())->method('saveCredentials')
             ->with($this->equalTo('user'), $this->equalTo('pass'));
-        $manager = $this->getMockManager(['isLoggedIn', 'updateSession']);
-        $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
+        $manager = $this->getMockManager(['getUserObject', 'updateSession']);
+        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $manager->expects($this->once())->method('updateSession')->with($this->equalTo($user));
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection(['patronLogin']);
@@ -73,8 +73,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testNewCatalogFailure()
     {
-        $manager = $this->getMockManager(['isLoggedIn']);
-        $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue(false));
+        $manager = $this->getMockManager(['getUserObject']);
+        $manager->expects($this->any())->method('getUserObject')->willReturn(null);
         $details = false;
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
@@ -109,8 +109,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testLoggedOutStoredLoginAttempt()
     {
-        $manager = $this->getMockManager(['isLoggedIn']);
-        $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue(false));
+        $manager = $this->getMockManager(['getUserObject']);
+        $manager->expects($this->any())->method('getUserObject')->willReturn(null);
         $auth = $this->getAuthenticator($manager);
         $this->assertEquals(false, $auth->storedCatalogLogin());
     }
@@ -128,8 +128,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user->expects($this->any())->method('__isset')
             ->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
-        $manager = $this->getMockManager(['isLoggedIn']);
-        $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
+        $manager = $this->getMockManager(['getUserObject']);
+        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
@@ -156,8 +156,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
         $user->expects($this->once())->method('clearCredentials');
-        $manager = $this->getMockManager(['isLoggedIn']);
-        $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
+        $manager = $this->getMockManager(['getUserObject']);
+        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue(false));
@@ -181,8 +181,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user->expects($this->any())->method('__isset')
             ->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
-        $manager = $this->getMockManager(['isLoggedIn']);
-        $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
+        $manager = $this->getMockManager(['getUserObject']);
+        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())
             ->method('patronLogin')

@@ -218,7 +218,7 @@ class Bootstrapper
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
         if (
-            ($user = $authManager->isLoggedIn())
+            ($user = $authManager->getUserObject())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);
@@ -298,7 +298,7 @@ class Bootstrapper
         $bm = $this->container->get(\VuFind\Search\BackendManager::class);
         $events = $this->container->get('SharedEventManager');
         $events->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_RESOLVE,
             [$bm, 'onResolve']
         );

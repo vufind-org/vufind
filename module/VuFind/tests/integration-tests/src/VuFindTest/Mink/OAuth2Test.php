@@ -124,7 +124,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $redirectUri Redirect URI
      *
-     * @return array
+     * @return void
      */
     protected function setUpTest(string $redirectUri): void
     {

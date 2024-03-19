@@ -11,7 +11,7 @@
   $renewAll = !$this->ilsPaging || !$paginator;
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -19,7 +19,7 @@
   <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->transactions)): ?>
     <nav class="search-header hidden-print">

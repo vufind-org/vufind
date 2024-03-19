@@ -1,5 +1,5 @@
 <?php
-$user = $this->auth()->isLoggedIn();
+$user = $this->auth()->getUserObject();
 $avail = $this->driver->getOverdriveAvailability();
 $previews = $this->driver->getPreviewLinks();
 $od_id = $this->driver->getOverdriveID();
@@ -49,7 +49,7 @@ if ($availCode == 'od_code_login_for_avail') {
     } else {
         $checkedOut = $checkedOutResult->data;
         if (!$checkedOut) {
-            $hold = $this->driver->isHeld($user);
+            $hold = $this->driver->isHeld();
         }
 
         //this title is checked out

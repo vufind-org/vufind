@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,15 +50,12 @@ use function ini_get;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/index_reserves',
+    description: 'Course reserves index builder'
+)]
 class IndexReservesCommand extends AbstractSolrAndIlsCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/index_reserves';
-
     /**
      * Default delimiter for reading files
      *
@@ -87,7 +85,6 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
     protected function configure()
     {
         $this
-            ->setDescription('Course reserves index builder')
             ->setHelp(
                 'This tool populates your course reserves Solr index. If run with'
                 . ' no options, it will attempt to load data from your ILS.'

@@ -1,7 +1,7 @@
 <?php
-  $user = $this->auth()->isLoggedIn();
+  $user = $this->auth()->getUserObject();
 ?>
-<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+<button class="close-offcanvas btn btn-link" data-toggle="vufind-offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
 <nav class="myresearch-menu" aria-labelledby="acc-menu-acc-header">
   <ul class="account-menu">
@@ -14,12 +14,6 @@
   <h3 id="acc-menu-lists-header"><?=$this->transEsc('Your Lists')?></h3>
   <nav class="myresearch-menu" aria-labelledby="acc-menu-lists-header">
     <ul>
-      <li>
-        <a href="<?=$this->url('myresearch-favorites')?>" class="icon-link <?=$this->active == 'favorites' ? 'active' : ''?>">
-          <?=$this->icon('user-favorites', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->transEsc('Your Favorites')?></span>
-        </a>
-      </li>
       <?php
         // Use a variable so that we can output this nicely without whitespace that would get underlined:
         $publicInd = $this->icon(
@@ -31,7 +25,7 @@
         );
         $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
       ?>
-  
+
       <?php $lists = $user->getLists() ?>
       <?php foreach ($lists as $list): ?>
       <li>

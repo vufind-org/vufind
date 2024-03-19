@@ -47,7 +47,7 @@
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.3.0" />
+  <property name="solr_version" value="9.5.0" />
   <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
@@ -58,6 +58,8 @@
   <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
+  <property name="test_theme" value="" /><!-- set to a theme name to override the default theme for Mink tests -->
+  <property name="psql_needs_sudo" value="true" /><!-- set to false if psql (Postgresql) must be run with current user instead of sudo -->
 
   <property name="version" value="9.1.1" />
 
@@ -291,7 +293,7 @@
         <property name="paramCoverageDir" value="" />
       </else>
     </if>
-    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} VUFIND_TEST_THEME=${test_theme} SOLR_PORT=${solr_port} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
 
     <!-- Produce coverage reports -->
     <exec command="${srcdir}/vendor/bin/phpcov merge --clover ${coveragedir}/clover.xml --html ${coveragedir} ${coveragedir}/tmp" passthru="true" checkreturn="true" />
@@ -311,12 +313,12 @@
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} VUFIND_TEST_THEME=${test_theme} SOLR_PORT=${solr_port} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${phpunit_command} --stop-on-defect ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} VUFIND_TEST_THEME=${test_theme} SOLR_PORT=${solr_port} ${phpunit_command} --stop-on-defect ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -584,6 +586,11 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
+    <echo file="${contentdir}/content.phtml">&lt;?php include $this-&gt;parentTemplate('content/content.phtml');?&gt;
+
+&lt;div class="content-footer"&gt;Content page footer&lt;/div&gt;
+</echo>
+    <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test_fi.phtml">&lt;h1&gt;FINNISH TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test/test.phtml">&lt;h1&gt;SUB LEVEL PHTML&lt;/h1&gt;</echo>
@@ -596,11 +603,24 @@ return [
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
         <!-- build database -->
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <if>
+          <equals arg1="${psql_needs_sudo}" arg2="false" />
+          <then>
+            <exec command="psql -c &quot;DROP DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
+            <exec command="psql -c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            <exec command="psql -c &quot;CREATE DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="psql -c &quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="psql -c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" checkreturn="true" />
+          </then>
+          <else>
+            <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+            <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+            <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+          </else>
+        </if>
+
         <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
       </then>
