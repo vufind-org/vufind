@@ -16,22 +16,6 @@ VuFind.register('lightbox', function Lightbox() {
   function _storeClickedStatus() {
     _clickedButton = this;
   }
-  function _html(content) {
-    _modalBody.html(VuFind.updateCspNonce(content));
-    // Set or update title if we have one
-    var $h2 = _modalBody.find("h2:first-of-type");
-    if (_lightboxTitle && $h2.length > 0) {
-      $h2.text(_lightboxTitle);
-    }
-    if ($h2.length > 0) {
-      $h2.attr('id', 'lightbox-title');
-      _modal.attr('aria-labelledby', 'lightbox-title');
-    } else {
-      _modal.removeAttr('aria-labelledby');
-    }
-    _lightboxTitle = false;
-    _modal.modal('handleUpdate');
-  }
   function _emit(msg, _details) {
     var details = _details || {};
     var event;
@@ -47,6 +31,23 @@ VuFind.register('lightbox', function Lightbox() {
       event.initCustomEvent(msg, true, true, details);
     }
     return document.dispatchEvent(event);
+  }
+  function _html(content) {
+    _modalBody.html(VuFind.updateCspNonce(content));
+    // Set or update title if we have one
+    var $h2 = _modalBody.find("h2:first-of-type");
+    if (_lightboxTitle && $h2.length > 0) {
+      $h2.text(_lightboxTitle);
+    }
+    if ($h2.length > 0) {
+      $h2.attr('id', 'lightbox-title');
+      _modal.attr('aria-labelledby', 'lightbox-title');
+    } else {
+      _modal.removeAttr('aria-labelledby');
+    }
+    _lightboxTitle = false;
+    _modal.modal('handleUpdate');
+    _emit("VuFind.lightbox.render", _modalBody.get(0));
   }
 
   function _addQueryParameters(url, params) {

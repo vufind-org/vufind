@@ -44,6 +44,20 @@
                   <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
                 </ul>
               </div>
+              <?=
+                $this->component(
+                    'confirm-menu',
+                    [
+                      'label' => 'hold_cancel_selected',
+                      'toggleAttrs' => [
+                        'data-lightbox-ignore' => '',
+                        'name' => 'cancelSelected',
+                      ],
+                      'toggleClass' => 'btn btn-default dropdown-toggle',
+                    ]
+                )
+              ?>
+
               <div class="btn-group">
                 <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('hold_cancel_all') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
                 <ul class="dropdown-menu">
@@ -51,6 +65,19 @@
                   <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                   <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
                 </ul>
+                <?=
+                  $this->component(
+                      'confirm-menu',
+                      [
+                        'label' => 'hold_cancel_all',
+                        'toggleAttrs' => [
+                          'data-lightbox-ignore' => '',
+                          'name' => 'cancelAll',
+                        ],
+                        'toggleClass' => 'btn btn-default dropdown-toggle',
+                      ]
+                  )
+                ?>
               </div>
             <?php endif; ?>
           </div>
