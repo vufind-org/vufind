@@ -129,7 +129,7 @@ class PagesForm extends Form implements InputFilterProviderInterface, Translator
                 'name' => 'content_' . $language,
                 'type' => Textarea::class,
                 'options' => [
-                    'label' => $this->translate('notifications_content'),
+                    'label' => $this->translate('notifications_content_html'),
                 ],
                 'attributes' => [
                     'class' => 'form-control is_not_external_url_fields',
