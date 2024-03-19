@@ -4,7 +4,6 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
-        'vendor/jquery.dataTables.min.css',
         'compiled.css',
         'print.css:print',
     ],
@@ -41,8 +40,6 @@ return [
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
-        ['file' => 'vendor/jquery.dataTables.min.js', 'priority' => 240],
-        ['file' => 'vendor/dataTables.rowReorder.min.js', 'priority' => 250],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'searchbox_controls.js', 'priority' => 330],

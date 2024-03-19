@@ -1,4 +1,8 @@
 <?php
+    $this->headLink()->appendStylesheet('vendor/jquery.dataTables.min.css');
+    $this->headScript()->appendFile('vendor/jquery.dataTables.min.js');
+    $this->headScript()->appendFile('vendor/dataTables.rowReorder.min.js');
+
     // Set up page title:
     $this->headTitle($this->translate('Pages Home'));
 
