@@ -3,9 +3,9 @@
         <?=$this->transEsc('Refine Results') ?>
     </a>
 <?php else: ?>
-    <a class="search-filter-toggle icon-link" href="#search-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
-        <?='left' === $side ? $this->icon('offcanvas-show-left', 'icon-link__icon') : ''?>
+    <a class="search-filter-toggle icon-link" href="#search-sidebar" data-toggle="vufind-offcanvas" title="<?=$this->transEscAttr('sidebar_expand')?>">
+        <?='left' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon') : ''?>
         <span class="icon-link__label"><?=$this->transEsc('Refine Results') ?></span>
-        <?='right' === $side ? $this->icon('offcanvas-show-right', 'icon-link__icon') : ''?>
+        <?='right' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-show-left' : 'offcanvas-show-right', 'icon-link__icon') : ''?>
     </a>
 <?php endif; ?>
