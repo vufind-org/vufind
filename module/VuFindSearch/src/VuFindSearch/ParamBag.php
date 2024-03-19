@@ -162,7 +162,7 @@ class ParamBag implements \Countable
             $this->params[$name] = [];
         }
         if (is_array($value)) {
-            $this->params[$name] = array_merge($this->params[$name], $value);
+            $this->params[$name] = array_unique(array_merge($this->params[$name], $value));
         } else {
             $this->params[$name][] = $value;
         }
