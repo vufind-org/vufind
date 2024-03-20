@@ -29,9 +29,9 @@
 
 namespace VuFindTest\OAuth2\Repository;
 
+use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
