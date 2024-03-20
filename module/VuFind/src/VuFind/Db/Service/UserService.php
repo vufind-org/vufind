@@ -47,11 +47,9 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class UserService extends AbstractDbService implements
     LoggerAwareInterface,
-    DbServiceInterface,
     UserServiceInterface
 {
     use LoggerAwareTrait;
-    use DbServiceAwareTrait;
 
     /**
      * Is encryption enabled?

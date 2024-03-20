@@ -48,7 +48,6 @@ class AccessTokenService extends AbstractDbService implements
     LoggerAwareInterface
 {
     use LoggerAwareTrait;
-    use DbServiceAwareTrait;
 
     /**
      * Access token table.
