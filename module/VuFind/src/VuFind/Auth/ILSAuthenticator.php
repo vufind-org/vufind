@@ -91,9 +91,9 @@ class ILSAuthenticator
     /**
      * Constructor
      *
-     * @param callable            $authCB    Auth manager callback
-     * @param ILSConnection       $catalog   ILS connection
-     * @param ?EmailAuthenticator $emailAuth Email authenticator
+     * @param callable            $authCB             Auth manager callback
+     * @param ILSConnection       $catalog            ILS connection
+     * @param ?EmailAuthenticator $emailAuthenticator Email authenticator
      */
     public function __construct(
         callable $authCB,

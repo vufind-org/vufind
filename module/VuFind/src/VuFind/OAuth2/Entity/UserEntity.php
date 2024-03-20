@@ -57,6 +57,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
      * @param ?Connection                 $ils                ILS connection
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param ILSAuthenticator            $ilsAuthenticator   ILS authenticator
      */
     public function __construct(
         protected DbUserEntityInterface $user,

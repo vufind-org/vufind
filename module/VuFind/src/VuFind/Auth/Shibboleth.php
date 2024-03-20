@@ -36,7 +36,6 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Exception\Auth as AuthException;
 
@@ -107,7 +106,7 @@ class Shibboleth extends AbstractBase
         protected \Laminas\Session\ManagerInterface $sessionManager,
         protected ConfigurationLoaderInterface $configurationLoader,
         protected Request $request,
-        protected ILSAuthenticator $ilsAuthenticator;
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
     }
 

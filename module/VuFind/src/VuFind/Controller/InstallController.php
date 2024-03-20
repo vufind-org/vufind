@@ -32,7 +32,6 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
-use VuFind\Db\Service\UserService;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
