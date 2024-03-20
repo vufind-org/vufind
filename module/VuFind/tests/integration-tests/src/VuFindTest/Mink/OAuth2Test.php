@@ -31,8 +31,6 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
-use const PHP_MAJOR_VERSION;
-
 /**
  * OAuth2/OIDC test class.
  *
