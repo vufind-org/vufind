@@ -31,6 +31,7 @@ namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
+use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Entity\RefreshTokenEntity;
 
@@ -76,7 +77,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return void
      *
-     * @throws UniqueTokenIdentifierConstraintViolationException
+     * @throws InvalidArgumentException
      */
     public function persistNewRefreshToken(RefreshTokenEntityInterface $entity)
     {

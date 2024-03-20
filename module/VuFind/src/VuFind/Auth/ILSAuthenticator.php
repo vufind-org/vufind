@@ -218,7 +218,9 @@ class ILSAuthenticator
         }
 
         try {
-            $patron = $this->emailAuthenticator->authenticate($hash);
+            $loginData = $this->emailAuthenticator->authenticate($hash);
+            // Check if we have more granular data available:
+            $patron = $loginData['userData'] ?? $loginData;
         } catch (\VuFind\Exception\Auth $e) {
             return false;
         }

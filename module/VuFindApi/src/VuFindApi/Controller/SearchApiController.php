@@ -30,6 +30,9 @@
 
 namespace VuFindApi\Controller;
 
+use Exception;
+use Laminas\Http\Exception\InvalidArgumentException;
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
@@ -202,7 +205,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException|InvalidArgumentException|Exception
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
@@ -261,7 +264,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             } else {
                 $results[] = $loader->load($request['id'], $this->searchClassId);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->output(
                 [],
                 self::STATUS_ERROR,
@@ -348,7 +351,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                     }
                 }
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
         }
 

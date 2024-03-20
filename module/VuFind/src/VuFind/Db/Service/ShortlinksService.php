@@ -82,7 +82,7 @@ class ShortlinksService extends AbstractDbService implements LoggerAwareInterfac
             $shortlink->setHash($b62->encode($id));
             $this->entityManager->persist($shortlink);
             $this->entityManager->flush();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logError('Could not save shortlink: ' . $e->getMessage());
             throw $e;
         }
@@ -98,13 +98,14 @@ class ShortlinksService extends AbstractDbService implements LoggerAwareInterfac
      *                              lookups (may be increased to enforce uniqueness)
      * @param int    $maxHashLength The maximum allowed hash length
      *
+     * @throws Exception
      * @return string
      */
     public function saveAndShortenHash($path, $hash, $length, $maxHashLength)
     {
         // Validate hash length:
         if ($length > $maxHashLength) {
-            throw new \Exception(
+            throw new Exception(
                 'Could not generate unique hash under ' . $maxHashLength
                 . ' characters in length.'
             );
@@ -133,7 +134,7 @@ class ShortlinksService extends AbstractDbService implements LoggerAwareInterfac
                 $this->entityManager->persist($shortlink);
                 $this->entityManager->flush();
                 $this->entityManager->getConnection()->commit();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logError('Could not save shortlink: ' . $e->getMessage());
                 $this->entityManager->getConnection()->rollBack();
                 throw $e;

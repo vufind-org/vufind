@@ -160,7 +160,7 @@ class Form extends \Laminas\Form\Form implements
      * @param array  $prefill Prefill form with these values.
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function setFormId($formId, $params = [], $prefill = [])
     {
@@ -561,7 +561,7 @@ class Form extends \Laminas\Form\Form implements
      * @param string $formId Form id
      *
      * @return mixed null|array
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getFormConfig($formId = null)
     {
