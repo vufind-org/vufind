@@ -295,6 +295,12 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      */
     public function jwksAction()
     {
+        // Check that authorization server can be created (means that config is good):
+        try {
+            ($this->oauth2ServerFactory)(null);
+        } catch (\Exception $e) {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
         $result = [];
         $keyPath = $this->oauth2Config['Server']['publicKeyPath'] ?? '';
         if (strncmp($keyPath, '/', 1) !== 0) {
