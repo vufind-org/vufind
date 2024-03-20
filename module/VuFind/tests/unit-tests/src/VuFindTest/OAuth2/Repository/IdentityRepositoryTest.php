@@ -29,7 +29,11 @@
 
 namespace VuFindTest\OAuth2\Repository;
 
+use PHPUnit\Framework\InvalidArgumentException;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserService;
@@ -127,7 +131,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $this->getMockUserService(),
             $accessTokenService,
             $this->getMockILSConnection($blocks),
-            $this->oauth2Config
+            $this->oauth2Config,
+            $this->getMockILSAuthenticator()
         );
 
         $this->assertNull($repo->getUserEntityByIdentifier(1));
@@ -157,6 +162,25 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
+     * Get a mock ILSAuthenticator
+     *
+     * @return ILSAuthenticator
+     * @throws InvalidArgumentException
+     * @throws Exception
+     * @throws NoPreviousThrowableException
+     */
+    protected function getMockILSAuthenticator(): ILSAuthenticator
+    {
+        $mock = $this->createMock(ILSAuthenticator::class);
+        $mock->expects($this->any())->method('getCatPasswordForUser')->willReturnCallback(
+            function ($user) {
+                return $user->getRawCatPassword();
+            }
+        );
+        return $mock;
+    }
+
+    /**
      * Test identity repository with a failing ILS connection
      *
      * @return void
@@ -170,7 +194,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $this->getMockUserService(),
             $accessTokenService,
             $this->getMockFailingIlsConnection(),
-            $this->oauth2Config
+            $this->oauth2Config,
+            $this->getMockILSAuthenticator()
         );
 
         $user = $repo->getUserEntityByIdentifier(2);
@@ -200,20 +225,14 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     protected function getMockUser(): UserEntityInterface
     {
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getUserService'])
-            ->getMock();
-        $user->expects($this->any())->method('getUserService')
-            ->willReturn($this->createMock(\VuFind\Db\Service\UserService::class));
-
-        $user->id = 2;
-        $user->last_language = 'en-gb';
-        $user->firstname = 'Lib';
-        $user->lastname = 'Rarian';
-        $user->email = 'Lib.Rarian@library.not';
-        $user->cat_username = 'user';
-        $user->cat_password = 'pass';
+        $user = $this->createMock(User::class);
+        $user->expects($this->any())->method('getId')->willReturn(2);
+        $user->expects($this->any())->method('getFirstname')->willReturn('Lib');
+        $user->expects($this->any())->method('getLastname')->willReturn('Rarian');
+        $user->expects($this->any())->method('getLastLanguage')->willReturn('en-gb');
+        $user->expects($this->any())->method('getEmail')->willReturn('Lib.Rarian@library.not');
+        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
+        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         return $user;
     }
 
