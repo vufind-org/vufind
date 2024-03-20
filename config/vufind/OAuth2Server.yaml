@@ -28,6 +28,8 @@ Server:
   # Uncomment to disable key permission checks. Only meant for testing, so avoid in
   # any production-like environment if possible.
   #keyPermissionChecks: false
+  # Optional URL for public documentation (returned in the discovery response)
+  documentationUrl: ""
 
 # Known clients configuration
 Clients:
