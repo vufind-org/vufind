@@ -29,6 +29,7 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -82,37 +83,20 @@ class ILSAuthenticator
     protected $encryptionKey = null;
 
     /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config = null;
-
-    /**
      * Constructor
      *
      * @param callable            $authCB             Auth manager callback
      * @param ILSConnection       $catalog            ILS connection
      * @param ?EmailAuthenticator $emailAuthenticator Email authenticator
+     * @param ?Config             $config             Configuration from config.ini
      */
     public function __construct(
         callable $authCB,
         protected ILSConnection $catalog,
-        protected ?EmailAuthenticator $emailAuthenticator = null
+        protected ?EmailAuthenticator $emailAuthenticator = null,
+        protected ?Config $config = null
     ) {
         $this->authManagerCallback = $authCB;
-    }
-
-    /**
-     * Configuration setter
-     *
-     * @param \Laminas\Config\Config $config VuFind configuration
-     *
-     * @return void
-     */
-    public function setConfig(\Laminas\Config\Config $config)
-    {
-        $this->config = $config;
     }
 
     /**
