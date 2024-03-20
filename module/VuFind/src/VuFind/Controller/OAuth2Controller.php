@@ -347,7 +347,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
             'response_types_supported' => ['code'],
             'grant_types_supported' => ['authorization_code'],
             'subject_types_supported' => ['public'],
-            'id_token_signing_alg_values_supported' => ["RS256"],
+            'id_token_signing_alg_values_supported' => ['RS256'],
         ];
         if ($url = $this->oauth2Config['Server']['documentationUrl'] ?? null) {
             $configuration['service_documentation'] = $url;
