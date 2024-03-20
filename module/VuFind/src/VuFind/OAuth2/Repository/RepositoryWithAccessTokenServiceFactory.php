@@ -69,6 +69,6 @@ class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        return new $requestedName($dbPluginManager->get(\VuFind\Db\Service\AccessTokenService::class));
+        return new $requestedName($dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class));
     }
 }
