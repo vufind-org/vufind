@@ -113,6 +113,11 @@
   &:hover {
     text-decoration: none;
   }
+
+  @media (max-width: @screen-sm-max) {
+    margin-left: 0.5rem;
+    padding: @padding-base-vertical calc(@padding-base-horizontal / 2);
+  }
 }
 
 .tagList button {
