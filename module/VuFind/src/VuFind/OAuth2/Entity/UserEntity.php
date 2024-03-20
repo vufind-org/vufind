@@ -32,6 +32,7 @@ namespace VuFind\OAuth2\Entity;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 use League\OAuth2\Server\Entities\UserEntityInterface as OAuth2UserEntityInterface;
 use OpenIDConnectServer\Entities\ClaimSetInterface;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface as DbUserEntityInterface;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\ILS\Connection;
@@ -61,7 +62,8 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
         protected DbUserEntityInterface $user,
         protected ?Connection $ils,
         protected array $oauth2Config,
-        protected AccessTokenServiceInterface $accessTokenService
+        protected AccessTokenServiceInterface $accessTokenService,
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
         $this->setIdentifier($user->getId());
     }
@@ -80,7 +82,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
             try {
                 $patron = $this->ils->patronLogin(
                     $this->user->getCatUsername(),
-                    $this->user->getCatPassword()
+                    $this->ilsAuthenticator->getCatPasswordForUser($this->user)
                 );
                 $profile = $this->ils->getMyProfile($patron);
                 $blocksSupported = $this->ils

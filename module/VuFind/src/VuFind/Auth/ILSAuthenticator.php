@@ -29,6 +29,9 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
@@ -58,20 +61,6 @@ class ILSAuthenticator
     protected $authManager = null;
 
     /**
-     * ILS connector
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
-
-    /**
-     * Email authenticator
-     *
-     * @var EmailAuthenticator
-     */
-    protected $emailAuthenticator;
-
-    /**
      * Cache for ILS account information (keyed by username)
      *
      * @var array
@@ -79,20 +68,165 @@ class ILSAuthenticator
     protected $ilsAccount = [];
 
     /**
+     * Is encryption enabled?
+     *
+     * @var bool
+     */
+    protected $encryptionEnabled = null;
+
+    /**
+     * Encryption key used for catalog passwords (null if encryption disabled):
+     *
+     * @var string
+     */
+    protected $encryptionKey = null;
+
+    /**
+     * VuFind configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $config = null;
+
+    /**
      * Constructor
      *
-     * @param callable           $authCB    Auth manager callback
-     * @param ILSConnection      $catalog   ILS connection
-     * @param EmailAuthenticator $emailAuth Email authenticator
+     * @param callable            $authCB    Auth manager callback
+     * @param ILSConnection       $catalog   ILS connection
+     * @param ?EmailAuthenticator $emailAuth Email authenticator
      */
     public function __construct(
         callable $authCB,
-        ILSConnection $catalog,
-        EmailAuthenticator $emailAuth = null
+        protected ILSConnection $catalog,
+        protected ?EmailAuthenticator $emailAuthenticator = null
     ) {
         $this->authManagerCallback = $authCB;
-        $this->catalog = $catalog;
-        $this->emailAuthenticator = $emailAuth;
+    }
+
+    /**
+     * Configuration setter
+     *
+     * @param \Laminas\Config\Config $config VuFind configuration
+     *
+     * @return void
+     */
+    public function setConfig(\Laminas\Config\Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * Is ILS password encryption enabled?
+     *
+     * @return bool
+     */
+    public function passwordEncryptionEnabled()
+    {
+        if (null === $this->encryptionEnabled) {
+            $this->encryptionEnabled
+                = $this->config->Authentication->encrypt_ils_password ?? false;
+        }
+        return $this->encryptionEnabled;
+    }
+
+    /**
+     * Decrypt text.
+     *
+     * @param string $text The text to decrypt
+     *
+     * @return string|bool The decrypted string (or false if invalid)
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function decrypt(string $text)
+    {
+        return $this->encryptOrDecrypt($text, false);
+    }
+
+    /**
+     * Encrypt text.
+     *
+     * @param string $text The text to encrypt
+     *
+     * @return string|bool The encrypted string (or false if invalid)
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function encrypt(string $text)
+    {
+        return $this->encryptOrDecrypt($text, true);
+    }
+
+    /**
+     * This is a central function for encrypting and decrypting so that
+     * logic is all in one location
+     *
+     * @param string $text    The text to be encrypted or decrypted
+     * @param bool   $encrypt True if we wish to encrypt text, False if we wish to
+     * decrypt text.
+     *
+     * @return string|bool    The encrypted/decrypted string
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    protected function encryptOrDecrypt($text, $encrypt = true)
+    {
+        // Ignore empty text:
+        if (empty($text)) {
+            return $text;
+        }
+
+        $configAuth = $this->config->Authentication ?? new \Laminas\Config\Config([]);
+
+        // Load encryption key from configuration if not already present:
+        if ($this->encryptionKey === null) {
+            if (empty($configAuth->ils_encryption_key)) {
+                throw new \VuFind\Exception\PasswordSecurity(
+                    'ILS password encryption on, but no key set.'
+                );
+            }
+
+            $this->encryptionKey = $configAuth->ils_encryption_key;
+        }
+
+        // Perform encryption:
+        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
+
+        // Check if OpenSSL error is caused by blowfish support
+        try {
+            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            if ($algo == 'blowfish') {
+                trigger_error(
+                    'Deprecated encryption algorithm (blowfish) detected',
+                    E_USER_DEPRECATED
+                );
+            }
+        } catch (\InvalidArgumentException $e) {
+            if ($algo == 'blowfish') {
+                throw new \VuFind\Exception\PasswordSecurity(
+                    'The blowfish encryption algorithm ' .
+                    'is not supported by your version of OpenSSL. ' .
+                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
+                );
+            } else {
+                throw $e;
+            }
+        }
+        $cipher->setKey($this->encryptionKey);
+        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+    }
+
+    /**
+     * Given a user object, retrieve the decrypted password.
+     *
+     * @param UserEntityInterface $user User
+     *
+     * @return string
+     */
+    public function getCatPasswordForUser(UserEntityInterface $user)
+    {
+        if ($this->passwordEncryptionEnabled()) {
+            $encrypted = $user->getCatPassEnc();
+            return !empty($encrypted) ? $this->decrypt($encrypted) : null;
+        }
+        return $user->getRawCatPassword();
     }
 
     /**
@@ -137,7 +271,7 @@ class ILSAuthenticator
             }
             $patron = $this->catalog->patronLogin(
                 $user->cat_username,
-                $user->getCatPassword()
+                $this->getCatPasswordForUser($user)
             );
             if (empty($patron)) {
                 // Problem logging in -- clear user credentials so they can be

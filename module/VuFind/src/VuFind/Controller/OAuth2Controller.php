@@ -194,7 +194,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     $user,
                     $this->getILS(),
                     $this->oauth2Config,
-                    $this->accessTokenService
+                    $this->accessTokenService,
+                    $this->getILSAuthenticator()
                 )
             );
             $authRequest->setAuthorizationApproved($this->formWasSubmitted('allow'));

@@ -69,10 +69,7 @@ class UserServiceFactory extends AbstractDbServiceFactory
         }
         $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('user');
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
         $userService = parent::__invoke($container, $requestedName, [$userTable]);
-        $userService->setConfig($config);
         return $userService;
     }
 }

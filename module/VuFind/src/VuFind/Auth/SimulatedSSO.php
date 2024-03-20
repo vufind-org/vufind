@@ -30,6 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Exception\Auth as AuthException;
 
 use function is_array;
@@ -73,10 +74,11 @@ class SimulatedSSO extends AbstractBase
     /**
      * Constructor
      *
-     * @param callable $url    Session initiator URL callback
-     * @param array    $config Configuration settings
+     * @param callable         $url              Session initiator URL callback
+     * @param array            $config           Configuration settings
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
-    public function __construct($url, array $config = [])
+    public function __construct($url, array $config = [], protected ILSAuthenticator $ilsAuthenticator)
     {
         $this->getSessionInitiatorCallback = $url;
         $this->simulatedSSOConfig = $config;
@@ -120,7 +122,7 @@ class SimulatedSSO extends AbstractBase
         if (!empty($user->cat_username)) {
             $user->saveCredentials(
                 $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 
