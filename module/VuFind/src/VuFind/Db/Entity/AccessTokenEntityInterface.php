@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service abstract base class
+ * Entity model interface for access tokens.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,39 +22,55 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service;
-
-use Laminas\Db\RowGateway\AbstractRowGateway;
-use VuFind\Db\Entity\EntityInterface;
+namespace VuFind\Db\Entity;
 
 /**
- * Database service abstract base class
+ * Entity model interface for access tokens.
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-abstract class AbstractDbService implements DbServiceInterface
+interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
-     * Persist an entity.
+     * Set user ID.
      *
-     * @param EntityInterface $entity Entity to persist.
+     * @param ?string $userId User ID
      *
-     * @return void
+     * @return AccessTokenEntityInterface
      */
-    public function persistEntity(EntityInterface $entity): void
-    {
-        if (!$entity instanceof AbstractRowGateway) {
-            throw new \Exception('Unexpected entity type');
-        }
-        $entity->save();
-    }
+    public function setUserId(?string $userId): AccessTokenEntityInterface;
+
+    /**
+     * Set data.
+     *
+     * @param string $data Data
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setData(string $data): AccessTokenEntityInterface;
+
+    /**
+     * Is the access token revoked?
+     *
+     * @return bool
+     */
+    public function isRevoked(): bool;
+
+    /**
+     * Set revoked status.
+     *
+     * @param bool $revoked Revoked
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setRevoked(bool $revoked): AccessTokenEntityInterface;
 }

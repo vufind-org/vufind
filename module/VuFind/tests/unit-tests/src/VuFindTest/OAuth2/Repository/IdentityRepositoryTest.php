@@ -30,8 +30,10 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Row\User;
+use VuFind\Db\Service\UserService;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\OAuth2\Entity\UserEntity;
 use VuFind\OAuth2\Repository\IdentityRepository;
@@ -118,12 +120,12 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testIdentityRepository(?bool $blocks): void
     {
-        $accessTokenTable = $this->getMockAccessTokenTable();
+        $accessTokenService = $this->getMockAccessTokenService();
         $nonce = bin2hex(random_bytes(5));
-        $accessTokenTable->storeNonce(2, $nonce);
+        $accessTokenService->storeNonce(2, $nonce);
         $repo = new IdentityRepository(
-            $this->getMockUserTable(),
-            $accessTokenTable,
+            $this->getMockUserService(),
+            $accessTokenService,
             $this->getMockILSConnection($blocks),
             $this->oauth2Config
         );
@@ -139,6 +141,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 'name' => 'Lib Rarian',
                 'given_name' => 'Lib',
                 'family_name' => 'Rarian',
+                'email' => 'Lib.Rarian@library.not',
                 'age' => 18,
                 'birthdate' => $this->userBirthDate,
                 'locale' => 'en-GB',
@@ -160,12 +163,12 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testIdentityRepositoryWithFailingILS(): void
     {
-        $accessTokenTable = $this->getMockAccessTokenTable();
+        $accessTokenService = $this->getMockAccessTokenService();
         $nonce = bin2hex(random_bytes(5));
-        $accessTokenTable->storeNonce(2, $nonce);
+        $accessTokenService->storeNonce(2, $nonce);
         $repo = new IdentityRepository(
-            $this->getMockUserTable(),
-            $accessTokenTable,
+            $this->getMockUserService(),
+            $accessTokenService,
             $this->getMockFailingIlsConnection(),
             $this->oauth2Config
         );
@@ -180,6 +183,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 'name' => 'Lib Rarian',
                 'given_name' => 'Lib',
                 'family_name' => 'Rarian',
+                'email' => 'Lib.Rarian@library.not',
                 'locale' => 'en-GB',
                 'nonce' => $nonce,
                 'block_status' => null,
@@ -192,11 +196,11 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Get a mock user object
      *
-     * @return MockObject&UserRow
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUser(): UserRow
+    protected function getMockUser(): UserEntityInterface
     {
-        $user = $this->getMockBuilder(UserRow::class)
+        $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getUserService'])
             ->getMock();
@@ -207,23 +211,24 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $user->last_language = 'en-gb';
         $user->firstname = 'Lib';
         $user->lastname = 'Rarian';
+        $user->email = 'Lib.Rarian@library.not';
         $user->cat_username = 'user';
         $user->cat_password = 'pass';
         return $user;
     }
 
     /**
-     * Create a mock user table that returns a fake user object.
+     * Create a mock user service that returns a fake user object.
      *
-     * @return MockObject&\VuFind\Db\Table\User
+     * @return MockObject&\VuFind\Db\Service\UserServiceInterface
      */
-    protected function getMockUserTable(): UserTable
+    protected function getMockUserService(): UserServiceInterface
     {
         $user = $this->getMockUser();
-        $userTable = $this->getMockBuilder(UserTable::class)
+        $userTable = $this->getMockBuilder(UserService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $userTable->expects($this->any())->method('getById')
+        $userTable->expects($this->any())->method('getUserById')
             ->willReturnMap(
                 [
                     [1, null],
