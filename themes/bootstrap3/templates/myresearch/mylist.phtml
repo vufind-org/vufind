@@ -25,7 +25,7 @@
   $user = $this->auth()->getUserObject();
 ?>
 
-<?=$this->component('show-account-menu')?>
+<?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('saved_items')?></h2>

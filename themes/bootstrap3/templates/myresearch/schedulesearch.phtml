@@ -9,7 +9,7 @@
   $user = $this->auth()->getUserObject();
 ?>
 
-<?=$this->component('show-account-menu')?>
+<?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if ($user && !empty($user->email)): ?>

@@ -12,7 +12,7 @@
 
 <?php if ($this->auth()->getIdentity() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('show-account-menu')?>
+  <?=$this->component('show-account-menu-button')?>
 <?php endif; ?>
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
