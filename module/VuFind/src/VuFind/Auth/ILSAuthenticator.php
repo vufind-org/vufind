@@ -242,10 +242,10 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->getAuthManager()->getUserObject()) && !empty($user->cat_username)) {
+        if (($user = $this->getAuthManager()->getUserObject()) && !empty($user->getCatUsername())) {
             return [
-                'cat_username' => $user->cat_username,
-                'cat_password' => $user->cat_password,
+                'cat_username' => $user->getCatUsername(),
+                'cat_password' => $this->getCatPasswordForUser($user),
             ];
         }
         return false;
@@ -264,13 +264,13 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->getAuthManager()->getUserObject()) && !empty($user->cat_username)) {
+        if (($user = $this->getAuthManager()->getUserObject()) && $username = $user->getCatUsername()) {
             // Do we have a previously cached ILS account?
-            if (isset($this->ilsAccount[$user->cat_username])) {
-                return $this->ilsAccount[$user->cat_username];
+            if (isset($this->ilsAccount[$username])) {
+                return $this->ilsAccount[$username];
             }
             $patron = $this->catalog->patronLogin(
-                $user->cat_username,
+                $username,
                 $this->getCatPasswordForUser($user)
             );
             if (empty($patron)) {
@@ -280,7 +280,7 @@ class ILSAuthenticator
                 $user->clearCredentials();
             } else {
                 // cache for future use
-                $this->ilsAccount[$user->cat_username] = $patron;
+                $this->ilsAccount[$username] = $patron;
                 return $patron;
             }
         }
