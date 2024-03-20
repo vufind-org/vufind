@@ -40,7 +40,7 @@
         <div class="form-group">
             <?php $content = $form->get('content_' . $language); ?>
             <?= $this->formElement($content) ?>
-            <a href="<?php echo $this->url('help-home')?>?topic=markdown" data-lightbox class="help-link"><?=$this->transEsc('Markdown and emoji help')?></a>
+            <a href="<?=$this->url('help-home', [], ['query' => ['topic' => 'markdown']])?>" data-lightbox class="help-link"><?=$this->transEsc('Markdown and emoji help')?></a>
             <?= $this->formElementErrors()->render($content, ['class' => 'help-block']) ?>
         </div>
       </div>
