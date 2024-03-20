@@ -106,7 +106,7 @@ class BroadcastsForm extends Form implements InputFilterProviderInterface, Trans
                 'name' => 'content_' . $language,
                 'type' => Textarea::class,
                 'options' => [
-                    'label' => $this->translate('notifications_content_html'),
+                    'label' => $this->translate('notifications_content'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
