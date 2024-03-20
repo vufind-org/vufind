@@ -337,6 +337,12 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      */
     public function wellKnownConfigurationAction()
     {
+        // Check that authorization server can be created (means that config is good):
+        try {
+            ($this->oauth2ServerFactory)(null);
+        } catch (\Exception $e) {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
         $baseUrl = rtrim($this->getServerUrl('home'), '/');
         $configuration = [
             'issuer' => 'https://' . $_SERVER['HTTP_HOST'], // Same as OpenIDConnectServer\IdTokenResponse
