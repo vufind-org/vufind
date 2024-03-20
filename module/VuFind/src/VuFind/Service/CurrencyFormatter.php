@@ -74,8 +74,7 @@ class CurrencyFormatter
 
         // Initialize default currency:
         if (null === $defaultCurrency) {
-            $localeInfo = localeconv();
-            $defaultCurrency = trim($localeInfo['int_curr_symbol'] ?? '');
+            $defaultCurrency = trim($this->formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE) ?: '');
         }
         $this->defaultCurrency = empty($defaultCurrency) ? 'USD' : $defaultCurrency;
     }

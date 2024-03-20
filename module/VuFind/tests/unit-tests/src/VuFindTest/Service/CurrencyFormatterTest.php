@@ -95,7 +95,7 @@ class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
 
         // test override default locale
         $cc = new \VuFind\Service\CurrencyFormatter(null, 'de_DE');
-        $this->assertEquals("3.000,00\u{a0}\$", $cc->convertToDisplayFormat(3000));
-        $this->assertEquals("3.000,00\u{a0}€", $cc->convertToDisplayFormat(3000, 'EUR'));
+        $this->assertEquals("3.000,00\u{a0}€", $cc->convertToDisplayFormat(3000));
+        $this->assertEquals("3.000,00\u{a0}\$", $cc->convertToDisplayFormat(3000, 'USD'));
     }
 }
