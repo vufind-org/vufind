@@ -50,20 +50,12 @@ class AccessTokenService extends AbstractDbService implements
     use LoggerAwareTrait;
 
     /**
-     * Access token table.
-     *
-     * @var AccessToken
-     */
-    protected $accessTokenTable;
-
-    /**
      * Constructor.
      *
      * @param AccessToken $accessTokenTable Access token table
      */
-    public function __construct(AccessToken $accessTokenTable)
+    public function __construct(protected AccessToken $accessTokenTable)
     {
-        $this->accessTokenTable = $accessTokenTable;
     }
 
     /**
