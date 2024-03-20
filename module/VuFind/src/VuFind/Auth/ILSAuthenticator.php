@@ -226,9 +226,9 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->getAuthManager()->getUserObject()) && !empty($user->getCatUsername())) {
+        if (($user = $this->getAuthManager()->getUserObject()) && ($username = $user->getCatUsername())) {
             return [
-                'cat_username' => $user->getCatUsername(),
+                'cat_username' => $username,
                 'cat_password' => $this->getCatPasswordForUser($user),
             ];
         }
@@ -248,7 +248,7 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->getAuthManager()->getUserObject()) && $username = $user->getCatUsername()) {
+        if (($user = $this->getAuthManager()->getUserObject()) && ($username = $user->getCatUsername())) {
             // Do we have a previously cached ILS account?
             if (isset($this->ilsAccount[$username])) {
                 return $this->ilsAccount[$username];
