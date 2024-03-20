@@ -331,6 +331,32 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
+     * Action to retrieve the OIDC configuration
+     *
+     * @return mixed
+     */
+    public function wellKnownConfigurationAction()
+    {
+        $baseUrl = rtrim($this->getServerUrl('home'), '/');
+        $configuration = [
+            'issuer' => 'https://' . $_SERVER['HTTP_HOST'], // Same as OpenIDConnectServer\IdTokenResponse
+            'authorization_endpoint' => "$baseUrl/OAuth2/Authorize",
+            'token_endpoint' => "$baseUrl/OAuth2/Token",
+            'userinfo_endpoint' => "$baseUrl/OAuth2/UserInfo",
+            'jwks_uri' => "$baseUrl/OAuth2/jwks",
+            'response_types_supported' => ['code'],
+            'grant_types_supported' => ['authorization_code'],
+            'subject_types_supported' => ['public'],
+            'id_token_signing_alg_values_supported' => ["RS256"],
+        ];
+        if ($url = $this->oauth2Config['Server']['documentationUrl'] ?? null) {
+            $configuration['service_documentation'] = $url;
+        }
+
+        return $this->getJsonResponse($configuration);
+    }
+
+    /**
      * Convert an instance of OAuthServerException to a Laminas response.
      *
      * @param OAuthServerException $exception Exception
