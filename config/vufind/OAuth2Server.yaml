@@ -142,7 +142,7 @@ Scopes:
 # - block_status  Whether the user has blocks in ILS (true/false or null if unknown)
 # - address_json  Address fields in JSON (see
 #                 https://openid.net/specs/openid-connect-core-1_0.html#AddressClaim)
-# - library_user_id_hash A unique hash of cat_id or getCatUsername (typically library 
+# - library_user_id_hash A unique hash of cat_id or getCatUsername (typically library
 #                        card number but can be e.g. an email as well). The field is
 #                        padded with hashSalt before hashing.
 #
