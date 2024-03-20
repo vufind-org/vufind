@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Row Definition for access_token
+ * Entity model interface for access tokens.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,37 +21,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
-
-use VuFind\Db\Entity\AccessTokenEntityInterface;
+namespace VuFind\Db\Entity;
 
 /**
- * Row Definition for access_token
+ * Entity model interface for access tokens.
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AccessToken extends RowGateway implements AccessTokenEntityInterface
+interface AccessTokenEntityInterface extends EntityInterface
 {
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
-     */
-    public function __construct($adapter)
-    {
-        parent::__construct(['id', 'type'], 'access_token', $adapter);
-    }
-
     /**
      * Set user ID.
      *
@@ -60,11 +47,7 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      *
      * @return AccessTokenEntityInterface
      */
-    public function setUserId(?string $userId): AccessTokenEntityInterface
-    {
-        $this->__set('user_id', $userId);
-        return $this;
-    }
+    public function setUserId(?string $userId): AccessTokenEntityInterface;
 
     /**
      * Set data.
@@ -73,21 +56,14 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      *
      * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenEntityInterface
-    {
-        $this->__set('data', $data);
-        return $this;
-    }
+    public function setData(string $data): AccessTokenEntityInterface;
 
     /**
      * Is the access token revoked?
      *
      * @return bool
      */
-    public function isRevoked(): bool
-    {
-        return $this->__get('revoked');
-    }
+    public function isRevoked(): bool;
 
     /**
      * Set revoked status.
@@ -96,9 +72,5 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      *
      * @return AccessTokenEntityInterface
      */
-    public function setRevoked(bool $revoked): AccessTokenEntityInterface
-    {
-        $this->__set('revoked', $revoked);
-        return $this;
-    }
+    public function setRevoked(bool $revoked): AccessTokenEntityInterface;
 }

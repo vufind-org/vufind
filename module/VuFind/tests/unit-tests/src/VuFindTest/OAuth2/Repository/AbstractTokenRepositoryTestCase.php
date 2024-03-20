@@ -31,6 +31,8 @@ namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\AccessToken as AccessTokenRow;
+use VuFind\Db\Service\AccessTokenService;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Entity\ClientEntity;
 
@@ -121,6 +123,36 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->willReturnCallback($save);
 
         return $result;
+    }
+
+    /**
+     * Create Access token service
+     *
+     * @return MockObject&AccessTokenServiceInterface
+     */
+    protected function getMockAccessTokenService(): AccessTokenServiceInterface
+    {
+        $accessTokenTable = $this->getMockAccessTokenTable();
+        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getByIdAndType',
+                    'getNonce',
+                    'storeNonce',
+                ]
+            )
+            ->getMock();
+        $accessTokenService->expects($this->any())
+            ->method('getByIdAndType')
+            ->willReturnCallback([$accessTokenTable, 'getByIdAndType']);
+        $accessTokenService->expects($this->any())
+            ->method('getNonce')
+            ->willReturnCallback([$accessTokenTable, 'getNonce']);
+        $accessTokenService->expects($this->any())
+            ->method('storeNonce')
+            ->willReturnCallback([$accessTokenTable, 'storeNonce']);
+        return $accessTokenService;
     }
 
     /**
