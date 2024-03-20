@@ -144,7 +144,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             return [
                 [
                     'id' => $id,
-                    'availability' => (bool)($this->config['Status']['availability'] ?? false),
+                    'availability' => $this->config['Status']['availability'] ?? false,
                     'status' => $status,
                     'use_unknown_message' => (bool)($this->config['Status']['use_unknown_message'] ?? false),
                     'status_array' => [$status],
