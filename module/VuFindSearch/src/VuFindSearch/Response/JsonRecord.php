@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Simple factory for record collection.
+ * Simple, schema-less JSON record.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,42 +23,54 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 
-namespace VuFindSearch\Backend\Primo\Response;
+namespace VuFindSearch\Response;
 
 /**
- * Simple factory for record collection.
+ * Simple, schema-less JSON record.
+ *
+ * This record primarily serves as an example or blueprint for a schema-less
+ * record. All fields are exposed via object properties.
  *
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordCollectionFactory
+class JsonRecord implements RecordInterface
 {
+    use RecordTrait;
+
     /**
-     * Get the class name of the record collection to use by default.
+     * Constructor.
      *
-     * @return string
+     * @param array   $fields   Document fields
+     * @param ?string $sourceId Record source identifier (optional)
+     *
+     * @return void
      */
-    protected function getDefaultRecordCollectionClass(): string
+    public function __construct(protected array $fields, ?string $sourceId = null)
     {
-        return RecordCollection::class;
+        if ($sourceId) {
+            $this->setSourceIdentifiers($sourceId);
+        }
     }
 
     /**
-     * Given a backend response, return an array of documents.
+     * __get()
      *
-     * @param array $response Backend response
+     * @param string $name Field name
      *
-     * @return array
+     * @return mixed
      */
-    protected function getDocumentListFromResponse($response): array
+    public function __get($name)
     {
-        return $response['documents'];
+        return $this->fields[$name] ?? null;
     }
 }
