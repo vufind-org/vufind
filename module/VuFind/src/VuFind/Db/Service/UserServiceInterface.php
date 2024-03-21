@@ -47,7 +47,7 @@ interface UserServiceInterface extends DbServiceInterface
      *
      * @param string $id ID.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
     public function getUserById($id);
 
@@ -57,7 +57,7 @@ interface UserServiceInterface extends DbServiceInterface
      * @param string $fieldName  Field name
      * @param string $fieldValue Field value
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
     public function getUserByField($fieldName, $fieldValue);
 }

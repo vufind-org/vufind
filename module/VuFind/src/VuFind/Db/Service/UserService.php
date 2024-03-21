@@ -63,7 +63,7 @@ class UserService extends AbstractDbService implements
      *
      * @param string $id ID.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
     public function getUserById($id)
     {
@@ -76,7 +76,7 @@ class UserService extends AbstractDbService implements
      * @param string $fieldName  Field name
      * @param string $fieldValue Field value
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
     public function getUserByField($fieldName, $fieldValue)
     {
