@@ -44,7 +44,11 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+<<<<<<<< HEAD:module/VuFind/src/VuFind/OAuth2/Repository/TokenRepositoryFactory.php
 class TokenRepositoryFactory implements FactoryInterface
+========
+class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
+>>>>>>>> dev:module/VuFind/src/VuFind/OAuth2/Repository/RepositoryWithAccessTokenServiceFactory.php
 {
     /**
      * Create an object
@@ -68,6 +72,7 @@ class TokenRepositoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+<<<<<<<< HEAD:module/VuFind/src/VuFind/OAuth2/Repository/TokenRepositoryFactory.php
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
@@ -75,5 +80,9 @@ class TokenRepositoryFactory implements FactoryInterface
             $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
             $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class)
         );
+========
+        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        return new $requestedName($dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class));
+>>>>>>>> dev:module/VuFind/src/VuFind/OAuth2/Repository/RepositoryWithAccessTokenServiceFactory.php
     }
 }

@@ -136,11 +136,12 @@ class CartController extends AbstractBase
     {
         // We came in from a search, so let's remember that context so we can
         // return to it later. However, if we came in from a previous instance
-        // of this action (for example, because of a login screen), we should
-        // ignore that!
+        // of this action (for example, because of a login screen), or if we
+        // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        $baseUrl = $this->getServerUrl('home');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (!str_ends_with($referer, $bulk)) {
+        if (str_starts_with($referer, $baseUrl) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
