@@ -303,4 +303,4 @@ function cartFormHandler(event, data) {
   }
 }
 
-document.addEventListener('VuFind.lightbox.closed', VuFind.cart.updateCount, false);
+VuFind.listen('lightbox.closed', VuFind.cart.updateCount);
