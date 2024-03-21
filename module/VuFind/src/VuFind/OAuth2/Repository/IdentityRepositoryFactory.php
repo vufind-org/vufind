@@ -74,7 +74,8 @@ class IdentityRepositoryFactory implements FactoryInterface
             $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class),
             $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
             $container->get(\VuFind\ILS\Connection::class),
-            $yamlReader->get('OAuth2Server.yaml')
+            $yamlReader->get('OAuth2Server.yaml'),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }
 }

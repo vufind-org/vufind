@@ -29,7 +29,10 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Log\LoggerAwareTrait;
@@ -49,6 +52,21 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
+
+    /**
+     * Constructor
+     *
+     * @param EntityManager       $entityManager       Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     * @param ILSAuthenticator    $ilsAuthenticator    ILS authenticator
+     */
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        protected ILSAuthenticator $ilsAuthenticator
+    ) {
+        parent::__construct($entityManager, $entityPluginManager);
+    }
 
     /**
      * Get user_card rows with insecure catalog passwords
@@ -206,9 +224,9 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
             $userCard->setHomeLibrary($homeLib);
         }
 
-        if ($userService->passwordEncryptionEnabled()) {
+        if ($this->ilsAuthenticator->passwordEncryptionEnabled()) {
             $userCard->setRawCatPassword(null);
-            $userCard->setCatPassEnc($userService->encrypt($password));
+            $userCard->setCatPassEnc($this->ilsAuthenticator->encrypt($password));
         } else {
             $userCard->setRawCatPassword($password);
             $userCard->setCatPassEnc(null);

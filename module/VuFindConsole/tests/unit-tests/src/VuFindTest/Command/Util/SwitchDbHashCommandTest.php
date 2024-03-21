@@ -278,7 +278,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $adapter = $this->createMock(\Laminas\Db\Adapter\Adapter::class);
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->setConstructorArgs([$adapter])
+            ->setConstructorArgs([$adapter, $this->createMock(\VuFind\Auth\ILSAuthenticator::class)])
             ->onlyMethods(['save'])
             ->getMock();
         $user->populate($data, true);

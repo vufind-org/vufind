@@ -30,6 +30,7 @@
 namespace VuFind\OAuth2\Repository;
 
 use OpenIDConnectServer\Repositories\IdentityProviderInterface;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Connection;
@@ -53,12 +54,14 @@ class IdentityRepository implements IdentityProviderInterface
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      * @param ?Connection                 $ils                ILS connection
      * @param array                       $oauth2Config       OAuth2 configuration
+     * @param ILSAuthenticator            $ilsAuthenticator   ILS authenticator
      */
     public function __construct(
         protected UserServiceInterface $userService,
         protected AccessTokenServiceInterface $accessTokenService,
         protected ?Connection $ils,
-        protected array $oauth2Config
+        protected array $oauth2Config,
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
     }
 
@@ -76,7 +79,8 @@ class IdentityRepository implements IdentityProviderInterface
                 $user,
                 $this->ils,
                 $this->oauth2Config,
-                $this->accessTokenService
+                $this->accessTokenService,
+                $this->ilsAuthenticator
             );
         }
         return null;

@@ -194,7 +194,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     $user,
                     $this->getILS(),
                     $this->oauth2Config,
-                    $this->accessTokenService
+                    $this->accessTokenService,
+                    $this->getILSAuthenticator()
                 )
             );
             $authRequest->setAuthorizationApproved($this->formWasSubmitted('allow'));
@@ -295,6 +296,12 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      */
     public function jwksAction()
     {
+        // Check that authorization server can be created (means that config is good):
+        try {
+            ($this->oauth2ServerFactory)(null);
+        } catch (\Exception $e) {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
         $result = [];
         $keyPath = $this->oauth2Config['Server']['publicKeyPath'] ?? '';
         if (strncmp($keyPath, '/', 1) !== 0) {
@@ -328,6 +335,38 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         }
 
         return $this->getJsonResponse($result);
+    }
+
+    /**
+     * Action to retrieve the OIDC configuration
+     *
+     * @return mixed
+     */
+    public function wellKnownConfigurationAction()
+    {
+        // Check that authorization server can be created (means that config is good):
+        try {
+            ($this->oauth2ServerFactory)(null);
+        } catch (\Exception $e) {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
+        $baseUrl = rtrim($this->getServerUrl('home'), '/');
+        $configuration = [
+            'issuer' => 'https://' . $_SERVER['HTTP_HOST'], // Same as OpenIDConnectServer\IdTokenResponse
+            'authorization_endpoint' => "$baseUrl/OAuth2/Authorize",
+            'token_endpoint' => "$baseUrl/OAuth2/Token",
+            'userinfo_endpoint' => "$baseUrl/OAuth2/UserInfo",
+            'jwks_uri' => "$baseUrl/OAuth2/jwks",
+            'response_types_supported' => ['code'],
+            'grant_types_supported' => ['authorization_code'],
+            'subject_types_supported' => ['public'],
+            'id_token_signing_alg_values_supported' => ['RS256'],
+        ];
+        if ($url = $this->oauth2Config['Server']['documentationUrl'] ?? null) {
+            $configuration['service_documentation'] = $url;
+        }
+
+        return $this->getJsonResponse($configuration);
     }
 
     /**

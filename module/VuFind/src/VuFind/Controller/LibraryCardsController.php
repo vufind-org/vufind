@@ -204,7 +204,7 @@ class LibraryCardsController extends AbstractBase
             $catalog = $this->getILS();
             $patron = $catalog->patronLogin(
                 $user->cat_username,
-                $user->getCatPassword()
+                $this->getILSAuthenticator()->getCatPasswordForUser($user)
             );
             if (!$patron) {
                 $this->flashMessenger()

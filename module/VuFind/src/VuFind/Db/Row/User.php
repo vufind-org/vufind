@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Row;
 
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -85,9 +86,10 @@ class User extends RowGateway implements
     /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
+     * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
      */
-    public function __construct($adapter)
+    public function __construct($adapter, protected ILSAuthenticator $ilsAuthenticator)
     {
         parent::__construct('id', 'user', $adapter);
     }
@@ -141,9 +143,9 @@ class User extends RowGateway implements
     public function setCredentials($username, $password)
     {
         $this->cat_username = $username;
-        if ($this->getUserService()->passwordEncryptionEnabled()) {
+        if ($this->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $this->getUserService()->encrypt($password);
+            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;
@@ -194,14 +196,41 @@ class User extends RowGateway implements
      *
      * @return string The Catalog password in plain text
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::getCatPasswordForUser()
      */
     public function getCatPassword()
     {
-        if ($this->getUserService()->passwordEncryptionEnabled()) {
-            return isset($this->cat_pass_enc)
-                ? $this->getUserService()->decrypt($this->cat_pass_enc) : null;
-        }
-        return $this->cat_password ?? null;
+        return $this->ilsAuthenticator->getCatPasswordForUser($this);
+    }
+
+    /**
+     * Is ILS password encryption enabled?
+     *
+     * @return bool
+     */
+    protected function passwordEncryptionEnabled()
+    {
+        return $this->ilsAuthenticator->passwordEncryptionEnabled();
+    }
+
+    /**
+     * This is a central function for encrypting and decrypting so that
+     * logic is all in one location
+     *
+     * @param string $text    The text to be encrypted or decrypted
+     * @param bool   $encrypt True if we wish to encrypt text, False if we wish to
+     * decrypt text.
+     *
+     * @return string|bool    The encrypted/decrypted string
+     * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::encrypt() or ILSAuthenticator::decrypt()
+     */
+    protected function encryptOrDecrypt($text, $encrypt = true)
+    {
+        $method = $encrypt ? 'encrypt' : 'decrypt';
+        return $this->ilsAuthenticator->$method($text);
     }
 
     /**
@@ -435,7 +464,7 @@ class User extends RowGateway implements
             $this->home_library = $row->getHomeLibrary();
 
             // Make sure we're properly encrypting everything:
-            if ($this->getUserService()->passwordEncryptionEnabled()) {
+            if ($this->passwordEncryptionEnabled()) {
                 $this->cat_password = null;
                 $this->cat_pass_enc = $row->getCatPassEnc();
                 if (empty($this->cat_pass_enc) && $row->getRawCatPassword()) {
@@ -517,16 +546,6 @@ class User extends RowGateway implements
     public function getUserCardService()
     {
         return $this->getDbService(\VuFind\Db\Service\UserCardService::class);
-    }
-
-    /**
-     * Get a User service object.
-     *
-     * @return \VuFind\Db\Service\UserService
-     */
-    public function getUserService()
-    {
-        return $this->getDbService(\VuFind\Db\Service\UserService::class);
     }
 
     /**

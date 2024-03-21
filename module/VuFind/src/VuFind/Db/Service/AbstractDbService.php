@@ -46,31 +46,15 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 abstract class AbstractDbService implements DbServiceInterface
 {
     /**
-     * Doctrine ORM entity manager
-     *
-     * @var EntityManager
-     */
-    protected $entityManager;
-
-    /**
-     * VuFind entity plugin manager
-     *
-     * @var EntityPluginManager
-     */
-    protected $entityPluginManager;
-
-    /**
      * Constructor
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
      */
     public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager
+        protected EntityManager $entityManager,
+        protected EntityPluginManager $entityPluginManager
     ) {
-        $this->entityManager = $entityManager;
-        $this->entityPluginManager = $entityPluginManager;
     }
 
     /**

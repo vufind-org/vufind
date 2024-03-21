@@ -108,6 +108,16 @@ $config = [
                     ],
                 ],
             ],
+            'oidc-wellknown-configuration' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/.well-known/openid-configuration',
+                    'defaults' => [
+                        'controller' => 'OAuth2',
+                        'action'     => 'wellKnownConfiguration',
+                    ],
+                ],
+            ],
             'soap-shibboleth-logout-notification-handler' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for Shibboleth authentication module.
+ * Database usercard service factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,34 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Auth;
+namespace VuFind\Db\Service;
 
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
-use Psr\Container\ContainerInterface;
-use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
-use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
 /**
- * Factory for Shibboleth authentication module.
+ * Database usercard service factory
  *
  * @category VuFind
- * @package  Authentication
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class UserCardServiceFactory extends AbstractDbServiceFactory
 {
-    public const SHIBBOLETH_CONFIG_FILE_NAME = 'Shibboleth';
-
     /**
      * Create an object
      *
@@ -69,34 +65,14 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options sent to factory!');
         }
-        $loader = $this->getConfigurationLoader($container);
-        $request = $container->get('Request');
-        return new $requestedName(
-            $container->get(\Laminas\Session\SessionManager::class),
-            $loader,
-            $request,
-            $container->get(\VuFind\Auth\ILSAuthenticator::class)
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+        $session = new \Laminas\Session\Container('List', $sessionManager);
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [$container->get(\VuFind\Auth\ILSAuthenticator::class), $session]
         );
-    }
-
-    /**
-     * Return configuration loader for shibboleth
-     *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return configuration loader
-     */
-    public function getConfigurationLoader(ContainerInterface $container)
-    {
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('config');
-        $override = $config->Shibboleth->allow_configuration_override ?? false;
-        if ($override) {
-            $shibConfig = $configManager->get(self::SHIBBOLETH_CONFIG_FILE_NAME);
-            return new MultiIdPConfigurationLoader($config, $shibConfig);
-        }
-        return new SingleIdPConfigurationLoader($config);
     }
 }

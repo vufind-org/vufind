@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database user service factory
+ * Factory for CAS authentication module.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @package  Authentication
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\Auth;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
- * Database user service factory
+ * Factory for CAS authentication module.
  *
  * @category VuFind
- * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @package  Authentication
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class UserServiceFactory extends AbstractDbServiceFactory
+class CASFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -65,12 +65,8 @@ class UserServiceFactory extends AbstractDbServiceFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory!');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $userService = parent::__invoke($container, $requestedName, $options);
-        $userService->setConfig($config);
-        return $userService;
+        return new $requestedName($container->get(\VuFind\Auth\ILSAuthenticator::class));
     }
 }

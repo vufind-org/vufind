@@ -119,9 +119,6 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $this->oauth2Config = $yamlReader->get('OAuth2Server.yaml');
 
-        // Check that hashSalt is defined:
-        $this->getOAuth2ServerSetting('hashSalt');
-
         $session = new \Laminas\Session\Container(
             OAuth2Controller::SESSION_NAME,
             $container->get(\Laminas\Session\SessionManager::class)
@@ -154,12 +151,16 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected function getAuthorizationServerFactory(): callable
     {
         return function (?string $clientId): AuthorizationServer {
+            // This could be called with incomplete configuration, so get settings
+            // first:
+            $privateKeyPath = $this->getKeyFromConfigPath('privateKeyPath');
+            $encryptionKey = $this->getOAuth2ServerSetting('encryptionKey');
             $server = new AuthorizationServer(
                 $this->container->get(ClientRepository::class),
                 $this->container->get(AccessTokenRepository::class),
                 $this->container->get(ScopeRepository::class),
-                $this->getKeyFromConfigPath('privateKeyPath'),
-                $this->getOAuth2ServerSetting('encryptionKey'),
+                $privateKeyPath,
+                $encryptionKey,
                 $this->getResponseType()
             );
             $clientConfig = $clientId
