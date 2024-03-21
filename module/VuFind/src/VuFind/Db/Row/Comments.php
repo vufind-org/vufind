@@ -31,8 +31,8 @@ namespace VuFind\Db\Row;
 
 use DateTime;
 use VuFind\Db\Entity\CommentsEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
