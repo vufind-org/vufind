@@ -139,9 +139,8 @@ class CartController extends AbstractBase
         // of this action (for example, because of a login screen), or if we
         // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        $baseUrl = $this->getServerUrl('home');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (str_starts_with($referer, $baseUrl) && !str_ends_with($referer, $bulk)) {
+        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 

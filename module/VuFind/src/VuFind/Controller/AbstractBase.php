@@ -705,8 +705,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             'lbreferer',
             $this->getRequest()->getServer()->get('HTTP_REFERER', null)
         );
-        // Get the referer -- if it's empty, there's nothing to store!
-        if (empty($referer)) {
+        // Get the referer -- if it's empty or invalid, there's nothing to store!
+        if (empty($referer) || !$this->isLocalUrl($referer)) {
             return;
         }
         $refererNorm = $this->normalizeUrlForComparison($referer);
@@ -892,5 +892,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $response = $this->getResponse();
         $response->setStatusCode(205);
         return $response;
+    }
+
+    /**
+     * Is the provided URL local to this instance?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function isLocalUrl(string $url): bool
+    {
+        $baseUrl = $this->getServerUrl('home');
+        return str_starts_with($url, $baseUrl);
     }
 }
