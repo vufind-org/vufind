@@ -1,0 +1,23 @@
+# Configuration file for notifications
+
+Notifications:
+  # Activated languages.
+  # Add more as two character abbreviations.
+  languages:
+    - "en"
+
+  # Types of broadcasts.
+  # Add more by specifying a name ("success") ad the two colors for the box.
+  broadcast_types:
+    success:
+      color: "#E2EEDA"
+      border_color: "#74B566"
+    info:
+      color: "#DDECF6"
+      border_color: "#75BFDB"
+    warning:
+      color: "#FBF8E5"
+      border_color: "#E7AF5F"
+    danger:
+      color: "#EFDFDE"
+      border_color: "#C95C54"
