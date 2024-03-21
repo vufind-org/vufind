@@ -44,6 +44,12 @@ use VuFind\Db\Service\UserServiceInterface;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property ?int    $user_id
+ * @property int     $resource_id
+ * @property string  $comment
+ * @property string  $created
  */
 class Comments extends RowGateway implements CommentsEntityInterface, DbServiceAwareInterface
 {
