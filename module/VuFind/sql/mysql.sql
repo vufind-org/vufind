@@ -424,7 +424,7 @@ CREATE TABLE `notifications_broadcasts` (
   `content` text DEFAULT NULL,
   `color` varchar(255) DEFAULT NULL,
   `startdate` datetime DEFAULT NULL,
-  `endate` datetime DEFAULT NULL,
+  `enddate` datetime DEFAULT NULL,
   `change_date` datetime DEFAULT NULL,
   `create_date` datetime DEFAULT NULL,
   `language` varchar(255) DEFAULT NULL,
