@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\UserEntityInterface;
+
 /**
  * Database service interface for tags.
  *
