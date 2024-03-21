@@ -32,6 +32,10 @@ namespace VuFindTest\OAuth2\Repository;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Service\AccessTokenService;
+use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserService;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\AccessToken;
 use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\ClientEntity;
@@ -61,8 +65,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     {
         return new AccessTokenRepository(
             $this->getOAuth2Config(),
-            $this->getMockAccessTokenTable(),
-            $this->getMockUserTable()
+            $this->getMockAccessTokenService(),
+            $this->getMockUserService()
         );
     }
 
@@ -75,8 +79,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     {
         return new AuthCodeRepository(
             $this->getOAuth2Config(),
-            $this->getMockAccessTokenTable(),
-            $this->getMockUserTable()
+            $this->getMockAccessTokenService(),
+            $this->getMockUserService()
         );
     }
 
@@ -89,8 +93,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     {
         return new RefreshTokenRepository(
             $this->getOAuth2Config(),
-            $this->getMockAccessTokenTable(),
-            $this->getMockUserTable()
+            $this->getMockAccessTokenService(),
+            $this->getMockUserService()
         );
     }
 
@@ -223,6 +227,54 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->getMock();
         $result->populate($data);
         return $result;
+    }
+
+    /**
+     * Create Access token service
+     *
+     * @return MockObject&AccessTokenServiceInterface
+     */
+    protected function getMockAccessTokenService(): AccessTokenServiceInterface
+    {
+        $accessTokenTable = $this->getMockAccessTokenTable();
+        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getByIdAndType',
+                    'getNonce',
+                    'storeNonce',
+                ]
+            )
+            ->getMock();
+        $accessTokenService->expects($this->any())
+            ->method('getByIdAndType')
+            ->willReturnCallback([$accessTokenTable, 'getByIdAndType']);
+        $accessTokenService->expects($this->any())
+            ->method('getNonce')
+            ->willReturnCallback([$accessTokenTable, 'getNonce']);
+        $accessTokenService->expects($this->any())
+            ->method('storeNonce')
+            ->willReturnCallback([$accessTokenTable, 'storeNonce']);
+        return $accessTokenService;
+    }
+
+    /**
+     * Create User service
+     *
+     * @return MockObject&UserServiceInterface
+     */
+    protected function getMockUserService(): UserServiceInterface
+    {
+        $userTable = $this->getMockUserTable();
+        $userService = $this->getMockBuilder(UserService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getUserByField'])
+            ->getMock();
+        $userService->expects($this->any())
+            ->method('getUserByField')
+            ->willReturnCallback([$userTable, 'getByField']);
+        return $userService;
     }
 
     /**

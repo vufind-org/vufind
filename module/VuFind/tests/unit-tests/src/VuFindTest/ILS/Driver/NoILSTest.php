@@ -45,7 +45,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock record loader
      *
-     * @param \VuFind\Record\Loader
+     * @var \VuFind\Record\Loader
      */
     protected $loader;
 

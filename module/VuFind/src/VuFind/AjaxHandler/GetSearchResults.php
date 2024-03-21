@@ -116,7 +116,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param ?UserRow         $user             Logged-in user
      * @param string           $sessionId        Session ID
      * @param SearchNormalizer $searchNormalizer Search normalizer
-     * @param SearchTable      $searchTable      Search table
+     * @param Search           $searchTable      Search table
      * @param array            $config           Main configuration
      * @param Memory           $searchMemory     Search memory
      */

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,8 +33,9 @@ use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
-use VuFind\Db\Table\AccessToken;
-use VuFind\Db\Table\User;
+use VuFind\Auth\InvalidArgumentException;
+use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\AccessTokenEntity;
 
 /**
@@ -51,18 +52,21 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
     /**
      * Constructor
      *
-     * @param array       $config     OAuth2 configuration
-     * @param AccessToken $tokenTable Token table
-     * @param User        $userTable  User table
+     * @param array                       $oauth2Config       OAuth2 configuration
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(array $config, AccessToken $tokenTable, User $userTable)
-    {
+    public function __construct(
+        array $oauth2Config,
+        AccessTokenServiceInterface $accessTokenService,
+        UserServiceInterface $userService
+    ) {
         parent::__construct(
             'oauth2_access_token',
             AccessTokenEntity::class,
-            $config,
-            $tokenTable,
-            $userTable
+            $oauth2Config,
+            $accessTokenService,
+            $userService
         );
     }
 
@@ -96,7 +100,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @return void
      *
-     * @throws UniqueTokenIdentifierConstraintViolationException
+     * @throws InvalidArgumentException
      */
     public function persistNewAccessToken(AccessTokenEntityInterface $entity)
     {

@@ -76,7 +76,8 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $loader,
-            $request
+            $request,
+            $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }
 

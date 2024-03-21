@@ -41,6 +41,15 @@ namespace VuFind\Db\Entity;
 interface UserEntityInterface extends EntityInterface
 {
     /**
+     * Get a user attribute by field name.
+     *
+     * @param string $fieldName Field name
+     *
+     * @return mixed
+     */
+    public function getField($fieldName);
+
+    /**
      * Get identifier.
      *
      * @return int
@@ -108,6 +117,22 @@ interface UserEntityInterface extends EntityInterface
      * @return string
      */
     public function getPendingEmail(): string;
+
+    /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface;
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string;
 
     /**
      * Catalog username setter

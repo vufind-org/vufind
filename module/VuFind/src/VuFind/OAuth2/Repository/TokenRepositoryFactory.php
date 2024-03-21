@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for repositories requiring the access token table.
+ * Factory for repositories requiring the access token service.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for repositories requiring the access token table.
+ * Factory for repositories requiring the access token service.
  *
  * @category VuFind
  * @package  OAuth2
@@ -69,12 +69,11 @@ class TokenRepositoryFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $tablePluginManager = $container
-            ->get(\VuFind\Db\Table\PluginManager::class);
+        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $yamlReader->get('OAuth2Server.yaml'),
-            $tablePluginManager->get('AccessToken'),
-            $tablePluginManager->get('User')
+            $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
+            $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class)
         );
     }
 }

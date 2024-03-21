@@ -63,12 +63,9 @@ class Permission extends AbstractHelper
     /**
      * Constructor
      *
-     * @param PermissionsManager       $permissionManager       Manager to decide
-     *                                                          if a permission has
-     *                                                          been granted or not
-     * @param PermissionsDeniedManager $permissionDeniedManager Manager for
-     *                                                          behavior on
-     *                                                          denied permissions
+     * @param PermissionManager       $permissionManager       Manager to decide if a permission has been granted or
+     * not
+     * @param PermissionDeniedManager $permissionDeniedManager Manager for behavior on denied permissions
      */
     public function __construct(
         PermissionManager $permissionManager,

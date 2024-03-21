@@ -55,11 +55,8 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      */
     public function getAuthObject(?Config $config = null): LDAP
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
-        $obj = new LDAP();
-        $obj->setConfig($config);
+        $obj = new LDAP($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 

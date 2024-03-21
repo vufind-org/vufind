@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,9 @@ namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
-use VuFind\Db\Table\AccessToken;
-use VuFind\Db\Table\User;
+use VuFind\Auth\InvalidArgumentException;
+use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\AuthCodeEntity;
 
 /**
@@ -49,13 +50,22 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
     /**
      * Constructor
      *
-     * @param array       $config     OAuth2 configuration
-     * @param AccessToken $tokenTable Token table
-     * @param User        $userTable  User table
+     * @param array                       $oauth2Config       OAuth2 configuration
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(array $config, AccessToken $tokenTable, User $userTable)
-    {
-        parent::__construct('oauth2_auth_code', AuthCodeEntity::class, $config, $tokenTable, $userTable);
+    public function __construct(
+        array $oauth2Config,
+        AccessTokenServiceInterface $accessTokenService,
+        UserServiceInterface $userService
+    ) {
+        parent::__construct(
+            'oauth2_auth_code',
+            AuthCodeEntity::class,
+            $oauth2Config,
+            $accessTokenService,
+            $userService
+        );
     }
 
     /**
@@ -75,7 +85,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return void
      *
-     * @throws UniqueTokenIdentifierConstraintViolationException
+     * @throws InvalidArgumentException
      */
     public function persistNewAuthCode(AuthCodeEntityInterface $entity)
     {
