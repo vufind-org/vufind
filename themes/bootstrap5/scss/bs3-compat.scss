@@ -38,6 +38,7 @@ $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
 $navbar-height:                    50px !default;
 $padding-base-vertical:            $btn-padding-y !default;
+$padding-base-horizontal:          $btn-padding-x !default;
 
 $panel-default-border:   $primary-border-subtle !default;
 $panel-bg:               #f5f5f5 !default;
