@@ -54,7 +54,7 @@ class Solr extends AbstractFallbackLoader
     /**
      * Solr field containing legacy IDs.
      *
-     * @param string
+     * @var string
      */
     protected $legacyIdField;
 
