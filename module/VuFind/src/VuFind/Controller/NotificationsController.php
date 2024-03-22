@@ -144,7 +144,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
                 $broadcast['content'] = $converter->convert($broadcast['content']);
             }
 
-            $broadcast['color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['color'];
+            $broadcast['background_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['background_color'];
             $broadcast['border_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['border_color'];
 
             $broadcastsList[] = $broadcast;
@@ -373,8 +373,9 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
             $broadcast['content'] = $converter->convert($broadcast['content']);
         }
 
-        $broadcast['color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['color'];
+        $broadcast['background_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['background_color'];
         $broadcast['border_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['border_color'];
+        $broadcast['color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['color'];
 
         $view = $this->createViewModel();
         $view->broadcast = $broadcast;

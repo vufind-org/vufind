@@ -16,7 +16,7 @@
 
   <p><?= $this->translate('Are you sure you want to delete the following broadcast?') ?></p>
 
-  <span class="broadcast" style="background-color:<?=$this->broadcast['color_value']?>; border-color:<?=$this->broadcast['border_color_value']?>;"><?=$this->broadcast['content']?></span><br/><br/>
+  <span class="broadcast" style="background-color:<?=$this->broadcast['background_color_value']?>; border-color:<?=$this->broadcast['border_color_value']?>;"><?=$this->broadcast['content']?></span><br/><br/>
 
   <form action="<?php $this->url('admin/notifications-broadcasts', ['action' => 'DeleteBroadcast', 'broadcast_id' => $this->broadcast_id]) ?>" method="post">
     <div class="form-group">

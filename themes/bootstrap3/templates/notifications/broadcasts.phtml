@@ -47,7 +47,7 @@
           </td>
           <td>
             <span class="broadcast-<?=$this->notifications()->isBroadcastActive($broadcast) ? 'active' : 'inactive' ?>"><?=date_format(date_create($broadcast['startdate']), 'd.m.Y') ?> - <?=date_format(date_create($broadcast['enddate']), 'd.m.Y')?></span><br/>
-            <span class="broadcast" style="background-color:<?=$broadcast['color_value']?>; border-color:<?=$broadcast['border_color_value']?>;"><?=$broadcast['content']?></span>
+            <span class="broadcast" style="background-color:<?=$broadcast['background_color_value']?>; border-color:<?=$broadcast['border_color_value']?>;"><?=$broadcast['content']?></span>
           </td>
         </tr>
       <?php endforeach; ?>

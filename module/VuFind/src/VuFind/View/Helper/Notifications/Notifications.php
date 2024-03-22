@@ -153,7 +153,7 @@ class Notifications extends AbstractHelper implements TranslatorAwareInterface
             if ($broadcast['content'] != '' && !in_array($broadcast['broadcast_id'], $closedBroadcasts)) {
                 $broadcast['content'] = $converter->convert($broadcast['content']);
 
-                $broadcast['color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['color'];
+                $broadcast['background_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['background_color'];
                 $broadcast['border_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['border_color'];
 
                 $broadcasts[$broadcast['broadcast_id']] = $broadcast;

@@ -3,7 +3,7 @@
 ?>
 <div class="broadcast_wrapper">
   <?php foreach($broadcasts as $broadcast_id => $broadcast): ?>
-    <span class="broadcast" style="background-color:<?=$broadcast['color_value']?>; border-color:<?=$broadcast['border_color_value']?>;">
+    <span class="broadcast" style="background-color:<?=$broadcast['background_color_value']?>; border-color:<?=$broadcast['border_color_value']?>;">
       <a class="close-broadcast" href="#" data-broadcast-id="<?=$broadcast_id?>" title="<?=$this->transEsc('Close for this session')?>">
         <span class="icon icon--font fa fa-times" aria-label="Close" role="img" aria-hidden="true"></span>
       </a>

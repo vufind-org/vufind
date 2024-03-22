@@ -117,7 +117,7 @@ class BroadcastsForm extends Form implements InputFilterProviderInterface, Trans
 
         $colors = [];
         foreach ($this->config['Notifications']['broadcast_types'] as $type => $typeData) {
-            if (isset($typeData['color'])) {
+            if (isset($typeData['background_color'])) {
                 $colors[] = [
                     'value' => $type,
                     'label' => '',
@@ -126,7 +126,7 @@ class BroadcastsForm extends Form implements InputFilterProviderInterface, Trans
                     ],
                     'label_attributes' => [
                         'class' => 'notifications-color',
-                        'style' => 'outline:1px solid ' . $typeData['border_color'] . '; background:' . $typeData['color'] . ';',
+                        'style' => 'outline:1px solid ' . $typeData['border_color'] . '; background-color:' . $typeData['background_color'] . ';',
                     ],
                 ];
             }
