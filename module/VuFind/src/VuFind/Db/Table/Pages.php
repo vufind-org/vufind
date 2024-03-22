@@ -148,6 +148,9 @@ class Pages extends Gateway
                 ]
             );
 
+            $select->order(new \Laminas\Db\Sql\Expression(
+                "FIELD(language, '" . implode("','", $this->config['Notifications']['languages']) . "')"
+            ));
             if (!$order) {
                 $select->order(
                     ['change_date DESC', new Expression('lower(pages.headline)')]
@@ -163,20 +166,22 @@ class Pages extends Gateway
 
         $pagesList = [];
         foreach ($this->select($callback) as $i) {
-            $pagesList[] = [
-                'id' => $i->id,
-                'page_id' => $i->page_id,
-                'visibility' => $i->visibility,
-                'is_external_url' => $i->is_external_url,
-                'priority' => $i->priority,
-                'author_id' => $i->author_id,
-                'headline' => $i->headline,
-                'nav_title' => $i->nav_title,
-                'content' => $i->content,
-                'external_url' => $i->external_url,
-                'change_date' => $i->change_date,
-                'create_date' => $i->create_date,
-            ];
+            if (!isset($pagesList[$i->page_id])) {
+                $pagesList[$i->page_id] = [
+                    'id' => $i->id,
+                    'page_id' => $i->page_id,
+                    'visibility' => $i->visibility,
+                    'is_external_url' => $i->is_external_url,
+                    'priority' => $i->priority,
+                    'author_id' => $i->author_id,
+                    'headline' => $i->headline,
+                    'nav_title' => $i->nav_title,
+                    'content' => $i->content,
+                    'external_url' => $i->external_url,
+                    'change_date' => $i->change_date,
+                    'create_date' => $i->create_date,
+                ];
+            }
         }
         return $pagesList;
     }

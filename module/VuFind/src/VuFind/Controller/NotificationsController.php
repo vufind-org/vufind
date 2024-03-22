@@ -99,7 +99,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         $converter = new MarkdownConverter($environment);
 
         $pagesList = [];
-        foreach ($pagesTable->getPagesList(['language' => 'de'], 'priority ASC, id ASC') as $page) {
+        foreach ($pagesTable->getPagesList([], 'priority ASC, id ASC') as $page) {
             if ($page['headline'] != '') {
                 $page['headline'] = $converter->convert($page['headline']);
             }
