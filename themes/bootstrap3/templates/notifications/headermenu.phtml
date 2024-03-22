@@ -6,7 +6,7 @@
     <?php if($page['is_external_url']): ?>
       <li><a href="<?=$page['external_url']?>" target="_blank"><?=$page['nav_title']?></a></li>
     <?php else: ?>
-      <li><a href="<?=$this->url('notifications-page')?><?=$page['page_id']?>"><?=$page['nav_title']?></a></li>
+      <li><a href="<?=$this->url('notifications-page')?>?page_id=<?=$page['page_id']?>"><?=$page['nav_title']?></a></li>
     <?php endif; ?>
   <?php endforeach; ?>
 </ul>
