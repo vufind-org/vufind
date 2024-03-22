@@ -138,7 +138,7 @@ legend {
 }
 
 .btn-default {
-  @include button-outline-variant($text-color, $body-bg);
+  @include button-variant($btn-default-bg, $btn-default-border, $btn-default-color, $btn-default-color, $btn-default-border, $btn-default-bg);
 }
 .btn-primary {
   @include button-variant($primary, $text-color, $body-bg, $body-bg, $text-color, $primary);
