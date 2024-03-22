@@ -29,6 +29,9 @@
 
 namespace VuFindAdmin\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Service\TagService;
+
 use function count;
 use function intval;
 use function is_array;
@@ -51,6 +54,25 @@ class TagsController extends AbstractAdmin
      * @var array
      */
     protected $params;
+
+    /**
+     * Tag service
+     *
+     * @var TagService
+     */
+    protected $tagService;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        parent::__construct($sm);
+        $this->tagService = $sm->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(TagService::class);
+    }
 
     /**
      * Get the url parameters
@@ -78,7 +100,7 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
-        $view->statistics = $this->getTable('resourcetags')->getStatistics(true);
+        $view->statistics = $this->tagService->getStatistics(true);
         return $view;
     }
 
@@ -94,9 +116,9 @@ class TagsController extends AbstractAdmin
         $view->type = null !== $this->params()->fromPost('type', null)
             ? $this->params()->fromPost('type')
             : $this->params()->fromQuery('type', null);
-        $view->uniqueTags      = $this->getUniqueTags()->toArray();
-        $view->uniqueUsers     = $this->getUniqueUsers()->toArray();
-        $view->uniqueResources = $this->getUniqueResources()->toArray();
+        $view->uniqueTags      = $this->getUniqueTags();
+        $view->uniqueUsers     = $this->getUniqueUsers();
+        $view->uniqueResources = $this->getUniqueResources();
         $view->params = $this->params()->fromQuery();
         return $view;
     }
@@ -110,10 +132,24 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/list');
-        $view->uniqueTags      = $this->getUniqueTags()->toArray();
-        $view->uniqueUsers     = $this->getUniqueUsers()->toArray();
-        $view->uniqueResources = $this->getUniqueResources()->toArray();
-        $view->results = $this->getResourceTags(false);
+        $view->uniqueTags      = $this->getUniqueTags();
+        $view->uniqueUsers     = $this->getUniqueUsers();
+        $view->uniqueResources = $this->getUniqueResources();
+        $page = $this->getParam('page', false, '1');
+        $resourceTags = $this->tagService->getResourceTags(
+            $this->convertFilter($this->getParam('user_id', false)),
+            $this->convertFilter($this->getParam('resource_id', false)),
+            $this->convertFilter($this->getParam('tag_id', false)),
+            $this->getParam('order', false),
+            $page
+        );
+        $view->results = new \Laminas\Paginator\Paginator(
+            new \DoctrineORMModule\Paginator\Adapter\DoctrinePaginator(
+                $resourceTags
+            )
+        );
+        $view->results->setCurrentPageNumber($page);
+        $view->results->setItemCountPerPage(20);
         $view->params = $this->params()->fromQuery();
         return $view;
     }
@@ -125,8 +161,6 @@ class TagsController extends AbstractAdmin
      */
     public function deleteAction()
     {
-        $tags = $this->getTable('ResourceTags');
-
         $origin = $this->getParam('origin');
 
         $action = ('list' == $origin) ? 'List' : 'Manage';
@@ -153,7 +187,7 @@ class TagsController extends AbstractAdmin
             || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {
             if (false === $confirm) {
-                return $this->confirmTagsDeleteByFilter($tags, $originUrl, $newUrl);
+                return $this->confirmTagsDeleteByFilter($originUrl, $newUrl);
             }
             $delete = $this->deleteResourceTagsByFilter();
         } else {
@@ -171,7 +205,7 @@ class TagsController extends AbstractAdmin
             if (false === $confirm) {
                 return $this->confirmTagsDelete($ids, $originUrl, $newUrl);
             }
-            $delete = $tags->deleteByIdArray($ids);
+            $delete = $this->tagService->deleteLinksByResourceTagsIdArray($ids);
         }
 
         if (0 == $delete) {
@@ -212,11 +246,11 @@ class TagsController extends AbstractAdmin
 
         $tagId = intval($this->getParam('tag_id'));
         if ($tagId) {
-            $tag = $this->getTable('tags')->select(['id' => $tagId])->current();
+            $tag = $this->tagService->getEntityById(\VuFind\Db\Entity\Tags::class, $tagId);
             if (!is_object($tag)) {
                 throw new \Exception("Unexpected error retrieving tag $tagId");
             }
-            $tagMsg = "{$tag->tag} ({$tag->id})";
+            $tagMsg = "{$tag->getTag()} ({$tag->getId()})";
         }
 
         $resourceId = intval($this->getParam('resource_id'));
@@ -287,19 +321,18 @@ class TagsController extends AbstractAdmin
     /**
      * Confirm Tag Delete by Filter
      *
-     * @param object $tagModel  A Tag object
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
      * @return mixed
      */
-    protected function confirmTagsDeleteByFilter($tagModel, $originUrl, $newUrl)
+    protected function confirmTagsDeleteByFilter($originUrl, $newUrl)
     {
-        $count = $tagModel->getResourceTags(
+        $count = $this->tagService->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id'))
-        )->getTotalItemCount();
+        )->count();
 
         $data = [
             'data' => [
@@ -324,11 +357,11 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique resources based on the url params
      *
-     * @return \Laminas\Db\ResultSet
+     * @return array
      */
-    protected function getUniqueResources()
+    protected function getUniqueResources(): array
     {
-        return $this->getTable('ResourceTags')->getUniqueResources(
+        return $this->tagService->getUniqueResources(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
             $this->convertFilter($this->getParam('tag_id', false))
@@ -338,11 +371,11 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique tags based on the url params
      *
-     * @return \Laminas\Db\ResultSet
+     * @return array
      */
-    protected function getUniqueTags()
+    protected function getUniqueTags(): array
     {
-        return $this->getTable('ResourceTags')->getUniqueTags(
+        return $this->tagService->getUniqueTags(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
             $this->convertFilter($this->getParam('tag_id', false))
@@ -352,11 +385,11 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique users based on the url params
      *
-     * @return \Laminas\Db\ResultSet
+     * @return array
      */
-    protected function getUniqueUsers()
+    protected function getUniqueUsers(): array
     {
-        return $this->getTable('ResourceTags')->getUniqueUsers(
+        return $this->tagService->getUniqueUsers(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
             $this->convertFilter($this->getParam('tag_id', false))
@@ -377,38 +410,22 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Get and set a list of resource tags
-     *
-     * @param bool $prioritizePost If true, check the POST params first
-     *
-     * @return \Laminas\Paginator\Paginator
-     */
-    protected function getResourceTags($prioritizePost = true)
-    {
-        $currentPage = $this->getParam('page', $prioritizePost, '1');
-        $resourceTags = $this->getTable('ResourceTags');
-        $tags = $resourceTags->getResourceTags(
-            $this->convertFilter($this->getParam('user_id', $prioritizePost)),
-            $this->convertFilter($this->getParam('resource_id', $prioritizePost)),
-            $this->convertFilter($this->getParam('tag_id', $prioritizePost)),
-            $this->getParam('order', $prioritizePost),
-            $currentPage
-        );
-        return $tags;
-    }
-
-    /**
      * Delete tags based on filter settings.
      *
      * @return int Number of IDs deleted
      */
-    protected function deleteResourceTagsByFilter()
+    protected function deleteResourceTagsByFilter(): int
     {
-        $tags = $this->getResourceTags();
-        $ids = [];
-        foreach ($tags as $tag) {
-            $ids[] = $tag->id;
-        }
-        return $this->getTable('ResourceTags')->deleteByIdArray($ids);
+        $count = $this->tagService->getResourceTags(
+            $this->convertFilter($this->getParam('user_id')),
+            $this->convertFilter($this->getParam('resource_id')),
+            $this->convertFilter($this->getParam('tag_id'))
+        )->count();
+        $this->tagService->deleteResourceTags(
+            $this->convertFilter($this->getParam('user_id')),
+            $this->convertFilter($this->getParam('resource_id')),
+            $this->convertFilter($this->getParam('tag_id'))
+        );
+        return $count;
     }
 }

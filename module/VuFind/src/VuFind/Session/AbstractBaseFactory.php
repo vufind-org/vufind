@@ -73,6 +73,10 @@ class AbstractBaseFactory implements FactoryInterface
 
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return new $requestedName($config->Session ?? null);
+        $service = new $requestedName($config->Session ?? null);
+        $service->setDbServiceManager(
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+        );
+        return $service;
     }
 }

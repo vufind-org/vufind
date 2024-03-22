@@ -69,14 +69,14 @@ class VuFind
     }
 
     /**
-     * Get the change tracker table object.
+     * Get the change tracker service object.
      *
-     * @return \VuFind\Db\Table\ChangeTracker
+     * @return \VuFind\Db\Service\ChangeTrackerService
      */
     public static function getChangeTracker()
     {
-        return static::$serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('ChangeTracker');
+        return static::$serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(\VuFind\Db\Service\ChangeTrackerService::class);
     }
 
     /**
@@ -105,8 +105,7 @@ class VuFind
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
-        $iso8601 = 'Y-m-d\TH:i:s\Z';
-        return date($iso8601, strtotime($row->first_indexed));
+        return $row->getFirstIndexed()->format('Y-m-d\TH:i:s\Z');
     }
 
     /**
@@ -123,7 +122,7 @@ class VuFind
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
         $iso8601 = 'Y-m-d\TH:i:s\Z';
-        return date($iso8601, strtotime($row->last_indexed));
+        return $row->getLastIndexed()->format('Y-m-d\TH:i:s\Z');
     }
 
     /**

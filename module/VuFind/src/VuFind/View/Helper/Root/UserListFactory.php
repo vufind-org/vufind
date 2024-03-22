@@ -71,6 +71,8 @@ class UserListFactory implements FactoryInterface
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('List', $sessionManager);
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        return new $requestedName($session, $capabilities->getListSetting());
+        $listService = $container->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(\VuFind\Db\Service\UserListService::class);
+        return new $requestedName($session, $capabilities->getListSetting(), $listService);
     }
 }

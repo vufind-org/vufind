@@ -49,8 +49,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AccessTokenServiceInterface::class => AccessTokenService::class,
         UserServiceInterface::class => UserService::class,
         'accesstoken' => AccessTokenService::class,
+        'changetracker' => ChangeTrackerService::class,
+        'comments' => CommentsService::class,
+        'feedback' => FeedbackService::class,
+        'oairesumption' => OaiResumptionService::class,
+        'ratings' => RatingsService::class,
+        'record' => RecordService::class,
+        'resource' => ResourceService::class,
+        'session' => SessionService::class,
+        'shortlinks' => ShortlinksService::class,
         'tag' => TagService::class,
         'user' => UserService::class,
+        'usercard' => UserCardService::class,
+        'userlist' => UserListService::class,
+        'userresource' => UserResourceService::class,
     ];
 
     /**
@@ -60,8 +72,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessTokenService::class => AccessTokenServiceFactory::class,
-        TagService::class => AbstractDbServiceFactory::class,
-        UserService::class => UserServiceFactory::class,
+        ChangeTrackerService::class => AbstractDbServiceFactory::class,
+        CommentsService::class => AbstractDbServiceFactory::class,
+        FeedbackService::class => AbstractDbServiceFactory::class,
+        OaiResumptionService::class => AbstractDbServiceFactory::class,
+        RatingsService::class => AbstractDbServiceFactory::class,
+        RecordService::class => AbstractDbServiceFactory::class,
+        ResourceService::class => ResourceServiceFactory::class,
+        SessionService::class => AbstractDbServiceFactory::class,
+        ShortlinksService::class => AbstractDbServiceFactory::class,
+        TagService::class => TagServiceFactory::class,
+        UserService::class => AbstractDbServiceFactory::class,
+        UserCardService::class => UserCardServiceFactory::class,
+        UserListService::class => UserListServiceFactory::class,
+        UserResourceService::class => AbstractDbServiceFactory::class,
     ];
 
     /**

@@ -35,8 +35,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Table\Record;
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Service\RecordService;
+use VuFind\Db\Service\ResourceService;
 
 /**
  * Console command: purge a record from cache
@@ -54,31 +54,34 @@ use VuFind\Db\Table\Resource;
 class PurgeCachedRecordCommand extends Command
 {
     /**
-     * Record table object
+     * Record service object
      *
-     * @var Record
+     * @var RecordService
      */
-    protected $recordTable;
+    protected $recordService;
 
     /**
-     * Resource table object
+     * Resource service object
      *
-     * @var Resource
+     * @var ResourceService
      */
-    protected $resourceTable;
+    protected $resourceService;
 
     /**
      * Constructor
      *
-     * @param Record      $record   Record table object
-     * @param Resource    $resource Resource table object
-     * @param string|null $name     The name of the command; passing null means it
-     * must be set in configure()
+     * @param RecordService   $recordService   Record service object
+     * @param ResourceService $resourceService Resource service object
+     * @param string|null     $name            The name of the command;
+     * passing null means it must be set in configure()
      */
-    public function __construct(Record $record, Resource $resource, $name = null)
-    {
-        $this->recordTable = $record;
-        $this->resourceTable = $resource;
+    public function __construct(
+        RecordService $recordService,
+        ResourceService $resourceService,
+        $name = null
+    ) {
+        $this->recordService = $recordService;
+        $this->resourceService = $resourceService;
         parent::__construct($name);
     }
 
@@ -114,13 +117,13 @@ class PurgeCachedRecordCommand extends Command
     {
         $source = $input->getArgument('source');
         $id = $input->getArgument('id');
-        if ($this->recordTable->delete(['source' => $source, 'record_id' => $id])) {
+        if ($this->recordService->deleteRecord($id, $source)) {
             $output->writeln('Cached record deleted');
         } else {
             $output->writeln('No cached record found');
         }
         if ($input->getOption('purge-resource')) {
-            if ($this->resourceTable->delete(['source' => $source, 'record_id' => $id])) {
+            if ($this->resourceService->deleteResource($id, $source)) {
                 $output->writeln('Resource deleted');
             } else {
                 $output->writeln('No resource found');

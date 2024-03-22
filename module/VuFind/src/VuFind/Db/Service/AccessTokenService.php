@@ -29,8 +29,10 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Table\AccessToken;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -52,10 +54,16 @@ class AccessTokenService extends AbstractDbService implements
     /**
      * Constructor.
      *
-     * @param AccessToken $accessTokenTable Access token table
+     * @param EntityManager       $entityManager       Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     * @param AccessToken         $accessTokenTable    Access token table
      */
-    public function __construct(protected AccessToken $accessTokenTable)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        protected AccessToken $accessTokenTable
+    ) {
+        parent::__construct($entityManager, $entityPluginManager);
     }
 
     /**

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,8 @@ namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
-use VuFind\Db\Table\Resource as ResourceTable;
-use VuFind\Db\Table\UserList as ListTable;
+use VuFind\Db\Service\ResourceService as ResourceService;
+use VuFind\Db\Service\UserListService as ListService;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
@@ -64,23 +64,23 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Active user list (false if none).
      *
-     * @var \VuFind\Db\Row\UserList|bool
+     * @var \VuFind\Db\Entity\UserList|bool
      */
     protected $list = false;
 
     /**
-     * Resource table
+     * Resource database service
      *
-     * @var ResourceTable
+     * @var ResourceService
      */
-    protected $resourceTable;
+    protected $resourceService;
 
     /**
-     * UserList table
+     * UserList database service
      *
-     * @var ListTable
+     * @var ListService
      */
-    protected $listTable;
+    protected $listService;
 
     /**
      * Facet list
@@ -99,23 +99,23 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params        Object representing user
-     * search parameters.
-     * @param SearchService              $searchService Search service
-     * @param Loader                     $recordLoader  Record loader
-     * @param ResourceTable              $resourceTable Resource table
-     * @param ListTable                  $listTable     UserList table
+     * @param \VuFind\Search\Base\Params $params          Object representing user
+     *                                                    search parameters.
+     * @param SearchService              $searchService   Search service
+     * @param Loader                     $recordLoader    Record loader
+     * @param ResourceService            $resourceService Resource database service
+     * @param ListService                $listService     UserList service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        ResourceTable $resourceTable,
-        ListTable $listTable
+        ResourceService $resourceService,
+        ListService $listService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->resourceTable = $resourceTable;
-        $this->listTable = $listTable;
+        $this->resourceService = $resourceService;
+        $this->listService = $listService;
     }
 
     /**
@@ -152,17 +152,17 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 switch ($field) {
                     case 'tags':
                         if ($this->list) {
-                            $tags = $this->list->getResourceTags();
+                            $tags = $this->listService->getResourceTags($this->list);
                         } else {
                             $tags = $this->user ? $this->user->getTags() : [];
                         }
                         foreach ($tags as $tag) {
                             $this->facets[$field]['list'][] = [
-                                'value' => $tag->tag,
-                                'displayText' => $tag->tag,
-                                'count' => $tag->cnt,
+                                'value' => $tag['tag'],
+                                'displayText' => $tag['tag'],
+                                'count' => $tag['cnt'],
                                 'isApplied' => $this->getParams()
-                                    ->hasFilter("$field:" . $tag->tag),
+                                    ->hasFilter("$field:" . $tag['tag']),
                             ];
                         }
                         break;
@@ -196,8 +196,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             );
         }
         if (
-            null !== $list && !$list->public
-            && (!$this->user || $list->user_id != $this->user->id)
+            null !== $list && !$list->isPublic()
+            && (!$this->user || $list->getUser()->getId() != $this->user->id)
         ) {
             throw new ListPermissionException(
                 $this->translate('list_access_denied')
@@ -205,41 +205,40 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         }
 
         // How many results were there?
-        $userId = null === $list ? $this->user->id : $list->user_id;
-        $listId = null === $list ? null : $list->id;
-        // Get results as an array so that we can rewind it:
-        $rawResults = $this->resourceTable->getFavorites(
+        $userId = null === $list ? $this->user->id : $list->getUser()->getId();
+        $listId = null === $list ? null : $list->getId();
+        $rawResults = $this->resourceService->getFavorites(
             $userId,
             $listId,
             $this->getTagFilters(),
             $this->getParams()->getSort()
-        )->toArray();
+        );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
-            return $result['source'] . '|' . $result['record_id'];
+            return $result[0]->getSource() . '|' . $result[0]->getRecordId();
         }, $rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            // Get results as an array so that we can rewind it:
-            $rawResults = $this->resourceTable->getFavorites(
+            $rawResults = $this->resourceService->getFavorites(
                 $userId,
                 $listId,
                 $this->getTagFilters(),
                 $this->getParams()->getSort(),
                 $this->getStartRecord() - 1,
                 $limit
-            )->toArray();
+            );
         }
 
         // Retrieve record drivers for the selected items.
         $recordsToRequest = [];
         foreach ($rawResults as $row) {
+            $resource = $row[0];
             $recordsToRequest[] = [
-                'id' => $row['record_id'], 'source' => $row['source'],
+                'id' => $resource->getRecordId(), 'source' => $resource->getSource(),
                 'extra_fields' => [
-                    'title' => $row['title'],
+                    'title' => $resource->getTitle(),
                 ],
             ];
         }
@@ -263,7 +262,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * Get the list object associated with the current search (null if no list
      * selected).
      *
-     * @return \VuFind\Db\Row\UserList|null
+     * @return \VuFind\Db\Entity\UserList|null
      */
     public function getListObject()
     {
@@ -274,7 +273,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $filters = $this->getParams()->getRawFilters();
             $listId = $filters['lists'][0] ?? null;
             $this->list = (null === $listId)
-                ? null : $this->listTable->getExisting($listId);
+                ? null : $this->listService->getExisting($listId);
         }
         return $this->list;
     }

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,6 @@ use VuFind\Config\Version;
 use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
-use VuFind\Crypt\Base62;
 use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
@@ -569,13 +568,13 @@ class UpgradeController extends AbstractBase
             // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
-            $resourceTagsTable = $this->getTable('ResourceTags');
-            $anonymousTags = $resourceTagsTable->getAnonymousCount();
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $anonymousTags = $tagService->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->getTable('Tags')->getDuplicates();
+            $dupeTags = $tagService->getDuplicates();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -711,8 +710,8 @@ class UpgradeController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage("User {$user} not found.", 'error');
                 } else {
-                    $table = $this->getTable('ResourceTags');
-                    $table->assignAnonymousTags($user->id);
+                    $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+                    $tagService->assignAnonymousTags($user->id);
                     $this->session->warnings->append(
                         "Assigned all anonymous tags to {$user->username}."
                     );
@@ -743,7 +742,7 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted('submit')) {
-            $this->getTable('Tags')->fixDuplicateTags();
+            $this->getDbService(\VuFind\Db\Service\TagService::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
@@ -768,8 +767,11 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $table = $this->getTable('Resource');
-        $problems = $table->findMissingMetadata();
+        $resourceService = $this->getDbService(
+            \VuFind\Db\Service\ResourceService::class
+        );
+
+        $problems = $resourceService->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
@@ -781,14 +783,22 @@ class UpgradeController extends AbstractBase
         if ($this->formWasSubmitted('submit')) {
             $converter = $this->serviceLocator->get(Converter::class);
             foreach ($problems as $problem) {
+                $recordId = $problem->getRecordId();
+                $source = $problem->getSource();
                 try {
                     $driver = $this->getRecordLoader()
-                        ->load($problem->record_id, $problem->source);
-                    $problem->assignMetadata($driver, $converter)->save();
+                        ->load($recordId, $source);
+                    $resourceService->assignMetadata($driver, $converter, $problem);
+                    $resourceService->persistEntity($problem);
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
                         'Unable to load metadata for record '
-                        . "{$problem->source}:{$problem->record_id}"
+                        . "{$source}:{$recordId}"
+                    );
+                } catch (\Exception $e) {
+                    $this->session->warnings->append(
+                        'Problem saving metadata updates for record '
+                        . "{$source}:{$recordId}"
                     );
                 }
             }
@@ -1026,23 +1036,12 @@ class UpgradeController extends AbstractBase
      */
     protected function fixshortlinks()
     {
-        $shortlinksTable = $this->getTable('shortlinks');
-        $base62 = new Base62();
-
         try {
-            $results = $shortlinksTable->select(['hash' => null]);
-
-            foreach ($results as $result) {
-                $id = $result['id'];
-                $shortlinksTable->update(
-                    ['hash' => $base62->encode($id)],
-                    ['id' => $id]
-                );
-            }
-
-            if (count($results) > 0) {
+            $shortlinksService = $this->getDbService(\VuFind\Db\Service\ShortlinksService::class);
+            $updateCount = $shortlinksService->fixshortlinks();
+            if ($updateCount > 0) {
                 $this->session->warnings->append(
-                    'Added hash value(s) to ' . count($results) . ' short links.'
+                    'Added hash value(s) to ' . $updateCount . ' short links.'
                 );
             }
         } catch (Exception $e) {

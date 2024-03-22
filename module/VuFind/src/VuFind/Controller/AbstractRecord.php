@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -163,14 +163,16 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $table = $this->getTable('Resource');
-            $resource = $table->findResource(
+            $resourceService = $this->getDbService(
+                \VuFind\Db\Service\ResourceService::class
+            );
+            $resource = $resourceService->findResource(
                 $driver->getUniqueId(),
                 $driver->getSourceIdentifier(),
                 true,
                 $driver
             );
-            $resource->addComment($comment, $user);
+            $resourceService->addComment($comment, $user->id, $resource);
 
             // Save rating if allowed:
             if (
@@ -205,8 +207,11 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = $this->getTable('Comments');
-        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
+
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsService::class
+        );
+        if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user->id)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
@@ -503,13 +508,15 @@ class AbstractRecord extends AbstractBase
 
         // Loop through all user lists and sort out containing/non-containing lists
         $containingLists = $nonContainingLists = [];
-        foreach ($user->getLists() as $list) {
+        $lists = $this->getDbService(\VuFind\Db\Service\UserListService::class)->getListsForUser($user->id);
+        foreach ($lists as $current) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
-            if (in_array($list->id, $listIds)) {
-                $containingLists[] = $list->toArray();
+            $list = $current[0];
+            if (in_array($list->getId(), $listIds)) {
+                $containingLists[] = $list;
             } else {
-                $nonContainingLists[] = $list->toArray();
+                $nonContainingLists[] = $list;
             }
         }
 

@@ -31,6 +31,7 @@ namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
+use VuFind\Db\Entity\UserList;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 
@@ -86,18 +87,18 @@ class ListItems extends AbstractChannelProvider
     protected $initialListsToDisplay;
 
     /**
-     * UserList table
+     * UserList database service
      *
-     * @var \VuFind\Db\Table\UserList
+     * @var \VuFind\Db\Service\UserListService
      */
-    protected $userList;
+    protected $listService;
 
     /**
-     * UserList table
+     * Tag database service
      *
-     * @var \VuFind\Db\Table\UserList
+     * @var \VuFind\Db\Service\TagService
      */
-    protected $resourceTags;
+    protected $tagService;
 
     /**
      * Results manager
@@ -116,22 +117,22 @@ class ListItems extends AbstractChannelProvider
     /**
      * Constructor
      *
-     * @param \VuFind\Db\Table\UserList            $userList       UserList table
-     * @param \VuFind\Db\Table\ResourceTags        $resourceTags   ResourceTags table
+     * @param \VuFind\Db\Service\UserListService   $listService    UserList table
+     * @param \VuFind\Db\Service\TagService        $tagService     Tag database service
      * @param Url                                  $url            URL helper
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
      * @param array                                $options        Settings
      * (optional)
      */
     public function __construct(
-        \VuFind\Db\Table\UserList $userList,
-        \VuFind\Db\Table\ResourceTags $resourceTags,
+        \VuFind\Db\Service\UserListService $listService,
+        \VuFind\Db\Service\TagService $tagService,
         Url $url,
         \VuFind\Search\Results\PluginManager $resultsManager,
         array $options = []
     ) {
-        $this->userList = $userList;
-        $this->resourceTags = $resourceTags;
+        $this->listService = $listService;
+        $this->tagService = $tagService;
         $this->url = $url;
         $this->resultsManager = $resultsManager;
         $this->setOptions($options);
@@ -200,7 +201,7 @@ class ListItems extends AbstractChannelProvider
     {
         $channels = [];
         $lists = $channelToken
-            ? $this->getListsById([$channelToken]) : $this->getLists();
+            ? $this->listService->getPublicLists([$channelToken]) : $this->getLists();
         foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
             $channel = $this->getChannelFromList($list, $tokenOnly);
@@ -209,52 +210,6 @@ class ListItems extends AbstractChannelProvider
             }
         }
         return $channels;
-    }
-
-    /**
-     * Get a list of lists, identified by ID; filter to public lists only.
-     *
-     * @param array $ids IDs to retrieve
-     *
-     * @return array
-     */
-    protected function getListsById($ids)
-    {
-        $lists = [];
-        foreach ($ids as $id) {
-            $list = $this->userList->getExisting($id);
-            if ($list->public) {
-                $lists[] = $list;
-            }
-        }
-        return $lists;
-    }
-
-    /**
-     * Given an array of lists, add public lists if configured to do so.
-     *
-     * @param array $lists List to expand.
-     *
-     * @return array
-     */
-    protected function addPublicLists($lists)
-    {
-        if ($this->displayPublicLists) {
-            $resultIds = [];
-            foreach ($lists as $list) {
-                $resultIds[] = $list->id;
-            }
-            $callback = function ($select) use ($resultIds) {
-                $select->where->equalTo('public', 1);
-                if (!empty($resultIds)) {
-                    $select->where->notIn('id', $resultIds);
-                }
-            };
-            foreach ($this->userList->select($callback) as $list) {
-                $lists[] = $list;
-            }
-        }
-        return $lists;
     }
 
     /**
@@ -268,10 +223,14 @@ class ListItems extends AbstractChannelProvider
         // fetch the base list of lists...
         $baseLists = $this->tags
             ? $this->getListsByTagAndId()
-            : $this->getListsById($this->ids);
+            : $this->listService->getPublicLists($this->ids);
 
         // Next, we add other public lists if necessary:
-        return $this->addPublicLists($baseLists);
+        $publicLists = [];
+        if ($this->displayPublicLists) {
+            $publicLists = $this->listService->getPublicLists([], $baseLists);
+        }
+        return array_merge($baseLists, $publicLists);
     }
 
     /**
@@ -282,36 +241,22 @@ class ListItems extends AbstractChannelProvider
     protected function getListsByTagAndId()
     {
         // Get public lists by search criteria
-        $lists = $this->resourceTags->getListsForTag(
+        $listIds = $this->tagService->getListsForTag(
             $this->tags,
             $this->ids,
             true,
             $this->andTags
         );
 
-        // Format result set into an array:
-        $result = $resultIds = [];
-        if ($lists->count()) {
-            foreach ($lists as $list) {
-                $resultIds[] = $list->list_id;
-            }
-
-            $callback = function ($select) use ($resultIds) {
-                $select->where->in('id', $resultIds);
-            };
-
-            foreach ($this->userList->select($callback) as $list) {
-                $result[] = $list;
-            }
-        }
+        $result = $this->listService->getListsById($listIds);
 
         // Sort lists by ID list, if necessary:
         if (!empty($result) && $this->ids) {
             $orderIds = (array)$this->ids;
             $sortFn = function ($left, $right) use ($orderIds) {
                 return
-                    array_search($left->id, $orderIds)
-                    <=> array_search($right->id, $orderIds);
+                    array_search($left->getId(), $orderIds)
+                    <=> array_search($right->getId(), $orderIds);
             };
             usort($result, $sortFn);
         }
@@ -330,21 +275,21 @@ class ListItems extends AbstractChannelProvider
     protected function getChannelFromList($list, $tokenOnly)
     {
         $retVal = [
-            'title' => $list->title,
+            'title' => $list->getTitle(),
             'providerId' => $this->providerId,
-            'token' => $list->id,
+            'token' => $list->getId(),
             'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
         }
         $results = $this->resultsManager->get('Favorites');
-        $results->getParams()->initFromRequest(new Parameters(['id' => $list->id]));
+        $results->getParams()->initFromRequest(new Parameters(['id' => $list->getId()]));
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',
-            'url' => $this->url->fromRoute('userList', ['id' => $list->id]),
+            'url' => $this->url->fromRoute('userList', ['id' => $list->getId()]),
         ];
         return $retVal;
     }

@@ -5,7 +5,7 @@
     <?php if (!$this->list): ?>
       <div class="alert alert-info"><?=$this->transEsc('fav_delete_warn') ?></div>
     <?php else: ?>
-      <h3><?=$this->transEsc('List') ?>: <?=$this->escapeHtml($this->list->title) ?></h3>
+      <h3><?=$this->transEsc('List') ?>: <?=$this->escapeHtml($this->list->getTitle()) ?></h3>
     <?php endif; ?>
 
     <ul class="record-list">
@@ -21,6 +21,6 @@
     <?php foreach ($this->deleteIDS as $deleteID): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($deleteID)?>">
     <?php endforeach; ?>
-      <input type="hidden" name="listID" value="<?=$this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>">
+      <input type="hidden" name="listID" value="<?=$this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''?>">
   </div>
 </form>

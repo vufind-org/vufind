@@ -76,15 +76,15 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $search->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->will($this->returnValue($commandObj));
-        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
+        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
             ->disableOriginalConstructor()->getMock();
-        $resource->expects($this->once())->method('updateRecordId')
+        $resourceService->expects($this->once())->method('updateRecordId')
             ->with(
                 $this->equalTo('oldId'),
                 $this->equalTo('newId'),
                 $this->equalTo('Solr')
             );
-        $loader = new Solr($resource, $search);
+        $loader = new Solr($resourceService, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));
     }
 
@@ -97,9 +97,9 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
+        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
             ->disableOriginalConstructor()->getMock();
-        $loader = new Solr($resource, $search, null);
+        $loader = new Solr($resourceService, $search, null);
         $this->assertCount(0, $loader->load(['oldId']));
     }
 }

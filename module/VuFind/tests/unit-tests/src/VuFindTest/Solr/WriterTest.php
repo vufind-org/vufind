@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Solr;
 
-use VuFind\Db\Table\ChangeTracker;
+use VuFind\Db\Service\ChangeTrackerService;
 use VuFind\Solr\Writer;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
@@ -131,13 +131,13 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock change tracker
+     * Get mock change tracker service
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerService
      */
     protected function getMockChangeTracker()
     {
-        return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
+        return $this->getMockBuilder(\VuFind\Db\Service\ChangeTrackerService::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

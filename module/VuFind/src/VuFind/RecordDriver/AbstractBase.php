@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -154,8 +154,8 @@ abstract class AbstractBase implements
      */
     public function getComments()
     {
-        $table = $this->getDbTable('Comments');
-        return $table->getForResource(
+        $comments = $this->getDbService(\VuFind\Db\Service\CommentsService::class);
+        return $comments->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
@@ -191,8 +191,10 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        $tags = $this->getDbTable('Tags');
-        return $tags->getForResource(
+        $tagService = $this->getDbService(
+            \VuFind\Db\Service\TagService::class
+        );
+        return $tagService->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             0,
@@ -252,8 +254,10 @@ abstract class AbstractBase implements
         // Cache data since comments list may ask for same information repeatedly:
         $cacheKey = $userId ?? '-';
         if (!isset($this->ratingCache[$cacheKey])) {
-            $table = $this->getDbTable('Ratings');
-            $this->ratingCache[$cacheKey] = $table->getForResource(
+            $ratingsService = $this->getDbService(
+                \VuFind\Db\Service\RatingsService::class
+            );
+            $this->ratingCache[$cacheKey] = $ratingsService->getForResource(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
                 $userId
@@ -277,11 +281,14 @@ abstract class AbstractBase implements
      */
     public function getRatingBreakdown(array $groups)
     {
-        return $this->getDbTable('Ratings')->getCountsForResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $groups
-        );
+        return $this->getDbService(
+            \VuFind\Db\Service\RatingsService::class
+        )
+            ->getCountsForResource(
+                $this->getUniqueId(),
+                $this->getSourceIdentifier(),
+                $groups
+            );
     }
 
     /**
@@ -297,12 +304,11 @@ abstract class AbstractBase implements
     {
         // Clear rating cache:
         $this->ratingCache = [];
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
+        $resource = $this->getDbService(\VuFind\Db\Service\ResourceService::class)->findResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
-        $resource->addOrUpdateRating($userId, $rating);
+        $this->getDbService(\VuFind\Db\Service\RatingsService::class)->addOrUpdateRating($resource, $userId, $rating);
     }
 
     /**
@@ -340,8 +346,8 @@ abstract class AbstractBase implements
      */
     public function getContainingLists($user_id = null)
     {
-        $table = $this->getDbTable('UserList');
-        return $table->getListsContainingResource(
+        $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
+        return $listService->getListsContainingResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             $user_id

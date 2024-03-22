@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Tags;
 
-use VuFind\Db\Table\Tags as TagsTable;
+use VuFind\Db\Service\TagService as TagService;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
@@ -48,11 +48,11 @@ use function count;
 class Results extends BaseResults
 {
     /**
-     * Tags table
+     * Tag Service
      *
-     * @var TagsTable
+     * @var TagService
      */
-    protected $tagsTable;
+    protected $tagService;
 
     /**
      * Constructor
@@ -61,16 +61,16 @@ class Results extends BaseResults
      * search parameters.
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
-     * @param TagsTable                  $tagsTable     Resource table
+     * @param TagService                 $tagService    Tags database service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        TagsTable $tagsTable
+        TagService $tagService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->tagsTable = $tagsTable;
+        $this->tagService = $tagService;
     }
 
     /**
@@ -99,7 +99,7 @@ class Results extends BaseResults
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
-        $rawResults = $this->tagsTable->resourceSearch(
+        $rawResults = $this->tagService->resourceSearch(
             $query,
             null,
             $this->getParams()->getSort(),
@@ -114,7 +114,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->tagsTable->resourceSearch(
+            $rawResults = $this->tagService->resourceSearch(
                 $query,
                 null,
                 $this->getParams()->getSort(),
@@ -124,7 +124,7 @@ class Results extends BaseResults
             );
         }
 
-        return $rawResults->toArray();
+        return $rawResults;
     }
 
     /**
@@ -143,7 +143,7 @@ class Results extends BaseResults
 
         // Retrieve record drivers for the selected items.
         $callback = function ($row) {
-            return ['id' => $row['record_id'], 'source' => $row['source']];
+            return ['id' => $row[0]->getRecordId(), 'source' => $row[0]->getSource()];
         };
         $this->results = $this->recordLoader
             ->loadBatch(array_map($callback, $results), true);

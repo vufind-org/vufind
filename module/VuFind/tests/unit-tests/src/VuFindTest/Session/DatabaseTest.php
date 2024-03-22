@@ -50,11 +50,10 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testRead()
     {
         $handler = $this->getHandler();
-        $session = $this->getMockSessionTable();
+        $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(3600))
             ->will($this->returnValue('bar'));
-        $this->getTables()->set('Session', $session);
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
@@ -68,11 +67,10 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler(
             new \Laminas\Config\Config(['lifetime' => 1000])
         );
-        $session = $this->getMockSessionTable();
+        $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(1000))
             ->will($this->returnValue('bar'));
-        $this->getTables()->set('Session', $session);
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
@@ -84,10 +82,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testGc()
     {
         $handler = $this->getHandler();
-        $session = $this->getMockSessionTable();
+        $session = $this->getMockSessionService();
         $session->expects($this->once())->method('garbageCollect')
             ->with($this->equalTo(3600));
-        $this->getTables()->set('Session', $session);
         $this->assertTrue($handler->gc(3600));
     }
 
@@ -99,10 +96,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testWrite()
     {
         $handler = $this->getHandler();
-        $session = $this->getMockSessionTable();
+        $session = $this->getMockSessionService();
         $session->expects($this->once())->method('writeSession')
             ->with($this->equalTo('foo'), $this->equalTo('stuff'));
-        $this->getTables()->set('Session', $session);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
 
@@ -115,10 +111,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     {
         $handler = $this->getHandler();
         $this->setUpDestroyExpectations('foo');
-        $session = $this->getMockSessionTable();
+        $session = $this->getMockSessionService();
         $session->expects($this->once())->method('destroySession')
             ->with($this->equalTo('foo'));
-        $this->tables->set('Session', $session);
         $this->assertTrue($handler->destroy('foo'));
     }
 
@@ -132,19 +127,18 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     protected function getHandler($config = null)
     {
         $handler = new Database($config);
+        $this->injectMockDatabaseServices($handler);
         $this->injectMockDatabaseTables($handler);
         return $handler;
     }
 
     /**
-     * Get a mock session table.
+     * Get a mock session service.
      *
-     * @return \VuFind\Db\Table\Session
+     * @return \VuFind\Db\Service\SessionService
      */
-    protected function getMockSessionTable()
+    protected function getMockSessionService()
     {
-        return $this->getMockBuilder(\VuFind\Db\Table\Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->services->get(\VuFind\Db\Service\SessionService::class);
     }
 }

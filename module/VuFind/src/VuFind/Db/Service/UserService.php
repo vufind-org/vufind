@@ -29,9 +29,12 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\User;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserList;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -45,28 +48,77 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class UserService extends AbstractDbService implements
     LoggerAwareInterface,
+    DbServiceAwareInterface,
     UserServiceInterface
 {
     use LoggerAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param User $userTable User table
+     * @param EntityManager       $entityManager       Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
      */
-    public function __construct(protected User $userTable)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager
+    ) {
+        parent::__construct($entityManager, $entityPluginManager);
     }
 
     /**
-     * Retrieve a user object from the database based on ID.
+     * Lookup and return a user.
      *
-     * @param string $id ID.
+     * @param int $id id value
      *
-     * @return UserEntityInterface
+     * @return User
      */
     public function getUserById($id)
     {
-        return $this->userTable->getById($id);
+        $user = $this->entityManager->find(
+            $this->getEntityClass(\VuFind\Db\Entity\User::class),
+            $id
+        );
+        return $user;
+    }
+
+    /**
+     * Add/update a resource in the user's account.
+     *
+     * @param Resource|int $resource        The resource to add/update
+     * @param User|int     $user            Logged in user
+     * @param UserList|int $list            The list to store the resource in.
+     * @param array        $tagArray        An array of tags to associate with the resource.
+     * @param string       $notes           User notes about the resource.
+     * @param bool         $replaceExisting Whether to replace all existing tags (true) or append to the
+     * existing list (false).
+     *
+     * @return void
+     */
+    public function saveResource(
+        $resource,
+        $user,
+        $list,
+        $tagArray,
+        $notes,
+        $replaceExisting = true
+    ) {
+        // Create the resource link if it doesn't exist and update the notes in any case:
+        $linkService = $this->getDbService(UserResourceService::class);
+        $linkService->createOrUpdateLink($resource, $user, $list, $notes);
+
+        // If we're replacing existing tags, delete the old ones before adding the new ones:
+        if ($replaceExisting) {
+            $unlinker = $this->getDbService(TagService::class);
+            $resourceId = $resource instanceof Resource ? $resource->getId() : $resource;
+            $unlinker->destroyResourceLinks($resourceId, $user, $list);
+        }
+
+        // Add the new tags:
+        foreach ($tagArray as $tag) {
+            $tagService = $this->getDbService(TagService::class);
+            $tagService->addTag($resource, $tag, $user, $list);
+        }
     }
 }

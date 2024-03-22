@@ -66,7 +66,8 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(\VuFind\Db\Service\ResourceService::class),
             $container->get(\VuFindSearch\Service::class),
             ...$options ?? []
         );

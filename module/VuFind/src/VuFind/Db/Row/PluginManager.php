@@ -47,22 +47,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'accesstoken' => AccessToken::class,
-        'changetracker' => ChangeTracker::class,
-        'comments' => Comments::class,
         'externalsession' => ExternalSession::class,
         'logintoken' => LoginToken::class,
-        'oairesumption' => OaiResumption::class,
         'ratings' => Ratings::class,
-        'record' => Record::class,
-        'resource' => Resource::class,
-        'resourcetags' => ResourceTags::class,
         'search' => Search::class,
         'session' => Session::class,
-        'shortlinks' => Shortlinks::class,
-        'tags' => Tags::class,
         'user' => User::class,
-        'usercard' => UserCard::class,
-        'userlist' => UserList::class,
         'userresource' => UserResource::class,
     ];
 
@@ -74,23 +64,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         AccessToken::class => RowGatewayFactory::class,
         AuthHash::class => RowGatewayFactory::class,
-        ChangeTracker::class => RowGatewayFactory::class,
-        Comments::class => RowGatewayFactory::class,
         ExternalSession::class => RowGatewayFactory::class,
-        Feedback::class => RowGatewayFactory::class,
         LoginToken::class => RowGatewayFactory::class,
-        OaiResumption::class => RowGatewayFactory::class,
         Ratings::class => RowGatewayFactory::class,
-        Record::class => RowGatewayFactory::class,
-        Resource::class => RowGatewayFactory::class,
-        ResourceTags::class => RowGatewayFactory::class,
         Search::class => RowGatewayFactory::class,
         Session::class => RowGatewayFactory::class,
-        Shortlinks::class => RowGatewayFactory::class,
-        Tags::class => RowGatewayFactory::class,
         User::class => UserFactory::class,
-        UserCard::class => RowGatewayFactory::class,
-        UserList::class => UserListFactory::class,
         UserResource::class => RowGatewayFactory::class,
     ];
 
