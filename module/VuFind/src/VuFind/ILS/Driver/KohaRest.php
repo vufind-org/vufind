@@ -2009,6 +2009,19 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $duedate = null;
             }
 
+            $inTransit = null;
+	    $inTransitDate = null;
+	    if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null)
+                $transit = $avail['unavailabilities']['Item::Transfer'];
+                if (isset($transit['datesent']) && isset($transit['to_library'])) {
+                    $inTransit = $this->getLibraryName($transit['to_library']);
+                    $inTransitDate = $this->convertDate(
+                        $transit['datesent'],
+                        true
+                    );
+                }
+            }
+
             $entry = [
                 'id' => $id,
                 'item_id' => $item['item_id'],
@@ -2026,6 +2039,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     [$item['hold_queue_length'],
                     $result['data']['hold_queue_length']]
                 ),
+                'in_transit' => $inTransit,
+                'in_transit_date' => $inTransitDate,
             ];
             if (!empty($item['public_notes'])) {
                 $entry['item_notes'] = [$item['public_notes']];
