@@ -100,6 +100,8 @@ label { cursor: pointer; }
 }
 .nav .dropdown-toggle {
   padding-right: 8px;
+  height: inherit;
+  border-radius: 0;
 
   .icon {
     margin-left: 4px;
@@ -116,13 +118,37 @@ label { cursor: pointer; }
     }
   }
 }
+button.dropdown-toggle {
+  @extend .btn;
+  @extend .btn-default;
+  vertical-align: baseline;
+
+  .icon {
+    margin-left: 4px;
+    margin-right: 0;
+  }
+
+  body.rtl & {
+    .icon {
+      margin-left: 0;
+      margin-right: 4px;
+    }
+  }
+}
 .navbar-nav button.dropdown-toggle {
-  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
   appearance: none;
   padding: $navbar-padding-vertical;
   border: 0;
   color: inherit;
   background-color: transparent;
+}
+.dropdown-container {
+  label {
+    padding-right: 0.5rem;
+  }
+  .dropdown {
+    display: inline-block;
+  }
 }
 
 // Normalize highlighting

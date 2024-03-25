@@ -609,7 +609,8 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
                 $this->findCssAndGetText($page, 'ul.record-list li a.title', null, $index)
             );
         }
-        $this->clickCss($page, '#sort_options_1 option', null, 2);
+        $this->clickCss($page, '.list__sort button.dropdown-toggle');
+        $this->clickCss($page, '.list__sort li a', null, 2);
         $this->waitForPageLoad($page);
         foreach (array_reverse($titles) as $index => $title) {
             $this->assertEquals(

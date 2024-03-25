@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, escapeHtmlAttr */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, escapeHtmlAttr */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -234,7 +234,6 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
       } else {
         removeHashFromLocation();
       }
-      setupJumpMenus($newTab);
     });
   return false;
 };
