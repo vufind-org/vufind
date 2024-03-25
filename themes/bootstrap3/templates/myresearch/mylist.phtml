@@ -65,9 +65,9 @@
               <span class="icon-link__label"><?=$this->transEsc('delete_list')?></span>
             </a>
             <ul class="dropdown-menu">
-              <li class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></li>
-              <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              <li><span class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></span></li>
+              <li><a class="dropdown-item" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+              <li><a class="dropdown-item" href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
         <?php endif; ?>

@@ -42,39 +42,37 @@
       <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
       <?php if ($purgeSelectedAllowed || $purgeAllAllowed): ?>
         <div class="toolbar">
-          <ul class="action-toolbar">
-            <?php if ($purgeSelectedAllowed): ?>
-              <li class="btn-group">
-                <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-                <ul class="dropdown-menu">
-                  <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
-                  <li><a href="#" id="confirm_purge_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                  <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-                </ul>
-              </li>
-            <?php endif; ?>
+          <?php if ($purgeSelectedAllowed): ?>
+            <div class="btn-group">
+              <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li><span class="dropdown-header"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
+                <li><a href="#" id="confirm_purge_selected_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="dropdown-item confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
 
-            <?php if ($purgeAllAllowed): ?>
-              <li class="btn-group">
-                <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-                <ul class="dropdown-menu">
-                  <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
-                  <li><a href="#" id="confirm_purge_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                  <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-                </ul>
-              </li>
-            <?php endif; ?>
-          </ul>
-          <ul class="selection-controls-bar">
-            <li class="bulk-checkbox">
-              <label>
-                <input type="checkbox" name="selectAll" class="checkbox-select-all">
-                <?=$this->transEsc('select_all_on_page')?>
-              </label>
-            </li>
-          </ul>
+          <?php if ($purgeAllAllowed): ?>
+            <div class="btn-group">
+              <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li><span class="dropdown-header"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
+                <li><a href="#" id="confirm_purge_all_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="dropdown-item confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
         </div>
+        <?php if ($purgeSelectedAllowed): ?>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
+            </label>
+          </div>
         <?php endif; ?>
+      <?php endif; ?>
     <?php endif; ?>
 
     <ul class="record-list">
