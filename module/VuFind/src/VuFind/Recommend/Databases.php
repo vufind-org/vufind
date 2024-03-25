@@ -273,7 +273,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         // Add databases from search query
         if ($this->useQuery) {
             $queryObject = $this->results->getParams()->getQuery();
-            $query = method_exists($queryObject, 'getString')
+            $query = is_callable([$queryObject, 'getString'])
                 ? strtolower($queryObject->getString())
                 : '';
             if (strlen($query) >= $this->useQueryMinLength) {

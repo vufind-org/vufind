@@ -199,7 +199,7 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
     public function process($results)
     {
         $query = $results->getParams()->getQuery();
-        if (method_exists($query, 'getString')) {
+        if (is_callable([$query, 'getString'])) {
             $this->queryString = $query->getString();
         }
     }
