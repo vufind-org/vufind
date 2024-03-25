@@ -112,9 +112,9 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
     /**
      * Query string from the original search results
      *
-     * @var string
+     * @var ?string
      */
-    protected $queryString;
+    protected $queryString = null;
 
     /**
      * Constructor
