@@ -746,30 +746,21 @@ class Folio extends AbstractAPI implements
      *
      * @param object $item The item record
      *
-     * @return array An array of key metadtaa for each bib record
+     * @return array An array of key metadata for each bib record
      */
     protected function getBoundWithRecords($item)
     {
         $boundWithRecords = [];
-        // Get the bound-with holdings for the item.
-        foreach (
-            $this->getPagedResults(
-                'boundWithParts',
-                '/inventory-storage/bound-with-parts',
-                ['query' => '(itemId=="' . $item->id . '")']
-            ) as $boundWithPart
-        ) {
-            $boundWithHoldingId = $boundWithPart->holdingsRecordId;
-            $response = $this->makeRequest(
-                'GET',
-                '/holdings-storage/holdings/' . $boundWithHoldingId
-            );
-            $holding = json_decode($response->getBody());
-            // Get the bound-with holding's instance record.
-            $instance = $this->getInstanceById($holding->instanceId);
+        // Get the full item record, which includes the boundWithTitles data
+        $response = $this->makeRequest(
+            'GET',
+            '/inventory/items/' . $item->id
+        );
+        $item = json_decode($response->getBody());
+        foreach ($item->boundWithTitles ?? [] as $boundWithTitle) {
             $boundWithRecords[] = [
-                'title' => $instance->title,
-                'bibId' => $this->getBibId($instance),
+                'title' => $boundWithTitle->briefInstance?->title,
+                'bibId' => $boundWithTitle->briefInstance?->id, 
             ];
         }
         return $boundWithRecords;
