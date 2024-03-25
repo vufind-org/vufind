@@ -121,7 +121,7 @@
 
 <?php /* Refine Search Options */ ?>
 <?php if ($recommendations): ?>
-  <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+  <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar" role="region" aria-label="<?=$this->transEscAttr('Search sidebar') ?>">
     <?php foreach ($recommendations as $index => $current): ?>
       <?=$this->recommend($current, 'side', $index)?>
     <?php endforeach; ?>
