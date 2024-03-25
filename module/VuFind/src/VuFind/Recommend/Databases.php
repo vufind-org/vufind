@@ -275,7 +275,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             $queryObject = $this->results->getParams()->getQuery();
             $query = method_exists($queryObject, 'getString')
                 ? strtolower($queryObject->getString())
-                : null;
+                : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
                     if (str_contains(strtolower($name), $query)) {
