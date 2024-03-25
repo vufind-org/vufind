@@ -198,7 +198,10 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
      */
     public function process($results)
     {
-        $this->queryString = $results->getParams()->getQuery()->getString();
+        $query = $results->getParams()->getQuery();
+        if (method_exists($query, 'getString')) {
+            $this->queryString = $query->getString();
+        }
     }
 
     /**
@@ -208,7 +211,7 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
      */
     public function getResults()
     {
-        if (!$this->hasMinimumConfig) {
+        if (!$this->hasMinimumConfig || !$this->queryString) {
             return [];
         }
 
