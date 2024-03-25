@@ -72,7 +72,7 @@ class GetRecordTagsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
             $tablePluginManager->get(\VuFind\Db\Table\Tags::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $container->get('ViewRenderer')
         );
     }

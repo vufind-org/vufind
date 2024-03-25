@@ -339,9 +339,9 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
         $manager = $this->getManager([], null, null, $pm);
-        $this->assertFalse($manager->isLoggedIn());
+        $this->assertNull($manager->getUserObject());
         $this->assertEquals($user, $manager->create($request));
-        $this->assertEquals($user, $manager->isLoggedIn());
+        $this->assertEquals($user, $manager->getUserObject());
     }
 
     /**
@@ -358,9 +358,9 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->returnValue($user));
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
-        $this->assertFalse($manager->isLoggedIn());
+        $this->assertNull($manager->getUserObject());
         $this->assertEquals($user, $manager->login($request));
-        $this->assertEquals($user, $manager->isLoggedIn());
+        $this->assertEquals($user, $manager->getUserObject());
     }
 
     /**
@@ -373,7 +373,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
 
-        $user = $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $manager = $this->getManager([], null, null, $pm);
@@ -390,7 +389,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
 
-        $user = $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $manager = $this->getManager([], null, null, $pm);
@@ -472,7 +470,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('updatePassword')->with($request)->will($this->returnValue($user));
         $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals($user, $manager->updatePassword($request));
-        $this->assertEquals($user, $manager->isLoggedIn());
+        $this->assertEquals($user, $manager->getUserObject());
     }
 
     /**
@@ -522,7 +520,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('userId'))->will($this->returnValue('foo'));
         $this->setProperty($manager, 'session', $mockSession);
 
-        $this->assertEquals($user, $manager->isLoggedIn());
+        $this->assertEquals($user, $manager->getUserObject());
     }
 
     /**

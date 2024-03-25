@@ -263,7 +263,12 @@ VuFind.register('search', function search() {
     }
     updateResultControls(pageUrl);
     updateResultLinks(pageUrl);
-    VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
+
+    VuFind.emit('results-load', {
+      url: pageUrl,
+      addToHistory: addToHistory
+    });
+
     fetch(VuFind.path + '/AJAX/JSON?' + queryParams.toString())
       .then((response) => response.json())
       .then((result) => {
@@ -282,7 +287,13 @@ VuFind.register('search', function search() {
         VuFind.initResultScripts(jsRecordListSelector);
         initPagination();
         initResultControls();
-        VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
+
+        VuFind.emit('results-loaded', {
+          url: pageUrl,
+          addToHistory: addToHistory,
+          data: result
+        });
+
         recordList.classList.remove('loading');
       })
       .catch((error) => {

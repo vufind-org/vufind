@@ -45,7 +45,7 @@
             </option>
           <?php endforeach; ?>
         <?php else: ?>
-          <option value=""><?=$this->transEsc('My Favorites') ?></option>
+          <option value=""><?=$this->transEsc('default_list_title') ?></option>
         <?php endif; ?>
       </select>
       <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', ['id' => 'NEW']) . '?' . implode('&amp;', $idParams) ?>"><?=$this->transEsc('or create a new list'); ?></a>

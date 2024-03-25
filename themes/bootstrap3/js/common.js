@@ -15,21 +15,62 @@ var VuFind = (function VuFind() {
   var _elementBase;
   var _iconsCache = {};
 
-  // Emit a custom event
-  // Recommendation: prefix with vf-
-  var emit = function emit(name, detail) {
-    if (typeof detail === 'undefined') {
-      document.dispatchEvent(new Event(name));
-    } else {
-      var event = document.createEvent('CustomEvent');
-      event.initCustomEvent(name, true, true, detail); // name, canBubble, cancelable, detail
-      document.dispatchEvent(event);
+  // Event controls
+
+  let listeners = {};
+  function unlisten(event, fn) {
+    if (typeof listeners[event] === "undefined") {
+      return;
     }
-  };
-  // Listen shortcut to put everyone on the same element
-  var listen = function listen(name, func) {
-    document.addEventListener(name, func, false);
-  };
+
+    const index = listeners[event].indexOf(fn);
+
+    if (index > -1) {
+      listeners[event].splice(index, 1);
+    }
+  }
+
+  // Add a function to call when an event is emitted
+  //
+  // Options:
+  // - once: remove this listener after it's been called
+  function listen(event, fn, { once = false } = {}) {
+    if (typeof listeners[event] === "undefined") {
+      listeners[event] = [];
+    }
+
+    listeners[event].push(fn);
+    const removeListener = () => unlisten(event, fn);
+
+    if (once) {
+      // Remove a "once" listener after calling
+      // Add the function to remove the listener
+      // to the array, listeners are called in order
+      listeners[event].push(removeListener);
+    }
+
+    // Return a function to disable the listener
+    // Makes it easier to control activating and deactivating listeners
+    // This is common for similar libraries
+    return removeListener;
+  }
+
+  // Broadcast an event, passing arguments to all listeners
+  function emit(event, ...args) {
+    // No listeners for this event
+    if (typeof listeners[event] === "undefined") {
+      return;
+    }
+
+    // iterate over a copy of the listeners array
+    // this prevents listeners from being skipped
+    // if the listener before it is removed during execution
+    for (const fn of Array.from(listeners[event])) {
+      fn(...args);
+    }
+  }
+
+  // Module control
 
   var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
@@ -402,6 +443,9 @@ var VuFind = (function VuFind() {
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
+    if (typeof this.explain !== 'undefined') {
+      this.explain.init();
+    }
   };
 
   var init = function init() {
@@ -427,11 +471,12 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    listen: listen,
+    unlisten: unlisten,
     evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
     isPrinting: isPrinting,
-    listen: listen,
     refreshPage: refreshPage,
     register: register,
     setCspNonce: setCspNonce,
@@ -654,10 +699,10 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
-    $('[data-toggle="offcanvas"]').on("click", function offcanvasClick(e) {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
+    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
       e.preventDefault();
-      $('body.offcanvas').toggleClass('active');
+      $('body.vufind-offcanvas').toggleClass('active');
     });
   }
 }
@@ -744,7 +789,7 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-$(function commonDocReady() {
+document.addEventListener('DOMContentLoaded', () => {
   // Start up all of our submodules
   VuFind.init();
   // Off canvas
@@ -780,6 +825,9 @@ $(function commonDocReady() {
   // Print
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
-    $("link[media='print']").attr("media", "all");
+    var printStylesheets = document.querySelectorAll('link[media="print"]');
+    printStylesheets.forEach((stylesheet) => {
+      stylesheet.media = 'all';
+    });
   }
 });

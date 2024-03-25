@@ -570,7 +570,6 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($shards as $current) {
                 $selectedShards[$current] = $allShards[$current];
             }
-            $shards = $selectedShards;
             $backendParams->add('shards', implode(',', $selectedShards));
         }
 
@@ -654,7 +653,7 @@ class Params extends \VuFind\Search\Base\Params
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
             // Simple case: [X TO Y]
-            $filter['displayText'] = $matches[1] . '-' . $matches[2];
+            $filter['displayText'] = $matches[1] . ' - ' . $matches[2];
         } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
@@ -662,7 +661,7 @@ class Params extends \VuFind\Search\Base\Params
                 strtolower($matches[3]) == strtolower($matches[1])
                 && strtolower($matches[4]) == strtolower($matches[2])
             ) {
-                $filter['displayText'] = $matches[1] . '-' . $matches[2];
+                $filter['displayText'] = $matches[1] . ' - ' . $matches[2];
             }
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely

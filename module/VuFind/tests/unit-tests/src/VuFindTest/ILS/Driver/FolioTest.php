@@ -463,7 +463,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('hold_date_invalid');
-        $result = $this->driver->placeHold($details);
+        $this->driver->placeHold($details);
     }
 
     /**

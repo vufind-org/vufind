@@ -55,6 +55,15 @@ class CAS extends AbstractBase
     protected $phpCASSetup = false;
 
     /**
+     * Constructor
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     */
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
+    {
+    }
+
+    /**
      * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
@@ -167,7 +176,7 @@ class CAS extends AbstractBase
         if (!empty($user->cat_username)) {
             $user->saveCredentials(
                 $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 

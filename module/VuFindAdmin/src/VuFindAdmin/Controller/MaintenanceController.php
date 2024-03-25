@@ -107,7 +107,7 @@ class MaintenanceController extends AbstractAdmin
     }
 
     /**
-     * Get a list of the names of scripts available to run thorugh the admin panel.
+     * Get a list of the names of scripts available to run through the admin panel.
      *
      * @return array
      */

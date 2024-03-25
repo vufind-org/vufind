@@ -63,7 +63,6 @@ class MapTabConfig extends AbstractConfig
     public function getMapTabOptions()
     {
         $validFields = ['displayCoords', 'mapLabels', 'graticule', 'recordMap'];
-        $options = [];
         // Check geofeatures.ini
         $options = $this->getOptions('geofeatures', 'MapTab', $validFields);
         // Check legacy configuration

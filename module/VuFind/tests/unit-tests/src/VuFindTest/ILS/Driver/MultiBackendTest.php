@@ -1056,7 +1056,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getMyTransactions(
+        $driver->getMyTransactions(
             $this->getPatron('username', 'invalid')
         );
     }
@@ -1095,7 +1095,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getRenewDetails(
+        $driver->getRenewDetails(
             [
                 'id' => 'invalid.loanid',
             ]
@@ -1138,7 +1138,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->renewMyItems(
+        $driver->renewMyItems(
             ['patron' => $this->getPatron('username', 'invalid')]
         );
     }
@@ -1169,7 +1169,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getMyFines($this->getPatron('username', 'invalid'));
+        $driver->getMyFines($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -1227,7 +1227,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getMyHolds($this->getPatron('username', 'invalid'));
+        $driver->getMyHolds($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -1257,7 +1257,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getAccountBlocks($this->getPatron('username', 'invalid'));
+        $driver->getAccountBlocks($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -1287,7 +1287,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getRequestBlocks($this->getPatron('username', 'invalid'));
+        $driver->getRequestBlocks($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -1326,7 +1326,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getMyStorageRetrievalRequests(
+        $driver->getMyStorageRetrievalRequests(
             $this->getPatron('username', 'invalid')
         );
     }
@@ -1525,7 +1525,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getPickUpLocations(
+        $driver->getPickUpLocations(
             $this->getPatron('username', 'invalid'),
             ['id' => '1']
         );
@@ -1573,7 +1573,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getDefaultPickUpLocation(
+        $driver->getDefaultPickUpLocation(
             $this->getPatron('username', 'invalid'),
             ['id' => '1']
         );
@@ -1621,7 +1621,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getRequestGroups(
+        $driver->getRequestGroups(
             '1',
             $this->getPatron('username', 'invalid')
         );
@@ -1669,7 +1669,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getDefaultRequestGroup(
+        $driver->getDefaultRequestGroup(
             $this->getPatron('username', 'invalid'),
             ['id' => '1']
         );
@@ -1732,7 +1732,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->placeHold(
+        $driver->placeHold(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
                 'id' => 'invalid.1',
@@ -1790,7 +1790,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->cancelHolds(
+        $driver->cancelHolds(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
                 'details' => ['1', '2'],
@@ -1834,7 +1834,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getCancelHoldDetails(
+        $driver->getCancelHoldDetails(
             ['id' => 'd1.1', 'item_id' => 2],
             $this->getPatron('user', 'invalid')
         );
@@ -1897,7 +1897,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->placeStorageRetrievalRequest(
+        $driver->placeStorageRetrievalRequest(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
                 'id' => 'invalid.1',
@@ -1955,7 +1955,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->cancelStorageRetrievalRequests(
+        $driver->cancelStorageRetrievalRequests(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
                 'details' => ['1', '2'],
@@ -1994,7 +1994,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getCancelStorageRetrievalRequestDetails(
+        $driver->getCancelStorageRetrievalRequestDetails(
             ['id' => 'd1.1', 'item_id' => 2],
             $this->getPatron('user', 'invalid')
         );
@@ -2095,7 +2095,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getILLPickupLibraries(
+        $driver->getILLPickupLibraries(
             '1',
             $this->getPatron('username', 'invalid')
         );
@@ -2142,7 +2142,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getILLPickupLocations(
+        $driver->getILLPickupLocations(
             '1',
             '2',
             $this->getPatron('username', 'invalid')
@@ -2202,7 +2202,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->placeILLRequest(
+        $driver->placeILLRequest(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
                 'id' => 'invalid.1',
@@ -2240,7 +2240,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getMyILLRequests(
+        $driver->getMyILLRequests(
             $this->getPatron('username', 'invalid')
         );
     }
@@ -2295,7 +2295,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->cancelILLRequests(
+        $driver->cancelILLRequests(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
                 'details' => ['1', '2'],
@@ -2334,7 +2334,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No suitable backend driver found');
-        $result = $driver->getCancelILLRequestDetails(
+        $driver->getCancelILLRequestDetails(
             ['id' => 'd1.1', 'item_id' => 2],
             $this->getPatron('user', 'invalid')
         );

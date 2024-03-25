@@ -9,16 +9,14 @@
     $this->headScript()->appendFile('requests.js');
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
-  <?=$this->transEsc('Your Account') ?>
-</a>
+<?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Interlibrary Loan Requests') ?></h2>
 
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->recordList)): ?>
     <?php if ($this->cancelForm): ?>

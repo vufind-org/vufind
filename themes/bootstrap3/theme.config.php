@@ -125,7 +125,7 @@ return [
         ],
         'aliases' => [
             /**
-             * Icons can be assigned or overriden here
+             * Icons can be assigned or overridden here
              *
              * Format: 'icon' => [set:]icon[:extra_classes]
              * Icons assigned without set will use the defaultSet.
@@ -144,6 +144,8 @@ return [
             'cart-empty' => 'FontAwesome:times',
             'cart-remove' => 'FontAwesome:minus-circle',
             'cite' => 'FontAwesome:asterisk',
+            'cites' => 'Unicode:275D',
+            'cited-by' => 'Unicode:275E',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
@@ -233,6 +235,10 @@ return [
             'my-account-notification' => 'Alias:notification',
             'my-account-warning' => 'Alias:warning',
             'notification' => 'FontAwesome:bell',
+            'offcanvas-hide-left' => 'FontAwesome:angle-right',
+            'offcanvas-hide-right' => 'FontAwesome:angle-left',
+            'offcanvas-show-left' => 'FontAwesome:angle-double-left',
+            'offcanvas-show-right' => 'FontAwesome:angle-double-right',
             'options' => 'FontAwesome:gear',
             'overdrive' => 'FontAwesome:download',
             'overdrive-cancel-hold' => 'FontAwesome:flag-o',

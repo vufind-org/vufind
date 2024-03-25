@@ -333,7 +333,16 @@ header .container.navbar { margin-bottom: 0; }
 .savedLists {
   @extend .alert;
   @extend .alert-info;
+  padding: 0.4rem;
   display: none;
+
+  ul {
+    padding-left: 1rem;
+  }
+}
+
+.result-citation-links {
+  margin: 0.5rem 0;
 }
 
 @media (min-width: 768px) {
@@ -463,7 +472,7 @@ body.rtl {
 
 /* ------ COMBINED ------ */
 // No sidebar in combined:
-.template-dir-combined.template-name-results.offcanvas {
+.template-dir-combined.template-name-results.vufind-offcanvas {
   margin: 0;
   padding: 0;
 }
@@ -804,8 +813,14 @@ table.search-history-table {
     .mainbody,
     .sidebar {
       float: none;
+    }
+    .mainbody {
       width: auto;
       padding: 0;
+      margin-bottom: 1rem;
+    }
+    &:not(.vufind-offcanvas.active) .sidebar {
+      width: auto;
     }
   }
 }

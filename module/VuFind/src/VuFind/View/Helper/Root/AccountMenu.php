@@ -77,7 +77,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
         return [
             [
                 'name' => 'favorites',
-                'label' => 'Favorites',
+                'label' => 'saved_items',
                 'route' => 'myresearch-favorites',
                 'icon' => 'user-favorites',
                 'checkMethod' => 'checkFavorites',
@@ -378,10 +378,10 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get authenticated user
      *
-     * @return User|bool Object if user is logged in, false otherwise.
+     * @return ?User Object if user is logged in, null otherwise.
      */
-    protected function getUser(): User|bool
+    protected function getUser(): ?User
     {
-        return $this->getAuthHelper()->isLoggedIn();
+        return $this->getAuthHelper()->getUserObject();
     }
 }

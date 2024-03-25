@@ -36,7 +36,8 @@ $config = [
             'content-page' => [
                 'type'    => 'Laminas\Router\Http\Regex',
                 'options' => [
-                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z][a-zA-Z0-9_-]*)',
+                    // Note: %2F is needed for encoded slashes to match the route regex:
+                    'regex'    => '/[C|c]ontent/(?<page>[a-zA-Z]([a-zA-Z0-9/_-]|%2[fF])*)',
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
@@ -104,6 +105,16 @@ $config = [
                     'defaults' => [
                         'controller' => 'WorldcatRecord',
                         'action'     => 'Home',
+                    ],
+                ],
+            ],
+            'oidc-wellknown-configuration' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/.well-known/openid-configuration',
+                    'defaults' => [
+                        'controller' => 'OAuth2',
+                        'action'     => 'wellKnownConfiguration',
                     ],
                 ],
             ],
@@ -414,6 +425,7 @@ $config = [
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\DoiLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -445,11 +457,11 @@ $config = [
             'VuFind\Net\UserIpReader' => 'VuFind\Net\UserIpReaderFactory',
             'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
             'VuFind\OAI\Server\Auth' => 'VuFind\OAI\ServerFactory',
-            'VuFind\OAuth2\Repository\AccessTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
-            'VuFind\OAuth2\Repository\AuthCodeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\AccessTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenServiceFactory',
+            'VuFind\OAuth2\Repository\AuthCodeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenServiceFactory',
             'VuFind\OAuth2\Repository\ClientRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
             'VuFind\OAuth2\Repository\IdentityRepository' => 'VuFind\OAuth2\Repository\IdentityRepositoryFactory',
-            'VuFind\OAuth2\Repository\RefreshTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\RefreshTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenServiceFactory',
             'VuFind\OAuth2\Repository\ScopeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -640,6 +652,7 @@ $config = [
             'contentblock' => [ /* see VuFind\ContentBlock\PluginManager for defaults */ ],
             'cover_layer' => [ /* see VuFind\Cover\Layer\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
+            'db_service' => [ /* see VuFind\Db\Service\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
             'doilinker' => [ /* see VuFind\DoiLinker\PluginManager for defaults */ ],
             'form_handler' => [ /* see VuFind\Form\Handler\PluginManager for defaults */],
@@ -767,7 +780,7 @@ $staticRoutes = [
     'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
     'Overdrive/MyContent','Overdrive/Hold',
     'Pazpar2/Home', 'Pazpar2/Search',
-    'Primo/Advanced', 'Primo/Home', 'Primo/Search',
+    'Primo/Advanced', 'Primo/CitedBy', 'Primo/Cites', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
     'Search/Advanced',
