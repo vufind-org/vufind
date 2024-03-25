@@ -760,7 +760,7 @@ class Folio extends AbstractAPI implements
         foreach ($item->boundWithTitles ?? [] as $boundWithTitle) {
             $boundWithRecords[] = [
                 'title' => $boundWithTitle->briefInstance?->title,
-                'bibId' => $boundWithTitle->briefInstance?->id, 
+                'bibId' => $boundWithTitle->briefInstance?->id,
             ];
         }
         return $boundWithRecords;
