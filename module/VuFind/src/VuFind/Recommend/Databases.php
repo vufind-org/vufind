@@ -33,6 +33,7 @@ use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function count;
 use function intval;
+use function is_callable;
 use function strlen;
 
 /**

@@ -33,6 +33,7 @@ use Laminas\Config\Config;
 use VuFind\Connection\ExternalVuFind as Connection;
 
 use function intval;
+use function is_callable;
 
 /**
  * ConsortialVuFind Recommendations Module
