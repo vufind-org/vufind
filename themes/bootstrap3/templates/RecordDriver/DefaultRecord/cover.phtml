@@ -1,4 +1,4 @@
-<?php if ($this->link): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-link"><?php endif; ?>
+<?php if ($this->link): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-link" <?php if (!$this->linkUnique): ?>tabindex="-1"<?php endif; ?>><?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->transEscAttr('Cover Image') ?>">
