@@ -52,6 +52,8 @@ class Component extends AbstractHelper
      */
     public function __invoke(string $name, $params = []): string
     {
+        static $invokation = 0;
+
         $path = 'components';
 
         // ->component('@atoms/caret')
@@ -61,6 +63,9 @@ class Component extends AbstractHelper
             $path = substr(array_shift($parts), 1);
             $name = implode('/', $parts);
         }
+
+        ++$invokation;
+        $params['_invokation'] = $invokation;
 
         return $this->view->render("_ui/$path/" . $name, $params);
     }

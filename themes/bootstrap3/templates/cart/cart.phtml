@@ -64,25 +64,38 @@
               ]
           )
         ?>
-        <li class="btn-group" id="cartDelete">
-          <button type="submit" name="delete" class="toolbar-btn dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
-            <?=$this->icon('cart-remove', 'icon-link__icon') ?>
-            <span class="icon-link__label"><?=$this->transEsc('Delete')?></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-            <li><a id="cart-confirm-delete" class="dropdown-item" title="<?=$this->transEscAttr('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-            <li><a class="dropdown-item"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-          </ul>
+        <li id="cartDelete">
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonId' => 'cart-delete-label',
+                    'buttonName' => 'delete',
+                    'buttonClass' => 'toolbar-btn',
+                    'buttonIcon' => 'cart-remove',
+                    'buttonLabel' => 'Delete',
+                    'confirmId' => 'cart-confirm-delete',
+                    'confirmTitle' => 'confirm_delete',
+                ]
+            )
+          ?>
         </li>
-        <li class="btn-group">
-          <button type="submit" class="toolbar-btn dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
-            <?=$this->icon('cart-empty', 'icon-link__icon') ?>
-            <span class="icon-link__label"><?=$this->transEsc('Empty Book Bag')?></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-            <li><a id="cart-confirm-empty" class="dropdown-item" title="<?=$this->transEscAttr('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-            <li><a id="cart-refuse-empty" class="dropdown-item"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-          </ul>
+        <li>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonId' => 'cart-empty-label',
+                    'buttonName' => 'empty',
+                    'buttonClass' => 'toolbar-btn',
+                    'buttonIcon' => 'cart-empty',
+                    'buttonLabel' => 'Empty Book Bag',
+                    'confirmId' => 'cart-confirm-empty',
+                    'confirmTitle' => 'bookbag_confirm_empty',
+                    'cancelId' => 'cart-refuse-empty',
+                ]
+            )
+          ?>
         </li>
       </ul>
     </div>

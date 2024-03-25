@@ -59,17 +59,17 @@
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
           </a>
-          <div class="btn-group">
-            <a class="btn btn-link dropdown-toggle icon-link" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-              <?=$this->icon('user-list-delete', 'icon-link__icon') ?>
-              <span class="icon-link__label"><?=$this->transEsc('delete_list')?></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><span class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></span></li>
-              <li><a class="dropdown-item" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-              <li><a class="dropdown-item" href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-          </div>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->id]]),
+                    'buttonIcon' => 'user-list-delete',
+                    'buttonLabel' => 'delete_list',
+                    'confirmLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->id, 'confirm' => 1]]),
+                ]
+            )
+          ?>
         <?php endif; ?>
       <?php endif; ?>
       <?php if ($recordTotal > 0): ?>

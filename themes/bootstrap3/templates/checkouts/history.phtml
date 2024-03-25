@@ -43,25 +43,37 @@
       <?php if ($purgeSelectedAllowed || $purgeAllAllowed): ?>
         <div class="toolbar">
           <?php if ($purgeSelectedAllowed): ?>
-            <div class="btn-group">
-              <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-              <ul class="dropdown-menu">
-                <li><span class="dropdown-header"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
-                <li><a href="#" id="confirm_purge_selected_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                <li><a href="#" class="dropdown-item confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-              </ul>
-            </div>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                      'buttonId' => 'purgeSelected',
+                      'buttonName' => 'purgeSelected',
+                      'buttonLabel' => 'loan_history_purge_selected',
+                      'header' => 'loan_history_confirm_purge_selected',
+                      'confirmId' => 'confirm_purge_selected_yes',
+                      'confirmTitle' => 'bookbag_confirm_empty',
+                      'cancelClass' => 'confirm_purge_no',
+                  ]
+              )
+            ?>
           <?php endif; ?>
 
           <?php if ($purgeAllAllowed): ?>
-            <div class="btn-group">
-              <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-              <ul class="dropdown-menu">
-                <li><span class="dropdown-header"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
-                <li><a href="#" id="confirm_purge_all_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                <li><a href="#" class="dropdown-item confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-              </ul>
-            </div>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                      'buttonId' => 'purgeAll',
+                      'buttonName' => 'purgeAll',
+                      'buttonLabel' => 'loan_history_purge_all',
+                      'header' => 'loan_history_confirm_purge_all',
+                      'confirmId' => 'confirm_purge_all_yes',
+                      'confirmTitle' => 'bookbag_confirm_empty',
+                      'cancelClass' => 'confirm_purge_no',
+                  ]
+              )
+            ?>
           <?php endif; ?>
         </div>
         <?php if ($purgeSelectedAllowed): ?>

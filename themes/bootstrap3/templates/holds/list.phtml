@@ -33,23 +33,36 @@
                 <input id="update_selected" name="updateSelected" type="submit" value="<?=$this->transEscAttr('hold_edit_selected') ?>" class="btn btn-default hidden">
               </div>
             <?php endif; ?>
-            <?php if ($this->cancelForm): ?>
-              <div class="btn-group">
-                <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr('hold_cancel_selected') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-                <ul class="dropdown-menu">
-                  <li><span class="dropdown-header"><?=$this->transEsc('confirm_hold_cancel_selected_text') ?></span></li>
-                  <li><a href="#" id="confirm_cancel_selected_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-                  <li><a href="#" class="dropdown-item confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-                </ul>
-              </div>
-              <div class="btn-group">
-                <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('hold_cancel_all') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-                <ul class="dropdown-menu">
-                  <li><span class="dropdown-header"><?=$this->transEsc('confirm_hold_cancel_all_text') ?></span></li>
-                  <li><a href="#" id="confirm_cancel_all_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-                  <li><a href="#" class="dropdown-item confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-                </ul>
-              </div>
+              <?php if ($this->cancelForm): ?>
+              <?=
+                $this->component(
+                    'confirm-button',
+                    [
+                        'buttonId' => 'cancelSelected',
+                        'buttonName' => 'cancelSelected',
+                        'buttonLabel' => 'hold_cancel_selected',
+                        'header' => 'confirm_hold_cancel_selected_text',
+                        'confirmId' => 'confirm_cancel_selected_yes',
+                        'cancelClass' => 'confirm_cancel_no',
+                        'ignoreLightbox' => true,
+                    ]
+                )
+              ?>
+              <?=
+                $this->component(
+                    'confirm-button',
+                    [
+                        'buttonId' => 'cancelAll',
+                        'buttonName' => 'cancelAll',
+                        'buttonLabel' => 'hold_cancel_all',
+                        'header' => 'confirm_hold_cancel_all_text',
+                        'confirmId' => 'confirm_cancel_all_yes',
+                        'confirmTitle' => 'bookbag_confirm_empty',
+                        'cancelClass' => 'confirm_cancel_no',
+                        'ignoreLightbox' => true,
+                    ]
+                )
+              ?>
             <?php endif; ?>
           </div>
         </div>

@@ -49,23 +49,35 @@
             <input type="checkbox" name="selectAll" class="checkbox-select-all">
             <?=$this->transEsc('select_all_on_page')?>
           </label>
-          <div class="btn-group">
-            <input type="submit" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr('renew_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-            <ul class="dropdown-menu">
-              <li><span class="dropdown-header"><?=$this->transEsc('confirm_renew_selected_text')?></span></li>
-              <li><a href="#" id="confirm_renew_selected_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-              <li><a href="#" class="dropdown-item confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-          </div>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonId' => 'renewSelected',
+                    'buttonName' => 'renewSelected',
+                    'buttonLabel' => 'renew_selected',
+                    'header' => 'confirm_renew_selected_text',
+                    'confirmId' => 'confirm_renew_selected_yes',
+                    'cancelClass' => 'confirm_renew_no',
+                    'ignoreLightbox' => true,
+                ]
+            )
+          ?>
           <?php if ($renewAll): ?>
-            <div class="btn-group">
-              <input type="submit" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-              <ul class="dropdown-menu">
-                <li><span class="dropdown-header"><?=$this->transEsc('confirm_renew_all_text')?></span></li>
-                <li><a href="#" id="confirm_renew_all_yes" class="dropdown-item"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                <li><a href="#" class="dropdown-item confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-              </ul>
-            </div>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                      'buttonId' => 'renewAll',
+                      'buttonName' => 'renewAll',
+                      'buttonLabel' => 'renew_all',
+                      'header' => 'confirm_renew_all_text',
+                      'confirmId' => 'confirm_renew_all_yes',
+                      'cancelClass' => 'confirm_renew_no',
+                      'ignoreLightbox' => true,
+                  ]
+              )
+            ?>
           <?php endif; ?>
         </div>
       </div>
