@@ -41,15 +41,6 @@ namespace VuFind\Db\Entity;
 interface UserEntityInterface extends EntityInterface
 {
     /**
-     * Get a user attribute by field name.
-     *
-     * @param string $fieldName Field name
-     *
-     * @return mixed
-     */
-    public function getField($fieldName);
-
-    /**
      * Get identifier.
      *
      * @return int

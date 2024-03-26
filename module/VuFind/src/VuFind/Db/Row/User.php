@@ -785,18 +785,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get a user attribute by field name.
-     *
-     * @param string $fieldName Field name
-     *
-     * @return mixed
-     */
-    public function getField($fieldName)
-    {
-        return $this->$fieldName;
-    }
-
-    /**
      * Get identifier.
      *
      * @return int
