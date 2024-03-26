@@ -80,6 +80,14 @@ class UserService extends AbstractDbService implements
      */
     public function getUserByField($fieldName, $fieldValue)
     {
-        return $this->userTable->getByField($fieldName, $fieldValue);
+        switch ($fieldName) {
+            case 'id':
+                return $this->userTable->getById($fieldValue);
+            case 'username':
+                return $this->userTable->getByUsername($fieldValue, false);
+            case 'cat_id':
+                return $this->userTable->getByCatalogId($fieldValue);
+        }
+        return null;
     }
 }

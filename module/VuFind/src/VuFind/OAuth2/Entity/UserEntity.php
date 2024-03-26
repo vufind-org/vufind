@@ -77,6 +77,8 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
             case 'cat_id':
                 $userIdentifier = $user->getCatId();
                 break;
+            default:
+                $userIdentifier = null;
         }
         if ($userIdentifier === null) {
             throw new \VuFind\Exception\BadConfig(

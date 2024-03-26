@@ -105,27 +105,6 @@ class User extends Gateway
     }
 
     /**
-     * Retrieve a user object from the database based on the given field name.
-     *
-     * @param string $fieldName  Field name
-     * @param string $fieldValue Field value
-     *
-     * @return ?UserRow
-     */
-    public function getByField($fieldName, $fieldValue)
-    {
-        switch ($fieldName) {
-            case 'id':
-                return $this->getById($fieldValue);
-            case 'username':
-                return $this->getByUsername($fieldValue, false);
-            case 'cat_id':
-                return $this->getByCatalogId($fieldValue);
-        }
-        return null;
-    }
-
-    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param string $id ID.

@@ -154,23 +154,20 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      */
     protected function getMockUserTable(): User
     {
-        $getByFieldCallback = function (
-            $fieldName,
-            $fieldValue
+        $getByIdCallback = function (
+            $id
         ): ?UserRow {
-            $id = 0;
             $username = 'test';
-            $$fieldName = $fieldValue;
             return $this->createUserRow(compact('id', 'username'));
         };
 
         $accessTokenTable = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getByField'])
+            ->onlyMethods(['getById'])
             ->getMock();
         $accessTokenTable->expects($this->any())
-            ->method('getByField')
-            ->willReturnCallback($getByFieldCallback);
+            ->method('getById')
+            ->willReturnCallback($getByIdCallback);
 
         return $accessTokenTable;
     }
@@ -273,7 +270,11 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->getMock();
         $userService->expects($this->any())
             ->method('getUserByField')
-            ->willReturnCallback([$userTable, 'getByField']);
+            ->willReturnCallback(
+                function ($fieldName, $fieldValue) use ($userTable) {
+                    return $userTable->getById($fieldValue);
+                }
+            );
         return $userService;
     }
 
