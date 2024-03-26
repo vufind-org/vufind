@@ -884,6 +884,29 @@ class User extends RowGateway implements
     }
 
     /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface
+    {
+        $this->cat_id = $catId;
+        return $this;
+    }
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string
+    {
+        return $this->cat_id;
+    }
+
+    /**
      * Catalog username setter
      *
      * @param ?string $catUsername Catalog username

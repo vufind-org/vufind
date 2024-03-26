@@ -60,6 +60,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     protected $oauth2Config = [
         'Server' => [
+            'userIdentifierField' => 'id',
             'encryptionKey' => 'testkey',
             'hashSalt' => 'superSalty',
         ],
@@ -244,17 +245,17 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     protected function getMockUserService(): UserServiceInterface
     {
         $user = $this->getMockUser();
-        $userTable = $this->getMockBuilder(UserService::class)
+        $userService = $this->getMockBuilder(UserService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $userTable->expects($this->any())->method('getUserById')
+        $userService->expects($this->any())->method('getUserByField')
             ->willReturnMap(
                 [
-                    [1, null],
-                    [2, $user],
+                    ['id', 1, null],
+                    ['id', 2, $user],
                 ]
             );
-        return $userTable;
+        return $userService;
     }
 
     /**

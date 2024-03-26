@@ -110,6 +110,22 @@ interface UserEntityInterface extends EntityInterface
     public function getPendingEmail(): string;
 
     /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface;
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string;
+
+    /**
      * Catalog username setter
      *
      * @param ?string $catUsername Catalog username

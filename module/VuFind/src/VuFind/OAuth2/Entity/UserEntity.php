@@ -66,7 +66,26 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
         protected AccessTokenServiceInterface $accessTokenService,
         protected ILSAuthenticator $ilsAuthenticator
     ) {
-        $this->setIdentifier($user->getId());
+        $userIdentifierField = $oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        switch ($userIdentifierField) {
+            case 'id':
+                $userIdentifier = $user->getId();
+                break;
+            case 'username':
+                $userIdentifier = $user->getUsername();
+                break;
+            case 'cat_id':
+                $userIdentifier = $user->getCatId();
+                break;
+            default:
+                $userIdentifier = null;
+        }
+        if ($userIdentifier === null) {
+            throw new \VuFind\Exception\BadConfig(
+                "Required user identifier field $userIdentifierField empty for user {$user->id}"
+            );
+        }
+        $this->setIdentifier($userIdentifier);
     }
 
     /**
