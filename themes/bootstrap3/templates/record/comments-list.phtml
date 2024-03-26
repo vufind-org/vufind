@@ -7,14 +7,14 @@
       <div class="comment-name">
         <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br>
         <small>
-          <?=$this->escapeHtml($comment->created)?>
+          <?=$this->escapeHtml($comment->getCreated()->format('Y-m-d H:i:s'))?>
           <?php if (($user = $this->auth()->getUserObject()) && $comment->user_id == $user->id): ?>
             <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment', ['delete' => $comment->id]))?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
           <?php endif; ?>
         </small>
       </div>
       <div class="comment-text">
-        <?=$this->escapeHtml($comment->comment)?>
+        <?=$this->escapeHtml($comment->getComment())?>
       </div>
       <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">

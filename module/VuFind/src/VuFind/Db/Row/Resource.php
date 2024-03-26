@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use VuFind\Date\DateException;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 use function intval;
@@ -53,7 +54,7 @@ use function strlen;
  * @property string  $source
  * @property ?string $extra_metadata
  */
-class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, ResourceEntityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
@@ -159,12 +160,12 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
         $table = $this->getDbTable('Comments');
         $row = $table->createRow();
-        $row->user_id = $user->id;
-        $row->resource_id = $this->id;
-        $row->comment = $comment;
-        $row->created = date('Y-m-d H:i:s');
+        $row->setUser($user)
+            ->setResource($this)
+            ->setComment($comment)
+            ->setCreated(new \DateTime());
         $row->save();
-        return $row->id;
+        return $row->getId();
     }
 
     /**
@@ -264,5 +265,133 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $this->extra_metadata = json_encode($extra);
         }
         return $this;
+    }
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Record Id setter
+     *
+     * @param string $recordId recordId
+     *
+     * @return ResourceEntityInterface
+     */
+    public function setRecordId(string $recordId): ResourceEntityInterface
+    {
+        $this->record_id = $recordId;
+        return $this;
+    }
+
+    /**
+     * Record Id getter
+     *
+     * @return string
+     */
+    public function getRecordId(): string
+    {
+        return $this->record_id;
+    }
+
+    /**
+     * Title setter
+     *
+     * @param string $title Title of the record.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function setTitle(string $title): ResourceEntityInterface
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Title getter
+     *
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * Author setter
+     *
+     * @param ?string $author Author of the title.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function setAuthor(?string $author): ResourceEntityInterface
+    {
+        $this->author = $author;
+        return $this;
+    }
+
+    /**
+     * Year setter
+     *
+     * @param ?int $year Year title is published.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function setYear(?int $year): ResourceEntityInterface
+    {
+        $this->year = $year;
+        return $this;
+    }
+
+    /**
+     * Source setter
+     *
+     * @param string $source Source (a search backend ID).
+     *
+     * @return ResourceEntityInterface
+     */
+    public function setSource(string $source): ResourceEntityInterface
+    {
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * Source getter
+     *
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    /**
+     * Extra Metadata setter
+     *
+     * @param ?string $extraMetadata ExtraMetadata.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function setExtraMetadata(?string $extraMetadata): ResourceEntityInterface
+    {
+        $this->extra_metadata = $extraMetadata;
+        return $this;
+    }
+
+    /**
+     * Extra Metadata getter
+     *
+     * @return ?string
+     */
+    public function getExtraMetadata(): ?string
+    {
+        return $this->extra_metadata;
     }
 }
