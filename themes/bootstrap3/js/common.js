@@ -379,6 +379,9 @@ var VuFind = (function VuFind() {
    */
   var initResultScripts = function initResultScripts(container) {
     let jqContainer = typeof container === 'string' ? $(container) : container;
+    if (typeof this.doi !== 'undefined') {
+      this.doi.embedDoiLinks(jqContainer);
+    }
     if (typeof this.openurl !== 'undefined') {
       this.openurl.init(jqContainer);
     }
