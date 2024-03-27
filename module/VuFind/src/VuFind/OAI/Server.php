@@ -1156,11 +1156,11 @@ class Server
     protected function isBadDate($from, $until)
     {
         $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
-        if ($dt === false || $dt->getLastErrors()) {
+        if (!$this->dateTimeCreationSuccessful($dt)) {
             return true;
         }
         $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
-        if ($dt === false || $dt->getLastErrors()) {
+        if (!$this->dateTimeCreationSuccessful($dt)) {
             return true;
         }
         // Check for different date granularity
@@ -1183,6 +1183,28 @@ class Server
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if a DateTime was successfully created without errors or warnings
+     *
+     * @param \DateTime|false $dt DateTime or false (return value of createFromFormat)
+     *
+     * @return bool
+     */
+    protected function dateTimeCreationSuccessful(\DateTime|false $dt): bool
+    {
+        // Return value false is always an error:
+        if (false === $dt) {
+            return false;
+        }
+        $errors = $dt->getLastErrors();
+        // getLastErrors returns false if no errors on PHP 8.2 and later:
+        if (false === $errors) {
+            return true;
+        }
+        // getLastErrors returns an array with no errors on PHP 8.1:
+        return empty($errors['errors']) && empty($errors['warnings']);
     }
 
     /**
