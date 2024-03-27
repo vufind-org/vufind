@@ -2,7 +2,7 @@
  <div class="media clearfix">
      <div class="pull-right <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
          <?php if ($cover): ?>
-             <img alt="Cover Image" class="recordcover" src="<?=$this->escapeHtmlAttr($cover)?>">
+             <img alt="<?=$this->transEscAttr('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover)?>">
          <?php endif; ?>
      </div>
      <div class="media-body">

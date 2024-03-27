@@ -2,7 +2,7 @@
 <div class="media">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode('core');
-    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'), true);
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
   ?>

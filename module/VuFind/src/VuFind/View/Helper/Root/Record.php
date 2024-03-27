@@ -441,9 +441,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getCover($context, $default, $link = false)
+    public function getCover($context, $default, $link = false, $linkUnique = false)
     {
-        $details = $this->getCoverDetails($context, $default, $link);
+        $details = $this->getCoverDetails($context, $default, $link, $linkUnique);
         return $details['html'];
     }
 
@@ -478,9 +478,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getCoverDetails($context, $default, $link = false)
+    public function getCoverDetails($context, $default, $link = false, $linkUnique = false)
     {
-        $details = compact('link', 'context') + [
+        $details = compact('link', 'linkUnique', 'context') + [
             'driver' => $this->driver, 'cover' => false, 'size' => false,
             'linkPreview' => $this->getPreviewCoverLinkSetting($context),
         ];
