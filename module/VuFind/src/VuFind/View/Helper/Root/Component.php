@@ -52,7 +52,8 @@ class Component extends AbstractHelper
      */
     public function __invoke(string $name, $params = []): string
     {
-        static $invokation = 0;
+        // A counter that can be used to create element id's etc.
+        static $invocation = 0;
 
         $path = 'components';
 
@@ -64,8 +65,8 @@ class Component extends AbstractHelper
             $name = implode('/', $parts);
         }
 
-        ++$invokation;
-        $params['_invokation'] = $invokation;
+        ++$invocation;
+        $params['_invocation'] = $invocation;
 
         return $this->view->render("_ui/$path/" . $name, $params);
     }
