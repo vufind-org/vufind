@@ -336,9 +336,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             if ($result->status) {
                 $checkedout = false;
                 $checkouts = $result->data;
-                //In case of a magazine issue, we have to get all the checkouts to see if the
-                //current title is the parentID of one of the user's checkouts. Return data as
-                //array in case there are multiple issues checked out to the user.
+                // In case of a magazine issue, we have to get all the checkouts to see if the
+                // current title is the parentID of one of the user's checkouts. Return data as
+                // array in case there are multiple issues checked out to the user.
                 $result->data = [];
                 $result->isMagazine = false;
                 foreach ($checkouts as $checkout) {
@@ -581,7 +581,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         return $this->getIsMarc()
             ? parent::getURLs()
-            : $this->getPermanentLink();
+            : $this->getPermanentLink();      
     }
 
     /**
@@ -595,6 +595,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $data = json_decode($this->fields['fullrecord'], false);
         $desc = $this->translate('od_resource_page');
         $permlink = "$libraryURL/media/" . $data->crossRefId;
-        return array (['url' => $permlink, 'desc' => $desc ?: $permlink]);
+        return array (['url' => $permlink, 'desc' => $desc ?: $permlink]);      
     }
 }
