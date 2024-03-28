@@ -218,8 +218,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
-        //$this->debug('patron: ' . print_r($patron, true));
-
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');
         $action = $this->params()->fromQuery('action');
