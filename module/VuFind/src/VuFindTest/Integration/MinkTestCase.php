@@ -88,6 +88,51 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $pathResolver;
 
     /**
+     * Selector for an open button group dropdown menu
+     *
+     * .in for Bootstrap 3, .show for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $btnGroupDropdownMenuSelector = '.btn-group .dropdown-menu.in, .btn-group .dropdown-menu.show';
+
+    /**
+     * Selector for first item in a dropdown menu
+     *
+     * .in for Bootstrap 3, .show for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $firstOpenDropdownMenuItemSelector = '.mainbody .dropdown-menu.in li:nth-child(1) a, .mainbody .dropdown-menu.show li:nth-child(1) a';
+
+    /**
+     * Selector for popover content
+     *
+     * .popover-content for Bootstrap 3, .popover-body for Boostrap 5
+     *
+     * @var string
+     */
+    protected $popoverContentSelector = '.popover-body, .popover-content';
+
+    /**
+     * Selector for an open modal dialog
+     *
+     * .in for Bootstrap 3, .show for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalSelector = '#modal.in, #modal.show';
+
+    /**
+     * Selector for a username field in open modal dialog
+     *
+     * .in for Bootstrap 3, .show for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
+
+    /**
      * Get name of the current test
      *
      * @return string
@@ -1155,19 +1200,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         // Create a pathResolver:
         $this->pathResolver = $this->getPathResolver();
-
-        // Change theme if requested:
-        if ($theme = (string)getenv('VUFIND_TEST_THEME')) {
-            $this->changeConfigs(
-                [
-                    'config' => [
-                        'Site' => [
-                            'theme' => $theme,
-                        ],
-                    ],
-                ]
-            );
-        }
     }
 
     /**
