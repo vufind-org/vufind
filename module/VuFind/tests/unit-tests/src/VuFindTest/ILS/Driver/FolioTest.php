@@ -1334,7 +1334,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'Wheeler vs. Passmore Williamson, including the several opinions delivered, and the arguments of ' .
                     'counsel / reported by Arthur Cannon.',
                 'bibId' => '080e5167-7a50-4513-b0f3-0f5bf835df7b',
-            ]
+            ],
         ];
         $this->assertEquals($expected, $result);
     }
