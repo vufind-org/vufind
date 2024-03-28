@@ -109,9 +109,9 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     /**
      * Inject source identifier in record collection and all contained records.
      *
-     * @param ResponseInterface $response Response
+     * @param RecordCollectionInterface $response Response
      *
-     * @return ResponseInterface
+     * @return RecordCollectionInterface
      */
     protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {

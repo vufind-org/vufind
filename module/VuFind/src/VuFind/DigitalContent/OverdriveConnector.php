@@ -298,7 +298,7 @@ class OverdriveConnector implements
      *
      * @return object|bool see getAvailability
      *
-     * @todo if more tan 25 passed in, make multiple calls
+     * @todo if more than 25 passed in, make multiple calls
      */
     public function getAvailabilityBulk($overDriveIds = [])
     {
@@ -1669,7 +1669,7 @@ class OverdriveConnector implements
      * @param bool   $allowRedirects Whether to allow the client to follow redirects
      *
      * @return \Laminas\Http\Client
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getHttpClient($url = null, $allowRedirects = true)
     {

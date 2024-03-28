@@ -747,7 +747,7 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-$(function commonDocReady() {
+document.addEventListener('DOMContentLoaded', () => {
   // Start up all of our submodules
   VuFind.init();
   // Off canvas
@@ -761,6 +761,9 @@ $(function commonDocReady() {
   // Print
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
-    $("link[media='print']").attr("media", "all");
+    var printStylesheets = document.querySelectorAll('link[media="print"]');
+    printStylesheets.forEach((stylesheet) => {
+      stylesheet.media = 'all';
+    });
   }
 });
