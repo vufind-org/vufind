@@ -579,10 +579,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getURLs()
     {
-        $permlink =  $this->getPermanentLink();
-        $desc = $this->translate('od_resource_page');
-        $retVal[] = ['url' => $permlink, 'desc' => $desc];
-        return $retVal;
+        return $this->getIsMarc()
+            ? parent::getURLs()
+            : $this->getPermanentLink();
     }
 
     /**
@@ -592,8 +591,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getPermanentLink()
     {
-        $od_id = $this->getOverdriveID();
-        $result = $this->connector->getPermanentLinks([$od_id]);
-        return $result[$od_id];
+        $libraryURL = $this->config->libraryURL;
+        $data = json_decode($this->fields['fullrecord'], false);
+        $desc = $this->translate('od_resource_page');
+        $permlink = "$libraryURL/media/" . $data->crossRefId;
+        return array (['url' => $permlink, 'desc' => $desc ?: $permlink]);
     }
 }
