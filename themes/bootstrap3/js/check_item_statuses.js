@@ -219,7 +219,14 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   }
 
   function checkAllItemStatuses(container = document) {
-    container.querySelectorAll(".ajaxItem").forEach(checkItemStatus);
+    const records = container.querySelectorAll(".ajaxItem");
+
+    if (records.length === 0) {
+      VuFind.emit("item-status-done");
+      return;
+    }
+
+    records.forEach(checkItemStatus);
   }
 
   function init($container = document) {

@@ -14,7 +14,7 @@
     <?php foreach ($boundWithRecords as $record): ?>
       <li class="<?=($record['bibId'] == $driver->getUniqueId()) ? 'direct-item' : 'bound-with-item'?>">
         <a href="<?=$this->escapeHtmlAttr($record['bibId'])?>">
-          <?=$this->escapeHtml($this->truncate($record['title'], 85)) ?>
+          <?=$this->escapeHtml($this->truncate($record['title'] ?? $this->translate('Title not available'), 85)) ?>
         </a>
       </li>
     <?php endforeach; ?>
