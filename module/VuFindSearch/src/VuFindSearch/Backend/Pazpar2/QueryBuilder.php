@@ -61,19 +61,20 @@ class QueryBuilder
     /**
      * Return Pazpar2 search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  Query object
+     * @param ParamBag      $params Search backend parameters
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ParamBag $params = null)
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);
 
         // Send back results
-        $params = new ParamBag();
-        $params->set('query', $queryStr);
-        return $params;
+        $newParams = new ParamBag();
+        $newParams->set('query', $queryStr);
+        return $newParams;
     }
 
     /// Internal API

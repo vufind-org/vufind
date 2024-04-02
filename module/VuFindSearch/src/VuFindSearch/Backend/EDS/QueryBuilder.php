@@ -63,18 +63,18 @@ class QueryBuilder
     /**
      * Construct EdsApi search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  Query object
+     * @param ParamBag      $params Search backend parameters
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ParamBag $params = null)
     {
         // Build base query
         $queries = $this->abstractQueryToArray($query);
 
         // Send back results
-        $params = new ParamBag(['query' => $queries]);
-        return $params;
+        return new ParamBag(['query' => $queries]);
     }
 
     /**
