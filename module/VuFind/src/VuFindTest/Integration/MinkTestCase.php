@@ -133,6 +133,24 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
 
     /**
+     * Selector for next page link
+     *
+     * a.page-next for Bootstrap 3, .page-next a for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pageNextSelector = 'a.page-next, .page-next a';
+
+    /**
+     * Selector for previous page link
+     *
+     * a.page-prev for Bootstrap 3, .page-prev a for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pagePrevSelector = 'a.page-prev, .page-prev a';
+
+    /**
      * Get name of the current test
      *
      * @return string
