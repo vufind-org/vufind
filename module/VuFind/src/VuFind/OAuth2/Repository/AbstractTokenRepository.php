@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,7 @@ namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use VuFind\Auth\InvalidArgumentException;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 
 use function is_callable;
 
@@ -47,41 +47,17 @@ use function is_callable;
 class AbstractTokenRepository
 {
     /**
-     * Token type.
-     *
-     * @var string
-     */
-    protected $tokenType;
-
-    /**
-     * Token table
-     *
-     * @var AccessToken
-     */
-    protected $table;
-
-    /**
-     * Entity class
-     *
-     * @var string
-     */
-    protected $entityClass;
-
-    /**
      * Constructor
      *
-     * @param string      $tokenType   Token type
-     * @param string      $entityClass Entity class name
-     * @param AccessToken $table       Token table
+     * @param string                      $tokenType          Token type
+     * @param string                      $entityClass        Entity class name
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
      */
     public function __construct(
-        string $tokenType,
-        string $entityClass,
-        AccessToken $table
+        protected string $tokenType,
+        protected string $entityClass,
+        protected AccessTokenServiceInterface $accessTokenService
     ) {
-        $this->tokenType = $tokenType;
-        $this->entityClass = $entityClass;
-        $this->table = $table;
     }
 
     /**
@@ -100,11 +76,11 @@ class AbstractTokenRepository
             );
         }
 
-        $row = $this->table->getByIdAndType(
+        $row = $this->accessTokenService->getByIdAndType(
             $token->getIdentifier(),
             $this->tokenType
         );
-        $row->data = json_encode($token);
+        $row->setData(json_encode($token));
         $userId = null;
         if ($token instanceof RefreshTokenEntityInterface) {
             $accessToken = $token->getAccessToken();
@@ -116,8 +92,8 @@ class AbstractTokenRepository
             // Drop nonce from user id:
             [$userId] = explode('|', $userId);
         }
-        $row->user_id = $userId;
-        $row->save();
+        $row->setUserId($userId);
+        $this->accessTokenService->persistEntity($row);
     }
 
     /**
@@ -129,10 +105,10 @@ class AbstractTokenRepository
      */
     public function revoke($tokenId)
     {
-        $token = $this->table->getByIdAndType($tokenId, $this->tokenType, false);
+        $token = $this->accessTokenService->getByIdAndType($tokenId, $this->tokenType, false);
         if ($token) {
-            $token->revoked = true;
-            $token->save();
+            $token->setRevoked(true);
+            $this->accessTokenService->persistEntity($token);
         }
     }
 
@@ -145,8 +121,8 @@ class AbstractTokenRepository
      */
     public function isRevoked($tokenId)
     {
-        $token = $this->table->getByIdAndType($tokenId, $this->tokenType, false);
-        return $token ? $token->revoked : true;
+        $token = $this->accessTokenService->getByIdAndType($tokenId, $this->tokenType, false);
+        return $token ? $token->isRevoked() : true;
     }
 
     /**
