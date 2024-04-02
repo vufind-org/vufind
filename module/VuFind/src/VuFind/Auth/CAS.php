@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Log\PsrLoggerAdapter;
 use VuFind\Exception\Auth as AuthException;
 
 use function constant;
@@ -286,18 +287,28 @@ class CAS extends AbstractBase
         // client can only be called once.
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
-            if (
-                isset($cas->log)
-                && !empty($cas->log) && isset($cas->debug) && ($cas->debug)
-            ) {
-                $casauth->setDebug($cas->log);
+            $casauth->setLogger(new PsrLoggerAdapter($this->logger));
+            if (isset($cas->debug) && ($cas->debug)) {
+                $casauth->setVerbose(true);
             }
             $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
+            $service_base_url = null;
+            if (isset($cas->service_base_url)) {
+                $service_base_url = $cas->service_base_url->toArray();
+            } elseif (isset($this->getConfig()->Site->url)) {
+                // fallback method
+                $service_base_url = [
+                    parse_url($this->getConfig()->Site->url, PHP_URL_SCHEME).'://'.
+                    parse_url($this->getConfig()->Site->url, PHP_URL_HOST).
+                    parse_url($this->getConfig()->Site->url, PHP_URL_PORT)
+                ];
+            }
             $casauth->client(
                 $protocol,
                 $cas->server,
                 (int)$cas->port,
                 $cas->context,
+                $service_base_url,
                 false
             );
             if (isset($cas->CACert) && !empty($cas->CACert)) {
