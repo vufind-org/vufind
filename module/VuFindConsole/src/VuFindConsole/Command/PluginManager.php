@@ -70,6 +70,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'language/importlokalise' => Language\ImportLokaliseCommand::class,
         'language/normalize' => Language\NormalizeCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
+        'util/browscap' => Util\BrowscapCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/commit' => Util\CommitCommand::class,
@@ -131,6 +132,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Language\NormalizeCommand::class => Language\AbstractCommandFactory::class,
         ScheduledSearch\NotifyCommand::class =>
             ScheduledSearch\NotifyCommandFactory::class,
+        Util\BrowscapCommand::class => Util\BrowscapCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class =>
             Util\CleanUpRecordCacheCommandFactory::class,
         Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,

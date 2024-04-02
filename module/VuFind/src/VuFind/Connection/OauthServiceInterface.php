@@ -43,7 +43,7 @@ namespace VuFind\Connection;
 interface OauthServiceInterface
 {
     /**
-     * Authentiate via the OAuth Client Credentials grant type.
+     * Authenticate via the OAuth Client Credentials grant type.
      *
      * @param string $oauthUrl     URL of thee OAuth service
      * @param string $clientId     client_id for a client_credentials grant

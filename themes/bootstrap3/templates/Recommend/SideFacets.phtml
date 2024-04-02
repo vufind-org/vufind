@@ -19,7 +19,7 @@
     }
   }
 ?>
-<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+<?=$this->component('hide-offcanvas-button')?>
 <?php
   $checkboxFilters = $this->recommend->getCheckboxFacetSet();
   $hasVisibleCheckboxes = false;

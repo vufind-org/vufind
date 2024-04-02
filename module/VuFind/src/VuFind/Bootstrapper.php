@@ -144,23 +144,12 @@ class Bootstrapper
     }
 
     /**
-     * Initializes locale and timezone values
+     * Initializes timezone value
      *
      * @return void
      */
-    protected function initLocaleAndTimeZone(): void
+    protected function initTimeZone(): void
     {
-        // Try to set the locale to UTF-8, but fail back to the exact string from
-        // the config file if this doesn't work -- different systems may vary in
-        // their behavior here.
-        setlocale(
-            LC_ALL,
-            [
-                "{$this->config->Site->locale}.UTF8",
-                "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale,
-            ]
-        );
         date_default_timezone_set($this->config->Site->timezone);
     }
 
@@ -218,7 +207,7 @@ class Bootstrapper
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
         if (
-            ($user = $authManager->isLoggedIn())
+            ($user = $authManager->getUserObject())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);
@@ -251,11 +240,15 @@ class Bootstrapper
      */
     protected function initLoginTokenManager(): void
     {
-        $callback = function () {
+        $dispatchCallback = function () {
             $this->container->get(\VuFind\Auth\LoginTokenManager::class)->themeIsReady();
         };
-        $this->events->attach('dispatch.error', $callback, 8000);
-        $this->events->attach('dispatch', $callback, 8000);
+        $finishCallback = function () {
+            $this->container->get(\VuFind\Auth\LoginTokenManager::class)->requestIsFinished();
+        };
+        $this->events->attach('dispatch.error', $dispatchCallback, 8000);
+        $this->events->attach('dispatch', $dispatchCallback, 8000);
+        $this->events->attach('finish', $finishCallback, 8000);
     }
 
     /**
@@ -294,7 +287,7 @@ class Bootstrapper
         $bm = $this->container->get(\VuFind\Search\BackendManager::class);
         $events = $this->container->get('SharedEventManager');
         $events->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_RESOLVE,
             [$bm, 'onResolve']
         );

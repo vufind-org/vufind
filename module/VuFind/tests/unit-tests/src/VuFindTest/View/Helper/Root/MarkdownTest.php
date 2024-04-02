@@ -33,7 +33,7 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
 use VuFind\View\Helper\Root\Markdown;
 
 /**
- * MArkdown Test Class
+ * Markdown Test Class
  *
  * @category VuFind
  * @package  Tests

@@ -7,20 +7,23 @@
   }
 
   $toggleTag = 'button';
-  $toggleAttrs = $this->toggleAttrs ?? [];
-  $toggleAttrs['type'] = 'button'; // Accessible default
-  $toggleAttrs['class'] = 'dropdown-toggle'; // Bootstrap class
-  $toggleAttrs['data-toggle'] = 'dropdown'; // Bootstrap data-attr
-  $toggleAttrs['aria-expanded'] = 'false';
-  $toggleAttrs['aria-haspopup'] = 'true';
+  $defaultAttrs = [
+    'type' => 'button', // Accessible default
+    'class' => 'dropdown-toggle', // Bootstrap class
+    'data-toggle' => 'dropdown', // Bootstrap data-attr
+    'aria-expanded' => 'false',
+    'aria-haspopup' => 'true',
+  ];
 
   // An anchor tag with an href should only be used as
   // a non-js fallback to open the menu on another page
   if ($this->href ?? false) {
     $toggleTag = 'a';
-    $toggleAttrs['href'] = $this->href;
-    $toggleAttrs['type'] = null;
+    $defaultAttrs['href'] = $this->href;
+    $defaultAttrs['type'] = null;
   }
+
+  $toggleAttrs = array_merge($defaultAttrs, $this->toggleAttrs ?? []);
 ?>
 
 <?php ob_start(); ?>

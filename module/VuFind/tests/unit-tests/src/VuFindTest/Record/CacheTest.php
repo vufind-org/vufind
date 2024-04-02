@@ -56,7 +56,6 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $cache = $this->getRecordCache();
         $this->recordTable = [
             [
                 'record_id' => '020645147',

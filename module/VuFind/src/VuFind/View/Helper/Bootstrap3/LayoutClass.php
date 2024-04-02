@@ -47,17 +47,21 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
      * name, return appropriate CSS classes to lay out the page according to
      * the current configuration file settings.
      *
-     * @param string $class Type of class to return ('mainbody' or 'sidebar')
+     * @param string $class      Type of class to return ('mainbody' or 'sidebar')
+     * @param bool   $hasSidebar Whether sidebar is available
      *
      * @return string       CSS classes to apply
      */
-    public function __invoke($class)
+    public function __invoke($class, $hasSidebar = true)
     {
         switch ($class) {
             case 'mainbody':
-                return $this->sidebarOnLeft
-                    ? 'mainbody right'
-                    : 'mainbody left';
+                if (!$hasSidebar) {
+                    $side = $this->rtl ? 'right' : 'left';
+                } else {
+                    $side = $this->sidebarOnLeft ? 'right' : 'left';
+                }
+                return "mainbody $side";
             case 'sidebar':
                 return $this->sidebarOnLeft
                     ? 'sidebar left hidden-print'
@@ -67,8 +71,8 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
                     return '';
                 }
                 return $this->sidebarOnLeft
-                    ? 'offcanvas offcanvas-left'
-                    : 'offcanvas offcanvas-right';
+                    ? 'vufind-offcanvas vufind-offcanvas-left'
+                    : 'vufind-offcanvas vufind-offcanvas-right';
         }
         throw new \Exception('Unexpected class: ' . $class);
     }

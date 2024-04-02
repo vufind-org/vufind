@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Feature
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -35,7 +35,7 @@ namespace VuFind\Feature;
  * VuFind Action Feature Trait - Bulk action helper methods
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Feature
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

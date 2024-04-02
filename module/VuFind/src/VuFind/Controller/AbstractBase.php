@@ -36,6 +36,7 @@ use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -73,7 +74,7 @@ use function is_object;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -82,7 +83,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * restriction, null to use configured default (which is usually the same
      * as false)).
      *
-     * @var string|bool
+     * @var string|bool|null
      */
     protected $accessPermission = null;
 
@@ -135,9 +136,10 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
-     * Getter for access permission.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null to use default permission).
      *
-     * @return string|bool
+     * @return string|bool|null
      */
     public function getAccessPermission()
     {
@@ -147,7 +149,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     /**
      * Getter for access permission.
      *
-     * @param string $ap Permission to require for access to the controller (false
+     * @param string|false $ap Permission to require for access to the controller (false
      * for no requirement)
      *
      * @return void
@@ -329,7 +331,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getUser()
     {
-        return $this->getAuthManager()->isLoggedIn();
+        return $this->getAuthManager()->getUserObject() ?? false;
     }
 
     /**
@@ -388,7 +390,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
-        if ($account->isLoggedIn() == false) {
+        if (!$account->getIdentity()) {
             return $this->forceLogin();
         }
 
@@ -522,6 +524,19 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     {
         return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
             ->get($table);
+    }
+
+    /**
+     * Get a database service object.
+     *
+     * @param string $name Name of service to retrieve
+     *
+     * @return \VuFind\Db\Service\AbstractDbService
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\AbstractDbService
+    {
+        return $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
+            ->get($name);
     }
 
     /**
@@ -690,23 +705,16 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             'lbreferer',
             $this->getRequest()->getServer()->get('HTTP_REFERER', null)
         );
-        // Get the referer -- if it's empty, there's nothing to store!
-        if (empty($referer)) {
-            return;
-        }
-        $refererNorm = $this->normalizeUrlForComparison($referer);
-
-        // If the referer lives outside of VuFind, don't store it! We only
+        // Get the referer -- if it's empty, there's nothing to store! Also,
+        // if the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
-        $baseUrl = $this->getServerUrl('home');
-        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
+        if (empty($referer) || !$this->isLocalUrl($referer)) {
             return;
         }
-
         // If the referer is the MyResearch/Home action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
+        $refererNorm = $this->normalizeUrlForComparison($referer);
         $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
         $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
         if ($mrhuNorm === $refererNorm) {
@@ -877,5 +885,18 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         $response = $this->getResponse();
         $response->setStatusCode(205);
         return $response;
+    }
+
+    /**
+     * Is the provided URL local to this instance?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function isLocalUrl(string $url): bool
+    {
+        $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
+        return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
     }
 }

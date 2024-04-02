@@ -45,14 +45,14 @@ use function is_array;
 class Highlight extends AbstractHelper
 {
     /**
-     * Start tag for highlighitng
+     * Start tag for highlighting
      *
      * @var string
      */
     protected $startTag = '<span class="highlight">';
 
     /**
-     * End tag for highlighitng
+     * End tag for highlighting
      *
      * @var string
      */

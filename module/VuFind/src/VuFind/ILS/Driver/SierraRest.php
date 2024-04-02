@@ -1264,7 +1264,7 @@ class SierraRest extends AbstractBase implements
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v5', 'patrons', 'holds', $holdId],
+                [$this->apiBase, 'patrons', 'holds', $holdId],
                 '',
                 'DELETE',
                 $patron
@@ -1589,6 +1589,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
+                'limit' => 10000,
                 'fields' => 'item,assessedDate,description,chargeType,itemCharge'
                     . ',processingFee,billingFee,paidAmount',
             ],
@@ -2347,7 +2348,7 @@ class SierraRest extends AbstractBase implements
         $holdingsData = [];
         if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
-                ['v5', 'holdings'],
+                [$this->apiBase, 'holdings'],
                 [
                     'bibIds' => $this->extractBibId($id),
                     'deleted' => 'false',
@@ -3381,6 +3382,7 @@ class SierraRest extends AbstractBase implements
                 'caseSensitivity' => false,
             ];
             try {
+                // Note: hard-coded to use v5 API:
                 $result = $this->makeRequest(
                     ['v5', 'patrons', 'validate'],
                     json_encode($request),
@@ -3573,7 +3575,7 @@ class SierraRest extends AbstractBase implements
         $titleInfo = [];
         if ($db) {
             try {
-                $query = 'SELECT 
+                $query = 'SELECT
                         bib_record_property.best_title as title,
                         bib_record_property.best_author as author,
                         --hold.status, -- this shows sierra hold status not inn-reach status
@@ -3621,15 +3623,15 @@ class SierraRest extends AbstractBase implements
         $titleInfo = [];
         if ($db) {
             try {
-                $query = 'SELECT 
+                $query = 'SELECT
   bib_record_property.best_title as title,
   bib_record_property.best_author as author,
   bib_record_property.best_title_norm as sort_title
-FROM 
+FROM
   sierra_view.checkout,
   sierra_view.bib_record_item_record_link,
   sierra_view.bib_record_property
-WHERE 
+WHERE
   checkout.id = $1
   AND checkout.item_record_id = bib_record_item_record_link.item_record_id
   AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';

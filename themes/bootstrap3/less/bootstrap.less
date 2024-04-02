@@ -270,6 +270,15 @@ footer {
     top: .5rem;
     right: .25rem;
   }
+
+  body.rtl & {
+    padding-left: 3rem;
+    padding-right: 1rem;
+    .badge {
+      left: .25rem;
+      right: auto;
+    }
+  }
 }
 .browse-item.view-record {
   padding: 2px 4px;
@@ -417,10 +426,7 @@ ul.list-group {
   list-style: none;
 }
 
-.dropdown-menu > li > .prompt-text {
-  &:extend(.dropdown-menu-ul-links);
-
-  white-space: inherit;
+.dropdown-menu > li .dropdown-header {
   min-width: 200px;
 }
 
@@ -445,6 +451,12 @@ ul.list-group {
 }
 #login-dropdown
 #login-dropdown .dropdown-menu .account-menu { display: block; }
+.login-tokens-table {
+  margin-bottom: 0.5rem;
+  tbody > tr > td {
+    vertical-align: middle;
+  }
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { .clearfix(); }
@@ -459,14 +471,31 @@ ul.list-group {
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */
 .table {
-  table-layout: fixed;
-  word-wrap: break-word;
+  th {
+    word-wrap: break-word;
+  }
+  &.staff-view th {
+    min-width: 30%;
+    word-wrap: anywhere;
+  }
+  td {
+    word-wrap: anywhere;
+  }
+  td.fullAvailability, td.holdings-table {
+    word-wrap: break-word;
+  }
+}
+.callnumAndLocation .table, .table.holdings-table {
+  td {
+    word-wrap: break-word;
+  }
 }
 // No wrapping for fines table in wide windows
 @media (min-width: 992px) {
   .table.fines-table {
-    table-layout: auto;
-    word-wrap: normal;
+    td, th {
+      word-wrap: normal;
+    }
   }
 }
 
@@ -639,4 +668,12 @@ div.holding-notes {
   list-style-type: none;
   margin-bottom: 1rem;
   padding: 0;
+}
+
+/* --- Pagination --- */
+.pagination {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }

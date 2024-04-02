@@ -58,7 +58,7 @@ trait OauthServiceTrait
     protected $tokenData = null;
 
     /**
-     * Authentiate via the OAuth Client Credentials grant type.
+     * Authenticate via the OAuth Client Credentials grant type.
      *
      * @param string $oauthUrl     URL of thee OAuth service
      * @param string $clientId     client_id for a client_credentials grant
@@ -164,7 +164,7 @@ trait OauthServiceTrait
     /**
      * Log a message, if $this->log exists.
      *
-     * @param string $level Loging level
+     * @param string $level Logging level
      * @param string $msg   Log message
      *
      * @return void

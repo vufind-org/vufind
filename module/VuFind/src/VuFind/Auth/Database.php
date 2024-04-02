@@ -79,8 +79,8 @@ class Database extends AbstractBase
     public function authenticate($request)
     {
         // Make sure the credentials are non-blank:
-        $this->username = trim($request->getPost()->get('username'));
-        $this->password = trim($request->getPost()->get('password'));
+        $this->username = trim($request->getPost()->get('username', ''));
+        $this->password = trim($request->getPost()->get('password', ''));
         if ($this->username == '' || $this->password == '') {
             throw new AuthException('authentication_error_blank');
         }
@@ -447,7 +447,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Create a user row object from given parametes.
+     * Create a user row object from given parameters.
      *
      * @param string[]  $params Parameters returned from collectParamsFromRequest()
      * @param UserTable $table  The VuFind user table

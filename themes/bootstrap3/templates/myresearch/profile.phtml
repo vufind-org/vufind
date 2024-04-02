@@ -9,9 +9,7 @@
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
-  <?=$this->transEsc('Your Account') ?>
-</a>
+<?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Profile')?></h2>
@@ -84,20 +82,18 @@
     <?php endif; ?>
   </div>
 
-  <?php $user = $this->auth()->isLoggedIn(); ?>
-  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user)): ?>
-    <div class="myresearch-profile-header">
-      <h3><?=$this->transEsc('Saved logins')?></h3>
-    </div>
+  <?php $user = $this->auth()->getUserObject(); ?>
+  <?php if ($user && $this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
+    <h3><?=$this->transEsc('Saved Logins')?></h3>
     <?php $tokens = $user->getLoginTokens($user->id); ?>
-    <?php if (count($tokens) === 0): ?>
+    <?php if (!$tokens): ?>
       <div class="my-profile-col"><?=$this->transEsc('No saved logins')?></div>
     <?php else: ?>
       <table class="login-tokens-table table table-responsive table-striped">
         <thead>
           <tr>
             <th scope="col" class="login_token_browser"> <?=$this->transEsc('saved_login_platform_and_browser')?></th>
-            <th scope="col" class="login_token_last_login"><?=$this->transEsc('Last Login')?>:</th>
+            <th scope="col" class="login_token_last_login"><?=$this->transEsc('Last Login')?></th>
             <th scope="col" class="login_token_delete"><?=$this->transEsc('saved_login_actions')?></th>
           </tr>
         </thead>
@@ -178,5 +174,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile'])?>
+  <?=$this->accountMenu()->render('profile')?>
 </div>

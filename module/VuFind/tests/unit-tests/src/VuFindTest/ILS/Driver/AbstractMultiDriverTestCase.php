@@ -290,7 +290,6 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockILS($type, $methods = null)
     {
-        $mock = null;
         if ($methods && in_array('supportsMethod', $methods)) {
             $mock = $this
                 ->getMockBuilder(__NAMESPACE__ . '\\MultiDriverTest\\' . $type . 'NoSupportMock')
@@ -335,7 +334,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     abstract protected function getDriver($constructorArgs = []);
 
     /**
-     * Create a Mulit Driver for the given ILS drivers
+     * Create a Multi Driver for the given ILS drivers
      *
      * @param array $drivers Array of drivers with prefix as key and driver instance
      * as value

@@ -9,38 +9,46 @@
     $this->headScript()->appendFile('requests.js');
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
-  <?=$this->transEsc('Your Account') ?>
-</a>
+<?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Interlibrary Loan Requests') ?></h2>
 
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->recordList)): ?>
     <?php if ($this->cancelForm): ?>
       <form name="updateForm" class="inline" method="post" id="cancelILLRequest" data-clear-account-cache="illRequests">
         <input type="hidden" id="submitType" name="cancelSelected" value="1">
         <input type="hidden" id="cancelConfirm" name="confirm" value="0">
-        <div class="btn-group">
-          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr('ill_request_cancel_selected') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <ul class="dropdown-menu">
-            <li class="disabled"><a><?=$this->transEsc('confirm_ill_request_cancel_selected_text') ?></a></li>
-            <li><a href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-            <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-          </ul>
-        </div>
-        <div class="btn-group">
-          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('ill_request_cancel_all') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <ul class="dropdown-menu">
-            <li class="disabled"><a><?=$this->transEsc('confirm_ill_request_cancel_all_text') ?></a></li>
-            <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-            <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-          </ul>
-        </div>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'ill_request_cancel_selected',
+                  'header' => 'confirm_ill_request_cancel_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+              ]
+          )
+        ?>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelAll',
+                  'buttonName' => 'cancelAll',
+                  'buttonLabel' => 'ill_request_cancel_all',
+                  'header' => 'confirm_ill_request_cancel_all_text',
+                  'confirmId' => 'confirm_cancel_all_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+              ]
+          )
+        ?>
     <?php endif; ?>
 
     <ul class="record-list">
@@ -153,7 +161,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'ILLRequests'])?>
+  <?=$this->accountMenu()->render('ILLRequests')?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'illRequests', 'accountStatus' => $this->accountStatus]); ?>

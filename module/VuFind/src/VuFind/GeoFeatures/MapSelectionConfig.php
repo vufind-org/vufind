@@ -61,7 +61,6 @@ class MapSelectionConfig extends AbstractConfig
     public function getMapSelectionOptions()
     {
         $validFields = ['default_coordinates', 'height'];
-        $options = [];
         // Check geofeatures.ini
         $options = $this->getOptions('geofeatures', 'MapSelection', $validFields);
 

@@ -39,7 +39,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class ApiTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -67,12 +66,13 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testApiDisabledByDefault(): void
     {
         $page = $this->makeRecordApiCall();
         $this->assertEquals(
             '403',
-            $this->findCss($page, '.live-responses-table .response td.response-col_status')->getText()
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
         );
     }
 
@@ -81,6 +81,7 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testEnabledRecordApi(): void
     {
         $this->changeConfigs(
@@ -97,7 +98,7 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->makeRecordApiCall();
         $this->assertEquals(
             '200',
-            $this->findCss($page, '.live-responses-table .response td.response-col_status')->getText()
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
         );
     }
 }

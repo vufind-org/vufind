@@ -506,7 +506,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'last_language' => 'en',
         ];
         $adapter = $this->container->createMock(\Laminas\Db\Adapter\Adapter::class);
-        $user = new \VuFind\Db\Row\User($adapter);
+        $user = new \VuFind\Db\Row\User($adapter, $this->createMock(\VuFind\Auth\ILSAuthenticator::class));
         $user->populate($data, true);
         return $user;
     }

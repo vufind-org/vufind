@@ -164,7 +164,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     protected $showPermanentLocation;
 
     /**
-     * Should we show homebranchinstead of holdingbranch
+     * Should we show homebranch instead of holdingbranch
      *
      * @var bool
      */
@@ -284,7 +284,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             //Return result set like mysql_fetch_assoc()
             $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            // set communication enoding to utf8
+            // set communication encoding to utf8
             $this->db->exec('SET NAMES utf8');
 
             // Drop the ONLY_FULL_GROUP_BY entry from sql_mode as it breaks this
