@@ -1,7 +1,7 @@
 <?php
     // Set up convenience variables:
     $account = $this->auth()->getManager();
-    $user = $account->isLoggedIn();
+    $user = $account->getUserObject();
     $openUrl = $this->openUrl($this->driver, 'holdings');
     $openUrlActive = $openUrl->isActive();
     $doi = $this->doi($this->driver, 'holdings');
@@ -25,7 +25,7 @@
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
-<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', compact('user')); ?>
 
 <?php if (!empty($holdings['blocks'])):?>
   <div id="account-block-msg" class="alert alert-danger">
@@ -39,11 +39,18 @@
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
       <div class="alert alert-info">
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true']))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
+        <a id="hold-login" href="<?=$this->serverUrl($this->url('myresearch-completelogin'))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
       </div>
     <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate('hold_profile_html', ['%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']))])?>
+        <?php
+          // Add a data-lightbox attribute to the link in the translation; we do this here to keep
+          // the HTML in the language files as simple/generic/future-proof as possible.
+          $catalogLoginUrl = $this->recordLinker()
+            ->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']);
+          $tokens = ['%%url%%' => $this->escapeHtmlAttr($catalogLoginUrl)];
+          echo str_replace('<a ', '<a data-lightbox ', $this->translate('hold_profile_html', $tokens));
+        ?>
       </div>
     <?php endif; ?>
   <?php endif; ?>

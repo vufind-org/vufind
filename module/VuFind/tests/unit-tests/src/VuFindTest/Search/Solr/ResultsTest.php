@@ -70,6 +70,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'hierarchical' => [
                     'building',
                 ],
+                'hierarchicalFacetSortOptions' => [
+                    'building' => 'top',
+                ],
             ],
         ],
     ];
@@ -484,9 +487,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         );
 
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ILS driver test
+ * FOLIO ILS driver test
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -34,7 +34,7 @@ use Laminas\Http\Response;
 use VuFind\ILS\Driver\Folio;
 
 /**
- * ILS driver test
+ * FOLIO ILS driver test
  *
  * @category VuFind
  * @package  Tests
@@ -58,6 +58,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'tenant' => 'config_tenant',
             'username' => 'config_username',
             'password' => 'config_password',
+            'legacy_authentication' => false,
         ],
     ];
 
@@ -186,7 +187,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist
+     * Request a token where one does not exist (RTR authentication)
      *
      * @return void
      */
@@ -197,7 +198,25 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Request a token where one does not exist (legacy authentication)
+     *
+     * @return void
+     */
+    public function testTokensWithLegacyAuth(): void
+    {
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector('get-tokens-legacy', $config); // saves to $this->driver
+        $this->driver->getMyProfile(['id' => 'whatever']);
+    }
+
+    /**
      * Check a valid token retrieved from session cache
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -208,7 +227,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache
+     * Check and renew an invalid token retrieved from session cache (RTR authentication)
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -219,7 +240,27 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check and renew an invalid token retrieved from session cache (legacy authentication)
+     *
+     * @depends testTokensWithLegacyAuth
+     *
+     * @return void
+     */
+    public function testCheckInvalidTokenLegacyAuth(): void
+    {
+        // Take default configuration, but use a different tenant (to avoid
+        // session collision with other tests) and disable legacy authentication:
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector('check-invalid-token-legacy', $config);
+        $this->driver->getPickupLocations(['username' => 'whatever']);
+    }
+
+    /**
      * Confirm that cancel holds validates the current patron.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -235,6 +276,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Confirm that cancel holds processes various statuses appropriately.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -257,6 +300,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test an unsuccessful patron login with default settings
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testUnsuccessfulPatronLogin(): void
@@ -266,7 +311,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi
+     * Test patron login with Okapi (RTR authentication)
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -290,7 +337,38 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test patron login with Okapi (Legacy authentication)
+     *
+     * @depends testTokensWithLegacyAuth
+     *
+     * @return void
+     */
+    public function testSuccessfulPatronLoginWithOkapiLegacyAuth(): void
+    {
+        $config = $this->defaultDriverConfig;
+        $config['API']['tenant'] = 'legacy_tenant';
+        $config['API']['legacy_authentication'] = 1;
+        $this->createConnector(
+            'successful-patron-login-with-okapi-legacy',
+            $config + ['User' => ['okapi_login' => true]]
+        );
+        $result = $this->driver->patronLogin('foo', 'bar');
+        $expected = [
+            'id' => 'fake-id',
+            'username' => 'foo',
+            'cat_username' => 'foo',
+            'cat_password' => 'bar',
+            'firstname' => 'first',
+            'lastname' => 'last',
+            'email' => 'fake@fake.com',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test successful place hold
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -316,6 +394,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold (using an old version of mod-circulation)
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testSuccessfulPlaceHoldLegacy(): void
@@ -340,6 +420,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold with no expiration date
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testSuccessfulPlaceHoldNoExpirationDate(): void
@@ -362,6 +444,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test unsuccessful place hold with invalid expiration date
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
@@ -379,11 +463,46 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('hold_date_invalid');
+        $this->driver->placeHold($details);
+    }
+
+    /**
+     * Test successful place hold using request type fallback
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceTitleLevelHoldAfterRequestTypeFallback(): void
+    {
+        $config = [
+            'API' => $this->defaultDriverConfig['API'],
+            'Holds' => [
+                'default_request' => 'Recall',
+                'fallback_request_type' => ['Page'],
+            ],
+        ];
+        $this->createConnector('request-type-fallback', $config);
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
+            'patron' => ['id' => 'user1'],
+            'id' => 'record1',
+            'level' => 'title',
+            'pickUpLocation' => 'servicepoint1',
+        ];
         $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'Open - Not yet filled',
+        ];
+        $this->assertEquals($expected, $result);
     }
 
     /**
      * Test unsuccessful place hold
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -408,6 +527,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful renewal
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -436,6 +557,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful call to holds, no items
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testNoItemsGetMyHolds(): void
@@ -451,6 +574,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, one available item
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -479,6 +604,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, one available item placed for a proxy
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -509,6 +636,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful call to holds, one in_transit item
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testInTransitItemGetMyHolds(): void
@@ -536,6 +665,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful call to holds, item in queue, position x
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -566,6 +697,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable when no excludeHoldLocationsCompareMode
      * config value is set
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableDefaultConfig(): void
@@ -580,6 +713,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable with the exact compare mode
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -600,6 +735,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test calls to isHoldable when using regex mode
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableRegexMode(): void
@@ -619,6 +756,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test calls to isHoldable to verify handling of invalid regex
      * when in regex compare mode
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -644,6 +783,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
      * config is case insensitive
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableCaseSensitivityConfig(): void
@@ -668,6 +809,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test calls to isHoldable using exact mode with invalid
      * location values and paramter values to isHoldable
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testIsHoldableExactModeInvalidInput(): void
@@ -685,6 +828,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the getMyProfile method.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -713,6 +858,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the getProxiedUsers method.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetProxiedUsers(): void
@@ -728,6 +875,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the getProxyingUsers method.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -784,6 +933,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding with HRID-based lookup
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingWithHridLookup(): void
@@ -796,6 +947,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getStatuses.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -814,6 +967,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getHolding with FOLIO-based sorting.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -858,6 +1013,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding filters empty holding statements appropriately.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingFilteringOfEmptyHoldingStatements(): void
@@ -901,6 +1058,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getHolding with checked out item.
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetHoldingWithDueDate(): void
@@ -941,6 +1100,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getHolding with VuFind-based sorting.
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -1009,6 +1170,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getPagedResults with less than the limit value returned
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetPagedResultsLessThanLimit(): void
@@ -1036,6 +1199,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getPagedResults with greater than the limit value returned
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetPagedResultsGreaterThanLimit(): void
@@ -1062,6 +1227,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getPagedResults with results equal to the limit value returned
+     *
+     * @depends testTokens
      *
      * @return void
      */
@@ -1094,6 +1261,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * response from the API is inacurrate for the first response
      * (i.e. just an estimate).
      *
+     * @depends testTokens
+     *
      * @return void
      */
     public function testGetPagedResultsEstimatedTotal(): void
@@ -1116,5 +1285,57 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $result = iterator_to_array($result, false);
 
         $this->assertCount(2, $result);
+    }
+
+    /**
+     * Test getBoundWithRecords with an item with six boundWithTitles.
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testGetBoundWithRecords(): void
+    {
+        $this->createConnector('get-bound-with-records');
+        $item = [
+            'id' => 'bc3fd525-4254-4075-845b-1428986d811b',
+        ];
+        $result = $this->callMethod($this->driver, 'getBoundWithRecords', [(object)$item]);
+        $expected = [
+            [
+                'title' => 'Slavery as it once prevailed in Massachusetts : A lecture for the Massachusetts ' .
+                    'Historical Society ...',
+                'bibId' => '12cb5553-c1bb-48c8-b439-aebc5202970f',
+            ],
+            [
+                'title' => 'Ueber sclaverei, sclaven-emancipation und die einwanderung "freier neger" nach ' .
+                    'den colonieen; aufzeichnungen eines weitgereisten.',
+                'bibId' => 'f56d3ce3-b31f-4320-8e08-dfc2f9a96c4a',
+            ],
+            [
+                'title' => 'Concerning a full understanding of the southern attitude toward slavery, by ' .
+                    'John Douglass Van Horne.',
+                'bibId' => '6abe72a5-f518-408a-8a67-fe1ec15627b8',
+            ],
+            [
+                'title' => 'American slavery : echoes and glimpses of prophecy / by Daniel S. Whitney.',
+                'bibId' => '1c4cda9b-3506-45e7-b444-0e901cc661e3',
+            ],
+            [
+                'title' => 'The Tract society and slavery. Speeches of Chief Justice Williams, Judge Parsons, ' .
+                    'and ex-Governor Ellsworth: delivered in the Center Church, Hartford, Conn., at the ' .
+                    'anniversary of the Hartford branch of the American Tract Society, January 9th, 1859.',
+                'bibId' => '03684060-3bc0-4a66-874c-854e50ed84fe',
+            ],
+            [
+                'title' => 'Case of Passmore Williamson : report of the proceedings on the writ of habeas corpus, ' .
+                    'issued by the Hon. John K. Kane, judge of the District Court of the United States for the ' .
+                    'Eastern District of Pennsylvania, in the case of the United States of America ex rel. John H. ' .
+                    'Wheeler vs. Passmore Williamson, including the several opinions delivered, and the arguments of ' .
+                    'counsel / reported by Arthur Cannon.',
+                'bibId' => '080e5167-7a50-4513-b0f3-0f5bf835df7b',
+            ],
+        ];
+        $this->assertEquals($expected, $result);
     }
 }

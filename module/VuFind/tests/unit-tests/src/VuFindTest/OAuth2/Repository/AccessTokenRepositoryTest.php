@@ -42,7 +42,7 @@ use VuFind\OAuth2\Repository\AuthCodeRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AccessTokenRepositoryTest extends AbstractTokenRepositoryTest
+class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Test access token repository
@@ -51,7 +51,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTest
      */
     public function testAccessTokenRepository(): void
     {
-        $repo = new AccessTokenRepository($this->getMockAccessTokenTable());
+        $repo = new AccessTokenRepository($this->getMockAccessTokenService());
 
         $token = $repo->getNewToken(
             $this->createClientEntity(),
@@ -100,8 +100,8 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTest
     public function testPersistInvalidTokenClass(): void
     {
         $accessTokenRepo
-            = new AccessTokenRepository($this->getMockAccessTokenTable());
-        $authCodeRepo = new AuthCodeRepository($this->getMockAccessTokenTable());
+            = new AccessTokenRepository($this->getMockAccessTokenService());
+        $authCodeRepo = new AuthCodeRepository($this->getMockAccessTokenService());
 
         $token = $authCodeRepo->getNewAuthCode();
         $this->expectExceptionMessage(

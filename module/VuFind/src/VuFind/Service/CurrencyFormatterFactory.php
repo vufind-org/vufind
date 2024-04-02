@@ -70,6 +70,9 @@ class CurrencyFormatterFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return new $requestedName($config->Site->defaultCurrency ?? null);
+        return new $requestedName(
+            $config->Site->defaultCurrency ?? null,
+            $config->Site->locale ?? null
+        );
     }
 }

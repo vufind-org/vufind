@@ -148,12 +148,8 @@ trait MarcAdvancedTrait
                 if (!empty($current)) {
                     if ($extended) {
                         $sourceIndicator = $result['i2'];
-                        $source = '';
-                        if (isset($this->subjectSources[$sourceIndicator])) {
-                            $source = $this->subjectSources[$sourceIndicator] ?? '';
-                        } else {
-                            $source = $this->getSubfield($result, '2');
-                        }
+                        $source = $this->subjectSources[$sourceIndicator]
+                            ?? $this->getSubfield($result, '2');
                         $retval[] = [
                             'heading' => $current,
                             'type' => $fieldType,
@@ -425,8 +421,6 @@ trait MarcAdvancedTrait
      */
     public function getSeries()
     {
-        $matches = [];
-
         // First check the 440, 800 and 830 fields for series information:
         $primaryFields = [
             '440' => ['a', 'p'],
@@ -941,17 +935,12 @@ trait MarcAdvancedTrait
     {
         // Special case for MARC:
         if ($format == 'marc21') {
-            $sanitizeXmlRegEx
-                = '[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+';
-            $xml = simplexml_load_string(
-                trim(
-                    preg_replace(
-                        "/$sanitizeXmlRegEx/u",
-                        ' ',
-                        $this->getMarcReader()->toFormat('MARCXML')
-                    )
-                )
-            );
+            try {
+                $xml = $this->getMarcReader()->toFormat('MARCXML');
+            } catch (\Exception) {
+                return false;
+            }
+            $xml = simplexml_load_string($xml);
             if (!$xml || !isset($xml->record)) {
                 return false;
             }
@@ -985,9 +974,14 @@ trait MarcAdvancedTrait
      */
     public function getRDFXML()
     {
+        try {
+            $xml = $this->getMarcReader()->toFormat('MARCXML');
+        } catch (\Exception $e) {
+            return '';
+        }
         return XSLTProcessor::process(
             'record-rdf-mods.xsl',
-            trim($this->getMarcReader()->toFormat('MARCXML'))
+            trim($xml)
         );
     }
 
@@ -1002,7 +996,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first ISMN found for this record, or false if no one fonund
+     * Return first ISMN found for this record, or false if no one found
      *
      * @return mixed
      */

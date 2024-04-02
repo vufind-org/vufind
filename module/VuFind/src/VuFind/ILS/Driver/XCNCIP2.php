@@ -296,6 +296,14 @@ class XCNCIP2 extends AbstractBase implements
     protected $maxNumberOfPages;
 
     /**
+     * Some ItemUseRestrictionType values could be useful as status. This property controls which values from
+     * ItemRestrictionType should replace the status value in response of getHolding method.
+     *
+     * @var array
+     */
+    protected $itemUseRestrictionTypesForStatus = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -383,6 +391,9 @@ class XCNCIP2 extends AbstractBase implements
                 );
             $this->holdProblemsDisplay = array_map('trim', $holdProblemsDisplay);
         }
+
+        $this->itemUseRestrictionTypesForStatus
+            = (array)($this->config['Catalog']['itemUseRestrictionTypesForStatus'] ?? []);
     }
 
     /**
@@ -652,6 +663,13 @@ class XCNCIP2 extends AbstractBase implements
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = (string)($status[0] ?? '');
+
+        $itemUseRestrictionType = $current->xpath('ns1:ItemOptionalFields/ns1:ItemUseRestrictionType');
+        $itemUseRestrictionType = (string)($itemUseRestrictionType[0] ?? '');
+
+        if (in_array($itemUseRestrictionType, $this->itemUseRestrictionTypesForStatus)) {
+            $status = $itemUseRestrictionType;
+        }
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
         $itemId = (string)($itemId[0] ?? '');
@@ -1582,7 +1600,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Public Function which retrieves Holds, StorageRetrivalRequests, and
+     * Public Function which retrieves Holds, StorageRetrievalRequests, and
      * Consortial settings from the driver ini file.
      *
      * @param string $function The name of the feature to be checked
@@ -2455,7 +2473,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param string $id Bibliographic item id
      *
-     * @return string Get BibiographicId XML element string
+     * @return string Get BibliographicId XML element string
      */
     protected function getBibliographicId($id)
     {
@@ -2757,7 +2775,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param \SimpleXMLElement $xml              XML response
      * @param array|string[]    $elements         Which of Problem subelements
-     * return in desription - defaulting to full list: ProblemType, ProblemDetail,
+     * return in description - defaulting to full list: ProblemType, ProblemDetail,
      * ProblemElement and ProblemValue
      * @param bool              $withElementNames Whether to add element names as
      * value labels (for example for debug purposes)
@@ -2873,7 +2891,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Invalidate L1 cache for responses
      *
-     * @param string $message NCIP message type - curently only 'LookupUser'
+     * @param string $message NCIP message type - currently only 'LookupUser'
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void
@@ -2889,7 +2907,7 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $idList     List of bibliographic IDs.
      * @param array $agencyList List of possible toAgency values
      *
-     * @return array|false|\SimpleXMLElement[]
+     * @return \SimpleXMLElement[]
      * @throws ILSException
      */
     protected function getBibs(array $idList, array $agencyList): array

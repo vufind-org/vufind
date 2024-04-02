@@ -1,5 +1,5 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -15,21 +15,62 @@ var VuFind = (function VuFind() {
   var _elementBase;
   var _iconsCache = {};
 
-  // Emit a custom event
-  // Recommendation: prefix with vf-
-  var emit = function emit(name, detail) {
-    if (typeof detail === 'undefined') {
-      document.dispatchEvent(new Event(name));
-    } else {
-      var event = document.createEvent('CustomEvent');
-      event.initCustomEvent(name, true, true, detail); // name, canBubble, cancelable, detail
-      document.dispatchEvent(event);
+  // Event controls
+
+  let listeners = {};
+  function unlisten(event, fn) {
+    if (typeof listeners[event] === "undefined") {
+      return;
     }
-  };
-  // Listen shortcut to put everyone on the same element
-  var listen = function listen(name, func) {
-    document.addEventListener(name, func, false);
-  };
+
+    const index = listeners[event].indexOf(fn);
+
+    if (index > -1) {
+      listeners[event].splice(index, 1);
+    }
+  }
+
+  // Add a function to call when an event is emitted
+  //
+  // Options:
+  // - once: remove this listener after it's been called
+  function listen(event, fn, { once = false } = {}) {
+    if (typeof listeners[event] === "undefined") {
+      listeners[event] = [];
+    }
+
+    listeners[event].push(fn);
+    const removeListener = () => unlisten(event, fn);
+
+    if (once) {
+      // Remove a "once" listener after calling
+      // Add the function to remove the listener
+      // to the array, listeners are called in order
+      listeners[event].push(removeListener);
+    }
+
+    // Return a function to disable the listener
+    // Makes it easier to control activating and deactivating listeners
+    // This is common for similar libraries
+    return removeListener;
+  }
+
+  // Broadcast an event, passing arguments to all listeners
+  function emit(event, ...args) {
+    // No listeners for this event
+    if (typeof listeners[event] === "undefined") {
+      return;
+    }
+
+    // iterate over a copy of the listeners array
+    // this prevents listeners from being skipped
+    // if the listener before it is removed during execution
+    for (const fn of Array.from(listeners[event])) {
+      fn(...args);
+    }
+  }
+
+  // Module control
 
   var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
@@ -239,19 +280,106 @@ var VuFind = (function VuFind() {
     return html.replace(/(<script[^>]*) nonce=["'].*?["']/ig, '$1 nonce="' + getCspNonce() + '"');
   };
 
-  var loadHtml = function loadHtml(_element, url, data, success) {
-    var $elem = $(_element);
-    if ($elem.length === 0) {
-      return;
-    }
-    $.get(url, typeof data !== 'undefined' ? data : {}, function onComplete(responseText, textStatus, jqXhr) {
-      if ('success' === textStatus || 'notmodified' === textStatus) {
-        $elem.html(updateCspNonce(responseText));
-      }
-      if (typeof success !== 'undefined') {
-        success(responseText, textStatus, jqXhr);
+  /**
+   * Set element contents and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm      Target element
+   * @param {string}  html     HTML
+   * @param {Object}  attrs    Any additional attributes
+   * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
+   */
+  function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
+    // Extract any scripts from the HTML and add them separately so that they are executed properly:
+    const scripts = [];
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = html;
+    tmpDiv.querySelectorAll('script').forEach((el) => {
+      const type = el.getAttribute('type');
+      if (!type || 'text/javascript' === type) {
+        scripts.push(el.cloneNode(true));
+        el.remove();
       }
     });
+
+    let newElm = elm;
+    if (property === 'innerHTML') {
+      elm.innerHTML = tmpDiv.innerHTML;
+    } else if (property === 'outerHTML') {
+      // Replacing outerHTML will invalidate elm, so find it again by using its next sibling or parent as reference:
+      const nextElm = elm.nextElementSibling;
+      const parentElm = elm.parentElement ? elm.parentElement : null;
+      elm.outerHTML = tmpDiv.innerHTML;
+      // Try to find a new reference, leave as is if not possible:
+      if (nextElm) {
+        newElm = nextElm.previousElementSibling;
+      } else if (parentElm) {
+        newElm = parentElm.lastElementChild;
+      }
+    }
+
+    // Set any attributes (N.B. has to be done before scripts in case they rely on the attributes):
+    Object.entries(attrs).forEach(([attr, value]) => newElm.setAttribute(attr, value));
+
+    // Append any scripts:
+    scripts.forEach((script) => {
+      const scriptEl = document.createElement('script');
+      scriptEl.innerHTML = script.innerHTML;
+      scriptEl.setAttribute('nonce', getCspNonce());
+      newElm.appendChild(scriptEl);
+    });
+  }
+
+  /**
+   * Set innerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setInnerHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'innerHTML');
+  }
+
+  /**
+   * Set outerHTML and ensure that any inline scripts run properly
+   *
+   * @param {Element} elm   Target element
+   * @param {string}  html  HTML
+   * @param {Object}  attrs Any additional attributes
+   */
+  function setOuterHtml(elm, html, attrs = {}) {
+    setElementContents(elm, html, attrs, 'outerHTML');
+  }
+
+  var loadHtml = function loadHtml(_element, url, data, success) {
+    var element = typeof _element === 'string' ? document.querySelector(_element) : _element.get(0);
+    if (!element) {
+      return;
+    }
+
+    fetch(url, {
+      method: 'GET',
+      body: data ? JSON.stringify(data) : null
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(VuFind.translate('error_occurred'));
+        }
+        return response.text();
+      })
+      .then(htmlContent => {
+        setInnerHtml(element, htmlContent);
+        if (typeof success === 'function') {
+          success(htmlContent);
+        }
+      })
+      .catch(error => {
+        console.error('Request failed:', error);
+        setInnerHtml(element, VuFind.translate('error_occurred'));
+        if (typeof success === 'function') {
+          success(null, error);
+        }
+      });
   };
 
   var isPrinting = function() {
@@ -315,6 +443,9 @@ var VuFind = (function VuFind() {
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
+    if (typeof this.explain !== 'undefined') {
+      this.explain.init();
+    }
   };
 
   var init = function init() {
@@ -340,11 +471,12 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    listen: listen,
+    unlisten: unlisten,
     evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
     isPrinting: isPrinting,
-    listen: listen,
     refreshPage: refreshPage,
     register: register,
     setCspNonce: setCspNonce,
@@ -356,17 +488,21 @@ var VuFind = (function VuFind() {
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
-    setupQRCodeLinks: setupQRCodeLinks
+    setupQRCodeLinks: setupQRCodeLinks,
+    setInnerHtml: setInnerHtml,
+    setOuterHtml: setOuterHtml,
+    setElementContents: setElementContents
   };
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
-  if (value) {
-    return $('<div />').text(value).html();
-  } else {
-    return '';
-  }
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**
@@ -429,8 +565,8 @@ function escapeHtmlAttr(str) {
   });
 }
 
-function extractClassParams(selector) {
-  var str = $(selector).attr('class');
+function extractClassParams(el) {
+  var str = el.className;
   if (typeof str === "undefined") {
     return [];
   }
@@ -444,6 +580,7 @@ function extractClassParams(selector) {
   }
   return params;
 }
+
 // Turn GET string into array
 function deparam(url) {
   if (!url.match(/\?|&/)) {
@@ -537,10 +674,22 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
+  let numberOfSelected = VuFind.listItemSelection.getAllSelected(event.target).length;
+  if (numberOfSelected === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
+  if (event.originalEvent !== undefined) {
+    let limit = event.originalEvent.submitter.dataset.itemLimit;
+    if (numberOfSelected > limit) {
+      VuFind.lightbox.alert(
+        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
+        'danger'
+      );
+      return false;
+    }
+  }
+
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;
@@ -550,122 +699,12 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
-    $('[data-toggle="offcanvas"]').on("click", function offcanvasClick(e) {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
+    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
       e.preventDefault();
-      $('body.offcanvas').toggleClass('active');
+      $('body.vufind-offcanvas').toggleClass('active');
     });
   }
-}
-
-function setupAutocomplete() {
-  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var $searchboxes = $('input.autocomplete');
-  $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
-    const $searchbox = $(searchboxElement);
-    const formattingRules = $searchbox.data('autocompleteFormattingRules');
-    const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
-    const typePrefix = $searchbox.data('autocompleteTypePrefix');
-    const getFormattingRule = function getAutocompleteFormattingRule(type) {
-      if (typeof(formattingRules) !== "undefined") {
-        if (typeof(formattingRules[type]) !== "undefined") {
-          return formattingRules[type];
-        }
-        // If we're using combined handlers, we may need to use a backend-specific wildcard:
-        const typeParts = type.split("|");
-        if (typeParts.length > 1) {
-          const backendWildcard = typeParts[0] + "|*";
-          if (typeof(formattingRules[backendWildcard]) !== "undefined") {
-            return formattingRules[backendWildcard];
-          }
-        }
-        // Special case: alphabrowse options in combined handlers:
-        const alphabrowseRegex = /^External:.*\/Alphabrowse.*\?source=([^&]*)/;
-        const alphabrowseMatches = alphabrowseRegex.exec(type);
-        if (alphabrowseMatches && alphabrowseMatches.length > 1) {
-          const alphabrowseKey = "VuFind:Solr|alphabrowse_" + alphabrowseMatches[1];
-          if (typeof(formattingRules[alphabrowseKey]) !== "undefined") {
-            return formattingRules[alphabrowseKey];
-          }
-        }
-        // Global wildcard fallback:
-        if (typeof(formattingRules["*"]) !== "undefined") {
-          return formattingRules["*"];
-        }
-      }
-      return "none";
-    };
-    const typeahead = new Autocomplete({
-      rtl: $(document.body).hasClass("rtl"),
-      maxResults: 10,
-      loadingString: VuFind.translate('loading_ellipsis'),
-    });
-
-    let cache = {};
-    const input = $searchbox[0];
-    typeahead(input, function vufindACHandler(query, callback) {
-      const classParams = extractClassParams(input);
-      const searcher = classParams.searcher;
-      const selectedType = classParams.type
-        ? classParams.type
-        : $(typeFieldSelector ? typeFieldSelector : '#searchForm_type').val();
-      const type = (typePrefix ? typePrefix : "") + selectedType;
-      const formattingRule = getFormattingRule(type);
-
-      const cacheKey = searcher + "|" + type;
-      if (typeof cache[cacheKey] === "undefined") {
-        cache[cacheKey] = {};
-      }
-
-      if (typeof cache[cacheKey][query] !== "undefined") {
-        callback(cache[cacheKey][query]);
-        return;
-      }
-
-      var hiddenFilters = [];
-      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-        hiddenFilters.push($(this).val());
-      });
-
-      $.ajax({
-        url: VuFind.path + '/AJAX/JSON',
-        data: {
-          q: query,
-          method: 'getACSuggestions',
-          searcher: searcher,
-          type: type,
-          hiddenFilters,
-        },
-        dataType: 'json',
-        success: function autocompleteJSON(json) {
-          const highlighted = json.data.suggestions.map(
-            (item) => ({
-              text: item.replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll(query, `<b>${query}</b>`),
-              value: formattingRule === 'phrase'
-                ? '"' + item.replaceAll('"', '\\"') + '"'
-                : item,
-            })
-          );
-          cache[cacheKey][query] = highlighted;
-          callback(highlighted);
-        }
-      });
-    });
-
-    // Bind autocomplete auto submit
-    if ($searchbox.hasClass("ac-auto-submit")) {
-      input.addEventListener("ac-select", (event) => {
-        const value = typeof event.detail === "string"
-          ? event.detail
-          : event.detail.value;
-        input.value = value;
-        input.form.submit();
-      });
-    }
-  });
 }
 
 /**
@@ -716,7 +755,10 @@ function unwrapJQuery(node) {
 function setupJumpMenus(_container) {
   var container = _container || $('body');
   container.find('select.jumpMenu').on("change", function jumpMenu() {
-    $(this).parent('form').trigger("submit");
+    // Check if jumpMenu is still enabled (search.js may have disabled it):
+    if ($(this).hasClass('jumpMenu')) {
+      $(this).parent('form').trigger("submit");
+    }
   });
 }
 
@@ -747,11 +789,9 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-$(function commonDocReady() {
+document.addEventListener('DOMContentLoaded', () => {
   // Start up all of our submodules
   VuFind.init();
-  // Setup search autocomplete
-  setupAutocomplete();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
@@ -760,32 +800,12 @@ $(function commonDocReady() {
   // support "jump menu" dropdown boxes
   setupJumpMenus();
 
-  // Checkbox select all
-  $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
-    var $form = this.form ? $(this.form) : $(this).closest('form');
-    if (this.checked) {
-      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
-    } else {
-      $form.find('.checkbox-select-item:checked').trigger('click');
-    }
-    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
-    $form.find('.checkbox-select-all').prop('checked', this.checked);
-    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
-  });
-  $('.checkbox-select-item').on('change', function selectAllDisable() {
-    var $form = this.form ? $(this.form) : $(this).closest('form');
-    if ($form.length === 0) {
-      return;
-    }
-    if (!$(this).prop('checked')) {
-      $form.find('.checkbox-select-all').prop('checked', false);
-      $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
-    }
-  });
-
   // Print
   var url = window.location.href;
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
-    $("link[media='print']").attr("media", "all");
+    var printStylesheets = document.querySelectorAll('link[media="print"]');
+    printStylesheets.forEach((stylesheet) => {
+      stylesheet.media = 'all';
+    });
   }
 });

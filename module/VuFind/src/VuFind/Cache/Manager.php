@@ -5,8 +5,9 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2007,
- *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Copyright (C) Villanova University 2007
+ * Copyright (C) Leipzig University Library <info@ub.uni-leipzig.de> 2018
+ * Copyright (C) The National Library of Finland 2024
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -48,6 +50,7 @@ use function strlen;
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -89,6 +92,53 @@ class Manager
     protected $factory;
 
     /**
+     * Cache configuration.
+     *
+     * Following settings are supported:
+     *
+     *   cliOverride   Set to false to not allow cache directory override in CLI mode (optional, true by default)
+     *   directory     Cache directory (required)
+     *   options       Array of cache options (optional, e.g. disabled, ttl)
+     *   persistent    Set to true to disable clearing of the cache by default with the admin API clearCache command
+     *                 (optional, false by default)
+     *
+     * @var array
+     */
+    protected $cacheSpecs = [
+        'browscap' => [
+            'cliOverride' => false,
+            'directory' => 'browscap',
+            'options' => [
+                'ttl' => 0, // no expiration - cache is updated with console util/browscap
+                'keyPattern' => '/^[a-z0-9_\+\-\.]*$/Di',
+            ],
+            'persistent' => true,
+        ],
+        'config' => [
+            'directory' => 'configs',
+        ],
+        'cover' => [
+            'directory' => 'covers',
+            'persistent' => true,
+        ],
+        'language' => [
+            'directory' => 'languages',
+        ],
+        'object' => [
+            'directory' => 'objects',
+        ],
+        'public' => [
+            'directory' => 'public',
+        ],
+        'searchspecs' => [
+            'directory' => 'searchspecs',
+        ],
+        'yaml' => [
+            'directory' => 'yamls',
+        ],
+    ];
+
+    /**
      * Constructor
      *
      * @param Config                $config       Main VuFind configuration
@@ -105,31 +155,16 @@ class Manager
         // $config and $config->Cache are Laminas\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
-        // Laminas\Config\Config can be created mutable or cloned and merged, useful
-        // for future cache-specific overrides.
-        $cacheConfig = $config->Cache ?? false;
-        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : [];
+        $this->defaults = $config->Cache?->toArray() ?? [];
 
-        // Get base cache directory.
-        $cacheBase = $this->getCacheDir();
-
-        // Set up standard file-based caches:
-        foreach (['config', 'cover', 'language', 'object', 'yaml'] as $cache) {
-            $this->createFileCache($cache, $cacheBase . $cache . 's');
-        }
-        $this->createFileCache('public', $cacheBase . 'public');
-
-        // Set up search specs cache based on config settings:
+        // Configure search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
             case 'File':
-                $this->createFileCache(
-                    'searchspecs',
-                    $cacheBase . 'searchspecs'
-                );
+                // Default
                 break;
             case false:
-                $this->createNoCache('searchspecs');
+                $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
                 break;
             default:
                 throw new \Exception("Unsupported cache setting: $searchCacheType");
@@ -148,6 +183,7 @@ class Manager
      */
     public function getCache($name, $namespace = null)
     {
+        $this->ensureFileCache($name);
         $namespace ??= $name;
         $key = "$name:$namespace";
 
@@ -206,7 +242,28 @@ class Manager
      */
     public function getCacheList()
     {
-        return array_keys($this->cacheSettings);
+        return array_unique(
+            [
+                ...array_keys($this->cacheSpecs),
+                ...array_keys($this->cacheSettings),
+            ]
+        );
+    }
+
+    /**
+     * Get the names of all non-persistent caches (ones that can be cleared).
+     *
+     * @return array
+     */
+    public function getNonPersistentCacheList(): array
+    {
+        $result = [];
+        foreach ($this->getCacheList() as $cache) {
+            if (!($this->cacheSpecs[$cache]['persistent'] ?? false)) {
+                $result[] = $cache;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -257,6 +314,22 @@ class Manager
     }
 
     /**
+     * Ensure that a file cache is properly set up
+     *
+     * @param string $name Cache name
+     *
+     * @return void
+     */
+    protected function ensureFileCache(string $name): void
+    {
+        // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
+        if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
+            $base = $this->getCacheDir($config['cliOverride'] ?? true);
+            $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
+        }
+    }
+
+    /**
      * Create a "no-cache" setting.
      *
      * @param string $cacheName Name of "no cache" to create
@@ -296,7 +369,7 @@ class Manager
                 // convert umask from string
                 $umask = octdec($opts['umask']);
                 // validate
-                if ($umask & 0700) {
+                if ($umask & 0o700) {
                     throw new \Exception(
                         'Invalid umask: ' . $opts['umask']
                         . '; need permission to execute, read and write by owner'
@@ -308,7 +381,7 @@ class Manager
                 $dir_perm = octdec($opts['dir_permission']);
             } else {
                 // 0777 is chmod default, use if dir_permission is not explicitly set
-                $dir_perm = 0777;
+                $dir_perm = 0o777;
             }
             // Make sure cache parent directory and directory itself exist:
             $parentDir = dirname($dirName);

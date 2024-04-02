@@ -76,7 +76,8 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $loader,
-            $request
+            $request,
+            $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }
 
@@ -92,13 +93,10 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $config = $configManager->get('config');
         $override = $config->Shibboleth->allow_configuration_override ?? false;
-        $loader = null;
         if ($override) {
             $shibConfig = $configManager->get(self::SHIBBOLETH_CONFIG_FILE_NAME);
-            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
-        } else {
-            $loader = new SingleIdPConfigurationLoader($config);
+            return new MultiIdPConfigurationLoader($config, $shibConfig);
         }
-        return $loader;
+        return new SingleIdPConfigurationLoader($config);
     }
 }

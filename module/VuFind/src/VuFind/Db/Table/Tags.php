@@ -148,15 +148,14 @@ class Tags extends Gateway
         $fuzzy = true
     ) {
         $cb = function ($select) use ($q, $source, $sort, $offset, $limit, $fuzzy) {
-            $select->columns(
-                [
-                    new Expression(
-                        'DISTINCT(?)',
-                        ['resource.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                ]
-            );
+            $columns = [
+                new Expression(
+                    'DISTINCT(?)',
+                    ['resource.id'],
+                    [Expression::TYPE_IDENTIFIER]
+                ),
+            ];
+            $select->columns($columns);
             $select->join(
                 ['rt' => 'resource_tags'],
                 'tags.id = rt.tag_id',
@@ -182,7 +181,7 @@ class Tags extends Gateway
             }
 
             if (!empty($sort)) {
-                Resource::applySort($select, $sort);
+                Resource::applySort($select, $sort, 'resource', $columns);
             }
 
             if ($offset > 0) {

@@ -540,7 +540,7 @@ class DefaultRecord extends AbstractBase
     public function getPrimaryAuthorsWithHighlighting()
     {
         $highlights = [];
-        // Create a map of de-highlighted valeus => highlighted values.
+        // Create a map of de-highlighted values => highlighted values.
         foreach ($this->getRawAuthorHighlights() as $current) {
             $dehighlighted = str_replace(
                 ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],

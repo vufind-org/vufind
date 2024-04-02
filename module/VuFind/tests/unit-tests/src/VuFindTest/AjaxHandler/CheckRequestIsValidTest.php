@@ -33,6 +33,7 @@ use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
+use VuFind\Db\Row\User;
 use VuFind\ILS\Connection;
 
 /**
@@ -44,16 +45,16 @@ use VuFind\ILS\Connection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
+class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CheckRequestIsValid handler for testing.
      *
-     * @param User|bool $user Return value for isLoggedIn() in auth manager
+     * @param ?User $user Return value for getUserObject() in auth manager
      *
      * @return CheckRequestIsValid
      */
-    protected function getHandler($user = false)
+    protected function getHandler(?User $user = null)
     {
         // Set up auth manager with user:
         $this->container->set(Manager::class, $this->getMockAuthManager($user));

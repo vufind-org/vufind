@@ -54,7 +54,7 @@ class FeedbackController extends AbstractAdmin
      * @param string $param          A key to check the url params for
      * @param bool   $prioritizePost If true, check the POST params first
      *
-     * @return string
+     * @return string|string[]
      */
     protected function getParam($param, $prioritizePost = false)
     {

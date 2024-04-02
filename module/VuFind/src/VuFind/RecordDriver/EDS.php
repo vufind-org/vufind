@@ -31,6 +31,7 @@ namespace VuFind\RecordDriver;
 
 use function count;
 use function in_array;
+use function is_array;
 use function is_callable;
 use function strlen;
 
@@ -117,7 +118,12 @@ class EDS extends DefaultRecord
     /**
      * Get the access level of the record.
      *
-     * @return string
+     * @return string If not empty, will contain a numerical value corresponding to these levels of access:
+     *                0 - Not Available to search via Guest Access
+     *                1 - Metadata is searched, but only a placeholder record is displayed
+     *                2 - Display record in the results but no access to detailed record or full text
+     *                3 - Full access: search/display all content to guests
+     *                6 - Display full record but no access to full text
      */
     public function getAccessLevel()
     {
@@ -259,21 +265,39 @@ class EDS extends DefaultRecord
         $nameFilter = null
     ) {
         $items = [];
-        foreach ($this->fields['Items'] ?? [] as $item) {
-            $nextItem = [
-                'Label' => $item['Label'] ?? '',
-                'Group' => $item['Group'] ?? '',
-                'Name' => $item['Name'] ?? '',
-                'Data'  => isset($item['Data'])
-                    ? $this->toHTML($item['Data'], $item['Group']) : '',
-            ];
-            if (
-                !$this->itemIsExcluded($nextItem, $context)
-                && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
-                && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
-                && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
-            ) {
-                $items[] = $nextItem;
+        if (is_array($this->fields['Items'] ?? null)) {
+            $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
+            $origItems = $this->fields['Items'];
+            // Only sort by label if we have a sort config and we're fetching multiple labels:
+            if (!empty($itemGlobalOrderConfig) && $labelFilter === null) {
+                // We want unassigned labels to appear AFTER configured labels:
+                $nextPos = max(array_keys($itemGlobalOrderConfig));
+                foreach (array_keys($origItems) as $key) {
+                    $label = $origItems[$key]['Label'] ?? '';
+                    $configuredPos = array_search($label, $itemGlobalOrderConfig);
+                    $origItems[$key]['Pos'] = $configuredPos === false
+                        ? ++$nextPos : $configuredPos;
+                }
+                $positions = array_column($origItems, 'Pos');
+                array_multisort($positions, SORT_ASC, $origItems);
+            }
+
+            foreach ($origItems as $item) {
+                $nextItem = [
+                    'Label' => $item['Label'] ?? '',
+                    'Group' => $item['Group'] ?? '',
+                    'Name' => $item['Name'] ?? '',
+                    'Data'  => isset($item['Data'])
+                        ? $this->toHTML($item['Data'], $item['Group']) : '',
+                ];
+                if (
+                    !$this->itemIsExcluded($nextItem, $context)
+                    && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
+                    && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
+                    && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
+                ) {
+                    $items[] = $nextItem;
+                }
             }
         }
         return $items;
@@ -931,12 +955,9 @@ class EDS extends DefaultRecord
         foreach ($this->getItems(null, 'Publication Information') as $pub) {
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
-                $placeParts = explode('.', $matches[1]);
-                [$place, $pub, $date]
-                    = [trim($matches[1]), trim($matches[2]), $matches[3]];
+                [$place, $pub, $date] = [trim($matches[1]), trim($matches[2]), $matches[3]];
             } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
-                [$place, $pub, $date]
-                    = [trim($matches[1]), trim($matches[2]), ''];
+                [$place, $pub, $date] = [trim($matches[1]), trim($matches[2]), ''];
             } else {
                 [$place, $pub, $date] = ['', $pub['Data'], ''];
             }

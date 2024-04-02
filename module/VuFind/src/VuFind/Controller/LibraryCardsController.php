@@ -77,8 +77,7 @@ class LibraryCardsController extends AbstractBase
     public function editCardAction()
     {
         // User must be logged in to edit library cards:
-        $user = $this->getUser();
-        if ($user == false) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
@@ -136,8 +135,7 @@ class LibraryCardsController extends AbstractBase
     public function deleteCardAction()
     {
         // User must be logged in to edit library cards:
-        $user = $this->getUser();
-        if ($user == false) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
@@ -191,8 +189,7 @@ class LibraryCardsController extends AbstractBase
      */
     public function selectCardAction()
     {
-        $user = $this->getUser();
-        if ($user == false) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
@@ -207,7 +204,7 @@ class LibraryCardsController extends AbstractBase
             $catalog = $this->getILS();
             $patron = $catalog->patronLogin(
                 $user->cat_username,
-                $user->getCatPassword()
+                $this->getILSAuthenticator()->getCatPasswordForUser($user)
             );
             if (!$patron) {
                 $this->flashMessenger()

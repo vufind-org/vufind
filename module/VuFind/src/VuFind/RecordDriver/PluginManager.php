@@ -99,7 +99,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Missing::class => AbstractBaseFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
-        Search2Default::class => SolrDefaultFactory::class,
+        Search2Default::class => Search2DefaultFactory::class,
         SolrArchivesSpace::class => SolrDefaultFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrAuthMarc::class => SolrDefaultWithoutSearchServiceFactory::class,

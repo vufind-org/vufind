@@ -50,7 +50,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslations()
+    public function testTranslations(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/base'),
@@ -74,7 +74,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFallback()
+    public function testFallback(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/base'),
@@ -98,7 +98,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFallbackToSelf()
+    public function testFallbackToSelf(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/base'),
@@ -118,7 +118,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSelfAsParent()
+    public function testSelfAsParent(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/base'),
@@ -139,7 +139,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParentChain()
+    public function testParentChain(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/base'),
@@ -162,12 +162,106 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingPathStack()
+    public function testMissingPathStack(): void
     {
         $this->expectException(\Laminas\I18n\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Ini file \'en.ini\' not found');
 
         $loader = new ExtendedIni();
         $loader->load('en', null);
+    }
+
+    /**
+     * Test alias behavior.
+     *
+     * @return void
+     */
+    public function testAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'baz' => 'Domain Translation',
+                'foo' => 'Translation',
+                'xyzzy' => 'Domain Translation',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test circular alias infinite loop prevention.
+     *
+     * @return void
+     */
+    public function testCircularAliasSafety(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/circularaliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $this->expectExceptionMessage('Circular alias detected resolving Domain::baz');
+        $loader->load('en', null);
+    }
+
+    /**
+     * Test inheriting aliases from a parent file.
+     *
+     * @return void
+     */
+    public function testInheritedAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en-gb', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'baz' => 'Domain Translation',
+                'foo' => 'Translation',
+                'xyzzy' => 'Child Overriding Alias',
+                '@parent_ini' => 'en.ini',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test that alias behavior can be disabled.
+     *
+     * @return void
+     */
+    public function testDisabledAliasing(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $loader->disableAliases();
+        $result = $loader->load('en', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+            ],
+            (array)$result
+        );
+        $result = $loader->load('en-gb', null);
+        $this->assertEquals(
+            [
+                'bar' => 'Translation',
+                'xyzzy' => 'Child Overriding Alias',
+                '@parent_ini' => 'en.ini',
+            ],
+            (array)$result
+        );
     }
 }

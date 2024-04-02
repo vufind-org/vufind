@@ -29,10 +29,10 @@
 
 namespace VuFind\Db\Row;
 
-use Laminas\Crypt\BlockCipher as BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
 
@@ -69,24 +69,11 @@ use function count;
  * @property string  $last_language
  */
 class User extends RowGateway implements
+    UserEntityInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
-
-    /**
-     * Is encryption enabled?
-     *
-     * @var bool
-     */
-    protected $encryptionEnabled = null;
-
-    /**
-     * Encryption key used for catalog passwords (null if encryption disabled):
-     *
-     * @var string
-     */
-    protected $encryptionKey = null;
 
     /**
      * VuFind configuration
@@ -98,9 +85,10 @@ class User extends RowGateway implements
     /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
+     * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
      */
-    public function __construct($adapter)
+    public function __construct($adapter, protected ILSAuthenticator $ilsAuthenticator)
     {
         parent::__construct('id', 'user', $adapter);
     }
@@ -144,6 +132,26 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set ILS login credentials without saving them.
+     *
+     * @param string $username Username to save
+     * @param string $password Password to save
+     *
+     * @return void
+     */
+    public function setCredentials($username, $password)
+    {
+        $this->cat_username = $username;
+        if ($this->passwordEncryptionEnabled()) {
+            $this->cat_password = null;
+            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
+        } else {
+            $this->cat_password = $password;
+            $this->cat_pass_enc = null;
+        }
+    }
+
+    /**
      * Save ILS login credentials.
      *
      * @param string $username Username to save
@@ -154,15 +162,7 @@ class User extends RowGateway implements
      */
     public function saveCredentials($username, $password)
     {
-        $this->cat_username = $username;
-        if ($this->passwordEncryptionEnabled()) {
-            $this->cat_password = null;
-            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
-        } else {
-            $this->cat_password = $password;
-            $this->cat_pass_enc = null;
-        }
-
+        $this->setCredentials($username, $password);
         $result = $this->save();
 
         // Update library card entry after saving the user so that we always have a
@@ -195,14 +195,12 @@ class User extends RowGateway implements
      *
      * @return string The Catalog password in plain text
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::getCatPasswordForUser()
      */
     public function getCatPassword()
     {
-        if ($this->passwordEncryptionEnabled()) {
-            return isset($this->cat_pass_enc)
-                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
-        }
-        return $this->cat_password ?? null;
+        return $this->ilsAuthenticator->getCatPasswordForUser($this);
     }
 
     /**
@@ -212,11 +210,7 @@ class User extends RowGateway implements
      */
     protected function passwordEncryptionEnabled()
     {
-        if (null === $this->encryptionEnabled) {
-            $this->encryptionEnabled
-                = $this->config->Authentication->encrypt_ils_password ?? false;
-        }
-        return $this->encryptionEnabled;
+        return $this->ilsAuthenticator->passwordEncryptionEnabled();
     }
 
     /**
@@ -229,52 +223,13 @@ class User extends RowGateway implements
      *
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::encrypt() or ILSAuthenticator::decrypt()
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
-        // Ignore empty text:
-        if (empty($text)) {
-            return $text;
-        }
-
-        $configAuth = $this->config->Authentication;
-
-        // Load encryption key from configuration if not already present:
-        if ($this->encryptionKey === null) {
-            if (empty($configAuth->ils_encryption_key)) {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'ILS password encryption on, but no key set.'
-                );
-            }
-
-            $this->encryptionKey = $configAuth->ils_encryption_key;
-        }
-
-        // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
-
-        // Check if OpenSSL error is caused by blowfish support
-        try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
-            if ($algo == 'blowfish') {
-                trigger_error(
-                    'Deprecated encryption algorithm (blowfish) detected',
-                    E_USER_DEPRECATED
-                );
-            }
-        } catch (\InvalidArgumentException $e) {
-            if ($algo == 'blowfish') {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'The blowfish encryption algorithm ' .
-                    'is not supported by your version of OpenSSL. ' .
-                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
-                );
-            } else {
-                throw $e;
-            }
-        }
-        $cipher->setKey($this->encryptionKey);
-        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+        $method = $encrypt ? 'encrypt' : 'decrypt';
+        return $this->ilsAuthenticator->$method($text);
     }
 
     /**
@@ -552,10 +507,7 @@ class User extends RowGateway implements
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
             if ($this->passwordEncryptionEnabled()) {
-                $row->cat_password = $this->encryptOrDecrypt(
-                    $row->cat_pass_enc,
-                    false
-                );
+                $row->cat_password = $this->ilsAuthenticator->decrypt($row->cat_pass_enc);
             }
         }
 
@@ -674,7 +626,7 @@ class User extends RowGateway implements
         }
         if ($this->passwordEncryptionEnabled()) {
             $row->cat_password = null;
-            $row->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+            $row->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
         } else {
             $row->cat_password = $password;
             $row->cat_pass_enc = null;
@@ -817,5 +769,229 @@ class User extends RowGateway implements
     public function getRoles()
     {
         return ['loggedin'];
+    }
+
+    /**
+     * Get login token data
+     *
+     * @param string $userId user identifier
+     *
+     * @return array
+     */
+    public function getLoginTokens(string $userId): array
+    {
+        $tokenTable = $this->getDbTable('LoginToken');
+        return $tokenTable->getByUserId($userId);
+    }
+
+    /**
+     * Get identifier.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Username setter
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function setUsername(string $username): UserEntityInterface
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * Get username.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Get firstname.
+     *
+     * @return string
+     */
+    public function getFirstname(): string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Get lastname.
+     *
+     * @return string
+     */
+    public function getLastname(): string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Set email.
+     *
+     * @param string $email Email address
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmail(string $email): UserEntityInterface
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * Get email.
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set pending email.
+     *
+     * @param string $email New pending email
+     *
+     * @return UserEntityInterface
+     */
+    public function setPendingEmail(string $email): UserEntityInterface
+    {
+        $this->pending_email = $email;
+        return $this;
+    }
+
+    /**
+     * Get pending email.
+     *
+     * @return string
+     */
+    public function getPendingEmail(): string
+    {
+        return $this->pending_email;
+    }
+
+    /**
+     * Catalog username setter
+     *
+     * @param ?string $catUsername Catalog username
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatUsername(?string $catUsername): UserEntityInterface
+    {
+        $this->cat_username = $catUsername;
+        return $this;
+    }
+
+    /**
+     * Get catalog username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string
+    {
+        return $this->cat_username;
+    }
+
+    /**
+     * Home library setter
+     *
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserEntityInterface
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserEntityInterface
+    {
+        $this->home_library = $homeLibrary;
+        return $this;
+    }
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string
+    {
+        return $this->home_library;
+    }
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserEntityInterface
+    {
+        $this->cat_password = $catPassword;
+        return $this;
+    }
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string
+    {
+        return $this->cat_password;
+    }
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserEntityInterface
+    {
+        $this->cat_pass_enc = $passEnc;
+        return $this;
+    }
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string
+    {
+        return $this->cat_pass_enc;
+    }
+
+    /**
+     * Get verification hash for recovery.
+     *
+     * @return string
+     */
+    public function getVerifyHash(): string
+    {
+        return $this->verify_hash;
+    }
+
+    /**
+     * Get last language.
+     *
+     * @return string
+     */
+    public function getLastLanguage(): string
+    {
+        return $this->last_language;
     }
 }

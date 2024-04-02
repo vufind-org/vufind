@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Install;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -47,18 +48,15 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'install/install',
+    description: 'VuFind installer'
+)]
 class InstallCommand extends Command
 {
     public const MULTISITE_NONE = 0;
     public const MULTISITE_DIR_BASED = 1;
     public const MULTISITE_HOST_BASED = 2;
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'install/install';
 
     /**
      * Base directory of VuFind installation.
@@ -134,7 +132,6 @@ class InstallCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('VuFind installer')
             ->setHelp('Set up (or modify) initial VuFind installation.')
             ->addOption(
                 'use-defaults',

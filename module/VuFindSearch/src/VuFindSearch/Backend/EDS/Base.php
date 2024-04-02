@@ -133,20 +133,6 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Print a message if debug is enabled.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     *
-     * @deprecated Use $this->debug function.
-     */
-    protected function debugPrint($msg)
-    {
-        $this->debug($msg);
-    }
-
-    /**
      * Obtain edsapi search critera and application related settings
      *
      * @param string $authenticationToken Authentication token

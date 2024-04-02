@@ -116,7 +116,6 @@ class BackendTest extends TestCase
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
         $this->assertEquals('125456', $recs[1]->id);
-        $rec  = $coll->next();
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('234547', $recs[2]->id);
     }
@@ -413,7 +412,7 @@ class BackendTest extends TestCase
             ->method('query')
             ->will($this->returnValue('bad {'));
         $back = new Backend($conn);
-        $terms = $back->terms('author', '', -1);
+        $back->terms('author', '', -1);
     }
 
     /**

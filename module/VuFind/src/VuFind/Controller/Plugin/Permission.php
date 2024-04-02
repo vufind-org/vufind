@@ -95,12 +95,13 @@ class Permission extends AbstractPlugin implements
      * applying any additional behavior.
      *
      * @param string $permission Permission to check
+     * @param mixed  $context    Context for the permission behavior (optional)
      *
      * @return bool
      */
-    public function isAuthorized($permission)
+    public function isAuthorized($permission, $context = null)
     {
-        return $this->permissionManager->isAuthorized($permission);
+        return $this->permissionManager->isAuthorized($permission, $context);
     }
 
     /**
@@ -145,7 +146,7 @@ class Permission extends AbstractPlugin implements
                     // login" denied permission requirement, there is probably a
                     // configuration error somewhere; throw an exception rather than
                     // triggering an infinite login redirection loop.
-                    if ($this->authManager->isLoggedIn()) {
+                    if ($this->getIdentity()) {
                         throw new ForbiddenException(
                             'Trying to prompt login due to denied ' . $permission
                             . ' permission, but a user is already logged in; '
@@ -163,7 +164,7 @@ class Permission extends AbstractPlugin implements
                 case 'exception':
                     $exceptionClass
                         = (isset($dl['value']) && class_exists($dl['value']))
-                        ? $dl['value'] : 'VuFind\Exception\Forbidden';
+                        ? $dl['value'] : \VuFind\Exception\Forbidden::class;
                     $exception = new $exceptionClass($exceptionDescription);
                     if ($exception instanceof \Exception) {
                         throw $exception;
@@ -175,5 +176,15 @@ class Permission extends AbstractPlugin implements
             }
         }
         return null;
+    }
+
+    /**
+     * Get the current identity from the authentication manager.
+     *
+     * @return \LmcRbacMvc\Identity\IdentityInterface|null
+     */
+    public function getIdentity()
+    {
+        return $this->authManager->getIdentity();
     }
 }

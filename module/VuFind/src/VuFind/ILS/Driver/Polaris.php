@@ -697,7 +697,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // duedate, id, barcode, renew (count), request (pending count),
         // volume (vol number), publication_year, renewable, message, title, item_id
-        // polaris apis: PatronItemsOutGet, Patron_RewewBlocksGet
+        // polaris apis: PatronItemsOutGet
         $transactions = [];
         $response = $this->makeRequest(
             "patron/{$patron['cat_username']}/itemsout/all",

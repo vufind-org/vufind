@@ -188,6 +188,15 @@
           <?php endif; ?>
           <br>
 
+          <?php if (
+            $this->searchOptions($this->driver->getSourceIdentifier())->displayCitationLinksInResults()
+            && $links = $driver->tryMethod('getCitations')
+          ): ?>
+            <div class="result-citation-links">
+              <?=$this->record($this->driver)->renderTemplate('data-citations.phtml', ['data' => $links])?>
+            </div>
+          <?php endif; ?>
+
           <?=$this->record($this->driver)->getFormatList() ?>
 
           <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>

@@ -45,6 +45,7 @@ use VuFindConsole\Command\Language\ImportLokaliseCommand;
 class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Base fixture directory
@@ -129,13 +130,16 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $source = $this->baseFixtureDir . '/incoming';
         $target = $this->baseFixtureDir . '/existing';
         $command = $this->getMockCommand();
-        $command->expects($this->exactly(4))->method('writeToDisk')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $command,
+            'writeToDisk',
+            [
                 [$target . '/da.ini', "new = \"NEW!\"\nstripped = \"NoQuotes\"\n"],
                 [$target . '/en.ini', "bar = \"enbaz\"\nfoo = \"enINCOMING\"\nxyzzy = \"enXYZZY\"\n"],
                 [$target . '/pt-br.ini', "bar = \"pt-brbaz\"\nfoo = \"pt-brINCOMING\"\nxyzzy = \"pt-brXYZZY\"\n"],
                 [$target . '/zh.ini', "bar = \"zhbaz\"\nfoo = \"zhINCOMING\"\nxyzzy = \"zhXYZZY\"\n"],
-            );
+            ]
+        );
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
     }
@@ -143,13 +147,13 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock command (with file writing stubbed out).
      *
-     * @return ImportLokaliseCommmand
+     * @return ImportLokaliseCommand
      */
     protected function getMockCommand(): ImportLokaliseCommand
     {
         return $this->getMockBuilder(ImportLokaliseCommand::class)
             ->setConstructorArgs([new ExtendedIniNormalizer()])
-            ->setMethods(['writeToDisk'])
+            ->onlyMethods(['writeToDisk'])
             ->getMock();
     }
 }

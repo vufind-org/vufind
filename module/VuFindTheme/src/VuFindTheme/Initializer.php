@@ -168,7 +168,7 @@ class Initializer
         );
 
         // Determine theme options:
-        $this->sendThemeOptionsToView();
+        $this->sendThemeOptionsToView($currentTheme);
 
         // Make sure the current theme is set correctly in the tools object:
         $error = null;
@@ -260,16 +260,18 @@ class Initializer
     /**
      * Make the theme options available to the view.
      *
+     * @param string $currentTheme Active theme
+     *
      * @return void
      */
-    protected function sendThemeOptionsToView()
+    protected function sendThemeOptionsToView($currentTheme)
     {
         // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:
-            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions($currentTheme));
         }
     }
 
@@ -277,9 +279,11 @@ class Initializer
      * Return an array of information about user-selectable themes. Each entry in
      * the array is an associative array with 'name', 'desc' and 'selected' keys.
      *
+     * @param string $currentTheme Active theme
+     *
      * @return array
      */
-    protected function getThemeOptions()
+    protected function getThemeOptions($currentTheme)
     {
         $options = [];
         if (isset($this->config->selectable_themes)) {
@@ -292,7 +296,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($this->cookieManager->get('ui') == $name),
+                        'selected' => ($currentTheme == $name),
                     ];
                 }
             }
@@ -335,14 +339,6 @@ class Initializer
         // Set generator if necessary:
         if (isset($this->config->generator)) {
             $resources->setGenerator($this->config->generator);
-        }
-
-        $lessActive = false;
-        // Find LESS activity
-        foreach ($themes as $key => $currentThemeInfo) {
-            if (isset($currentThemeInfo['less']['active'])) {
-                $lessActive = $currentThemeInfo['less']['active'];
-            }
         }
 
         // Determine doctype and apply it:

@@ -43,7 +43,7 @@ use OpenIDConnectServer\IdTokenResponse;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
 use VuFind\OAuth2\Repository\ClientRepository;
@@ -75,13 +75,6 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
      * @var array
      */
     protected $oauth2Config;
-
-    /**
-     * Access token table
-     *
-     * @var AccessToken
-     */
-    protected $accessTokenTable;
 
     /**
      * Config file path resolver
@@ -126,14 +119,11 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $this->oauth2Config = $yamlReader->get('OAuth2Server.yaml');
 
-        // Check that hashSalt is defined:
-        $this->getOAuth2ServerSetting('hashSalt');
-
         $session = new \Laminas\Session\Container(
             OAuth2Controller::SESSION_NAME,
             $container->get(\Laminas\Session\SessionManager::class)
         );
-        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
 
         return $this->applyPermissions(
             $container,
@@ -146,7 +136,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $container->get(\VuFind\Validator\CsrfInterface::class),
                 $session,
                 $container->get(IdentityRepository::class),
-                $tablePluginManager->get('AccessToken'),
+                $dbPluginManager->get(AccessTokenServiceInterface::class),
                 $this->getClaimExtractor(),
                 $this->pathResolver
             )
@@ -161,12 +151,16 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     protected function getAuthorizationServerFactory(): callable
     {
         return function (?string $clientId): AuthorizationServer {
+            // This could be called with incomplete configuration, so get settings
+            // first:
+            $privateKeyPath = $this->getKeyFromConfigPath('privateKeyPath');
+            $encryptionKey = $this->getOAuth2ServerSetting('encryptionKey');
             $server = new AuthorizationServer(
                 $this->container->get(ClientRepository::class),
                 $this->container->get(AccessTokenRepository::class),
                 $this->container->get(ScopeRepository::class),
-                $this->getKeyFromConfigPath('privateKeyPath'),
-                $this->getOAuth2ServerSetting('encryptionKey'),
+                $privateKeyPath,
+                $encryptionKey,
                 $this->getResponseType()
             );
             $clientConfig = $clientId
