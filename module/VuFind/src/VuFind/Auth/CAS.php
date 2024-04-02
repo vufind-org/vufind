@@ -298,8 +298,8 @@ class CAS extends AbstractBase
             } elseif (isset($this->getConfig()->Site->url)) {
                 // fallback method
                 $service_base_url = [
-                    parse_url($this->getConfig()->Site->url, PHP_URL_SCHEME).'://'.
-                    parse_url($this->getConfig()->Site->url, PHP_URL_HOST).
+                    parse_url($this->getConfig()->Site->url, PHP_URL_SCHEME) . '://' .
+                    parse_url($this->getConfig()->Site->url, PHP_URL_HOST) .
                     parse_url($this->getConfig()->Site->url, PHP_URL_PORT)
                 ];
             }
