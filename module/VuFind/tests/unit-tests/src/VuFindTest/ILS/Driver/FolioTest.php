@@ -1288,7 +1288,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBoundWithRecords with and item with six boundWithTitles.
+     * Test getBoundWithRecords with an item with six boundWithTitles.
      *
      * @depends testTokens
      *
