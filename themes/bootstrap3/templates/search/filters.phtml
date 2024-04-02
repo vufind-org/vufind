@@ -94,7 +94,7 @@
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
-        <a class="filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
+        <a class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
           <span class="sr-only">
             <?=$this->translate('Remove filter') ?>
           </span>

@@ -485,6 +485,7 @@ class AbstractRecord extends AbstractBase
         if (
             !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
+            && $this->isLocalUrl($referer)
         ) {
             $this->setFollowupUrlToReferer();
         } else {
