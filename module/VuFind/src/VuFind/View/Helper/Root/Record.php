@@ -421,8 +421,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
+        $titleHtml = $this->getTitleHtml();
         $context
-            = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
+            = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix, 'titleHtml' => $titleHtml];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }
