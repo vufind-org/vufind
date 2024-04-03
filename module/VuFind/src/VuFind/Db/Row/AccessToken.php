@@ -31,7 +31,7 @@
 namespace VuFind\Db\Row;
 
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFInd\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Row Definition for access_token
