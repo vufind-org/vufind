@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Row Definition for auth_hash
+ * Entity model interface for change_tracker table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,36 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
-
-use VuFind\Db\Entity\AuthHashEntityInterface;
+namespace VuFind\Db\Entity;
 
 /**
- * Row Definition for auth_hash
+ * Entity model interface for change_tracker table
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AuthHash extends RowGateway implements AuthHashEntityInterface
+interface ChangeTrackerEntityInterface extends EntityInterface
 {
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
-     */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'auth_hash', $adapter);
-    }
 }

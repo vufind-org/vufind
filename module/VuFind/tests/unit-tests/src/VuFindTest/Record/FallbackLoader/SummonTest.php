@@ -94,7 +94,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
         $row = $this->getMockBuilder(\VuFind\Db\Entity\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $row->expects($this->once())->method('getExtraMetadata')
-            ->will($this->returnValue('{ "bookmark": "bar" }'));
+            ->willReturn('{ "bookmark": "bar" }');
         $resourceService->expects($this->once())->method('findResource')
             ->with($this->equalTo('oldId'), $this->equalTo('Summon'))
             ->will($this->returnValue($row));

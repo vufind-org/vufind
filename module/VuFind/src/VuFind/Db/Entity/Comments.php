@@ -44,7 +44,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="comments")
  * @ORM\Entity
  */
-class Comments implements EntityInterface
+class Comments implements CommentsEntityInterface
 {
     /**
      * Unique ID.
@@ -167,11 +167,11 @@ class Comments implements EntityInterface
     /**
      * User setter.
      *
-     * @param ?User $user User that created comment
+     * @param ?UserEntityInterface $user User that created comment
      *
      * @return Comments
      */
-    public function setUser(?User $user): Comments
+    public function setUser(?UserEntityInterface $user): Comments
     {
         $this->user = $user;
         return $this;
@@ -190,11 +190,11 @@ class Comments implements EntityInterface
     /**
      * Resource setter.
      *
-     * @param Resource $resource Resource id.
+     * @param ResourceEntityInterface $resource Resource id.
      *
      * @return Comments
      */
-    public function setResource(?Resource $resource): Comments
+    public function setResource(?ResourceEntityInterface $resource): Comments
     {
         $this->resource = $resource;
         return $this;

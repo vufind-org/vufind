@@ -45,7 +45,7 @@ use Doctrine\ORM\Mapping as ORM;
  * )
  * @ORM\Entity
  */
-class Resource implements EntityInterface
+class Resource implements ResourceEntityInterface
 {
     /**
      * Unique ID.
