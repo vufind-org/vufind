@@ -30,6 +30,8 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Config\Config;
+use Laminas\Log\PsrLoggerAdapter;
 use VuFind\Exception\Auth as AuthException;
 
 use function constant;
@@ -47,6 +49,8 @@ use function constant;
  */
 class CAS extends AbstractBase
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Already Setup phpCAS
      *
@@ -274,6 +278,33 @@ class CAS extends AbstractBase
     }
 
     /**
+     * Return an array of service base URLs for the CAS client.
+     *
+     * @return string[]
+     * @throws AuthException
+     */
+    protected function getServiceBaseUrl(): array
+    {
+        $config = $this->getConfig();
+        $cas = $config->CAS;
+        if (isset($cas->service_base_url)) {
+            return $cas->service_base_url->toArray();
+        } elseif (isset($config->Site->url)) {
+            // fallback method
+            $siteUrl = parse_url($config->Site->url);
+            if (isset($siteUrl['scheme']) && isset($siteUrl['host'])) {
+                return [
+                    $siteUrl['scheme'] . '://' . $siteUrl['host'] .
+                    (isset($siteUrl['port']) ? ':' . $siteUrl['port'] : ''),
+                ];
+            }
+        }
+        throw new AuthException(
+            'Valid CAS/service_base_url or Site/url config parameters are required.'
+        );
+    }
+
+    /**
      * Establishes phpCAS Configuration and Enables the phpCAS Client
      *
      * @return object     Returns phpCAS Object
@@ -286,25 +317,30 @@ class CAS extends AbstractBase
         // client can only be called once.
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
-            if (
-                isset($cas->log)
-                && !empty($cas->log) && isset($cas->debug) && ($cas->debug)
-            ) {
-                $casauth->setDebug($cas->log);
+
+            $casauth->setLogger(new PsrLoggerAdapter($this->logger));
+
+            if ($cas->debug ?? false) {
+                $casauth->setVerbose(true);
             }
+
             $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
+
             $casauth->client(
                 $protocol,
                 $cas->server,
                 (int)$cas->port,
                 $cas->context,
+                $this->getServiceBaseUrl(),
                 false
             );
+
             if (isset($cas->CACert) && !empty($cas->CACert)) {
                 $casauth->setCasServerCACert($cas->CACert);
             } else {
                 $casauth->setNoCasServerValidation();
             }
+
             $this->phpCASSetup = true;
         }
 
