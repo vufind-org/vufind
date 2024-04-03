@@ -305,7 +305,7 @@ class CAS extends AbstractBase
                 // fallback method
                 $siteUrl = parse_url($this->getConfig()->Site->url);
                 $serviceBaseUrl = [
-                    $siteUrl['scheme'] . '://' . $siteUrl['host'].
+                    $siteUrl['scheme'] . '://' . $siteUrl['host'] .
                     ($siteUrl['port'] ? ':' . $siteUrl['port'] : '')
                 ];
             } else {
