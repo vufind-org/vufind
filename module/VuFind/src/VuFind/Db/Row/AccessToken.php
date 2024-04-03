@@ -31,6 +31,7 @@
 namespace VuFind\Db\Row;
 
 use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFInd\Db\Entity\UserEntityInterface;
 
 /**
  * Row Definition for access_token
@@ -56,13 +57,13 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
     /**
      * Set user ID.
      *
-     * @param ?string $userId User ID
+     * @param ?UserEntityInterface $user User owning token
      *
      * @return AccessTokenEntityInterface
      */
-    public function setUserId(?string $userId): AccessTokenEntityInterface
+    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
     {
-        $this->__set('user_id', $userId);
+        $this->__set('user_id', $user === null ? null : $user->getId());
         return $this;
     }
 

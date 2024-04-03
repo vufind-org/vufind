@@ -33,6 +33,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Service\AccessTokenService;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserService;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\AccessToken;
 use VuFind\OAuth2\Entity\ClientEntity;
 
@@ -153,6 +155,23 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->method('storeNonce')
             ->willReturnCallback([$accessTokenTable, 'storeNonce']);
         return $accessTokenService;
+    }
+
+    /**
+     * Create User service
+     *
+     * @return MockObject&UserServiceInterface
+     */
+    protected function getMockUserService(): UserServiceInterface
+    {
+        $mock = $this->createMock(UserService::class);
+        $userCallback = function ($id) {
+            $mockUser = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+            $mockUser->expects($this->any())->method('getId')->willReturn($id);
+            return $mockUser;
+        };
+        $mock->expects($this->any())->method('getUserById')->willReturnCallback($userCallback);
+        return $mock;
     }
 
     /**

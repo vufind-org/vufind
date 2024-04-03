@@ -51,9 +51,10 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testRefreshTokenRepository(): void
     {
-        $service = $this->getMockAccessTokenService();
-        $repo = new RefreshTokenRepository($service);
-        $accessTokenRepo = new AccessTokenRepository($service);
+        $tokenService = $this->getMockAccessTokenService();
+        $userService = $this->getMockUserService();
+        $repo = new RefreshTokenRepository($tokenService, $userService);
+        $accessTokenRepo = new AccessTokenRepository($tokenService, $userService);
 
         $accessToken = $accessTokenRepo->getNewToken(
             $this->createClientEntity(),
