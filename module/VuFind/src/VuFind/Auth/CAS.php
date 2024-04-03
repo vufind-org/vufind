@@ -48,6 +48,8 @@ use function constant;
  */
 class CAS extends AbstractBase
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Already Setup phpCAS
      *
@@ -287,35 +289,46 @@ class CAS extends AbstractBase
         // client can only be called once.
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
+
             $casauth->setLogger(new PsrLoggerAdapter($this->logger));
-            if (isset($cas->debug) && ($cas->debug)) {
+
+            if ($cas->debug ?? false) {
                 $casauth->setVerbose(true);
             }
+
             $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
-            $service_base_url = null;
+
+            $serviceBaseUrl = null;
             if (isset($cas->service_base_url)) {
-                $service_base_url = $cas->service_base_url->toArray();
+                $serviceBaseUrl = $cas->service_base_url->toArray();
             } elseif (isset($this->getConfig()->Site->url)) {
                 // fallback method
-                $service_base_url = [
-                    parse_url($this->getConfig()->Site->url, PHP_URL_SCHEME) . '://' .
-                    parse_url($this->getConfig()->Site->url, PHP_URL_HOST) .
-                    parse_url($this->getConfig()->Site->url, PHP_URL_PORT)
+                $siteUrl = parse_url($this->getConfig()->Site->url);
+                $serviceBaseUrl = [
+                    $siteUrl['scheme'] . '://' . $siteUrl['host'].
+                    ($siteUrl['port'] ? ':' . $siteUrl['port'] : '')
                 ];
+            } else {
+                throw new AuthException(
+                    'One of CAS/service_base_url or Site/url config parameters are required.'
+                );
             }
+
             $casauth->client(
                 $protocol,
                 $cas->server,
                 (int)$cas->port,
                 $cas->context,
-                $service_base_url,
+                $serviceBaseUrl,
                 false
             );
+
             if (isset($cas->CACert) && !empty($cas->CACert)) {
                 $casauth->setCasServerCACert($cas->CACert);
             } else {
                 $casauth->setNoCasServerValidation();
             }
+
             $this->phpCASSetup = true;
         }
 
