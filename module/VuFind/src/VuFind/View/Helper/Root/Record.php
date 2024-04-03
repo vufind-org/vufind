@@ -419,9 +419,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
     {
-        $id = $this->getUniqueHtmlElementId($idPrefix);
-        $context
-            = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
+        $context = compact('number') + [
+            'id' => $this->getUniqueIdWithSourcePrefix(),
+            'checkboxElementId' => $this->getUniqueHtmlElementId($idPrefix)
+            ];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }
@@ -715,6 +716,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      * Get the source identifier + unique id of the record without spaces
      *
      * @param string $idPrefix Prefix for HTML ids
+     * @throws \Exception If no record driver can be found
      *
      * @return string
      */
@@ -738,5 +740,6 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return "{$this->driver->tryMethod('getSourceIdentifier')}"
                 . "|{$this->driver->tryMethod('getUniqueId')}";
         }
+        throw new \Exception("No record driver found.");
     }
 }
