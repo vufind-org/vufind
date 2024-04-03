@@ -104,5 +104,5 @@ interface CommentsEntityInterface extends EntityInterface
      *
      * @return Comments
      */
-    public function setResource(?ResourceEntityInterface $resource): CommentsEntityInterface;
+    public function setResource(ResourceEntityInterface $resource): CommentsEntityInterface;
 }

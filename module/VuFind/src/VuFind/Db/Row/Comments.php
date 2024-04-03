@@ -153,7 +153,7 @@ class Comments extends RowGateway implements CommentsEntityInterface, DbServiceA
      *
      * @return Comments
      */
-    public function setResource(?ResourceEntityInterface $resource): CommentsEntityInterface
+    public function setResource(ResourceEntityInterface $resource): CommentsEntityInterface
     {
         $this->resource_id = $resource->getId();
         return $this;
