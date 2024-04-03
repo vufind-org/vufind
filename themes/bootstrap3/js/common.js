@@ -325,6 +325,9 @@ var VuFind = (function VuFind() {
       const scriptEl = document.createElement('script');
       scriptEl.innerHTML = script.innerHTML;
       scriptEl.setAttribute('nonce', getCspNonce());
+      if (script.src) {
+        scriptEl.src = script.src;
+      }
       newElm.appendChild(scriptEl);
     });
   }
