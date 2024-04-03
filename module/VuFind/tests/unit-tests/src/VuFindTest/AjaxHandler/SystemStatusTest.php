@@ -114,6 +114,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     public function testSuccessfulResponse(): void
     {
         $sessionManager = $this->createMock(\Laminas\Session\SessionManager::class);
+        $sessionManager->expects($this->once())->method('destroy');
         $resultsManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->once())->method('performAndProcessSearch');
