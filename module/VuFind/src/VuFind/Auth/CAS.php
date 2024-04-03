@@ -306,7 +306,7 @@ class CAS extends AbstractBase
                 $siteUrl = parse_url($this->getConfig()->Site->url);
                 $serviceBaseUrl = [
                     $siteUrl['scheme'] . '://' . $siteUrl['host'] .
-                    ($siteUrl['port'] ? ':' . $siteUrl['port'] : '')
+                    ($siteUrl['port'] ? ':' . $siteUrl['port'] : ''),
                 ];
             } else {
                 throw new AuthException(
