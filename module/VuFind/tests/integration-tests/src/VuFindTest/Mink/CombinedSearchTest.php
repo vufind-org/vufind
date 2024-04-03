@@ -167,15 +167,36 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that DOI results work in mixed AJAX/non-AJAX mode.
+     * Data provider for testCombinedSearchResultsMixedAjaxDOIs
+     *
+     * @return array
+     */
+    public static function combinedSearchResultsMixedAjaxDOIsProvider(): array
+    {
+        return [
+            'no ajax' => [false, false],
+            'left ajax' => [true, false],
+            'right ajax' => [false, true],
+            'all ajax' => [true, true],
+        ];
+    }
+
+    /**
+     * Test that DOI results work in various AJAX/non-AJAX modes.
+     *
+     * @param bool $leftAjax  Should left column load via AJAX?
+     * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
+     *
+     * @dataProvider combinedSearchResultsMixedAjaxDOIsProvider
      */
-    public function testCombinedSearchResultsMixedAjaxDOIs()
+    public function testCombinedSearchResultsMixedAjaxDOIs($leftAjax, $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();
+        $config['Solr:one']['ajax'] = $leftAjax;
         $config['Solr:one']['hiddenFilter'] = 'id:fakedoi1';
-        $config['Solr:two']['ajax'] = true;
+        $config['Solr:two']['ajax'] = $rightAjax;
         $config['Solr:two']['hiddenFilter'] = 'id:fakedoi2';
         $this->changeConfigs(
             [
