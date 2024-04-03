@@ -366,6 +366,21 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Helper function for testGetCheckbox to simulate withConsecutive deprecated in PhpUnit 9.6
+     * stolen from https://stackoverflow.com/a/75536028
+     *
+     * @param ...$args
+     * @return callable
+     */
+    public function consecutiveCalls(...$args): callable
+    {
+        $count = 0;
+        return function ($arg) use (&$count, $args) {
+            return $arg == $args[$count++];
+        };
+    }
+
+    /**
      * Test getCheckbox.
      *
      * @return void
@@ -374,15 +389,15 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('renderInContext')
-            ->withConsecutive(
-                [
+            ->with(
+                self::callback(self::consecutiveCalls(
                     'record/checkbox.phtml',
-                    ['id' => 'bar-Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ],
-                [
+                    ['id' => 'bar-Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']
+                )),
+                self::callback(self::consecutiveCalls(
                     'record/checkbox.phtml',
-                    ['id' => 'bar-Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ]
+                    ['id' => 'bar-Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']
+                ))
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
         $record = $this->getRecord(
