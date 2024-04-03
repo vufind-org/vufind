@@ -29,7 +29,7 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Db\Service\TagService;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
@@ -242,7 +242,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $this->getDbService(TagService::class)->addTagsToRecord(
+            $this->getDbService(TagServiceInterface::class)->addTagsToRecord(
                 $driver->getUniqueID(),
                 $driver->getSourceIdentifier(),
                 $user,
@@ -281,7 +281,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->getDbService(TagService::class)->deleteTagsFromRecord(
+            $this->getDbService(TagServiceInterface::class)->deleteTagsFromRecord(
                 $driver->getUniqueID(),
                 $driver->getSourceIdentifier(),
                 $user,
