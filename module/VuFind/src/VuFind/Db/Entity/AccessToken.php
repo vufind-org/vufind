@@ -118,4 +118,40 @@ class AccessToken implements EntityInterface
      * @ORM\Column(name="revoked", type="boolean", nullable=false)
      */
     protected $revoked = '0';
+
+    /**
+     * Set data.
+     *
+     * @param string $data Data
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setData(string $data): AccessTokenEntityInterface
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Is the access token revoked?
+     *
+     * @return bool
+     */
+    public function isRevoked(): bool
+    {
+        return (bool)$this->revoked;
+    }
+
+    /**
+     * Set revoked status.
+     *
+     * @param bool $revoked Revoked
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setRevoked(bool $revoked): AccessTokenEntityInterface
+    {
+        $this->revoked = $revoked ? '1' : '0';
+        return $this;
+    }
 }
