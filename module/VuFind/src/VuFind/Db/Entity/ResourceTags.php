@@ -76,7 +76,7 @@ class ResourceTags implements EntityInterface
     /**
      * Resource ID.
      *
-     * @var \VuFind\Db\Entity\Resource
+     * @var Resource
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
      * @ORM\JoinColumns({
@@ -89,7 +89,7 @@ class ResourceTags implements EntityInterface
     /**
      * Tag ID.
      *
-     * @var \VuFind\Db\Entity\Tags
+     * @var Tags
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Tags")
      * @ORM\JoinColumns({
@@ -102,7 +102,7 @@ class ResourceTags implements EntityInterface
     /**
      * List ID.
      *
-     * @var \VuFind\Db\Entity\UserList
+     * @var UserList
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\UserList")
      * @ORM\JoinColumns({
@@ -115,7 +115,7 @@ class ResourceTags implements EntityInterface
     /**
      * User ID.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({

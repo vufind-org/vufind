@@ -107,7 +107,7 @@ class UserList implements EntityInterface
     /**
      * User ID.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({

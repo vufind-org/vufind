@@ -85,7 +85,7 @@ class Comments implements CommentsEntityInterface
     /**
      * User ID.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var ?User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
@@ -98,7 +98,7 @@ class Comments implements CommentsEntityInterface
     /**
      * Resource ID.
      *
-     * @var \VuFind\Db\Entity\Resource
+     * @var Resource
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
      * @ORM\JoinColumns({
@@ -123,9 +123,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param string $comment Comment
      *
-     * @return Comments
+     * @return CommentsEntityInterface
      */
-    public function setComment(string $comment): Comments
+    public function setComment(string $comment): CommentsEntityInterface
     {
         $this->comment = $comment;
         return $this;
@@ -146,9 +146,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param Datetime $dateTime Created date
      *
-     * @return Comments
+     * @return CommentsEntityInterface
      */
-    public function setCreated(DateTime $dateTime): Comments
+    public function setCreated(DateTime $dateTime): CommentsEntityInterface
     {
         $this->created = $dateTime;
         return $this;
@@ -169,9 +169,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param ?UserEntityInterface $user User that created comment
      *
-     * @return Comments
+     * @return CommentsEntityInterface
      */
-    public function setUser(?UserEntityInterface $user): Comments
+    public function setUser(?UserEntityInterface $user): CommentsEntityInterface
     {
         $this->user = $user;
         return $this;
@@ -180,9 +180,9 @@ class Comments implements CommentsEntityInterface
     /**
      * User getter
      *
-     * @return User
+     * @return ?UserEntityInterface
      */
-    public function getUser(): User
+    public function getUser(): ?UserEntityInterface
     {
         return $this->user;
     }
@@ -192,9 +192,9 @@ class Comments implements CommentsEntityInterface
      *
      * @param ResourceEntityInterface $resource Resource id.
      *
-     * @return Comments
+     * @return CommentsEntityInterface
      */
-    public function setResource(?ResourceEntityInterface $resource): Comments
+    public function setResource(ResourceEntityInterface $resource): CommentsEntityInterface
     {
         $this->resource = $resource;
         return $this;

@@ -87,7 +87,7 @@ class UserResource implements EntityInterface
     /**
      * User ID.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
@@ -100,7 +100,7 @@ class UserResource implements EntityInterface
     /**
      * Resource.
      *
-     * @var \VuFind\Db\Entity\Resource
+     * @var Resource
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
      * @ORM\JoinColumns({
@@ -113,7 +113,7 @@ class UserResource implements EntityInterface
     /**
      * User list ID.
      *
-     * @var \VuFind\Db\Entity\UserList
+     * @var UserList
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\UserList")
      * @ORM\JoinColumns({

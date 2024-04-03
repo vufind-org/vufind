@@ -136,7 +136,7 @@ class UserCard implements EntityInterface
     /**
      * User.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({

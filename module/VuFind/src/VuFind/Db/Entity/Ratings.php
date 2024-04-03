@@ -63,7 +63,7 @@ class Ratings implements EntityInterface
     /**
      * User ID.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
@@ -76,7 +76,7 @@ class Ratings implements EntityInterface
     /**
      * Resource ID.
      *
-     * @var \VuFind\Db\Entity\Resource
+     * @var Resource
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
      * @ORM\JoinColumns({

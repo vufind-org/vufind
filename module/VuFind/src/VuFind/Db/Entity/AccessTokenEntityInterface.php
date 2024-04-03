@@ -41,15 +41,6 @@ namespace VuFind\Db\Entity;
 interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
-     * Set user ID.
-     *
-     * @param ?string $userId User ID
-     *
-     * @return AccessTokenEntityInterface
-     */
-    public function setUserId(?string $userId): AccessTokenEntityInterface;
-
-    /**
      * Set data.
      *
      * @param string $data Data

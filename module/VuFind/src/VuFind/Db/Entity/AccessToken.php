@@ -43,7 +43,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="access_token")
  * @ORM\Entity
  */
-class AccessToken implements EntityInterface
+class AccessToken implements AccessTokenEntityInterface
 {
     /**
      * Unique ID.
@@ -78,7 +78,7 @@ class AccessToken implements EntityInterface
     /**
      * User ID.
      *
-     * @var \VuFind\Db\Entity\User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({

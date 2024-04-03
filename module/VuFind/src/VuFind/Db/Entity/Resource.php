@@ -139,9 +139,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param string $recordId recordId
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function setRecordId(string $recordId): Resource
+    public function setRecordId(string $recordId): ResourceEntityInterface
     {
         $this->recordId = $recordId;
         return $this;
@@ -162,9 +162,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param string $title Title of the record.
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function setTitle(string $title): Resource
+    public function setTitle(string $title): ResourceEntityInterface
     {
         $this->title = $title;
         return $this;
@@ -185,9 +185,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param ?string $author Author of the title.
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function setAuthor(?string $author): Resource
+    public function setAuthor(?string $author): ResourceEntityInterface
     {
         $this->author = $author;
         return $this;
@@ -198,9 +198,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param ?int $year Year title is published.
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function setYear(?int $year): Resource
+    public function setYear(?int $year): ResourceEntityInterface
     {
         $this->year = $year;
         return $this;
@@ -211,9 +211,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param string $source Source (a search backend ID).
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function setSource(string $source): Resource
+    public function setSource(string $source): ResourceEntityInterface
     {
         $this->source = $source;
         return $this;
@@ -234,9 +234,9 @@ class Resource implements ResourceEntityInterface
      *
      * @param ?string $extraMetadata ExtraMetadata.
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function setExtraMetadata(?string $extraMetadata): Resource
+    public function setExtraMetadata(?string $extraMetadata): ResourceEntityInterface
     {
         $this->extraMetadata = $extraMetadata;
         return $this;
