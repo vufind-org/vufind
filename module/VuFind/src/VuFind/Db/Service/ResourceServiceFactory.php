@@ -67,8 +67,7 @@ class ResourceServiceFactory extends AbstractDbServiceFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $loader = $container->get(\VuFind\Record\Loader::class);
-        $converter = $container->get(\VuFind\Date\Converter::class);
-        return parent::__invoke($container, $requestedName, [$loader, $converter]);
+        $table = $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource');
+        return parent::__invoke($container, $requestedName, [$table]);
     }
 }
