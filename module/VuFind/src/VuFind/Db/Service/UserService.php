@@ -89,6 +89,6 @@ class UserService extends AbstractDbService implements
             case 'cat_id':
                 return $this->userTable->getByCatalogId($fieldValue);
         }
-        throw new \InvalidArgumentException("Field name must be id, username or cat_id");
+        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
     }
 }
