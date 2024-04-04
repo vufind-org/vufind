@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
+class RepositoryWithAccessTokenAndUserServicesFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -69,6 +69,9 @@ class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        return new $requestedName($dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class));
+        return new $requestedName(
+            $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
+            $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class)
+        );
     }
 }

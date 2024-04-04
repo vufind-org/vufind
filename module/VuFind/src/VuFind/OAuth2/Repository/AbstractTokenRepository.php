@@ -32,6 +32,7 @@ namespace VuFind\OAuth2\Repository;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function is_callable;
 
@@ -52,11 +53,13 @@ class AbstractTokenRepository
      * @param string                      $tokenType          Token type
      * @param string                      $entityClass        Entity class name
      * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
     public function __construct(
         protected string $tokenType,
         protected string $entityClass,
-        protected AccessTokenServiceInterface $accessTokenService
+        protected AccessTokenServiceInterface $accessTokenService,
+        protected UserServiceInterface $userService
     ) {
     }
 
@@ -92,7 +95,7 @@ class AbstractTokenRepository
             // Drop nonce from user id:
             [$userId] = explode('|', $userId);
         }
-        $row->setUserId($userId);
+        $row->setUser($this->userService->getUserById($userId));
         $this->accessTokenService->persistEntity($row);
     }
 
