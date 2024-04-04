@@ -121,16 +121,38 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for different combinations of AJAX columns
+     *
+     * @return array
+     */
+    public static function ajaxCombinationsProvider(): array
+    {
+        return [
+            'no ajax' => [false, false],
+            'left ajax' => [true, false],
+            'right ajax' => [false, true],
+            'all ajax' => [true, true],
+        ];
+    }
+
+    /**
      * Test that combined results contain valid author links with appropriate filtering.
      *
+     * @param bool $leftAjax  Should left column load via AJAX?
+     * @param bool $rightAjax Should right column load via AJAX?
+     *
      * @return void
+     *
+     * @dataProvider ajaxCombinationsProvider
      */
-    public function testCombinedSearchResultsAuthorLinks(): void
+    public function testCombinedSearchResultsAuthorLinks(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();
         // Default configuration does not have authors in both columns; switch to a
         // different data set that will let us test authors:
         $config['Solr:one']['hiddenFilter'] = 'building:author_relators.mrc';
+        $config['Solr:one']['ajax'] = $leftAjax;
+        $config['Solr:two']['ajax'] = $rightAjax;
         $this->changeConfigs(
             ['combined' => $config],
             ['combined']
