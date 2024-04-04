@@ -48,7 +48,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getCombinedIniOverrides()
+    protected function getCombinedIniOverrides(): array
     {
         return [
             'Solr:one' => [
@@ -71,7 +71,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertResultsForDefaultQuery($page)
+    protected function assertResultsForDefaultQuery(Element $page): void
     {
         $expectedResults = [
             '#combined_Solr____one' => 'Journal of rational emotive therapy : '
@@ -103,7 +103,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCombinedSearchResults()
+    public function testCombinedSearchResults(): void
     {
         $this->changeConfigs(
             ['combined' => $this->getCombinedIniOverrides()],
@@ -121,11 +121,43 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results contain valid author links with appropriate filtering.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsAuthorLinks(): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:one']['hiddenFilter'] = 'building:author_relators.mrc';
+        $this->changeConfigs(
+            ['combined' => $config],
+            ['combined']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('id:"0001732009-1" OR id:"theplus+andtheminus-"');
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        // The author link in each column should have an appropriate hidden filter applied:
+        $this->assertStringContainsString(
+            'hiddenFilters%5B%5D=building%3A%22author_relators.mrc%22',
+            $this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
+        );
+        $this->assertStringContainsString(
+            'hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22',
+            $this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
+        );
+    }
+
+    /**
      * Test that combined results work in AJAX mode.
      *
      * @return void
      */
-    public function testCombinedSearchResultsAllAjax()
+    public function testCombinedSearchResultsAllAjax(): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
@@ -149,7 +181,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCombinedSearchResultsMixedAjax()
+    public function testCombinedSearchResultsMixedAjax(): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
