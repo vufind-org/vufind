@@ -20,6 +20,12 @@ $thumbnail-width-large:  160px;
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
   .result .checkbox { display: none; }
+
+  // Except for these
+  #update_holds .checkbox,
+  #renewals .checkbox {
+    display: inherit;
+  }
 }
 
 .searchHomeContent { @include clearfix(); }
