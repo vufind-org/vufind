@@ -47,7 +47,7 @@ use VuFind\Db\Entity\SessionEntityInterface;
  * @property int     $last_used
  * @property string  $created
  */
-class Session extends RowGateway implements \VuFind\Db\Entity\SessionEntityInterface
+class Session extends RowGateway implements SessionEntityInterface
 {
     /**
      * Constructor
@@ -74,7 +74,7 @@ class Session extends RowGateway implements \VuFind\Db\Entity\SessionEntityInter
      *
      * @param ?string $sid Session Id.
      *
-     * @return Session
+     * @return SessionEntityInterface
      */
     public function setSessionId(?string $sid): SessionEntityInterface
     {
@@ -87,7 +87,7 @@ class Session extends RowGateway implements \VuFind\Db\Entity\SessionEntityInter
      *
      * @param Datetime $dateTime Created date
      *
-     * @return Session
+     * @return SessionEntityInterface
      */
     public function setCreated(DateTime $dateTime): SessionEntityInterface
     {
@@ -98,13 +98,13 @@ class Session extends RowGateway implements \VuFind\Db\Entity\SessionEntityInter
     /**
      * Set time the session is last used.
      *
-     * @param int $lastused Time last used
+     * @param int $lastUsed Time last used
      *
-     * @return Session
+     * @return SessionEntityInterface
      */
-    public function setLastUsed(int $lastused): SessionEntityInterface
+    public function setLastUsed(int $lastUsed): SessionEntityInterface
     {
-        $this->last_used = $lastused;
+        $this->last_used = $lastUsed;
         return $this;
     }
 
@@ -123,7 +123,7 @@ class Session extends RowGateway implements \VuFind\Db\Entity\SessionEntityInter
      *
      * @param ?string $data Session data.
      *
-     * @return Session
+     * @return SessionEntityInterface
      */
     public function setData(?string $data): SessionEntityInterface
     {

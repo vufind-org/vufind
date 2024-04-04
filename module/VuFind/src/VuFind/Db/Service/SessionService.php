@@ -30,7 +30,7 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\SessionInterface;
+use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\Table\Session;
 
 /**
@@ -61,9 +61,9 @@ class SessionService extends AbstractDbService implements SessionServiceInterfac
      * @param string $sid    Session ID to retrieve
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return ?SessionInterface
+     * @return ?SessionEntityInterface
      */
-    public function getSessionById($sid, $create = true)
+    public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface
     {
         return $this->session->getBySessionId($sid, $create);
     }
