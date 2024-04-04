@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service plugin manager
+ * Database service interface for resource.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,57 +23,33 @@
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
+
 /**
- * Database service plugin manager
+ * Database service interface for resource.
  *
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+interface ResourceService extends DbServiceInterface
 {
     /**
-     * Default plugin aliases.
+     * Lookup and return a resource.
      *
-     * @var array
-     */
-    protected $aliases = [
-        AccessTokenServiceInterface::class => AccessTokenService::class,
-        ResourceServiceInterface::class => ResourceService::class,
-        SessionServiceInterface::class => SessionService::class,
-        TagServiceInterface::class => TagService::class,
-        UserServiceInterface::class => UserService::class,
-    ];
-
-    /**
-     * Default plugin factories.
+     * @param int $id Identifier value
      *
-     * @var array
+     * @return ?ResourceEntityInterface
      */
-    protected $factories = [
-        AccessTokenService::class => AccessTokenServiceFactory::class,
-        ResourceService::class => ResourceServiceFactory::class,
-        SessionService::class => SessionServiceFactory::class,
-        TagService::class => AbstractDbServiceFactory::class,
-        UserService::class => UserServiceFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
-    {
-        return DbServiceInterface::class;
-    }
+    public function getResourceById($id): ?ResourceEntityInterface;
 }

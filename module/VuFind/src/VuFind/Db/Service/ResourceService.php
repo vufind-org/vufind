@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service plugin manager
+ * Database service for resource.
  *
  * PHP version 8
  *
@@ -23,57 +23,46 @@
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Table\Resource;
+
 /**
- * Database service plugin manager
+ * Database service for resource.
  *
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class ResourceService extends AbstractDbService implements ResourceServiceInterface
 {
     /**
-     * Default plugin aliases.
+     * Constructor.
      *
-     * @var array
+     * @param Resource $resourceTable Resource table
      */
-    protected $aliases = [
-        AccessTokenServiceInterface::class => AccessTokenService::class,
-        ResourceServiceInterface::class => ResourceService::class,
-        SessionServiceInterface::class => SessionService::class,
-        TagServiceInterface::class => TagService::class,
-        UserServiceInterface::class => UserService::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AccessTokenService::class => AccessTokenServiceFactory::class,
-        ResourceService::class => ResourceServiceFactory::class,
-        SessionService::class => SessionServiceFactory::class,
-        TagService::class => AbstractDbServiceFactory::class,
-        UserService::class => UserServiceFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function __construct(protected Resource $resourceTable)
     {
-        return DbServiceInterface::class;
+    }
+
+    /**
+     * Lookup and return a resource.
+     *
+     * @param int $id Identifier value
+     *
+     * @return ?ResourceEntityInterface
+     */
+    public function getResourceById($id): ?ResourceEntityInterface
+    {
+        return $this->resourceTable->select(['id' => $id])->current();
     }
 }
