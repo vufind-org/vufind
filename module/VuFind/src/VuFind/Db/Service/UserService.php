@@ -72,6 +72,7 @@ class UserService extends AbstractDbService implements
 
     /**
      * Retrieve a user object from the database based on the given field.
+     * Field name must be id, username or cat_id.
      *
      * @param string $fieldName  Field name
      * @param string $fieldValue Field value
@@ -88,6 +89,6 @@ class UserService extends AbstractDbService implements
             case 'cat_id':
                 return $this->userTable->getByCatalogId($fieldValue);
         }
-        return null;
+        throw new \InvalidArgumentException("Field name must be id, username or cat_id");
     }
 }
