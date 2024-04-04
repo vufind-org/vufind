@@ -51,7 +51,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testAccessTokenRepository(): void
     {
-        $repo = new AccessTokenRepository($this->getMockAccessTokenService());
+        $repo = new AccessTokenRepository($this->getMockAccessTokenService(), $this->getMockUserService());
 
         $token = $repo->getNewToken(
             $this->createClientEntity(),
@@ -99,9 +99,10 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testPersistInvalidTokenClass(): void
     {
-        $accessTokenRepo
-            = new AccessTokenRepository($this->getMockAccessTokenService());
-        $authCodeRepo = new AuthCodeRepository($this->getMockAccessTokenService());
+        $tokenService = $this->getMockAccessTokenService();
+        $userService = $this->getMockUserService();
+        $accessTokenRepo = new AccessTokenRepository($tokenService, $userService);
+        $authCodeRepo = new AuthCodeRepository($tokenService, $userService);
 
         $token = $authCodeRepo->getNewAuthCode();
         $this->expectExceptionMessage(

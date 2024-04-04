@@ -120,6 +120,19 @@ class AccessToken implements AccessTokenEntityInterface
     protected $revoked = '0';
 
     /**
+     * Set user ID.
+     *
+     * @param ?UserEntityInterface $user User owning token
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
      * Set data.
      *
      * @param string $data Data
