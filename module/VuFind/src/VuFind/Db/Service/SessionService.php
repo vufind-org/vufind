@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service plugin manager
+ * Database service for Session.
  *
  * PHP version 8
  *
@@ -23,55 +23,48 @@
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\SessionEntityInterface;
+use VuFind\Db\Table\Session;
+
 /**
- * Database service plugin manager
+ * Database service for Session.
  *
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class SessionService extends AbstractDbService implements SessionServiceInterface
 {
     /**
-     * Default plugin aliases.
+     * Constructor
      *
-     * @var array
+     * @param Session $session Session table object
      */
-    protected $aliases = [
-        AccessTokenServiceInterface::class => AccessTokenService::class,
-        SessionServiceInterface::class => SessionService::class,
-        TagServiceInterface::class => TagService::class,
-        UserServiceInterface::class => UserService::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AccessTokenService::class => AccessTokenServiceFactory::class,
-        SessionService::class => SessionServiceFactory::class,
-        TagService::class => AbstractDbServiceFactory::class,
-        UserService::class => UserServiceFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function __construct(protected Session $session)
     {
-        return DbServiceInterface::class;
+    }
+
+    /**
+     * Retrieve an object from the database based on session ID; create a new
+     * row if no existing match is found.
+     *
+     * @param string $sid    Session ID to retrieve
+     * @param bool   $create Should we create rows that don't already exist?
+     *
+     * @return ?SessionEntityInterface
+     */
+    public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface
+    {
+        return $this->session->getBySessionId($sid, $create);
     }
 }
