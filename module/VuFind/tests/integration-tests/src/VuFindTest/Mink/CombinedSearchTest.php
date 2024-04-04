@@ -128,6 +128,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testCombinedSearchResultsAuthorLinks(): void
     {
         $config = $this->getCombinedIniOverrides();
+        // Default configuration does not have authors in both columns; switch to a
+        // different data set that will let us test authors:
         $config['Solr:one']['hiddenFilter'] = 'building:author_relators.mrc';
         $this->changeConfigs(
             ['combined' => $config],
