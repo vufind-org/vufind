@@ -48,21 +48,22 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'authhash' => AuthHash::class,
-        'changetracker' => ChangeTracker::class,
-        'comments' => Comments::class,
+        AccessTokenEntityInterface::class => AccessToken::class,
+        AuthHashEntityInterface::class => AuthHash::class,
+        ChangeTrackerEntityInterface::class => ChangeTracker::class,
+        CommentsEntityInterface::class => Comments::class,
         'externalsession' => ExternalSession::class,
         'feedback' => Feedback::class,
         'oairesumption' => OaiResumption::class,
         'ratings' => Ratings::class,
         'record' => Record::class,
-        'resource' => Resource::class,
+        ResourceEntityInterface::class => Resource::class,
         'resourcetags' => ResourceTags::class,
         'search' => Search::class,
-        'session' => Session::class,
+        SessionEntityInterface::class => Session::class,
         'shortlinks' => Shortlinks::class,
         'tags' => Tags::class,
-        'user' => User::class,
+        UserEntityInterface::class => User::class,
         'usercard' => UserCard::class,
         'userlist' => UserList::class,
         'userresource' => UserResource::class,
@@ -74,6 +75,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        AccessToken::class => InvokableFactory::class,
         AuthHash::class => InvokableFactory::class,
         ChangeTracker::class => InvokableFactory::class,
         Comments::class => InvokableFactory::class,

@@ -47,7 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
  * indexes={@ORM\Index(name="last_used", columns={"last_used"})})
  * @ORM\Entity
  */
-class Session implements EntityInterface
+class Session implements SessionEntityInterface
 {
     /**
      * Unique ID.

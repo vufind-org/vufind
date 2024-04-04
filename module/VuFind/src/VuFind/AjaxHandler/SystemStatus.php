@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
-use VuFind\Db\Service\SessionService;
+use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -52,51 +52,19 @@ class SystemStatus extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Session Manager
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
-     * Session database service
-     *
-     * @var SessionService
-     */
-    protected $sessionService;
-
-    /**
-     * Results manager
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Top-level VuFind configuration (config.ini)
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
-     * @param SessionManager $sm             Session manager
-     * @param ResultsManager $rm             Results manager
-     * @param Config         $config         Top-level VuFind configuration (config.ini)
-     * @param SessionService $sessionService Session database service
+     * @param SessionManager          $sessionManager Session manager
+     * @param ResultsManager          $resultsManager Results manager
+     * @param Config                  $config         Top-level VuFind configuration (config.ini)
+     * @param SessionServiceInterface $sessionService Session database service
      */
     public function __construct(
-        SessionManager $sm,
-        ResultsManager $rm,
-        Config $config,
-        SessionService $sessionService
+        protected SessionManager $sessionManager,
+        protected ResultsManager $resultsManager,
+        protected Config $config,
+        protected SessionServiceInterface $sessionService
     ) {
-        $this->sessionManager = $sm;
-        $this->resultsManager = $rm;
-        $this->config = $config;
-        $this->sessionService = $sessionService;
     }
 
     /**
@@ -139,7 +107,7 @@ class SystemStatus extends AbstractBase implements \Laminas\Log\LoggerAwareInter
 
         // Test database connection
         try {
-            $this->sessionService->getBySessionId('healthcheck', false);
+            $this->sessionService->getSessionById('healthcheck', false);
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'Database error: ' . $e->getMessage(),

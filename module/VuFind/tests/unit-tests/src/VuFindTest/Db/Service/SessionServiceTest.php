@@ -30,6 +30,7 @@
 namespace VuFindTest\Db\Service;
 
 use VuFind\Db\Entity\Session;
+use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\Service\SessionService;
 
 /**
@@ -58,7 +59,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
-                ->with(Session::class)
+                ->with(SessionEntityInterface::class)
                 ->willReturn(new Session());
         }
         return $pluginManager;
@@ -151,7 +152,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSessionById()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
+        $session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
         $entityManager = $this->getEntityManager();
@@ -160,7 +161,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager->expects($this->once())->method('createQueryBuilder')
             ->willReturn($queryBuilder);
         $service = $this->getService($entityManager, $pluginManager);
-        $this->assertEquals($session, $service->getBySessionId('1', false));
+        $this->assertEquals($session, $service->getSessionById('1', false));
     }
 
     /**
@@ -171,16 +172,13 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testSessionNotFound()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
         $queryBuilder = $this->getQueryBuilder('1', []);
         $entityManager->expects($this->once())->method('createQueryBuilder')
             ->willReturn($queryBuilder);
         $service = $this->getService($entityManager, $pluginManager);
-        $this->assertFalse($service->getBySessionId('1', false));
+        $this->assertNull($service->getSessionById('1', false));
     }
 
     /**
@@ -190,7 +188,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreatingSession()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
+        $session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
         $entityManager = $this->getEntityManager(1);
@@ -205,7 +203,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
             ->with($this->anything())
             ->willReturn($session);
         $service = $this->getService($entityManager, $pluginManager, $session);
-        $this->assertEquals($session, $service->getBySessionId('1', true));
+        $this->assertEquals($session, $service->getSessionById('1', true));
     }
 
     /**
@@ -215,7 +213,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testReadSession()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
+        $session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
         $entityManager = $this->getEntityManager(1);
@@ -242,7 +240,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\SessionExpired::class);
         $this->expectExceptionMessage('Session expired!');
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
+        $session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
         $entityManager = $this->getEntityManager();
@@ -263,7 +261,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testWriteSession()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
+        $session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
         $entityManager = $this->getEntityManager(1);
@@ -288,9 +286,6 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testDestroySession()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
         $queryBuilder = $this->getMockBuilder(\Doctrine\ORM\QueryBuilder::class)
@@ -326,9 +321,6 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testGarbageCollect()
     {
-        $session = $this->getMockBuilder(\VuFind\Db\Entity\Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
         $queryBuilder = $this->getMockBuilder(\Doctrine\ORM\QueryBuilder::class)

@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -30,7 +31,7 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\Session;
+use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -41,6 +42,7 @@ use function intval;
  *
  * @category VuFind
  * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -56,17 +58,17 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
      * @param string $sid    Session ID to retrieve
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return Session|bool
+     * @return ?SessionEntityInterface
      */
-    public function getBySessionId($sid, $create = true)
+    public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('s')
-            ->from($this->getEntityClass(Session::class), 's')
+            ->from($this->getEntityClass(SessionEntityInterface::class), 's')
             ->where('s.sessionId = :sid')
             ->setParameter('sid', $sid);
         $query = $queryBuilder->getQuery();
-        $session = current($query->getResult());
+        $session = current($query->getResult()) ?: null;
         if ($create && empty($session)) {
             $now = new \DateTime();
             $session = $this->createEntity()
@@ -76,7 +78,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
                 $this->persistEntity($session);
             } catch (\Exception $e) {
                 $this->logError('Could not save session: ' . $e->getMessage());
-                return false;
+                return null;
             }
         }
         return $session;
@@ -93,7 +95,10 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
      */
     public function readSession($sid, $lifetime)
     {
-        $s = $this->getBySessionId($sid);
+        $s = $this->getSessionById($sid);
+        if (!$s) {
+            throw new SessionExpiredException("Cannot read session $sid");
+        }
         $lastused = $s->getLastUsed();
         // enforce lifetime of this session data
         if (!empty($lastused) && $lastused + $lifetime <= time()) {
@@ -107,7 +112,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
             $this->persistEntity($s);
         } catch (\Exception $e) {
             $this->logError('Could not save session: ' . $e->getMessage());
-            return false;
+            return '';
         }
         $data = $s->getData();
         return $data ?? '';
@@ -123,10 +128,13 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
      */
     public function writeSession($sid, $data)
     {
-        $session = $this->getBySessionId($sid);
-        $session->setLastUsed(time())
-            ->setData($data);
+        $session = $this->getSessionById($sid);
         try {
+            if (!$session) {
+                throw new \Exception("cannot read id $sid");
+            }
+            $session->setLastUsed(time())
+                ->setData($data);
             $this->persistEntity($session);
         } catch (\Exception $e) {
             $this->logError('Could not save session data: ' . $e->getMessage());
@@ -145,7 +153,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
     public function destroySession($sid)
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(Session::class), 's')
+        $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
             ->where('s.sessionId = :sid')
             ->setParameter('sid', $sid);
         $query = $queryBuilder->getQuery();
@@ -162,7 +170,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
     public function garbageCollect($sess_maxlifetime)
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(Session::class), 's')
+        $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
             ->where('s.lastUsed < :used')
             ->setParameter('used', time() - intval($sess_maxlifetime));
         $query = $queryBuilder->getQuery();
@@ -172,11 +180,11 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
     /**
      * Create a session entity object.
      *
-     * @return Session
+     * @return SessionEntityInterface
      */
-    public function createEntity(): Session
+    public function createEntity(): SessionEntityInterface
     {
-        $class = $this->getEntityClass(Session::class);
+        $class = $this->getEntityClass(SessionEntityInterface::class);
         return new $class();
     }
 }
