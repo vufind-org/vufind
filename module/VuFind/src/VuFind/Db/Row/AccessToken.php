@@ -63,7 +63,7 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      */
     public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
     {
-        $this->__set('user_id', $user === null ? null : $user->getId());
+        $this->__set('user_id', $user?->getId());
         return $this;
     }
 
