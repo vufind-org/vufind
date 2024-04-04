@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RepositoryWithAccessTokenAndUserServicesFactory implements FactoryInterface
+class TokenRepositoryFactory implements FactoryInterface
 {
     /**
      * Create an object
