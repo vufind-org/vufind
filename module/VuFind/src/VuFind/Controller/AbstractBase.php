@@ -705,23 +705,16 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             'lbreferer',
             $this->getRequest()->getServer()->get('HTTP_REFERER', null)
         );
-        // Get the referer -- if it's empty, there's nothing to store!
-        if (empty($referer)) {
-            return;
-        }
-        $refererNorm = $this->normalizeUrlForComparison($referer);
-
-        // If the referer lives outside of VuFind, don't store it! We only
+        // Get the referer -- if it's empty, there's nothing to store! Also,
+        // if the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
-        $baseUrl = $this->getServerUrl('home');
-        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
+        if (empty($referer) || !$this->isLocalUrl($referer)) {
             return;
         }
-
         // If the referer is the MyResearch/Home action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
+        $refererNorm = $this->normalizeUrlForComparison($referer);
         $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
         $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
         if ($mrhuNorm === $refererNorm) {
@@ -892,5 +885,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $response = $this->getResponse();
         $response->setStatusCode(205);
         return $response;
+    }
+
+    /**
+     * Is the provided URL local to this instance?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function isLocalUrl(string $url): bool
+    {
+        $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
+        return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
     }
 }

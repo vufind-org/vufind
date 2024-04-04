@@ -34,7 +34,6 @@ use VuFind\Db\Row\AccessToken as AccessTokenRow;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Service\AccessTokenService;
 use VuFind\Db\Service\AccessTokenServiceInterface;
-use VuFind\Db\Service\UserService;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\AccessToken;
 use VuFind\Db\Table\User;
@@ -264,14 +263,12 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     protected function getMockUserService(): UserServiceInterface
     {
         $userTable = $this->getMockUserTable();
-        $userService = $this->getMockBuilder(UserService::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getUserByField'])
-            ->getMock();
+        $userService = $this->createMock(UserServiceInterface::class);
         $userService->expects($this->any())
             ->method('getUserByField')
             ->willReturnCallback(
                 function ($fieldName, $fieldValue) use ($userTable) {
+                    $this->assertEquals('id', $fieldName);
                     return $userTable->getById($fieldValue);
                 }
             );

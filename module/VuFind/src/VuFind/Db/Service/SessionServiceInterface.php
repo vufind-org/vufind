@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Entity model interface for access tokens.
+ * Database service interface for Session.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,55 +22,34 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Entity;
+namespace VuFind\Db\Service;
+
+use VuFind\Db\Entity\SessionEntityInterface;
 
 /**
- * Entity model interface for access tokens.
+ * Database service interface for Session.
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface AccessTokenEntityInterface extends EntityInterface
+interface SessionServiceInterface extends DbServiceInterface
 {
     /**
-     * Set user ID.
+     * Retrieve an object from the database based on session ID; create a new
+     * row if no existing match is found.
      *
-     * @param ?UserEntityInterface $user User owning token
+     * @param string $sid    Session ID to retrieve
+     * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return AccessTokenEntityInterface
+     * @return ?SessionEntityInterface
      */
-    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface;
-
-    /**
-     * Set data.
-     *
-     * @param string $data Data
-     *
-     * @return AccessTokenEntityInterface
-     */
-    public function setData(string $data): AccessTokenEntityInterface;
-
-    /**
-     * Is the access token revoked?
-     *
-     * @return bool
-     */
-    public function isRevoked(): bool;
-
-    /**
-     * Set revoked status.
-     *
-     * @param bool $revoked Revoked
-     *
-     * @return AccessTokenEntityInterface
-     */
-    public function setRevoked(bool $revoked): AccessTokenEntityInterface;
+    public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface;
 }

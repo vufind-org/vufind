@@ -99,7 +99,7 @@ class AbstractTokenRepository
         }
         $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
         $user = $this->userService->getUserByField($userIdentifierField, $userIdentifier);
-        $row->setUserId($user->getId());
+        $row->setUser($user);
         $this->accessTokenService->persistEntity($row);
     }
 

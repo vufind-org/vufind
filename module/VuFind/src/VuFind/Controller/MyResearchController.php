@@ -394,7 +394,7 @@ class MyResearchController extends AbstractBase
             $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
         } else {
             $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
-            if (empty($logoutTarget)) {
+            if (empty($logoutTarget) || !$this->isLocalUrl($logoutTarget)) {
                 $logoutTarget = $this->getServerUrl('home');
             }
 

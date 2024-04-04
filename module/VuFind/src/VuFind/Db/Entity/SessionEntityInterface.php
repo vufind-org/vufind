@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for session
+ * Interface for representing a session row.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,53 +21,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\SessionEntityInterface;
 
 /**
- * Row Definition for session
+ * Interface for representing a session row.
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Interface
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
- *
- * @property int     $id
- * @property ?string $session_id
- * @property string  $data
- * @property int     $last_used
- * @property string  $created
  */
-class Session extends RowGateway implements SessionEntityInterface
+interface SessionEntityInterface extends EntityInterface
 {
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
-     */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'session', $adapter);
-    }
-
     /**
      * Id getter
      *
      * @return int
      */
-    public function getId(): int
-    {
-        return $this->id;
-    }
+    public function getId(): int;
 
     /**
      * Session Id setter
@@ -76,11 +56,7 @@ class Session extends RowGateway implements SessionEntityInterface
      *
      * @return SessionEntityInterface
      */
-    public function setSessionId(?string $sid): SessionEntityInterface
-    {
-        $this->session_id = $sid;
-        return $this;
-    }
+    public function setSessionId(?string $sid): SessionEntityInterface;
 
     /**
      * Created setter.
@@ -89,11 +65,7 @@ class Session extends RowGateway implements SessionEntityInterface
      *
      * @return SessionEntityInterface
      */
-    public function setCreated(DateTime $dateTime): SessionEntityInterface
-    {
-        $this->created = $dateTime->format('Y-m-d H:i:s');
-        return $this;
-    }
+    public function setCreated(DateTime $dateTime): SessionEntityInterface;
 
     /**
      * Set time the session is last used.
@@ -102,21 +74,14 @@ class Session extends RowGateway implements SessionEntityInterface
      *
      * @return SessionEntityInterface
      */
-    public function setLastUsed(int $lastUsed): SessionEntityInterface
-    {
-        $this->last_used = $lastUsed;
-        return $this;
-    }
+    public function setLastUsed(int $lastUsed): SessionEntityInterface;
 
     /**
      * Get time when the session was last used.
      *
      * @return int
      */
-    public function getLastUsed(): int
-    {
-        return $this->last_used;
-    }
+    public function getLastUsed(): int;
 
     /**
      * Session data setter.
@@ -125,19 +90,12 @@ class Session extends RowGateway implements SessionEntityInterface
      *
      * @return SessionEntityInterface
      */
-    public function setData(?string $data): SessionEntityInterface
-    {
-        $this->data = $data;
-        return $this;
-    }
+    public function setData(?string $data): SessionEntityInterface;
 
     /**
      * Get session data.
      *
      * @return ?string
      */
-    public function getData(): ?string
-    {
-        return $this->data;
-    }
+    public function getData(): ?string;
 }
