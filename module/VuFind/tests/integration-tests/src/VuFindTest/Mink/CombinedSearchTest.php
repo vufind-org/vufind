@@ -47,7 +47,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getCombinedIniOverrides()
+    protected function getCombinedIniOverrides(): array
     {
         return [
             'Solr:one' => [
@@ -70,7 +70,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertResultsForDefaultQuery($page)
+    protected function assertResultsForDefaultQuery(Element $page): void
     {
         $expectedResults = [
             '#combined_Solr____one' => 'Journal of rational emotive therapy : '
@@ -102,7 +102,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCombinedSearchResults()
+    public function testCombinedSearchResults(): void
     {
         $this->changeConfigs(
             ['combined' => $this->getCombinedIniOverrides()],
@@ -120,11 +120,26 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for different combinations of AJAX columns
+     *
+     * @return array
+     */
+    public static function ajaxCombinationsProvider(): array
+    {
+        return [
+            'no ajax' => [false, false],
+            'left ajax' => [true, false],
+            'right ajax' => [false, true],
+            'all ajax' => [true, true],
+        ];
+    }
+
+    /**
      * Test that combined results work in AJAX mode.
      *
      * @return void
      */
-    public function testCombinedSearchResultsAllAjax()
+    public function testCombinedSearchResultsAllAjax(): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
@@ -148,7 +163,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCombinedSearchResultsMixedAjax()
+    public function testCombinedSearchResultsMixedAjax(): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
@@ -167,21 +182,6 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testCombinedSearchResultsMixedAjaxDOIs
-     *
-     * @return array
-     */
-    public static function combinedSearchResultsMixedAjaxDOIsProvider(): array
-    {
-        return [
-            'no ajax' => [false, false],
-            'left ajax' => [true, false],
-            'right ajax' => [false, true],
-            'all ajax' => [true, true],
-        ];
-    }
-
-    /**
      * Test that DOI results work in various AJAX/non-AJAX modes.
      *
      * @param bool $leftAjax  Should left column load via AJAX?
@@ -189,9 +189,9 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      *
-     * @dataProvider combinedSearchResultsMixedAjaxDOIsProvider
+     * @dataProvider ajaxCombinationsProvider
      */
-    public function testCombinedSearchResultsMixedAjaxDOIs($leftAjax, $rightAjax): void
+    public function testCombinedSearchResultsMixedAjaxDOIs(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = $leftAjax;
