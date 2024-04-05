@@ -222,4 +222,51 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
     }
+
+    /**
+     * Test that DOI results work in various AJAX/non-AJAX modes.
+     *
+     * @param bool $leftAjax  Should left column load via AJAX?
+     * @param bool $rightAjax Should right column load via AJAX?
+     *
+     * @return void
+     *
+     * @dataProvider ajaxCombinationsProvider
+     */
+    public function testCombinedSearchResultsMixedAjaxDOIs(bool $leftAjax, bool $rightAjax): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:one']['ajax'] = $leftAjax;
+        $config['Solr:one']['hiddenFilter'] = 'id:fakedoi1';
+        $config['Solr:two']['ajax'] = $rightAjax;
+        $config['Solr:two']['hiddenFilter'] = 'id:fakedoi2';
+        $this->changeConfigs(
+            [
+                'combined' => $config,
+                'config' => [
+                    'DOI' => [
+                        'resolver' => 'Demo',
+                    ],
+                ],
+            ],
+            ['combined']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('*:*');
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        // Whether the combined column was loaded inline or via AJAX, it should
+        // now include a DOI link:
+        $this->assertStringStartsWith(
+            'Demonstrating DOI link for 10.1234/FAKETYFAKE1',
+            $this->findCss($page, '#combined_Solr____one .doiLink a')->getText()
+        );
+        $this->assertStringStartsWith(
+            'Demonstrating DOI link for 10.1234/FAKETYFAKE2',
+            $this->findCss($page, '#combined_Solr____two .doiLink a')->getText()
+        );
+    }
 }
