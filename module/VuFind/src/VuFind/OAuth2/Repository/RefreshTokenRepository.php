@@ -33,6 +33,7 @@ use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\RefreshTokenEntity;
 
 /**
@@ -50,13 +51,15 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      * Constructor
      *
      * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessTokenServiceInterface $accessTokenService)
+    public function __construct(AccessTokenServiceInterface $accessTokenService, UserServiceInterface $userService)
     {
         parent::__construct(
             'oauth2_refresh_token',
             RefreshTokenEntity::class,
-            $accessTokenService
+            $accessTokenService,
+            $userService
         );
     }
 

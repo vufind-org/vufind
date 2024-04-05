@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for repositories requiring the access token service.
+ * Database session service factory
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\OAuth2\Repository;
+namespace VuFind\Db\Service;
 
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
-use Psr\Container\ContainerInterface;
 
 /**
- * Factory for repositories requiring the access token service.
+ * Database session service factory
  *
  * @category VuFind
- * @package  OAuth2
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
+class SessionServiceFactory extends AbstractDbServiceFactory
 {
     /**
      * Create an object
@@ -66,9 +65,9 @@ class RepositoryWithAccessTokenServiceFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options sent to factory!');
         }
-        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        return new $requestedName($dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class));
+        $sessionTable = $container->get(\VuFind\Db\Table\PluginManager::class)->get('session');
+        return parent::__invoke($container, $requestedName, [$sessionTable]);
     }
 }

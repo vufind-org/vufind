@@ -35,6 +35,7 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\AccessTokenEntity;
 
 /**
@@ -52,10 +53,11 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      * Constructor
      *
      * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessTokenServiceInterface $accessTokenService)
+    public function __construct(AccessTokenServiceInterface $accessTokenService, UserServiceInterface $userService)
     {
-        parent::__construct('oauth2_access_token', AccessTokenEntity::class, $accessTokenService);
+        parent::__construct('oauth2_access_token', AccessTokenEntity::class, $accessTokenService, $userService);
     }
 
     /**

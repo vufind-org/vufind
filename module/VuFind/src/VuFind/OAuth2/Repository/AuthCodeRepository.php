@@ -33,6 +33,7 @@ use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\AuthCodeEntity;
 
 /**
@@ -50,10 +51,11 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      * Constructor
      *
      * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessTokenServiceInterface $accessTokenService)
+    public function __construct(AccessTokenServiceInterface $accessTokenService, UserServiceInterface $userService)
     {
-        parent::__construct('oauth2_auth_code', AuthCodeEntity::class, $accessTokenService);
+        parent::__construct('oauth2_auth_code', AuthCodeEntity::class, $accessTokenService, $userService);
     }
 
     /**

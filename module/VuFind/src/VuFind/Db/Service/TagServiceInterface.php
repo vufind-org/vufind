@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service plugin manager
+ * Database service interface for tags.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,8 +29,10 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\UserEntityInterface;
+
 /**
- * Database service plugin manager
+ * Database service interface for tags.
  *
  * @category VuFind
  * @package  Database
@@ -38,40 +40,29 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+interface TagServiceInterface extends DbServiceInterface
 {
     /**
-     * Default plugin aliases.
+     * Add tags to the record.
      *
-     * @var array
+     * @param string              $id     Unique record ID
+     * @param string              $source Record source
+     * @param UserEntityInterface $user   The user adding the tag(s)
+     * @param string[]            $tags   The user-provided tag(s)
+     *
+     * @return void
      */
-    protected $aliases = [
-        AccessTokenServiceInterface::class => AccessTokenService::class,
-        SessionServiceInterface::class => SessionService::class,
-        TagServiceInterface::class => TagService::class,
-        UserServiceInterface::class => UserService::class,
-    ];
+    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
 
     /**
-     * Default plugin factories.
+     * Remove tags from the record.
      *
-     * @var array
-     */
-    protected $factories = [
-        AccessTokenService::class => AccessTokenServiceFactory::class,
-        SessionService::class => SessionServiceFactory::class,
-        TagService::class => AbstractDbServiceFactory::class,
-        UserService::class => UserServiceFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * @param string              $id     Unique record ID
+     * @param string              $source Record source
+     * @param UserEntityInterface $user   The user deleting the tag(s)
+     * @param string[]            $tags   The user-provided tag(s)
      *
-     * @return string
+     * @return void
      */
-    protected function getExpectedInterface()
-    {
-        return DbServiceInterface::class;
-    }
+    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
 }
