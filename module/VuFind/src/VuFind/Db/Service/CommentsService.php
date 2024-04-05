@@ -29,7 +29,11 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Comments;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Log\LoggerAwareTrait;
 
 use function is_int;
 
@@ -42,9 +46,10 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class CommentsService extends AbstractDbService implements DbServiceAwareInterface
+class CommentsService extends AbstractDbService implements DbServiceAwareInterface, LoggerAwareInterface
 {
     use DbServiceAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Create a comments entity object.
@@ -55,6 +60,43 @@ class CommentsService extends AbstractDbService implements DbServiceAwareInterfa
     {
         $class = $this->getEntityClass(Comments::class);
         return new $class();
+    }
+
+    /**
+     * Add a comment to the current resource. Returns comment ID on success, null on failure.
+     *
+     * @param string                      $comment  The comment to save.
+     * @param int|UserEntityInterface     $user     User object or identifier
+     * @param int|ResourceEntityInterface $resource Resource object or identifier
+     *
+     * @return ?int
+     */
+    public function addComment(
+        string $comment,
+        int|UserEntityInterface $user,
+        int|ResourceEntityInterface $resource
+    ): ?int {
+        $userVal = is_int($user)
+            ? $this->getDbService(UserService::class)->getUserById($user)
+            : $user;
+        $resourceVal = is_int($resource)
+            ? $this->getDbService(ResourceService::class)->getResourceById($resource)
+            : $resource;
+        $now = new \DateTime();
+        $data = $this->createEntity()
+            ->setUser($userVal)
+            ->setComment($comment)
+            ->setCreated($now)
+            ->setResource($resourceVal);
+
+        try {
+            $this->persistEntity($data);
+        } catch (\Exception $e) {
+            $this->logError('Could not save comment: ' . $e->getMessage());
+            return null;
+        }
+
+        return $data->getId();
     }
 
     /**

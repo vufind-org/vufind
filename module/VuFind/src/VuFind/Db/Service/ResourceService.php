@@ -37,13 +37,11 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserResource;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Record\Loader;
 
 use function in_array;
 use function intval;
-use function is_int;
 use function strlen;
 
 /**
@@ -143,51 +141,6 @@ class ResourceService extends AbstractDbService implements DbServiceAwareInterfa
             return $resource;
         }
         return current($result);
-    }
-
-    /**
-     * Add a comment to the current resource.
-     *
-     * @param string                         $comment  The comment to save.
-     * @param int|\VuFind\Db\Entity\User     $user     User object or identifier
-     * @param int|\VuFind\Db\Entity\Resource $resource Resource object or identifier
-     *
-     * @throws LoginRequiredException
-     * @return int
-     */
-    public function addComment($comment, $user, $resource)
-    {
-        if (null === $user) {
-            throw new LoginRequiredException(
-                "Can't add comments without logging in."
-            );
-        }
-        if (is_int($user)) {
-            $userVal = $this->getDbService(UserService::class)
-                ->getUserById($user);
-        } else {
-            $userVal = $user;
-        }
-        $commentsService = $this->getDbService(
-            CommentsService::class
-        );
-        $resourceVal = is_int($resource) ? $this->getResourceById($resource)
-            : $resource;
-        $now = new \DateTime();
-        $data = $commentsService->createEntity()
-            ->setUser($userVal)
-            ->setComment($comment)
-            ->setCreated($now)
-            ->setResource($resourceVal);
-
-        try {
-            $commentsService->persistEntity($data);
-        } catch (\Exception $e) {
-            $this->logError('Could not save comment: ' . $e->getMessage());
-            return false;
-        }
-
-        return $data->getId();
     }
 
     /**

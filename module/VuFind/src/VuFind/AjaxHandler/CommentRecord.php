@@ -33,6 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\CommentsService;
 use VuFind\Db\Service\ResourceService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -56,6 +57,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * Constructor
      *
      * @param ResourceService     $resourceService     Resource database service
+     * @param CommentsService     $commentsService     Comments database service
      * @param Captcha             $captcha             Captcha controller plugin
      * @param ?User               $user                Logged in user (or null)
      * @param bool                $enabled             Are comments enabled?
@@ -64,6 +66,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      */
     public function __construct(
         protected ResourceService $resourceService,
+        protected CommentsService $commentsService,
         protected Captcha $captcha,
         protected ?User $user,
         protected bool $enabled,
@@ -130,7 +133,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         }
 
         $resource = $this->resourceService->findResource($id, $source);
-        $commentId = $this->resourceService->addComment(
+        $commentId = $this->commentsService->addComment(
             $comment,
             $this->user->id,
             $resource
