@@ -1,6 +1,9 @@
 /*global VuFind, setupQRCodeLinks */
 VuFind.combinedSearch = (function CombinedSearch() {
   function initResultScripts(container) {
+    if (typeof VuFind.doi !== "undefined") {
+      VuFind.doi.embedDoiLinks(container);
+    }
     VuFind.openurl.init(container);
     VuFind.itemStatuses.init(container);
     VuFind.saveStatuses.init(container);
