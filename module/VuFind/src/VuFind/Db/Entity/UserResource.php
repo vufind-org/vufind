@@ -196,7 +196,7 @@ class UserResource implements EntityInterface
      *
      * @return UserList
      */
-    public function getlist(): UserList
+    public function getList(): UserList
     {
         return $this->list;
     }
