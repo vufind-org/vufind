@@ -96,7 +96,8 @@
         "webfontkit/open-sans": "^1.0",
         "webmozart/glob": "^4.7",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.4.2"
+        "yajra/laravel-pdo-via-oci8": "3.4.2",
+        "symfony/var-dumper": "6.4.6"
     },
     "require-dev": {
         "behat/mink": "1.11.0",
