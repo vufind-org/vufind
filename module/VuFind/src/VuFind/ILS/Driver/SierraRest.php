@@ -1848,7 +1848,7 @@ class SierraRest extends AbstractBase implements
                 ? (' failed (' . $exception->getMessage() . ')')
                 : ' succeeded';
             $msg = "$method request for '$apiUrl' with params "
-                . var_export($params, true)
+                . $this->varDump($params)
                 . "$status on attempt $attempt";
             $this->logWarning($msg);
         };

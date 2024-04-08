@@ -113,7 +113,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                          'startRecord' => 1,
                          'recordSchema' => 'marcxml'];
 
-        $this->debug('More Like This Query: ' . print_r($query, true));
+        $this->debug('More Like This Query: ' . $this->varDump($query));
 
         return $this->call('GET', $options);
     }
@@ -161,7 +161,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $schema = 'marcxml',
         $process = true
     ) {
-        $this->debug('Query: ' . print_r($query, true));
+        $this->debug('Query: ' . $this->varDump($query));
 
         // Query String Parameters
         $options = ['operation' => 'searchRetrieve',
@@ -221,7 +221,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        $this->debug('Connect: ' . print_r($this->host . '?' . $queryString, true));
+        $this->debug('Connect: ' . $this->varDump($this->host . '?' . $queryString));
 
         // Send Request
         $this->client->resetParameters();
