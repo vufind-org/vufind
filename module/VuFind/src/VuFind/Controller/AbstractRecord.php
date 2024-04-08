@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -170,7 +170,10 @@ class AbstractRecord extends AbstractBase
                 true,
                 $driver
             );
-            $resource->addComment($comment, $user);
+            $commentsService = $this->getDbService(
+                \VuFind\Db\Service\CommentsService::class
+            );
+            $commentsService->addComment($comment, $user, $resource);
 
             // Save rating if allowed:
             if (
