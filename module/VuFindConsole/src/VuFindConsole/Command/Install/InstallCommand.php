@@ -744,11 +744,8 @@ class InstallCommand extends Command
     protected function buildImportConfig(OutputInterface $output, $filename)
     {
         $target = $this->overrideDir . '/import/' . $filename;
-        if (file_exists($target)) {
-            $output->writeln(
-                "Warning: $target already exists; skipping file creation."
-            );
-            return true;
+        if (($msg = $this->backUpFile($output, $target, 'import configuration')) !== true) {
+            return $msg;
         }
         $import = @file_get_contents($this->baseDir . '/import/' . $filename);
         $import = str_replace(
