@@ -461,7 +461,7 @@ class AbstractRecord extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             return $this->processSave();
         }
 
@@ -553,7 +553,7 @@ class AbstractRecord extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
@@ -617,7 +617,7 @@ class AbstractRecord extends AbstractBase
         $view->to = $this->params()->fromPost('to');
         $view->provider = $this->params()->fromPost('provider');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
