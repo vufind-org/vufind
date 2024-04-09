@@ -19,7 +19,12 @@
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
-  #search-cart-form .result .checkbox { display: none; }
+  // Bulk action checkboxes:
+  #search-cart-form .result .checkbox,
+  // Search result bulk action buttons:
+  #search-cart-form .bulkActionButtons,
+  // Favorites bulk action buttons:
+  form[name="bulkActionForm"] .bulkActionButtons { display: none; }
 }
 
 .searchHomeContent { .clearfix(); }
