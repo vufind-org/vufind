@@ -40,7 +40,7 @@
 <?php endif; ?>
 <?php if ($this->auth()->getIdentity()): ?>
   <form method="post" name="rateRecord" class="form-add-rating">
-    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="submitButton" value="1">
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
     <div class="form-group">
@@ -56,7 +56,7 @@
   </form>
   <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
     <form method="post" name="rateRecord" id="form_remove_rating" class="form-remove-rating">
-      <input type="hidden" name="submit" value="1">
+      <input type="hidden" name="submitButton" value="1">
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
       <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <input type="hidden" name="rating" value="">

@@ -584,7 +584,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @return bool
      */
     protected function formWasSubmitted(
-        $submitElement = 'submit',
+        $submitElement = 'submitButton',
         $useCaptcha = false
     ) {
         // Fail if the expected submission element was missing from the POST:
