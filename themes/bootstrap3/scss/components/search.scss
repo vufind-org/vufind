@@ -19,7 +19,7 @@ $thumbnail-width-large:  160px;
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
-  .result .checkbox { display: none; }
+  #search-cart-form .result .checkbox { display: none; }
 }
 
 .searchHomeContent { @include clearfix(); }
