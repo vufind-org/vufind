@@ -101,7 +101,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-default');
         $this->waitForLightboxHidden();
 
-        // Test visibility of favorites bulk items:
+        // Test visibility of favorites bulk items and checkbox:
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.bulkActionButtons')->isVisible());
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.checkbox-select-item')->isVisible());
 
