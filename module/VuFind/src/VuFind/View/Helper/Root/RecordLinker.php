@@ -48,8 +48,6 @@ use function is_string;
  */
 class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 {
-    use \VuFind\Log\VarDumperTrait;
-
     /**
      * Record router
      *
