@@ -83,8 +83,9 @@ class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=id:testbug2');
         $page = $session->getPage();
 
-        // Test visibility of search result bulk items:
+        // Test visibility of search result bulk items and checkbox:
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.bulkActionButtons')->isVisible());
+        $this->assertEquals($shouldBeVisible, $this->findCss($page, '.checkbox-select-item')->isVisible());
 
         // Add a favorite:
         $this->clickCss($page, '.save-record');
@@ -100,6 +101,7 @@ class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test visibility of favorites bulk items:
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.bulkActionButtons')->isVisible());
+        $this->assertEquals($shouldBeVisible, $this->findCss($page, '.checkbox-select-item')->isVisible());
 
         // Clear out user for next run:
         static::removeUsers(['username1']);
