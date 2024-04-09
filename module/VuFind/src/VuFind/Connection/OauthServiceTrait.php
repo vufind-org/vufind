@@ -76,7 +76,7 @@ trait OauthServiceTrait
     ) {
         $this->oauthServiceTraitDebug('connecting to API');
         $tokenData = $this->tokenData;
-        $this->oauthServiceTraitDebug('Last API Token: ' . print_r($tokenData, true));
+        $this->oauthServiceTraitDebug('Last API Token: ' . $this->varDump($tokenData));
         if (
             $tokenData == null
             || !isset($tokenData->access_token)
@@ -109,10 +109,7 @@ trait OauthServiceTrait
             $body = $response->getBody();
             $tokenData = json_decode($body);
             $this->oauthServiceTraitDebug(
-                'TokenData returned from API Call: ' . print_r(
-                    $tokenData,
-                    true
-                )
+                'TokenData returned from API Call: ' . $this->varDump($tokenData)
             );
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
@@ -130,7 +127,7 @@ trait OauthServiceTrait
                     'Error: Nothing returned from API call.'
                 );
                 $this->oauthServiceTraitDebug(
-                    'Body return from API Call: ' . print_r($body, true)
+                    'Body return from API Call: ' . $this->varDump($body)
                 );
             }
         }
