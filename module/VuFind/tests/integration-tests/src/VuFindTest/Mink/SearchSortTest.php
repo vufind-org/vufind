@@ -103,6 +103,35 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test sort stickiness
+     *
+     * @return void
+     */
+    public function testSortStickiness(): void
+    {
+        // Call number has a custom default sort; if we do a regular search and leave
+        // the sort at default, then do a call number search, we expect the sort to
+        // change accordingly. We also expect it to change back if we do a non-call-no
+        // search.
+        $page = $this->performSearch('*:*');
+        $this->assertSelectedSort($page, 'relevance');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'callnumber-sort');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'relevance');
+
+        // However, if we choose a non-default sort, we expect it to stick across
+        // all search types:
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 2);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'year asc');
+    }
+
+    /**
      * Set up a search page with sorting configured
      *
      * @param string $sortParam Requested sort option
