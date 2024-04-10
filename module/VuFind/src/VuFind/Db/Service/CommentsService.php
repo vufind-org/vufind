@@ -62,10 +62,10 @@ class CommentsService extends AbstractDbService implements CommentsServiceInterf
         int|ResourceEntityInterface $resource
     ): ?int {
         $userVal = is_int($user)
-            ? $this->getDbService(UserService::class)->getUserById($user)
+            ? $this->getDbService(UserServiceInterface::class)->getUserById($user)
             : $user;
         $resourceVal = is_int($resource)
-            ? $this->getDbService(ResourceService::class)->getResourceById($resource)
+            ? $this->getDbService(ResourceServiceInterface::class)->getResourceById($resource)
             : $resource;
         return $resourceVal->addComment($comment, $userVal);
     }

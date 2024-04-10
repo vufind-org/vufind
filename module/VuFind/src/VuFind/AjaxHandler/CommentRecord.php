@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -56,17 +56,17 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource            $table               Resource database table
-     * @param CommentsService     $commentsService     Comments database service
-     * @param Captcha             $captcha             Captcha controller plugin
-     * @param ?User               $user                Logged in user (or null)
-     * @param bool                $enabled             Are comments enabled?
-     * @param RecordLoader        $recordLoader        Record loader
-     * @param AccountCapabilities $accountCapabilities Account capabilities helper
+     * @param Resource                 $table               Resource database table
+     * @param CommentsServiceInterface $commentsService     Comments database service
+     * @param Captcha                  $captcha             Captcha controller plugin
+     * @param ?User                    $user                Logged in user (or null)
+     * @param bool                     $enabled             Are comments enabled?
+     * @param RecordLoader             $recordLoader        Record loader
+     * @param AccountCapabilities      $accountCapabilities Account capabilities helper
      */
     public function __construct(
         protected Resource $table,
-        protected CommentsService $commentsService,
+        protected CommentsServiceInterface $commentsService,
         protected Captcha $captcha,
         protected ?User $user,
         protected bool $enabled,

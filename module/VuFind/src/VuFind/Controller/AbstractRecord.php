@@ -171,7 +171,7 @@ class AbstractRecord extends AbstractBase
                 $driver
             );
             $commentsService = $this->getDbService(
-                \VuFind\Db\Service\CommentsService::class
+                \VuFind\Db\Service\CommentsServiceInterface::class
             );
             $commentsService->addComment($comment, $user, $resource);
 
