@@ -32,6 +32,7 @@ namespace VuFind\OAuth2\Repository;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function is_callable;
 
@@ -51,12 +52,16 @@ class AbstractTokenRepository
      *
      * @param string                      $tokenType          Token type
      * @param string                      $entityClass        Entity class name
+     * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
     public function __construct(
         protected string $tokenType,
         protected string $entityClass,
-        protected AccessTokenServiceInterface $accessTokenService
+        protected array $oauth2Config,
+        protected AccessTokenServiceInterface $accessTokenService,
+        protected UserServiceInterface $userService
     ) {
     }
 
@@ -81,18 +86,20 @@ class AbstractTokenRepository
             $this->tokenType
         );
         $row->setData(json_encode($token));
-        $userId = null;
+        $userIdentifier = null;
         if ($token instanceof RefreshTokenEntityInterface) {
             $accessToken = $token->getAccessToken();
-            $userId = $accessToken->getUserIdentifier();
+            $userIdentifier = $accessToken->getUserIdentifier();
         } elseif (is_callable([$token, 'getUserIdentifier'])) {
-            $userId = $token->getUserIdentifier();
+            $userIdentifier = $token->getUserIdentifier();
         }
-        if ($userId) {
+        if ($userIdentifier) {
             // Drop nonce from user id:
-            [$userId] = explode('|', $userId);
+            [$userIdentifier] = explode('|', $userIdentifier);
         }
-        $row->setUserId($userId);
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        $user = $this->userService->getUserByField($userIdentifierField, $userIdentifier);
+        $row->setUser($user);
         $this->accessTokenService->persistEntity($row);
     }
 

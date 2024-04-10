@@ -151,12 +151,13 @@ class ParamBag implements \Countable
     /**
      * Add parameter value.
      *
-     * @param string $name  Parameter name
-     * @param mixed  $value Parameter value
+     * @param string $name        Parameter name
+     * @param mixed  $value       Parameter value
+     * @param bool   $deduplicate Deduplicate parameter values
      *
      * @return void
      */
-    public function add($name, $value)
+    public function add($name, $value, $deduplicate = true)
     {
         if (!isset($this->params[$name])) {
             $this->params[$name] = [];
@@ -165,6 +166,9 @@ class ParamBag implements \Countable
             $this->params[$name] = array_merge($this->params[$name], $value);
         } else {
             $this->params[$name][] = $value;
+        }
+        if ($deduplicate) {
+            $this->params[$name] = array_values(array_unique($this->params[$name]));
         }
     }
 

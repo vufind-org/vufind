@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use VuFind\Db\Entity\ChangeTrackerEntityInterface;
+
 /**
  * Row Definition for change_tracker
  *
@@ -38,7 +40,7 @@ namespace VuFind\Db\Row;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ChangeTracker extends RowGateway
+class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
 {
     /**
      * Constructor

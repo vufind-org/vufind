@@ -47,10 +47,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
+        SessionServiceInterface::class => SessionService::class,
+        TagServiceInterface::class => TagService::class,
         UserServiceInterface::class => UserService::class,
-        'accesstoken' => AccessTokenService::class,
-        'tag' => TagService::class,
-        'user' => UserService::class,
     ];
 
     /**
@@ -60,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessTokenService::class => AccessTokenServiceFactory::class,
+        SessionService::class => SessionServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,
         UserService::class => UserServiceFactory::class,
     ];

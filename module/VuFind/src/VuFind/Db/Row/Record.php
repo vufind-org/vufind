@@ -38,7 +38,7 @@ namespace VuFind\Db\Row;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Record extends RowGateway
+class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterface
 {
     /**
      * Constructor

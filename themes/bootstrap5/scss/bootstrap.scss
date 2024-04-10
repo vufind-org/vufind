@@ -466,10 +466,7 @@ ul.list-group {
   list-style: none;
 }
 
-.dropdown-menu > li > .prompt-text {
-  @extend .dropdown-menu-ul-links;
-
-  white-space: inherit;
+.dropdown-menu > li .dropdown-header {
   min-width: 200px;
 }
 

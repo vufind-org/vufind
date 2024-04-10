@@ -720,7 +720,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             ];
         }
 
-        $this->debug('patron: ' . print_r($patron, true));
+        $this->debug('patron: ' . $this->varDump($patron));
         $this->debug('patron_id: ' . $patron_id);
         $this->debug('request_location: ' . $request_location);
         $this->debug('item_id: ' . $item_id);
@@ -1037,8 +1037,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
         }
-
-        //file_put_contents('holding.txt', print_r($holding,TRUE), FILE_APPEND);
 
         $this->debug(
             'Processing finished, rows processed: '

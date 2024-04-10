@@ -82,7 +82,7 @@ class OaiResumption extends Gateway
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return \VuFind\Db\Row\OaiResumption|null
+     * @return ?\VuFind\Db\Row\OaiResumption
      */
     public function findToken($token)
     {

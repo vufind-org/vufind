@@ -333,8 +333,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Click the delete button
-        $button = $this->findCss($page, 'tr:nth-child(3) a:nth-child(2)');
-        $this->assertEquals('Delete', $button->getText());
+        $button = $this->findCss($page, 'tr:nth-child(3)')->findLink('Delete');
         $button->click();
         $this->waitForPageLoad($page);
         $this->clickCss($page, $this->firstOpenDropdownMenuItemSelector);
