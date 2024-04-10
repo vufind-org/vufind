@@ -36,7 +36,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User;
-use VuFind\Db\Service\UserService;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\OAuth2\Entity\UserEntity;
@@ -241,10 +240,10 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      *
      * @return MockObject&\VuFind\Db\Service\UserServiceInterface
      */
-    protected function getMockUserService(): UserServiceInterface
+    protected function getMockUserService(): MockObject&UserServiceInterface
     {
         $user = $this->getMockUser();
-        $userTable = $this->getMockBuilder(UserService::class)
+        $userTable = $this->getMockBuilder(UserServiceInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $userTable->expects($this->any())->method('getUserById')
