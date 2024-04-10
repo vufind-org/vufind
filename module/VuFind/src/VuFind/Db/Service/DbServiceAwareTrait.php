@@ -78,9 +78,9 @@ trait DbServiceAwareTrait
      *
      * @param string $name Name of service to retrieve
      *
-     * @return AbstractDbService
+     * @return DbServiceInterface
      */
-    public function getDbService(string $name)
+    public function getDbService(string $name): DbServiceInterface
     {
         return $this->getDbServiceManager()->get($name);
     }
