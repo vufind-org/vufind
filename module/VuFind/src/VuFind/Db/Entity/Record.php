@@ -46,7 +46,7 @@ use Doctrine\ORM\Mapping as ORM;
  *                          columns={"record_id", "source"})})
  * @ORM\Entity
  */
-class Record implements EntityInterface
+class Record implements RecordEntityInterface
 {
     /**
      * Unique ID.

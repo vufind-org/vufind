@@ -47,7 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Index(name="user_id",                columns={"user_id"})})
  * @ORM\Entity
  */
-class Search implements EntityInterface
+class Search implements SearchEntityInterface
 {
     /**
      * Unique ID.

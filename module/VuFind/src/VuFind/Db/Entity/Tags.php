@@ -43,7 +43,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="tags")
  * @ORM\Entity
  */
-class Tags implements EntityInterface
+class Tags implements TagsEntityInterface
 {
     /**
      * Unique ID.

@@ -44,7 +44,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="ratings")
  * @ORM\Entity
  */
-class Ratings implements EntityInterface
+class Ratings implements RatingsEntityInterface
 {
     /**
      * Unique ID.

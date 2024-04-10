@@ -47,7 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
  *                          columns={"hash"})}
  * )
  */
-class Shortlinks implements EntityInterface
+class Shortlinks implements ShortlinksEntityInterface
 {
     /**
      * Unique ID.

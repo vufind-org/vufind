@@ -48,7 +48,7 @@ use function is_int;
  * )
  * @ORM\Entity
  */
-class UserList implements EntityInterface
+class UserList implements UserListEntityInterface
 {
     /**
      * Unique ID.

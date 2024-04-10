@@ -47,7 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
  * )
  * @ORM\Entity
  */
-class ExternalSession implements EntityInterface
+class ExternalSession implements ExternalSessionEntityInterface
 {
     /**
      * Unique ID.

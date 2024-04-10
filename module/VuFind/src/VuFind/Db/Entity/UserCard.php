@@ -46,7 +46,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Index(name="user_id",   columns={"user_id"})})
  * @ORM\Entity
  */
-class UserCard implements EntityInterface
+class UserCard implements UserCardEntityInterface
 {
     /**
      * Unique ID.

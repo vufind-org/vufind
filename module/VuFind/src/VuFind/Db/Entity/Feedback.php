@@ -48,7 +48,7 @@ use Doctrine\ORM\Mapping as ORM;
  * )
  * @ORM\Entity
  */
-class Feedback implements EntityInterface
+class Feedback implements FeedbackEntityInterface
 {
     /**
      * Unique ID.

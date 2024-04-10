@@ -44,7 +44,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="resource_tags")
  * @ORM\Entity
  */
-class ResourceTags implements EntityInterface
+class ResourceTags implements ResourceTagsEntityInterface
 {
     /**
      * Unique ID.
