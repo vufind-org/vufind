@@ -637,7 +637,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
-        $this->submitSearchForm($page, $query, $handler, $path);
+        $this->submitSearchForm($page, $query, $handler);
         return $page;
     }
 
