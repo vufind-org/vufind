@@ -82,7 +82,8 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
         }
         if ($userIdentifier === null) {
             throw new \VuFind\Exception\BadConfig(
-                "Required user identifier field $userIdentifierField empty for user {$user->id}"
+                "$userIdentifierField empty for user {$user->id}."
+                . ' The configured user identifier field has to be required.'
             );
         }
         $this->setIdentifier($userIdentifier);

@@ -61,11 +61,11 @@ class UserService extends AbstractDbService implements
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param string $id ID.
+     * @param int $id ID.
      *
      * @return ?UserEntityInterface
      */
-    public function getUserById($id)
+    public function getUserById(int $id): ?UserEntityInterface
     {
         return $this->userTable->getById($id);
     }
@@ -74,12 +74,12 @@ class UserService extends AbstractDbService implements
      * Retrieve a user object from the database based on the given field.
      * Field name must be id, username or cat_id.
      *
-     * @param string $fieldName  Field name
-     * @param string $fieldValue Field value
+     * @param string          $fieldName  Field name
+     * @param int|null|string $fieldValue Field value
      *
      * @return ?UserEntityInterface
      */
-    public function getUserByField($fieldName, $fieldValue)
+    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
     {
         switch ($fieldName) {
             case 'id':

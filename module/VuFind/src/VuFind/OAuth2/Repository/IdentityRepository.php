@@ -68,7 +68,7 @@ class IdentityRepository implements IdentityProviderInterface
     /**
      * Get a user entity by identifier.
      *
-     * @param int $identifier User Identifier
+     * @param int|string $identifier User Identifier
      *
      * @return ?UserEntity
      */
