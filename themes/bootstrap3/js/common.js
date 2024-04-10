@@ -679,8 +679,8 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (event.originalEvent !== undefined) {
-    let limit = event.originalEvent.submitter.dataset.itemLimit;
+  if (event.submitter !== undefined) {
+    let limit = event.submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
       VuFind.lightbox.alert(
         VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
@@ -690,11 +690,13 @@ function bulkFormHandler(event, data) {
     }
   }
 
-  for (var i in data) {
+  for (var i = 0; i < data.length; i++) {
     if ('print' === data[i].name) {
       return true;
     }
   }
+
+  return false;
 }
 
 // Ready functions
