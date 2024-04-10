@@ -243,9 +243,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     protected function getMockUserService(): MockObject&UserServiceInterface
     {
         $user = $this->getMockUser();
-        $userTable = $this->getMockBuilder(UserServiceInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $userTable = $this->createMock(UserServiceInterface::class);
         $userTable->expects($this->any())->method('getUserById')
             ->willReturnMap(
                 [
