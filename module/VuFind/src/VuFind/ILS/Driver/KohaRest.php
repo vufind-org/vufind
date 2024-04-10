@@ -2435,9 +2435,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function mapRenewalBlockReason($reason)
+    protected function mapRenewalBlockReason($reason, $itype)
     {
-        return $this->renewalBlockMappings[$reason] ?? 'renew_item_no';
+        if (isset($this->config['ItypeRenewalBlockMappings'][$itype])) {
+            $itypeRenewalBlockMapping = explode(':', $this->config['ItypeRenewalBlockMappings'][$itype]);
+            if ( $itypeRenewalBlockMapping[0] == $reason ) {
+                return $itypeRenewalBlockMapping[1];
+            } else {
+                return 'renew_item_no';
+            }
+        } else {
+            return $this->renewalBlockMappings[$reason] ?? 'renew_item_no';
+        }
     }
 
     /**
@@ -2661,7 +2670,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $message = '';
             if (!$renewable && !$checkedIn) {
                 $message = $this->mapRenewalBlockReason(
-                    $entry['renewability_blocks']
+                    $entry['renewability_blocks'],
+                    $entry['item_itype']
                 );
                 $permanent = in_array(
                     $entry['renewability_blocks'],
