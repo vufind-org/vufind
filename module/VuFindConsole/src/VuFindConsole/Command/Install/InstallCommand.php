@@ -108,6 +108,13 @@ class InstallCommand extends Command
     protected $solrPort = '8983';
 
     /**
+     * Should we make backups of existing files?
+     *
+     * @var bool
+     */
+    protected $makeBackups = true;
+
+    /**
      * Constructor
      *
      * @param string|null $name The name of the command; passing null means it must
@@ -179,6 +186,11 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Use settings if provided via arguments, otherwise use defaults'
+            )->addOption(
+                'skip-backups',
+                null,
+                InputOption::VALUE_NONE,
+                'Overwrite existing files without creating backups'
             );
     }
 
@@ -595,7 +607,7 @@ class InstallCommand extends Command
      */
     protected function backUpFile(OutputInterface $output, string $filename, string $desc)
     {
-        if (file_exists($filename)) {
+        if ($this->makeBackups && file_exists($filename)) {
             $bak = $filename . '.bak.' . time();
             if (!copy($filename, $bak)) {
                 return "Problem backing up $filename to $bak";
@@ -744,11 +756,8 @@ class InstallCommand extends Command
     protected function buildImportConfig(OutputInterface $output, $filename)
     {
         $target = $this->overrideDir . '/import/' . $filename;
-        if (file_exists($target)) {
-            $output->writeln(
-                "Warning: $target already exists; skipping file creation."
-            );
-            return true;
+        if (($msg = $this->backUpFile($output, $target, 'import configuration')) !== true) {
+            return $msg;
         }
         $import = @file_get_contents($this->baseDir . '/import/' . $filename);
         $import = str_replace(
@@ -1018,6 +1027,10 @@ class InstallCommand extends Command
         // Normalize the module setting to remove whitespace:
         $this->module = preg_replace('/\s/', '', $this->module);
 
+        // Should we make backups of existing files?
+        if ($input->getOption('skip-backups')) {
+            $this->makeBackups = false;
+        }
         return 0;
     }
 

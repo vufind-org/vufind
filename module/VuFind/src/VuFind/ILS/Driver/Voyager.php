@@ -132,7 +132,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         if ($this->logger) {
             $logString = "[$func] $sql";
             if (isset($params)) {
-                $logString .= ', params: ' . print_r($params, true);
+                $logString .= ', params: ' . $this->varDump($params);
             }
             $this->debug($logString);
         }

@@ -88,6 +88,7 @@
         "steverhoades/oauth2-openid-connect-server": "2.6.1",
         "swagger-api/swagger-ui": "5.11.10",
         "symfony/console": "6.4.4",
+        "symfony/var-dumper": "6.4.6",
         "symfony/yaml": "6.4.3",
         "vstelmakh/url-highlight": "3.0.3",
         "vufind-org/vufindcode": "1.2",
