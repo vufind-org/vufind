@@ -40,7 +40,7 @@ namespace VuFind\Db\Row;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Feedback extends RowGateway
+class Feedback extends RowGateway implements \VuFind\Db\Entity\FeedbackEntityInterface
 {
     /**
      * Constructor

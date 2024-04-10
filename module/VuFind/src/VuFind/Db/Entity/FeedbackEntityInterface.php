@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Row Definition for record
+ * Entity model interface for feedback table
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,32 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Row;
+namespace VuFind\Db\Entity;
 
 /**
- * Row Definition for user
+ * Entity model interface for feedback table
  *
  * @category VuFind
- * @package  Db_Row
- * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterface
+interface FeedbackEntityInterface extends EntityInterface
 {
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
-     */
-    public function __construct($adapter)
-    {
-        parent::__construct('id', 'record', $adapter);
-    }
 }

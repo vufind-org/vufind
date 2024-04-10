@@ -42,7 +42,7 @@ namespace VuFind\Db\Row;
  * @property string $params
  * @property string $expires
  */
-class OaiResumption extends RowGateway
+class OaiResumption extends RowGateway implements \VuFind\Db\Entity\OaiResumptionEntityInterface
 {
     /**
      * Constructor

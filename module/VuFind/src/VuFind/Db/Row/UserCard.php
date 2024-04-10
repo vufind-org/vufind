@@ -48,7 +48,7 @@ namespace VuFind\Db\Row;
  * @property string  $created
  * @property string  $saved
  */
-class UserCard extends RowGateway
+class UserCard extends RowGateway implements \VuFind\Db\Entity\UserCardEntityInterface
 {
     /**
      * Constructor
