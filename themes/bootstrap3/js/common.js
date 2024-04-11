@@ -366,7 +366,7 @@ var VuFind = (function VuFind() {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(VuFind.translate('error_occurred'));
+          throw new Error(translate('error_occurred'));
         }
         return response.text();
       })
@@ -378,7 +378,7 @@ var VuFind = (function VuFind() {
       })
       .catch(error => {
         console.error('Request failed:', error);
-        setInnerHtml(element, VuFind.translate('error_occurred'));
+        setInnerHtml(element, translate('error_occurred'));
         if (typeof success === 'function') {
           success(null, error);
         }
