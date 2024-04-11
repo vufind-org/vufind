@@ -682,21 +682,16 @@ function bulkFormHandler(event, data) {
   if (event.submitter !== undefined) {
     let limit = event.submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
-      VuFind.lightbox.alert(
-        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
-        'danger'
-      );
-      return false;
+        alert('Bulk limit exceeded: ' + numberOfSelected + '. Limit is: ' + limit);
+        return false;
     }
-  }
+}
 
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;
     }
   }
-
-  return false;
 }
 
 // Ready functions
