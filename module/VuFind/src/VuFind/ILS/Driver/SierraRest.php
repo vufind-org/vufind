@@ -283,17 +283,16 @@ class SierraRest extends AbstractBase implements
      *
      * @var int
      */
-    protected $apiVersion = 5;
+    protected $apiVersion = 6;
 
     /**
      * API base path
      *
-     * This is the default API level used even if apiVersion is higher so that any
-     * changes in existing methods don't cause trouble.
+     * This should correspond to $apiVersion above
      *
      * @var string
      */
-    protected $apiBase = 'v5';
+    protected $apiBase = 'v6';
 
     /**
      * Statistic group to use e.g. when renewing loans or placing holds
@@ -491,10 +490,7 @@ class SierraRest extends AbstractBase implements
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
-            // Default to API v5 unless a lower compatibility level is needed.
-            if ($this->apiVersion < 5) {
-                $this->apiBase = 'v' . floor($this->apiVersion);
-            }
+            $this->apiBase = 'v' . floor($this->apiVersion);
         }
         if ($statGroup = $this->config['Catalog']['statgroup'] ?? null) {
             if ($this->apiVersion >= 6) {
@@ -1418,7 +1414,7 @@ class SierraRest extends AbstractBase implements
         }
 
         $result = $this->makeRequest(
-            ['v4', 'branches', 'pickupLocations'],
+            [$this->apiBase, 'branches', 'pickupLocations'],
             [
                 'limit' => 10000,
                 'offset' => 0,
@@ -2655,7 +2651,7 @@ class SierraRest extends AbstractBase implements
         if (null === $locations) {
             $locations = [];
             $result = $this->makeRequest(
-                ['v4', 'branches'],
+                [$this->apiBase, 'branches'],
                 [
                     'limit' => 10000,
                     'fields' => 'locations',
