@@ -34,6 +34,7 @@ use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -70,11 +71,11 @@ class UserService extends AbstractDbService implements
     /**
      * Lookup and return a user.
      *
-     * @param int $id id value
+     * @param int $id ID value.
      *
-     * @return User
+     * @return ?UserEntityInterface
      */
-    public function getUserById($id)
+    public function getUserById(int $id): ?UserEntityInterface
     {
         $user = $this->entityManager->find(
             $this->getEntityClass(\VuFind\Db\Entity\User::class),
@@ -120,5 +121,29 @@ class UserService extends AbstractDbService implements
             $tagService = $this->getDbService(TagService::class);
             $tagService->addTag($resource, $tag, $user, $list);
         }
+    }
+
+    /**
+     * Retrieve a user object from the database based on the given field.
+     * Field name must be id, username or cat_id.
+     *
+     * @param string          $fieldName  Field name
+     * @param int|null|string $fieldValue Field value
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
+    {
+        $legalFields = ['id', 'username', 'cat_id'];
+        if (in_array($fieldName, $legalFields)) {
+            $dql = 'SELECT U FROM ' . $this->getEntityClass(User::class) . ' U '
+                . 'WHERE U.' . $fieldName . ' = :fieldValue';
+            $parameters = compact('fieldValue');
+            $query = $this->entityManager->createQuery($dql);
+            $query->setParameters($parameters);
+            $result = current($query->getResult());
+            return $result ?: null;
+        }
+        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
     }
 }

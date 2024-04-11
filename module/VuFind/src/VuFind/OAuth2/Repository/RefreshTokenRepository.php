@@ -50,14 +50,19 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
     /**
      * Constructor
      *
+     * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessTokenServiceInterface $accessTokenService, UserServiceInterface $userService)
-    {
+    public function __construct(
+        array $oauth2Config,
+        AccessTokenServiceInterface $accessTokenService,
+        UserServiceInterface $userService
+    ) {
         parent::__construct(
             'oauth2_refresh_token',
             RefreshTokenEntity::class,
+            $oauth2Config,
             $accessTokenService,
             $userService
         );

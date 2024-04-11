@@ -198,6 +198,13 @@ class HoldsController extends AbstractBase
      */
     public function editAction()
     {
+        $this->ilsExceptionResponse = $this->createViewModel(
+            [
+                'selectedIDS' => [],
+                'fields' => [],
+            ]
+        );
+
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;

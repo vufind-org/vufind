@@ -30,7 +30,12 @@
   <ul class="dropdown-menu">
     <?php foreach ($this->menuItems as $current): ?>
       <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
-        <a class="dropdown__link" href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
+        <a class="dropdown__link"
+          href="<?=$this->escapeHtmlAttr($current['url']) ?>"
+          <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
+          <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
+          rel="nofollow"
+        >
           <?=$this->transEsc($current['label']) ?>
         </a>
       </li>

@@ -77,9 +77,11 @@
     <?php endif; ?>
   <?php endif; ?>
 
-  <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="updateHolds" value="<?=$this->transEscAttr('Save')?>">
-  </div>
+  <?php if ($this->fields): ?>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" name="updateHolds" value="<?=$this->transEscAttr('Save')?>">
+    </div>
+  <?php endif; ?>
 </form>
 
 <?php
