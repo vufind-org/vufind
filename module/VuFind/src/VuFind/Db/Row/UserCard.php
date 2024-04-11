@@ -74,7 +74,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
