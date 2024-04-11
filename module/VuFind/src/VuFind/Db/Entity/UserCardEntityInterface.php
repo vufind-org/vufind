@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for user_card table
  *
@@ -40,4 +42,138 @@ namespace VuFind\Db\Entity;
  */
 interface UserCardEntityInterface extends EntityInterface
 {
+    /**
+     * Id getter
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Card name setter
+     *
+     * @param string $cardName User card name.
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCardName(string $cardName): UserCardEntityInterface;
+
+    /**
+     * Get user card name.
+     *
+     * @return string
+     */
+    public function getCardName(): string;
+
+    /**
+     * Catalog username setter
+     *
+     * @param string $catUsername Catalog username
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCatUsername(string $catUsername): UserCardEntityInterface;
+
+    /**
+     * Get catalog username.
+     *
+     * @return string
+     */
+    public function getCatUsername(): string;
+
+    /**
+     * Raw catalog password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setRawCatPassword(?string $catPassword): UserCardEntityInterface;
+
+    /**
+     * Get raw catalog password.
+     *
+     * @return ?string
+     */
+    public function getRawCatPassword(): ?string;
+
+    /**
+     * Encrypted catalog password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCatPassEnc(?string $passEnc): UserCardEntityInterface;
+
+    /**
+     * Get encrypted catalog password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string;
+
+    /**
+     * Home library setter
+     *
+     * @param ?string $homeLibrary Home library
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserCardEntityInterface;
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string;
+
+    /**
+     * Created date setter.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserCardEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set time the card is saved.
+     *
+     * @param DateTime $dateTime Saved date and time
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setSaved(DateTime $dateTime): UserCardEntityInterface;
+
+    /**
+     * Get saved time.
+     *
+     * @return DateTime
+     */
+    public function getSaved(): DateTime;
+
+    /**
+     * User setter.
+     *
+     * @param UserEntityInterface $user User that owns card
+     *
+     * @return UserCardEntityInterface
+     */
+    public function setUser(UserEntityInterface $user): UserCardEntityInterface;
+
+    /**
+     * User getter
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface;
 }
