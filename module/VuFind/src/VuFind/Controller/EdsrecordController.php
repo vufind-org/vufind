@@ -80,7 +80,11 @@ class EdsrecordController extends AbstractRecord
             }
             throw new ForbiddenException('Access denied.');
         }
-        return $this->redirect()->toUrl($driver->tryMethod($method));
+        $url = $driver->tryMethod($method);
+        if (!$url) {
+            throw new \VuFind\Exception\BadConfig('EDS API did not provide a URL for this record.');
+        }
+        return $this->redirect()->toUrl($url);
     }
 
     /**
