@@ -73,6 +73,6 @@ class UserListFactory implements FactoryInterface
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         $listService = $container->get(\VuFind\Db\Service\PluginManager::class)
             ->get(\VuFind\Db\Service\UserListService::class);
-        return new $requestedName($session, $capabilities->getListSetting(), $listService);
+        return new $requestedName($session, $listService, $capabilities->getListSetting());
     }
 }

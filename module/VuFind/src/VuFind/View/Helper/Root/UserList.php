@@ -45,40 +45,18 @@ use VuFind\Db\Service\UserListService as ListService;
 class UserList extends AbstractHelper
 {
     /**
-     * List mode (enabled or disabled)
-     *
-     * @var string
-     */
-    protected $mode;
-
-    /**
-     * Session container for last list information.
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
-     * UserList database service
-     *
-     * @var ListService
-     */
-    protected $listService;
-
-    /**
      * Constructor
      *
-     * @param Container   $session     Session container (must use same namespace as
-     *                                 container provided to
-     *                                 \VuFind\Db\Table\UserList)
-     * @param string      $mode        List mode (enabled or disabled)
+     * @param Container   $session     Session container for last list information (must use
+     * same namespace as container provided to \VuFind\Db\Table\UserList)
      * @param ListService $listService UserList database service
+     * @param string      $mode        List mode (enabled or disabled)
      */
-    public function __construct(Container $session, $mode, ListService $listService)
-    {
-        $this->mode = $mode;
-        $this->session = $session;
-        $this->listService = $listService;
+    public function __construct(
+        protected Container $session,
+        protected ListService $listService,
+        protected string $mode = 'enabled'
+    ) {
     }
 
     /**
