@@ -132,7 +132,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function setRawCatPassword(?string $catPassword): UserCardEntityInterface
     {
-        $this->cat_password = $this->catPassword;
+        $this->cat_password = $catPassword;
         return $this;
     }
 
