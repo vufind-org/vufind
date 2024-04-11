@@ -68,7 +68,7 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
     }
 
     /**
-     * Id getter
+     * ID getter (null if the entity has not been saved/populated yet)
      *
      * @return ?int
      */
