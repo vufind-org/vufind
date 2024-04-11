@@ -3092,7 +3092,7 @@ class SierraRest extends AbstractBase implements
             'GET',
             $patron
         );
-        foreach ($records['entries'] as $record) {
+        foreach ($records['entries'] ?? [] as $record) {
             $id = $this->extractId($record['id']);
             $this->putCachedRecordData("$type|$id", $requiredFields, $record, $ttl);
             $result[$id] = $record;
