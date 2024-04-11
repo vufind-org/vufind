@@ -38,6 +38,8 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Log\LoggerAwareTrait;
 
+use function in_array;
+
 /**
  * Database service for user.
  *
