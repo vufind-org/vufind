@@ -82,7 +82,8 @@ class EdsrecordController extends AbstractRecord
         }
         $url = $driver->tryMethod($method);
         if (!$url) {
-            throw new \VuFind\Exception\BadConfig('EDS API did not provide a URL for this record.');
+            $this->flashMessenger()->addErrorMessage($this->translate('error_accessing_full_text'));
+            return $this->redirect()->toRoute('edsrecord', ['id' => $this->params()->fromRoute('id')]);
         }
         return $this->redirect()->toUrl($url);
     }
