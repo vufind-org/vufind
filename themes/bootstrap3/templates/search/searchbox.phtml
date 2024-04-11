@@ -173,7 +173,7 @@
       if (!empty($lastLimit)) {
         echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
       }
-      if (!empty($lastSort)) {
+      if (!empty($lastSort) && $lastSort !== $params?->getDefaultSort()) {
         echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '">';
       }
     ?>

@@ -630,20 +630,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string $handler Search type (optional)
      * @param string $path    Path to use as search starting point (optional)
      *
-     * @return \Behat\Mink\Element\Element
+     * @return Element
      */
     protected function performSearch($query, $handler = null, $path = '/Search')
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
+        $this->submitSearchForm($page, $query, $handler);
+        return $page;
+    }
+
+    /**
+     * Submit a search on the provided page.
+     *
+     * @param Element $page    Current page object
+     * @param string  $query   Search term(s)
+     * @param string  $handler Search type (optional)
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function submitSearchForm(
+        Element $page,
+        string $query,
+        ?string $handler = null
+    ): void {
         $this->findCss($page, '#searchForm_lookfor')->setValue($query);
         if ($handler) {
             $this->findCss($page, '#searchForm_type')->setValue($handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
-        return $page;
     }
 
     /**
