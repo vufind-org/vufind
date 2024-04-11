@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2023.
+ * Copyright (C) The National Library of Finland 2016-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -375,7 +375,7 @@ class SierraRest extends AbstractBase implements
      *
      * @var array
      */
-    protected $defaultBibFields = ['title', 'publishYear', 'bibLevel'];
+    protected $defaultBibFields = ['default'];
 
     /**
      * Default list of item fields to request from Sierra. This list must include at
@@ -384,14 +384,9 @@ class SierraRest extends AbstractBase implements
      * @var array
      */
     protected $defaultItemFields = [
-        'location',
-        'status',
-        'barcode',
-        'callNumber',
+        'default',
         'fixedFields',
         'varFields',
-        'itemType',
-        'bibIds',
     ];
 
     /**
@@ -742,7 +737,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id']],
             [
-                'fields' => 'names,emails,phones,addresses,birthDate,expirationDate',
+                'fields' => 'default,names,emails,phones,addresses',
             ],
             'GET',
             $patron
@@ -813,8 +808,7 @@ class SierraRest extends AbstractBase implements
             [
                 'limit' => $pageSize,
                 'offset' => $offset,
-                'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber,barcode',
+                'fields' => 'default,numberOfRenewals,callNumber,barcode',
             ],
             'GET',
             $patron
@@ -974,7 +968,6 @@ class SierraRest extends AbstractBase implements
                 'offset' => $offset,
                 'sortField' => 'outDate',
                 'sortOrder' => $sortOrder,
-                'fields' => 'bib,item,outDate',
             ],
             'GET',
             $patron
@@ -1093,8 +1086,7 @@ class SierraRest extends AbstractBase implements
      */
     public function getMyHolds($patron)
     {
-        $fields = 'id,record,frozen,placed,location,pickupLocation,status'
-            . ',recordType,priority,priorityQueueLength';
+        $fields = 'default,location,priorityQueueLength';
         if ($this->apiVersion >= 5) {
             $fields .= ',pickupByDate';
         }
@@ -1307,8 +1299,7 @@ class SierraRest extends AbstractBase implements
         $results = [];
         foreach ($holdsDetails as $requestId) {
             // Fetch existing hold status:
-            $reqFields = 'status,pickupLocation,frozen'
-                . (isset($fields['frozen']) ? ',canFreeze' : '');
+            $reqFields = 'default' . (isset($fields['frozen']) ? ',canFreeze' : '');
             $hold = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'holds', $requestId],
                 [
@@ -1418,7 +1409,6 @@ class SierraRest extends AbstractBase implements
             [
                 'limit' => 10000,
                 'offset' => 0,
-                'fields' => 'code,name',
                 'language' => $this->getTranslatorLocale(),
             ],
             'GET',
@@ -1586,8 +1576,6 @@ class SierraRest extends AbstractBase implements
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
                 'limit' => 10000,
-                'fields' => 'item,assessedDate,description,chargeType,itemCharge'
-                    . ',processingFee,billingFee,paidAmount',
             ],
             'GET',
             $patron
@@ -2654,7 +2642,6 @@ class SierraRest extends AbstractBase implements
                 [$this->apiBase, 'branches'],
                 [
                     'limit' => 10000,
-                    'fields' => 'locations',
                 ],
                 'GET'
             );
@@ -2871,7 +2858,7 @@ class SierraRest extends AbstractBase implements
         if (null === $blockReason) {
             $result = $this->makeRequest(
                 [$this->apiBase, 'patrons', $patronId],
-                ['fields' => 'blockInfo'],
+                [],
                 'GET',
                 $patron
             );
