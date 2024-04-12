@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service interface for users.
+ * Database service interface for resource.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,42 +22,34 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\ResourceEntityInterface;
 
 /**
- * Database service interface for users.
+ * Database service interface for resource.
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface UserServiceInterface extends DbServiceInterface
+interface ResourceServiceInterface extends DbServiceInterface
 {
     /**
-     * Retrieve a user object from the database based on ID.
+     * Lookup and return a resource.
      *
-     * @param int $id ID.
+     * @param int $id Identifier value
      *
-     * @return ?UserEntityInterface
+     * @return ?ResourceEntityInterface
      */
-    public function getUserById(int $id): ?UserEntityInterface;
-
-    /**
-     * Retrieve a user object from the database based on the given field.
-     *
-     * @param string          $fieldName  Field name
-     * @param int|null|string $fieldValue Field value
-     *
-     * @return ?UserEntityInterface
-     */
-    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
+    public function getResourceById($id): ?ResourceEntityInterface;
 }

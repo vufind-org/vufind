@@ -107,7 +107,7 @@ class User extends Gateway
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param string $id ID.
+     * @param int $id ID.
      *
      * @return ?UserRow
      */
