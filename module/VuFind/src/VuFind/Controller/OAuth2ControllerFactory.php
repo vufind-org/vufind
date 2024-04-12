@@ -51,6 +51,8 @@ use VuFind\OAuth2\Repository\IdentityRepository;
 use VuFind\OAuth2\Repository\RefreshTokenRepository;
 use VuFind\OAuth2\Repository\ScopeRepository;
 
+use function in_array;
+
 /**
  * OAuth2 controller factory.
  *
@@ -118,6 +120,9 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         // Load configuration:
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $this->oauth2Config = $yamlReader->get('OAuth2Server.yaml');
+
+        // Check that user identifier field is valid
+        $this->checkIfUserIdentifierFieldIsValid();
 
         $session = new \Laminas\Session\Container(
             OAuth2Controller::SESSION_NAME,
@@ -308,6 +313,28 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
             );
         }
         return $result;
+    }
+
+    /**
+     * Check that the user identifier field is valid.
+     *
+     * @return void
+     *
+     * @throws \Exception if the field is invalid
+     */
+    protected function checkIfUserIdentifierFieldIsValid()
+    {
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        if (
+            !in_array(
+                $userIdentifierField,
+                ['id', 'username', 'cat_id']
+            )
+        ) {
+            throw new \Exception(
+                "User identifier field '$userIdentifierField' is invalid."
+            );
+        }
     }
 
     /**

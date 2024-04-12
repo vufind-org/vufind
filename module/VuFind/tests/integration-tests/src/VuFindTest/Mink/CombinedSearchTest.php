@@ -47,7 +47,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getCombinedIniOverrides()
+    protected function getCombinedIniOverrides(): array
     {
         return [
             'Solr:one' => [
@@ -70,7 +70,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertResultsForDefaultQuery($page)
+    protected function assertResultsForDefaultQuery(Element $page): void
     {
         $expectedResults = [
             '#combined_Solr____one' => 'Journal of rational emotive therapy : '
@@ -102,7 +102,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCombinedSearchResults()
+    public function testCombinedSearchResults(): void
     {
         $this->changeConfigs(
             ['combined' => $this->getCombinedIniOverrides()],
@@ -120,11 +120,26 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for different combinations of AJAX columns
+     *
+     * @return array
+     */
+    public static function ajaxCombinationsProvider(): array
+    {
+        return [
+            'no ajax' => [false, false],
+            'left ajax' => [true, false],
+            'right ajax' => [false, true],
+            'all ajax' => [true, true],
+        ];
+    }
+
+    /**
      * Test that combined results work in AJAX mode.
      *
      * @return void
      */
-    public function testCombinedSearchResultsAllAjax()
+    public function testCombinedSearchResultsAllAjax(): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
@@ -148,7 +163,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCombinedSearchResultsMixedAjax()
+    public function testCombinedSearchResultsMixedAjax(): void
     {
         $config = $this->getCombinedIniOverrides();
         $config['Solr:one']['ajax'] = true;
@@ -164,5 +179,52 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
         $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Test that DOI results work in various AJAX/non-AJAX modes.
+     *
+     * @param bool $leftAjax  Should left column load via AJAX?
+     * @param bool $rightAjax Should right column load via AJAX?
+     *
+     * @return void
+     *
+     * @dataProvider ajaxCombinationsProvider
+     */
+    public function testCombinedSearchResultsMixedAjaxDOIs(bool $leftAjax, bool $rightAjax): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:one']['ajax'] = $leftAjax;
+        $config['Solr:one']['hiddenFilter'] = 'id:fakedoi1';
+        $config['Solr:two']['ajax'] = $rightAjax;
+        $config['Solr:two']['hiddenFilter'] = 'id:fakedoi2';
+        $this->changeConfigs(
+            [
+                'combined' => $config,
+                'config' => [
+                    'DOI' => [
+                        'resolver' => 'Demo',
+                    ],
+                ],
+            ],
+            ['combined']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('*:*');
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        // Whether the combined column was loaded inline or via AJAX, it should
+        // now include a DOI link:
+        $this->assertStringStartsWith(
+            'Demonstrating DOI link for 10.1234/FAKETYFAKE1',
+            $this->findCssAndGetText($page, '#combined_Solr____one .doiLink a')
+        );
+        $this->assertStringStartsWith(
+            'Demonstrating DOI link for 10.1234/FAKETYFAKE2',
+            $this->findCssAndGetText($page, '#combined_Solr____two .doiLink a')
+        );
     }
 }
