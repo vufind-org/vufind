@@ -74,27 +74,6 @@ class Shibboleth extends AbstractBase
     ];
 
     /**
-     * Session manager
-     *
-     * @var \Laminas\Session\ManagerInterface
-     */
-    protected $sessionManager;
-
-    /**
-     * Configuration loading implementation
-     *
-     * @var ConfigurationLoaderInterface
-     */
-    protected $configurationLoader;
-
-    /**
-     * Http Request object
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Read attributes from headers instead of environment variables
      *
      * @var boolean
@@ -121,15 +100,14 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
      * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
      * @param Request                           $request             Http request object
+     * @param ILSAuthenticator                  $ilsAuthenticator    ILS authenticator
      */
     public function __construct(
-        \Laminas\Session\ManagerInterface $sessionManager,
-        ConfigurationLoaderInterface $configurationLoader,
-        Request $request
+        protected \Laminas\Session\ManagerInterface $sessionManager,
+        protected ConfigurationLoaderInterface $configurationLoader,
+        protected Request $request,
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
-        $this->sessionManager = $sessionManager;
-        $this->configurationLoader = $configurationLoader;
-        $this->request = $request;
     }
 
     /**
@@ -195,7 +173,7 @@ class Shibboleth extends AbstractBase
                 : $request->getServer()->toArray();
             $this->debug(
                 "No username attribute ({$shib['username']}) present in request: "
-                . print_r($details, true)
+                . $this->varDump($details)
             );
             throw new AuthException('authentication_error_admin');
         }
@@ -207,7 +185,7 @@ class Shibboleth extends AbstractBase
                     : $request->getServer()->toArray();
                 $this->debug(
                     "Attribute '$key' does not match required value '$value' in"
-                    . ' request: ' . print_r($details, true)
+                    . ' request: ' . $this->varDump($details)
                 );
                 throw new AuthException('authentication_error_denied');
             }
@@ -250,7 +228,7 @@ class Shibboleth extends AbstractBase
         if (!empty($user->cat_username)) {
             $user->saveCredentials(
                 $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 

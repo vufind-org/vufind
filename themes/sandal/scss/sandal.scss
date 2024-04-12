@@ -23,7 +23,13 @@ body {
 
 /* -- Layout --- */
 .main .container { background-color: $white; }
-.mainbody { padding-top: 1rem; }
+.mainbody {
+  padding-top: 1rem;
+  // If an h2 is the first element in mainbody, avoid excessive space due to the padding:
+  & > h2:first-child {
+    margin-top: 0;
+  }
+}
 
 /* --- Header --- */
 .navbar { border-radius: 0; }
@@ -182,7 +188,6 @@ a:hover .login-dropdown-caret {
 .comment { margin-bottom: .5rem; }
 .comment .delete { font-size: $reduced-font-size; }
 .comment-form .btn-primary { margin-top: .25rem; }
-.tagList { line-height: 2rem; }
 .tagList .tag .fa-close { margin: 0; }
 
 /* --- Sidebar --- */

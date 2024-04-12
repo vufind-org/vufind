@@ -113,7 +113,7 @@ class Ratings extends Gateway
 
         $result = $this->select($callback)->current();
         return [
-            'count' => $result->count,
+            'count' => $result->count ?? 0,
             'rating' => $result->rating ?? 0,
         ];
     }

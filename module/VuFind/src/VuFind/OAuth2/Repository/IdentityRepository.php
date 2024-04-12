@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,8 +30,9 @@
 namespace VuFind\OAuth2\Repository;
 
 use OpenIDConnectServer\Repositories\IdentityProviderInterface;
-use VuFind\Db\Table\AccessToken;
-use VuFind\Db\Table\User;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\OAuth2\Entity\UserEntity;
 
@@ -47,68 +48,40 @@ use VuFind\OAuth2\Entity\UserEntity;
 class IdentityRepository implements IdentityProviderInterface
 {
     /**
-     * User table
-     *
-     * @var User
-     */
-    protected $userTable;
-
-    /**
-     * Access token table
-     *
-     * @var AccessToken
-     */
-    protected $accessTokenTable;
-
-    /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
-     * OAuth2 configuration
-     *
-     * @var array
-     */
-    protected $oauth2Config;
-
-    /**
      * Constructor
      *
-     * @param User        $userTable  User table
-     * @param AccessToken $tokenTable Access token table
-     * @param Connection  $ils        ILS connection
-     * @param array       $config     OAuth2 configuration
+     * @param UserServiceInterface        $userService        User service
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param ?Connection                 $ils                ILS connection
+     * @param array                       $oauth2Config       OAuth2 configuration
+     * @param ILSAuthenticator            $ilsAuthenticator   ILS authenticator
      */
     public function __construct(
-        User $userTable,
-        AccessToken $tokenTable,
-        Connection $ils,
-        array $config
+        protected UserServiceInterface $userService,
+        protected AccessTokenServiceInterface $accessTokenService,
+        protected ?Connection $ils,
+        protected array $oauth2Config,
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
-        $this->userTable = $userTable;
-        $this->accessTokenTable = $tokenTable;
-        $this->ils = $ils;
-        $this->oauth2Config = $config;
     }
 
     /**
      * Get a user entity by identifier.
      *
-     * @param int $identifier User ID
+     * @param int|string $identifier User Identifier
      *
      * @return ?UserEntity
      */
     public function getUserEntityByIdentifier($identifier)
     {
-        if ($user = $this->userTable->getById($identifier)) {
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        if ($user = $this->userService->getUserByField($userIdentifierField, $identifier)) {
             return new UserEntity(
                 $user,
                 $this->ils,
                 $this->oauth2Config,
-                $this->accessTokenTable
+                $this->accessTokenService,
+                $this->ilsAuthenticator
             );
         }
         return null;

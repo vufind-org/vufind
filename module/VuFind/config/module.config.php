@@ -108,6 +108,16 @@ $config = [
                     ],
                 ],
             ],
+            'oidc-wellknown-configuration' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/.well-known/openid-configuration',
+                    'defaults' => [
+                        'controller' => 'OAuth2',
+                        'action'     => 'wellKnownConfiguration',
+                    ],
+                ],
+            ],
             'soap-shibboleth-logout-notification-handler' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -447,11 +457,11 @@ $config = [
             'VuFind\Net\UserIpReader' => 'VuFind\Net\UserIpReaderFactory',
             'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
             'VuFind\OAI\Server\Auth' => 'VuFind\OAI\ServerFactory',
-            'VuFind\OAuth2\Repository\AccessTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
-            'VuFind\OAuth2\Repository\AuthCodeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\AccessTokenRepository' => 'VuFind\OAuth2\Repository\TokenRepositoryFactory',
+            'VuFind\OAuth2\Repository\AuthCodeRepository' => 'VuFind\OAuth2\Repository\TokenRepositoryFactory',
             'VuFind\OAuth2\Repository\ClientRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
             'VuFind\OAuth2\Repository\IdentityRepository' => 'VuFind\OAuth2\Repository\IdentityRepositoryFactory',
-            'VuFind\OAuth2\Repository\RefreshTokenRepository' => 'VuFind\OAuth2\Repository\RepositoryWithAccessTokenTableFactory',
+            'VuFind\OAuth2\Repository\RefreshTokenRepository' => 'VuFind\OAuth2\Repository\TokenRepositoryFactory',
             'VuFind\OAuth2\Repository\ScopeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

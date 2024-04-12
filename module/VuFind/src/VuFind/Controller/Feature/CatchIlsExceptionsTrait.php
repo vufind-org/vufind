@@ -81,7 +81,9 @@ trait CatchIlsExceptionsTrait
             if ('development' == APPLICATION_ENV) {
                 $this->flashMessenger()->addErrorMessage($exception->getMessage());
             }
-            return $this->ilsExceptionResponse ?? $this->createViewModel();
+            $actionResponse = $this->ilsExceptionResponse ?? $this->createViewModel();
+            $event->setResult($actionResponse);
+            return $actionResponse;
         }
     }
 }

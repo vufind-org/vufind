@@ -31,6 +31,7 @@ namespace VuFind\Db\Row;
 
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Table\Resource as ResourceTable;
 
 /**
@@ -42,7 +43,7 @@ use VuFind\Db\Table\Resource as ResourceTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, TagsEntityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
