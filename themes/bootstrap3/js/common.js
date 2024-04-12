@@ -682,7 +682,10 @@ function bulkFormHandler(event, data) {
   if (event.submitter !== undefined) {
     let limit = event.submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
-      alert('Bulk limit exceeded: ' + numberOfSelected + '. Limit is: ' + limit);
+      VuFind.lightbox.alert(
+        VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
+        'danger'
+      );
       return false;
     }
   }
