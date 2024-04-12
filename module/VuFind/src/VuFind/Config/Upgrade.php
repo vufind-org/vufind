@@ -709,6 +709,13 @@ class Upgrade
             unset($newConfig['Syndetics']['url']);
         }
 
+        // Convert spellchecker 'simple' option
+        if (isset($newConfig['Spelling']['simple']) && !isset($newConfig['Spelling']['dictionaries'])) {
+            $newConfig['Spelling']['dictionaries'] = $newConfig['Spelling']['simple']
+                ? ['basicSpell'] : ['default', 'basicSpell'];
+            unset($newConfig['Spelling']['simple']);
+        }
+
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
 
