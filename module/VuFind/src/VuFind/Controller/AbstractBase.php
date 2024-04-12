@@ -529,11 +529,13 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Get a database service object.
      *
-     * @param string $name Name of service to retrieve
+     * @param class-string<T> $name Name of service to retrieve
      *
-     * @return \VuFind\Db\Service\AbstractDbService
+     * @template T
+     *
+     * @return T
      */
-    public function getDbService(string $name): \VuFind\Db\Service\AbstractDbService
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
     {
         return $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
             ->get($name);
