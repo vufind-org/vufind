@@ -157,7 +157,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * Id getter
+     * ID getter (returns null if the entity has not been saved/populated yet)
      *
      * @return ?int
      */
@@ -171,9 +171,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param string $cardName User card name.
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function setCardName(string $cardName): UserCard
+    public function setCardName(string $cardName): UserCardEntityInterface
     {
         $this->cardName = $cardName;
         return $this;
@@ -194,9 +194,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param string $catUsername Catalog username
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function setCatUsername(string $catUsername): UserCard
+    public function setCatUsername(string $catUsername): UserCardEntityInterface
     {
         $this->catUsername = $catUsername;
         return $this;
@@ -217,9 +217,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param ?string $catPassword Cat password
      *
-     * @return User
+     * @return UserCardEntityInterface
      */
-    public function setRawCatPassword(?string $catPassword): UserCard
+    public function setRawCatPassword(?string $catPassword): UserCardEntityInterface
     {
         $this->catPassword = $catPassword;
         return $this;
@@ -240,9 +240,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return User
+     * @return UserCardEntityInterface
      */
-    public function setCatPassEnc(?string $passEnc): UserCard
+    public function setCatPassEnc(?string $passEnc): UserCardEntityInterface
     {
         $this->catPassEnc = $passEnc;
         return $this;
@@ -263,9 +263,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function setHomeLibrary(?string $homeLibrary): UserCard
+    public function setHomeLibrary(?string $homeLibrary): UserCardEntityInterface
     {
         $this->homeLibrary = $homeLibrary;
         return $this;
@@ -286,9 +286,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function setCreated(DateTime $dateTime): UserCard
+    public function setCreated(DateTime $dateTime): UserCardEntityInterface
     {
         $this->created = $dateTime;
         return $this;
@@ -309,9 +309,9 @@ class UserCard implements UserCardEntityInterface
      *
      * @param DateTime $dateTime Saved date and time
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function setSaved(DateTime $dateTime): UserCard
+    public function setSaved(DateTime $dateTime): UserCardEntityInterface
     {
         $this->saved = $dateTime;
         return $this;
@@ -330,11 +330,11 @@ class UserCard implements UserCardEntityInterface
     /**
      * User setter.
      *
-     * @param User $user User that owns card
+     * @param UserEntityInterface $user User that owns card
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function setUser(User $user): UserCard
+    public function setUser(UserEntityInterface $user): UserCardEntityInterface
     {
         $this->user = $user;
         return $this;
@@ -343,9 +343,9 @@ class UserCard implements UserCardEntityInterface
     /**
      * User getter
      *
-     * @return User
+     * @return UserEntityInterface
      */
-    public function getUser(): User
+    public function getUser(): UserEntityInterface
     {
         return $this->user;
     }

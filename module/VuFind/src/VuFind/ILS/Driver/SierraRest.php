@@ -770,7 +770,7 @@ class SierraRest extends AbstractBase implements
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : '';
+                ) : null;
         return [
             'firstname' => $firstname,
             'lastname' => $lastname,
