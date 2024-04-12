@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -163,9 +163,6 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $commentsService = $this->getDbService(
-                \VuFind\Db\Service\CommentsService::class
-            );
             $resourceService = $this->getDbService(
                 \VuFind\Db\Service\ResourceService::class
             );
@@ -174,6 +171,9 @@ class AbstractRecord extends AbstractBase
                 $driver->getSourceIdentifier(),
                 true,
                 $driver
+            );
+            $commentsService = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
             );
             $commentsService->addComment($comment, $user->id, $resource);
 

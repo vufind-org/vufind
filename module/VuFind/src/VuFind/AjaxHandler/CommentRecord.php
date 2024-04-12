@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\ResourceService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -56,17 +56,17 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param ResourceService     $resourceService     Resource database service
-     * @param CommentsService     $commentsService     Comments database service
-     * @param Captcha             $captcha             Captcha controller plugin
-     * @param ?User               $user                Logged in user (or null)
-     * @param bool                $enabled             Are comments enabled?
-     * @param RecordLoader        $recordLoader        Record loader
-     * @param AccountCapabilities $accountCapabilities Account capabilities helper
+     * @param ResourceService          $resourceService     Resource database service
+     * @param CommentsServiceInterface $commentsService     Comments database service
+     * @param Captcha                  $captcha             Captcha controller plugin
+     * @param ?User                    $user                Logged in user (or null)
+     * @param bool                     $enabled             Are comments enabled?
+     * @param RecordLoader             $recordLoader        Record loader
+     * @param AccountCapabilities      $accountCapabilities Account capabilities helper
      */
     public function __construct(
         protected ResourceService $resourceService,
-        protected CommentsService $commentsService,
+        protected CommentsServiceInterface $commentsService,
         protected Captcha $captcha,
         protected ?User $user,
         protected bool $enabled,
@@ -135,7 +135,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         $resource = $this->resourceService->findResource($id, $source);
         $commentId = $this->commentsService->addComment(
             $comment,
-            $this->user->id,
+            $this->user,
             $resource
         );
 

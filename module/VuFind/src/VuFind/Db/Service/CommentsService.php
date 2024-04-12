@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Comments;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -46,7 +47,10 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class CommentsService extends AbstractDbService implements DbServiceAwareInterface, LoggerAwareInterface
+class CommentsService extends AbstractDbService implements
+    CommentsServiceInterface,
+    DbServiceAwareInterface,
+    LoggerAwareInterface
 {
     use DbServiceAwareTrait;
     use LoggerAwareTrait;
@@ -76,9 +80,11 @@ class CommentsService extends AbstractDbService implements DbServiceAwareInterfa
         int|UserEntityInterface $user,
         int|ResourceEntityInterface $resource
     ): ?int {
-        $userVal = is_int($user)
-            ? $this->getDbService(UserService::class)->getUserById($user)
-            : $user;
+        // We need $userVal to be a User object; if it's an integer or a different implementation
+        // of UserEntityInterface, do conversion below:
+        $userVal = $user instanceof User
+            ? $user
+            : $this->getDbService(UserService::class)->getUserById(is_int($user) ? $user : $user->getId());
         $resourceVal = is_int($resource)
             ? $this->getDbService(ResourceService::class)->getResourceById($resource)
             : $resource;

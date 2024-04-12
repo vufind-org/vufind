@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -35,6 +36,7 @@ use VuFind\Date\Converter as DateConverter;
 use VuFind\Date\DateException;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
@@ -53,7 +55,10 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractDbService implements DbServiceAwareInterface, LoggerAwareInterface
+class ResourceService extends AbstractDbService implements
+    ResourceServiceInterface,
+    DbServiceAwareInterface,
+    LoggerAwareInterface
 {
     use DbServiceAwareTrait;
     use LoggerAwareTrait;
@@ -148,9 +153,9 @@ class ResourceService extends AbstractDbService implements DbServiceAwareInterfa
      *
      * @param int $id id value
      *
-     * @return Resource
+     * @return ?ResourceEntityInterface
      */
-    public function getResourceById($id)
+    public function getResourceById($id): ?ResourceEntityInterface
     {
         $resource = $this->entityManager->find(
             $this->getEntityClass(\VuFind\Db\Entity\Resource::class),

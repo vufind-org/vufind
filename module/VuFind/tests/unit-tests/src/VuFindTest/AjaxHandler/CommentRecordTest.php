@@ -34,7 +34,7 @@ use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Row\User;
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\ResourceService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\RecordDriver\DefaultRecord;
@@ -144,12 +144,12 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $resourceService->expects($this->once())->method('findResource')
             ->with($this->equalTo('foo'), $this->equalTo('Solr'))
             ->will($this->returnValue($resource));
-        $commentsService = $this->container->createMock(CommentsService::class);
-        $this->container->set(CommentsService::class, $commentsService);
+        $commentsService = $this->container->createMock(CommentsServiceInterface::class);
+        $this->container->set(CommentsServiceInterface::class, $commentsService);
         $commentsService->expects($this->once())->method('addComment')
             ->with(
                 $this->equalTo('bar'),
-                $this->equalTo($user->id),
+                $this->equalTo($user),
                 $this->anything()
             )
             ->will($this->returnValue(1));
