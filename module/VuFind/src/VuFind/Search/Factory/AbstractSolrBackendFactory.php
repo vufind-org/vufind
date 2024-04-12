@@ -339,7 +339,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         if ($config->Spelling->enabled ?? true) {
             $dictionaries = $config->Spelling->dictionaries?->toArray() ?? [];
             if (empty($dictionaries)) {
-                // Respect the the deprecated 'simple' configuration setting.
+                // Respect the deprecated 'simple' configuration setting.
                 $dictionaries = ($config->Spelling->simple ?? false)
                     ? ['basicSpell'] : ['default', 'basicSpell'];
             }
