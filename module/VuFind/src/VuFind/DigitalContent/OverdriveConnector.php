@@ -330,7 +330,7 @@ class OverdriveConnector implements
             if (!$res) {
                 $result->code = 'od_code_connection_failed';
             } else {
-                if (($res->errorCode ??  null) == 'NotFound' || $res->totalItems == 0) {
+                if (($res->errorCode ?? null) == 'NotFound' || $res->totalItems == 0) {
                     if ($loginRequired) {
                         // Consortium support is turned on but user is not logged in.
                         // If the title is not found it could mean that it's only
@@ -1488,7 +1488,7 @@ class OverdriveConnector implements
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
-            $this->debug("callPatronURL method: " . $client->getMethod() . " url: $url");
+            $this->debug('callPatronURL method: ' . $client->getMethod() . " url: $url");
             $client->setUri($url);
             if ($params != null) {
                 $jsonData = ['fields' => []];

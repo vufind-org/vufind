@@ -364,7 +364,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             }
         } else {
             $result = $this->connector->getResultObject();
-            $result->data = (object)["isMagazine" => false];
+            $result->data = (object)['isMagazine' => false];
             // Check to make sure they don't already have this checked out
             // shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
