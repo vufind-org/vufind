@@ -591,11 +591,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getPermanentLink()
     {
-        if(!empty($libraryURL = $this->config->libraryURL)) {
-          $data = json_decode($this->fields['fullrecord'], false);
-          $desc = $this->translate('od_resource_page');
-          $permlink = "$libraryURL/media/" . $data->crossRefId;
-          return  [['url' => $permlink, 'desc' => $desc ?: $permlink]];
-        } else return [];
+        if (!empty($libraryURL = $this->config->libraryURL)) {
+            $data = json_decode($this->fields['fullrecord'], false);
+            $desc = $this->translate('od_resource_page');
+            $permlink = "$libraryURL/media/" . $data->crossRefId;
+            return  [['url' => $permlink, 'desc' => $desc ?: $permlink]];
+        } else {
+            return [];
+        }
     }
 }
