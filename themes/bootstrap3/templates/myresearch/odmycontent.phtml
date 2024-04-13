@@ -86,7 +86,7 @@
               <a
                 class="btn btn-warning icon-link returnTitle"
                 data-lightbox title="<?=$this->transEsc('od_but_return')?>"
-                href="<?=$this->url('overdrive-hold') . "?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&edition=" . urlencode($edition) . '&action=returnTitleConfirm'?>"
+                href="<?=$this->url('overdrive-hold') . '?od_id=' . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&edition=' . urlencode($edition) . '&action=returnTitleConfirm'?>"
               >
                 <?=$this->icon('overdrive-return', 'icon-link__icon')?>
                 <span class="icon-link__label"><?=$this->transEsc('od_but_return')?></span>
@@ -96,7 +96,7 @@
             <a
               class="btn btn-success icon-link getTitle"
               data-lightbox title="<?=$this->transEsc('od_but_gettitle')?>"
-              href="<?=$this->url('overdrive-hold') . "?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=getTitle"?>"
+              href="<?=$this->url('overdrive-hold') . '?od_id=' . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=getTitle'?>"
             >
               <?=$this->icon('overdrive-download', 'icon-link__icon')?>
               <span class="icon-link__label"><?=$this->transEsc('od_but_gettitle')?></span>
@@ -181,14 +181,14 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                       <li><a class="cancelhold"
                             data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-                            href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=cancelHoldConfirm"?>">
+                            href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=cancelHoldConfirm'?>">
                               <i class="fa fa-minus-circle" aria-hidden="true"></i>
                               <?=$this->transEsc('od_but_cancel_hold')?></a>
                       </li>
 
                       <li><a class="editEmail"
                             data-lightbox title="{$this->transEsc('edit_hold_email')}"
-                            href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=editHoldEmailConfirm"?>">
+                            href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldEmailConfirm'?>">
                               <i class="fa fa-edit" aria-hidden="true"></i>
                               <?=$this->transEsc('od_edit_hold_email')?></a>
                       </li>
@@ -197,14 +197,14 @@
                       if(isset($resource['hold']->holdSuspension)): ?>
                       <li><a class="edithold"
                             data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
-                              href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=editHoldConfirm"?>">
+                              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldConfirm'?>">
                                 <i class="fa fa-calendar" aria-hidden="true"></i>
                                 <?=$this->transEsc('od_but_edit_hold')?></a>
                       </li>
                       <?php else: ?>
                       <li><a class="susphold"
                             data-lightbox title="<?=$this->transEsc('suspend_hold')?>"
-                              href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=suspHoldConfirm"?>">
+                              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=suspHoldConfirm'?>">
                                 <i class="fa fa-flag" aria-hidden="true"></i>
                                 <?=$this->transEsc('od_but_susp_hold')?></a>
                       </li>

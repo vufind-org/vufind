@@ -10,15 +10,15 @@
       <?=$this->transEsc('od_code_login_for_avail')?>
     </strong></p>
 <?php else:
-  $od_id = $this->driver->getOverdriveID();
-  $rec_id = $this->driver->getUniqueID();
-  $hold_url = $this->url('overdrive-hold');
-  $avail = $this->driver->getOverdriveAvailability();
-  $checkedOutResult = $this->driver->isCheckedOut();
-  $checkedOut = $checkedOutResult->data;
-  if (!$checkedOut):
-    $hold = $this->driver->isHeld();
-  endif; ?>
+    $od_id = $this->driver->getOverdriveID();
+    $rec_id = $this->driver->getUniqueID();
+    $hold_url = $this->url('overdrive-hold');
+    $avail = $this->driver->getOverdriveAvailability();
+    $checkedOutResult = $this->driver->isCheckedOut();
+    $checkedOut = $checkedOutResult->data;
+    if (!$checkedOut):
+        $hold = $this->driver->isHeld();
+    endif; ?>
 
   <div class="internetDetails">
     <div class="odbrand pull-left media-left">
@@ -55,7 +55,7 @@
         <?php if (($avail->data->copiesAvailable ?? 0) > 0): ?>
           <p>
             <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-              href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=checkoutConfirm"?>">
+              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=checkoutConfirm'?>">
               <?=$this->transEsc('od_but_checkout')?>
             </a>
           <p>
@@ -65,7 +65,7 @@
           <?php if (($avail->data->copiesAvailable ?? 0) == 0): ?>
           <p>
             <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_texts')?>"
-              href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=holdConfirm"?>">
+              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=holdConfirm'?>">
               <?=$this->icon('place-hold', 'icon-link__icon')?>
               <?=$this->transEsc('od_but_hold')?>
             </a>
@@ -74,11 +74,11 @@
       <?php endif; ?>
 
       <?php
-      if ($checkedOut):
-        foreach ($checkedOut as $title): ?>
+        if ($checkedOut):
+            foreach ($checkedOut as $title): ?>
           <div class="panel panel-info">
             <?php if ($checkedOutResult->isMagazine):
-              $od_id = $title->reserveId; ?>
+                $od_id = $title->reserveId; ?>
               <div class="panel-heading">
                 <h3 class="panel-title">
                   <?=$this->translate('Issue') . ': ' . $title->metadata->edition?>
@@ -91,14 +91,14 @@
             </div>
             <div class="panel-footer">
               <a class="btn btn-success getTitle" data-lightbox title="<?=$this->transEsc('od_but_gettitle')?>"
-                href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=getTitle"?>">
+                href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=getTitle'?>">
                 <?=$this->icon('overdrive-download', 'icon-link__icon')?>
                 <?=$this->transEsc('od_but_gettitle')?>
               </a>
 
               <?php if ($title->isReturnable): ?>
                 <a class="btn btn-warning returnTitle" data-lightbox title='{$this->transEsc("od_but_return")}'
-                  href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=returnTitleConfirm"?>">
+                  href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=returnTitleConfirm'?>">
                   <?=$this->icon('overdrive-return', 'icon-link__icon')?>
                   <?=$this->transEsc('od_but_return')?>
                 </a>
@@ -131,7 +131,7 @@
           <div class="panel-footer">
             <?php if ($hold->holdReadyForCheckout): ?>
               <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-                href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=checkoutConfirm"?>">
+                href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=checkoutConfirm'?>">
                 <?=$this->icon('overdrive-checkout', 'icon-link__icon')?>
                 <?=$this->transEsc('od_but_checkout')?>
               </a>
@@ -143,30 +143,30 @@
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><a class="cancelhold" data-lightbox title="<?=$this->transEsc('od_but_cancel_hold')?>"
-                    href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=cancelHoldConfirm"?>">
+                    href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=cancelHoldConfirm'?>">
                     <?=$this->icon('overdrive-cancel-hold', 'icon-link__icon')?>
                     <?=$this->transEsc('od_but_cancel_hold')?>
                   </a>
                 </li>
 
                 <li><a class="editEmail" data-lightbox title="<?=$this->transEsc('edit_hold_email')?>"
-                    href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=editHoldEmailConfirm"?>">
+                    href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldEmailConfirm'?>">
                     <?=$this->icon('overdrive-edit-hold', 'icon-link__icon')?>
                     <?=$this->transEsc('od_edit_hold_email')?>
                   </a>
                 </li>
 
                 <?php // user already has a hold suspension.  allow them to edit the suspension
-                    if ($hold->holdSuspension ?? 0): ?>
+                      if ($hold->holdSuspension ?? 0): ?>
                   <li><a class="edithold" data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
-                      href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=editHoldConfirm"?>">
+                      href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldConfirm'?>">
                       <?=$this->icon('overdrive-edit-hold-suspension', 'icon-link__icon')?>
                       <?=$this->transEsc('od_but_edit_hold')?>
                     </a>
                   </li>
                 <?php else: ?>
                   <li><a class="susphold" data-lightbox title="<?=$this->transEsc('od_susp_hold')?>"
-                      href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=suspHoldConfirm"?>">
+                      href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=suspHoldConfirm'?>">
                       <?=$this->icon('overdrive-suspend-hold', 'icon-link__icon')?>
                       <?=$this->transEsc('od_but_susp_hold')?>
                     </a>
@@ -179,4 +179,4 @@
       <?php endif; ?>
     </div>
   </div>
-<?php endif; //end account issues check ?>
+<?php endif; //end account issues check?>
