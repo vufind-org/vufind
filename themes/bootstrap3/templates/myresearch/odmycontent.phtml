@@ -14,8 +14,8 @@
     <?=$this->transEsc('od_content')?>
   </h2>
   <?php if ($this->config()->get('Overdrive')->Overdrive->ODHelpLink): ?>
-    <p class="od_help"><?=$this->icon('overdrive-help') ?>
-      <?=$this->translate('od_mycontent_help', ['%%url%%' => $this->config()->get('Overdrive')->Overdrive->ODHelpLink]); ?></p>
+    <p class="od_help"><?=$this->icon('overdrive-help')?>
+      <?=$this->translate('od_mycontent_help', ['%%url%%' => $this->config()->get('Overdrive')->Overdrive->ODHelpLink])?></p>
   <?php endif;?>
 
   <?=$this->flashmessages()?>
@@ -46,20 +46,20 @@
             $edition = '';
           endif;
   ?>
-          <div id="record<?=$rec_id?>" class="well result">
+          <div id="record<?=urlencode($rec_id)?>" class="well result">
    <?php
          if ($cover):
             ob_start(); ?>
-            <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
-              <?=$cover ?>
+            <div class="media-<?=$thumbnailAlignment?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+              <?=$cover?>
             </div>
             <?php $thumbnail = ob_get_contents(); ?>
           <?php ob_end_clean(); ?>
         <?php endif; ?>
         <div class="media">
           <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
-            <?=$thumbnail ?>
-          <?php endif ?>
+            <?=$thumbnail?>
+          <?php endif; ?>
           <div class="media-body">
 
           <h4 property="name">
@@ -67,10 +67,11 @@
              <?=$this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
             </a>
           </h4>
+          <?php if ($edition): ?>
+            <div class="od_edition"><?=$this->escapeHtml($edition)?></div>
+          <?php endif; ?>
 
-          <div class="od_edition"><?=$this->escapeHtml($edition)?></div>
-
-          <?php $listAuthors = $resource['record']->getPrimaryAuthors() ?>
+          <?php $listAuthors = $resource['record']->getPrimaryAuthors(); ?>
           <?php if (!empty($listAuthors)): ?>
             <?=$this->transEsc('by')?>:
             <a href="<?=$this->record($resource['record'])->getLink('author', $listAuthors[0])?>">
@@ -85,10 +86,9 @@
               <a
                 class="btn btn-warning icon-link returnTitle"
                 data-lightbox title="<?=$this->transEsc('od_but_return')?>"
-                href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&edition=" .
-                urlencode($edition) . '&action=returnTitleConfirm'; ?>"
+                href="<?=$this->url('overdrive-hold') . "?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&edition=" . urlencode($edition) . '&action=returnTitleConfirm'?>"
               >
-                <?=$this->icon('overdrive-return', 'icon-link__icon') ?>
+                <?=$this->icon('overdrive-return', 'icon-link__icon')?>
                 <span class="icon-link__label"><?=$this->transEsc('od_but_return')?></span>
               </a>
             <?php endif;?>
@@ -96,9 +96,9 @@
             <a
               class="btn btn-success icon-link getTitle"
               data-lightbox title="<?=$this->transEsc('od_but_gettitle')?>"
-              href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle"; ?>"
+              href="<?=$this->url('overdrive-hold') . "?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=getTitle"?>"
             >
-              <?=$this->icon('overdrive-download', 'icon-link__icon') ?>
+              <?=$this->icon('overdrive-download', 'icon-link__icon')?>
               <span class="icon-link__label"><?=$this->transEsc('od_but_gettitle')?></span>
             </a>
 
@@ -132,16 +132,16 @@
           <?php
             if ($cover):
               ob_start(); ?>
-              <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
-                <?=$cover ?>
+              <div class="media-<?=$thumbnailAlignment?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+                <?=$cover?>
               </div>
               <?php $thumbnail = ob_get_contents(); ?>
             <?php ob_end_clean(); ?>
           <?php endif; ?>
           <div class="media">
             <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
-              <?=$thumbnail ?>
-            <?php endif ?>
+              <?=$thumbnail?>
+            <?php endif; ?>
             <div class="media-body">
               <h4 property="name">
                 <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($resource['record']))?>" class="title">
@@ -158,11 +158,11 @@
                 <?=$this->transEsc('od_hold_placed_on', ['%%holdPlacedDate%%' => $resource['hold']->holdPlacedDate]);?>
                 <?=$this->transEsc('od_hold_queue', ['%%holdPosition%%' => $resource['hold']->holdListPosition, '%%numberOfHolds%%' => $resource['hold']->numberOfHolds]);?>
 
-                <?php if (isset($resource['hold']->holdSuspension)): ?>
+                <?php if ($resource['hold']->holdSuspension ?? 0): ?>
                   <?php if ($resource['hold']->holdSuspension->suspensionType == 'limited'): ?>
-                    <?= $this->transEsc('od_hold_redelivery', ['%%days%%' => $resource['hold']->holdSuspension->numberOfDays]) ?>
+                    <?=$this->transEsc('od_hold_redelivery', ['%%days%%' => $resource['hold']->holdSuspension->numberOfDays])?>
                   <?php else: ?>
-                    <?= $this->transEsc('od_hold_susp_indef') ?>
+                    <?=$this->transEsc('od_hold_susp_indef')?>
                   <?php endif; ?>
                 <?php endif; ?>
 
@@ -181,32 +181,32 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                       <li><a class="cancelhold"
                             data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-                            href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"?>">
+                            href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=cancelHoldConfirm"?>">
                               <i class="fa fa-minus-circle" aria-hidden="true"></i>
                               <?=$this->transEsc('od_but_cancel_hold')?></a>
                       </li>
 
                       <li><a class="editEmail"
                             data-lightbox title="{$this->transEsc('edit_hold_email')}"
-                            href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldEmailConfirm"?>">
+                            href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=editHoldEmailConfirm"?>">
                               <i class="fa fa-edit" aria-hidden="true"></i>
-                              <?= $this->transEsc('od_edit_hold_email')?></a>
+                              <?=$this->transEsc('od_edit_hold_email')?></a>
                       </li>
 
                       <?php //user already has a hold suspension.  allow them to edit the suspension
                       if(isset($resource['hold']->holdSuspension)): ?>
                       <li><a class="edithold"
                             data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
-                              href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldConfirm"?>">
+                              href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=editHoldConfirm"?>">
                                 <i class="fa fa-calendar" aria-hidden="true"></i>
-                                <?= $this->transEsc('od_but_edit_hold')?></a>
+                                <?=$this->transEsc('od_but_edit_hold')?></a>
                       </li>
                       <?php else: ?>
                       <li><a class="susphold"
                             data-lightbox title="<?=$this->transEsc('suspend_hold')?>"
-                              href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=suspHoldConfirm"?>">
+                              href="<?="$hold_url?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=suspHoldConfirm"?>">
                                 <i class="fa fa-flag" aria-hidden="true"></i>
-                                <?= $this->transEsc('od_but_susp_hold')?></a>
+                                <?=$this->transEsc('od_but_susp_hold')?></a>
                       </li>
                       <?php endif; ?>
                     </ul>

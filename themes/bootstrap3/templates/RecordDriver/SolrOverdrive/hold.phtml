@@ -1,16 +1,16 @@
 <div class="odaction">
   <?php if($action == 'getTitle'): ?>
-    <h2><?=$this->transEsc($actionTitleCode); ?>
+    <h2><?=$this->transEsc($actionTitleCode)?>
         <span class="odbrand pull-left">
           <img class="media-left" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
         </span>
     </h2>
-    <iframe class="od_download" src="<?=$result->data->downloadRedirect?>"></iframe>
-  <?php else:?>
+    <iframe class="od_download" src="<?=$this->escapeHtmlAttr($result->data->downloadRedirect)?>"></iframe>
+  <?php else: ?>
 
  <div class="media clearfix">
      <div class="media-body">
-    <h2><?=$this->transEsc($actionTitleCode); ?>
+    <h2><?=$this->transEsc($actionTitleCode)?>
         <span class="odbrand pull-left"
           <img class="media-left" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
         </span>
@@ -31,47 +31,47 @@
        </div>
      <?php endif; ?>
 
-    <div class="action <?=$action ?>">
+    <div class="action <?=$action?>">
 
     <?php if ($action == 'checkoutConfirm'): ?>
         <?php if ($result->status): ?>
             <div class="odformats">
-                <h4><?=$this->transEsc('od_dl_formats'); ?></h4>
+                <h4><?=$this->transEsc('od_dl_formats')?></h4>
                 <?php foreach ($formats as $key => $format): ?>
-                <ul><li><?=$this->translate($format->name) ?></li></ul>
-                <?php endforeach;?>
+                <ul><li><?=$this->translate($format->name)?></li></ul>
+                <?php endforeach; ?>
             </div>
 
             <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
 
-            <?php  if ($result->data->isMagazine): ?>
+            <?php if ($result->data->isMagazine): ?>
               <div class="form-group">
-                <label id="select-issue-label"><?=$this->translate('Issue') ?></label>
+                <label id="select-issue-label"><?=$this->translate('Issue')?></label>
                 <select class="form-control" name="edition" id="select-edition" data-open="false">
 
                 <?php foreach ($result->data->products as $key => $issue):
                     $checkedout = $issue->checkedout ? ' - ' . $this->transEsc('od_mag_issue_ischeckedout') : ''; ?>
                     <option value="<?=$issue->id?>"><?=$issue->edition . $checkedout?> </option>
-                <?php endforeach;?>
+                <?php endforeach; ?>
                 </select>
             </div>
-            <?php  endif;?>
+            <?php endif; ?>
 
                 <input name="doAction" value="doCheckout" type="hidden">
-                <input class="btn btn-success" name="doCheckout" value="<?=$this->transEsc('od_but_checkout_s'); ?>" type="submit">
+                <input class="btn btn-success" name="doCheckout" value="<?=$this->transEsc('od_but_checkout_s')?>" type="submit">
             </form>
 
         <?php elseif ($result->code == 'OD_CODE_NOMAGISSUES'): ?>
             <div class="alert alert-warning">
                 <div class="moreInfo">
-                    <?=$this->transEsc('od_docheckout_failure') ?>
-                    <?=$result->msg?>
+                    <?=$this->transEsc('od_docheckout_failure')?>
+                    <?=$this->escapeHtml($result->msg)?>
                 </div>
             </div>
         <?php elseif ($result->code == 'OD_CODE_ALREADY_CHECKED_OUT'): ?>
             <div class="alert alert-warning">
                 <div class="moreInfo">
-                    <?=$this->transEsc('od_is_checkedout', ['%%due_date%%' => $result->data->checkout->expires]); ?>
+                    <?=$this->transEsc('od_is_checkedout', ['%%due_date%%' => $result->data->checkout->expires])?>
                 </div>
             </div>
         <?php elseif ($result->code == 'OD_CODE_ALREADY_ON_HOLD'): ?>
@@ -88,31 +88,31 @@
                                 '%%numberOfHolds%%' => $result->data->hold->numberOfHolds,
                             ]
                         );
-                    endif;?>
+                    endif; ?>
                 </div>
             </div>
         <?php else: ?>
             <div class="alert alert-danger">
-                <div class="moreInfo"><?=$result->msg?></div>
+                <div class="moreInfo"><?=$this->escapeHtml($result->msg)?></div>
             </div>
 
-        <?php endif;?>
+        <?php endif; ?>
     <?php elseif ($action == 'holdConfirm'): ?>
 
-        <?php  if ($result->status): ?>
+        <?php if ($result->status): ?>
      <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
          <div class="form-group hold-required-by">
-             <label class="control-label"><?=$this->transEsc('Email Address'); ?></label>
+             <label class="control-label"><?=$this->transEsc('Email Address')?></label>
              <input id="email" name="email" value="" size="" class="form-control" type="text">
          </div>
              <input name="doAction" value="placeHold" type="hidden">
-             <input class="btn btn-primary" name="placeHold" value="<?=$this->transEscAttr('od_but_hold_s'); ?>" type="submit">
+             <input class="btn btn-primary" name="placeHold" value="<?=$this->transEscAttr('od_but_hold_s')?>" type="submit">
          </div>
      </form>
         <?php elseif ($result->code == 'OD_CODE_ALREADY_CHECKED_OUT'): ?>
         <div class="alert alert-warning">
             <div class="moreInfo">
-                <?=$this->transEsc('od_is_checkedout', ['%%due_date%%' => $result->data->checkout->expires]); ?>
+                <?=$this->transEsc('od_is_checkedout', ['%%due_date%%' => $result->data->checkout->expires])?>
             </div>
         </div>
         <?php elseif ($result->code == 'OD_CODE_ALREADY_ON_HOLD'): ?>
@@ -129,26 +129,26 @@
                             '%%numberOfHolds%%' => $result->data->hold->numberOfHolds,
                         ]
                     );
-                endif;?>
+                endif; ?>
             </div>
         </div>
         <?php else: ?>
         <div class="alert alert-danger">
-            <div class="moreInfo"><?=$result->msg?></div>
+            <div class="moreInfo"><?=$this->escapeHtml($result->msg)?></div>
         </div>
 
-        <?php endif;?>
+        <?php endif; ?>
 
     <?php elseif ($action == 'editHoldEmailConfirm'): ?>
         <form class="" method="POST" name="editHoldEmail" data-lightbox-onclose="VuFind.refreshPage">
             <div class="form-group">
-                <label class="control-label"><?=$this->transEsc('Email Address'); ?></label>
-                <input id="email" name="email" value="<?=$result->data->hold->emailAddress?>" size="" class="form-control" type="text">
+                <label class="control-label"><?=$this->transEsc('Email Address')?></label>
+                <input id="email" name="email" value="<?=$this->escapeHtmlAttr($result->data->hold->emailAddress)?>" size="" class="form-control" type="text">
 
             </div>
             <div class="form-group">
                 <input name="doAction" value="editHoldEmail" type="hidden">
-                <input class="btn btn-primary" name="editHoldEmail" value="<?=$this->transEscAttr('Submit'); ?>" type="submit">
+                <input class="btn btn-primary" name="editHoldEmail" value="<?=$this->transEscAttr('Submit')?>" type="submit">
             </div>
         </form>
 
@@ -156,22 +156,19 @@
         <form class="" method="POST" name="editHold" data-lightbox-onclose="VuFind.refreshPage">
 
             <div class="form-group">
-                <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm'); ?></label>
+                <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-control" name="suspendValue" id="select-suspension" data-open="false">
-                    <option value="0" selected=""><?=$this->transEsc('od_susp_asap'); ?></option>
-                    <option value="7"><?=$this->transEsc('od_susp_after', ['%%days%%' => '7']); ?></option>
-                    <option value="14"><?=$this->transEsc('od_susp_after', ['%%days%%' => '14']); ?></option>
-                    <option value="21"><?=$this->transEsc('od_susp_after', ['%%days%%' => '21']); ?></option>
-                    <option value="28"><?=$this->transEsc('od_susp_after', ['%%days%%' => '28']); ?></option>
-                    <option value="60"><?=$this->transEsc('od_susp_after', ['%%days%%' => '60']); ?></option>
-                    <option value="90"><?=$this->transEsc('od_susp_after', ['%%days%%' => '90']); ?></option>
-                    <option value="180"><?=$this->transEsc('od_susp_after', ['%%days%%' => '180']); ?></option>
-                    <option value="-1"><?=$this->transEsc('od_susp_ind'); ?></option>
+                    <option value="0" selected=""><?=$this->transEsc('od_susp_asap')?></option>
+                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations; ?>
+                    <?php foreach ($durations as $duration): ?>
+                      <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
+                    <?php endforeach; ?>
+                    <option value="-1"><?=$this->transEsc('od_susp_ind')?></option>
                 </select>
             </div>
             <div class="form-group">
                 <input name="doAction" value="editSuspendedHold" type="hidden">
-                <input class="btn btn-primary" name="editHold" value="<?=$this->transEsc('od_but_edit_hold_conf'); ?>" type="submit">
+                <input class="btn btn-primary" name="editHold" value="<?=$this->transEsc('od_but_edit_hold_conf')?>" type="submit">
             </div>
         </form>
 
@@ -179,31 +176,27 @@
 
         <form class="" method="POST" name="suspHold" data-lightbox-onclose="VuFind.refreshPage">
             <div class="form-group">
-                <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm'); ?></label>
+                <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-control" name="suspendValue"  id="select-suspension" data-open="false">
-
-                    <option value="7"><?=$this->transEsc('od_susp_after', ['%%days%%' => '7']); ?></option>
-                    <option value="14"><?=$this->transEsc('od_susp_after', ['%%days%%' => '14']); ?></option>
-                    <option value="21"><?=$this->transEsc('od_susp_after', ['%%days%%' => '21']); ?></option>
-                    <option value="28"><?=$this->transEsc('od_susp_after', ['%%days%%' => '28']); ?></option>
-                    <option value="60"><?=$this->transEsc('od_susp_after', ['%%days%%' => '60']); ?></option>
-                    <option value="90"><?=$this->transEsc('od_susp_after', ['%%days%%' => '90']); ?></option>
-                    <option value="180"><?=$this->transEsc('od_susp_after', ['%%days%%' => '180']); ?></option>
-                    <option value="-1"><?=$this->transEsc('od_susp_ind'); ?></option>
+                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations; ?>
+                    <?php foreach ($durations as $duration): ?>
+                      <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
+                    <?php endforeach; ?>
+                    <option value="-1"><?=$this->transEsc('od_susp_ind')?></option>
                 </select>
             </div>
             <div class="form-group">
                 <input name="doAction" value="suspendHold" type="hidden">
-                <input class="btn btn-primary" name="suspendHold" value="<?=$this->transEscAttr('od_but_susp_hold'); ?>" type="submit">
+                <input class="btn btn-primary" name="suspendHold" value="<?=$this->transEscAttr('od_but_susp_hold')?>" type="submit">
             </div>
         </form>
 
     <?php elseif ($action == 'cancelHoldConfirm'): ?>
-	        <div class="moreInfo"><p><?=$this->transEsc('od_cancel_hold_confirm'); ?></p></div>
+	        <div class="moreInfo"><p><?=$this->transEsc('od_cancel_hold_confirm')?></p></div>
             <form class="" method="POST" name="cancelHold" data-lightbox-onclose="VuFind.refreshPage">
                 <div class="form-group">
                     <input name="doAction" value="cancelHold" type="hidden">
-                    <input class="btn btn-primary" name="cancelHold" value="<?=$this->transEscAttr('od_but_cancel_hold'); ?>" type="submit">
+                    <input class="btn btn-primary" name="cancelHold" value="<?=$this->transEscAttr('od_but_cancel_hold')?>" type="submit">
                 </div>
             </form>
 
@@ -212,26 +205,26 @@
 
     <div class="returnTitleDialog">
 
-        <?php  if ($result->data): ?>
-          <h4><?=$edition?></h4>
-        <?php endif;?>
-        <p><?=$this->transEsc('od_return_confirm'); ?></p>
+        <?php if ($result->data): ?>
+          <h4><?=$this->escapeHtml($edition)?></h4>
+        <?php endif; ?>
+        <p><?=$this->transEsc('od_return_confirm')?></p>
         <form class="" method="POST" name="returnTitle" data-lightbox-onclose="VuFind.refreshPage">
             <input name="doAction" value="returnTitle" type="hidden">
-            <input class="btn btn-primary" name="returnTitle" value="<?=$this->transEscAttr('od_but_return'); ?>" type="submit">
+            <input class="btn btn-primary" name="returnTitle" value="<?=$this->transEscAttr('od_but_return')?>" type="submit">
         </form>
     </div>
 
     <?php elseif ($action == 'doCheckout'): ?>
-        <?php  if ($result->status): ?>
+        <?php if ($result->status): ?>
             <div class="alert alert-success">
-                <?=$this->transEsc('od_docheckout_success', ['%%expireDate%%' => $result->data->expires]); ?>
+                <?=$this->transEsc('od_docheckout_success', ['%%expireDate%%' => $result->data->expires])?>
             </div>
 
             <div class="odformats">
                 <a class="btn btn-primary getTitle"
                       data-lightbox title="<?=$this->transEscAttr('od_but_gettitle')?>"
-                      href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle"; ?>">
+                      href="<?=$this->url('overdrive-hold') . "?od_id=" . urlencode($od_id) . "&rec_id=" . urlencode($rec_id) . "&action=getTitle"?>">
                       <i class="fa fa-fw fa-download" aria-hidden="true"></i>
                       <?=$this->transEsc('od_but_gettitle')?></a>
             </div>
@@ -239,30 +232,30 @@
         <?php else: ?>
             <div class="alert alert-danger">
               <i class='fa fa-exclamation-triangle'></i>
-                <?=$this->transEsc('od_docheckout_failure'); ?>
-                  <div class="moreInfo"><?=$result->msg?></div>
+                <?=$this->transEsc('od_docheckout_failure')?>
+                  <div class="moreInfo"><?=$this->escapeHtml($result->msg); ?></div>
             </div>
 
-        <?php endif;?>
+        <?php endif; ?>
             <div class="pull-right">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc('close'); ?></button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc('close')?></button>
             </div>
 
     <?php else: ?>
-        <?php if ($result->status):?>
+        <?php if ($result->status): ?>
             <div class="alert alert-success">
-                <?=$this->transEsc($result->code, $result->codeParams ?? null);?>
+                <?=$this->transEsc($result->code, $result->codeParams ?? null)?>
             </div>
         <?php else: ?>
             <div class="alert alert-danger">
               <i class='fa fa-exclamation-triangle'></i>
-                <?=$this->transEsc($result->code); ?>
-                <div class="moreInfo"><?=$result->msg ?></div>
+                <?=$this->transEsc($result->code)?>
+                <div class="moreInfo"><?=$this->escapeHtml($result->msg)?></div>
             </div>
 
-        <?php endif;?>
+        <?php endif; ?>
         <div class="pull-right">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc('close'); ?></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc('close')?></button>
         </div>
     <?php endif; ?>
 

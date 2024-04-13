@@ -330,7 +330,7 @@ class OverdriveConnector implements
             if (!$res) {
                 $result->code = 'od_code_connection_failed';
             } else {
-                if ((isset($res->errorCode) and $res->errorCode == 'NotFound') or $res->totalItems == 0) {
+                if (($res->errorCode ??  null) == 'NotFound' || $res->totalItems == 0) {
                     if ($loginRequired) {
                         // Consortium support is turned on but user is not logged in.
                         // If the title is not found it could mean that it's only
@@ -1245,7 +1245,7 @@ class OverdriveConnector implements
                         // Check for holds ready for checkout
                         foreach ($response->holds as $key => $hold) {
                             // check for hold suspension
-                            $result->data[$key]->holdSupension = $hold->holdSupension ?? false;
+                            $result->data[$key]->holdSuspension = $hold->holdSuspension ?? false;
                             // check if ready for checkout
                             foreach ($hold->actions as $action => $value) {
                                 if ($action == 'checkout') {
@@ -1488,7 +1488,7 @@ class OverdriveConnector implements
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
-            $this->debug('OverdriveConnector: patronURL method: ' . $client->getMethod());
+            $this->debug("callPatronURL method: " . $client->getMethod() . " url: $url");
             $client->setUri($url);
             if ($params != null) {
                 $jsonData = ['fields' => []];
@@ -1521,8 +1521,8 @@ class OverdriveConnector implements
                     return true;
                 } else {
                     $this->error(
-                        $requestType . 'OverdriveConnector: Patron call failed. HTTP return code: ' .
-                        $response->getStatusCode()
+                        $requestType . ' Patron call failed. HTTP return code: ' .
+                        $response->getStatusCode() . " body: $body"
                     );
                     return false;
                 }
@@ -1545,7 +1545,6 @@ class OverdriveConnector implements
                 }
             } else {
                 $returnVal = json_decode($body);
-
                 if ($returnVal != null) {
                     if (
                         !isset($returnVal->message)

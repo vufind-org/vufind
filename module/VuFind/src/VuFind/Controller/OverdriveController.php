@@ -152,14 +152,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                             ->load(strtolower($hold->reserveId));
                         $holds[] = $myhold;
                     } catch (\VuFind\Exception\RecordMissing $e) {
-                        //hold is missing from Solr
+                        // hold is missing from Solr
                         $this->flashMessenger()->addMessage(
                             'One or more holds could not be displayed properly: ' .
                             $e->getMessage(),
                             'error'
                         );
 
-                        //get metadata from overdrive.
+                        // get metadata from overdrive.
                         $meta = $this->connector->getMetadata([$hold->reserveId]);
                         $myhold['metadata'] = $meta[$hold->reserveId];
                         $holds[] = $myhold;
@@ -261,9 +261,9 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $actions = [
             'checkoutConfirm' => ['titleCode' => 'od_checkout', 'resMeth' => 'getConfirmCheckoutRes'],
             'holdConfirm' => ['titleCode' => 'od_hold', 'resMeth' => 'getHoldConfirmRes'],
-            'cancelHoldConfirm' => ['titleCode' => 'od_cancel_hold', 'resMeth' => false],
-            'suspHoldConfirm' => ['titleCode' => 'od_susp_hold', 'resMeth' => false],
-            'editHoldConfirm' => ['titleCode' => 'od_susp_hold_edit', 'resMeth' => false],
+            'cancelHoldConfirm' => ['titleCode' => 'od_cancel_hold', 'resMeth' => null],
+            'suspHoldConfirm' => ['titleCode' => 'od_susp_hold', 'resMeth' => null],
+            'editHoldConfirm' => ['titleCode' => 'od_susp_hold_edit', 'resMeth' => null],
             'editHoldEmailConfirm' => ['titleCode' => 'od_edit_hold_email', 'resMeth' => 'getEditHoldEmailConfRes'],
             'returnTitleConfirm' => ['titleCode' => 'od_early_return', 'resMeth' => 'getReturnTitleConfirmResult'],
             'doCheckout' => ['titleCode' => 'od_checkout', 'resMeth' => 'getCheckoutRes'],
@@ -364,12 +364,11 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             }
         } else {
             $result = $this->connector->getResultObject();
-            $result->data->isMagazine = false;
+            $result->data = (object)["isMagazine" => false];
             // Check to make sure they don't already have this checked out
             // shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
-                $result->data = (object)[];
                 $result->data->checkout = $checkout;
                 $result->code = 'OD_CODE_ALREADY_CHECKED_OUT';
             } elseif ($hold = $this->connector->getHold($od_id, false)) {
@@ -377,7 +376,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     $result->status = true;
                 } else {
                     $result->status = false;
-                    $result->data = (object)[];
                     $result->data->hold = $hold;
                     $result->code = 'OD_CODE_ALREADY_ON_HOLD';
                 }
