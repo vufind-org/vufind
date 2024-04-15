@@ -4,18 +4,17 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
 
-    <?=$this->flashmessages()?>
+  <?=$this->flashmessages()?>
 
+  <?php if ($this->overdrive()->showOverdriveAdminLink()): // Hide output if disabled ?>
     <h2><?=$this->transEsc('Overdrive Status')?></h2>
     <ul class="list-group">
-
         <li class="list-group-item"> <?php echo '<strong>Current API Token:</strong> ' . $this->token;?></li>
     </ul>
 
     <h2><?=$this->transEsc('Overdrive Library Information')?></h2>
     <ul class="list-group">
         <li class="list-group-item"><?php echo '<strong>Product Key:</strong> ' . $this->productsKey;?></li>
-
     </ul>
 
     <h2><?=$this->transEsc('Overdrive Configuration')?></h2>
@@ -27,8 +26,10 @@
         <li class="list-group-item"> <?php echo '<strong>Library ID:</strong> ' . $this->overdriveConfig->libraryID;?></li>
         <li class="list-group-item"> <?php echo '<strong>Website ID:</strong> ' . $this->overdriveConfig->websiteID;?></li>
         <li class="list-group-item"> <?php echo '<strong>ILS Name:</strong> ' . $this->overdriveConfig->ILSname;?></li>
-        <li class="list-group-item"> <?php echo '<strong>Records in Marc Format: </strong>';
-             echo $this->overdriveConfig->isMarc ? 'Yes' : 'No'?></li>
+        <li class="list-group-item"> <?php
+          echo '<strong>Records in Marc Format: </strong>';
+          echo $this->overdriveConfig->isMarc ? 'Yes' : 'No';
+        ?></li>
     </ul>
 
     <h2><?=$this->transEsc('User Access')?></h2>
@@ -45,7 +46,7 @@
             </div>
         </li>
     </ul>
-
+  <?php endif; ?>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>">
   <?=$this->render('admin/menu.phtml')?>

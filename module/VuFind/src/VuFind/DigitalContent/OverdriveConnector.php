@@ -881,7 +881,7 @@ class OverdriveConnector implements
         $conf = new \stdClass();
         if (!$this->recordConfig) {
             $this->error(
-                'Could not locate the Overdrive Record Driver '
+                'Could not locate the OverDrive Record Driver '
                 . 'configuration.'
             );
             return false;
@@ -919,6 +919,7 @@ class OverdriveConnector implements
             = $this->recordConfig->API->tokenCacheLifetime;
         $conf->libraryURL = $this->recordConfig->Overdrive->overdriveLibraryURL;
         $conf->enableAjaxStatus = $this->recordConfig->Overdrive->enableAjaxStatus;
+        $conf->showOverdriveAdminMenu = $this->recordConfig->Overdrive->showOverdriveAdminMenu;
         return $conf;
     }
 

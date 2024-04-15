@@ -93,7 +93,7 @@ class Overdrive extends \Laminas\View\Helper\AbstractHelper
      */
     public function showOverdriveAdminLink()
     {
-        //if not configured at all, connector is null
+        // If not configured at all, connector is null
         if (null === $this->connector) {
             return false;
         }
