@@ -100,7 +100,7 @@ class LibraryCardsController extends AbstractBase
         $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
 
         $target = null;
-        $username = $card->cat_username;
+        $username = $card->getCatUsername();
 
         $loginSettings = $this->getILSLoginSettings();
         // Split target and username if multiple login targets are available:
@@ -108,7 +108,7 @@ class LibraryCardsController extends AbstractBase
             [$target, $username] = explode('.', $username, 2);
         }
 
-        $cardName = $this->params()->fromPost('card_name', $card->card_name);
+        $cardName = $this->params()->fromPost('card_name', $card->getCardName());
         $username = $this->params()->fromPost('username', $username);
         $target = $this->params()->fromPost('target', $target);
 
@@ -203,7 +203,7 @@ class LibraryCardsController extends AbstractBase
         try {
             $catalog = $this->getILS();
             $patron = $catalog->patronLogin(
-                $user->cat_username,
+                $user->getCatUsername(),
                 $this->getILSAuthenticator()->getCatPasswordForUser($user)
             );
             if (!$patron) {
@@ -290,7 +290,7 @@ class LibraryCardsController extends AbstractBase
         // Check the credentials if the username is changed or a new password is
         // entered:
         $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
-        if ($card->cat_username !== $username || trim($password)) {
+        if ($card->getCatUsername() !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
             if (
