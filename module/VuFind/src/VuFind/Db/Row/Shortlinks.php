@@ -38,7 +38,7 @@ namespace VuFind\Db\Row;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Shortlinks extends RowGateway
+class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntityInterface
 {
     /**
      * Constructor

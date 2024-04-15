@@ -106,7 +106,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
      */
     public function testconfigureSummonResults(): void
     {
-        $class = new \ReflectionClass('VuFind\Recommend\SummonTopics');
+        $class = new \ReflectionClass(SummonTopics::class);
         $method = $class->getMethod('configureSummonResults');
         $method->setAccessible(true);
         $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)

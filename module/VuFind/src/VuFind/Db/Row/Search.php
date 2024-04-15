@@ -54,7 +54,7 @@ use function is_resource;
  * @property string  $last_notification_sent
  * @property string  $notification_base_url
  */
-class Search extends RowGateway
+class Search extends RowGateway implements \VuFind\Db\Entity\SearchEntityInterface
 {
     /**
      * Constructor
@@ -145,8 +145,8 @@ class Search extends RowGateway
      * Utility function for generating a token for unsubscribing a
      * saved search.
      *
-     * @param VuFind\Crypt\HMAC $hmac HMAC hash generator
-     * @param object            $user User object
+     * @param HMAC   $hmac HMAC hash generator
+     * @param object $user User object
      *
      * @return string token
      */

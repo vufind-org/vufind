@@ -27,16 +27,6 @@
 ?>
 
 <?php ob_start(); ?>
-  <ul class="dropdown-menu">
-    <?php foreach ($this->menuItems as $current): ?>
-      <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
-        <a class="dropdown__link" href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
-          <?=$this->transEsc($current['label']) ?>
-        </a>
-      </li>
-    <?php endforeach; ?>
-  </ul>
-
   <?=$this
       ->makeTag(
           $toggleTag,
@@ -45,6 +35,21 @@
           ['escapeContent' => false]
       )
   ?>
+
+  <ul class="dropdown-menu">
+    <?php foreach ($this->menuItems as $current): ?>
+      <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
+        <a class="dropdown__link"
+          href="<?=$this->escapeHtmlAttr($current['url']) ?>"
+          <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
+          <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
+          rel="nofollow"
+        >
+          <?=$this->transEsc($current['label']) ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
 <?php $menuContents = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 

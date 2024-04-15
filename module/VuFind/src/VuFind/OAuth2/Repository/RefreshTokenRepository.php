@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,9 @@ namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
-use VuFind\Db\Table\AccessToken;
+use VuFind\Auth\InvalidArgumentException;
+use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\RefreshTokenEntity;
 
 /**
@@ -48,14 +50,21 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
     /**
      * Constructor
      *
-     * @param AccessToken $table Token table
+     * @param array                       $oauth2Config       OAuth2 configuration
+     * @param AccessTokenServiceInterface $accessTokenService Access token service
+     * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessToken $table)
-    {
+    public function __construct(
+        array $oauth2Config,
+        AccessTokenServiceInterface $accessTokenService,
+        UserServiceInterface $userService
+    ) {
         parent::__construct(
             'oauth2_refresh_token',
             RefreshTokenEntity::class,
-            $table
+            $oauth2Config,
+            $accessTokenService,
+            $userService
         );
     }
 
@@ -76,7 +85,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return void
      *
-     * @throws UniqueTokenIdentifierConstraintViolationException
+     * @throws InvalidArgumentException
      */
     public function persistNewRefreshToken(RefreshTokenEntityInterface $entity)
     {

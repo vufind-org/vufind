@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
@@ -169,7 +170,10 @@ class AbstractRecord extends AbstractBase
                 true,
                 $driver
             );
-            $resource->addComment($comment, $user);
+            $commentsService = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $commentsService->addComment($comment, $user, $resource);
 
             // Save rating if allowed:
             if (
@@ -236,7 +240,12 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $driver->addTags($user, $tagParser->parse($tags));
+            $this->getDbService(TagServiceInterface::class)->addTagsToRecord(
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
+                $user,
+                $tagParser->parse($tags)
+            );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
@@ -270,7 +279,12 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $driver->deleteTags($user, [$tag]);
+            $this->getDbService(TagServiceInterface::class)->deleteTagsFromRecord(
+                $driver->getUniqueID(),
+                $driver->getSourceIdentifier(),
+                $user,
+                [$tag]
+            );
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
@@ -469,6 +483,7 @@ class AbstractRecord extends AbstractBase
         if (
             !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
+            && $this->isLocalUrl($referer)
         ) {
             $this->setFollowupUrlToReferer();
         } else {

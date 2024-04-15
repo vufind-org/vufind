@@ -2091,7 +2091,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         } else {
             $this->logError(
-                'Unable to determine status for item: ' . print_r($item, true)
+                'Unable to determine status for item: ' . $this->varDump($item)
             );
         }
 

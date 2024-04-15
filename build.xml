@@ -47,7 +47,7 @@
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.3.0" />
+  <property name="solr_version" value="9.5.0" />
   <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
@@ -59,6 +59,7 @@
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
   <property name="test_theme" value="" /><!-- set to a theme name to override the default theme for Mink tests -->
+  <property name="psql_needs_sudo" value="true" /><!-- set to false if psql (Postgresql) must be run with current user instead of sudo -->
 
   <property name="version" value="9.1.1" />
 
@@ -585,6 +586,11 @@ return [
     'extends' =&gt; 'sandal',
 ];
 </echo>
+    <echo file="${contentdir}/content.phtml">&lt;?php include $this-&gt;parentTemplate('content/content.phtml');?&gt;
+
+&lt;div class="content-footer"&gt;Content page footer&lt;/div&gt;
+</echo>
+    <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test.phtml">&lt;h1&gt;MAIN LEVEL TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test_fi.phtml">&lt;h1&gt;FINNISH TEST&lt;/h1&gt;</echo>
     <echo file="${contentdir}/test/test.phtml">&lt;h1&gt;SUB LEVEL PHTML&lt;/h1&gt;</echo>
@@ -597,11 +603,24 @@ return [
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
         <!-- build database -->
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <if>
+          <equals arg1="${psql_needs_sudo}" arg2="false" />
+          <then>
+            <exec command="psql -c &quot;DROP DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
+            <exec command="psql -c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            <exec command="psql -c &quot;CREATE DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="psql -c &quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="psql -c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" checkreturn="true" />
+          </then>
+          <else>
+            <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+            <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+            <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+          </else>
+        </if>
+
         <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
       </then>

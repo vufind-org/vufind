@@ -58,7 +58,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      * Test the description of new search handler.
      *
      * @param string $settings       Settings from searches.ini
-     * @param bool   $expectedResult Expected return value from isActive
+     * @param string $expectedResult Expected return value from isActive
      *
      * @return void
      *
