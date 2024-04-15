@@ -194,7 +194,7 @@ class SearchController extends AbstractSolrSearch
                 ? $this->redirect()->toRoute('search-history')
                 : $this->forceLogin();
         }
-        $userId = $user?->getId() ?? null;
+        $userId = $user?->getId();
 
         $searchHistoryHelper = $this->serviceLocator
             ->get(\VuFind\Search\History::class);
@@ -215,7 +215,7 @@ class SearchController extends AbstractSolrSearch
             unset($viewData['schedule']);
         } else {
             $viewData['scheduleOptions'] = $scheduleOptions;
-            $viewData['alertemail'] = $user?->getEmail() ?? null;
+            $viewData['alertemail'] = $user?->getEmail();
         }
         return $this->createViewModel($viewData);
     }
