@@ -112,7 +112,7 @@ class CommentsService extends AbstractDbService implements
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
-     * @return array
+     * @return CommentsEntityInterface[]
      */
     public function getForResource(string $id, $source = DEFAULT_SEARCH_BACKEND): array
     {
@@ -122,7 +122,7 @@ class CommentsService extends AbstractDbService implements
         if (empty($resource)) {
             return [];
         }
-        $dql = 'SELECT c, u.firstname, u.lastname '
+        $dql = 'SELECT c '
             . 'FROM ' . $this->getEntityClass(Comments::class) . ' c '
             . 'LEFT JOIN c.user u '
             . 'WHERE c.resource = :resource '
@@ -197,6 +197,8 @@ class CommentsService extends AbstractDbService implements
 
     /**
      * Get a comment row by ID (or return null for no match).
+     *
+     * @param int $id ID of comment to retrieve.
      *
      * @return ?CommentsEntityInterface
      */
