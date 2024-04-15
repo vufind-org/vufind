@@ -15,6 +15,14 @@
 
 # Authorization server configuration
 Server:
+  # User field to be used as identifier in tokens.
+  # Needs to be one of the unique fields id, username, cat_id.
+  # Note: The field needs to be unique and required for every user. There are systems
+  # where the cat_id is not required. Creating tokens for users without a cat_id will
+  # result in an error.
+  # Security Warning! The tokens are not encrypted. Hence, the used field will be readable
+  # by everyone who has access to the token.
+  userIdentifierField: "id"
   # Create keys e.g. as above and point the following setting to it. The paths can be
   # absolute or relative to the config directory.
   privateKeyPath: "oauth2_private.key"
@@ -69,6 +77,14 @@ Scopes:
     claims:
       - sub   # A built-in claim, required for proper functionality
       - nonce # A built-in claim, required for proper functionality
+  username:
+    description: external_auth_scope_username
+    claims:
+      - username
+  cat_id:
+    description: external_auth_scope_cat_id
+    claims:
+      - cat_id
   address: # A predefined set required for OpenID; do not specify claims here
     description: external_auth_scope_address
     ils: true
@@ -150,6 +166,8 @@ Scopes:
 #
 ClaimMappings:
   id: getId
+  username: getUsername
+  cat_id: getCatId
   name: full_name # special field created from getFirstname + ' ' + getLastname
   given_name: getFirstname
   family_name: getLastname

@@ -10,7 +10,7 @@
   <?=$this->flashmessages()?>
 
   <h2><?=$this->transEsc('Library Cards')?></h2>
-  <?php if ($this->libraryCards->count() == 0): ?>
+  <?php if (count($this->libraryCards) == 0): ?>
     <div><?=$this->transEsc('You do not have any library cards')?></div>
   <?php else: ?>
     <table class="table table-striped">
@@ -25,8 +25,8 @@
     </tr>
     <?php foreach ($this->libraryCards as $record): ?>
       <tr>
-        <td><?=$this->escapeHtml($record['card_name'])?></td>
-        <?php $username = $record['cat_username']; ?>
+        <td><?=$this->escapeHtml($record->getCardName())?></td>
+        <?php $username = $record->getCatUsername(); ?>
         <?php if ($this->multipleTargets): ?>
           <?php $target = ''; ?>
           <?php if (strstr($username, '.')): ?>
@@ -37,7 +37,7 @@
         <td><?=$this->escapeHtml($username)?></td>
         <td>
           <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-            <a class="btn btn-link icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
+            <a class="btn btn-link icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record->getId()) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
               <?=$this->icon('profile-card-edit', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
             </a>
@@ -46,10 +46,10 @@
             $this->component(
                 'confirm-button',
                 [
-                    'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id']]]),
+                    'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record->getId()]]),
                     'buttonIcon' => 'profile-card-delete',
                     'buttonLabel' => 'Delete',
-                    'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id'], 'confirm' => 1]]),
+                    'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record->getId(), 'confirm' => 1]]),
                     'clearAccountCache' => true,
                 ]
             )
