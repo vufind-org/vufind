@@ -31,6 +31,7 @@ namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Comments;
+use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -106,14 +107,14 @@ class CommentsService extends AbstractDbService implements
     }
 
     /**
-     * Get tags associated with the specified resource.
+     * Get comments associated with the specified resource.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
      * @return array
      */
-    public function getForResource(string $id, $source = DEFAULT_SEARCH_BACKEND)
+    public function getForResource(string $id, $source = DEFAULT_SEARCH_BACKEND): array
     {
         $resource = $this->getDbService(ResourceService::class)
             ->findResource($id, $source, false);
@@ -137,32 +138,27 @@ class CommentsService extends AbstractDbService implements
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                        $id   ID of row to delete
-     * @param int|\VuFind\Db\Entity\User $user User object or identifier
+     * @param int                     $id   ID of row to delete
+     * @param int|UserEntityInterface $user User object or identifier
      *
      * @return bool
      */
-    public function deleteIfOwnedByUser($id, $user)
+    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool
     {
         if (null === $user) {
             return false;
         }
-        $comment = $this->entityManager->find(
-            $this->getEntityClass(\VuFind\Db\Entity\Comments::class),
-            $id
-        );
 
-        $commentOwnerId = $comment->getUser()->getId();
         $userId = is_int($user) ? $user : $user->getId();
-        if ($userId !== $commentOwnerId) {
+        $comment = $this->getCommentById($id);
+        if ($userId !== $comment->getUser()->getId()) {
             return false;
         }
 
         $del = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
         . 'WHERE c.id = :id AND c.user = :user';
-        $parameters = compact('id', 'user');
         $query = $this->entityManager->createQuery($del);
-        $query->setParameters($parameters);
+        $query->setParameters(['id' => $id, 'user' => $userId]);
         $query->execute();
         return true;
     }
@@ -170,17 +166,16 @@ class CommentsService extends AbstractDbService implements
     /**
      * Deletes all comments by a user.
      *
-     * @param int|\VuFind\Db\Entity\User $user User object or identifier
+     * @param int|UserEntityInterface $user User object or identifier
      *
      * @return void
      */
-    public function deleteByUser($user)
+    public function deleteByUser(int|UserEntityInterface $user): void
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
         . 'WHERE c.user = :user';
-        $parameters = compact('user');
         $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
+        $query->setParameters(['user' => is_int($user) ? $user : $user->getId()]);
         $query->execute();
     }
 
@@ -198,5 +193,18 @@ class CommentsService extends AbstractDbService implements
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;
+    }
+
+    /**
+     * Get a comment row by ID (or return null for no match).
+     *
+     * @return ?CommentsEntityInterface
+     */
+    public function getCommentById(int $id): ?CommentsEntityInterface
+    {
+        return $this->entityManager->find(
+            $this->getEntityClass(\VuFind\Db\Entity\Comments::class),
+            $id
+        );
     }
 }
