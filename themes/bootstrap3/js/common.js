@@ -15,6 +15,8 @@ var VuFind = (function VuFind() {
   var _elementBase;
   var _iconsCache = {};
 
+  var _additionalResultScripts = [];
+
   // Event controls
 
   let listeners = {};
@@ -452,6 +454,13 @@ var VuFind = (function VuFind() {
     if (typeof this.explain !== 'undefined') {
       this.explain.init();
     }
+    _additionalResultScripts.forEach(
+      (callback) => callback(container)
+    );
+  };
+
+  var addResultScript = function addResultScript(callback) {
+    _additionalResultScripts.push(callback);
   };
 
   var init = function init() {
@@ -494,6 +503,7 @@ var VuFind = (function VuFind() {
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
+    addResultScript: addResultScript,
     setupQRCodeLinks: setupQRCodeLinks,
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
