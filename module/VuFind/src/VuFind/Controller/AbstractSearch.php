@@ -519,9 +519,7 @@ class AbstractSearch extends AbstractBase
     {
         $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $user = $this->getUser();
-        $userId = $user ? $user->getId() : null;
-        return $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        return $searchTable->getOwnedRowById($searchId, $sessId, $this->getUser()?->getId());
     }
 
     /**
@@ -533,15 +531,13 @@ class AbstractSearch extends AbstractBase
      */
     protected function saveSearchToHistory($results)
     {
-        $user = $this->getUser();
-        $userId = $user ? $user->getId() : null;
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
             $results,
             $sessId,
-            $userId
+            $this->getUser()?->getId()
         );
     }
 
