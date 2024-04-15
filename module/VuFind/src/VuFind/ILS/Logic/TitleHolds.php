@@ -265,7 +265,7 @@ class TitleHolds
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
                     if (
-                        $holding['availability']
+                        $holding['availability']->isAvailable()
                         && !in_array($holding['location'], $this->hideHoldings)
                     ) {
                         $any_available = true;

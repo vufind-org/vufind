@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Item Status Logic Class
+ * Availability Status Manager
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -30,34 +30,43 @@
 namespace VuFind\ILS\Logic;
 
 /**
- * Item Status Logic Class
+ * Availability Status Manager
  *
  * @category VuFind
  * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ItemStatus
+class AvailabilityStatusManager
 {
     /**
-     * Status code for unavailable items
+     * Create a new Availability Status
      *
-     * @var int
+     * @param int|bool $availability Availability
+     *
+     * @return AvailabilityStatusInterface
      */
-    public const STATUS_UNAVAILABLE = 0;
+    public function createAvailabilityStatus(int|bool $availability): AvailabilityStatusInterface
+    {
+        return new AvailabilityStatus($availability);
+    }
 
     /**
-     * Status code for available items
+     * Get combined availability of multiple availability status.
      *
-     * @var int
-     */
-    public const STATUS_AVAILABLE = 1;
-
-    /**
-     * Status code for items with uncertain availability
+     * @param array $availabilities Array of Availability Statuses
      *
-     * @var int
+     * @return AvailabilityStatusInterface
      */
-    public const STATUS_UNCERTAIN = 2;
+    public function combine(array $availabilities): AvailabilityStatusInterface
+    {
+        if (empty($availabilities)) {
+            return new AvailabilityStatus(false);
+        }
+        usort($availabilities, function ($a, $b) {
+            return $a->compareTo($b);
+        });
+        return $availabilities[0];
+    }
 }

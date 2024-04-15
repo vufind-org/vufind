@@ -35,7 +35,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-use VuFind\ILS\Logic\ItemStatus;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\Marc\MarcReader;
 
 use function count;
@@ -297,8 +297,8 @@ class Alma extends AbstractBase implements
         // Normal check for availability if no mapping found above:
         if (null === $available) {
             $available = (string)$item->item_data->base_status === '1'
-                ? ItemStatus::STATUS_AVAILABLE
-                : ItemStatus::STATUS_UNAVAILABLE;
+                ? AvailabilityStatus::STATUS_AVAILABLE
+                : AvailabilityStatus::STATUS_UNAVAILABLE;
         }
 
         return [$available, $status];
@@ -323,13 +323,13 @@ class Alma extends AbstractBase implements
         if (isset($parts[1])) {
             switch ($parts[1]) {
                 case 'unavailable':
-                    $available = ItemStatus::STATUS_UNAVAILABLE;
+                    $available = AvailabilityStatus::STATUS_UNAVAILABLE;
                     break;
                 case 'uncertain':
-                    $available = ItemStatus::STATUS_UNCERTAIN;
+                    $available = AvailabilityStatus::STATUS_UNCERTAIN;
                     break;
                 default:
-                    $available = ItemStatus::STATUS_AVAILABLE;
+                    $available = AvailabilityStatus::STATUS_AVAILABLE;
                     break;
             }
         }

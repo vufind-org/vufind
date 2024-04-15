@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for GetItemStatus AJAX handler.
+ * Availability Status Manager
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\ILS\Logic;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for GetItemStatus AJAX handler.
+ * Availability Status Manager Factory
  *
  * @category VuFind
- * @package  AJAX
+ * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class AvailabilityStatusManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,8 +59,6 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -67,17 +66,9 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $handler = new $requestedName(
-            $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\ILS\Connection::class),
-            $container->get('ViewRenderer'),
-            $container->get(\VuFind\ILS\Logic\Holds::class),
-            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class)
+        return new $requestedName(
         );
-        $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
-        return $handler;
     }
 }

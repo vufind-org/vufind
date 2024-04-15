@@ -22,7 +22,7 @@
             $location = $details['location'];
             foreach ($details['items'] as $item) {
                 $callno = $item['callnumber'] ?? false;
-                if ($item['availability']) {
+                if ($item['availability']->isAvailable()) {
                     if ($callno) {
                         // Best case scenario -- available item with call number!
                         // Exit loop in this situation.

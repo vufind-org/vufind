@@ -38,6 +38,7 @@ use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Driver\DriverInterface;
+use VuFind\ILS\Logic\AvailabilityStatus;
 
 use function call_user_func_array;
 use function count;
@@ -60,8 +61,6 @@ use function is_object;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
- *
- * @method array getStatus(string $id)
  */
 class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 {
@@ -1103,7 +1102,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Get holdings
      *
-     * Retrieve holdings from ILS driver class and normalize result array if needed.
+     * Retrieve holdings from ILS driver class and normalize result array and availability if needed.
      *
      * @param string $id      The record id to retrieve the holdings for
      * @param array  $patron  Patron data
@@ -1150,9 +1149,70 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $holdings['electronic_holdings'] = [];
             }
         }
+
+        // parse availability and status to AvailabilityStatus object
+        $holdings['holdings'] = array_map($this->getStatusParser(), $holdings['holdings']);
+        $holdings['electronic_holdings'] = array_map($this->getStatusParser(), $holdings['electronic_holdings']);
         $holdings['page'] = $finalOptions['page'];
         $holdings['itemLimit'] = $finalOptions['itemLimit'];
         return $holdings;
+    }
+
+    /**
+     * Get status
+     *
+     * Retrieve status from ILS driver class and normalize availability if needed.
+     *
+     * @param string $id The record id to retrieve the status for
+     *
+     * @return array Array with holding data
+     */
+    public function getStatus($id)
+    {
+        $status = $this->__call('getStatus', [$id]);
+
+        // parse availability and status to AvailabilityStatus object
+        return array_map($this->getStatusParser(), $status);
+    }
+
+    /**
+     * Get statuses
+     *
+     * Retrieve statuses from ILS driver class and normalize availability if needed.
+     *
+     * @param string $ids The record ids to retrieve the statuses for
+     *
+     * @return array Array with holding data
+     */
+    public function getStatuses($ids)
+    {
+        $statuses = $this->__call('getStatuses', [$ids]);
+
+        return array_map(function ($status) {
+            // parse availability and status to AvailabilityStatus object
+            return array_map($this->getStatusParser(), $status);
+        }, $statuses);
+    }
+
+    /**
+     * Get a function that parses availability and status to an AvailabilityStatus object if necessary.
+     *
+     * @return callable
+     */
+    public function getStatusParser()
+    {
+        return function ($item) {
+            if (!($item['availability'] instanceof AvailabilityStatus)) {
+                $item['availability'] = new AvailabilityStatus(
+                    $item['availability'] ?? false,
+                    $item['status'] ?? ''
+                );
+                $item['availability']->setUseUnknownMessage($item['use_unknown_message'] ?? false);
+                unset($item['status']);
+                unset($item['use_unknown_message']);
+            }
+            return $item;
+        };
     }
 
     /**

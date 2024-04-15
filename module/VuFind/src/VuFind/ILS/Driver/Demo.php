@@ -40,7 +40,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\ILS\Logic\ItemStatus;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -476,14 +476,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
         switch ($status) {
             case 'Uncertain':
-                $availability = ItemStatus::STATUS_UNCERTAIN;
+                $availability = AvailabilityStatus::STATUS_UNCERTAIN;
                 break;
             case 'Available':
                 if (rand(1, 2) === 1) {
                     // Legacy boolean value
                     $availability = true;
                 } else {
-                    $availability = ItemStatus::STATUS_AVAILABLE;
+                    $availability = AvailabilityStatus::STATUS_AVAILABLE;
                     $status = 'Item in Library';
                 }
                 break;
@@ -492,7 +492,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     // Legacy boolean value
                     $availability = false;
                 } else {
-                    $availability = ItemStatus::STATUS_UNAVAILABLE;
+                    $availability = AvailabilityStatus::STATUS_UNAVAILABLE;
                 }
                 break;
         }

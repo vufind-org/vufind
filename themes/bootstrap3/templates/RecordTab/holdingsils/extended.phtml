@@ -3,9 +3,10 @@
     $check = $holding['check'] ?? false;
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
+    $availabilityStatus = $holding['availability'];
   ?>
   <tr vocab="http://schema.org/" typeof="Offer">
-    <td colspan="2" class="holding-<?=$holding['availability'] ? 'available' : 'unavailable' ?>">
+    <td colspan="2" class="holding-<?=$availabilityStatus->isAvailable() ? 'available' : 'unavailable' ?>">
       <div class="holding-details">
         <span class="holding-field copy-number">
           <?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'])?>
@@ -24,26 +25,16 @@
             <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
           <?php endif; ?>
 
-          <?php if ($holding['use_unknown_message'] ?? false): ?>
+          <?php if ($availabilityStatus->useUnknownMessage()): ?>
             <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
           <?php else: ?>
-            <?php if ($holding['availability']): ?>
-              <?php /* Begin Available Items (Holds) */ ?>
-              <?php
-                if ((int)$holding['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN) {
-                  $statusClassEsc = 'text-warning';
-                  $status = $holding['status'];
-                  $schemaAvailEsc = 'http://schema.org/LimitedAvailability';
-                } else {
-                  $statusClassEsc = 'text-success';
-                  $status = is_int($holding['availability']) && !empty($holding['status']) ? $holding['status'] : 'Available';
-                  $schemaAvailEsc = 'http://schema.org/InStock';
-                }
-              ?>
-              <span class="<?=$statusClassEsc?>"><?=$this->transEsc($status)?><link property="availability" href="<?=$schemaAvailEsc?>"></span>
-            <?php else: ?>
-              <?php /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
+            <?php
+              $statusClassEsc = 'text-' . $availabilityStatus->getStatusClass();
+              $statusDescription = $availabilityStatus->getStatusDescription();
+              $schemaAvailEsc = $availabilityStatus->getSchema();
+            ?>
+            <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?><link property="availability" <?=$schemaAvailEsc ? 'href="' . $schemaAvailEsc . '"' : ''?>></span>
+            <?php if (!$availabilityStatus->isAvailable()): ?>
               <?php if ($holding['returnDate'] ?? false): ?>
                 <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
               <?php endif; ?>
@@ -72,7 +63,7 @@
             </a>
           <?php endif; ?>
         </span>
-        <?php if ($holding['availability'] ?? false): ?>
+        <?php if ($availabilityStatus->isAvailable()): ?>
           <span class="holding-field place-hold">
             <?php if ($holding['link'] ?? false): ?>
               <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
