@@ -1,2 +1,4 @@
 baseurl: "/vufind"
-lessc: "_plugins/less/bin/lessc"
+sass:
+    load_paths:
+        - assets/css
