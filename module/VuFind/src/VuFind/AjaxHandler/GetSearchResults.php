@@ -241,6 +241,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
                 'showBulkOptions' => $showBulkOptions,
                 'showCartControls' => $showCartControls,
                 'showCheckboxes' => $showCheckboxes,
+                'saveToHistory' => (bool)$requestParams->fromQuery('history', false),
             ]
         );
     }
