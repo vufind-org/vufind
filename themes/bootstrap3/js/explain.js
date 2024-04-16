@@ -204,10 +204,15 @@ VuFind.register('explain', function explain() {
     });
   }
 
-  function init() {
+  function updateContainer() {
     _setupResultListChart();
     _setupExplainPieChart();
     _setupExplainColumnChart();
+  }
+
+  function init() {
+    updateContainer();
+    VuFind.listen('result-scripts', updateContainer);
   }
 
   return {

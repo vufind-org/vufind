@@ -15,8 +15,6 @@ var VuFind = (function VuFind() {
   var _elementBase;
   var _iconsCache = {};
 
-  var _additionalResultScripts = [];
-
   // Event controls
 
   let listeners = {};
@@ -425,42 +423,11 @@ var VuFind = (function VuFind() {
    */
   var initResultScripts = function initResultScripts(container) {
     let jqContainer = typeof container === 'string' ? $(container) : container;
-    if (typeof this.doi !== 'undefined') {
-      this.doi.embedDoiLinks(jqContainer);
-    }
-    if (typeof this.openurl !== 'undefined') {
-      this.openurl.init(jqContainer);
-    }
-    if (typeof this.itemStatuses !== 'undefined') {
-      this.itemStatuses.init(jqContainer);
-    }
-    if (typeof this.saveStatuses !== 'undefined') {
-      this.saveStatuses.init(jqContainer);
-    }
-    if (typeof this.recordVersions !== 'undefined') {
-      this.recordVersions.init(jqContainer);
-    }
-    if (typeof this.cart !== 'undefined') {
-      this.cart.registerToggles(jqContainer);
-    }
-    if (typeof this.embedded !== 'undefined') {
-      this.embedded.init(jqContainer);
-    }
-    this.lightbox.bind(jqContainer);
+    emit('result-scripts', jqContainer);
     setupQRCodeLinks(jqContainer[0]);
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
-    if (typeof this.explain !== 'undefined') {
-      this.explain.init();
-    }
-    _additionalResultScripts.forEach(
-      (callback) => callback(container)
-    );
-  };
-
-  var addResultScript = function addResultScript(callback) {
-    _additionalResultScripts.push(callback);
   };
 
   var init = function init() {
@@ -503,7 +470,6 @@ var VuFind = (function VuFind() {
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
     initResultScripts: initResultScripts,
-    addResultScript: addResultScript,
     setupQRCodeLinks: setupQRCodeLinks,
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,

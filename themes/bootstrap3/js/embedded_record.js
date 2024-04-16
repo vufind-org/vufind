@@ -226,10 +226,15 @@ VuFind.register('embedded', function embedded() {
     }
   }
 
-  function init(_container) {
+  function updateContainer(_container) {
     const container = typeof _container !== 'undefined' ? _container : $(document);
     container.find('.getFull').on('click', function linkToggle() { return toggleDataView(this); });
     loadStorage();
+  }
+
+  function init() {
+    updateContainer();
+    VuFind.listen('result-scripts', updateContainer);
   }
 
   return {

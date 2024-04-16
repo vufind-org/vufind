@@ -229,7 +229,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     records.forEach(checkItemStatus);
   }
 
-  function init($container = document) {
+  function updateContainer($container) {
     const container = unwrapJQuery($container);
 
     if (VuFind.isPrinting()) {
@@ -241,6 +241,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         container.querySelectorAll('.ajaxItem')
       );
     }
+  }
+
+  function init() {
+    updateContainer(document);
+    VuFind.listen('result-scripts', updateContainer);
   }
 
   return { init: init, check: checkAllItemStatuses, checkRecord: checkItemStatus };

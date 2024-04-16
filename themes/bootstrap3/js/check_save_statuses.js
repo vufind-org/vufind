@@ -146,7 +146,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     checkAllSaveStatuses();
   }
 
-  function init($container = document) {
+  function updateContainer($container) {
     const container = unwrapJQuery($container);
 
     if (VuFind.isPrinting()) {
@@ -158,6 +158,11 @@ VuFind.register("saveStatuses", function ItemStatuses() {
         container.querySelectorAll(".result,.record")
       );
     }
+  }
+
+  function init() {
+    updateContainer(document);
+    VuFind.listen('result-scripts', updateContainer);
   }
 
   return { init, refresh, check: checkAllSaveStatuses, checkRecord: checkSaveStatus };

@@ -70,6 +70,7 @@ VuFind.register('doi', function Doi() {
         Array.from(container.querySelectorAll('.doiLink'))
       );
     }
+    VuFind.listen('result-scripts', embedDoiLinks);
   }
   return {
     init: init,
