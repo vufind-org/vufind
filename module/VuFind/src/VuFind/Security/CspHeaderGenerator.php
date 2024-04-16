@@ -180,7 +180,7 @@ class CspHeaderGenerator implements
             if ($groupConfig) {
                 $group = [
                     'group' => $groupName,
-                    'max-age' => $groupConfig->max_age ?? 86400, // one day
+                    'max_age' => $groupConfig->max_age ?? 86400, // one day
                     'endpoints' => [],
                 ];
                 foreach ($groupConfig->endpoints_url ?? [] as $url) {
