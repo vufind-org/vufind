@@ -136,7 +136,7 @@ class CspHeaderGenerator implements
     /**
      * Create Report-To header based on given configuration
      *
-     * @return >GenericHeader
+     * @return ?GenericHeader
      */
     public function getReportToHeader()
     {
