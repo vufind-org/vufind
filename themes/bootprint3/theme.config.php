@@ -1,6 +1,6 @@
 <?php
 return [
-    'extends' => 'bootstrap5',
+    'extends' => 'bootstrap3',
     'icons' => [
         'sets' => [
             /**

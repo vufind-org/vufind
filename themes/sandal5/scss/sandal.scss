@@ -4,7 +4,7 @@
 @import "variables";
 <#LESS */
 /* #SCSS> */
-@import "colors", "variables", "../../bootstrap3/scss/bootstrap";
+@import "colors", "variables", "../../bootstrap5/scss/bootstrap";
 /* <#SCSS */
 
 @import "common";
@@ -32,7 +32,11 @@ body {
 }
 
 /* --- Header --- */
-.navbar { border-radius: 0; }
+.navbar {
+  border-radius: 0;
+  --bs-navbar-color: white;
+  --bs-emphasis-color-rgb: white;
+}
 .banner {
   width: auto;
   color: $white;
