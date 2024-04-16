@@ -46,8 +46,11 @@ use function in_array;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class CspHeaderGenerator
+class CspHeaderGenerator implements
+    \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Configuration for generator from contensecuritypolicy.ini
      *
@@ -100,6 +103,14 @@ class CspHeaderGenerator
                 && $this->config->CSP->use_nonce
             ) {
                 $sources[] = "'nonce-$this->nonce'";
+            }
+            // Warn about report-to being used in place of report-uri
+            if ($name == 'report-to') {
+                foreach ($sources as $source) {
+                    if (str_contains($source, '://')) {
+                        $this->logWarning("CSP report-to directive should not be a URI.");
+                    }
+                }
             }
             $cspHeader->setDirective($name, $sources);
         }
