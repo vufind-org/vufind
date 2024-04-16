@@ -108,7 +108,7 @@ class CspHeaderGenerator implements
             if ($name == 'report-to') {
                 foreach ($sources as $source) {
                     if (str_contains($source, '://')) {
-                        $this->logWarning("CSP report-to directive should not be a URI.");
+                        $this->logWarning('CSP report-to directive should not be a URI.');
                     }
                 }
             }
