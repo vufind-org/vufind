@@ -99,6 +99,11 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
         $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
+
+        // Change sort back to relevance (first option) and verify:
+        $this->clickCss($page, $this->sortControlSelector . ' option');
+        $this->waitForPageLoad($page);
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
     }
 
     /**
