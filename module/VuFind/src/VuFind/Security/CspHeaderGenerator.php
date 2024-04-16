@@ -136,7 +136,7 @@ class CspHeaderGenerator implements
     /**
      * Create Report-To header based on given configuration
      *
-     * @return GenericHeader
+     * @return >GenericHeader
      */
     public function getReportToHeader()
     {
@@ -164,7 +164,7 @@ class CspHeaderGenerator implements
         }
 
         if (!$groupsText) {
-            return false;
+            return null;
         }
         $reportToHeader->setFieldValue(implode(', ', $groupsText));
         return $reportToHeader;
