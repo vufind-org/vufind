@@ -111,12 +111,13 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     }
 
     /**
-     * Check if status should be visible.
+     * Check if status should be visible in the holdings tab.
      *
      * @return bool
      */
     public function isVisible(): bool
     {
+        // Can be overridden if the status should not be visible in the holdings tab,
         return true;
     }
 

@@ -299,10 +299,8 @@ class GetItemStatuses extends AbstractBase implements
         $callnumberSetting
     ) {
         // Get combined availability
-        $availabilities = array_map(function ($info) {
-            return $info['availability'];
-        }, $record);
-        $combinedAvailability = $this->availabilityStatusManager->combine($availabilities);
+        $combinedInfo = $this->availabilityStatusManager->combine($record);
+        $combinedAvailability = $combinedInfo['availability'];
 
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];

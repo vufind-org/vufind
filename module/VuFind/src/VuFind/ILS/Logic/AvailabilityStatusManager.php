@@ -53,20 +53,28 @@ class AvailabilityStatusManager
     }
 
     /**
-     * Get combined availability of multiple availability status.
+     * Get combined item info of multiple item info arrays.
      *
-     * @param array $availabilities Array of Availability Statuses
+     * @param array $items Array of items
      *
-     * @return AvailabilityStatusInterface
+     * @return array
      */
-    public function combine(array $availabilities): AvailabilityStatusInterface
+    public function combine(array $items): array
     {
-        if (empty($availabilities)) {
-            return new AvailabilityStatus(false);
+        if (empty($items)) {
+            return ['availability' => new AvailabilityStatus(false)];
         }
-        usort($availabilities, function ($a, $b) {
-            return $a->compareTo($b);
+        usort($items, function ($a, $b) {
+            $availabilityA = $a['availability'] ?? null;
+            $availabilityB = $b['availability'] ?? null;
+            if ($availabilityA === null) {
+                return 1;
+            }
+            if ($availabilityB === null) {
+                return -1;
+            }
+            return $availabilityA->compareTo($availabilityB);
         });
-        return $availabilities[0];
+        return $items[0];
     }
 }
