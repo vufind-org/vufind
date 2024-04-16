@@ -354,5 +354,8 @@ class Bootstrapper
         if ($cspHeader = $cspHeaderGenerator->getHeader()) {
             $headers->addHeader($cspHeader);
         }
+        if ($reportToHeader = $cspHeaderGenerator->getReportToHeader()) {
+            $headers->addHeader($reportToHeader);
+        }
     }
 }

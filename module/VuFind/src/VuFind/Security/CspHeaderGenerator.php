@@ -31,6 +31,7 @@ namespace VuFind\Security;
 
 use Laminas\Http\Header\ContentSecurityPolicy;
 use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
+use Laminas\Http\Header\GenericHeader;
 
 use function in_array;
 
@@ -100,10 +101,6 @@ class CspHeaderGenerator
             ) {
                 $sources[] = "'nonce-$this->nonce'";
             }
-            // Add report-uri header for backwards compatibility
-            if ($name == 'report-to') {
-                $cspHeader->setDirective('report-uri', $sources);
-            }
             $cspHeader->setDirective($name, $sources);
         }
         return $cspHeader;
@@ -123,5 +120,42 @@ class CspHeaderGenerator
         return ('report_only' === $mode)
             ? new ContentSecurityPolicyReportOnly()
             : new ContentSecurityPolicy();
+    }
+
+    /**
+     * Create Report-To header based on given configuration
+     *
+     * @return GenericHeader
+     */
+    public function getReportToHeader()
+    {
+        $reportToHeader = new GenericHeader();
+        $reportToHeader->setFieldName('Report-To');
+        $groupsText = [];
+
+        $reportTo = $this->config->ReportTo;
+        foreach ($reportTo['groups'] ?? [] as $groupName) {
+            $configSectionName = 'ReportTo' . $groupName;
+            $groupConfig = $this->config->$configSectionName ?? false;
+            if ($groupConfig) {
+                $group = [
+                    'group' => $groupName,
+                    'max-age' => $groupConfig->max_age ?? 86400, // one day
+                    'endpoints' => [],
+                ];
+                foreach ($groupConfig->endpoints_url ?? [] as $url) {
+                    $group['endpoints'][] = [
+                        'url' => $url,
+                    ];
+                }
+                $groupsText[] = json_encode($group, JSON_UNESCAPED_SLASHES);
+            }
+        }
+
+        if (!$groupsText) {
+            return false;
+        }
+        $reportToHeader->setFieldValue(join(", ", $groupsText));
+        return $reportToHeader;
     }
 }
