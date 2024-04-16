@@ -3,7 +3,7 @@
     <form id="export-form" method="POST" action="<?=$this->escapeHtmlAttr($this->url)?>" target="<?=$this->escapeHtmlAttr($this->targetWindow)?>">
       <input type="hidden" name="<?=$this->escapeHtmlAttr($this->postField)?>" value="<?=$this->escapeHtmlAttr($this->postData)?>">
       <?=$this->transEsc('export_success')?>&nbsp;&mdash;&nbsp;
-      <input class="btn btn-primary" type="submit" name="submit"
+      <input class="btn btn-primary" type="submit" name="submitButton"
         value="<?=$this->transEscAttr('export_send', ['%%service%%' => $this->translate($this->export()->getLabelForFormat($this->format))])?>"
       >
     </form>

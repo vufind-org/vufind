@@ -303,7 +303,7 @@ class CartController extends AbstractBase
         $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {

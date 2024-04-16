@@ -660,7 +660,7 @@ class UpgradeController extends AbstractBase
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
             // Process form submission:
-            if ($this->formWasSubmitted('submit')) {
+            if ($this->formWasSubmitted()) {
                 $pass = $this->params()->fromPost('dbrootpass');
 
                 // Test the connection:
@@ -699,7 +699,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             $user = $this->params()->fromPost('username');
             if (empty($user)) {
                 $this->flashMessenger()
@@ -742,7 +742,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             $this->getTable('Tags')->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -778,7 +778,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Process submit button:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             $converter = $this->serviceLocator->get(Converter::class);
             foreach ($problems as $problem) {
                 try {
