@@ -165,7 +165,7 @@ class Backend extends AbstractBackend implements
 
         $params->set('rows', $limit);
         $params->set('start', $offset);
-        $params->mergeWith($this->getQueryBuilder()->build($query));
+        $params->mergeWith($this->getQueryBuilder()->build($query, $params));
         return $this->connector->search($params);
     }
 

@@ -49,16 +49,18 @@ class QueryBuilder
     /**
      * Return BrowZine search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Send back results
         $q = $this->abstractQueryToArray($query);
-        $params = new ParamBag(['query' => empty($q) ? '*' : $q]);
-        return $params;
+        return new ParamBag(['query' => empty($q) ? '*' : $q]);
     }
 
     /// Internal API

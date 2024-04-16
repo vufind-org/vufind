@@ -62,28 +62,32 @@ class QueryBuilder
     /**
      * Return LibGuides search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Send back results
-        $params = new ParamBag();
+        $newParams = new ParamBag();
 
         // Convert the query to an array, then flatten that to a string
         // (right now, we're ignoring a lot of data -- we may want to
         // revisit this and see if more detail can be utilized).
         $array = $this->abstractQueryToArray($query);
         if (isset($array[0]['lookfor'])) {
-            $params->set('search', $array[0]['lookfor']);
+            $newParams->set('search', $array[0]['lookfor']);
         }
 
-        if (!$params->hasParam('widget_type')) {
-            $params->set('widget_type', $this->defaultWidgetType);
+        // TODO: is this check correct?
+        if (!$newParams->hasParam('widget_type')) {
+            $newParams->set('widget_type', $this->defaultWidgetType);
         }
 
-        return $params;
+        return $newParams;
     }
 
     /**
