@@ -155,7 +155,7 @@ class CspHeaderGenerator
         if (!$groupsText) {
             return false;
         }
-        $reportToHeader->setFieldValue(implode(", ", $groupsText));
+        $reportToHeader->setFieldValue(implode(', ', $groupsText));
         return $reportToHeader;
     }
 }
