@@ -55,7 +55,7 @@ class QueryBuilder
      *
      * @var string
      */
-    protected $defaultWidgetType = '1';
+    protected $widgetType = '1';
 
     /// Public API
 
@@ -81,25 +81,21 @@ class QueryBuilder
         if (isset($array[0]['lookfor'])) {
             $newParams->set('search', $array[0]['lookfor']);
         }
-
-        // TODO: is this check correct?
-        if (!$newParams->hasParam('widget_type')) {
-            $newParams->set('widget_type', $this->defaultWidgetType);
-        }
+        $newParams->set('widget_type', $this->widgetType);
 
         return $newParams;
     }
 
     /**
-     * Set the default widget type for this QueryBuilder instance.  See $defaultWidgetType.
+     * Set the widget type for this QueryBuilder instance.  See $widgetType.
      *
-     * @param string $type default widget type
+     * @param string $type Widget type
      *
      * @return void
      */
     public function setDefaultWidgetType($type)
     {
-        $this->defaultWidgetType = $type;
+        $this->widgetType = $type;
     }
 
     /// Internal API
