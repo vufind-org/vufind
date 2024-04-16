@@ -85,11 +85,40 @@ class CspHeaderGenerator implements
     }
 
     /**
+     * Create all relevant CSP-related headers based on given configuration
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        $headers = [];
+        if ($cspHeader = $this->getCspHeader()) {
+            $headers[] = $cspHeader;
+        }
+        if ($reportToHeader = $this->getReportToHeader()) {
+            $headers[] = $reportToHeader;
+        }
+        return $headers;
+    }
+
+    /**
+     * Create CSP header base on given configuration
+     *
+     * @return ContentSecurityPolicy
+     *
+     * @deprecated Use getCspHeader instead
+     */
+    public function getHeader()
+    {
+        return $this->getCspHeader();
+    }
+
+    /**
      * Create CSP header base on given configuration
      *
      * @return ContentSecurityPolicy
      */
-    public function getHeader()
+    public function getCspHeader()
     {
         $cspHeader = $this->createHeaderObject();
         $directives = $this->config->Directives ?? [];
