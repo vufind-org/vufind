@@ -64,12 +64,14 @@ class QueryBuilder
     /**
      * Return Summon search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query  Query object
-     * @param ParamBag      $params Search backend parameters
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query, ParamBag $params = null)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);
