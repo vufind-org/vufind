@@ -29,7 +29,7 @@
             <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
           <?php else: ?>
             <?php
-              $statusClassEsc = 'text-' . $availabilityStatus->getStatusClass();
+              $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
               $statusDescription = $availabilityStatus->getStatusDescription();
               $schemaAvailEsc = $availabilityStatus->getSchema();
             ?>

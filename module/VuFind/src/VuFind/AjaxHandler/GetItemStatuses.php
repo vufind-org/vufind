@@ -107,13 +107,6 @@ class GetItemStatuses extends AbstractBase implements
     protected $availabilityStatusManager;
 
     /**
-     * Status messages
-     *
-     * @var array
-     */
-    protected $messages;
-
-    /**
      * Constructor
      *
      * @param SessionSettings           $ss            Session settings
@@ -380,10 +373,8 @@ class GetItemStatuses extends AbstractBase implements
     protected function getItemStatusGroup($record, $callnumberSetting)
     {
         // Get combined availability
-        $availabilities = array_map(function ($info) {
-            return $info['availability'];
-        }, $record);
-        $combinedAvailability = $this->availabilityStatusManager->combine($availabilities);
+        $combinedInfo = $this->availabilityStatusManager->combine($record);
+        $combinedAvailability = $combinedInfo['availability'];
 
         // Summarize call number, location and availability info across all items:
         $locations = [];
@@ -486,27 +477,8 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function getAvailabilityMessage($availability): string
     {
-        $key = $availability->getStatusMessageKey();
-        if (!empty($key)) {
-            if (!isset($this->messages[$key])) {
-                $this->messages[$key] = $this->renderAvailabilityMessage($availability);
-            }
-            return $this->messages[$key] ?? '';
-        }
-        return $this->renderAvailabilityMessage($availability);
-    }
-
-    /**
-     * Render message for availability status
-     *
-     * @param AvailabilityStatusInterface $availability Availability Status
-     *
-     * @return string
-     */
-    protected function renderAvailabilityMessage($availability)
-    {
         return $this->renderer->render(
-            $availability->getStatusMessageTemplate(),
+            'ajax/status.phtml',
             ['availabilityStatus' => $availability]
         );
     }

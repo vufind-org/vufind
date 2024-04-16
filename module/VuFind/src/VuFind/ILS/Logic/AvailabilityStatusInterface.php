@@ -94,32 +94,11 @@ interface AvailabilityStatusInterface
     public function getStatusLabel(): string;
 
     /**
-     * Get status class.
-     *
-     * @return string
-     */
-    public function getStatusClass(): string;
-
-    /**
      * Get schema.
      *
      * @return ?string
      */
     public function getSchema(): ?string;
-
-    /**
-     * Get status message key
-     *
-     * @return ?string
-     */
-    public function getStatusMessageKey(): ?string;
-
-    /**
-     * Get status message key.
-     *
-     * @return string
-     */
-    public function getStatusMessageTemplate(): string;
 
     /**
      * Convert availability to a string

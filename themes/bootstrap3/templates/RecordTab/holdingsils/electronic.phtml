@@ -18,7 +18,7 @@
           <span><?=$this->transEsc('status_unknown_message')?></span>
         <?php else: ?>
           <?php
-            $statusClassEsc = 'text-' . $availabilityStatus->getStatusClass();
+            $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
             $statusDescription = $availabilityStatus->getStatusDescription();
           ?>
           <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?></span>

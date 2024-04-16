@@ -35,7 +35,7 @@
           <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
         <?php else: ?>
           <?php
-            $statusClassEsc = 'text-' . $availabilityStatus->getStatusClass();
+            $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
             if ($availabilityStatus->isAvailable() && $item['reserve'] === 'Y') {
               $statusDescription = 'On Reserve';
             } else {

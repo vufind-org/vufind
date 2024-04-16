@@ -181,23 +181,6 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     }
 
     /**
-     * Get status class.
-     *
-     * @return string
-     */
-    public function getStatusClass(): string
-    {
-        switch ($this->availability) {
-            case self::STATUS_UNAVAILABLE:
-                return 'danger';
-            case self::STATUS_AVAILABLE:
-                return 'success';
-            default:
-                return 'warning';
-        }
-    }
-
-    /**
      * Get schema.
      *
      * @return ?string
@@ -212,32 +195,6 @@ class AvailabilityStatus implements AvailabilityStatusInterface
             default:
                 return 'http://schema.org/LimitedAvailability';
         }
-    }
-
-    /**
-     * Get status message key
-     *
-     * @return ?string
-     */
-    public function getStatusMessageKey(): ?string
-    {
-        if ($this->useUnknownMessage) {
-            return 'unknown';
-        }
-        return lcfirst($this->getStatusDescription());
-    }
-
-    /**
-     * Get status message key.
-     *
-     * @return string
-     */
-    public function getStatusMessageTemplate(): string
-    {
-        if ($this->useUnknownMessage) {
-            return 'ajax/status-unknown.phtml';
-        }
-        return 'ajax/status.phtml';
     }
 
     /**
