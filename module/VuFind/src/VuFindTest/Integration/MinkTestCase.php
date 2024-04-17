@@ -90,7 +90,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for an open button group dropdown menu
      *
-     * .in for Bootstrap 3, .show for Bootstrap 5
+     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
      *
      * @var string
      */
@@ -99,16 +99,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for first item in a dropdown menu
      *
-     * .in for Bootstrap 3, .show for Bootstrap 5
+     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
      *
      * @var string
      */
-    protected $firstOpenDropdownMenuItemSelector = '.mainbody .dropdown-menu.in li:nth-child(1) a, .mainbody .dropdown-menu.show li:nth-child(1) a';
+    protected $firstOpenDropdownMenuItemSelector
+        = '.mainbody .dropdown-menu.in li:nth-child(1) a, .mainbody .dropdown-menu.show li:nth-child(1) a';
 
     /**
      * Selector for popover content
      *
-     * .popover-content for Bootstrap 3, .popover-body for Boostrap 5
+     * Selector is .popover-content for Bootstrap 3, .popover-body for Boostrap 5
      *
      * @var string
      */
@@ -117,7 +118,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for an open modal dialog
      *
-     * .in for Bootstrap 3, .show for Bootstrap 5
+     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
      *
      * @var string
      */
@@ -126,7 +127,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for a username field in open modal dialog
      *
-     * .in for Bootstrap 3, .show for Bootstrap 5
+     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
      *
      * @var string
      */
@@ -135,7 +136,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for next page link
      *
-     * a.page-next for Bootstrap 3, .page-next a for Bootstrap 5
+     * Selector is a.page-next for Bootstrap 3, .page-next a for Bootstrap 5
      *
      * @var string
      */
@@ -144,7 +145,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for previous page link
      *
-     * a.page-prev for Bootstrap 3, .page-prev a for Bootstrap 5
+     * Selector is a.page-prev for Bootstrap 3, .page-prev a for Bootstrap 5
      *
      * @var string
      */

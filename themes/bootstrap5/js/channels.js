@@ -202,7 +202,7 @@ VuFind.register('channels', function Channels() {
   function init () {
     $('.channel').each(setupChannelSlider);
     $('.channel').each(bindChannelAddMenu);
-    document.addEventListener('hidden.bs.popover', () => {
+    document.addEventListener('hidden.bs.popover', (e) => {
       if (isCurrentPopoverRecord($(e.target))) {
         switchPopover(false);
       }

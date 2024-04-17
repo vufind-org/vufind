@@ -48,7 +48,7 @@ VuFind.register('bs3-compat', function cookie() {
       el.classList.add('page-item');
       const linkEl = el.querySelector('a');
       if (linkEl) {
-        linkEl.classList.add('page-link')
+        linkEl.classList.add('page-link');
       } else {
         el.innerHTML = '<a href="#" class="page-link">' + el.innerHTML + '</a>';
       }
