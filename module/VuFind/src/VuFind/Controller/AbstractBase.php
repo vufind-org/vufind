@@ -529,11 +529,13 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Get a database service object.
      *
-     * @param string $name Name of service to retrieve
+     * @param class-string<T> $name Name of service to retrieve
      *
-     * @return \VuFind\Db\Service\AbstractDbService
+     * @template T
+     *
+     * @return T
      */
-    public function getDbService(string $name): \VuFind\Db\Service\AbstractDbService
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
     {
         return $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
             ->get($name);
@@ -578,19 +580,29 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string $submitElement Name of the post field of the submit button
-     * @param bool   $useCaptcha    Are we using captcha in this situation?
+     * @param string|string[]|null $submitElements Name of the post field(s) to check
+     * to indicate a form submission (or null for default)
+     * @param bool                 $useCaptcha     Are we using captcha in this situation?
      *
      * @return bool
      */
     protected function formWasSubmitted(
-        $submitElement = 'submit',
+        $submitElements = null,
         $useCaptcha = false
     ) {
-        // Fail if the expected submission element was missing from the POST:
-        // Form was submitted; if CAPTCHA is expected, validate it now.
-        return $this->params()->fromPost($submitElement, false)
-            && (!$useCaptcha || $this->captcha()->verify());
+        $buttonFound = false;
+        // Use of 'submit' as an input name was deprecated in release 10.0, but the
+        // check is retained for backward compatibility with custom templates.
+        $defaultSubmitElements = ['submitButton', 'submit'];
+        foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
+            if ($this->params()->fromPost($submitElement, false)) {
+                $buttonFound = true;
+                break;
+            }
+        }
+        // Fail if all expected submission elements were missing from the POST or
+        // if the form was submitted but expected CAPTCHA does not validate.
+        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
     }
 
     /**

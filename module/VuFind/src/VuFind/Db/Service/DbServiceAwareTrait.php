@@ -76,11 +76,13 @@ trait DbServiceAwareTrait
     /**
      * Get a database service object.
      *
-     * @param string $name Name of service to retrieve
+     * @param class-string<T> $name Name of service to retrieve
      *
-     * @return AbstractDbService
+     * @template T
+     *
+     * @return T
      */
-    public function getDbService(string $name)
+    public function getDbService(string $name): DbServiceInterface
     {
         return $this->getDbServiceManager()->get($name);
     }
