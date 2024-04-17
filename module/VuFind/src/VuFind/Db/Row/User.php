@@ -700,8 +700,10 @@ class User extends RowGateway implements
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
-            $comments = $this->getDbTable('Comments');
-            $comments->deleteByUser($this);
+            $comments = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
             $ratings = $this->getDbTable('Ratings');
