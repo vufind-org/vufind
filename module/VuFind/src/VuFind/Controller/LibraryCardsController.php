@@ -90,7 +90,7 @@ class LibraryCardsController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             if ($redirect = $this->processEditLibraryCard($user)) {
                 return $redirect;
             }
@@ -203,7 +203,7 @@ class LibraryCardsController extends AbstractBase
         try {
             $catalog = $this->getILS();
             $patron = $catalog->patronLogin(
-                $user->cat_username,
+                $user->getCatUsername(),
                 $this->getILSAuthenticator()->getCatPasswordForUser($user)
             );
             if (!$patron) {
