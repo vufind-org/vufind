@@ -138,10 +138,32 @@ legend {
 }
 
 .btn-default {
-  @include button-variant($btn-default-bg, $btn-default-border, $btn-default-color, $btn-default-color, $btn-default-border, $btn-default-bg);
+  @include button-variant(
+    $btn-default-bg,
+    $btn-default-border,
+    $color: $btn-default-color,
+    $hover-background: $btn-default-color,
+    $hover-border: $btn-default-border,
+    $hover-color: $btn-default-bg,
+    $active-background: shade-color($btn-default-bg, $btn-active-bg-shade-amount),
+    $active-border: shade-color($btn-default-border, $btn-active-border-shade-amount),
+    $active-color: $btn-default-color,
+  );
+
+  &:focus,
+  &.focus {
+    background-color: darken($btn-default-bg, 10%);
+  }
 }
 .btn-primary {
-  @include button-variant($primary, $text-color, $body-bg, $body-bg, $text-color, $primary);
+  @include button-variant(
+    $primary,
+    $text-color,
+    $color: $body-bg,
+    $hover-background: $body-bg,
+    $hover-border: $text-color,
+    $hover-color: $primary
+  );
 }
 .btn-group {
   display: inline-block;
