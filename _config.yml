@@ -2,6 +2,3 @@ baseurl: "/vufind"
 sass:
     load_paths:
         - assets/css
-        - assets/css/vendor
-        - vufind/assets/css
-        - vufind/assets/css/vendor
