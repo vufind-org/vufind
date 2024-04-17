@@ -98,6 +98,9 @@ class CspHeaderGenerator implements
         if ($reportToHeader = $this->getReportToHeader()) {
             $headers[] = $reportToHeader;
         }
+        if ($nelHeader = $this->getNetworkErrorLoggingHeader()) {
+            $headers[] = $nelHeader;
+        }
         return $headers;
     }
 
@@ -197,5 +200,31 @@ class CspHeaderGenerator implements
         }
         $reportToHeader->setFieldValue(implode(', ', $groupsText));
         return $reportToHeader;
+    }
+
+    /**
+     * Create NEL (Network Error Logging) header based on given configuration
+     *
+     * @return ?GenericHeader
+     */
+    public function getNetworkErrorLoggingHeader()
+    {
+        $nelHeader = new \Laminas\Http\Header\GenericHeader();
+        $nelHeader->setFieldName('NEL');
+        $nelData = [];
+
+        $nelConfig = $this->config->NetworkErrorLogging;
+        if ($reportTo = $nelConfig['report_to'] ?? null) {
+            $nelData['report_to'] = $reportTo;
+        } else {
+            return null;
+        }
+        $nelData['max_age'] = $nelConfig['max_age'] ?? 86400; // one day
+        $nelData['include_subdomains'] = $nelConfig['include_subdomains'] ?? false;
+        $nelData['failure_fraction'] = (float)$nelConfig['failure_fraction'] ?? 1.0;
+
+        $nelText = json_encode($nelData, JSON_UNESCAPED_SLASHES);
+        $nelHeader->setFieldValue($nelText);
+        return $nelHeader;
     }
 }
