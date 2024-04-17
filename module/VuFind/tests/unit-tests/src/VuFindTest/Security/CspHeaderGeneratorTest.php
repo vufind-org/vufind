@@ -47,7 +47,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     /**
      * Nonce generator mock
      *
-     * @type \PHPUnit\Framework\MockObject
+     * @var \PHPUnit\Framework\MockObject&\VuFind\Security\NonceGenerator
      */
     protected $nonceGenerator;
 
