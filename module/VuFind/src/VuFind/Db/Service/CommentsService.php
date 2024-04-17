@@ -35,6 +35,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
+use function is_array;
 use function is_int;
 
 /**
