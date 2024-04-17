@@ -351,7 +351,7 @@ class Bootstrapper
         $headers = $this->event->getResponse()->getHeaders();
         $cspHeaderGenerator = $this->container
             ->get(\VuFind\Security\CspHeaderGenerator::class);
-        foreach ($cspHeaders = $cspHeaderGenerator->getHeaders() as $cspHeader) {
+        foreach ($cspHeaderGenerator->getHeaders() as $cspHeader) {
             $headers->addHeader($cspHeader);
         }
     }
