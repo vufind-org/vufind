@@ -70,7 +70,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @dataProvider windowDimensionProvider
      */
-    public function testHomePage(int $windowWidth, int $windowHeight, array $controlVisibility): void
+    public function testBulkControls(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate the bulk options:
         $this->changeConfigs(
