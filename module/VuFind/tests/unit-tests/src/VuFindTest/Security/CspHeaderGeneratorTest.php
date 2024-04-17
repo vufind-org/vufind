@@ -75,9 +75,10 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
         $generator = $this->buildGenerator($configData);
 
         $header = $generator->getReportToHeader();
-        $expectedHeader =
+        $expectedHeaderValue =
             '{"group":"CSPReportingEndpoint","max_age":"12345","endpoints":[{"url":"https://abc.report-uri.com"}]}';
-        $this->assertEquals($expectedHeader, $header->getFieldValue());
+        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
+        $this->assertEquals('Report-To', $header->getFieldName());
     }
 
     /**
@@ -103,11 +104,12 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
 
         $header = $generator->getReportToHeader();
         // phpcs:disable Generic.Files.LineLength
-        $expectedHeader =
+        $expectedHeaderValue =
             '{"group":"CSPReportingEndpoint","max_age":"12345","endpoints":[{"url":"https://abc.report-uri.com"}]}, ' .
             '{"group":"Endpoint2","max_age":"67890","endpoints":[{"url":"https://url1.endpoint2.com"},{"url":"https://url2.endpoint2.com"}]}';
         // phpcs:enable
-        $this->assertEquals($expectedHeader, $header->getFieldValue());
+        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
+        $this->assertEquals('Report-To', $header->getFieldName());
     }
 
     /**
