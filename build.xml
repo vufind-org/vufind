@@ -951,17 +951,65 @@ ${git_status}
     </reflexive>
   </target>
 
-  <target name="update-bootstrap5-templates">
-    <property name="templatesdir" value="${srcdir}/themes/bootstrap5/templates" />
+  <!-- Update bootstrap3 templates from bootstrap5 -->
+  <!-- N.B. This destroys any existing bootstrap3 templates (except header.phtml) -->
+  <target name="update-bootstrap3">
+    <property name="templatesdir" value="${srcdir}/themes/bootstrap3/templates" />
     <if>
       <available file="${templatesdir}"></available>
       <then>
-        <delete dir="${templatesdir}" includeemptydirs="true" failonerror="true" />
+        <echo message="Checking for uncommitted changes in ${templatesdir}" />
+        <exec command="git diff --exit-code ${templatesdir}" checkreturn="true" passthru="true" />
+        <delete failonerror="true">
+          <fileset dir="${templatesdir}">
+            <exclude name="header.phtml" />
+          </fileset>
+        </delete>
       </then>
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap3/templates" defaultexcludes="false" />
+      <fileset dir="${srcdir}/themes/bootstrap5/templates" defaultexcludes="false">
+        <exclude name="header.phtml" />
+      </fileset>
+    </copy>
+    <reflexive>
+      <fileset dir="${templatesdir}">
+        <include pattern="**/*.phtml" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <!-- HTML attributes -->
+          <regexp pattern=" data-bs-(dismiss|target|toggle)=" replace=" data-\1=" />
+
+          <!-- HTMLAttributes helper -->
+          <regexp pattern="'data-bs-(dismiss|target|toggle)'" replace="'data-\1'" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
+
+  <!-- Update bootstrap5 templates from bootstrap3 -->
+  <!-- N.B. This destroys any existing bootstrap5 templates (except header.phtml) -->
+  <target name="update-bootstrap5">
+    <property name="templatesdir" value="${srcdir}/themes/bootstrap5/templates" />
+    <if>
+      <available file="${templatesdir}"></available>
+      <then>
+        <echo message="Checking for uncommitted changes in ${templatesdir}" />
+        <exec command="git diff --exit-code ${templatesdir}" checkreturn="true" passthru="true" />
+        <delete failonerror="true">
+          <fileset dir="${templatesdir}">
+            <exclude name="header.phtml" />
+          </fileset>
+        </delete>
+      </then>
+    </if>
+    <mkdir dir="${templatesdir}"></mkdir>
+    <copy todir="${templatesdir}">
+      <fileset dir="${srcdir}/themes/bootstrap3/templates" defaultexcludes="false">
+        <exclude name="header.phtml" />
+      </fileset>
     </copy>
     <reflexive>
       <fileset dir="${templatesdir}">
@@ -977,7 +1025,6 @@ ${git_status}
         </replaceregexp>
       </filterchain>
     </reflexive>
-    <echo message="NOTE: Any files in git overwritten, check status!" />
   </target>
 
 </project>
