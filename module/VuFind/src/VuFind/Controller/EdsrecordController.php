@@ -80,7 +80,12 @@ class EdsrecordController extends AbstractRecord
             }
             throw new ForbiddenException('Access denied.');
         }
-        return $this->redirect()->toUrl($driver->tryMethod($method));
+        $url = $driver->tryMethod($method);
+        if (!$url) {
+            $this->flashMessenger()->addErrorMessage($this->translate('error_accessing_full_text'));
+            return $this->redirect()->toRoute('edsrecord', ['id' => $this->params()->fromRoute('id')]);
+        }
+        return $this->redirect()->toUrl($url);
     }
 
     /**

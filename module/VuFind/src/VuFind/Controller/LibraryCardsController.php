@@ -90,7 +90,7 @@ class LibraryCardsController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             if ($redirect = $this->processEditLibraryCard($user)) {
                 return $redirect;
             }
