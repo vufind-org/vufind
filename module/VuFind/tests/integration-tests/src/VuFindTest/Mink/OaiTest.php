@@ -31,6 +31,8 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
+use function count;
+
 /**
  * OAI-PMH test class.
  *
@@ -51,6 +53,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         'OAI' => [
             'identifier' => 'vufind.org',
             'repository_name' => 'test repo',
+            'page_size' => 10,
         ],
     ];
 
@@ -122,5 +125,46 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         $expectedName = $path === '/OAI/AuthServer'
             ? 'Authority Data Store' : $this->defaultOaiConfig['OAI']['repository_name'];
         $this->assertEquals($expectedName, $xml->Identify->repositoryName);
+    }
+
+    /**
+     * Test the ListRecords verb.
+     *
+     * @return void
+     */
+    public function testListRecords(): void
+    {
+        $this->changeConfigs(['config' => $this->defaultOaiConfig]);
+
+        // Get the first page of results. We expect 20 total results because we only turned on change
+        // tracking in the demo setup for one 20-record file; if more change tracking is added in
+        // future, this test will need to be adjusted.
+        $rawXml = file_get_contents($this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&metadataPrefix=oai_dc');
+        $xml = simplexml_load_string($rawXml);
+        $resultSetSize = 20;
+        $pageSize = $this->defaultOaiConfig['OAI']['page_size'];
+        $resumptionAttributes = $xml->ListRecords->resumptionToken->attributes();
+        $this->assertCount($pageSize, $xml->ListRecords->record);
+        $this->assertEquals($resultSetSize, (int)$resumptionAttributes['completeListSize']);
+        $this->assertEquals(0, (int)$resumptionAttributes['cursor']);
+        $resumptionToken = (string)$xml->ListRecords->resumptionToken;
+        $firstPageFirstId = (string)$xml->ListRecords->record[0]->header->identifier;
+        $this->assertStringStartsWith('oai:vufind.org:', $firstPageFirstId);
+
+        // Now get the second page of results, using the resumption token from the first. Make sure
+        // the results are different than before by comparing first record IDs.
+        $rawXml2 = file_get_contents(
+            $this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&resumptionToken=' . urlencode($resumptionToken)
+        );
+        $xml2 = simplexml_load_string($rawXml2);
+        $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
+        $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));
+        $this->assertEquals($resultSetSize, (int)$resumptionAttributes2['completeListSize']);
+        $this->assertEquals($pageSize, (int)$resumptionAttributes2['cursor']);
+        $resumptionToken2 = (string)$xml2->ListRecords->resumptionToken;
+        $secondPageFirstId = (string)$xml2->ListRecords->record[0]->header->identifier;
+        $this->assertStringStartsWith('oai:vufind.org:', $secondPageFirstId);
+        $this->assertNotEquals($firstPageFirstId, $secondPageFirstId);
+        $this->assertEquals('', $resumptionToken2); // end of set
     }
 }
