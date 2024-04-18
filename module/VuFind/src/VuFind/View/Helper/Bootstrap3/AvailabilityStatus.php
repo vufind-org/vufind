@@ -76,25 +76,19 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      */
     public function renderAjax(AvailabilityStatusInterface $availabilityStatus): string
     {
-        if (empty($this->messageCache)) {
-            $this->messageCache = [
-                'available' => $this->getView()->render('ajax/status-available.phtml'),
-                'unavailable' => $this->getView()->render('ajax/status-unavailable.phtml'),
-                'uncertain' => $this->getView()->render('ajax/status-uncertain.phtml'),
-                'unknown' => $this->getView()->render('ajax/status-unknown.phtml'),
-            ];
-        }
-
         $availabilityStr = $availabilityStatus->availabilityAsString();
         if ($availabilityStatus->useUnknownMessage()) {
-            $key = 'unknown';
+            $key = 'ajax/status-unknown.phtml';
         } elseif ('false' === $availabilityStr) {
-            $key = 'unavailable';
+            $key = 'ajax/status-unavailable.phtml';
         } elseif ('uncertain' === $availabilityStr) {
-            $key = 'uncertain';
+            $key = 'ajax/status-uncertain.phtml';
         } else {
-            $key = 'available';
+            $key = 'ajax/status-available.phtml';
         }
-        return $this->messageCache[$key] ?? '';
+        if (!isset($this->messageCache[$key])) {
+            $this->messageCache[$key] = $this->getView()->render($key);
+        }
+        return $this->messageCache[$key];
     }
 }
