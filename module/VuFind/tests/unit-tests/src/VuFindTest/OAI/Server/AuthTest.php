@@ -74,7 +74,8 @@ class AuthTest extends \PHPUnit\Framework\TestCase
         $auth = new Auth(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager()
+            $this->getMockTableManager(),
+            $this->getMockResumptionService()
         );
         $auth->setRecordFormatter($this->getMockRecordFormatter());
         return $auth;
@@ -118,5 +119,15 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     protected function getMockRecordFormatter(): MockObject&\VuFindApi\Formatter\RecordFormatter
     {
         return $this->createMock(\VuFindApi\Formatter\RecordFormatter::class);
+    }
+
+    /**
+     * Get a mock resumption Service
+     *
+     * @return MockObject&\VuFind\Db\Service\OaiResumptionService
+     */
+    protected function getMockResumptionService(): MockObject&\VuFind\Db\Service\OaiResumptionService
+    {
+        return $this->createMock(\VuFind\Db\Service\OaiResumptionService::class);
     }
 }
