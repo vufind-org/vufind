@@ -155,6 +155,29 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test a Network Error Logging header configuration with falsy values
+     *
+     * @return void
+     */
+    public function testNetworkErrorLoggingHeaderFalsyValues(): void
+    {
+        $configData = parse_ini_file(
+            $this->getFixtureDir() . 'configs/contentsecuritypolicy/contentsecuritypolicy.ini',
+            true
+        );
+        $configData['NetworkErrorLogging']['max_age'] = 0;
+        $configData['NetworkErrorLogging']['include_subdomains'] = false;
+        $configData['NetworkErrorLogging']['failure_fraction'] = 0;
+        $generator = $this->buildGenerator($configData);
+
+        $header = $generator->getNetworkErrorLoggingHeader();
+        $expectedHeaderValue =
+            '{"report_to":"CSPReportingEndpoint","max_age":0,"include_subdomains":false,"failure_fraction":0}';
+        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
+        $this->assertEquals('NEL', $header->getFieldName());
+    }
+
+    /**
      * Build the CspHeaderGenerator object
      *
      * @param array $configData The contentsecuritypolicy.ini config data as an array

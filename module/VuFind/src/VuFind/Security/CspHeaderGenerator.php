@@ -220,11 +220,11 @@ class CspHeaderGenerator implements
             return null;
         }
         $nelData['max_age'] = $nelConfig['max_age'] ?? 86400; // one day
-        if ($includeSubdomains = (bool)$nelConfig['include_subdomains'] ?? null) {
-            $nelData['include_subdomains'] = $includeSubdomains;
+        if (isset($nelConfig['include_subdomains'])) {
+            $nelData['include_subdomains'] = (bool)$nelConfig['include_subdomains'];
         }
-        if ($failureFraction = (float)$nelConfig['failure_fraction'] ?? null) {
-            $nelData['failure_fraction'] = $failureFraction;
+        if (isset($nelConfig['failure_fraction'])) {
+            $nelData['failure_fraction'] = (float)$nelConfig['failure_fraction'];
         }
 
         $nelText = json_encode($nelData, JSON_UNESCAPED_SLASHES);
