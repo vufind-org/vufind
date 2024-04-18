@@ -29,6 +29,7 @@
 
 namespace VuFind\OAI\Server;
 
+use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\OAI\Server as Base;
 
 /**
@@ -47,16 +48,18 @@ class Auth extends Base
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $resultsManager Search manager for retrieving records
-     * @param \VuFind\Record\Loader                $recordLoader   Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tableManager   Table manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
+     * @param \VuFind\Record\Loader                $recordLoader      Record loader
+     * @param \VuFind\Db\Table\PluginManager       $tableManager      Table manager
+     * @param OaiResumptionServiceInterface        $resumptionService Database service for resumption tokens
      */
     public function __construct(
         protected \VuFind\Search\Results\PluginManager $resultsManager,
         protected \VuFind\Record\Loader $recordLoader,
-        protected \VuFind\Db\Table\PluginManager $tableManager
+        protected \VuFind\Db\Table\PluginManager $tableManager,
+        protected OaiResumptionServiceInterface $resumptionService
     ) {
-        parent::__construct($resultsManager, $recordLoader, $tableManager);
+        parent::__construct($resultsManager, $recordLoader, $tableManager, $resumptionService);
         $this->core = 'authority';
         $this->searchClassId = 'SolrAuth';
     }

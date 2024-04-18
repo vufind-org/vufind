@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for oai_resumption table
+ * Database service interface for OaiResumption.
  *
  * PHP version 8
  *
@@ -23,61 +23,58 @@
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Entity;
+namespace VuFind\Db\Service;
 
-use DateTime;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
 
 /**
- * Entity model interface for oai_resumption table
+ * Database service interface for OaiResumption.
  *
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface OaiResumptionEntityInterface extends EntityInterface
+interface OaiResumptionServiceInterface
 {
     /**
-     * Id getter
+     * Remove all expired tokens from the database.
      *
-     * @return int
+     * @return void
      */
-    public function getId(): int;
+    public function removeExpired(): void;
 
     /**
-     * Resumption parameters setter
+     * Retrieve a row from the database based on primary key; return null if it
+     * is not found.
      *
-     * @param ?string $params Resumption parameters.
+     * @param string $token The resumption token to retrieve.
+     *
+     * @return ?OaiResumptionEntityInterface
+     */
+    public function findToken($token): ?OaiResumptionEntityInterface;
+
+    /**
+     * Create a new resumption token
+     *
+     * @param array $params Parameters associated with the token.
+     * @param int   $expire Expiration time for token (Unix timestamp).
+     *
+     * @return int          ID of new token
+     */
+    public function saveToken($params, $expire): int;
+
+    /**
+     * Create a OaiResumption entity object.
      *
      * @return OaiResumptionEntityInterface
      */
-    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface;
-
-    /**
-     * Get resumption parameters.
-     *
-     * @return ?string
-     */
-    public function getResumptionParameters(): ?string;
-
-    /**
-     * Expiry date setter.
-     *
-     * @param Datetime $dateTime Expiration date
-     *
-     * @return OaiResumptionEntityInterface
-     */
-    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface;
-
-    /**
-     * Get expiry date.
-     *
-     * @return DateTime
-     */
-    public function getExpiry(): DateTime;
+    public function createEntity(): OaiResumptionEntityInterface;
 }
