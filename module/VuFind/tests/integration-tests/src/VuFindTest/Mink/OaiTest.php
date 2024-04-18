@@ -103,4 +103,24 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         $xml = simplexml_load_string($rawXml);
         $this->assertEquals('Missing Verb Argument', $xml->error);
     }
+
+    /**
+     * Test that an identify response is provided and includes an appropriate repository name.
+     *
+     * @param string $path URL path to OAI-PMH server.
+     *
+     * @return void
+     *
+     * @dataProvider serverProvider
+     */
+    public function testIdentifyResponseRepositoryName(string $path): void
+    {
+        $this->changeConfigs(['config' => $this->defaultOaiConfig]);
+        $rawXml = file_get_contents($this->getVuFindUrl() . $path . '?verb=Identify');
+        $xml = simplexml_load_string($rawXml);
+        // Authority endpoint overrides default name:
+        $expectedName = $path === '/OAI/AuthServer'
+            ? 'Authority Data Store' : $this->defaultOaiConfig['OAI']['repository_name'];
+        $this->assertEquals($expectedName, $xml->Identify->repositoryName);
+    }
 }
