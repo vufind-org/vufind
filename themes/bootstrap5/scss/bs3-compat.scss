@@ -32,11 +32,13 @@ $input-height-base: $input-height !default;
 $list-group-border: $list-group-border-color !default;
 
 $nav-link-hover-bg:   $gray-lighter !default;
+$nav-link-active-bg:  $primary !default;
 $nav-link-padding:    $nav-link-padding-y !default;
 
 $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
 $navbar-height:                    50px !default;
+
 $padding-base-vertical:            $btn-padding-y !default;
 $padding-base-horizontal:          $btn-padding-x !default;
 
@@ -325,6 +327,15 @@ h6, .h6 {
 .navbar nav {
   width: 100%;
   margin-bottom: 7.5px;
+
+  .nav-link {
+    &.active {
+      background-color: $nav-link-active-bg;
+    }
+    &:not(.active):hover {
+      background-color: $nav-link-hover-bg;
+    }
+  }
 }
 .navbar-right {
   justify-content: right;

@@ -49,6 +49,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "bootstrap/scss/tooltip";
 @import "bootstrap/scss/card";
 @import "bootstrap/scss/popover";
+@import "bootstrap/scss/list-group";
 
 // Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
 @import "bootstrap/scss/utilities/api";
