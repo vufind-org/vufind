@@ -83,6 +83,8 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
      * @param array $params Parameters to save.
      *
      * @return void
+     *
+     * @deprecated
      */
     public function saveParams($params)
     {
