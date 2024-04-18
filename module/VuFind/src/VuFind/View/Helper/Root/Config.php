@@ -103,6 +103,16 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get Java Script config.
+     *
+     * @return array
+     */
+    public function getJsConfig()
+    {
+        return $this->get('js')->toArray();
+    }
+
+    /**
      * Should we limit the number of subjects displayed on the full record?
      *
      * @return int

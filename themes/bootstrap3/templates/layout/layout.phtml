@@ -99,6 +99,7 @@
       }
 
       $root = rtrim($this->url('home'), '/');
+      $jsConfig = json_encode($this->config()->getJsConfig());
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
@@ -106,6 +107,7 @@
       $appendScripts[] = <<<JS
           VuFind.path = '{$root}';
           VuFind.defaultSearchBackend = '{$dsb}';
+          VuFind.config.add({$jsConfig});
           VuFind.addTranslations({$translations});
           VuFind.addIcons({$icons});
           VuFind.setCspNonce('{$cspNonce}');
