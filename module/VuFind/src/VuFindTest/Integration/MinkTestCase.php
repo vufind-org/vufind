@@ -90,7 +90,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for an open button group dropdown menu
      *
-     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
@@ -99,7 +99,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for first item in a dropdown menu
      *
-     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
@@ -109,7 +109,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for popover content
      *
-     * Selector is .popover-content for Bootstrap 3, .popover-body for Boostrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
@@ -118,16 +118,25 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for an open modal dialog
      *
-     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
     protected $openModalSelector = '#modal.in, #modal.show';
 
     /**
+     * Selector for a button link in an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalButtonLinkSelector = '#modal.in a.btn, #modal.show a.btn';
+
+    /**
      * Selector for a username field in open modal dialog
      *
-     * Selector is .in for Bootstrap 3, .show for Bootstrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
@@ -136,7 +145,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for next page link
      *
-     * Selector is a.page-next for Bootstrap 3, .page-next a for Bootstrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
@@ -145,7 +154,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for previous page link
      *
-     * Selector is a.page-prev for Bootstrap 3, .page-prev a for Bootstrap 5
+     * First for Bootstrap 3, second for Bootstrap 5
      *
      * @var string
      */
@@ -1238,6 +1247,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         // Create a pathResolver:
         $this->pathResolver = $this->getPathResolver();
+
+        // Change theme if requested:
+        if ($theme = (string)getenv('VUFIND_TEST_THEME')) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Site' => [
+                            'theme' => $theme,
+                        ],
+                    ],
+                ]
+            );
+        }
     }
 
     /**

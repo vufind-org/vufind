@@ -639,7 +639,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click to add rating
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
-        $this->clickCss($page, $this->openModalSelector . ' a.btn');
+        $this->clickCss($page, $this->openModalButtonLinkSelector);
         // Lightbox login open?
         $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
@@ -651,7 +651,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click rating link:
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
-        $this->clickCss($page, $this->openModalSelector . ' a.btn');
+        $this->clickCss($page, $this->openModalButtonLinkSelector);
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Click rating link again:

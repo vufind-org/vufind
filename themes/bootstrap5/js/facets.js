@@ -186,15 +186,11 @@ VuFind.register('sideFacets', function SideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
   }
 
-  function facetSessionStorage(e) {
+  function facetSessionStorage(e, data) {
     var source = $('#result0 .hiddenSource').val();
     var id = e.target.id;
     var key = 'sidefacet-' + source + id;
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, document.getElementById(id).className);
-    } else {
-      sessionStorage.removeItem(key);
-    }
+    sessionStorage.setItem(key, data);
   }
 
   function init() {
@@ -206,21 +202,15 @@ VuFind.register('sideFacets', function SideFacets() {
       var source = $('#result0 .hiddenSource').val();
       var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
       if (storedItem) {
-        var saveTransition = $.support.transition;
-        try {
-          $.support.transition = false;
-          if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
-            $(item).collapse('show');
-          } else if (!$(item).data('forceIn')) {
-            $(item).collapse('hide');
-          }
-        } finally {
-          $.support.transition = saveTransition;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else if (!$(item).data('forceIn')) {
+          $(item).collapse('hide');
         }
       }
     });
-    $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
-    $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
+    $('.facet-group').on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
+    $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
     $('.side-facets-container-ajax')

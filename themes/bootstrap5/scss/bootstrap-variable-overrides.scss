@@ -53,3 +53,6 @@ $icon-link-underline-offset:        inherit !default;
 
 // Disable dark mode for now:
 $enable-dark-mode:                  false;
+
+// Disable smooth scroll for now (doesn't interact well with Mink tests):
+$enable-smooth-scroll:              false;
