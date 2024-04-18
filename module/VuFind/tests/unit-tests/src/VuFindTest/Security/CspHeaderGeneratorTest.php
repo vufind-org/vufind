@@ -113,6 +113,48 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test a basic Network Error Logging header configuration
+     *
+     * @return void
+     */
+    public function testNetworkErrorLoggingHeaderSimple(): void
+    {
+        $configData = parse_ini_file(
+            $this->getFixtureDir() . 'configs/contentsecuritypolicy/contentsecuritypolicy.ini',
+            true
+        );
+        $generator = $this->buildGenerator($configData);
+
+        $header = $generator->getNetworkErrorLoggingHeader();
+        $expectedHeaderValue =
+            '{"report_to":"CSPReportingEndpoint","max_age":"55555"}';
+        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
+        $this->assertEquals('NEL', $header->getFieldName());
+    }
+
+    /**
+     * Test a Network Error Logging header configuration with custom params
+     *
+     * @return void
+     */
+    public function testNetworkErrorLoggingHeaderComplex(): void
+    {
+        $configData = parse_ini_file(
+            $this->getFixtureDir() . 'configs/contentsecuritypolicy/contentsecuritypolicy.ini',
+            true
+        );
+        $configData['NetworkErrorLogging']['include_subdomains'] = true;
+        $configData['NetworkErrorLogging']['failure_fraction'] = 0.5;
+        $generator = $this->buildGenerator($configData);
+
+        $header = $generator->getNetworkErrorLoggingHeader();
+        $expectedHeaderValue =
+            '{"report_to":"CSPReportingEndpoint","max_age":"55555","include_subdomains":true,"failure_fraction":0.5}';
+        $this->assertEquals($expectedHeaderValue, $header->getFieldValue());
+        $this->assertEquals('NEL', $header->getFieldName());
+    }
+
+    /**
      * Build the CspHeaderGenerator object
      *
      * @param array $configData The contentsecuritypolicy.ini config data as an array
