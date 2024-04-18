@@ -42,6 +42,8 @@ use VuFind\Db\Entity\OaiResumption;
  */
 class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * OaiResumption service object to test.
      *
@@ -164,33 +166,39 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test encoding parameters.
+     * Data provide for testEncodeParams()
      *
-     * @return void
+     * @return array
      */
-    public function testEncodeParams(): void
+    public static function encodeParamsProvider(): array
     {
-        $entityManager = $this->getEntityManager();
-        $pluginManager = $this->getPluginManager();
-        $resumptionService = $this->getService($entityManager, $pluginManager);
-        $params = ['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar'];
-        $queryString  = 'cursor=20&cursorMark=100&foo=bar';
-        $this->assertEquals($queryString, $resumptionService->encodeParams($params));
+        // The expected result is encoded in the test below; both data sets represent the
+        // same values, but in different orders. We want to be sure the result is the same
+        // regardless of order.
+        return [
+            'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']],
+            'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]],
+        ];
     }
 
     /**
-     * Test encoding parameters (with unsorted keys, to confirm that ksort works).
+     * Test encoding parameters.
+     *
+     * @param array $params Parameters to encode.
      *
      * @return void
+     *
+     * @dataProvider encodeParamsProvider
      */
-    public function testEncodeParamsWithUnsortedKeys(): void
+    public function testEncodeParams(array $params): void
     {
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager();
         $resumptionService = $this->getService($entityManager, $pluginManager);
-        $params = ['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20];
-        $queryString  = 'cursor=20&cursorMark=100&foo=bar';
-        $this->assertEquals($queryString, $resumptionService->encodeParams($params));
+        $this->assertEquals(
+            'cursor=20&cursorMark=100&foo=bar',
+            $this->callMethod($resumptionService, 'encodeParams', [$params])
+        );
     }
 
     /**

@@ -121,7 +121,7 @@ class OaiResumptionService extends AbstractDbService implements LoggerAwareInter
      *
      * @return string
      */
-    public function encodeParams($params): string
+    protected function encodeParams($params): string
     {
         ksort($params);
         $processedParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
