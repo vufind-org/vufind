@@ -231,12 +231,12 @@ module.exports = function(grunt) {
     grunt.task.run('dart-sass');
   });
   grunt.registerMultiTask('scssonly', function sassScan() {
-    grunt.config.set('dart-sass', getSassConfig(this.data.options, false, true));
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, false, false));
     grunt.task.run('dart-sass');
   });
 
   grunt.registerMultiTask('check:scss', function sassCheck() {
-    grunt.config.set('dart-sass', getSassConfig(this.data.options, true));
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, true, true));
     grunt.task.run('dart-sass');
   });
 
@@ -254,12 +254,12 @@ module.exports = function(grunt) {
     - grunt lessToSass  = transpile all LESS files to SASS.`);
   });
 
-  function getSassConfig(additionalOptions, checkOnly, ignoreThemesWithLess) {
+  function getSassConfig(additionalOptions, checkOnly, themesWithLess = null) {
     var sassConfig = {},
       path = require('path'),
       themeList = fs.readdirSync(path.resolve('themes')).filter(function (theme) {
         return fs.existsSync(path.resolve('themes/' + theme + '/scss/compiled.scss'))
-          && (!ignoreThemesWithLess || !fs.existsSync(path.resolve('themes/' + theme + '/less/compiled.less')));
+          && (null === themesWithLess || themesWithLess === fs.existsSync(path.resolve('themes/' + theme + '/less/compiled.less')));
       });
 
     for (var i in themeList) {
