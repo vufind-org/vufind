@@ -388,18 +388,26 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetCheckbox()
     {
         $context = $this->getMockContext();
-        $context->expects($this->exactly(2))->method('renderInContext')
-            ->with(
-                self::callback(self::consecutiveCalls(
-                    'record/checkbox.phtml',
-                    ['id' => 'bar-Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']
-                )),
-                self::callback(self::consecutiveCalls(
-                    'record/checkbox.phtml',
-                    ['id' => 'bar-Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']
-                ))
+        $context->expects($this->exactly(2))
+            ->method('renderInContext')
+            ->withConsecutive(
+                ['record/checkbox.phtml', $this->callback(function ($array) {
+                    return ($array['number'] ?? null) == 1 &&
+                        ($array['id'] ?? '') == 'Solr|000105196' &&
+                        ($array['checkboxElementId'] ?? '') == 'bar-Solr|000105196' &&
+                        ($array['prefix'] ?? '') == 'bar' &&
+                        ($array['formAttr'] ?? '') == 'foo';
+                })],
+                ['record/checkbox.phtml', $this->callback(function ($array) {
+                    return ($array['number'] ?? null) == 2 &&
+                        ($array['id'] ?? '') == 'Solr|000105196' &&
+                        ($array['checkboxElementId'] ?? '') == 'bar-Solr|000105196' &&
+                        ($array['prefix'] ?? '') == 'bar' &&
+                        ($array['formAttr'] ?? '') == 'foo';
+                })]
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
+        
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
