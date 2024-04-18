@@ -421,8 +421,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         $context = compact('number') + [
             'id' => $this->getUniqueIdWithSourcePrefix(),
-            'checkboxElementId' => $this->getUniqueHtmlElementId($idPrefix)
-            ];
+            'checkboxElementId' => $this->getUniqueHtmlElementId($idPrefix),
+            'prefix' => $idPrefix
+        ];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }
