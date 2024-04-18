@@ -84,7 +84,7 @@ class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
      *
      * @return void
      *
-     * @deprecated
+     * @deprecated Use \VuFind\Db\Service\OaiResumptionService::saveToken()
      */
     public function saveParams($params)
     {
