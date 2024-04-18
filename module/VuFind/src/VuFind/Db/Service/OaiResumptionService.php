@@ -59,7 +59,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function removeExpired(): void
     {
-        return $this->getDbTable('oairesumption')->removeExpired();
+        $this->getDbTable('oairesumption')->removeExpired();
     }
 
     /**

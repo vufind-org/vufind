@@ -43,6 +43,18 @@ namespace VuFindTest\Mink;
 class OaiTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Default OAI config settings
+     *
+     * @var array
+     */
+    protected $defaultOaiConfig = [
+        'OAI' => [
+            'identifier' => 'vufind.org',
+            'repository_name' => 'test repo',
+        ],
+    ];
+
+    /**
      * Data provider describing OAI servers.
      *
      * @return array[]
@@ -50,7 +62,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     public static function serverProvider(): array
     {
         return [
-            'auth' => ['/OAI/Server/Auth'],
+            'auth' => ['/OAI/AuthServer'],
             'biblio' => ['/OAI/Server'],
         ];
     }
@@ -67,11 +79,28 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     public function testDisabledByDefault(string $path): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/OAI/Server');
+        $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
         $this->assertEquals(
             'OAI Server Not Configured.',
             $page->getText()
         );
+    }
+
+    /**
+     * Test that a verb is required when enabled.
+     *
+     * @param string $path URL path to OAI-PMH server.
+     *
+     * @return void
+     *
+     * @dataProvider serverProvider
+     */
+    public function testVerbRequired(string $path): void
+    {
+        $this->changeConfigs(['config' => $this->defaultOaiConfig]);
+        $rawXml = file_get_contents($this->getVuFindUrl() . $path);
+        $xml = simplexml_load_string($rawXml);
+        $this->assertEquals('Missing Verb Argument', $xml->error);
     }
 }
