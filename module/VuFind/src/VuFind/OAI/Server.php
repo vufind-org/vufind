@@ -147,27 +147,6 @@ class Server
     protected $adminEmail;
 
     /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Table manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
-
-    /**
      * Record link helper (optional)
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
@@ -231,19 +210,15 @@ class Server
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Search manager for
-     * retrieving records
-     * @param \VuFind\Record\Loader                $loader  Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Search manager for retrieving records
+     * @param \VuFind\Record\Loader                $recordLoader   Record loader
+     * @param \VuFind\Db\Table\PluginManager       $tableManager   Table manager
      */
     public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \VuFind\Record\Loader $recordLoader,
+        protected \VuFind\Db\Table\PluginManager $tableManager
     ) {
-        $this->resultsManager = $results;
-        $this->recordLoader = $loader;
-        $this->tableManager = $tables;
     }
 
     /**
