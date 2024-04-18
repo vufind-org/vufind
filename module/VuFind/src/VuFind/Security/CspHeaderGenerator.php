@@ -36,7 +36,9 @@ use Laminas\Http\Header\GenericHeader;
 use function in_array;
 
 /**
- * VuFind class for generating Content Security Policy http headers
+ * VuFind class for generating Content Security Policy http headers.
+ * Also generates related headers like NEL (network error logging)
+ * and reporting headers like Report-To.
  *
  * @category VuFind
  * @package  Security
