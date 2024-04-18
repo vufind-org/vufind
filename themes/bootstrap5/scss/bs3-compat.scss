@@ -395,8 +395,11 @@ h6, .h6 {
 }
 .panel-title {
   @extend .card-title;
-  font-size: 16px;
+  font-size: 1.15rem;
   margin: 0;
+  > a {
+    color: inherit;
+  }
 }
 .panel-body {
   @extend .card-body;
