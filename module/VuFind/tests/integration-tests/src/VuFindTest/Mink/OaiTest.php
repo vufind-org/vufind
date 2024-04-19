@@ -102,7 +102,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     public function testVerbRequired(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
-        $rawXml = file_get_contents($this->getVuFindUrl() . $path);
+        $rawXml = $this->httpGet($this->getVuFindUrl() . $path)->getBody();
         $xml = simplexml_load_string($rawXml);
         $this->assertEquals('Missing Verb Argument', $xml->error);
     }
@@ -119,7 +119,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     public function testIdentifyResponseRepositoryName(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
-        $rawXml = file_get_contents($this->getVuFindUrl() . $path . '?verb=Identify');
+        $rawXml = $this->httpGet($this->getVuFindUrl() . $path . '?verb=Identify')->getBody();
         $xml = simplexml_load_string($rawXml);
         // Authority endpoint overrides default name:
         $expectedName = $path === '/OAI/AuthServer'
@@ -139,7 +139,9 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         // Get the first page of results. We expect 20 total results because we only turned on change
         // tracking in the demo setup for one 20-record file; if more change tracking is added in
         // future, this test will need to be adjusted.
-        $rawXml = file_get_contents($this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&metadataPrefix=oai_dc');
+        $rawXml = $this
+            ->httpGet($this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&metadataPrefix=oai_dc')
+            ->getBody();
         $xml = simplexml_load_string($rawXml);
         $resultSetSize = 20;
         $pageSize = $this->defaultOaiConfig['OAI']['page_size'];
@@ -153,9 +155,9 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now get the second page of results, using the resumption token from the first. Make sure
         // the results are different than before by comparing first record IDs.
-        $rawXml2 = file_get_contents(
+        $rawXml2 = $this->httpGet(
             $this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&resumptionToken=' . urlencode($resumptionToken)
-        );
+        )->getBody();
         $xml2 = simplexml_load_string($rawXml2);
         $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
         $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));
