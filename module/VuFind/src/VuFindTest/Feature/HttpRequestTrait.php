@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Feature;
 
+use VuFindHttp\HttpService;
+
 /**
  * HTTP request helper methods for integration tests.
  *
@@ -41,6 +43,13 @@ namespace VuFindTest\Feature;
 trait HttpRequestTrait
 {
     use RemoteCoverageTrait;
+
+    /**
+     * HTTP service
+     *
+     * @var ?HttpService
+     */
+    protected $httpService = null;
 
     /**
      * Get extra HTTP headers to support testing.
@@ -62,6 +71,19 @@ trait HttpRequestTrait
     }
 
     /**
+     * Get HTTP service.
+     *
+     * @return HttpService
+     */
+    protected function getHttpService(): HttpService
+    {
+        if (!$this->httpService) {
+            $this->httpService = new HttpService();
+        }
+        return $this->httpService;
+    }
+
+    /**
      * Perform an HTTP GET operation with coverage awareness.
      *
      * @param string $url     Request URL
@@ -77,8 +99,7 @@ trait HttpRequestTrait
         $timeout = null,
         array $headers = []
     ): \Laminas\Http\Response {
-        $http = new \VuFindHttp\HttpService();
-        return $http->get(
+        return $this->getHttpService()->get(
             $url,
             $params,
             $timeout,
@@ -104,8 +125,7 @@ trait HttpRequestTrait
         $timeout = null,
         array $headers = []
     ): \Laminas\Http\Response {
-        $http = new \VuFindHttp\HttpService();
-        return $http->post(
+        return $this->getHttpService()->post(
             $url,
             $body,
             $type,
