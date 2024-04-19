@@ -102,16 +102,21 @@ VuFind.register('channels', function Channels() {
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
+
+    let recordContent = {};
     $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
-      var record = $(event.delegateTarget);
-      if (!record.data("popover-loaded")) {
-        record.popover({
-          content: VuFind.translate('loading_ellipsis'),
-          html: true,
-          placement: 'bottom',
-          trigger: 'focus',
-          container: '#' + record.closest('.channel').attr('id')
-        });
+      const record = $(event.delegateTarget);
+      const recordID = record.data("record-id");
+
+      record.popover({
+        content: VuFind.translate('loading_ellipsis'),
+        html: true,
+        placement: 'bottom',
+        trigger: 'focus',
+        container: '#' + record.closest('.channel').attr('id')
+      });
+
+      if (!(recordID in recordContent)) {
         $.ajax({
           url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
           type: 'POST',
@@ -126,11 +131,15 @@ VuFind.register('channels', function Channels() {
             + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
             + '</div>'
             + data;
-            redrawPopover(record, newContent);
-            record.data("popover-loaded", true);
+
+            recordContent[recordID] = newContent;
+            switchPopover(record);
+            redrawPopover(record, recordContent[recordID]);
           });
+      } else {
+        switchPopover(record);
+        redrawPopover(record, recordContent[recordID]);
       }
-      switchPopover(record);
       return false;
     });
     // Channel add buttons
