@@ -384,8 +384,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                     'id' => 'Solr|000105196',
                     'checkboxElementId' => 'bar-Solr|000105196',
                     'prefix' => 'bar',
-                    'formAttr' => 'foo'
-                ]
+                    'formAttr' => 'foo',
+                ],
             ],
             [
                 $tpl,
@@ -394,9 +394,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                     'id' => 'Solr|000105196',
                     'checkboxElementId' => 'bar-Solr|000105196',
                     'prefix' => 'bar',
-                    'formAttr' => 'foo'
-                ]
-            ]
+                    'formAttr' => 'foo',
+                ],
+            ],
         ];
 
         $this->expectConsecutiveCalls(
