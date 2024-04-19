@@ -68,9 +68,9 @@ class OaiResumptionService extends AbstractDbService implements
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return ?OaiResumption
+     * @return ?OaiResumptionEntityInterface
      */
-    public function findToken($token): ?OaiResumptionEntityInterface
+    public function findToken(string $token): ?OaiResumptionEntityInterface
     {
         return $this->getDbTable('oairesumption')->findToken($token);
     }
@@ -82,8 +82,10 @@ class OaiResumptionService extends AbstractDbService implements
      * @param int   $expire Expiration time for token (Unix timestamp).
      *
      * @return int          ID of new token
+     *
+     * @throws \Exception
      */
-    public function saveToken($params, $expire): int
+    public function saveToken(array $params, int $expire): int
     {
         $row = $this->createEntity()
             ->setResumptionParameters($this->encodeParams($params))
@@ -92,7 +94,7 @@ class OaiResumptionService extends AbstractDbService implements
             $this->persistEntity($row);
         } catch (\Exception $e) {
             $this->logError('Could not save token: ' . $e->getMessage());
-            return false;
+            throw $e;
         }
         return $row->getId();
     }
@@ -114,7 +116,7 @@ class OaiResumptionService extends AbstractDbService implements
      *
      * @return string
      */
-    protected function encodeParams($params): string
+    protected function encodeParams(array $params): string
     {
         ksort($params);
         $processedParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);

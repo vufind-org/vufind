@@ -59,7 +59,7 @@ interface OaiResumptionServiceInterface
      *
      * @return ?OaiResumptionEntityInterface
      */
-    public function findToken($token): ?OaiResumptionEntityInterface;
+    public function findToken(string $token): ?OaiResumptionEntityInterface;
 
     /**
      * Create a new resumption token
@@ -69,7 +69,7 @@ interface OaiResumptionServiceInterface
      *
      * @return int          ID of new token
      */
-    public function saveToken($params, $expire): int;
+    public function saveToken(array $params, int $expire): int;
 
     /**
      * Create a OaiResumption entity object.
