@@ -95,7 +95,7 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function renderAjax(AvailabilityStatusInterface $availabilityStatus): string
+    public function renderStatusForAjaxResponse(AvailabilityStatusInterface $availabilityStatus): string
     {
         $availabilityStr = $availabilityStatus->availabilityAsString();
         if ($availabilityStatus->useUnknownMessage()) {
