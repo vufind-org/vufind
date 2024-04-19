@@ -971,16 +971,19 @@ ${git_status}
     <copy todir="${templatesdir}">
       <fileset dir="${srcdir}/themes/bootstrap5/templates" defaultexcludes="false">
         <exclude name="header.phtml" />
+        <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
     </copy>
     <reflexive>
       <fileset dir="${templatesdir}">
         <include pattern="**/*.phtml" />
+        <exclude name="header.phtml" />
+        <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
       <filterchain>
         <replaceregexp>
           <!-- HTML attributes -->
-          <regexp pattern=" data-bs-(dismiss|target|toggle)=" replace=" data-\1=" />
+          <regexp pattern=" data-bs-(dismiss|ride|slide|slide-to|target|toggle)=" replace=" data-\1=" />
 
           <!-- HTMLAttributes helper -->
           <regexp pattern="'data-bs-(dismiss|target|toggle)'" replace="'data-\1'" />
@@ -1001,6 +1004,7 @@ ${git_status}
         <delete failonerror="true">
           <fileset dir="${templatesdir}">
             <exclude name="header.phtml" />
+            <exclude name="RecordTab/similaritemscarousel.phtml" />
           </fileset>
         </delete>
       </then>
@@ -1009,6 +1013,7 @@ ${git_status}
     <copy todir="${templatesdir}">
       <fileset dir="${srcdir}/themes/bootstrap3/templates" defaultexcludes="false">
         <exclude name="header.phtml" />
+        <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
     </copy>
     <reflexive>
@@ -1018,7 +1023,7 @@ ${git_status}
       <filterchain>
         <replaceregexp>
           <!-- HTML attributes -->
-          <regexp pattern=" data-(dismiss|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
+          <regexp pattern=" data-(dismiss|ride|slide|slide-to|target|toggle)=(?!&quot;vufind)" replace=" data-bs-\1=" />
 
           <!-- HTMLAttributes helper -->
           <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />

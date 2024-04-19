@@ -1,13 +1,15 @@
 #similar-items-carousel {
   .carousel-indicators {
     bottom: 0px;
-    li {
+    align-items: baseline;
+    button {
       width: 8px;
       height: 8px;
       margin: 2px;
       margin-bottom: 4px;
       background-color: #fff;
       border: 1px solid $gray-darker;
+      border-radius: 10px;
       box-shadow: none;
       transition-duration: .4s;
       transition-property: width, height, margin;
@@ -21,11 +23,11 @@
   }
   .hover-overlay {
     position: relative;
-    display: block;
-    min-width: 150px;
+    display: inline-block;
     min-height: 200px;
     margin: auto;
     text-align: center;
+    width: 24%;
     .recordcover {
       max-width: 100%;
       margin: 10px 0;
@@ -43,18 +45,17 @@
     }
     &:hover .content {display: block;}
   }
-  .item {
+  .carousel-item {
     padding: 0 2em;
+    width: 100%;
+    transition: transform 0.6s ease-in;
+
     &.prev,
     &.active,
     &.next { display: flex; }
   }
 
-  .carousel-item {
-    flex-basis: 25%;
-  }
-
-  .carousel-control {
+  .carousel-control-prev, .carousel-control-next {
     --gradent-start: rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
@@ -62,22 +63,24 @@
     min-width: 40px;
     opacity: 1;
     text-decoration: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 
     &:hover {
       --gradent-start: rgba(0, 0, 0, 0.5);
     }
 
-    &.left {
-      justify-content: start;
-      background: linear-gradient(to right, var(--gradent-start), rgba(0, 0, 0, 0.0001));
-    }
-    &.right {
-      justify-content: end;
-      background: linear-gradient(to left, var(--gradent-start), rgba(0, 0, 0, 0.0001));
-    }
-
     & > img {
       margin: 1rem;
     }
+  }
+  .carousel-control-prev {
+    justify-content: start;
+    background: linear-gradient(to right, var(--gradent-start), rgba(0, 0, 0, 0.0001));
+    padding-left: 0.2rem;
+  }
+  .carousel-control-next {
+    justify-content: end;
+    background: linear-gradient(to left, var(--gradent-start), rgba(0, 0, 0, 0.0001));
+    padding-right: 0.2rem;
   }
 }
