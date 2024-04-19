@@ -379,11 +379,23 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $expectedCalls = [
             [
                 $tpl,
-                ['number' => 1, 'id' => 'Solr|000105196', 'checkboxElementId' => 'bar-Solr|000105196', 'prefix' => 'bar', 'formAttr' => 'foo']
+                [
+                    'number' => 1,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => 'bar-Solr|000105196',
+                    'prefix' => 'bar',
+                    'formAttr' => 'foo'
+                ]
             ],
             [
                 $tpl,
-                ['number' => 2, 'id' => 'Solr|000105196', 'checkboxElementId' => 'bar-Solr|000105196', 'prefix' => 'bar', 'formAttr' => 'foo']
+                [
+                    'number' => 2,
+                    'id' => 'Solr|000105196',
+                    'checkboxElementId' => 'bar-Solr|000105196',
+                    'prefix' => 'bar',
+                    'formAttr' => 'foo'
+                ]
             ]
         ];
 
