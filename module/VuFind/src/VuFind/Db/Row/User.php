@@ -69,9 +69,9 @@ use function count;
  */
 class User extends RowGateway implements
     UserEntityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
-    \LmcRbacMvc\Identity\IdentityInterface,
-    \VuFind\Db\Service\DbServiceAwareInterface
+    \LmcRbacMvc\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\Db\Service\DbServiceAwareTrait;
@@ -568,9 +568,9 @@ class User extends RowGateway implements
         $tagService->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
             $comments = $this->getDbService(
-                \VuFind\Db\Service\CommentsService::class
+                \VuFind\Db\Service\CommentsServiceInterface::class
             );
-            $comments->deleteByUser($this->id);
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
             $ratings = $this->getDbService(\VuFind\Db\Service\RatingsService::class);

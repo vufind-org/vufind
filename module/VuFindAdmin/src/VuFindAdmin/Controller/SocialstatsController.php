@@ -30,7 +30,7 @@
 namespace VuFindAdmin\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsService;
 use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\UserResourceService;
@@ -52,13 +52,6 @@ class SocialstatsController extends AbstractAdmin
      * @var TagService
      */
     protected $tagService;
-
-    /**
-     * Comments service
-     *
-     * @var CommentsService
-     */
-    protected $commentsService;
 
     /**
      * Ratings service
@@ -84,8 +77,6 @@ class SocialstatsController extends AbstractAdmin
         parent::__construct($sm);
         $this->tagService = $sm->get(\VuFind\Db\Service\PluginManager::class)
             ->get(TagService::class);
-        $this->commentsService = $sm->get(\VuFind\Db\Service\PluginManager::class)
-            ->get(CommentsService::class);
         $this->ratingsService = $sm->get(\VuFind\Db\Service\PluginManager::class)
             ->get(RatingsService::class);
         $this->userResourceService = $sm->get(
@@ -103,7 +94,7 @@ class SocialstatsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/socialstats/home');
-        $view->comments = $this->commentsService->getStatistics();
+        $view->comments = $this->getDbService(CommentsServiceInterface::class)->getStatistics();
         $view->ratings = $this->ratingsService->getStatistics();
         $view->favorites = $this->userResourceService->getStatistics();
         $view->tags = $this->tagService->getStatistics();

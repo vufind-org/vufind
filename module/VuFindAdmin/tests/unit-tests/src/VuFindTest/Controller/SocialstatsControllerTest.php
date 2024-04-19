@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Controller;
 
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsService;
 use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\UserResourceService;
@@ -58,12 +58,10 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $container->set(\VuFind\Db\Service\PluginManager::class, $dbServices);
 
         $mockCommentsStats = ['users' => 5, 'resources' => 7, 'total' => 23];
-        $commentsService = $this->getMockBuilder(CommentsService::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
-            ->getMock();
+        $commentsService = $this->createMock(CommentsServiceInterface::class);
         $commentsService->expects($this->once())->method('getStatistics')
             ->will($this->returnValue($mockCommentsStats));
-        $dbServices->set(CommentsService::class, $commentsService);
+        $dbServices->set(CommentsServiceInterface::class, $commentsService);
 
         $userResourceStats = ['users' => 5,
             'lists' => 4,

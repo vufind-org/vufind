@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Row\User;
-use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -50,14 +50,14 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param CommentsService $commentsService Comments database service
-     * @param ?User           $user            Logged in user (or null)
-     * @param bool            $enabled         Are comments enabled?
+     * @param CommentsServiceInterface $commentsService Comments database service
+     * @param ?User                    $user            Logged in user (or null)
+     * @param bool                     $enabled         Are comments enabled?
      */
     public function __construct(
-        protected CommentsService $commentsService,
+        protected CommentsServiceInterface $commentsService,
         protected ?User $user,
-        protected $enabled = true
+        protected bool $enabled = true
     ) {
     }
 
@@ -93,7 +93,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
             );
         }
 
-        if (!$this->commentsService->deleteIfOwnedByUser($id, $this->user->id)) {
+        if (!$this->commentsService->deleteIfOwnedByUser($id, $this->user)) {
             return $this->formatResponse(
                 $this->translate('edit_list_fail'),
                 self::STATUS_HTTP_FORBIDDEN

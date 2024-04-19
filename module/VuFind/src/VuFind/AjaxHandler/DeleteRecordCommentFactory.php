@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -74,7 +74,7 @@ class DeleteRecordCommentFactory implements \Laminas\ServiceManager\Factory\Fact
         );
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $servicePluginManager->get(\VuFind\Db\Service\CommentsService::class),
+            $servicePluginManager->get(\VuFind\Db\Service\CommentsServiceInterface::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $capabilities->getCommentSetting() !== 'disabled'
         );

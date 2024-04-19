@@ -154,7 +154,7 @@ abstract class AbstractBase implements
      */
     public function getComments()
     {
-        $comments = $this->getDbService(\VuFind\Db\Service\CommentsService::class);
+        $comments = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
         return $comments->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
