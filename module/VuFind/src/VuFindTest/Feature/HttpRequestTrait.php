@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Feature;
 
+use VuFindHttp\HttpService;
+
 /**
  * HTTP request helper methods for integration tests.
  *
@@ -43,16 +45,20 @@ trait HttpRequestTrait
     use RemoteCoverageTrait;
 
     /**
-     * Perform an HTTP get operation with coverage awareness.
+     * HTTP service
      *
-     * @param string $url URL to retrieve
-     *
-     * @return \Laminas\Http\Response
+     * @var ?HttpService
      */
-    protected function httpGet(string $url): \Laminas\Http\Response
+    protected $httpService = null;
+
+    /**
+     * Get extra HTTP headers to support testing.
+     *
+     * @return array
+     */
+    protected function getExtraVuFindHttpRequestHeaders(): array
     {
-        $http = new \VuFindHttp\HttpService();
-        $headers = ($coverageDir = $this->getRemoteCoverageDirectory())
+        return ($coverageDir = $this->getRemoteCoverageDirectory())
             ? [
                 'X-VuFind-Remote-Coverage' => json_encode(
                     [
@@ -62,6 +68,69 @@ trait HttpRequestTrait
                     ]
                 ),
             ] : [];
-        return $http->get($url, headers: $headers);
+    }
+
+    /**
+     * Get HTTP service.
+     *
+     * @return HttpService
+     */
+    protected function getHttpService(): HttpService
+    {
+        if (!$this->httpService) {
+            $this->httpService = new HttpService();
+        }
+        return $this->httpService;
+    }
+
+    /**
+     * Perform an HTTP GET operation with coverage awareness.
+     *
+     * @param string $url     Request URL
+     * @param array  $params  Request parameters
+     * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request headers
+     *
+     * @return \Laminas\Http\Response
+     */
+    protected function httpGet(
+        $url,
+        array $params = [],
+        $timeout = null,
+        array $headers = []
+    ): \Laminas\Http\Response {
+        return $this->getHttpService()->get(
+            $url,
+            $params,
+            $timeout,
+            array_merge($headers, $this->getExtraVuFindHttpRequestHeaders())
+        );
+    }
+
+    /**
+     * Perform an HTTP POST operation with coverage awareness.
+     *
+     * @param string $url     Request URL
+     * @param mixed  $body    Request body document
+     * @param string $type    Request body content type
+     * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request http-headers
+     *
+     * @return \Laminas\Http\Response
+     */
+    protected function httpPost(
+        $url,
+        $body = null,
+        $type = 'application/octet-stream',
+        $timeout = null,
+        array $headers = []
+    ): \Laminas\Http\Response {
+        return $this->getHttpService()->post(
+            $url,
+            $body,
+            $type,
+            $timeout,
+            array_merge($headers, $this->getExtraVuFindHttpRequestHeaders())
+        );
     }
 }
