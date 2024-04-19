@@ -19,6 +19,9 @@ $btn-border-radius-base: $btn-border-radius;
 $btn-default-color:      map-get($theme-colors, "light") !default;
 $btn-default-bg:         map-get($theme-colors, "primary") !default;
 $btn-default-border:     shade-color($btn-default-bg, $btn-active-bg-shade-amount) !default;
+$btn-primary-color:      $body-bg !default;
+$btn-primary-bg:         $primary !default;
+$btn-primary-border:     shade-color($primary, $btn-active-bg-shade-amount) !default;
 
 $gray-base:              #000 !default;
 $gray-darker:            lighten($gray-base, 13.5%) !default; // #222
@@ -117,10 +120,6 @@ $legend-border-color:            #e5e5e5 !default;
 
 
 // *** Styles ***
-label {
-  margin-bottom: 5px;
-}
-
 legend {
   float: none;
   border: 0;
@@ -200,10 +199,23 @@ button.list-group-item {
 
 .label {
   @extend .badge;
+  margin-bottom: 5px;
 }
 .label-info {
   color: $body-bg;
   background-color: $primary;
+}
+.label-success {
+  color: $body-bg;
+  background-color: $success;
+}
+.label-warning {
+  color: $body-bg;
+  background-color: $warning;
+}
+.label-danger {
+  color: $body-bg;
+  background-color: $danger;
 }
 
 .dropdown-toggle::after {
