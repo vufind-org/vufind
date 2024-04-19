@@ -717,7 +717,6 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      * Get the source identifier + unique id of the record without spaces
      *
      * @param string $idPrefix Prefix for HTML ids
-     * @throws \Exception If no record driver can be found
      *
      * @return string
      */

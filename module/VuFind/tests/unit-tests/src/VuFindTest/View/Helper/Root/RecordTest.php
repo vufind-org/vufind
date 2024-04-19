@@ -393,7 +393,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $expectedCalls,
             ['success', 'success']
         );
-        
+
         $record = $this->getRecord($driver, [], $context);
 
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
