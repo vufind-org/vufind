@@ -297,9 +297,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Perform an HTTP get operation with coverage awareness.
      *
+     * @param string $url URL to retrieve
+     *
      * @return \Laminas\Http\Response
      */
-    protected function httpGet($url): \Laminas\Http\Response
+    protected function httpGet(string $url): \Laminas\Http\Response
     {
         $http = new \VuFindHttp\HttpService();
         $headers = ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR'))
