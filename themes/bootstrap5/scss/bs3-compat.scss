@@ -487,3 +487,12 @@ h6, .h6 {
 .list-group {
   margin-bottom: 1rem;
 }
+
+@media print {
+  .table {
+    td,
+    th {
+      box-shadow: none;
+    }
+  }
+}
