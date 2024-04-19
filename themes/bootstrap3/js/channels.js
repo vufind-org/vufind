@@ -106,7 +106,6 @@ VuFind.register('channels', function Channels() {
     let recordContent = {};
     function showChannelRecord(event) {
       const record = $(event.delegateTarget);
-      const recordID = record.data("record-id");
 
       record.popover({
         content: VuFind.translate('loading_ellipsis'),
@@ -116,6 +115,7 @@ VuFind.register('channels', function Channels() {
         container: '#' + record.closest('.channel').attr('id')
       });
 
+      const recordID = record.data("record-id");
       if (!(recordID in recordContent)) {
         const controls = '<div class="btn-group btn-group-justified">'
           + '<a href="' + VuFind.path + '/Channels/Record?'
@@ -143,11 +143,14 @@ VuFind.register('channels', function Channels() {
       } else {
         switchPopover(record);
         redrawPopover(record, recordContent[recordID]);
+        // redraw needs to happen since element is destroyed on hide
       }
       return false;
     }
 
+    // don't follow links
     $(op).find('.channel-record').off("click").on("click", () => false);
+    // click and tab
     $(op).find('.channel-record').off("focus").on("focus", showChannelRecord);
 
     // Channel add buttons
