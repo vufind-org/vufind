@@ -54,23 +54,23 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
     public static function windowDimensionProvider(): array
     {
         return [
-            'mobile' => [500, 500, false],
-            'desktop' => [1280, 768, true],
+            'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]],
+            'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]],
         ];
     }
 
     /**
-     * Test that bulk controls are hidden in mobile view and visible in desktop,
+     * Test that bulk controls are hidden in mobile view and visible in desktop
      *
-     * @param int  $windowWidth     Window width
-     * @param int  $windowHeight    Window height
-     * @param bool $shouldBeVisible Expected visibility of bulk controls
+     * @param int   $windowWidth       Window width
+     * @param int   $windowHeight      Window height
+     * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
      *
      * @dataProvider windowDimensionProvider
      */
-    public function testHomePage(int $windowWidth, int $windowHeight, bool $shouldBeVisible): void
+    public function testBulkControls(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate the bulk options:
         $this->changeConfigs(
@@ -86,6 +86,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         // Test visibility of search result bulk items and checkbox:
+        $shouldBeVisible = $controlVisibility['bulk'];
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.bulkActionButtons')->isVisible());
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.checkbox-select-item')->isVisible());
 
@@ -107,5 +108,71 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
 
         // Clear out user for next run:
         static::removeUsers(['username1']);
+    }
+
+    /**
+     * Test that offcanvas controls are visible in mobile and hidden in desktop
+     *
+     * @param int   $windowWidth       Window width
+     * @param int   $windowHeight      Window height
+     * @param array $controlVisibility Expected visibility of controls
+     *
+     * @return void
+     *
+     * @dataProvider windowDimensionProvider
+     */
+    public function testOffcanvas(int $windowWidth, int $windowHeight, array $controlVisibility): void
+    {
+        // Activate offcanvas:
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Site' => ['offcanvas' => true],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->resizeWindow($windowWidth, $windowHeight, 'current');
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=id:testbug2');
+        $page = $session->getPage();
+
+        // Test search sidebar:
+        $shouldBeVisible = $controlVisibility['offcanvas'];
+        $this->assertEquals($shouldBeVisible, $this->findCss($page, '.search-filter-toggle')->isVisible());
+        if ($shouldBeVisible) {
+            $this->clickCss($page, '.search-filter-toggle');
+        }
+        $this->assertEquals($shouldBeVisible, $this->findCss($page, '#search-sidebar .close-offcanvas')->isVisible());
+
+        // Log in:
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Home');
+        $this->clickCss($page, '.createAccountLink');
+        $this->waitForPageLoad($page);
+        $this->fillInAccountForm($page, ['username' => 'username2']);
+        $this->clickCss($page, '#accountForm .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Test account menu:
+        $this->assertEquals($shouldBeVisible, $this->findCss($page, '.search-filter-toggle')->isVisible());
+        if ($shouldBeVisible) {
+            $this->clickCss($page, '.search-filter-toggle');
+        }
+        $this->assertEquals(
+            $shouldBeVisible,
+            $this->findCss($page, '#myresearch-sidebar .close-offcanvas')->isVisible()
+        );
+
+        // Clear out user for next run:
+        static::removeUsers(['username2']);
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass(): void
+    {
+        static::removeUsers(['username1', 'username2']);
     }
 }

@@ -208,8 +208,10 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = $this->getTable('Comments');
-        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsServiceInterface::class
+        );
+        if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
