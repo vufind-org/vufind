@@ -60,7 +60,7 @@ trait HttpRequestTrait
                         'testName' => $this->getTestName(),
                         'outputDir' => $coverageDir,
                     ]
-                )
+                ),
             ] : [];
         return $http->get($url, headers: $headers);
     }
