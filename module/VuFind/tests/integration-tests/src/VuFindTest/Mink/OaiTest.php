@@ -44,6 +44,8 @@ use function count;
  */
 class OaiTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\HttpRequestTrait;
+
     /**
      * Default OAI config settings
      *

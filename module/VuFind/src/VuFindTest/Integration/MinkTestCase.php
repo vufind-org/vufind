@@ -56,6 +56,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\RemoteCoverageTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -283,7 +284,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
-            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+            if ($coverageDir = $this->getRemoteCoverageDirectory()) {
                 $this->session->setRemoteCoverageConfig(
                     $this->getTestName(),
                     $coverageDir
@@ -292,29 +293,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->session->start();
         }
         return $this->session;
-    }
-
-    /**
-     * Perform an HTTP get operation with coverage awareness.
-     *
-     * @param string $url URL to retrieve
-     *
-     * @return \Laminas\Http\Response
-     */
-    protected function httpGet(string $url): \Laminas\Http\Response
-    {
-        $http = new \VuFindHttp\HttpService();
-        $headers = ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR'))
-            ? [
-                'X-VuFind-Remote-Coverage' => json_encode(
-                    [
-                        'action' => 'record',
-                        'testName' => $this->getTestName(),
-                        'outputDir' => $coverageDir,
-                    ]
-                )
-            ] : [];
-        return $http->get($url, headers: $headers);
     }
 
     /**
