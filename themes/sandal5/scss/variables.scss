@@ -14,7 +14,7 @@ $font-size-reduced: ($font-size-base - 0.1);  // ~14px from default 16px
 $font-size-min:     ($font-size-base - 0.38); // ~10px from default 16px
 $reduced-font-size: $font-size-reduced;       // Deprecated, for back-compatibility
 
-// Increase base line height to accommodate 16px font (affect at least Chrome on Windows):
+// Increase base line height to accommodate 16px font (affects at least Chrome on Windows):
 $line-height-base: 1.5;
 
 $pagination-border-width: 0;
