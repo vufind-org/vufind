@@ -68,8 +68,10 @@ class LoaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('cover')->getOptions()->getCacheDir();
+        $cacheOptions = $container->get(\VuFind\Cache\Manager::class)
+            ->getCache('cover')->getOptions();
+        $cacheDir = method_exists($cacheOptions, 'getOptions') 
+            ? $cacheOptions->getOptions : null;
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $loader = new $requestedName(
