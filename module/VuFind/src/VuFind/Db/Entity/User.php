@@ -261,11 +261,11 @@ class User implements UserEntityInterface
     protected $lastLanguage = '';
 
     /**
-     * Get identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
