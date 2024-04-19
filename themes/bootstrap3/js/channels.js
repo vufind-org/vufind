@@ -104,7 +104,7 @@ VuFind.register('channels', function Channels() {
     });
 
     let recordContent = {};
-    $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
+    function showChannelRecord(event) {
       const record = $(event.delegateTarget);
       const recordID = record.data("record-id");
 
@@ -117,22 +117,26 @@ VuFind.register('channels', function Channels() {
       });
 
       if (!(recordID in recordContent)) {
+        const controls = '<div class="btn-group btn-group-justified">'
+          + '<a href="' + VuFind.path + '/Channels/Record?'
+            + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+            + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+          + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+          + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+          + '</div>';
+
         $.ajax({
           url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
           type: 'POST',
           data: {tab: 'description'}
         })
           .done(function channelPopoverDone(data) {
-            var newContent = '<div class="btn-group btn-group-justified">'
-            + '<a href="' + VuFind.path + '/Channels/Record?'
-              + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-              + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-            + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-            + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-            + '</div>'
-            + data;
-
-            recordContent[recordID] = newContent;
+            recordContent[recordID] = controls + data;
+          })
+          .fail(function channelPopoverFail(error) {
+            recordContent[recordID] = controls + VuFind.translate('no_description');
+          })
+          .always(function channelPopoverFinally() {
             switchPopover(record);
             redrawPopover(record, recordContent[recordID]);
           });
@@ -141,7 +145,11 @@ VuFind.register('channels', function Channels() {
         redrawPopover(record, recordContent[recordID]);
       }
       return false;
-    });
+    }
+
+    $(op).find('.channel-record').off("click").on("click", () => false);
+    $(op).find('.channel-record').off("focus").on("focus", showChannelRecord);
+
     // Channel add buttons
     addLinkButtons(op);
     $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
