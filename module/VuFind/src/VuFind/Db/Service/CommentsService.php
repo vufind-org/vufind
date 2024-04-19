@@ -86,7 +86,7 @@ class CommentsService extends AbstractDbService implements
      *
      * @return CommentsEntityInterface[]
      */
-    public function getForResource(string $id, $source = DEFAULT_SEARCH_BACKEND): array
+    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
     {
         $comments = $this->getDbTable('comments')->getForResource($id, $source);
         return is_array($comments) ? $comments : iterator_to_array($comments);

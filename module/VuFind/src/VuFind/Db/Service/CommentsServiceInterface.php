@@ -67,7 +67,7 @@ interface CommentsServiceInterface extends DbServiceInterface
      *
      * @return CommentsEntityInterface[]
      */
-    public function getForResource(string $id, $source = DEFAULT_SEARCH_BACKEND): array;
+    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array;
 
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
