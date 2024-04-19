@@ -366,54 +366,36 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Helper function for testGetCheckbox to simulate withConsecutive deprecated in PhpUnit 9.6
-     * stolen from https://stackoverflow.com/a/75536028
-     *
-     * @param ...$args
-     * @return callable
-     */
-    public function consecutiveCalls(...$args): callable
-    {
-        $count = 0;
-        return function ($arg) use (&$count, $args) {
-            return $arg == $args[$count++];
-        };
-    }
-
-    /**
      * Test getCheckbox.
      *
      * @return void
      */
     public function testGetCheckbox()
     {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $tpl = 'record/checkbox.phtml';
         $context = $this->getMockContext();
-        $context->expects($this->exactly(2))
-            ->method('renderInContext')
-            ->withConsecutive(
-                ['record/checkbox.phtml', $this->callback(function ($array) {
-                    return ($array['number'] ?? null) == 1 &&
-                        ($array['id'] ?? '') == 'Solr|000105196' &&
-                        ($array['checkboxElementId'] ?? '') == 'bar-Solr|000105196' &&
-                        ($array['prefix'] ?? '') == 'bar' &&
-                        ($array['formAttr'] ?? '') == 'foo';
-                })],
-                ['record/checkbox.phtml', $this->callback(function ($array) {
-                    return ($array['number'] ?? null) == 2 &&
-                        ($array['id'] ?? '') == 'Solr|000105196' &&
-                        ($array['checkboxElementId'] ?? '') == 'bar-Solr|000105196' &&
-                        ($array['prefix'] ?? '') == 'bar' &&
-                        ($array['formAttr'] ?? '') == 'foo';
-                })]
-            )
-            ->willReturnOnConsecutiveCalls('success', 'success');
-        
-        $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'),
-            [],
-            $context
+
+        $expectedCalls = [
+            [
+                $tpl,
+                ['number' => 1, 'id' => 'Solr|000105196', 'checkboxElementId' => 'bar-Solr|000105196', 'prefix' => 'bar', 'formAttr' => 'foo']
+            ],
+            [
+                $tpl,
+                ['number' => 2, 'id' => 'Solr|000105196', 'checkboxElementId' => 'bar-Solr|000105196', 'prefix' => 'bar', 'formAttr' => 'foo']
+            ]
+        ];
+
+        $this->expectConsecutiveCalls(
+            $context,
+            'renderInContext',
+            $expectedCalls,
+            ['success', 'success']
         );
-        // We run the test twice to ensure that checkbox incrementing works properly:
+        
+        $record = $this->getRecord($driver, [], $context);
+
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
     }
