@@ -45,6 +45,7 @@ use VuFind\Db\Table\ExternalSession;
 final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\HttpRequestTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
@@ -82,8 +83,7 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
         $table->addSessionMapping($sessionId, 'EXTERNAL_SESSION_ID');
 
         // Call the notification endpoint:
-        $http = new \VuFindHttp\HttpService();
-        $result = $http->post(
+        $result = $this->httpPost(
             $this->getVuFindUrl() . '/soap/shiblogout',
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
