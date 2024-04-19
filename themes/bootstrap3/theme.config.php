@@ -76,7 +76,6 @@ return [
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
-            'VuFind\View\Helper\Bootstrap3\AvailabilityStatus' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\BulkAction' => 'VuFind\View\Helper\Root\BulkActionFactory',
             'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
@@ -85,7 +84,6 @@ return [
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
-            'availabilityStatus' => 'VuFind\View\Helper\Bootstrap3\AvailabilityStatus',
             'bulkAction' => 'VuFind\View\Helper\Bootstrap3\BulkAction',
             'copyToClipboardButton' => 'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton',
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',

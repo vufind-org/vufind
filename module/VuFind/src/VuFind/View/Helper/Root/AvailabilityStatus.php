@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Bootstrap3;
+namespace VuFind\View\Helper\Root;
 
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 
@@ -42,6 +42,27 @@ use VuFind\ILS\Logic\AvailabilityStatusInterface;
  */
 class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
 {
+    /**
+     * Html class for available items.
+     *
+     * @var string
+     */
+    protected $classAvailable = 'text-success';
+
+    /**
+     * Html class for unavailable items.
+     *
+     * @var string
+     */
+    protected $classUnavailable = 'text-danger';
+
+    /**
+     * Html class for items where status is uncertain.
+     *
+     * @var string
+     */
+    protected $classUncertain = 'text-warning';
+
     /**
      * Message cache
      *
@@ -59,12 +80,12 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
     public function getClass(AvailabilityStatusInterface $availabilityStatus): string
     {
         if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNAVAILABLE)) {
-            return 'text-danger';
+            return $this->classUnavailable;
         }
         if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_AVAILABLE)) {
-            return 'text-success';
+            return $this->classAvailable;
         }
-        return 'text-warning';
+        return $this->classUncertain;
     }
 
     /**
