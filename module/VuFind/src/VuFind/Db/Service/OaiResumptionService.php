@@ -31,6 +31,7 @@ namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\OaiResumption;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -42,7 +43,9 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class OaiResumptionService extends AbstractDbService implements LoggerAwareInterface
+class OaiResumptionService extends AbstractDbService implements
+    LoggerAwareInterface,
+    OaiResumptionServiceInterface
 {
     use LoggerAwareTrait;
 
@@ -67,9 +70,9 @@ class OaiResumptionService extends AbstractDbService implements LoggerAwareInter
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return ?OaiResumption
+     * @return ?OaiResumptionEntityInterface
      */
-    public function findToken($token): ?OaiResumption
+    public function findToken($token): ?OaiResumptionEntityInterface
     {
         $dql = 'SELECT O '
         . 'FROM ' . $this->getEntityClass(OaiResumption::class) . ' O '
@@ -88,8 +91,10 @@ class OaiResumptionService extends AbstractDbService implements LoggerAwareInter
      * @param int   $expire Expiration time for token (Unix timestamp).
      *
      * @return int          ID of new token
+     *
+     * @throws \Exception
      */
-    public function saveToken($params, $expire): int
+    public function saveToken(array $params, int $expire): int
     {
         $row = $this->createEntity()
             ->setResumptionParameters($this->encodeParams($params))
@@ -98,7 +103,7 @@ class OaiResumptionService extends AbstractDbService implements LoggerAwareInter
             $this->persistEntity($row);
         } catch (\Exception $e) {
             $this->logError('Could not save token: ' . $e->getMessage());
-            return false;
+            throw $e;
         }
         return $row->getId();
     }
@@ -106,9 +111,9 @@ class OaiResumptionService extends AbstractDbService implements LoggerAwareInter
     /**
      * Create a OaiResumption entity object.
      *
-     * @return OaiResumption
+     * @return OaiResumptionEntityInterface
      */
-    public function createEntity(): OaiResumption
+    public function createEntity(): OaiResumptionEntityInterface
     {
         $class = $this->getEntityClass(OaiResumption::class);
         return new $class();
@@ -121,7 +126,7 @@ class OaiResumptionService extends AbstractDbService implements LoggerAwareInter
      *
      * @return string
      */
-    protected function encodeParams($params): string
+    protected function encodeParams(array $params): string
     {
         ksort($params);
         $processedParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);

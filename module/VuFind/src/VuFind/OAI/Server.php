@@ -34,7 +34,7 @@ namespace VuFind\OAI;
 use SimpleXMLElement;
 use VuFind\Db\Entity\ChangeTracker;
 use VuFind\Db\Service\ChangeTrackerService;
-use VuFind\Db\Service\OaiResumptionService;
+use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
@@ -150,34 +150,6 @@ class Server
     protected $adminEmail;
 
     /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Change tracker service object
-     *
-     * @var ChangeTrackerService
-     */
-    protected $tracker;
-
-    /**
-     * OaiResumption service object
-     *
-     * @var OaiResumptionService
-     */
-    protected $resumptionService;
-
-    /**
      * Record link helper (optional)
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
@@ -241,22 +213,17 @@ class Server
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results    Search manager for
-     *                                                         retrieving records
-     * @param \VuFind\Record\Loader                $loader     Record loader
-     * @param ChangeTrackerService                 $tracker    ChangeTracker Service
-     * @param OaiResumptionService                 $oaiService OaiResumption service
+     * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
+     * @param \VuFind\Record\Loader                $recordLoader      Record loader
+     * @param ChangeTrackerService                 $tracker           ChangeTracker Service
+     * @param OaiResumptionServiceInterface        $resumptionService Database service for resumption tokens
      */
     public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader,
-        ChangeTrackerService $tracker,
-        OaiResumptionService $oaiService
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \VuFind\Record\Loader $recordLoader,
+        protected ChangeTrackerService $tracker,
+        protected OaiResumptionServiceInterface $resumptionService
     ) {
-        $this->resultsManager = $results;
-        $this->recordLoader = $loader;
-        $this->tracker = $tracker;
-        $this->resumptionService = $oaiService;
     }
 
     /**
