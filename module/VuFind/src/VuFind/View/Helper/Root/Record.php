@@ -422,7 +422,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         $context = compact('number') + [
             'id' => $this->getUniqueIdWithSourcePrefix(),
             'checkboxElementId' => $this->getUniqueHtmlElementId($idPrefix),
-            'prefix' => $idPrefix
+            'prefix' => $idPrefix,
         ];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
@@ -720,11 +720,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getUniqueHtmlElementId($idPrefix = "")
+    public function getUniqueHtmlElementId($idPrefix = '')
     {
         return preg_replace(
             "/\s+/",
-            "_",
+            '_',
             ($idPrefix ? $idPrefix . '-' : '') . $this->getUniqueIdWithSourcePrefix()
         );
     }
@@ -740,6 +740,6 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return "{$this->driver->tryMethod('getSourceIdentifier')}"
                 . "|{$this->driver->tryMethod('getUniqueId')}";
         }
-        throw new \Exception("No record driver found.");
+        throw new \Exception('No record driver found.');
     }
 }
