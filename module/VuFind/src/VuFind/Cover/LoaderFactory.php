@@ -70,8 +70,8 @@ class LoaderFactory implements FactoryInterface
         }
         $cacheOptions = $container->get(\VuFind\Cache\Manager::class)
             ->getCache('cover')->getOptions();
-        $cacheDir = method_exists($cacheOptions, 'getOptions')
-            ? $cacheOptions->getOptions : null;
+        $cacheDir = method_exists($cacheOptions, 'getCacheDir')
+            ? $cacheOptions->getCacheDir() : null;
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $loader = new $requestedName(
