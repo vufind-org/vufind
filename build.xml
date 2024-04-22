@@ -64,7 +64,8 @@
 
   <property name="version" value="9.1.1" />
 
-  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass}" />
+  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
+  <!-- Add password if not empty -->
   <if>
     <not>
       <equals arg1="${mysqlrootpass}" arg2="" />
@@ -73,6 +74,7 @@
       <property name="mysqlconnectionargs" override="true" value="${mysqlconnectionargs} -p${mysqlrootpass}" />
     </then>
   </if>
+  <!-- Add protocol if not empty -->
   <if>
     <not>
       <equals arg1="${mysqlprotocol}" arg2="" />
