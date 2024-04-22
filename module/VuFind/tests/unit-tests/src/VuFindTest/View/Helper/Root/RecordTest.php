@@ -412,7 +412,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
     }
-    
+
     /**
      * Test getUniqueHtmlElementId.
      *
