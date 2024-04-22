@@ -134,6 +134,7 @@ VuFind.register('channels', function Channels() {
             recordContent[recordID] = controls + data;
           })
           .fail(function channelPopoverFail(error) {
+            console.error(error);
             recordContent[recordID] = controls + VuFind.translate('no_description');
           })
           .always(function channelPopoverFinally() {
