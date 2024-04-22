@@ -737,8 +737,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getUniqueIdWithSourcePrefix()
     {
         if ($this->driver) {
-            return "{$this->driver->tryMethod('getSourceIdentifier')}"
-                . "|{$this->driver->tryMethod('getUniqueId')}";
+            return "{$this->driver->getSourceIdentifier()}"
+                . "|{$this->driver->getUniqueId()}";
         }
         throw new \Exception('No record driver found.');
     }
