@@ -412,6 +412,29 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
     }
+    
+    /**
+     * Test getUniqueHtmlElementId.
+     *
+     * @return void
+     */
+    public function testGetUniqueHtmlElementId()
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $record = $this->getRecord($driver);
+
+        // with prefix
+        $this->assertEquals(
+            'testPrefix-Solr|000105196',
+            $record->getUniqueHtmlElementId('testPrefix')
+        );
+
+        // without prefix
+        $this->assertEquals(
+            'Solr|000105196',
+            $record->getUniqueHtmlElementId()
+        );
+    }
 
     /**
      * Test getTab.
