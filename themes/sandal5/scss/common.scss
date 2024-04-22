@@ -52,7 +52,7 @@ mark { background-color: $highlighter-color; }
   outline: 4px solid var(--outline-color);
 }
 .form-control:focus {
-  --outline-color: $gold;
+  --outline-color: #{$gold};
 }
 
 .breadcrumb a { color: $dark-gray; }

@@ -237,7 +237,7 @@ button.list-group-item {
   }
 }
 
-.form-control {
+.form-control:not([multiple]) {
   appearance: auto;
   height: $input-height;
 }
