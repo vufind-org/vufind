@@ -408,6 +408,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $record = $this->getRecord($driver, [], $context);
 
+        // We run the test twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
     }
