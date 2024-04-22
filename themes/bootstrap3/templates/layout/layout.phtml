@@ -99,7 +99,7 @@
       }
 
       $root = rtrim($this->url('home'), '/');
-      $jsConfig = json_encode($this->config()->getJsConfig());
+      $jsConfig = !isset($this->renderingError) ? $this->render('js-configs.phtml') : '{}';
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
