@@ -144,23 +144,12 @@ class Bootstrapper
     }
 
     /**
-     * Initializes locale and timezone values
+     * Initializes timezone value
      *
      * @return void
      */
-    protected function initLocaleAndTimeZone(): void
+    protected function initTimeZone(): void
     {
-        // Try to set the locale to UTF-8, but fail back to the exact string from
-        // the config file if this doesn't work -- different systems may vary in
-        // their behavior here.
-        setlocale(
-            LC_ALL,
-            [
-                "{$this->config->Site->locale}.UTF8",
-                "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale,
-            ]
-        );
         date_default_timezone_set($this->config->Site->timezone);
     }
 
@@ -362,7 +351,7 @@ class Bootstrapper
         $headers = $this->event->getResponse()->getHeaders();
         $cspHeaderGenerator = $this->container
             ->get(\VuFind\Security\CspHeaderGenerator::class);
-        if ($cspHeader = $cspHeaderGenerator->getHeader()) {
+        foreach ($cspHeaderGenerator->getHeaders() as $cspHeader) {
             $headers->addHeader($cspHeader);
         }
     }

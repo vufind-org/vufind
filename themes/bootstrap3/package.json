@@ -7,6 +7,7 @@
   "dependencies": {
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.9",
     "chart.js": "^4.4.0",
+    "jquery": "^3.7.1",
     "simple-keyboard": "^3.6.0",
     "simple-keyboard-layouts": "^3.0.0",
     "vanilla-cookieconsent": "3.0.0"

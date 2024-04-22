@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,6 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
-use const PHP_MAJOR_VERSION;
-
 /**
  * OAuth2/OIDC test class.
  *
@@ -47,6 +45,7 @@ use const PHP_MAJOR_VERSION;
 final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\DemoDriverTestTrait;
+    use \VuFindTest\Feature\HttpRequestTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -107,6 +106,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                 'encryptionKey' => 'encryption!',
                 'hashSalt' => 'Need more salt!',
                 'keyPermissionChecks' => false,
+                'documentationUrl' => 'https://vufind.org/wiki/configuration:oauth2_oidc',
             ],
             'Clients' => [
                 'test' => [
@@ -216,8 +216,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'client_id' => 'test',
             'client_secret' => 'mysecret',
         ];
-        $http = new \VuFindHttp\HttpService();
-        $response = $http->post(
+        $response = $this->httpPost(
             $this->getVuFindUrl() . '/OAuth2/token',
             http_build_query($tokenParams),
             'application/x-www-form-urlencoded'
@@ -229,7 +228,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertArrayHasKey('token_type', $tokenResult);
 
         // Fetch public key to verify idToken:
-        $response = $http->get($this->getVuFindUrl() . '/OAuth2/jwks');
+        $response = $this->httpGet($this->getVuFindUrl() . '/OAuth2/jwks');
         $this->assertEquals(
             200,
             $response->getStatusCode(),
@@ -261,7 +260,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Test the userinfo endpoint:
-        $response = $http->get(
+        $response = $this->httpGet(
             $this->getVuFindUrl() . '/OAuth2/userinfo',
             [],
             '',
@@ -289,7 +288,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         // Test token request with bad credentials:
         $tokenParams['client_secret'] = 'badsecret';
-        $response = $http->post(
+        $response = $this->httpPost(
             $this->getVuFindUrl() . '/OAuth2/token',
             http_build_query($tokenParams),
             'application/x-www-form-urlencoded'
@@ -431,6 +430,46 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test OpenID Connect Discovery.
+     *
+     * @return void
+     */
+    public function testOIDCDiscovery(): void
+    {
+        // Bogus redirect URI, but it doesn't matter since the page won't handle the
+        // authorization response:
+        $baseUrl = $this->getVuFindUrl();
+        $this->setUpTest('');
+
+        $urlData = parse_url($this->getVuFindUrl());
+        // Issuer is always https:
+        $issuer = 'https://' . $urlData['host'];
+        if ($port = $urlData['port'] ?? null) {
+            $issuer .= ":$port";
+        }
+        $expected = [
+            'issuer' => $issuer,
+            'authorization_endpoint' => "$baseUrl/OAuth2/Authorize",
+            'token_endpoint' => "$baseUrl/OAuth2/Token",
+            'userinfo_endpoint' => "$baseUrl/OAuth2/UserInfo",
+            'jwks_uri' => "$baseUrl/OAuth2/jwks",
+            'response_types_supported' => ['code'],
+            'grant_types_supported' => ['authorization_code'],
+            'subject_types_supported' => ['public'],
+            'id_token_signing_alg_values_supported' => ['RS256'],
+            'service_documentation' => 'https://vufind.org/wiki/configuration:oauth2_oidc',
+        ];
+
+        $response = $this->httpGet($this->getVuFindUrl() . '/.well-known/openid-configuration');
+        $this->assertEquals(
+            'application/json',
+            $response->getHeaders()->get('Content-Type')->getFieldValue()
+        );
+        $json = $response->getBody();
+        $this->assertJsonStringEqualsJsonString(json_encode($expected), $json);
+    }
+
+    /**
      * Create a public/private key pair
      *
      * @return void
@@ -495,11 +534,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         }
 
         $this->opensslKeyPairCreated = true;
-
-        // Pre-PHP 8.0: Free the key:
-        if (PHP_MAJOR_VERSION < 8) {
-            openssl_pkey_free($privateKey);
-        }
     }
 
     /**

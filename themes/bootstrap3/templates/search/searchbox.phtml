@@ -120,7 +120,7 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
               <li>
-                <a class="keyboard-selection-item" href="#" data-value="none"><?= $this->transEsc('None') ?></a>
+                <a class="dropdown-item keyboard-selection-item" href="#" data-value="none"><?= $this->transEsc('None') ?></a>
               </li>
               <?php foreach ($keyboardLayouts as $keyboardLayout): ?>
                 <li>
@@ -206,7 +206,7 @@
       if (!empty($lastLimit)) {
         echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
       }
-      if (!empty($lastSort)) {
+      if (!empty($lastSort) && $lastSort !== $params?->getDefaultSort()) {
         echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '">';
       }
     ?>

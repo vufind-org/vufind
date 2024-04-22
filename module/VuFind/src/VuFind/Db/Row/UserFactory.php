@@ -79,7 +79,8 @@ class UserFactory extends RowGatewayFactory
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
         $rowClass = $privacy ? $this->privateUserClass : $requestedName;
-        $prototype = parent::__invoke($container, $rowClass, $options);
+        $ilsAuthenticator = $container->get(\VuFind\Auth\ILSAuthenticator::class);
+        $prototype = parent::__invoke($container, $rowClass, [$ilsAuthenticator]);
         $prototype->setConfig($config);
         if ($privacy) {
             $sessionManager = $container

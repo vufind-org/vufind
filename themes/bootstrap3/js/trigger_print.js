@@ -1,12 +1,19 @@
 /* global VuFind */
 
 function waitForItemStatuses(fn) {
-  var itemDone = false;
-  var saveDone = false;
+  var itemDone = typeof VuFind.itemStatuses === "undefined";
+  var saveDone = typeof VuFind.saveStatuses === "undefined";
+  var fnCalled = false;
+
+  if (itemDone && saveDone) {
+    fn();
+    return;
+  }
 
   function checkBoth() {
-    if (itemDone && saveDone) {
+    if (!fnCalled && itemDone && saveDone) {
       fn();
+      fnCalled = true;
     }
   }
 
@@ -21,7 +28,7 @@ function waitForItemStatuses(fn) {
   });
 }
 
-$(function triggerPrint() {
+(function triggerPrint() {
   if (!VuFind.isPrinting()) {
     return;
   }
@@ -60,4 +67,4 @@ $(function triggerPrint() {
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   });
-});
+})();

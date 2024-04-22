@@ -136,11 +136,11 @@ class CartController extends AbstractBase
     {
         // We came in from a search, so let's remember that context so we can
         // return to it later. However, if we came in from a previous instance
-        // of this action (for example, because of a login screen), we should
-        // ignore that!
+        // of this action (for example, because of a login screen), or if we
+        // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (!str_ends_with($referer, $bulk)) {
+        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -303,7 +303,7 @@ class CartController extends AbstractBase
         $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {

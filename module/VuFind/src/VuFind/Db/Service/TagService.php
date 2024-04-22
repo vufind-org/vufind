@@ -40,7 +40,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class TagService extends AbstractDbService implements \VuFind\Db\Table\DbTableAwareInterface
+class TagService extends AbstractDbService implements TagServiceInterface, \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 

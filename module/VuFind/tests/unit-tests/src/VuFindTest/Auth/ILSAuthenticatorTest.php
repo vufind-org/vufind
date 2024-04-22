@@ -122,18 +122,15 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulStoredLoginAttempt()
     {
-        $user = $this->getMockUser(['__get', '__isset', 'getCatPassword']);
-        $user->expects($this->any())->method('__get')
-            ->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
-        $user->expects($this->any())->method('__isset')
-            ->with($this->equalTo('cat_username'))->will($this->returnValue(true));
-        $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
+        $user = $this->getMockUser(['getCatUsername', 'getRawCatPassword']);
+        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
+        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue($details));
+            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn($details);
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->storedCatalogLogin());
 
@@ -149,12 +146,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulStoredLoginAttempt()
     {
-        $user = $this->getMockUser(['__get', '__isset', 'clearCredentials', 'getCatPassword']);
-        $user->expects($this->any())->method('__get')
-            ->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
-        $user->expects($this->any())->method('__isset')
-            ->with($this->equalTo('cat_username'))->will($this->returnValue(true));
-        $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
+        $user = $this->getMockUser(['clearCredentials', 'getCatUsername', 'getRawCatPassword']);
+        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
+        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $user->expects($this->once())->method('clearCredentials');
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
@@ -175,12 +169,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('kaboom');
 
-        $user = $this->getMockUser(['__get', '__isset', 'clearCredentials', 'getCatPassword']);
-        $user->expects($this->any())->method('__get')
-            ->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
-        $user->expects($this->any())->method('__isset')
-            ->with($this->equalTo('cat_username'))->will($this->returnValue(true));
-        $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
+        $user = $this->getMockUser(['clearCredentials', 'getCatUsername', 'getRawCatPassword']);
+        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
+        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $connection = $this->getMockConnection(['patronLogin']);

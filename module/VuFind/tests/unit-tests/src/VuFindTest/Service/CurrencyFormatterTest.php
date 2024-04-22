@@ -85,12 +85,17 @@ class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // test default settings
         $cc = new \VuFind\Service\CurrencyFormatter();
-        $this->assertEquals('$3.00', $cc->convertToDisplayFormat(3));
-        $this->assertEquals('€3.00', $cc->convertToDisplayFormat(3, 'EUR'));
+        $this->assertEquals('$3,000.00', $cc->convertToDisplayFormat(3000));
+        $this->assertEquals('€3,000.00', $cc->convertToDisplayFormat(3000, 'EUR'));
 
         // test override default currency
         $cc = new \VuFind\Service\CurrencyFormatter('EUR');
-        $this->assertEquals('€3.00', $cc->convertToDisplayFormat(3));
-        $this->assertEquals('$3.00', $cc->convertToDisplayFormat(3, 'USD'));
+        $this->assertEquals('€3,000.00', $cc->convertToDisplayFormat(3000));
+        $this->assertEquals('$3,000.00', $cc->convertToDisplayFormat(3000, 'USD'));
+
+        // test override default locale
+        $cc = new \VuFind\Service\CurrencyFormatter(null, 'de_DE');
+        $this->assertEquals("3.000,00\u{a0}€", $cc->convertToDisplayFormat(3000));
+        $this->assertEquals("3.000,00\u{a0}\$", $cc->convertToDisplayFormat(3000, 'USD'));
     }
 }

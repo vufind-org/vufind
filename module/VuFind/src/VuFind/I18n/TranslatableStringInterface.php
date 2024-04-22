@@ -38,7 +38,7 @@ namespace VuFind\I18n;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface TranslatableStringInterface
+interface TranslatableStringInterface extends \Stringable
 {
     /**
      * Return string for display if raw value has no translation available (can be

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
-use VuFind\Db\Table\Session;
+use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -52,51 +52,19 @@ class SystemStatus extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Session Manager
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
-     * Session database table
-     *
-     * @var Session
-     */
-    protected $sessionTable;
-
-    /**
-     * Results manager
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Top-level VuFind configuration (config.ini)
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
-     * @param SessionManager $sm     Session manager
-     * @param ResultsManager $rm     Results manager
-     * @param Config         $config Top-level VuFind configuration (config.ini)
-     * @param Session        $table  Session database table
+     * @param SessionManager          $sessionManager Session manager
+     * @param ResultsManager          $resultsManager Results manager
+     * @param Config                  $config         Top-level VuFind configuration (config.ini)
+     * @param SessionServiceInterface $sessionService Session database service
      */
     public function __construct(
-        SessionManager $sm,
-        ResultsManager $rm,
-        Config $config,
-        Session $table
+        protected SessionManager $sessionManager,
+        protected ResultsManager $resultsManager,
+        protected Config $config,
+        protected SessionServiceInterface $sessionService
     ) {
-        $this->sessionManager = $sm;
-        $this->resultsManager = $rm;
-        $this->config = $config;
-        $this->sessionTable = $table;
     }
 
     /**
@@ -139,7 +107,7 @@ class SystemStatus extends AbstractBase implements \Laminas\Log\LoggerAwareInter
 
         // Test database connection
         try {
-            $this->sessionTable->getBySessionId('healthcheck', false);
+            $this->sessionService->getSessionById('healthcheck', false);
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'Database error: ' . $e->getMessage(),

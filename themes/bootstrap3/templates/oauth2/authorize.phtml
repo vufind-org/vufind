@@ -4,6 +4,9 @@
 
     $scopes = [];
     $ilsNeeded = false;
+    if ($this->userIdentifierField != 'id') {
+      $scopes[] = $this->translate('external_auth_sub_' . $this->userIdentifierField);
+    }
     foreach ($this->authRequest->getScopes() as $scope) {
       if ($scope->getHidden()) {
         continue;
@@ -11,6 +14,7 @@
       $ilsNeeded = $ilsNeeded || $scope->getILSNeeded();
       $scopes[] = $this->translate($scope->getDescription() ?: $scope->getIdentifier());
     }
+    $scopes = array_unique($scopes);
     if (!$scopes) {
       $scopes[] = $this->translate('external_auth_scopes_none');
     }

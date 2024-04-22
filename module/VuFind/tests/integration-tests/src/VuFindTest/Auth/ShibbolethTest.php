@@ -125,7 +125,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
         $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
             $loader,
-            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class)
+            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class),
+            $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
         $obj->setDbTableManager($this->getLiveTableManager());
         $obj->setConfig($config);
