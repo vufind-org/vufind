@@ -52,7 +52,7 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Record factory must be callable.');
 
-        $x = new RecordCollectionFactory('bad');
+        new RecordCollectionFactory('bad');
     }
 
     /**

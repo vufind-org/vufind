@@ -54,7 +54,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage("must have section 'Databases'");
 
         $configData = [];
-        $module = $this->buildModuleAndProcessResults($configData);
+        $this->buildModuleAndProcessResults($configData);
     }
 
     /**

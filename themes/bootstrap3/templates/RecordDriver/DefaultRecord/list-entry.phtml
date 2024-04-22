@@ -188,6 +188,15 @@
           <?php endif; ?>
           <br>
 
+          <?php if (
+            $this->searchOptions($this->driver->getSourceIdentifier())->displayCitationLinksInResults()
+            && $links = $driver->tryMethod('getCitations')
+          ): ?>
+            <div class="result-citation-links">
+              <?=$this->record($this->driver)->renderTemplate('data-citations.phtml', ['data' => $links])?>
+            </div>
+          <?php endif; ?>
+
           <?=$this->record($this->driver)->getFormatList() ?>
 
           <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
@@ -208,20 +217,19 @@
               ? $this->url('myresearch-favorites')
               : $this->url('userList', ['id' => $list_id]);
           $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
-
-          $dLabel = 'delete-label-' . preg_replace('[\W]', '-', $id);
         ?>
-        <div class="dropdown">
-          <a class="dropdown-toggle icon-link" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" href="<?=$deleteUrlGet ?>">
-            <?=$this->icon('user-list-remove', 'icon-link__icon') ?>
-            <span class="icon-link__label"><?=$this->transEsc('Delete') ?></span>
-          </a>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-            <li><a id="confirm_delete_item_<?=$this->escapeHtmlAttr($id);?>" title="<?=$this->transEscAttr('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-            <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
-          </ul>
-        </div>
-
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonClass' => 'btn-link',
+                  'buttonLink' => $deleteUrlGet,
+                  'buttonIcon' => 'user-list-remove',
+                  'buttonLabel' => 'Delete',
+                  'confirmId' => "confirm_delete_item_$id",
+              ]
+          )
+        ?>
         <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
       </div>
     </div>

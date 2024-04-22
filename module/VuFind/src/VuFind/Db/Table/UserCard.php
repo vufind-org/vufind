@@ -61,4 +61,17 @@ class UserCard extends Gateway
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
+
+    /**
+     * Get user_card rows with insecure catalog passwords
+     *
+     * @return mixed
+     */
+    public function getInsecureRows()
+    {
+        $callback = function ($select) {
+            $select->where->isNotNull('cat_password');
+        };
+        return $this->select($callback);
+    }
 }

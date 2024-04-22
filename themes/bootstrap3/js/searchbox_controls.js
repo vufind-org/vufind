@@ -77,6 +77,10 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function setupKeyboard() {
+    if (!_textInput) {
+      return;
+    }
+
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
 

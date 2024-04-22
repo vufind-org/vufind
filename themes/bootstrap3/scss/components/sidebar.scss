@@ -55,6 +55,11 @@
     flex-shrink: 0;
     text-align: center;
     padding-left: 0.5rem;
+
+    body.rtl & {
+      padding-left: 0;
+      padding-right: 0.5rem;
+    }
   }
 }
 .facet-group .facet,

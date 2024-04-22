@@ -45,7 +45,7 @@
             </option>
           <?php endforeach; ?>
         <?php else: ?>
-          <option value=""><?=$this->transEsc('My Favorites') ?></option>
+          <option value=""><?=$this->transEsc('default_list_title') ?></option>
         <?php endif; ?>
       </select>
       <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', ['id' => 'NEW']) . '?' . implode('&amp;', $idParams) ?>"><?=$this->transEsc('or create a new list'); ?></a>
@@ -59,7 +59,7 @@
       </div>
     <?php endif; ?>
     <div class="form-group">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>">
+      <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Save') ?>">
     </div>
   </form>
 <?php endif; ?>

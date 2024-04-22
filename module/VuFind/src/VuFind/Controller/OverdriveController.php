@@ -78,7 +78,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $odAccessResult = $this->connector->getAccess();
 
         if (!($odAccessResult->status ?? false)) {
-            $this->debug('result:' . print_r($odAccessResult, true));
+            $this->debug('result:' . $this->varDump($odAccessResult));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
                     $odAccessResult->code ?? 'An error has occurred',
@@ -157,7 +157,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             'id',
             $this->params()->fromQuery('id', [])
         );
-        $this->debug('ODRC availability for :' . print_r($ids, true));
+        $this->debug('ODRC availability for :' . $this->varDump($ids));
         $result = $this->connector->getAvailabilityBulk($ids);
         $view = $this->createViewModel(compact('ids', 'result'));
         $view->setTemplate('RecordDriver/SolrOverdrive/status-full');
@@ -174,7 +174,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      * @return array|bool|\Laminas\View\Model\ViewModel
      * @todo   Deal with situation that an unlogged in user requests
      *     an action but the action is no longer valid since they
-     *     already have the content on hold/checked out or do not have acceess
+     *     already have the content on hold/checked out or do not have access
      */
     public function holdAction()
     {
@@ -183,7 +183,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
-        $this->debug('patron: ' . print_r($patron, true));
+        $this->debug('patron: ' . $this->varDump($patron));
 
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');

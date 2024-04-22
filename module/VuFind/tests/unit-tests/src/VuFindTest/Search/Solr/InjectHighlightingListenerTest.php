@@ -87,8 +87,8 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
             $mock,
             'attach',
             [
-                ['VuFind\Search', 'pre', [$this->listener, 'onSearchPre']],
-                ['VuFind\Search', 'post', [$this->listener, 'onSearchPost']],
+                [\VuFindSearch\Service::class, 'pre', [$this->listener, 'onSearchPre']],
+                [\VuFindSearch\Service::class, 'post', [$this->listener, 'onSearchPost']],
             ]
         );
         $this->listener->attach($mock);

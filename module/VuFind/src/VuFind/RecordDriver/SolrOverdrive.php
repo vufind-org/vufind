@@ -239,7 +239,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
             }
         }
-        $this->debug('previewlinks:' . print_r($results, true));
+        $this->debug('previewlinks:' . $this->varDump($results));
         return $results;
     }
 
@@ -519,7 +519,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getFormattedRawData()
     {
-        $result = [];
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
         $c_arr = [];
@@ -529,7 +528,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         }
         $data['creators'] = implode('<br>', $c_arr);
 
-        $this->debug('raw data:' . print_r($data, true));
+        $this->debug('raw data:' . $this->varDump($data));
         return $data;
     }
 

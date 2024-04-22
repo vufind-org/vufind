@@ -13,7 +13,7 @@
 
 MenuItems:
   - name: favorites
-    label: Favorites
+    label: saved_items
     route: myresearch-favorites
     icon: user-favorites
     checkMethod: checkFavorites

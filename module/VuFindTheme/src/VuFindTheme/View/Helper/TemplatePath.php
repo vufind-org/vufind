@@ -86,14 +86,14 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
      * @param string $targetTheme template to pull the template from
      *
      * @return string path, null if image not found
-     * @throws Exception if no file exists at path
+     * @throws \Exception if no file exists at path
      */
     public function __invoke($template, $targetTheme)
     {
         $path = $this->pathPre . $targetTheme . $this->pathPost . $template;
         if (!file_exists($path)) {
             throw new \Exception(
-                'template not found in ' . $targetTheme . ': ' . $template
+                'Template not found in ' . $targetTheme . ': ' . $template
             );
         }
         return $path;

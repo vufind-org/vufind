@@ -303,7 +303,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     protected function checkContext()
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
-        if (!isset($this->config->url)) {
+        if (empty($this->config->url)) {
             return false;
         }
 

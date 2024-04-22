@@ -78,7 +78,7 @@
           }
         }
         $this->headScript()->prependScript(
-            'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+            'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
         );
       }
 
@@ -136,7 +136,7 @@
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
         <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <?php endif; ?>
-      <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+      <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
     <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
@@ -163,7 +163,7 @@
         </div>
       </div>
     </div>
-    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <div class="vufind-offcanvas-overlay" data-toggle="vufind-offcanvas"></div>
     <?=$this->render('Helpers/analytics.phtml')?>
     <?php foreach ($this->captcha()->js() as $jsInclude):?>
       <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>

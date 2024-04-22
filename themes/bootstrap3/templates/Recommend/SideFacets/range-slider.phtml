@@ -1,8 +1,12 @@
 <?php
   // Sanitize inputs:
-  $sanitize = function ($val) {
-    return preg_replace('/[^\d]*/', '', $val);
-  };
+  $sanitize = 'fulldate' === $this->facet['type']
+    ? function ($val) {
+      return substr($val, 0, 10);
+    }
+    : function ($val) {
+      return preg_replace('/[^\d]*/', '', $val);
+    };
   $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
   $safeBaseId = $this->escapeHtmlAttr($this->title);
 ?>

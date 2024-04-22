@@ -52,11 +52,18 @@ class Translate extends \Laminas\View\Helper\AbstractHelper implements \VuFind\I
      *                                             found (null for no default).
      * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
      * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null, $useIcuFormatter = false)
-    {
-        return $this->translate($str, $tokens, $default, $useIcuFormatter);
+    public function __invoke(
+        $str,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
+        return $this->translate($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
     }
 }

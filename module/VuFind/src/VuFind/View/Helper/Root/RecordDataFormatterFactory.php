@@ -316,6 +316,11 @@ class RecordDataFormatterFactory implements FactoryInterface
             'data-allSubjectHeadings.phtml'
         );
         $spec->setTemplateLine(
+            'Citations',
+            'getCitations',
+            'data-citations.phtml',
+        );
+        $spec->setTemplateLine(
             'child_records',
             'getChildRecordCount',
             'data-childRecords.phtml',

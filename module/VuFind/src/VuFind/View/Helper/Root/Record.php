@@ -224,13 +224,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     /**
      * Render an entry in a favorite list.
      *
-     * @param \VuFind\Db\Row\UserList $list Currently selected list (null for
+     * @param ?\VuFind\Db\Row\UserList $list Currently selected list (null for
      * combined favorites)
-     * @param \VuFind\Db\Row\User     $user Current logged in user (false if none)
+     * @param ?\VuFind\Db\Row\User     $user Current logged in user (null if none)
      *
      * @return string
      */
-    public function getListEntry($list = null, $user = false)
+    public function getListEntry($list = null, $user = null)
     {
         // Get list of lists containing this entry
         $lists = null;

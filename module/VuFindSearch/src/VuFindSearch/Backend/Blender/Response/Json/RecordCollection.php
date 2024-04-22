@@ -412,7 +412,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get parent hierachy keys for a facet value
+     * Get parent hierarchy keys for a facet value
      *
      * For example with '2/Main/Sub/Shelf/' the result is:
      * [

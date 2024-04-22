@@ -493,7 +493,7 @@ class AbstractSearch extends AbstractBase
      * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
      * @param array                             $queryParams Any query parameters
      *
-     * @return ViewModel
+     * @return HttpResponse
      */
     protected function getRedirectForRecord(
         \VuFind\RecordDriver\AbstractBase $record,

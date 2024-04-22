@@ -87,7 +87,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     {
         $cookieManager = $this->getCookieManager(
             [
-              'loginToken' => '222;0;111',
+              'loginToken' => '222;111',
             ]
         );
         $mockToken = $this->getMockLoginToken();
@@ -97,7 +97,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->throwException(new LoginTokenException()));
+            ->will($this->throwException(new LoginTokenException('Token does not match', 0)));
         $tokenTable->expects($this->once())->method('getByUserId')
             ->willReturn([$mockToken]);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, true);

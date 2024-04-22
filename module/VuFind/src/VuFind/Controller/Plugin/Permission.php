@@ -146,7 +146,7 @@ class Permission extends AbstractPlugin implements
                     // login" denied permission requirement, there is probably a
                     // configuration error somewhere; throw an exception rather than
                     // triggering an infinite login redirection loop.
-                    if ($this->authManager->isLoggedIn()) {
+                    if ($this->getIdentity()) {
                         throw new ForbiddenException(
                             'Trying to prompt login due to denied ' . $permission
                             . ' permission, but a user is already logged in; '
@@ -164,7 +164,7 @@ class Permission extends AbstractPlugin implements
                 case 'exception':
                     $exceptionClass
                         = (isset($dl['value']) && class_exists($dl['value']))
-                        ? $dl['value'] : 'VuFind\Exception\Forbidden';
+                        ? $dl['value'] : \VuFind\Exception\Forbidden::class;
                     $exception = new $exceptionClass($exceptionDescription);
                     if ($exception instanceof \Exception) {
                         throw $exception;

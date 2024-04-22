@@ -33,6 +33,7 @@ use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function count;
 use function intval;
+use function is_callable;
 use function strlen;
 
 /**
@@ -272,7 +273,10 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
 
         // Add databases from search query
         if ($this->useQuery) {
-            $query = strtolower($this->results->getParams()->getQuery()->getString());
+            $queryObject = $this->results->getParams()->getQuery();
+            $query = is_callable([$queryObject, 'getString'])
+                ? strtolower($queryObject->getString())
+                : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
                     if (str_contains(strtolower($name), $query)) {

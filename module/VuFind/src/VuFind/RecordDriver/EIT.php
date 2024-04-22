@@ -44,6 +44,8 @@ use function strlen;
  */
 class EIT extends DefaultRecord
 {
+    use \VuFind\Log\VarDumperTrait;
+
     /**
      * Used for identifying search backends
      *
@@ -324,7 +326,7 @@ class EIT extends DefaultRecord
     {
         if (!isset($this->fields['fields']['header']['@attributes']['uiTerm'])) {
             throw new \Exception(
-                'ID not set!' . print_r($this->fields['fields'], true)
+                'ID not set!' . $this->varDump($this->fields['fields'])
             );
         }
         return $this->fields['fields']['header']['@attributes']['uiTerm'];

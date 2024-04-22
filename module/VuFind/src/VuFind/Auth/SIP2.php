@@ -84,7 +84,7 @@ class SIP2 extends AbstractBase
         }
         $result = $mysip->parseACSStatusResponse($msg_result);
 
-        //  Use result to populate SIP2 setings
+        //  Use result to populate SIP2 settings
         $mysip->AO = $result['variable']['AO'][0];
         $mysip->AN = $result['variable']['AN'][0];
 

@@ -29,8 +29,6 @@
 
 namespace VuFindTest\OAuth2\Repository;
 
-use VuFind\OAuth2\Repository\AuthCodeRepository;
-
 /**
  * OAuth2 AuthCodeRepository tests.
  *
@@ -49,7 +47,7 @@ class AuthCodeRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testAuthCodeRepository(): void
     {
-        $repo = new AuthCodeRepository($this->getMockAccessTokenTable());
+        $repo = $this->getAuthCodeRepository();
 
         $token = $repo->getNewAuthCode();
         $tokenId = $this->createTokenId();

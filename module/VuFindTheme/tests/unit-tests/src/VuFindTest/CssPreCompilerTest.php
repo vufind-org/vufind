@@ -52,7 +52,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     /**
      * Our brave test subject
      *
-     * @var $extCompiler
+     * @var object
      */
     protected $compiler;
 

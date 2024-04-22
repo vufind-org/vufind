@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,15 +44,12 @@ use VuFind\Db\Table\Record;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/cleanup_record_cache',
+    description: 'Record cache cleaner'
+)]
 class CleanUpRecordCacheCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/cleanup_record_cache';
-
     /**
      * Record table object
      *
@@ -80,7 +78,6 @@ class CleanUpRecordCacheCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Record cache cleaner')
             ->setHelp('Removes unused cached records from the database.')
             ->setAliases(['util/cleanuprecordcache']);
     }

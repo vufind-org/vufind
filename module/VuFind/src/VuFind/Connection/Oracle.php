@@ -191,7 +191,7 @@ class Oracle
      * @param resource $parsed       Result returned by prepare() method.
      * @param string   $place_holder The colon-prefixed bind variable placeholder
      * used in the statement.
-     * @param string   $data         The PHP variable to be associatd with
+     * @param string   $data         The PHP variable to be associated with
      * $place_holder
      * @param string   $data_type    The type of $data (string, integer, float,
      * long, date, row_id, clob, or blob)
@@ -232,7 +232,7 @@ class Oracle
      * @param resource $parsed       Result returned by prepare() method.
      * @param string   $place_holder The colon-prefixed bind variable placeholder
      * used in the statement.
-     * @param string   $data         The PHP variable to be associatd with
+     * @param string   $data         The PHP variable to be associated with
      * $place_holder
      * @param string   $data_type    The type of $data (string, integer, float,
      * long, date, row_id, clob, or blob)
