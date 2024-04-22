@@ -135,10 +135,10 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getChannelsPage();
         // Click a record to open the popover:
-        $this->clickCss($page, '.channel-record[data-record-id="<angle>brackets&ampersands"]');
+        $this->clickCss($page, '.channel-record[data-record-id="hashes#coming@ya"]');
         $popoverContents = $this->findCssAndGetText($page, '.popover');
         // The popover should contain an appropriate title and metadata:
-        $this->assertStringContainsString('<HTML> The Basics', $popoverContents);
+        $this->assertStringContainsString('Octothorpes: Why not?', $popoverContents);
         $this->assertStringContainsString('Physical Description', $popoverContents);
         // Click a different record:
         $this->clickCss($page, '.channel-record[data-record-id="dollar$ign/slashcombo"]');
@@ -146,8 +146,10 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // The popover should contain an appropriate title and metadata:
         $this->assertStringContainsString('Of Money and Slashes', $popoverContents2);
         $this->assertStringContainsString('Physical Description', $popoverContents2);
+        // Click outside of channels to move the focus away:
+        $this->clickCss($page, 'li.active');
         // Now click back to the original record; the popover should contain the same contents.
-        $this->clickCss($page, '.channel-record[data-record-id="<angle>brackets&ampersands"]');
+        $this->clickCss($page, '.channel-record[data-record-id="hashes#coming@ya"]');
         $popoverContents3 = $this->findCssAndGetText($page, '.popover');
         $this->assertEquals($popoverContents, $popoverContents3);
         // Finally, click through to the record page.
@@ -155,6 +157,6 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('View Record', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
-        $this->assertEquals('<HTML> The Basics', $this->findCssAndGetText($page, 'h1'));
+        $this->assertEquals('Octothorpes: Why not?', $this->findCssAndGetText($page, 'h1'));
     }
 }
