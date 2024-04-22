@@ -48,7 +48,7 @@ class JsConfigsTest extends \PHPUnit\Framework\TestCase
     use ConfigPluginManagerTrait;
 
     /**
-     * Test JS translations.
+     * Test JS configs.
      *
      * @return void
      */
@@ -88,9 +88,7 @@ class JsConfigsTest extends \PHPUnit\Framework\TestCase
             $this->any()
         );
 
-        //        $view = $this->getPhpRenderer($this->getViewHelpers());
         $helper = new JsConfigs($configLoader);
-        //        $helper->setView($view);
 
         $helper->addConfigPaths([
             'config1' => [

@@ -66,11 +66,11 @@ class JsConfigs extends AbstractHelper
     /**
      * Add config paths to the internal array.
      *
-     * @param array $new Strings to add
+     * @param array $new Paths to add
      *
      * @return void
      */
-    public function addConfigPaths(array $new)
+    public function addConfigPaths(array $new): void
     {
         $this->configPaths = array_merge_recursive($this->configPaths, $new);
     }
@@ -80,7 +80,7 @@ class JsConfigs extends AbstractHelper
      *
      * @return string
      */
-    public function getJSON()
+    public function getJSON(): string
     {
         $res = [];
         foreach ($this->configPaths as $configFile => $configPath) {
@@ -102,7 +102,7 @@ class JsConfigs extends AbstractHelper
      *
      * @return array|string|null
      */
-    protected function getConfigRecursive(string|array $configPaths, ?Config $config)
+    protected function getConfigRecursive(string|array $configPaths, ?Config $config): array|string|null
     {
         if (!is_array($configPaths)) {
             return $this->convertToArray($config?->$configPaths);
