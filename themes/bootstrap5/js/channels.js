@@ -98,6 +98,7 @@ VuFind.register('channels', function Channels() {
       var record = $(event.delegateTarget);
       if (!record.data("popover-loaded")) {
         record.data("popover-loaded", true);
+        switchPopover(false);
         let loadingPopover = new bootstrap.Popover(
           record,
           {
@@ -130,7 +131,7 @@ VuFind.register('channels', function Channels() {
                 content: newContent,
                 html: true,
                 placement: 'bottom',
-                trigger: 'focus',
+                trigger: 'manual',
                 sanitize: false,
                 container: '#' + record.closest('.channel').attr('id')
               }
@@ -199,12 +200,22 @@ VuFind.register('channels', function Channels() {
     });
   };
 
-  function init () {
+  function init() {
     $('.channel').each(setupChannelSlider);
     $('.channel').each(bindChannelAddMenu);
     document.addEventListener('hidden.bs.popover', (e) => {
       if (isCurrentPopoverRecord($(e.target))) {
         switchPopover(false);
+      }
+    });
+    document.addEventListener('mouseup', function onMouseUp(e) {
+      // Close any current popover if clicked outside of a popover and a record that triggers one:
+      const popover = document.querySelector('.channel-wrapper .channel .popover');
+      if (popover && !popover.contains(e.target)) {
+        const intersectingRecords = Array.from(document.querySelectorAll('.channel-wrapper .channel .channel-record')).filter(r => r.contains(e.target));
+        if (intersectingRecords.length === 0) {
+          switchPopover(false);
+        }
       }
     });
   }
