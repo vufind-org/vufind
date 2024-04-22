@@ -12,9 +12,15 @@ VuFind.register('bs3-compat', function cookie() {
 
   function initNav() {
     document.querySelectorAll('.nav li').forEach((el) => {
-      el.classList.add('nav-item');
-      const aEl = el.querySelector('a');
-      if (aEl) {
+      const aEl = el.querySelector(':scope > a');
+      if (el.classList.contains('dropdown__item')) {
+        if (aEl && !aEl.classList.contains('btn')) {
+          aEl.classList.add('dropdown-item');
+          if (el.classList.contains('active')) {
+            aEl.classList.add('active');
+          }
+        }
+      } else if (aEl) {
         if (!aEl.classList.contains('btn')) {
           aEl.classList.add('nav-link');
         }

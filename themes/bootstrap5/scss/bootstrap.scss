@@ -23,6 +23,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
 @import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
 
 // Optionally include any other parts as needed
 @import "bootstrap/scss/accordion";
@@ -45,7 +46,6 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "bootstrap/scss/offcanvas";
 @import "bootstrap/scss/pagination";
 @import "bootstrap/scss/popover";
-@import "bootstrap/scss/reboot";
 @import "bootstrap/scss/tables";
 @import "bootstrap/scss/tooltip";
 @import "bootstrap/scss/transitions";

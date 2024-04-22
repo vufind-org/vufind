@@ -97,7 +97,7 @@ header {
     font-size: $reduced-font-size;
   }
   .dropdown-menu a { color: $black; }
-  .dropdown-menu a:hover {
+  .dropdown-menu a:not(.active):hover {
     background-color: $header-light;
     color: $black;
   }
