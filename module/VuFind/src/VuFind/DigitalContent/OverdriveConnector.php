@@ -340,7 +340,7 @@ class OverdriveConnector implements
                 } else {
                     $result->status = true;
                     foreach ($res->availability as $item) {
-                        $this->debug('item:' . print_r($item, true));
+                        $this->debug('item:' . $this->varDump($item));
                         $result->data[strtolower($item->reserveId)] = $item;
                     }
                     // Now look for items not returned
@@ -477,7 +477,7 @@ class OverdriveConnector implements
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email       The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notification
      *
      * @return \stdClass Object with result
      */
@@ -620,7 +620,7 @@ class OverdriveConnector implements
         // or it is locked in and they are requesting the format that
         // is already locked in.
         if ($template = $this->getLinkTemplate($checkout, $format)) {
-            $this->debug('template: ' . print_r($template, true));
+            $this->debug('template: ' . $this->varDump($template));
             $downloadLink = $template->downloadLinkV2->href;
             $this->debug("found the link: $downloadLink");
         } elseif (!$checkout->isFormatLockedIn) {
@@ -1038,7 +1038,7 @@ class OverdriveConnector implements
                     $result->status = true;
                     $result->message = 'hold_place_success_html';
                     $result->data = $response->holds;
-                    // Check for holds ready for chechout
+                    // Check for holds ready for checkout
                     foreach ($response->holds as $key => $hold) {
                         if (
                             !$hold->autoCheckout
@@ -1141,7 +1141,7 @@ class OverdriveConnector implements
             $body = $response->getBody();
             $returnVal = json_decode($body);
             $this->debug(
-                'Return from OD API Call: ' . print_r($returnVal, true)
+                'Return from OD API Call: ' . $this->varDump($returnVal)
             );
             if ($returnVal != null) {
                 if (isset($returnVal->errorCode)) {
@@ -1156,7 +1156,7 @@ class OverdriveConnector implements
                     'Overdrive Error: Nothing returned from API call.'
                 );
                 $this->debug(
-                    'Body return from OD API Call: ' . print_r($body, true)
+                    'Body return from OD API Call: ' . $this->varDump($body)
                 );
             }
         }
@@ -1176,7 +1176,7 @@ class OverdriveConnector implements
         $this->debug('connecting to API');
         $conf = $this->getConfig();
         $tokenData = $this->getSessionContainer()->tokenData;
-        $this->debug('API Token from session: ' . print_r($tokenData, true));
+        $this->debug('API Token from session: ' . $this->varDump($tokenData));
         if (
             $forceNewConnection || $tokenData == null
             || !isset($tokenData->access_token)
@@ -1215,10 +1215,7 @@ class OverdriveConnector implements
             $body = $response->getBody();
             $tokenData = json_decode($body);
             $this->debug(
-                'TokenData returned from OD API Call: ' . print_r(
-                    $tokenData,
-                    true
-                )
+                'TokenData returned from OD API Call: ' . $this->varDump($tokenData)
             );
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
@@ -1236,7 +1233,7 @@ class OverdriveConnector implements
                     'Overdrive Error: Nothing returned from API call.'
                 );
                 $this->debug(
-                    'Body return from OD API Call: ' . print_r($body, true)
+                    'Body return from OD API Call: ' . $this->varDump($body)
                 );
             }
         }
@@ -1328,7 +1325,7 @@ class OverdriveConnector implements
             }
 
             $returnVal = json_decode($body);
-            $this->debug('response from call: ' . print_r($returnVal, true));
+            $this->debug('response from call: ' . $this->varDump($returnVal));
 
             if ($returnVal != null) {
                 if (
@@ -1420,10 +1417,7 @@ class OverdriveConnector implements
             } else {
                 $this->debug(
                     'problem with OD patron API token Call: ' .
-                    print_r(
-                        $patronTokenData,
-                        true
-                    )
+                    $this->varDump($patronTokenData)
                 );
                 // If we have an unauthorized error, then we are going
                 // to cache that in the session so we don't keep making
@@ -1453,7 +1447,7 @@ class OverdriveConnector implements
      * @param string $url URL for client to use
      *
      * @return \Laminas\Http\Client
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getHttpClient($url = null)
     {

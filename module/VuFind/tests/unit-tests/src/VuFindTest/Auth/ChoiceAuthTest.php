@@ -196,7 +196,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     public function testIllegalMethod()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Illegal setting: foo');
+        $this->expectExceptionMessage('authentication_error_technical');
 
         $request = new Request();
         $request->getQuery()->set('auth_method', 'foo');

@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use Laminas\Session\Container;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Tags;
@@ -50,7 +51,7 @@ use VuFind\Tags;
  * @property string $created
  * @property bool   $public
  */
-class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, UserListEntityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
@@ -85,7 +86,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Is the current user allowed to edit this list?
      *
-     * @param \VuFind\Db\Row\User|bool $user Logged-in user (false if none)
+     * @param ?\VuFind\Db\Row\User $user Logged-in user (null if none)
      *
      * @return bool
      */
@@ -195,7 +196,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function save($user = false)
     {
-        if (!$this->editAllowed($user)) {
+        if (!$this->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
         }
         if (empty($this->title)) {
@@ -246,7 +247,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $ids,
         $source = DEFAULT_SEARCH_BACKEND
     ) {
-        if (!$this->editAllowed($user)) {
+        if (!$this->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
         }
 
@@ -289,7 +290,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function delete($user = false, $force = false)
     {
-        if (!$force && !$this->editAllowed($user)) {
+        if (!$force && !$this->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
         }
 

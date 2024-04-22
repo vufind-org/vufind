@@ -85,7 +85,7 @@ class Connector extends Base implements LoggerAwareInterface
      * @param string $queryString   Query string to append to URL
      * @param array  $headers       HTTP headers to send
      * @param string $messageBody   Message body to for HTTP Request
-     * @param string $messageFormat Format of request $messageBody and respones
+     * @param string $messageFormat Format of request $messageBody and responses
      * @param bool   $cacheable     Whether the request is cacheable
      *
      * @throws ApiException

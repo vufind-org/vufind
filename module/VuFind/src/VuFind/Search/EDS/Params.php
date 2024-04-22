@@ -95,6 +95,13 @@ class Params extends AbstractEDSParams
     protected $checkboxFacetsAugmented = false;
 
     /**
+     * Default query adapter class (override to use EDS version)
+     *
+     * @var string
+     */
+    protected $queryAdapterClass = QueryAdapter::class;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -312,7 +319,7 @@ class Params extends AbstractEDSParams
         $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
-        return QueryAdapter::display($this->getQuery(), $translate, $showField);
+        return $this->getQueryAdapter()->display($this->getQuery(), $translate, $showField);
     }
 
     /**

@@ -40,7 +40,6 @@ use function intval;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    0
  */
 class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -100,7 +99,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->assertEquals(
             'An error has occurred',
-            $this->findCss($page, '.alert-danger p')->getText()
+            $this->findCssAndGetText($page, '.alert-danger p')
         );
     }
 
@@ -109,27 +108,23 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getSearchData(): array
+    public static function getSearchData(): array
     {
         return [
             [
                 ['page' => 1],
-                $this->getExpectedLabels(1),
                 'Blender/Results',
             ],
             [
                 ['page' => 2],
-                $this->getExpectedLabels(2),
                 'Blender/Results',
             ],
             [
                 ['page' => 1],
-                $this->getExpectedLabels(1),
                 'Search/Blended', // legacy path
             ],
             [
                 ['page' => 2],
-                $this->getExpectedLabels(2),
                 'Search/Blended', // legacy path
             ],
         ];
@@ -138,16 +133,16 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test blended search
      *
-     * @param array  $queryParams    Query parameters
-     * @param array  $expectedLabels Expected labels
-     * @param string $path           URL path
+     * @param array  $queryParams Query parameters
+     * @param string $path        URL path
      *
      * @dataProvider getSearchData
      *
      * @return void
      */
-    public function testSearch(array $queryParams, array $expectedLabels, string $path): void
+    public function testSearch(array $queryParams, string $path): void
     {
+        $expectedLabels = $this->getExpectedLabels($queryParams['page']);
         $this->changeConfigs(
             [
                 'config' => [
@@ -168,7 +163,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $session->getPage();
 
-        $text = $this->findCss($page, '.search-stats strong')->getText();
+        $text = $this->findCssAndGetText($page, '.search-stats strong');
         [$start, $limit] = explode(' - ', $text);
         $offset = (($queryParams['page'] ?? 1) - 1) * 20;
         $this->assertEquals(1 + $offset, intval($start));
@@ -177,8 +172,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         for ($i = 0; $i < count($expectedLabels); $i++) {
             $this->assertEquals(
                 $expectedLabels[$i],
-                $this->findCss($page, '.result span.label-source', null, $i)
-                    ->getText(),
+                $this->findCssAndGetText($page, '.result span.label-source', null, $i),
                 "Result index $i"
             );
         }
@@ -188,7 +182,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Blended',
-            $this->findCss($page, '.searchbox li.active')->getText()
+            $this->findCssAndGetText($page, '.searchbox li.active')
         );
     }
 
@@ -264,8 +258,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         for ($i = 0; $i < count($expectedLabels); $i++) {
             $this->assertEquals(
                 $expectedLabels[$i],
-                $this->findCss($page, '.result span.label-source', null, $i)
-                    ->getText(),
+                $this->findCssAndGetText($page, '.result span.label-source', null, $i),
                 "Result index $i"
             );
         }
@@ -278,7 +271,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertStringStartsWith(
             'Showing 1 - 12 results of 12',
-            $this->findCss($page, '.search-stats')->getText()
+            $this->findCssAndGetText($page, '.search-stats')
         );
 
         // Go back and add another search term:
@@ -290,7 +283,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertStringStartsWith(
             'Showing 1 - 4 results of 4',
-            $this->findCss($page, '.search-stats')->getText()
+            $this->findCssAndGetText($page, '.search-stats')
         );
 
         // Go back and change type of second search term:
@@ -300,7 +293,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEquals(
             'Your search - (All Fields:Dublin AND Author:Award) - did not match any resources.',
-            $this->findCss($page, '.mainbody p')->getText()
+            $this->findCssAndGetText($page, '.mainbody p')
         );
     }
 

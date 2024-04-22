@@ -80,6 +80,6 @@ class LayoutClassFactory implements FactoryInterface
         if ($layout->rtl && $mirror) {
             $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new $requestedName($sidebarOnLeft, $offcanvas);
+        return new $requestedName($sidebarOnLeft, $offcanvas, $layout->rtl);
     }
 }

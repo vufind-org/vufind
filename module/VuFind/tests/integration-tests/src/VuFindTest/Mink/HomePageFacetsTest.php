@@ -37,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -48,12 +47,9 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testNormalFacets()
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
-        $container = $this->findCss($page, '.home-facet.callnumber-first a');
-        $this->assertEquals('A - General Works', $container->getText());
+        $this->assertEquals('A - General Works', $this->findCssAndGetText($page, '.home-facet.callnumber-first a'));
         $this->clickCss($page, '.home-facet.callnumber-first a');
         $this->waitForPageLoad($page);
         $this->assertStringEndsWith(
@@ -84,12 +80,12 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
-        $container = $this->findCss($page, '.home-facet.hierarchical_facet_str_mv .home-facet-list');
-        $this->assertEquals('level1a level1z', $container->getText());
+        $this->assertEquals(
+            'level1a level1z',
+            $this->findCssAndGetText($page, '.home-facet.hierarchical_facet_str_mv .home-facet-list')
+        );
         $this->clickCss($page, '.home-facet.hierarchical_facet_str_mv .facet');
         $this->waitForPageLoad($page);
         $this->assertStringEndsWith(

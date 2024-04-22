@@ -1358,6 +1358,8 @@ class Upgrade
             $this->addWarning('WARNING: Could not find ILS driver setting.');
         } elseif ('Sample' == $driver) {
             // No configuration file for Sample driver
+        } elseif ('AdminScripts' == $driver) {
+            // Prevent abuse if upgrade process is hijacked
         } elseif (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
             $this->addWarning(
                 "WARNING: Could not find {$driver}.ini file; "

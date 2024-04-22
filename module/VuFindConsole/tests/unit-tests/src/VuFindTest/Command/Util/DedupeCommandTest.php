@@ -46,6 +46,7 @@ use VuFindConsole\Command\Util\DedupeCommand;
 class DedupeCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Get a mocked-out command object.
@@ -79,12 +80,15 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('openOutputFile')
             ->with($this->equalTo($output))
             ->will($this->returnValue($fakeHandle));
-        $command->expects($this->exactly(3))->method('writeToOutputFile')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $command,
+            'writeToOutputFile',
+            [
                 [$fakeHandle, "foo\n"],
                 [$fakeHandle, "bar\n"],
-                [$fakeHandle, "baz\n"]
-            );
+                [$fakeHandle, "baz\n"],
+            ]
+        );
         $command->expects($this->once())->method('closeOutputFile')
             ->with($this->equalTo($fakeHandle));
     }
@@ -138,8 +142,10 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $fixture = $this->getFixtureDir('VuFindConsole') . 'fileWithDuplicateLines';
         $outputFilename = '/fake/outfile';
         $command = $this->getMockCommand();
-        $command->expects($this->exactly(2))->method('getInput')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $command,
+            'getInput',
+            [
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
@@ -149,8 +155,10 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
                     'Please specify an output file: ',
-                ]
-            )->willReturnOnConsecutiveCalls($fixture, $outputFilename);
+                ],
+            ],
+            [$fixture, $outputFilename]
+        );
         $this->setSuccessfulExpectations($command, $outputFilename);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);

@@ -96,7 +96,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getTestCreateWithPasswordPolicyData(): array
+    public static function getTestCreateWithPasswordPolicyData(): array
     {
         $numericConfig = [
             'minimum_password_length' => 4,
@@ -267,7 +267,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getTestCreateWithUsernamePolicyData(): array
+    public static function getTestCreateWithUsernamePolicyData(): array
     {
         $defaultConfig = [
             'username_pattern' => '([\\x21\\x23-\\x2B\\x2D-\\x2F\\x3D\\x3F\\x40'

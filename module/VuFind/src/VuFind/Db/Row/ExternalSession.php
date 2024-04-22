@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyrught (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -41,7 +41,7 @@ namespace VuFind\Db\Row;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ExternalSession extends RowGateway
+class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSessionEntityInterface
 {
     /**
      * Constructor

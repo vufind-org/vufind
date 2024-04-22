@@ -23,6 +23,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
     .done(function checkValidDone(response) {
       if (response.data.status) {
         $(element).removeClass('disabled')
+          .removeClass('request-check')
           .attr('title', response.data.msg)
           .html(VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + "</span>");
       } else {

@@ -42,6 +42,8 @@ use VuFind\RecordTab\TOC;
  */
 class TOCTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test getting Description.
      *
@@ -59,7 +61,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function isActiveProvider(): array
+    public static function isActiveProvider(): array
     {
         return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
     }
@@ -79,9 +81,13 @@ class TOCTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('tryMethod')
-            ->withConsecutive([$this->equalTo('getTOC')], [$this->equalTo('getCleanISBN')])
-            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue('bar'));
+        $this->expectConsecutiveCalls(
+            $recordDriver,
+            'tryMethod',
+            // We'll only do an ISBN lookup if the initial TOC is empty:
+            !empty($toc) ? [['getTOC']] : [['getTOC'], ['getCleanISBN']],
+            [$toc, 'bar']
+        );
         $obj = new TOC();
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());

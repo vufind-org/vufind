@@ -194,7 +194,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @param string   $source                    Record source
      * @param bool     $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * subscriptions
      * @param ParamBag $params                    Search backend parameters
      *
      * @throws \Exception
@@ -316,7 +316,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * a mock driver object if the real data source is unavailable.
      * @param bool       $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * subscriptions
      * @param ParamBag[] $params                    Associative array of search
      * backend parameters keyed with source key
      *

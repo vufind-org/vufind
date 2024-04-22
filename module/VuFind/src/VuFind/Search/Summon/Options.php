@@ -42,6 +42,7 @@ use function count;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
@@ -90,8 +91,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
         if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(',', $searchSettings->General->limit_options);
+            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference

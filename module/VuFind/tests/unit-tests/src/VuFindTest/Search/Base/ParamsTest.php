@@ -32,9 +32,12 @@
 
 namespace VuFindTest\Search\Base;
 
+use minSO;
 use VuFind\Config\PluginManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
+use VuFind\Search\QueryAdapter;
+use VuFindSearch\Query\Query;
 
 /**
  * Base Search Object Parameters Test
@@ -324,5 +327,39 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'ophtalmologie*'
             )
         );
+    }
+
+    /**
+     * Test query adapters
+     *
+     * @return void
+     */
+    public function testQueryAdapters(): void
+    {
+        $params = $this->getMockParams();
+        $params->setQuery(new Query('foo'));
+        $params->setLimit(50);
+
+        $minified = $this->createMock(minSO::class);
+        $params->minify($minified);
+        $this->assertEquals(
+            [
+                [
+                    'l' => 'foo',
+                    'i' => null,
+                    's' => 'b',
+                ],
+            ],
+            $minified->t
+        );
+        $this->assertEquals(50, $minified->scp['limit']);
+
+        $customAdapter = $this->getMockBuilder(QueryAdapter::class)->getMock();
+        $customAdapter->expects($this->once())
+            ->method('minify')
+            ->willReturn('CUSTOM');
+        $params->setQueryAdapter($customAdapter);
+        $params->minify($minified);
+        $this->assertEquals('CUSTOM', $minified->t);
     }
 }

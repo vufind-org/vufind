@@ -49,7 +49,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function capitalizeBooleansProvider(): array
+    public static function capitalizeBooleansProvider(): array
     {
         return [
             ['this not that', 'this NOT that'],        // capitalize not
@@ -227,7 +227,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function capitalizeRangesProvider(): array
+    public static function capitalizeRangesProvider(): array
     {
         return [
             // don't capitalize inside quotes
@@ -367,7 +367,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function colonNormalizationProvider(): array
+    public static function colonNormalizationProvider(): array
     {
         return [
             ['this : that', 'this  that'],
@@ -406,7 +406,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function extractSearchTermsProvider(): array
+    public static function extractSearchTermsProvider(): array
     {
         return [
             ['keyword', 'keyword'],
@@ -452,7 +452,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function unquotedNormalizationProvider(): array
+    public static function unquotedNormalizationProvider(): array
     {
         return [
             // Unquoted ones that may need changes:

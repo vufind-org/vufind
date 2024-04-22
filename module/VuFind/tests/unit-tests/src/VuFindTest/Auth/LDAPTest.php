@@ -30,6 +30,7 @@
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
+use Laminas\Http\Request;
 use VuFind\Auth\LDAP;
 
 /**
@@ -48,20 +49,14 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
+     * @param ?Config $config Configuration to use (null for default)
      *
      * @return LDAP
      */
-    public function getAuthObject($config = null)
+    public function getAuthObject(?Config $config = null): LDAP
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
-        $authManager = new \VuFind\Auth\PluginManager(
-            new \VuFindTest\Container\MockContainer($this)
-        );
-        $obj = $authManager->get('LDAP');
-        $obj->setConfig($config);
+        $obj = new LDAP($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
@@ -70,7 +65,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return Config
      */
-    public function getAuthConfig()
+    public function getAuthConfig(): Config
     {
         $ldapConfig = new Config(
             [
@@ -89,7 +84,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingHost()
+    public function testWithMissingHost(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -103,7 +98,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingPort()
+    public function testWithMissingPort(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -117,7 +112,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingBaseDN()
+    public function testWithMissingBaseDN(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -131,7 +126,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingUid()
+    public function testWithMissingUid(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -145,7 +140,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCaseNormalization()
+    public function testCaseNormalization(): void
     {
         $config = $this->getAuthConfig();
         $config->LDAP->username = 'UPPER';
@@ -168,7 +163,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateIsDisallowed()
+    public function testCreateIsDisallowed(): void
     {
         $this->assertFalse($this->getAuthObject()->supportsCreation());
     }
@@ -179,14 +174,14 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Laminas\Http\Request
+     * @return Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = []): Request
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass',
         ];
-        $request = new \Laminas\Http\Request();
+        $request = new Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
@@ -196,7 +191,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -209,7 +204,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 

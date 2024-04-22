@@ -3,25 +3,91 @@
 ?>
 <?php if ($searchSettings->checkboxesEnabled()): ?>
   <nav class="bulkActionButtons">
-    <div class="bulk-checkbox">
-      <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
-      <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll"><?=$this->transEsc('select_all_on_page')?></label>
-    </div>
     <ul class="action-toolbar">
       <?php if ($searchSettings->bulkOptionsEnabled()): ?>
-        <li><button id="<?=$this->idPrefix?>ribbon-email" class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('send-email') ?> <?=$this->transEsc('Email')?></button></li>
+        <?=
+          $this->bulkAction()->button(
+              'email',
+              'send-email',
+              'Email',
+              array_merge(
+                  [
+                    'id' => $this->idPrefix . 'ribbon-email',
+                    'title' => $this->translate('bulk_email_search'),
+                  ],
+                  $this->formAttr ? ['form' => $this->formAttr] : []
+              )
+          )
+        ?>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
         <?php if (count($exportOptions) > 0): ?>
-          <li><button id="<?=$this->idPrefix?>ribbon-export" class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
+          <?=
+            $this->bulkAction()->button(
+                'export',
+                'export',
+                'Export',
+                array_merge(
+                    [
+                      'id' => $this->idPrefix . 'ribbon-export',
+                      'title' => $this->translate('bulk_export_search'),
+                    ],
+                    $this->formAttr ? ['form' => $this->formAttr] : []
+                )
+            )
+          ?>
         <?php endif; ?>
-        <li><button id="<?=$this->idPrefix?>ribbon-print" class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('bookbag_print_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>
+        <?=
+          $this->bulkAction()->button(
+              'print',
+              'print',
+              'Print',
+              array_merge(
+                  [
+                    'id' => $this->idPrefix . 'ribbon-print',
+                    'title' => $this->translate('bulk_print_search'),
+                  ],
+                  $this->formAttr ? ['form' => $this->formAttr] : []
+              )
+          )
+        ?>
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><button id="<?=$this->idPrefix?>ribbon-save" class="toolbar-btn" type="submit" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('user-list-add') ?> <?=$this->transEsc('Save')?></button></li>
+          <?=
+            $this->bulkAction()->button(
+                'saveCart',
+                'user-list-add',
+                'Save',
+                array_merge(
+                    [
+                      'id' => $this->idPrefix . 'ribbon-save',
+                      'title' => $this->translate('bulk_save_search'),
+                    ],
+                    $this->formAttr ? ['form' => $this->formAttr] : []
+                )
+            )
+          ?>
         <?php endif; ?>
       <?php endif; ?>
       <?php if ($searchSettings->cartControlsEnabled()): ?>
-        <li><button id="<?=$this->idPrefix?>updateCart" type="submit" class="toolbar-btn" name="add" value="1"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('cart-add') ?> <?=$this->transEsc('Add to Book Bag')?></button></li>
+        <?=
+          $this->bulkAction()->button(
+              'add',
+              'cart-add',
+              'Add to Book Bag',
+              array_merge(
+                  [
+                    'id' => $this->idPrefix . 'updateCart',
+                  ],
+                  $this->formAttr ? ['form' => $this->formAttr] : []
+              )
+          )
+        ?>
       <?php endif; ?>
+    </ul>
+    <ul class="selection-controls-bar">
+      <li class="bulk-checkbox">
+        <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll"><?=$this->transEsc('select_all_on_page')?></label>
+      </li>
     </ul>
   </nav>
 <?php endif; ?>

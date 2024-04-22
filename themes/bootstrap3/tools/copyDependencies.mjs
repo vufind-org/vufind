@@ -5,8 +5,11 @@ console.log('Copying dependencies...');
 // autocomplete.js
 await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autocomplete.js');
 
-// jstree
-await copyFile('node_modules/jstree/dist/jstree.min.js', 'js/vendor/jsTree/jstree.min.js');
+// chart.js
+await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
+
+// jQuery
+await copyFile('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
 
 // simple-keyboard
 await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');

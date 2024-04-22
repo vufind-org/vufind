@@ -5,9 +5,9 @@
 ?>
 <?php if (!empty($results)): ?>
   <h2><?=$this->transEsc($heading)?></h2>
-  <div class="list-group">
+  <ul class="list-group">
     <?php foreach ($results as $driver): ?>
-      <div class="list-group-item">
+      <li class="list-group-item">
         <span>
           <?php
             $formats = $driver->getFormats();
@@ -24,8 +24,8 @@
           </span>
           <?php endif; ?>
         </span>
-      </div>
+      </li>
     <?php endforeach; ?>
     <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More EDS results')?></a>
-  </div>
+  </ul>
 <?php endif ?>

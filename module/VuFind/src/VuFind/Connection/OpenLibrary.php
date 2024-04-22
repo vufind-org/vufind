@@ -102,7 +102,6 @@ class OpenLibrary
 
         for ($i = 0; $i < count($subjectTypes); $i++) {
             if (empty($result)) {
-                $subjectType = '';
                 $subjectType = $subjectTypes[$i] == 'topic' ? '' :
                     $subjectTypes[$i] . ':';
 

@@ -29,6 +29,10 @@
 
 namespace VuFindApi\Controller;
 
+use Exception;
+use Laminas\Http\Exception\InvalidArgumentException;
+use Laminas\Mvc\Exception\DomainException;
+
 /**
  * Additional functionality for API controllers.
  *
@@ -67,7 +71,7 @@ trait ApiTrait
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException|InvalidArgumentException|Exception
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
@@ -144,7 +148,7 @@ trait ApiTrait
      * @param string $message  Status message
      *
      * @return \Laminas\Http\Response
-     * @throws \Exception
+     * @throws Exception
      */
     protected function output($data, $status, $httpCode = null, $message = '')
     {
@@ -176,7 +180,7 @@ trait ApiTrait
             );
             return $response;
         } else {
-            throw new \Exception('Invalid output mode');
+            throw new Exception('Invalid output mode');
         }
     }
 }

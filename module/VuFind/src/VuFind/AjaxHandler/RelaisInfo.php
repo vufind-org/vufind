@@ -53,7 +53,7 @@ class RelaisInfo extends AbstractRelaisAction
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $oclcNumber = $params->fromQuery('oclcNumber');
-        $lin = $this->user['cat_username'] ?? null;
+        $lin = $this->user ? $this->user['cat_username'] : null;
 
         // Authenticate
         $authResponse = $this->relais->authenticatePatron($lin, true);

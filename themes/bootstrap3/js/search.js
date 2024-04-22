@@ -10,6 +10,7 @@ VuFind.register('search', function search() {
   let sortFormSelector = resultsControlFormSelector + '.search-sort';
   let limitFormSelector = resultsControlFormSelector + '.search-result-limit';
   let viewTypeSelector = '.view-buttons a';
+  let selectAllSelector = '.checkbox-select-all';
 
   // Forward declaration
   let loadResults = function loadResultsForward() {};
@@ -201,6 +202,9 @@ VuFind.register('search', function search() {
       }
       element.setAttribute('href', urlParts[0] + '?' + urlParams.toString());
     });
+
+    // Reset "select all" checkbox:
+    document.querySelectorAll(selectAllSelector).forEach((el) => el.checked = false);
   }
 
   /**
@@ -279,6 +283,10 @@ VuFind.register('search', function search() {
       showError('ERROR: data-backend not set for record list');
       return;
     }
+    if (recordList.classList.contains('loading')) {
+      return;
+    }
+    recordList.classList.add('loading');
     const history = recordList.dataset.history;
 
     const loadingOverlay = document.createElement('div');
@@ -312,7 +320,12 @@ VuFind.register('search', function search() {
     }
     updateResultControls(pageUrl);
     updateResultLinks(pageUrl);
-    VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
+
+    VuFind.emit('results-load', {
+      url: pageUrl,
+      addToHistory: addToHistory
+    });
+
     fetch(VuFind.path + '/AJAX/JSON?' + queryParams.toString())
       .then((response) => response.json())
       .then((result) => {
@@ -320,40 +333,28 @@ VuFind.register('search', function search() {
         recordList.innerHTML = '';
         Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
           document.querySelectorAll(elementSelector).forEach((element) => {
-            // Extract any scripts from the HTML and add them separately so that they are executed properly:
-            const scripts = [];
-            const tmpDiv = document.createElement('div');
-            tmpDiv.innerHTML = contents.content;
-            tmpDiv.querySelectorAll('script').forEach((el) => {
-              const type = el.getAttribute('type');
-              if (!type || 'text/javascript' === type) {
-                scripts.push(el.cloneNode(true));
-                el.remove();
-              }
-            });
-
-            if (contents.target === 'inner') {
-              element.innerHTML = tmpDiv.innerHTML;
-            } else if (contents.target === 'outer') {
-              element.outerHTML = tmpDiv.outerHTML;
-            }
-            Object.entries(contents.attrs).forEach(([attr, value]) => element.setAttribute(attr, value));
-
-            // Append any scripts:
-            scripts.forEach((script) => {
-              const scriptEl = document.createElement('script');
-              scriptEl.innerHTML = script.innerHTML;
-              scriptEl.setAttribute('nonce', VuFind.getCspNonce());
-              element.appendChild(scriptEl);
-            });
+            VuFind.setElementContents(
+              element,
+              contents.content,
+              contents.attrs,
+              contents.target ? (contents.target + 'HTML') : ''
+            );
           });
         });
         VuFind.initResultScripts(jsRecordListSelector);
         initPagination();
-        VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
+
+        VuFind.emit('results-loaded', {
+          url: pageUrl,
+          addToHistory: addToHistory,
+          data: result
+        });
+
+        recordList.classList.remove('loading');
       })
       .catch((error) => {
         showError(VuFind.translate('error_occurred') + ' - ' + error);
+        recordList.classList.remove('loading');
       });
   };
 

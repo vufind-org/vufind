@@ -747,7 +747,7 @@ class BrowseController extends AbstractBase implements
         }
 
         // ALPHABET TO ['value','displayText']
-        // (value has asterix appended for Solr, but is unmodified for tags)
+        // (value has asterisk appended for Solr, but is unmodified for tags)
         $action = $this->getCurrentAction();
         $callback = function ($letter) use ($action) {
             // Tag is a special case because it is database-backed; for everything

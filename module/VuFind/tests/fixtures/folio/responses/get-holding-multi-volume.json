@@ -83,7 +83,7 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
@@ -135,7 +135,7 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
@@ -210,7 +210,7 @@
             }
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     },
     {
         "expectedMethod": "GET",
@@ -241,6 +241,6 @@
             "totalRecords": 1
         },
         "bodyType": "json",
-        "code": 200
+        "status": 200
     }
 ]

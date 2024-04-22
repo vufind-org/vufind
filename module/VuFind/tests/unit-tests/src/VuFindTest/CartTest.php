@@ -29,6 +29,7 @@
 
 namespace VuFindTest;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Cookie\CookieManager;
 
 /**
@@ -42,10 +43,12 @@ use VuFind\Cookie\CookieManager;
  */
 class CartTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Mock record loader
      *
-     * @param \VuFind\Record\Loader
+     * @var MockObject&\VuFind\Record\Loader
      */
     protected $loader;
 
@@ -73,7 +76,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      * @param string $path     Cookie base path (default = /)
      * @param string $domain   Cookie domain
      * @param bool   $secure   Are cookies secure only? (default = false)
-     * @param bool   $httpOnly Are cookes HTTP only? (default = false)
+     * @param bool   $httpOnly Are cookies HTTP only? (default = false)
      *
      * @return CookieManager
      */
@@ -192,9 +195,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testCookieWrite()
     {
         $manager = $this->getMockCookieManager();
-        $manager->expects($this->exactly(2))
-            ->method('set')
-            ->withConsecutive(['vufind_cart', 'Aa'], ['vufind_cart_src', 'Solr']);
+        $this->expectConsecutiveCalls($manager, 'set', [['vufind_cart', 'Aa'], ['vufind_cart_src', 'Solr']]);
         $cart = $this->getCart(100, true, $manager);
         $cart->addItem('Solr|a');
     }

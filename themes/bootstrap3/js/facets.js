@@ -1,5 +1,121 @@
 /*global VuFind */
 
+/* --- Facet List --- */
+VuFind.register('facetList', function FacetList() {
+  function getCurrentContainsValue() {
+    const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
+    return containsEl ? containsEl.value : null;
+  }
+
+  function setCurrentContainsValue(val) {
+    const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
+    if (containsEl) {
+      containsEl.value = val;
+    }
+  }
+
+  function overrideHref(selector, overrideParams = {}) {
+    $(selector).each(function overrideHrefEach() {
+      const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
+      let url = new URL(dummyDomain + $(this).attr('href'));
+      Object.entries(overrideParams).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+      url = url.href;
+      url = url.replaceAll(dummyDomain, '');
+      $(this).attr('href', url);
+    });
+  }
+
+  function updateHrefContains() {
+    const overrideParams = { contains: getCurrentContainsValue() };
+    overrideHref('.js-facet-sort', overrideParams);
+    overrideHref('.js-facet-next-page', overrideParams);
+    overrideHref('.js-facet-prev-page', overrideParams);
+  }
+
+  function getContent(overrideParams = {}) {
+    const ajaxParams = $('.ajax_params').data('params');
+    let url = ajaxParams.urlBase;
+
+    for (let [key, val] of Object.entries(ajaxParams)) {
+      if (key in overrideParams) {
+        val = overrideParams[key];
+      }
+      url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+    }
+
+    const contains = getCurrentContainsValue();
+    if (contains) {
+      url += '&contains=' + encodeURIComponent(contains);
+    }
+
+    if (!("facetsort" in overrideParams)) {
+      const sort = $('.js-facet-sort.active').data('sort');
+      if (sort !== undefined) {
+        url += '&facetsort=' + encodeURIComponent(sort);
+      }
+    }
+
+    url += '&ajax=1';
+
+    return Promise.resolve($.ajax({
+      url: url
+    }));
+  }
+
+  function updateContent(overrideParams = {}) {
+    $('#facet-info-result').html(VuFind.loading());
+    getContent(overrideParams).then(html => {
+      let htmlList = '';
+      $(VuFind.updateCspNonce(html)).find('.full-facet-list').each(function itemEach() {
+        htmlList += $(this).prop('outerHTML');
+      });
+      $('#facet-info-result').html(htmlList);
+      updateHrefContains();
+      VuFind.lightbox_facets.setup();
+    });
+  }
+
+  // Useful function to delay callbacks, e.g. when using a keyup event
+  // to detect when the user stops typing.
+  // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
+  var inputCallbackTimeout = null;
+  function registerCallbacks() {
+    $('.facet-lightbox-filter').removeClass('hidden');
+
+    $('.ajax_param[data-name="contains"]').on('input', function onInputChangeFacetList(event) {
+      clearTimeout(inputCallbackTimeout);
+      if (event.target.value.length < 1) {
+        $('#btn-reset-contains').addClass('hidden');
+      } else {
+        $('#btn-reset-contains').removeClass('hidden');
+      }
+      inputCallbackTimeout = setTimeout(function onInputTimeout() {
+        updateContent({facetpage: 1});
+      }, 500);
+    });
+
+    $('#btn-reset-contains').on('click', function onResetClick() {
+      setCurrentContainsValue('');
+      $('#btn-reset-contains').addClass('hidden');
+      updateContent({facetpage: 1});
+    });
+  }
+
+  function setup() {
+    if ($.isReady) {
+      registerCallbacks();
+    } else {
+      $(function ready() {
+        registerCallbacks();
+      });
+    }
+  }
+
+  return { setup: setup, getContent: getContent, updateContent: updateContent };
+});
+
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
   function showLoadingOverlay() {
@@ -134,20 +250,12 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     var sortButtons = $('.js-facet-sort');
     function sortAjax(button) {
       var sort = $(button).data('sort');
-      var list = $('#facet-list-' + sort);
-      if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').html(VuFind.translate('loading_ellipsis'));
-        $.ajax(button.href + '&layout=lightbox')
-          .done(function facetSortTitleDone(data) {
-            list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').html(VuFind.translate('more_ellipsis'));
-          });
-      }
+      VuFind.facetList.updateContent({facetsort: sort});
       $('.full-facet-list').addClass('hidden');
-      list.removeClass('hidden');
       sortButtons.removeClass('active');
     }
-    sortButtons.click(function facetSortButton() {
+    sortButtons.off('click');
+    sortButtons.on('click', function facetSortButton() {
       sortAjax(this);
       $(this).addClass('active');
       return false;
@@ -157,30 +265,32 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   function setup() {
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
-      var button = $(this);
-      var page = parseInt(button.attr('data-page'), 10);
+      let button = $(this);
+      const page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
       }
       button.attr('disabled', 1);
       button.html(VuFind.translate('loading_ellipsis'));
-      $.ajax(this.href + '&layout=lightbox')
-        .done(function facetLightboxMoreDone(data) {
-          var htmlDiv = $('<div>' + data + '</div>');
-          var list = htmlDiv.find('.js-facet-item');
-          button.before(list);
-          if (list.length && htmlDiv.find('.js-facet-next-page').length) {
-            button.attr('data-page', page + 1);
-            button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.html(VuFind.translate('more_ellipsis'));
-            button.removeAttr('disabled');
-          } else {
-            button.remove();
-          }
+
+      const overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
+      VuFind.facetList.getContent(overrideParams).then(data => {
+        $(data).find('.js-facet-item').each(function eachItem() {
+          button.before($(this).prop('outerHTML'));
         });
+        const list = $(data).find('.js-facet-item');
+        if (list.length && $(data).find('.js-facet-next-page').length) {
+          button.attr('data-page', page + 1);
+          button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
+          button.html(VuFind.translate('more_ellipsis'));
+          button.removeAttr('disabled');
+        } else {
+          button.remove();
+        }
+      });
       return false;
     });
-    var margin = 230;
+    const margin = 230;
     $('#modal').on('show.bs.modal', function facetListHeight() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });

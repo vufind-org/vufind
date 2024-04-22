@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -37,6 +39,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -64,6 +67,57 @@ class PrimoController extends AbstractSearch
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Primo');
         return $config->Record->next_prev_navigation ?? false;
+    }
+
+    /**
+     * Show results of "cited by" search.
+     *
+     * @return mixed
+     */
+    public function citedByAction()
+    {
+        $this->flashMessenger()->addInfoMessage('results_citing_title_note');
+        return $this->performCitationSearch();
+    }
+
+    /**
+     * Show results of "cites" search.
+     *
+     * @return mixed
+     */
+    public function citesAction()
+    {
+        $this->flashMessenger()->addInfoMessage('results_cited_by_title_note');
+        return $this->performCitationSearch();
+    }
+
+    /**
+     * Perform a "cited" or "cited by" search
+     *
+     * @return mixed
+     */
+    protected function performCitationSearch()
+    {
+        if (!($id = trim($this->params()->fromQuery('lookfor', ''), '"'))) {
+            return $this->forwardTo('Primo', 'Home');
+        }
+        $driver = $this->getRecordLoader()->load($id, $this->searchClassId);
+
+        // Don't save to history -- history page doesn't handle correctly:
+        $this->saveToHistory = false;
+
+        $callback = function ($runner, $params, $searchId) {
+            $options = $params->getOptions();
+            $options->disableHighlighting();
+            $options->spellcheckEnabled(false);
+            if ($lastLimit = $this->getSearchMemory()->retrieveLastSetting($this->searchClassId, 'limit')) {
+                $params->setLimit($lastLimit);
+            }
+        };
+
+        $view = $this->getSearchResultsView($callback);
+        $view->driver = $driver;
+        return $view;
     }
 
     /**

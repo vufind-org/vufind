@@ -189,7 +189,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function unicodeIconProvider(): array
+    public static function unicodeIconProvider(): array
     {
         return [
             [

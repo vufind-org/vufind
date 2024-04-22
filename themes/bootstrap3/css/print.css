@@ -1,6 +1,6 @@
 * {
-  background-color: #FFF;
-  color: #000;
+  background-color: #FFF !important;
+  color: #000 !important;
 }
 a[href]:after{ content: ''; } /* hide following urls */
 .container { margin:0; } /* print margins */

@@ -31,6 +31,7 @@ namespace VuFind\Db\Row;
 
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Table\Resource as ResourceTable;
 
 /**
@@ -42,7 +43,7 @@ use VuFind\Db\Table\Resource as ResourceTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, TagsEntityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
@@ -75,15 +76,14 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
         // Set up base query:
         $tag = $this;
         $callback = function ($select) use ($tag, $source, $sort, $offset, $limit) {
-            $select->columns(
-                [
-                    new Expression(
-                        'DISTINCT(?)',
-                        ['resource.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR,
-                ]
-            );
+            $columns = [
+                new Expression(
+                    'DISTINCT(?)',
+                    ['resource.id'],
+                    [Expression::TYPE_IDENTIFIER]
+                ), Select::SQL_STAR,
+            ];
+            $select->columns($columns);
             $select->join(
                 ['rt' => 'resource_tags'],
                 'resource.id = rt.resource_id',
@@ -96,7 +96,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
             }
 
             if (!empty($sort)) {
-                ResourceTable::applySort($select, $sort);
+                ResourceTable::applySort($select, $sort, 'resource', $columns);
             }
 
             if ($offset > 0) {

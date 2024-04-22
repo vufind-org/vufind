@@ -29,7 +29,7 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Config\Config;
 use VuFind\Connection\LibGuides;
 

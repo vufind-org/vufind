@@ -332,7 +332,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             isset($search->ConditionalHiddenFilters)
             && $search->ConditionalHiddenFilters->count() > 0
         ) {
-            $this->getInjectConditionalFilterListener($search)->attach($events);
+            $this->getInjectConditionalFilterListener($backend, $search)->attach($events);
         }
 
         // Spellcheck
@@ -479,6 +479,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $timeout = $this->getIndexConfig('timeout', 30);
         $searchConfig = $this->config->get($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
+
+        if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
+            $defaultFields .= ',score';
+        }
 
         $handlers = [
             'select' => [
@@ -693,13 +697,15 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Get a Conditional Filter Listener
      *
-     * @param Config $search Search configuration
+     * @param BackendInterface $backend Search backend
+     * @param Config           $search  Search configuration
      *
      * @return InjectConditionalFilterListener
      */
-    protected function getInjectConditionalFilterListener(Config $search)
+    protected function getInjectConditionalFilterListener(BackendInterface $backend, Config $search)
     {
         $listener = new InjectConditionalFilterListener(
+            $backend,
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(

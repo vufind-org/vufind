@@ -47,7 +47,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function tabConfigProvider(): array
+    public static function tabConfigProvider(): array
     {
         return [
             'First tab selected' => [
@@ -123,7 +123,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function inactiveTabConfigProvider(): array
+    public static function inactiveTabConfigProvider(): array
     {
         return [
             'Test1' => [

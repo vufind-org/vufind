@@ -30,10 +30,9 @@
 namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Webmozart\Glob\Glob;
 
-use function array_key_exists;
 use function is_array;
-use function is_string;
 use function strlen;
 
 /**
@@ -47,6 +46,8 @@ use function strlen;
  */
 class ThemeInfo
 {
+    use \VuFind\Feature\MergeRecursiveTrait;
+
     /**
      * Base directory for theme files
      *
@@ -218,74 +219,6 @@ class ThemeInfo
     }
 
     /**
-     * Determine if a variable is a string-keyed array
-     *
-     * @param mixed $op Variable to test
-     *
-     * @return boolean
-     */
-    protected function isStringKeyedArray($op)
-    {
-        if (!is_array($op)) {
-            return false;
-        }
-
-        reset($op);
-        return is_string(key($op));
-    }
-
-    /**
-     * Add parent theme information to a collection of merged theme info.
-     * Using the string-keyed array format of theme config info,
-     * recursively walk the array, capturing unique or missing values.
-     *
-     * @param array|string $children Merged theme info, overrides parent theme
-     * @param array|string $parent   Theme info to be merged
-     *
-     * @return array|string merged theme info, favoring child themes (merged)
-     */
-    protected function mergeWithoutOverride($children, $parent)
-    {
-        if (empty($children)) {
-            return $parent;
-        }
-
-        // Early escape for string, number, etc. values
-        if (!is_array($children) && !is_array($parent)) {
-            return $children;
-        }
-
-        if ($this->isStringKeyedArray($children)) {
-            if (!$this->isStringKeyedArray($parent)) {
-                // don't override if incompatible
-                return $children;
-            }
-
-            foreach ($parent as $key => $val) {
-                if (!array_key_exists($key, $children)) {
-                    // capture missing string keys
-                    $children[$key] = $val;
-                } elseif ($this->isStringKeyedArray($val)) {
-                    // recurse
-                    $children[$key]
-                        = $this->mergeWithoutOverride($children[$key], $val);
-                } elseif (is_array($val)) {
-                    // capture unique or missing array items
-                    $children[$key] = array_merge($val, (array)$children[$key]);
-                } elseif (is_array($children[$key])) {
-                    // string -> array
-                    $children[$key] = array_merge((array)$val, $children[$key]);
-                }
-            }
-
-            return $children;
-        }
-
-        // capture unique or missing array items
-        return array_merge((array)$parent, (array)$children);
-    }
-
-    /**
      * Get a configuration element, merged to reflect theme inheritance.
      *
      * @param string $key Configuration key to retrieve (or empty string to
@@ -326,7 +259,7 @@ class ThemeInfo
                         ? $allThemeInfo[$theme]
                         : $allThemeInfo[$theme][$key];
 
-                    $merged = $this->mergeWithoutOverride($merged, $current);
+                    $merged = $this->mergeRecursive($current, $merged);
                 }
             }
 
@@ -422,7 +355,7 @@ class ThemeInfo
             $themePath = "$basePath/$theme/";
             foreach ($allPaths as $currentPath) {
                 $path = $themePath . $currentPath;
-                foreach (glob($path) as $file) {
+                foreach (Glob::glob($path) as $file) {
                     if (filetype($file) === 'dir') {
                         continue;
                     }

@@ -47,7 +47,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
      *
      * @return array
      */
-    public function getTestScopeRepositoryData(): array
+    public static function getTestScopeRepositoryData(): array
     {
         return [
             ['openid', 'OpenID', false, false],

@@ -12,7 +12,7 @@
         if (
           !($currentSearch['ajax'] ?? false)                        // AJAX column
           && ($currentSearch['hide_if_empty'] ?? false)             // set to hide when empty
-          && $currentSearch['view']->results->getResultTotal() == 0 // and empty
+          && $currentSearch['view']->results->getResultTotal() <= 0 // and empty
         ) {
           continue;
         }

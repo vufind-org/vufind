@@ -49,6 +49,7 @@ use VuFindHttp\HttpService;
 class BokinfoTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Get mock request/headers to expect key setting.
@@ -128,9 +129,12 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(['foo: bar']));
         $client2->expects($this->once())->method('send')
             ->will($this->returnValue($response2));
-        $service->expects($this->exactly(2))->method('createClient')
-            ->withConsecutive([$url1], [$url2])
-            ->willReturnOnConsecutiveCalls($client1, $client2);
+        $this->expectConsecutiveCalls(
+            $service,
+            'createClient',
+            [[$url1], [$url2]],
+            [$client1, $client2]
+        );
         return $service;
     }
 

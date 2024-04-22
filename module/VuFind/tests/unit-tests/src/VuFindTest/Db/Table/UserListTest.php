@@ -88,7 +88,7 @@ class UserListTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\LoginRequired::class);
 
         $table = $this->getMockTable();
-        $list = $table->getNew(false);
+        $table->getNew(false);
     }
 
     /**

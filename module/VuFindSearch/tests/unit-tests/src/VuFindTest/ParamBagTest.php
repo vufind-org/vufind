@@ -112,4 +112,39 @@ class ParamBagTest extends TestCase
         $bag->set('xyzzy', 'baz');
         $this->assertCount(2, $bag);
     }
+
+    /**
+     * Test deduplication
+     *
+     * @return void
+     */
+    public function testDeduplication()
+    {
+        $bag = new ParamBag();
+        $bag->add('foo', 'bar');
+        $bag->add('foo', 'bar');
+        $bag->add('foo', ['bar', 'bar', 'bar']);
+        $this->assertEquals(['bar'], $bag->get('foo'));
+        $bag->add('foo', ['bar', 'baz', 'bar', 'baz']);
+        $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
+    }
+
+    /**
+     * Test disabling deduplication
+     *
+     * @return void
+     */
+    public function testDisabledDeduplication()
+    {
+        $bag = new ParamBag();
+        $bag->add('foo', 'bar', false);
+        $bag->add('foo', 'bar', false);
+        $bag->add('foo', ['bar', 'bar', 'bar'], false);
+        $this->assertEquals(['bar', 'bar', 'bar', 'bar', 'bar'], $bag->get('foo'));
+        $bag->add('foo', ['bar', 'baz', 'bar', 'baz'], false);
+        $this->assertEquals(['bar', 'bar', 'bar', 'bar', 'bar', 'bar', 'baz', 'bar', 'baz'], $bag->get('foo'));
+        // Now deduplicate everything:
+        $bag->add('foo', 'bar');
+        $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
+    }
 }

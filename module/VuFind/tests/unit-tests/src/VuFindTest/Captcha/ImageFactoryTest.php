@@ -112,7 +112,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function factoryDataProvider(): array
+    public static function factoryDataProvider(): array
     {
         return [
             'Empty base path' => [],

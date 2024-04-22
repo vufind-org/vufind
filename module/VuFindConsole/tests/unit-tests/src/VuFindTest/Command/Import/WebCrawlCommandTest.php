@@ -47,6 +47,7 @@ use VuFindConsole\Command\Import\WebCrawlCommand;
 class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Test the simplest possible success case.
@@ -78,11 +79,13 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $command = $this->getMockCommand($importer, $solr, $config);
-        $command->expects($this->exactly(2))->method('downloadFile')
-            ->withConsecutive(['http://foo'], ['http://bar'])
-            ->willReturnOnConsecutiveCalls($fixture1, $fixture2);
-        $command->expects($this->exactly(2))->method('removeTempFile')
-            ->withConsecutive([$fixture2], [$fixture1]);
+        $this->expectConsecutiveCalls(
+            $command,
+            'downloadFile',
+            [['http://foo'], ['http://bar']],
+            [$fixture1, $fixture2]
+        );
+        $this->expectConsecutiveCalls($command, 'removeTempFile', [[$fixture2], [$fixture1]]);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(

@@ -58,7 +58,7 @@
         </span>
         <span class="holding-field storage-retrieval">
           <?php if ($holding['storageRetrievalRequestLink'] ?? false): ?>
-            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>">
+            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest request-check ' : ''?> placeStorageRetrievalRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>">
               <?=$this->icon('place-storage-retrieval', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc($checkStorageRetrievalRequest ? 'storage_retrieval_request_check_text' : 'storage_retrieval_request_place_text')?></span>
             </a>
@@ -66,7 +66,7 @@
         </span>
         <span class="holding-field ill-request">
           <?php if ($holding['ILLRequestLink'] ?? false): ?>
-            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>">
+            <a class="<?=$checkILLRequest ? 'checkILLRequest request-check ' : ''?>placeILLRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>">
               <?=$this->icon('place-ill-request', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? 'ill_request_check_text' : 'ill_request_place_text')?></span>
             </a>
@@ -75,7 +75,7 @@
         <?php if ($holding['availability'] ?? false): ?>
           <span class="holding-field place-hold">
             <?php if ($holding['link'] ?? false): ?>
-              <a class="<?=$check ? 'checkRequest ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
+              <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
                 <?=$this->icon('place-hold', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Hold' : 'Place a Hold')?></span>
               </a>
@@ -84,7 +84,7 @@
         <?php else: ?>
           <span class="holding-field recall">
             <?php if ($holding['link'] ?? false): ?>
-              <a class="<?=$check ? 'checkRequest' : ''?> placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
+              <a class="<?=$check ? 'checkRequest request-check' : ''?> placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
                 <?=$this->icon('place-recall', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
               </a>

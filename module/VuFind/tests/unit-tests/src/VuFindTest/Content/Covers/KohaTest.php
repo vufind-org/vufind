@@ -47,7 +47,7 @@ class KohaTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getCoverData(): array
+    public static function getCoverData(): array
     {
         return [
             'no id' => [false, [null, 'small', []]],

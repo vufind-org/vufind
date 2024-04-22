@@ -10,7 +10,7 @@
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <label class="comment-label"><?=$this->transEsc('Your Comment')?></label>
-  <?php $user = $this->auth()->isLoggedIn() ?>
+  <?php $user = $this->auth()->getUserObject() ?>
   <?php if ($user): ?>
     <div class="text-form">
       <textarea name="comment" class="form-control" rows="3" required></textarea>

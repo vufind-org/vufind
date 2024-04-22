@@ -11,15 +11,13 @@
   $renewAll = !$this->ilsPaging || !$paginator;
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
-  <?=$this->transEsc('Your Account') ?>
-</a>
+<?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
   <?=$this->flashmessages()?>
 
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->transactions)): ?>
     <nav class="search-header hidden-print">
@@ -51,23 +49,35 @@
             <input type="checkbox" name="selectAll" class="checkbox-select-all">
             <?=$this->transEsc('select_all_on_page')?>
           </label>
-          <div class="btn-group">
-            <input type="submit" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr('renew_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-            <ul class="dropdown-menu">
-              <li class="disabled"><a><?=$this->transEsc('confirm_renew_selected_text')?></a></li>
-              <li><a href="#" id="confirm_renew_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-              <li><a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-          </div>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonId' => 'renewSelected',
+                    'buttonName' => 'renewSelected',
+                    'buttonLabel' => 'renew_selected',
+                    'header' => 'confirm_renew_selected_text',
+                    'confirmId' => 'confirm_renew_selected_yes',
+                    'cancelClass' => 'confirm_renew_no',
+                    'ignoreLightbox' => true,
+                ]
+            )
+          ?>
           <?php if ($renewAll): ?>
-            <div class="btn-group">
-              <input type="submit" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-              <ul class="dropdown-menu">
-                <li class="disabled"><a><?=$this->transEsc('confirm_renew_all_text')?></a></li>
-                <li><a href="#" id="confirm_renew_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                <li><a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-              </ul>
-            </div>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                      'buttonId' => 'renewAll',
+                      'buttonName' => 'renewAll',
+                      'buttonLabel' => 'renew_all',
+                      'header' => 'confirm_renew_all_text',
+                      'confirmId' => 'confirm_renew_all_yes',
+                      'cancelClass' => 'confirm_renew_no',
+                      'ignoreLightbox' => true,
+                  ]
+              )
+            ?>
           <?php endif; ?>
         </div>
       </div>
@@ -198,7 +208,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'checkedout'])?>
+  <?=$this->accountMenu()->render('checkedout')?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

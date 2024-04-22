@@ -43,11 +43,12 @@ trait TranslatorTrait
     /**
      * Get mock translator.
      *
-     * @param array $translations Key => value translation map.
+     * @param array  $translations Key => value translation map.
+     * @param string $locale       Locale, default to 'en'
      *
      * @return \Laminas\I18n\Translator\TranslatorInterface
      */
-    protected function getMockTranslator($translations)
+    protected function getMockTranslator(array $translations, string $locale = 'en')
     {
         $callback = function ($str, $domain) use ($translations) {
             return $translations[$domain][$str] ?? $str;
@@ -59,7 +60,7 @@ trait TranslatorTrait
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
         $translator->expects($this->any())->method('getLocale')
-            ->will($this->returnValue('en'));
+            ->will($this->returnValue($locale));
         return $translator;
     }
 }

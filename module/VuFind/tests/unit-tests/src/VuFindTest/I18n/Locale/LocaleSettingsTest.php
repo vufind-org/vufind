@@ -151,7 +151,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function fallbackLocalConfigsProvider(): array
+    public static function fallbackLocalConfigsProvider(): array
     {
         return [
             [

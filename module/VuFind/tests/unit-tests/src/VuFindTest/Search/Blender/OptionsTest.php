@@ -50,7 +50,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function optionsProvider(): array
+    public static function optionsProvider(): array
     {
         return [
             [

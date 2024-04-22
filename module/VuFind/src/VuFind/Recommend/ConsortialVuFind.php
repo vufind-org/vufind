@@ -33,6 +33,7 @@ use Laminas\Config\Config;
 use VuFind\Connection\ExternalVuFind as Connection;
 
 use function intval;
+use function is_callable;
 
 /**
  * ConsortialVuFind Recommendations Module
@@ -111,9 +112,9 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
     /**
      * Query string from the original search results
      *
-     * @var string
+     * @var ?string
      */
-    protected $queryString;
+    protected $queryString = null;
 
     /**
      * Constructor
@@ -198,7 +199,10 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
      */
     public function process($results)
     {
-        $this->queryString = $results->getParams()->getQuery()->getString();
+        $query = $results->getParams()->getQuery();
+        if (is_callable([$query, 'getString'])) {
+            $this->queryString = $query->getString();
+        }
     }
 
     /**
@@ -208,7 +212,7 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
      */
     public function getResults()
     {
-        if (!$this->hasMinimumConfig) {
+        if (!$this->hasMinimumConfig || !$this->queryString) {
             return [];
         }
 

@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -51,34 +52,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     use TranslatorAwareTrait;
 
     /**
-     * Main configuration
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Cookie consent configuration
-     *
-     * @var array
-     */
-    protected $consentConfig;
-
-    /**
-     * Cookie manager
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
-
-    /**
-     * Date converter
-     *
-     * @var DateConverter
-     */
-    protected $dateConverter;
-
-    /**
      * Consent cookie name
      *
      * @var string
@@ -86,7 +59,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     protected $consentCookieName;
 
     /**
-     * Consent cookie expiration time
+     * Consent cookie expiration time (days)
      *
      * @var int
      */
@@ -102,24 +75,21 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     /**
      * Constructor
      *
-     * @param array         $config        Main configuration
-     * @param array         $consentConfig Cookie consent configuration
-     * @param CookieManager $cookieManager Cookie manager
-     * @param DateConverter $converter     Date converter
+     * @param array             $config            Main configuration
+     * @param array             $consentConfig     Cookie consent configuration
+     * @param CookieManager     $cookieManager     Cookie manager
+     * @param DateConverter     $dateConverter     Date converter
+     * @param LoginTokenManager $loginTokenManager Login token manager
      */
     public function __construct(
-        array $config,
-        array $consentConfig,
-        CookieManager $cookieManager,
-        DateConverter $converter
+        protected array $config,
+        protected array $consentConfig,
+        protected CookieManager $cookieManager,
+        protected DateConverter $dateConverter,
+        protected LoginTokenManager $loginTokenManager
     ) {
-        $this->config = $config;
-        $this->consentConfig = $consentConfig;
-        $this->cookieManager = $cookieManager;
-        $this->dateConverter = $converter;
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
-        $this->consentCookieExpiration
-            = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
+        $this->consentCookieExpiration = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
     }
 
     /**
@@ -463,6 +433,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
             '{{vufind_cookie_domain}}' => $this->cookieManager->getDomain()
                 ?: $this->getHostName(),
             '{{vufind_session_cookie}}' => $this->cookieManager->getSessionName(),
+            '{{vufind_login_token_cookie_name}}' => $this->loginTokenManager->getCookieName(),
+            '{{vufind_login_token_cookie_expiration}}' => $this->loginTokenManager->getCookieLifetime(),
         ];
     }
 

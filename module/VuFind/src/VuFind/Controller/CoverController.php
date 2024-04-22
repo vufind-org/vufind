@@ -33,6 +33,8 @@ use VuFind\Cover\CachingProxy;
 use VuFind\Cover\Loader;
 use VuFind\Session\Settings as SessionSettings;
 
+use function in_array;
+
 /**
  * Generates covers for book entries
  *
@@ -66,20 +68,30 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     protected $sessionSettings = null;
 
     /**
+     * Configuration settings ([Content] section of config.ini)
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
      * @param Loader          $loader Cover loader
      * @param CachingProxy    $proxy  Proxy loader
      * @param SessionSettings $ss     Session settings
+     * @param array           $config Configuration settings
      */
     public function __construct(
         Loader $loader,
         CachingProxy $proxy,
-        SessionSettings $ss
+        SessionSettings $ss,
+        array $config = []
     ) {
         $this->loader = $loader;
         $this->proxy = $proxy;
         $this->sessionSettings = $ss;
+        $this->config = $config;
     }
 
     /**
@@ -116,6 +128,41 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
+     * Is the provided URL included on the configured allow list?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function proxyAllowedForUrl(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!$host) {
+            return false;
+        }
+        foreach ((array)($this->config['coverproxyAllowedHosts'] ?? []) as $regEx) {
+            if (preg_match($regEx, $host)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Is the content type allowed by the cover proxy?
+     *
+     * @param string $contentType Type to check
+     *
+     * @return bool
+     */
+    protected function isValidProxyImageContentType(string $contentType): bool
+    {
+        $validTypes = $this->config['coverproxyAllowedTypes']
+            ?? ['image/gif', 'image/jpeg', 'image/png'];
+        return in_array(strtolower($contentType), array_map('strtolower', $validTypes));
+    }
+
+    /**
      * Send image data for display in the view
      *
      * @return \Laminas\Http\Response
@@ -126,13 +173,16 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
 
         // Special case: proxy a full URL:
         $url = $this->params()->fromQuery('proxy');
-        if (!empty($url)) {
+        if (!empty($url) && $this->proxyAllowedForUrl($url)) {
             try {
                 $image = $this->proxy->fetch($url);
-                return $this->displayImage(
-                    $image->getHeaders()->get('content-type')->getFieldValue(),
-                    $image->getContent()
-                );
+                $contentType = $image?->getHeaders()?->get('content-type')?->getFieldValue() ?? '';
+                if ($this->isValidProxyImageContentType($contentType)) {
+                    return $this->displayImage(
+                        $contentType,
+                        $image->getContent()
+                    );
+                }
             } catch (\Exception $e) {
                 // If an exception occurs, drop through to the standard case
                 // to display an image unavailable graphic.

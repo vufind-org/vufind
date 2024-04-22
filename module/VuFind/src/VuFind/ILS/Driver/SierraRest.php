@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2023.
+ * Copyright (C) The National Library of Finland 2016-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -76,6 +76,13 @@ class SierraRest extends AbstractBase implements
      * @var string
      */
     public const HOLDINGS_LOCATION_FIELD = '40';
+
+    /**
+     * Sierra INN-Reach Database connection
+     *
+     * @var ?resource
+     */
+    protected $innReachDb = null;
 
     /**
      * Fixed field number for item code 2 (ICODE2) in item records
@@ -276,17 +283,16 @@ class SierraRest extends AbstractBase implements
      *
      * @var int
      */
-    protected $apiVersion = 5;
+    protected $apiVersion = 6;
 
     /**
      * API base path
      *
-     * This is the default API level used even if apiVersion is higher so that any
-     * changes in existing methods don't cause trouble.
+     * This should correspond to $apiVersion above
      *
      * @var string
      */
-    protected $apiBase = 'v5';
+    protected $apiBase = 'v6';
 
     /**
      * Statistic group to use e.g. when renewing loans or placing holds
@@ -369,7 +375,7 @@ class SierraRest extends AbstractBase implements
      *
      * @var array
      */
-    protected $defaultBibFields = ['title', 'publishYear', 'bibLevel'];
+    protected $defaultBibFields = ['default'];
 
     /**
      * Default list of item fields to request from Sierra. This list must include at
@@ -378,14 +384,9 @@ class SierraRest extends AbstractBase implements
      * @var array
      */
     protected $defaultItemFields = [
-        'location',
-        'status',
-        'barcode',
-        'callNumber',
+        'default',
         'fixedFields',
         'varFields',
-        'itemType',
-        'bibIds',
     ];
 
     /**
@@ -429,6 +430,10 @@ class SierraRest extends AbstractBase implements
      */
     public function init()
     {
+        if (empty($this->config)) {
+            throw new ILSException('Configuration needs to be set.');
+        }
+
         // Validate config
         $required = ['host', 'client_key', 'client_secret'];
         foreach ($required as $current) {
@@ -480,10 +485,7 @@ class SierraRest extends AbstractBase implements
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
-            // Default to API v5 unless a lower compatibility level is needed.
-            if ($this->apiVersion < 5) {
-                $this->apiBase = 'v' . floor($this->apiVersion);
-            }
+            $this->apiBase = 'v' . floor($this->apiVersion);
         }
         if ($statGroup = $this->config['Catalog']['statgroup'] ?? null) {
             if ($this->apiVersion >= 6) {
@@ -507,6 +509,26 @@ class SierraRest extends AbstractBase implements
         );
         $factory = $this->sessionFactory;
         $this->sessionCache = $factory($namespace);
+    }
+
+    /**
+     * Establish INN-Reach database connection
+     *
+     * @return ?resource
+     */
+    protected function getInnReachDb()
+    {
+        if (null === $this->innReachDb) {
+            try {
+                $conn_string = $this->config['InnReach']['sierra_db'];
+                $connection = pg_connect($conn_string);
+                $this->innReachDb = $connection;
+            } catch (\Exception $e) {
+                $this->logWarning("INN-Reach: Could not connect to the Sierra database: {$e}");
+                $this->innReachDb = null;
+            }
+        }
+        return $this->innReachDb;
     }
 
     /**
@@ -715,7 +737,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id']],
             [
-                'fields' => 'names,emails,phones,addresses,birthDate,expirationDate',
+                'fields' => 'default,names,emails,phones,addresses',
             ],
             'GET',
             $patron
@@ -748,7 +770,7 @@ class SierraRest extends AbstractBase implements
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : '';
+                ) : null;
         return [
             'firstname' => $firstname,
             'lastname' => $lastname,
@@ -786,8 +808,7 @@ class SierraRest extends AbstractBase implements
             [
                 'limit' => $pageSize,
                 'offset' => $offset,
-                'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber,barcode',
+                'fields' => 'default,numberOfRenewals,callNumber,barcode',
             ],
             'GET',
             $patron
@@ -836,6 +857,21 @@ class SierraRest extends AbstractBase implements
                 }
             }
             $transactions[] = $transaction;
+        }
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            foreach ($transactions as $n => $transaction) {
+                $irIdentifier = $this->config['InnReach']['identifier'];
+                if ($transaction['item_id'] && strstr($transaction['item_id'], $irIdentifier)) {
+                    $irCheckoutId = $transaction['checkout_id'];
+                    $irItemId = $transaction['item_id'];
+                    $innReach = $this->getInnReachCheckoutTitleInfoFromId($irCheckoutId, $irItemId);
+
+                    if (!empty($innReach)) {
+                        $transactions[$n]['title'] = $innReach['title'];
+                        $transactions[$n]['author'] = $innReach['author'];
+                    }
+                }
+            }
         }
 
         return [
@@ -932,7 +968,6 @@ class SierraRest extends AbstractBase implements
                 'offset' => $offset,
                 'sortField' => 'outDate',
                 'sortOrder' => $sortOrder,
-                'fields' => 'bib,item,outDate',
             ],
             'GET',
             $patron
@@ -1051,8 +1086,7 @@ class SierraRest extends AbstractBase implements
      */
     public function getMyHolds($patron)
     {
-        $fields = 'id,record,frozen,placed,location,pickupLocation,status'
-            . ',recordType,priority,priorityQueueLength';
+        $fields = 'default,location,priorityQueueLength';
         if ($this->apiVersion >= 5) {
             $fields .= ',pickupByDate';
         }
@@ -1179,6 +1213,22 @@ class SierraRest extends AbstractBase implements
                 'updateDetails' => $updateDetails,
             ];
         }
+
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            foreach ($holds as $n => $hold) {
+                if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
+                    $id = $hold['id'];
+                    $volume = $hold['volume'];
+
+                    $innReach = $this->getInnReachHoldTitleInfoFromId($hold['reqnum'], $hold['id']);
+                    if (!empty($innReach)) {
+                        $holds[$n]['id'] = $innReach['id'];
+                        $holds[$n]['title'] = $innReach['title'];
+                        $holds[$n]['author'] = $innReach['author'];
+                    }
+                }
+            }
+        }
         return $holds;
     }
 
@@ -1202,7 +1252,7 @@ class SierraRest extends AbstractBase implements
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v5', 'patrons', 'holds', $holdId],
+                [$this->apiBase, 'patrons', 'holds', $holdId],
                 '',
                 'DELETE',
                 $patron
@@ -1249,8 +1299,7 @@ class SierraRest extends AbstractBase implements
         $results = [];
         foreach ($holdsDetails as $requestId) {
             // Fetch existing hold status:
-            $reqFields = 'status,pickupLocation,frozen'
-                . (isset($fields['frozen']) ? ',canFreeze' : '');
+            $reqFields = 'default' . (isset($fields['frozen']) ? ',canFreeze' : '');
             $hold = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'holds', $requestId],
                 [
@@ -1356,11 +1405,10 @@ class SierraRest extends AbstractBase implements
         }
 
         $result = $this->makeRequest(
-            ['v4', 'branches', 'pickupLocations'],
+            [$this->apiBase, 'branches', 'pickupLocations'],
             [
                 'limit' => 10000,
                 'offset' => 0,
-                'fields' => 'code,name',
                 'language' => $this->getTranslatorLocale(),
             ],
             'GET',
@@ -1527,8 +1575,7 @@ class SierraRest extends AbstractBase implements
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
-                'fields' => 'item,assessedDate,description,chargeType,itemCharge'
-                    . ',processingFee,billingFee,paidAmount',
+                'limit' => 10000,
             ],
             'GET',
             $patron
@@ -1785,7 +1832,7 @@ class SierraRest extends AbstractBase implements
                 ? (' failed (' . $exception->getMessage() . ')')
                 : ' succeeded';
             $msg = "$method request for '$apiUrl' with params "
-                . var_export($params, true)
+                . $this->varDump($params)
                 . "$status on attempt $attempt";
             $this->logWarning($msg);
         };
@@ -2285,7 +2332,7 @@ class SierraRest extends AbstractBase implements
         $holdingsData = [];
         if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
-                ['v5', 'holdings'],
+                [$this->apiBase, 'holdings'],
                 [
                     'bibIds' => $this->extractBibId($id),
                     'deleted' => 'false',
@@ -2592,10 +2639,9 @@ class SierraRest extends AbstractBase implements
         if (null === $locations) {
             $locations = [];
             $result = $this->makeRequest(
-                ['v4', 'branches'],
+                [$this->apiBase, 'branches'],
                 [
                     'limit' => 10000,
-                    'fields' => 'locations',
                 ],
                 'GET'
             );
@@ -2812,7 +2858,7 @@ class SierraRest extends AbstractBase implements
         if (null === $blockReason) {
             $result = $this->makeRequest(
                 [$this->apiBase, 'patrons', $patronId],
-                ['fields' => 'blockInfo'],
+                [],
                 'GET',
                 $patron
             );
@@ -3029,7 +3075,7 @@ class SierraRest extends AbstractBase implements
             'GET',
             $patron
         );
-        foreach ($records['entries'] as $record) {
+        foreach ($records['entries'] ?? [] as $record) {
             $id = $this->extractId($record['id']);
             $this->putCachedRecordData("$type|$id", $requiredFields, $record, $ttl);
             $result[$id] = $record;
@@ -3319,6 +3365,7 @@ class SierraRest extends AbstractBase implements
                 'caseSensitivity' => false,
             ];
             try {
+                // Note: hard-coded to use v5 API:
                 $result = $this->makeRequest(
                     ['v5', 'patrons', 'validate'],
                     json_encode($request),
@@ -3415,6 +3462,13 @@ class SierraRest extends AbstractBase implements
                 $bibIdsToItems[$this->extractId($bibId)][$itemId] = true;
             }
         }
+        if ($this->config['InnReach']['enabled'] ?? false) {
+            foreach ($itemIds as $key => $iRId) {
+                if (strstr($iRId, $this->config['InnReach']['identifier'])) {
+                    unset($itemIds[$key]);
+                }
+            }
+        }
         // Get items and collect further bib id mappings:
         $items = $this->getItemRecords($itemIds, null, $patron);
         foreach ($items as $itemId => $item) {
@@ -3486,5 +3540,99 @@ class SierraRest extends AbstractBase implements
             }
         }
         return false;
+    }
+
+    /**
+     * Gets title information for holds placed in an INN-Reach system
+     *
+     * @param $holdId the id of the hold from Sierra
+     * @param $bibId  the id of the bib from Sierra
+     *
+     * @return array
+     *
+     * @throws ILSException
+     */
+    protected function getInnReachHoldTitleInfoFromId($holdId, $bibId): array
+    {
+        $db = $this->getInnReachDb();
+        $titleInfo = [];
+        if ($db) {
+            try {
+                $query = 'SELECT
+                        bib_record_property.best_title as title,
+                        bib_record_property.best_author as author,
+                        --hold.status, -- this shows sierra hold status not inn-reach status
+                        bib_record_property.best_title_norm as sort_title
+                    FROM
+                        sierra_view.hold,
+                        sierra_view.bib_record_item_record_link,
+                        sierra_view.bib_record_property
+                    WHERE
+                        hold.id = $1
+                    AND hold.is_ir=true
+                    AND hold.record_id = bib_record_item_record_link.item_record_id
+                    AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
+                pg_prepare($this->innReachDb, 'prep_query', $query);
+                $results = pg_execute($this->innReachDb, 'prep_query', [$holdId]);
+                if ($result = pg_fetch_array($results, 0)) {
+                    $titleInfo['id'] = $bibId;
+                    $titleInfo['title'] = $result[0];
+                    $titleInfo['author'] = $result[1];
+                }
+            } catch (\Exception $e) {
+                $this->throwAsIlsException($e);
+            }
+        } else {
+            $titleInfo['id'] = '';
+            $titleInfo['title'] = 'Unknown Title';
+            $titleInfo['author'] = 'Unknown Author';
+        }
+        return $titleInfo;
+    }
+
+    /**
+     * Gets title information for checked out items from INN-Reach systems
+     *
+     * @param $checkOutId the id of the checkout from Sierra
+     * @param $bibId      the id of the bib from Sierra
+     *
+     * @return array
+     *
+     * @throws ILSException
+     */
+    protected function getInnReachCheckoutTitleInfoFromId($checkOutId, $bibId): array
+    {
+        $db = $this->getInnReachDb();
+        $titleInfo = [];
+        if ($db) {
+            try {
+                $query = 'SELECT
+  bib_record_property.best_title as title,
+  bib_record_property.best_author as author,
+  bib_record_property.best_title_norm as sort_title
+FROM
+  sierra_view.checkout,
+  sierra_view.bib_record_item_record_link,
+  sierra_view.bib_record_property
+WHERE
+  checkout.id = $1
+  AND checkout.item_record_id = bib_record_item_record_link.item_record_id
+  AND bib_record_item_record_link.bib_record_id = bib_record_property.bib_record_id';
+                pg_prepare($this->innReachDb, 'prep_query', $query);
+                $results = pg_execute($this->innReachDb, 'prep_query', [$checkOutId]);
+                if ($result = pg_fetch_array($results, 0)) {
+                    $titleInfo['id'] = $bibId;
+                    $titleInfo['title'] = $result[0];
+                    $titleInfo['author'] = $result[1];
+                }
+            } catch (\Exception $e) {
+                $this->throwAsIlsException($e);
+            }
+        } else {
+            $titleInfo['id'] = '';
+            $titleInfo['title'] = 'Unknown Title';
+            $titleInfo['author'] = 'Unknown Author';
+        }
+        return $titleInfo;
     }
 }

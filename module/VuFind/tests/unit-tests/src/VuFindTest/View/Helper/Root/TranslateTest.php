@@ -170,6 +170,80 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test translation with domain fallback.
+     *
+     * @return void
+     */
+    public function testTranslationWithDomainFallback(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(
+                [
+                    'default' => ['4' => 'success'],
+                    'domain1' => ['1' => 'success'],
+                    'domain2' => ['1' => 'fail', '2' => 'success'],
+                    'domain3' => ['1' => 'fail', '2' => 'fail', '3' => 'success'],
+                ]
+            )
+        );
+
+        for ($x = 1; $x <= 4; $x++) {
+            // Check using default namespace:
+            $this->assertEquals(
+                'success',
+                $translate((string)$x, fallbackDomains: ['domain1', 'domain2', 'domain3'])
+            );
+            // String format with no default:
+            $this->assertEquals(
+                'success',
+                $translate("domain1::$x", fallbackDomains: ['domain2', 'domain3', 'default'])
+            );
+            // String format with default set:
+            $this->assertEquals(
+                'success',
+                $translate("domain1::$x", default: 'foo', fallbackDomains: ['domain2', 'domain3', 'default'])
+            );
+            // Array format:
+            $this->assertEquals(
+                'success',
+                $translate(['domain1', $x], fallbackDomains: ['domain2', 'domain3', 'default'])
+            );
+        }
+    }
+
+    /**
+     * Test translation of a key with illegal characters.
+     *
+     * @return void
+     */
+    public function testTranslationWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => ['_28_29_3F_21' => 'success']])
+        );
+
+        $this->assertEquals('success', $translate('()?!'));
+    }
+
+    /**
+     * Test default fallback after translation of a key with illegal characters when
+     * no matching translations are found.
+     *
+     * @return void
+     */
+    public function testTranslationDefaultsWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => []])
+        );
+
+        $this->assertEquals('()?!', $translate('()?!'));
+    }
+
+    /**
      * Test translation of a TranslatableString object with a loaded translator
      *
      * @return void
@@ -429,6 +503,49 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             $translate(
                 'foo',
                 ['bar' => '7'],
+                'failure',
+                true
+            )
+        );
+
+        $translate->setTranslator(
+            $this->getMockTranslator(
+                ['default' => ['foo' => '{bar, plural, =1 {jeden} few {několik} other {mnoho = #}}']],
+                'cs-CZ'
+            )
+        );
+        $this->assertEquals(
+            'jeden',
+            $translate(
+                'foo',
+                ['bar' => '1'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '2'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '3'],
+                'failure',
+                true
+            )
+        );
+        $this->assertEquals(
+            'mnoho = 12',
+            $translate(
+                'foo',
+                ['bar' => '12'],
                 'failure',
                 true
             )

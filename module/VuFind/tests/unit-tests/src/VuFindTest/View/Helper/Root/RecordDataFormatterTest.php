@@ -296,7 +296,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getFormattingData(): array
+    public static function getFormattingData(): array
     {
         return [
             [
@@ -580,7 +580,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getFormattingDataWithGlobalOptions(): array
+    public static function getFormattingDataWithGlobalOptions(): array
     {
         return [
             [

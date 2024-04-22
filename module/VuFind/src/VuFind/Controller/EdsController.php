@@ -197,7 +197,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Process the publicationd date range limiter widget
+     * Process the publication date range limiter widget
      *
      * @param object $searchObject Saved search object (false if none)
      *

@@ -54,7 +54,7 @@ class PrivateUser extends User
      *
      * @param string $name Field to retrieve.
      *
-     * @throws Exception\InvalidArgumentException
+     * @throws \Laminas\Db\RowGateway\Exception\InvalidArgumentException
      * @return mixed
      */
     public function __get($name)

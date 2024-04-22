@@ -5,16 +5,16 @@
 ?>
 <?php if (!empty($results)): ?>
   <h2><?=$this->transEsc($heading)?></h2>
-  <div class="list-group">
+  <ul class="list-group">
     <?php foreach ($results as $driver): ?>
-      <div class="list-group-item">
+      <li class="list-group-item">
         <span>
           <a href="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" class="title">
             <?=$this->record($driver)->getTitleHtml()?>
           </a>
         </span>
-      </div>
+      </li>
     <?php endforeach; ?>
     <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('libguides_recommendations_more')?></a>
-  </div>
+  </ul>
 <?php endif ?>

@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Legacy adapter: search query parameters to AbstractQuery object
+ * Search query adapter
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -40,18 +42,16 @@ use function call_user_func;
 use function count;
 
 /**
- * Legacy adapter: search query parameters to AbstractQuery object
- *
- * The class is a intermediate solution to translate the (possibly modified)
- * search query parameters in an object required by the new search system.
+ * Search query adapter
  *
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class QueryAdapter
+class QueryAdapter implements QueryAdapterInterface
 {
     /**
      * Return a Query or QueryGroup based on minified search arguments.
@@ -60,7 +60,7 @@ abstract class QueryAdapter
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public static function deminify(array $search)
+    public function deminify(array $search)
     {
         $type = $search['s'] ?? null;
         if ('w' === $type) {
@@ -80,7 +80,7 @@ abstract class QueryAdapter
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
                 $operator,
-                array_map(self::class . '::deminify', $search['g'])
+                array_map([$this, 'deminify'], $search['g'])
             );
         } else {
             // Special case: The outer-most group-of-groups.
@@ -88,7 +88,7 @@ abstract class QueryAdapter
                 $operator = $search[0]['j'];
                 return new QueryGroup(
                     $operator,
-                    array_map(self::class . '::deminify', $search)
+                    array_map([$this, 'deminify'], $search)
                 );
             } else {
                 // Simple query
@@ -106,7 +106,7 @@ abstract class QueryAdapter
      *
      * @return string
      */
-    public static function display(AbstractQuery $query, $translate, $showName)
+    public function display(AbstractQuery $query, $translate, $showName)
     {
         // Simple case -- basic query:
         if ($query instanceof Query) {
@@ -119,22 +119,22 @@ abstract class QueryAdapter
         }
 
         // Complex case -- advanced query:
-        return self::displayAdvanced($query, $translate, $showName);
+        return $this->displayAdvanced($query, $translate, $showName);
     }
 
     /**
      * Support method for display() -- process advanced queries.
      *
-     * @param AbstractQuery $query     Query to convert
-     * @param callable      $translate Callback to translate strings
-     * @param callable      $showName  Callback to translate field names
+     * @param QueryGroup $query     Query to convert
+     * @param callable   $translate Callback to translate strings
+     * @param callable   $showName  Callback to translate field names
      *
      * @return string
      */
-    protected static function displayAdvanced(
-        AbstractQuery $query,
-        $translate,
-        $showName
+    protected function displayAdvanced(
+        QueryGroup $query,
+        callable $translate,
+        callable $showName
     ) {
         // Groups and exclusions.
         $groups = $excludes = [];
@@ -192,7 +192,7 @@ abstract class QueryAdapter
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public static function fromRequest(Parameters $request, $defaultHandler)
+    public function fromRequest(Parameters $request, $defaultHandler)
     {
         // Check for a work keys query first (id and keys included for back-compatibility):
         if (
@@ -253,7 +253,7 @@ abstract class QueryAdapter
      *
      * @return array
      */
-    public static function minify(AbstractQuery $query, $topLevel = true)
+    public function minify(AbstractQuery $query, $topLevel = true)
     {
         // Simple query:
         if ($query instanceof Query) {
@@ -282,7 +282,7 @@ abstract class QueryAdapter
         foreach ($query->getQueries() as $current) {
             if ($topLevel) {
                 $retVal[] = [
-                    'g' => self::minify($current, false),
+                    'g' => $this->minify($current, false),
                     'j' => $operator,
                     's' => 'a',
                 ];

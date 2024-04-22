@@ -72,7 +72,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param string $test   Name of test fixture to load
      * @param array  $config Driver configuration (null to use default)
      *
-     * @return void
+     * @return EDS
      */
     protected function getDriver(string $test = null, array $config = null): EDS
     {
@@ -655,7 +655,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getLinkUrlsProvider(): array
+    public static function getLinkUrlsProvider(): array
     {
         return [
             [

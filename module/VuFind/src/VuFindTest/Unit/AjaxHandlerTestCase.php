@@ -72,9 +72,9 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an auth manager with a value set for isLoggedIn.
+     * Get an auth manager with a value set for getUserObject.
      *
-     * @param \VuFind\Db\Row\User $user Return value for isLoggedIn()
+     * @param \VuFind\Db\Row\User $user Return value for getUserObject()
      *
      * @return \VuFind\Auth\Manager
      */
@@ -82,10 +82,12 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     {
         $authManager = $this->container->createMock(
             \VuFind\Auth\Manager::class,
-            ['isLoggedIn']
+            ['getUserObject', 'loginEnabled']
         );
-        $authManager->expects($this->any())->method('isLoggedIn')
-            ->will($this->returnValue($user));
+        $authManager->expects($this->any())->method('getUserObject')
+            ->willReturn($user);
+        $authManager->expects($this->any())->method('loginEnabled')
+            ->willReturn(true);
         return $authManager;
     }
 

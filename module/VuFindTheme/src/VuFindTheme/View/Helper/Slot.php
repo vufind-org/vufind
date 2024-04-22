@@ -50,7 +50,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     public const APPEND = 'APPEND';
 
     /**
-     * Storage for strings to be concatinated to the front of a block
+     * Storage for strings to be concatenated to the front of a block
      *
      * @var array of arrays
      */
@@ -64,7 +64,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     protected $blocks = [];
 
     /**
-     * Storage for strings to be concatinated to the end of a block
+     * Storage for strings to be concatenated to the end of a block
      *
      * @var array of arrays
      */
@@ -122,7 +122,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
      * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening
      *
      * Non-string data can be stored in a slot but prepend and append
-     * will cause it to be concatinated into a string.
+     * will cause it to be concatenated into a string.
      *
      * @param string $name Name of target block for action
      *
@@ -230,7 +230,6 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     public function end($method = self::SET)
     {
         $method = strtoupper($method);
-        $ret = null;
         if ($method == self::SET) {
             $ret = $this->set(ob_get_contents());
         } elseif ($method == self::PREPEND) {

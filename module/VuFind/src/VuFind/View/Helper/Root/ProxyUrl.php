@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Exception;
-use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function intval;
 

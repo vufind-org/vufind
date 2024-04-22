@@ -223,7 +223,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
-            $data = $fulldata[strtolower($od_id)];
+            $data = $fulldata[strtolower($od_id)] ?? null;
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
@@ -239,7 +239,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
             }
         }
-        $this->debug('previewlinks:' . print_r($results, true));
+        $this->debug('previewlinks:' . $this->varDump($results));
         return $results;
     }
 
@@ -449,7 +449,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
-            $data = $fulldata[strtolower($od_id)];
+            $data = $fulldata[strtolower($od_id)] ?? null;
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
@@ -473,19 +473,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $newDesc = preg_replace('/&#8217;/i', '', $desc);
         $newDesc = strip_tags($newDesc);
         return ['Summary' => $newDesc];
-    }
-
-    /**
-     * Retrieve raw data from object (primarily for use in staff view and
-     * autocomplete; avoid using whenever possible).
-     *
-     * @return mixed
-     */
-    public function getRawData()
-    {
-        return $this->getIsMarc()
-            ? parent::getRawData()
-            : json_decode($this->fields['fullrecord'], true);
     }
 
     /**
@@ -532,7 +519,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getFormattedRawData()
     {
-        $result = [];
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
         $c_arr = [];
@@ -542,7 +528,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         }
         $data['creators'] = implode('<br>', $c_arr);
 
-        $this->debug('raw data:' . print_r($data, true));
+        $this->debug('raw data:' . $this->varDump($data));
         return $data;
     }
 

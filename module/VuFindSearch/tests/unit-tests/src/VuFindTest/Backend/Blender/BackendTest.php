@@ -33,8 +33,8 @@ use Laminas\Config\Config;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
+use Laminas\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
-use VuFind\Log\Logger;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
@@ -62,13 +62,14 @@ use function in_array;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Blender config
      *
      * @var array
      */
-    protected $config = [
+    protected static $config = [
         'Backends' => [
             'Solr' => 'Local',
             'EDS' => 'Electronic Stuff',
@@ -239,7 +240,7 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    public function getSearchTestData(): array
+    public static function getSearchTestData(): array
     {
         $solrRecords = [
             [
@@ -317,7 +318,7 @@ class BackendTest extends TestCase
             array_slice($solrRecords, 13, 5),
             array_slice($edsRecords, 17, 5)
         );
-        $adaptiveConfig = $this->config;
+        $adaptiveConfig = static::$config;
         $adaptiveConfig['Blending']['adaptiveBlockSizes'] = [
             '5000-100000:5',
         ];
@@ -333,7 +334,7 @@ class BackendTest extends TestCase
             array_slice($solrRecords, 14, 7),
             array_slice($edsRecords, 14, 5)
         );
-        $noBoostConfig = $this->config;
+        $noBoostConfig = static::$config;
         unset($noBoostConfig['Blending']['initialResults']);
 
         $expectedRecordsTitleSearch = array_merge(
@@ -604,21 +605,23 @@ class BackendTest extends TestCase
         $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $eds->expects($this->exactly(3))
-            ->method('search')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $eds,
+            'search',
+            [
                 [$query, 0, 20, $edsParams],
                 [$query, 0, 20, $edsParams],
                 [$query, 0, 0, $edsParams],
-            )->will($this->returnValue($collection));
-
+            ],
+            $collection
+        );
         $backends = [
             'EDS' => $eds,
         ];
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config($this->config),
+            new Config(static::$config),
             $this->mappings,
             $eventManager
         );
@@ -642,7 +645,7 @@ class BackendTest extends TestCase
      */
     public function testNonDelimitedBlenderBackendFacet(): void
     {
-        $config = $this->config;
+        $config = static::$config;
         unset($config['Advanced_Settings']);
         $backend = $this->getBackend($config);
         $expectedSolr = 240;
@@ -811,9 +814,7 @@ class BackendTest extends TestCase
         $backend = $this->getBackend();
         $params = $this->getSearchParams(['blender_backend:Foo']);
 
-        $logger = $this->getMockBuilder(Logger::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('warn')
             ->with(
@@ -821,7 +822,7 @@ class BackendTest extends TestCase
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
             )
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }
@@ -831,7 +832,7 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    public function getInvalidBlockSizes(): array
+    public static function getInvalidBlockSizes(): array
     {
         return [
             [
@@ -857,7 +858,7 @@ class BackendTest extends TestCase
      */
     public function testInvalidAdaptiveBlockSize($blockSizes): void
     {
-        $config = $this->config;
+        $config = static::$config;
         $config['Blending']['adaptiveBlockSizes'] = $blockSizes;
         $backend = $this->getBackend($config);
         $params = $this->getSearchParams([]);
@@ -908,12 +909,12 @@ class BackendTest extends TestCase
         };
 
         $this->sharedEventManager->attach(
-            'VuFind\Search',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_PRE,
             $onSearchPre
         );
         $this->sharedEventManager->attach(
-            'VuFind\Search',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_POST,
             $onSearchPost
         );
@@ -929,12 +930,12 @@ class BackendTest extends TestCase
             ]
         );
         $this->sharedEventManager->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_PRE,
             [$backend, 'onSearchPre']
         );
         $this->sharedEventManager->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_POST,
             [$backend, 'onSearchPost']
         );
@@ -953,7 +954,7 @@ class BackendTest extends TestCase
             'params' => $params,
         ];
         $eventManager = new EventManager($this->sharedEventManager);
-        $eventManager->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
+        $eventManager->setIdentifiers([\VuFindSearch\Service::class]);
         $eventManager->trigger(
             \VuFindSearch\Service::EVENT_PRE,
             $backend,
@@ -1085,7 +1086,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config($config ?? $this->config),
+            new Config($config ?? static::$config),
             $mappings ?? $this->mappings,
             $eventManager
         );
@@ -1242,9 +1243,7 @@ class BackendTest extends TestCase
             ->method('call')
             ->will($this->returnCallback($callback));
 
-        $cache = $this->getMockForAbstractClass(
-            \Laminas\Cache\Storage\Adapter\AbstractAdapter::class
-        );
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $container = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         $params = [

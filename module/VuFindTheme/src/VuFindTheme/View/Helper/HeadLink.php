@@ -29,6 +29,7 @@
 
 namespace VuFindTheme\View\Helper;
 
+use stdClass;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -105,11 +106,11 @@ class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\Log
     /**
      * Create HTML link element from data item
      *
-     * @param \stdClass $item data item
+     * @param stdClass $item data item
      *
      * @return string
      */
-    public function itemToString(\stdClass $item)
+    public function itemToString(stdClass $item)
     {
         // Normalize href to account for themes, then call the parent class:
         $relPath = 'css/' . $item->href;

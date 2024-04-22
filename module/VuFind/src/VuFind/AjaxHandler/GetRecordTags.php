@@ -46,38 +46,14 @@ use VuFind\Db\Table\Tags;
 class GetRecordTags extends AbstractBase
 {
     /**
-     * Tags database table
-     *
-     * @var Tags
-     */
-    protected $table;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
      * Constructor
      *
      * @param Tags              $table    Tags table
-     * @param User|bool         $user     Logged in user (or false)
+     * @param ?User             $user     Logged in user (or null)
      * @param RendererInterface $renderer View renderer
      */
-    public function __construct(Tags $table, $user, RendererInterface $renderer)
+    public function __construct(protected Tags $table, protected ?User $user, protected RendererInterface $renderer)
     {
-        $this->table = $table;
-        $this->user = $user;
-        $this->renderer = $renderer;
     }
 
     /**

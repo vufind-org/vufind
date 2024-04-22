@@ -11,7 +11,7 @@
 
 <?=$this->flashmessages()?>
 
-<?php if (!empty($this->exportOptions)): ?>
+<?php if (!empty($this->exportOptions) && count($this->records) > 0): ?>
   <form class="form-cart-export" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEscAttr('Export Items')?>">
     <?php foreach ($this->records as $current): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
@@ -48,7 +48,7 @@
       </select>
     </div>
     <div class="form-group">
-      <input class="export btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Export')?>"<?php if ($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<?php endif; ?>>
+      <input class="export btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Export')?>"<?php if ($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<?php endif; ?>>
     </div>
   </form>
 <?php endif; ?>

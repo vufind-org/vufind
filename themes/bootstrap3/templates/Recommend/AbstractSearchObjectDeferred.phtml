@@ -3,7 +3,7 @@
     $classParts = explode('\\', $this->recommend::class);
     $containerId = array_pop($classParts) . 'Recommend';
     $loadJs = 'var url = VuFind.path + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
-        . "VuFind.loadHtml(\$('#$containerId'), url);";
+        . "VuFind.loadHtml('#$containerId', url);";
 ?>
 <div id="<?=$containerId?>">
     <p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
