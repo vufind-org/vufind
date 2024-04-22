@@ -16,9 +16,9 @@ $border-radius-large:  $border-radius-lg !default;
 $breadcrumb-separator: $breadcrumb-divider !default;
 
 $btn-border-radius-base: $btn-border-radius;
-$btn-default-color:      map-get($theme-colors, "light") !default;
-$btn-default-bg:         map-get($theme-colors, "primary") !default;
-$btn-default-border:     shade-color($btn-default-bg, $btn-active-bg-shade-amount) !default;
+$btn-default-color:      #333 !default;
+$btn-default-bg:         #fff !default;
+$btn-default-border:     #ccc !default;
 $btn-primary-color:      $body-bg !default;
 $btn-primary-bg:         $primary !default;
 $btn-primary-border:     shade-color($primary, $btn-active-bg-shade-amount) !default;
@@ -130,6 +130,12 @@ legend {
   @extend .visually-hidden;
 }
 
+.btn {
+  &:focus,
+  &.focus {
+    outline: dotted 1px $text-color;
+  }
+}
 .btn.btn-more {
   background-color: revert;
   &:hover {
@@ -137,7 +143,6 @@ legend {
     border-color: #999;
   }
 }
-
 .btn-default {
   @include button-variant(
     $btn-default-bg,
@@ -150,11 +155,6 @@ legend {
     $active-border: shade-color($btn-default-border, $btn-active-border-shade-amount),
     $active-color: $btn-default-color,
   );
-
-  &:focus,
-  &.focus {
-    background-color: darken($btn-default-bg, 10%);
-  }
 }
 .btn-primary {
   @include button-variant(
@@ -507,4 +507,9 @@ h6, .h6 {
       box-shadow: none;
     }
   }
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+  text-decoration: underline;
 }
