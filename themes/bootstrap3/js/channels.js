@@ -82,18 +82,6 @@ VuFind.register('channels', function Channels() {
       switchPopover(false);
     });
 
-<<<<<<< HEAD
-    $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
-      var record = $(event.delegateTarget);
-      if (!record.data("popover-loaded")) {
-        record.popover({
-          content: VuFind.translate('loading_ellipsis'),
-          html: true,
-          placement: 'bottom',
-          trigger: 'focus',
-          container: '#' + record.closest('.channel').attr('id')
-        });
-=======
     let recordContent = {};
     function showChannelRecord(event) {
       const record = $(event.delegateTarget);
@@ -116,7 +104,6 @@ VuFind.register('channels', function Channels() {
           + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
           + '</div>';
 
->>>>>>> origin/dev
         $.ajax({
           url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
           type: 'POST',

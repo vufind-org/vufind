@@ -15,24 +15,29 @@
           <li class="splide__slide">
             <a class="record-cover-link hover-overlay carousel-item" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
               <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
+
+              <p class="unhover-title"><b><?=$this->escapeHtml($data->getTitle())?></b></p>
+
               <div class="content">
-                <?php
-                  $formats = $data->getFormats();
-                  $format = $formats[0] ?? null;
-                  $icon = $format
-                    ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
-                    : 'default';
-                ?>
-                <?=$this->icon('format-' . $icon, $format ? ['title' => $format] : []) ?>
-                <b><?=$this->escapeHtml($data->getTitle())?></b>
-                <?php $authors = $data->getPrimaryAuthors(); ?>
-                <?php if (!empty($authors)): ?>
-                  <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
-                <?php endif; ?>
-                <?php $pubDates = $data->getPublicationDates(); ?>
-                <?php if (!empty($pubDates)): ?>
-                  <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
-                <?php endif; ?>
+                <div class="content__wrapper">
+                  <?php
+                    $formats = $data->getFormats();
+                    $format = $formats[0] ?? null;
+                    $icon = $format
+                      ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+                      : 'default';
+                  ?>
+                  <?=$this->icon('format-' . $icon, $format ? ['title' => $format] : []) ?>
+                  <b><?=$this->escapeHtml($data->getTitle())?></b>
+                  <?php $authors = $data->getPrimaryAuthors(); ?>
+                  <?php if (!empty($authors)): ?>
+                    <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+                  <?php endif; ?>
+                  <?php $pubDates = $data->getPublicationDates(); ?>
+                  <?php if (!empty($pubDates)): ?>
+                    <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+                  <?php endif; ?>
+                </div>
               </div>
             </a>
           </li>
