@@ -31,6 +31,7 @@
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
   <property name="mysqlport" value="3306" />
+  <property name="mysqlprotocol" value="" />
   <property name="mysqlrootuser" value="root" />
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
@@ -63,17 +64,22 @@
 
   <property name="version" value="9.1.1" />
 
-  <!-- We only need the -p switch if the password is non-blank -->
+  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass}" />
   <if>
     <not>
       <equals arg1="${mysqlrootpass}" arg2="" />
     </not>
     <then>
-      <property name="mysqlpwswitch" value="-p" />
+      <property name="mysqlconnectionargs" override="true" value="${mysqlconnectionargs} -p${mysqlrootpass}" />
     </then>
-    <else>
-      <property name="mysqlpwswitch" value="" />
-    </else>
+  </if>
+  <if>
+    <not>
+      <equals arg1="${mysqlprotocol}" arg2="" />
+    </not>
+    <then>
+      <property name="mysqlconnectionargs" override="true" value="${mysqlconnectionargs} --protocol ${mysqlprotocol}" />
+    </then>
   </if>
 
   <!-- Main Target -->
@@ -510,7 +516,7 @@
         <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
-        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}:${mysqlport}/${vufinddb}" />
+        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}:${mysqlport}/${vufinddb};" />
       </else>
     </if>
 
@@ -626,13 +632,13 @@ return [
       </then>
       <else>
         <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
-        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+        <exec command="mysqladmin -f ${mysqlconnectionargs} drop ${vufinddb}" />
+        <exec command="mysqladmin ${mysqlconnectionargs} create ${vufinddb}" checkreturn="true" passthru="true" />
+        <exec command="mysql ${mysqlconnectionargs} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" passthru="true" />
+        <exec command="mysql ${mysqlconnectionargs} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" passthru="true" />
+        <exec command="mysql ${mysqlconnectionargs} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" checkreturn="true" passthru="true" />
+        <exec command="mysql ${mysqlconnectionargs} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" passthru="true" />
+        <exec command="mysql ${mysqlconnectionargs} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" passthru="true" />
       </else>
     </if>
   </target>
@@ -718,8 +724,8 @@ ${git_status}
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
-        <exec command="mysql -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
-        <exec command="mysqladmin -f -h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysql ${mysqlconnectionargs} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+        <exec command="mysqladmin -f ${mysqlconnectionargs} drop ${vufinddb}" />
       </else>
     </if>
 
