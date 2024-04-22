@@ -20,6 +20,7 @@ VuFind.register('bs3-compat', function cookie() {
         }
         if (el.classList.contains('active')) {
           aEl.classList.add('active');
+          el.classList.remove('active');
         }
       }
     });
@@ -69,7 +70,7 @@ VuFind.register('bs3-compat', function cookie() {
   }
 
   function initDataAttributeMappings() {
-    document.querySelectorAll('[data-dismiss],[data-target],[data-toggle]').forEach((el) => {
+    document.querySelectorAll('[data-dismiss],[data-target],[data-toggle],[data-ride],[data-slide],[data-slide-to]').forEach((el) => {
       convertDataAttributes(el);
     });
     const observer = new MutationObserver((mutations) => {
