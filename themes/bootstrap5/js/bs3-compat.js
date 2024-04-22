@@ -20,7 +20,9 @@ VuFind.register('bs3-compat', function cookie() {
         }
         if (el.classList.contains('active')) {
           aEl.classList.add('active');
-          el.classList.remove('active');
+          if (null === el.closest('.searchHomeContent')) {
+            el.classList.remove('active');
+          }
         }
       }
     });
