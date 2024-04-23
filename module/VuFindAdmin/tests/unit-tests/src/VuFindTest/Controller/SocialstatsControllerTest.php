@@ -30,6 +30,7 @@
 namespace VuFindTest\Controller;
 
 use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Db\Service\RatingsServiceInterface;
 
 /**
  * Unit tests for Socialstats controller.
@@ -56,11 +57,13 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $dbServices = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Db\Service\PluginManager::class, $dbServices);
         $c = new \VuFindAdmin\Controller\SocialstatsController($container);
+
         $mockCommentsStats = ['users' => 5, 'resources' => 7, 'total' => 23];
         $commentsService = $this->createMock(CommentsServiceInterface::class);
         $commentsService->expects($this->once())->method('getStatistics')
             ->will($this->returnValue($mockCommentsStats));
         $dbServices->set(CommentsServiceInterface::class, $commentsService);
+
         $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
             ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
@@ -70,10 +73,13 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
         $tables->set('resourcetags', $resourcetags);
-        $ratings = $this->getMockBuilder(\VuFind\Db\Table\Ratings::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
-        $ratings->expects($this->once())->method('getStatistics')->will($this->returnValue(['ratings-data']));
-        $tables->set('ratings', $ratings);
+
+        $mockRatingsStats = ['users' => 1, 'resources' => 2, 'total' => 3];
+        $ratingsService = $this->createMock(RatingsServiceInterface::class);
+        $ratingsService->expects($this->any())->method('getStatistics')
+            ->will($this->returnValue($mockRatingsStats));
+        $dbServices->set(RatingsServiceInterface::class, $ratingsService);
+
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
@@ -88,6 +94,6 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($mockCommentsStats, $view->comments);
         $this->assertEquals('userresource-data', $view->favorites);
         $this->assertEquals('resourcetags-data', $view->tags);
-        $this->assertEquals(['ratings-data'], $view->ratings);
+        $this->assertEquals($mockRatingsStats, $view->ratings);
     }
 }
