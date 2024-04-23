@@ -94,7 +94,7 @@ interface AvailabilityStatusInterface
     public function getStatusLabel(): string;
 
     /**
-     * Get schema.
+     * Get schema.org availability URI.
      *
      * @return ?string
      */
