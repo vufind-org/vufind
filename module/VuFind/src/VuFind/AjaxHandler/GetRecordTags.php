@@ -31,7 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\Tags;
 
 /**
@@ -48,12 +48,15 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param Tags              $table    Tags table
-     * @param ?User             $user     Logged in user (or null)
-     * @param RendererInterface $renderer View renderer
+     * @param Tags                 $table    Tags table
+     * @param ?UserEntityInterface $user     Logged in user (or null)
+     * @param RendererInterface    $renderer View renderer
      */
-    public function __construct(protected Tags $table, protected ?User $user, protected RendererInterface $renderer)
-    {
+    public function __construct(
+        protected Tags $table,
+        protected ?UserEntityInterface $user,
+        protected RendererInterface $renderer
+    ) {
     }
 
     /**
@@ -65,7 +68,7 @@ class GetRecordTags extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
-        $is_me_id = !$this->user ? null : $this->user->id;
+        $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
         $tags = $this->table->getForResource(

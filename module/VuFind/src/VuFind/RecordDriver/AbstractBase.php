@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -252,8 +252,10 @@ abstract class AbstractBase implements
         // Cache data since comments list may ask for same information repeatedly:
         $cacheKey = $userId ?? '-';
         if (!isset($this->ratingCache[$cacheKey])) {
-            $table = $this->getDbTable('Ratings');
-            $this->ratingCache[$cacheKey] = $table->getForResource(
+            $ratingsService = $this->getDbService(
+                \VuFind\Db\Service\RatingsServiceInterface::class
+            );
+            $this->ratingCache[$cacheKey] = $ratingsService->getForResource(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
                 $userId
@@ -277,11 +279,12 @@ abstract class AbstractBase implements
      */
     public function getRatingBreakdown(array $groups)
     {
-        return $this->getDbTable('Ratings')->getCountsForResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $groups
-        );
+        return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
+            ->getCountsForResource(
+                $this->getUniqueId(),
+                $this->getSourceIdentifier(),
+                $groups
+            );
     }
 
     /**
@@ -302,7 +305,8 @@ abstract class AbstractBase implements
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
-        $resource->addOrUpdateRating($userId, $rating);
+        $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
+            ->addOrUpdateRating($resource, $userId, $rating);
     }
 
     /**

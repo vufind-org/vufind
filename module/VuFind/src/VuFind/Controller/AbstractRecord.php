@@ -324,7 +324,7 @@ class AbstractRecord extends AbstractBase
                 throw new BadRequestException('error_inconsistent_parameters');
             }
             $driver->addOrUpdateRating(
-                $user->id,
+                $user->getId(),
                 '' === $rating ? null : intval($rating)
             );
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
