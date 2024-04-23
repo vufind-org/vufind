@@ -34,7 +34,7 @@ $input-height-base: $input-height !default;
 
 $list-group-border: $list-group-border-color !default;
 
-$nav-link-hover-bg:       $body-color !default;
+$nav-link-hover-bg:       $gray-lighter !default;
 $nav-link-active-bg:      $primary !default;
 $nav-link-padding:        $nav-link-padding-y !default;
 
@@ -42,6 +42,7 @@ $nav-tabs-active-link-hover-color: $gray !default;
 $navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
 $navbar-height:                    50px !default;
 $navbar-nav-link-hover-color:      $body-bg !default;
+$navbar-nav-link-hover-bg:         $body-color !default;
 
 $padding-base-vertical:            $btn-padding-y !default;
 $padding-base-horizontal:          $btn-padding-x !default;
@@ -345,7 +346,7 @@ h6, .h6 {
     }
     &:not(.active):hover {
       --#{$prefix}nav-link-hover-color: #{$navbar-nav-link-hover-color};
-      background-color: $nav-link-hover-bg;
+      background-color: $navbar-nav-link-hover-bg;
     }
   }
 }
@@ -514,4 +515,11 @@ h6, .h6 {
 .navbar-brand {
   font-size: 1.4rem;
   text-decoration: underline;
+}
+
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
 }

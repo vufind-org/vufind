@@ -405,11 +405,11 @@ footer {
     align-items: baseline;
 
     &:hover {
-      background-color: $gray-lighter;
+      background-color: $nav-link-hover-bg;
       outline: dotted 1px #000;
     }
     &:focus {
-      background-color: $gray-lighter;
+      background-color: $nav-link-hover-bg;
     }
     &.user-list-link i {
       margin-left: 0.5rem;
