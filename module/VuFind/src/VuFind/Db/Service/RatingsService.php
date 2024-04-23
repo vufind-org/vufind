@@ -107,6 +107,16 @@ class RatingsService extends AbstractDbService implements
         return $this->getDbTable('ratings')->getStatistics();
     }
 
+    /**
+     * Add or update user's rating for a resource.
+     *
+     * @param int|ResourceEntityInterface $resource Resource to add or update rating.
+     * @param int|UserEntityInterface     $user     User
+     * @param ?int                        $rating   Rating (null to delete)
+     *
+     * @throws \Exception
+     * @return int ID of rating added, deleted or updated
+     */
     public function addOrUpdateRating(
         int|ResourceEntityInterface $resource,
         int|UserEntityInterface $user,
