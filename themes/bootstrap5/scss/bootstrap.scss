@@ -409,7 +409,7 @@ footer {
       outline: dotted 1px #000;
     }
     &:focus {
-      background-color: $nav-link-hover-bg;
+      background-color: $gray-lighter;
     }
     &.user-list-link i {
       margin-left: 0.5rem;
