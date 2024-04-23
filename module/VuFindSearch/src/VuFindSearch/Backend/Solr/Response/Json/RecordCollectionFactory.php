@@ -103,6 +103,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         $collection = new $this->collectionClass($response);
         $hlDetails = $response['highlighting'] ?? [];
         foreach ($response['response']['docs'] ?? [] as $doc) {
+            // If highlighting details were provided, merge them into the record for future use:
             if (isset($doc['id']) && ($hl = $hlDetails[$doc['id']] ?? [])) {
                 $doc['__highlight_details'] = $hl;
             }
