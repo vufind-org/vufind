@@ -169,7 +169,7 @@ class Search extends Gateway
      * missing?
      *
      * @throws \Exception
-     * @return \VuFind\Db\Row\Search
+     * @return ?\VuFind\Db\Row\Search
      */
     public function getRowById($id, $exceptionIfMissing = true)
     {

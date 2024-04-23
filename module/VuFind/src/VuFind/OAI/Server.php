@@ -32,6 +32,7 @@
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
+use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
@@ -147,27 +148,6 @@ class Server
     protected $adminEmail;
 
     /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Table manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
-
-    /**
      * Record link helper (optional)
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
@@ -231,19 +211,17 @@ class Server
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Search manager for
-     * retrieving records
-     * @param \VuFind\Record\Loader                $loader  Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
+     * @param \VuFind\Record\Loader                $recordLoader      Record loader
+     * @param \VuFind\Db\Table\PluginManager       $tableManager      Table manager
+     * @param OaiResumptionServiceInterface        $resumptionService Database service for resumption tokens
      */
     public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \VuFind\Record\Loader $recordLoader,
+        protected \VuFind\Db\Table\PluginManager $tableManager,
+        protected OaiResumptionServiceInterface $resumptionService
     ) {
-        $this->resultsManager = $results;
-        $this->recordLoader = $loader;
-        $this->tableManager = $tables;
     }
 
     /**
@@ -1156,11 +1134,11 @@ class Server
     protected function isBadDate($from, $until)
     {
         $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
-        if ($dt === false || $dt->getLastErrors()) {
+        if (!$this->dateTimeCreationSuccessful($dt)) {
             return true;
         }
         $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
-        if ($dt === false || $dt->getLastErrors()) {
+        if (!$this->dateTimeCreationSuccessful($dt)) {
             return true;
         }
         // Check for different date granularity
@@ -1183,6 +1161,28 @@ class Server
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if a DateTime was successfully created without errors or warnings
+     *
+     * @param \DateTime|false $dt DateTime or false (return value of createFromFormat)
+     *
+     * @return bool
+     */
+    protected function dateTimeCreationSuccessful(\DateTime|false $dt): bool
+    {
+        // Return value false is always an error:
+        if (false === $dt) {
+            return false;
+        }
+        $errors = $dt->getLastErrors();
+        // getLastErrors returns false if no errors on PHP 8.2 and later:
+        if (false === $errors) {
+            return true;
+        }
+        // getLastErrors returns an array with no errors on PHP 8.1:
+        return empty($errors['errors']) && empty($errors['warnings']);
     }
 
     /**
@@ -1246,15 +1246,13 @@ class Server
      */
     protected function loadResumptionToken($token)
     {
-        // Create object for loading tokens:
-        $search = $this->tableManager->get('OaiResumption');
-
         // Clean up expired records before doing our search:
-        $search->removeExpired();
+        $this->resumptionService->removeExpired();
 
         // Load the requested token if it still exists:
-        if ($row = $search->findToken($token)) {
-            return $row->restoreParams();
+        if ($row = $this->resumptionService->findToken($token)) {
+            parse_str($row->getResumptionParameters(), $params);
+            return $params;
         }
 
         // If we got this far, the token is invalid or expired:
@@ -1324,9 +1322,8 @@ class Server
         $params['cursorMark'] = $cursorMark;
 
         // Save everything to the database:
-        $search = $this->tableManager->get('OaiResumption');
         $expire = time() + 24 * 60 * 60;
-        $token = $search->saveToken($params, $expire);
+        $token = $this->resumptionService->saveToken($params, $expire);
 
         // Add details to the xml:
         $token = $xml->addChild('resumptionToken', $token);

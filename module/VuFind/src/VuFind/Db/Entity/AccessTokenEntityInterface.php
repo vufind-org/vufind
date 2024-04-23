@@ -43,11 +43,11 @@ interface AccessTokenEntityInterface extends EntityInterface
     /**
      * Set user ID.
      *
-     * @param ?string $userId User ID
+     * @param ?UserEntityInterface $user User owning token
      *
      * @return AccessTokenEntityInterface
      */
-    public function setUserId(?string $userId): AccessTokenEntityInterface;
+    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface;
 
     /**
      * Set data.
