@@ -30,7 +30,7 @@
 namespace VuFindTest\Controller;
 
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Service\RatingsService;
+use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\UserResourceService;
 
@@ -76,12 +76,10 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $dbServices->set(UserResourceService::class, $userResourceService);
 
         $mockRatingsStats = ['users' => 1, 'resources' => 2, 'total' => 3];
-        $ratingsService = $this->getMockBuilder(RatingsService::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
-            ->getMock();
+        $ratingsService = $this->createMock(RatingsServiceInterface::class);
         $ratingsService->expects($this->any())->method('getStatistics')
             ->will($this->returnValue($mockRatingsStats));
-        $dbServices->set(RatingsService::class, $ratingsService);
+        $dbServices->set(RatingsServiceInterface::class, $ratingsService);
 
         $mockTagStats = ['users' => 31, 'resources' => 32, 'total' => 33];
         $tagService = $this->getMockBuilder(TagService::class)

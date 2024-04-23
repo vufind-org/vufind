@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -255,7 +255,7 @@ abstract class AbstractBase implements
         $cacheKey = $userId ?? '-';
         if (!isset($this->ratingCache[$cacheKey])) {
             $ratingsService = $this->getDbService(
-                \VuFind\Db\Service\RatingsService::class
+                \VuFind\Db\Service\RatingsServiceInterface::class
             );
             $this->ratingCache[$cacheKey] = $ratingsService->getForResource(
                 $this->getUniqueId(),
@@ -281,9 +281,7 @@ abstract class AbstractBase implements
      */
     public function getRatingBreakdown(array $groups)
     {
-        return $this->getDbService(
-            \VuFind\Db\Service\RatingsService::class
-        )
+        return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
             ->getCountsForResource(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
@@ -308,7 +306,8 @@ abstract class AbstractBase implements
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
-        $this->getDbService(\VuFind\Db\Service\RatingsService::class)->addOrUpdateRating($resource, $userId, $rating);
+        $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
+            ->addOrUpdateRating($resource, $userId, $rating);
     }
 
     /**

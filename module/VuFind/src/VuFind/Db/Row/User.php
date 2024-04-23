@@ -573,8 +573,8 @@ class User extends RowGateway implements
             $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
-            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsService::class);
-            $ratings->deleteByUser($this->id);
+            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
+            $ratings->deleteByUser($this);
         }
 
         // Remove the user itself:

@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AccessTokenServiceInterface::class => AccessTokenService::class,
         CommentsServiceInterface::class => CommentsService::class,
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
+        RatingsServiceInterface::class => RatingsService::class,
         ResourceServiceInterface::class => ResourceService::class,
         SessionServiceInterface::class => SessionService::class,
         TagServiceInterface::class => TagService::class,

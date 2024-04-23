@@ -32,11 +32,12 @@ namespace VuFind\Db\Service;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Ratings;
 use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
-use function is_object;
+use function is_int;
 
 /**
  * Database service for Ratings.
@@ -158,15 +159,15 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
     /**
      * Deletes all ratings by a user.
      *
-     * @param int|\VuFind\Db\Entity\User $user User object or identifier
+     * @param int|UserEntityInterface $user User object or identifier
      *
      * @return void
      */
-    public function deleteByUser($user): void
+    public function deleteByUser(int|UserEntityInterface $user): void
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Ratings::class) . ' r '
             . 'WHERE r.user = :user';
-        $parameters['user'] = $user;
+        $parameters['user'] = is_int($user) ? $user : $user->getId();
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->execute();
@@ -191,11 +192,10 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
     /**
      * Add or update user's rating for a resource.
      *
-     * @param Resource $resource Resource to add or update rating.
-     * @param int|User $user     User
-     * @param ?int     $rating   Rating (null to delete)
+     * @param int|ResourceEntityInterface $resource Resource to add or update rating.
+     * @param int|UserEntityInterface     $user     User
+     * @param ?int                        $rating   Rating (null to delete)
      *
-     * @throws LoginRequiredException
      * @throws \Exception
      * @return int ID of rating added, deleted or updated
      */
@@ -208,6 +208,8 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
         $dql = 'SELECT r '
             . 'FROM ' . $this->getEntityClass(Ratings::class) . ' r '
             . 'WHERE r.user = :user AND r.resource = :resource';
+        $resource = $this->getDoctrineReference(Resource::class, $resource);
+        $user = $this->getDoctrineReference(User::class, $user);
         $parameters = compact('resource', 'user');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -234,7 +236,7 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
 
         $row = $this->createRatings()
                 ->setResource($resource)
-                ->setUser(is_object($user) ? $user : $this->entityManager->getReference(User::class, $user))
+                ->setUser($user)
                 ->setRating($rating)
                 ->setCreated(new \DateTime());
         try {

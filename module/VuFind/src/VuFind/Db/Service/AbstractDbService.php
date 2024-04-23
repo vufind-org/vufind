@@ -34,6 +34,9 @@ use Laminas\Db\RowGateway\AbstractRowGateway;
 use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 
+use function is_callable;
+use function is_int;
+
 /**
  * Database service abstract base class
  *
@@ -99,6 +102,30 @@ abstract class AbstractDbService implements DbServiceInterface
     {
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Get a Doctrine reference for an entity or ID.
+     *
+     * @param string              $desiredClass Desired Doctrine entity class
+     * @param int|EntityInterface $objectOrId   Object or identifier to convert to entity
+     *
+     * @return EntityInterface
+     */
+    protected function getDoctrineReference(string $desiredClass, int|EntityInterface $objectOrId): EntityInterface
+    {
+        if ($objectOrId instanceof $desiredClass) {
+            return $objectOrId;
+        }
+        if (is_int($objectOrId)) {
+            $id = $objectOrId;
+        } else {
+            if (!is_callable([$objectOrId, 'getId'])) {
+                throw new \Exception('No getId() method on ' . $objectOrId::class);
+            }
+            $id = $objectOrId->getId();
+        }
+        return $this->entityManager->getReference($desiredClass, $id);
     }
 
     /**
