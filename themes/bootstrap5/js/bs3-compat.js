@@ -26,7 +26,7 @@ VuFind.register('bs3-compat', function cookie() {
         }
         if (el.classList.contains('active')) {
           aEl.classList.add('active');
-          if (null === el.closest('.searchHomeContent')) {
+          if (null === el.closest('.searchForm')) {
             el.classList.remove('active');
           }
         }
