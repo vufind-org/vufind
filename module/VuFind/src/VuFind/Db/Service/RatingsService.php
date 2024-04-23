@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -106,18 +107,11 @@ class RatingsService extends AbstractDbService implements
         return $this->getDbTable('ratings')->getStatistics();
     }
 
-    /**
-     * Add or update user's rating for a resource.
-     *
-     * @param int|ResourceEntityInterface $resource Resource to add or update rating.
-     * @param int|UserEntityInterface     $user     User
-     * @param ?int                        $rating   Rating (null to delete)
-     *
-     * @throws \Exception
-     * @return int ID of rating added, deleted or updated
-     */
-    public function addOrUpdateRating($resource, $user, $rating): int
-    {
+    public function addOrUpdateRating(
+        int|ResourceEntityInterface $resource,
+        int|UserEntityInterface $user,
+        ?int $rating
+    ): int {
         if (is_int($resource)) {
             $resource = $this->getDbTable('resource')->select(['id' => $resource])->current();
         }
