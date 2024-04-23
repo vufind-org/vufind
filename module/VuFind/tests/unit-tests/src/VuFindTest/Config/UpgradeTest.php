@@ -266,6 +266,22 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test spellchecker changes.
+     *
+     * @return void
+     */
+    public function testSpelling()
+    {
+        $upgrader = $this->getUpgrader('spelling');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure spellcheck 'simple' is replaced by 'dictionaries'
+        $this->assertFalse(isset($results['config.ini']['Spelling']['simple']));
+        $this->assertTrue(isset($results['config.ini']['Spelling']['dictionaries']));
+    }
+
+    /**
      * Test Syndetics upgrade.
      *
      * @return void
