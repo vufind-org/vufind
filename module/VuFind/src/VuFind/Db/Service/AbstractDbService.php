@@ -107,10 +107,12 @@ abstract class AbstractDbService implements DbServiceInterface
     /**
      * Get a Doctrine reference for an entity or ID.
      *
-     * @param string              $desiredClass Desired Doctrine entity class
+     * @param class-string<T>     $desiredClass Desired Doctrine entity class
      * @param int|EntityInterface $objectOrId   Object or identifier to convert to entity
      *
-     * @return EntityInterface
+     * @template T
+     *
+     * @return T
      */
     protected function getDoctrineReference(string $desiredClass, int|EntityInterface $objectOrId): EntityInterface
     {

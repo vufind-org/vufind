@@ -44,8 +44,6 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Tags;
 
-use function is_object;
-
 /**
  * Database service for UserList.
  *
@@ -133,7 +131,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         if (!$user) {
             throw new LoginRequiredException('Log in to create lists.');
         }
-        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        $user = $this->getDoctrineReference(User::class, $user);
         $row = $this->createUserList()
             ->setCreated(new \DateTime())
             ->setUser($user);
@@ -362,7 +360,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
         string $source = DEFAULT_SEARCH_BACKEND
     ): void {
         if ($user) {
-            $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+            $user = $this->getDoctrineReference(User::class, $user);
         }
         if (!$list->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');
@@ -398,7 +396,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
     public function delete($list, $user = false, $force = false)
     {
         if ($user) {
-            $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+            $user = $this->getDoctrineReference(User::class, $user);
         }
         if (!$force && !$list->editAllowed($user ?: null)) {
             throw new ListPermissionException('list_access_denied');

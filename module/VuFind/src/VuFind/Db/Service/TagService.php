@@ -45,7 +45,6 @@ use VuFind\Log\LoggerAwareTrait;
 
 use function count;
 use function in_array;
-use function is_object;
 
 /**
  * Database service for tags.
@@ -96,24 +95,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Given a legacy user row, a Doctrine user entity, or an integer ID, return a
-     * user reference that can be used in a query.
-     *
-     * @param UserEntityInterface|int $user Object or identifier representing a user
-     *
-     * @return object
-     */
-    protected function getUserReference($user)
-    {
-        if ($user instanceof User) {
-            return $user; // already a Doctrine entity
-        }
-        // A legacy object or an integer:
-        $userId = is_object($user) ? $user->getId() : $user;
-        return $this->entityManager->getReference(User::class, $userId);
-    }
-
-    /**
      * Look up a row for the specified resource.
      *
      * @param int|Tags     $tag      ID of tag to link up
@@ -131,14 +112,13 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $list = null,
         $posted = null
     ) {
-        $tag = is_object($tag) ? $tag : $this->entityManager->getReference(Tags::class, $tag);
+        $tag = $this->getDoctrineReference(Tags::class, $tag);
         $dql = ' SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
         $dqlWhere = ['rt.tag = :tag '];
         $parameters = compact('tag');
 
         if (null !== $resource) {
-            $resource = is_object($resource) ? $resource :
-                $this->entityManager->getReference(Resource::class, $resource);
+            $resource = $this->getDoctrineReference(Resource::class, $resource);
             $dqlWhere[] = 'rt.resource = :resource ';
             $parameters['resource'] = $resource;
         } else {
@@ -146,7 +126,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         }
 
         if (null !== $list) {
-            $list = is_object($list) ? $list : $this->entityManager->getReference(UserList::class, $list);
+            $list = $this->getDoctrineReference(UserList::class, $list);
             $dqlWhere[] = 'rt.list = :list ';
             $parameters['list'] = $list;
         } else {
@@ -154,7 +134,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         }
 
         if (null !== $user) {
-            $user = $this->getUserReference($user);
+            $user = $this->getDoctrineReference(User::class, $user);
             $dqlWhere[] = 'rt.user = :user';
             $parameters['user'] = $user;
         } else {
@@ -235,10 +215,10 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             . 'WHERE ' . ($this->caseSensitive ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
             . 'AND rt.user = :user ';
 
-        $user = $this->getUserReference($user);
+        $user = $this->getDoctrineReference(User::class, $user);
         $parameters = compact('tag', 'user');
         if (null !== $list) {
-            $list = is_object($list) ? $list : $this->entityManager->getReference(UserList::class, $list);
+            $list = $this->getDoctrineReference(UserList::class, $list);
             $dql .= 'AND rt.list = :list';
             $parameters['list'] = $list;
         }
@@ -327,7 +307,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
 
         $dqlWhere = ['rt.user = :user '];
-        $parameters = ['user' => $this->getUserReference($user)];
+        $parameters = ['user' => $this->getDoctrineReference(User::class, $user)];
         if (null !== $resource) {
             $dqlWhere[] = 'rt.resource IN (:resource) ';
             $parameters['resource'] = (array)$resource;

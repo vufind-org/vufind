@@ -36,8 +36,6 @@ use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
 
-use function is_object;
-
 /**
  * Database service for UserResource.
  *
@@ -96,7 +94,7 @@ class UserResourceService extends AbstractDbService implements LoggerAwareInterf
                         $notes[] = $row->getNotes();
                     }
                 }
-                $userResource =  $this->entityManager->getReference(UserResource::class, $dupe['id']);
+                $userResource = $this->getDoctrineReference(UserResource::class, $dupe['id']);
                 $userResource->setNotes(implode(' ', $notes));
                 $this->entityManager->flush();
 
@@ -198,8 +196,8 @@ class UserResourceService extends AbstractDbService implements LoggerAwareInterf
         $list,
         $notes = ''
     ) {
-        $resource = is_object($resource) ? $resource : $this->entityManager->getReference(Resource::class, $resource);
-        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        $resource = $this->getDoctrineReference(Resource::class, $resource);
+        $user = $this->getDoctrineReference(User::class, $user);
         $params = compact('resource', 'list', 'user');
         $result = current($this->entityManager->getRepository($this->getEntityClass(UserResource::class))
             ->findBy($params));
