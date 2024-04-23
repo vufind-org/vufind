@@ -31,11 +31,14 @@ namespace VuFind\Security;
 
 use Laminas\Http\Header\ContentSecurityPolicy;
 use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
+use Laminas\Http\Header\GenericHeader;
 
 use function in_array;
 
 /**
- * VuFind class for generating Content Security Policy http headers
+ * VuFind class for generating Content Security Policy http headers.
+ * Also generates related headers like NEL (network error logging)
+ * and reporting headers like Report-To.
  *
  * @category VuFind
  * @package  Security
@@ -45,8 +48,11 @@ use function in_array;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class CspHeaderGenerator
+class CspHeaderGenerator implements
+    \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Configuration for generator from contensecuritypolicy.ini
      *
@@ -81,11 +87,43 @@ class CspHeaderGenerator
     }
 
     /**
+     * Create all relevant CSP-related headers based on given configuration
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        $headers = [];
+        if ($cspHeader = $this->getCspHeader()) {
+            $headers[] = $cspHeader;
+        }
+        if ($reportToHeader = $this->getReportToHeader()) {
+            $headers[] = $reportToHeader;
+        }
+        if ($nelHeader = $this->getNetworkErrorLoggingHeader()) {
+            $headers[] = $nelHeader;
+        }
+        return $headers;
+    }
+
+    /**
+     * Create CSP header base on given configuration
+     *
+     * @return ContentSecurityPolicy
+     *
+     * @deprecated Use getCspHeader instead
+     */
+    public function getHeader()
+    {
+        return $this->getCspHeader();
+    }
+
+    /**
      * Create CSP header base on given configuration
      *
      * @return ContentSecurityPolicy
      */
-    public function getHeader()
+    public function getCspHeader()
     {
         $cspHeader = $this->createHeaderObject();
         $directives = $this->config->Directives ?? [];
@@ -100,9 +138,13 @@ class CspHeaderGenerator
             ) {
                 $sources[] = "'nonce-$this->nonce'";
             }
-            // Add report-uri header for backwards compatibility
+            // Warn about report-to being used in place of report-uri
             if ($name == 'report-to') {
-                $cspHeader->setDirective('report-uri', $sources);
+                foreach ($sources as $source) {
+                    if (str_contains($source, '://')) {
+                        $this->logWarning('CSP report-to directive should not be a URI.');
+                    }
+                }
             }
             $cspHeader->setDirective($name, $sources);
         }
@@ -123,5 +165,72 @@ class CspHeaderGenerator
         return ('report_only' === $mode)
             ? new ContentSecurityPolicyReportOnly()
             : new ContentSecurityPolicy();
+    }
+
+    /**
+     * Create Report-To header based on given configuration
+     *
+     * @return ?GenericHeader
+     */
+    public function getReportToHeader()
+    {
+        $reportToHeader = new GenericHeader();
+        $reportToHeader->setFieldName('Report-To');
+        $groupsText = [];
+
+        $reportTo = $this->config->ReportTo;
+        foreach ($reportTo['groups'] ?? [] as $groupName) {
+            $configSectionName = 'ReportTo' . $groupName;
+            $groupConfig = $this->config->$configSectionName ?? false;
+            if ($groupConfig) {
+                $group = [
+                    'group' => $groupName,
+                    'max_age' => $groupConfig->max_age ?? 86400, // one day
+                    'endpoints' => [],
+                ];
+                foreach ($groupConfig->endpoints_url ?? [] as $url) {
+                    $group['endpoints'][] = [
+                        'url' => $url,
+                    ];
+                }
+                $groupsText[] = json_encode($group, JSON_UNESCAPED_SLASHES);
+            }
+        }
+
+        if (!$groupsText) {
+            return null;
+        }
+        $reportToHeader->setFieldValue(implode(', ', $groupsText));
+        return $reportToHeader;
+    }
+
+    /**
+     * Create NEL (Network Error Logging) header based on given configuration
+     *
+     * @return ?GenericHeader
+     */
+    public function getNetworkErrorLoggingHeader()
+    {
+        $nelHeader = new \Laminas\Http\Header\GenericHeader();
+        $nelHeader->setFieldName('NEL');
+        $nelData = [];
+
+        $nelConfig = $this->config->NetworkErrorLogging;
+        if ($reportTo = $nelConfig['report_to'] ?? null) {
+            $nelData['report_to'] = $reportTo;
+        } else {
+            return null;
+        }
+        $nelData['max_age'] = $nelConfig['max_age'] ?? 86400; // one day
+        if (isset($nelConfig['include_subdomains'])) {
+            $nelData['include_subdomains'] = (bool)$nelConfig['include_subdomains'];
+        }
+        if (isset($nelConfig['failure_fraction'])) {
+            $nelData['failure_fraction'] = (float)$nelConfig['failure_fraction'];
+        }
+
+        $nelText = json_encode($nelData, JSON_UNESCAPED_SLASHES);
+        $nelHeader->setFieldValue($nelText);
+        return $nelHeader;
     }
 }

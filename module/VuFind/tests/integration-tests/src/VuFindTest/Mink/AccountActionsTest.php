@@ -270,7 +270,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the email:
         $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
-        $this->clickCss($page, '[name="submit"]');
+        $this->clickCss($page, '[name="submitButton"]');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your email address has been changed successfully',

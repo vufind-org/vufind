@@ -90,7 +90,7 @@ class ExternalSession extends Gateway
      *
      * @param string $sid External session ID to retrieve
      *
-     * @return \VuFind\Db\Row\ExternalSession
+     * @return ?\VuFind\Db\Row\ExternalSession
      */
     public function getByExternalSessionId($sid)
     {

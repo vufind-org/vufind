@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,7 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Db\Service\TagService;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
@@ -170,7 +170,10 @@ class AbstractRecord extends AbstractBase
                 true,
                 $driver
             );
-            $resource->addComment($comment, $user);
+            $commentsService = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $commentsService->addComment($comment, $user, $resource);
 
             // Save rating if allowed:
             if (
@@ -205,8 +208,10 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = $this->getTable('Comments');
-        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsServiceInterface::class
+        );
+        if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
@@ -237,7 +242,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $this->getDbService(TagService::class)->addTagsToRecord(
+            $this->getDbService(TagServiceInterface::class)->addTagsToRecord(
                 $driver->getUniqueID(),
                 $driver->getSourceIdentifier(),
                 $user,
@@ -276,7 +281,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->getDbService(TagService::class)->deleteTagsFromRecord(
+            $this->getDbService(TagServiceInterface::class)->deleteTagsFromRecord(
                 $driver->getUniqueID(),
                 $driver->getSourceIdentifier(),
                 $user,
@@ -461,7 +466,7 @@ class AbstractRecord extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             return $this->processSave();
         }
 
@@ -553,7 +558,7 @@ class AbstractRecord extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
@@ -617,7 +622,7 @@ class AbstractRecord extends AbstractBase
         $view->to = $this->params()->fromPost('to');
         $view->provider = $this->params()->fromPost('provider');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {

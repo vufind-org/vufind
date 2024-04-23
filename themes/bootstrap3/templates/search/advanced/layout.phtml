@@ -216,11 +216,13 @@
       <?php if ($helpTopics): ?>
         <h2><?=$this->transEsc('Search Tips')?></h2>
         <?php // Data-title attribute is for analytics use.  Do not remove. ?>
-        <div class="facet-group" data-title="<?=$this->escapeHtmlAttr('Search Tips') ?>">
+        <ul class="facet-group" data-title="<?=$this->escapeHtmlAttr('Search Tips') ?>">
           <?php foreach ($helpTopics as $topic => $title): ?>
-            <a class="facet help-link" data-lightbox href="<?=$this->url('help-home', [], ['query' => ['topic' => $topic, '_' => time()]])?>"><?=$this->transEsc($title)?></a>
+            <li class="facet">
+              <a class="help-link" data-lightbox href="<?=$this->url('help-home', [], ['query' => ['topic' => $topic, '_' => time()]])?>"><?=$this->transEsc($title)?></a>
+            </li>
           <?php endforeach; ?>
-        </div>
+        </ul>
       <?php endif; ?>
     </div>
   </form>

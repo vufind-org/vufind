@@ -426,10 +426,7 @@ ul.list-group {
   list-style: none;
 }
 
-.dropdown-menu > li > .prompt-text {
-  @extend .dropdown-menu-ul-links;
-
-  white-space: inherit;
+.dropdown-menu > li .dropdown-header {
   min-width: 200px;
 }
 
@@ -474,14 +471,31 @@ ul.list-group {
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */
 .table {
-  table-layout: fixed;
-  word-wrap: break-word;
+  th {
+    word-wrap: break-word;
+  }
+  &.staff-view th {
+    min-width: 30%;
+    word-wrap: anywhere;
+  }
+  td {
+    word-wrap: anywhere;
+  }
+  td.fullAvailability, td.holdings-table {
+    word-wrap: break-word;
+  }
+}
+.callnumAndLocation .table, .table.holdings-table {
+  td {
+    word-wrap: break-word;
+  }
 }
 // No wrapping for fines table in wide windows
 @media (min-width: 992px) {
   .table.fines-table {
-    table-layout: auto;
-    word-wrap: normal;
+    td, th {
+      word-wrap: normal;
+    }
   }
 }
 

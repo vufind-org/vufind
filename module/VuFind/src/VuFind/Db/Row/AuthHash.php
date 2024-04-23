@@ -31,6 +31,8 @@
 
 namespace VuFind\Db\Row;
 
+use VuFind\Db\Entity\AuthHashEntityInterface;
+
 /**
  * Row Definition for auth_hash
  *
@@ -41,7 +43,7 @@ namespace VuFind\Db\Row;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AuthHash extends RowGateway
+class AuthHash extends RowGateway implements AuthHashEntityInterface
 {
     /**
      * Constructor
