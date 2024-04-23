@@ -182,8 +182,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $recordType = $this->has($key) ? $key : $keyPrefix . $defaultKeySuffix;
 
         // Build the object:
+        $hl = $data['__highlight_details'] ?? [];
+        unset($data['__highlight_details']);
         $driver = $this->get($recordType);
         $driver->setRawData($data);
+        $driver->setHighlightDetails($hl);
         return $driver;
     }
 

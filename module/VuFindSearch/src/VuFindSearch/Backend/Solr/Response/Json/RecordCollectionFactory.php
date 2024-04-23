@@ -101,7 +101,11 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             );
         }
         $collection = new $this->collectionClass($response);
+        $hlDetails = $response['highlighting'] ?? [];
         foreach ($response['response']['docs'] ?? [] as $doc) {
+            if (isset($doc['id']) && ($hl = $hlDetails[$doc['id']] ?? [])) {
+                $doc['__highlight_details'] = $hl;
+            }
             $collection->add(call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
