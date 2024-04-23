@@ -104,13 +104,12 @@ class JsConfigs extends AbstractHelper
      */
     protected function getConfigRecursive(string|array $configPaths, ?Config $config): array|string|null
     {
-        if (!is_array($configPaths)) {
-            return $this->convertToArray($config?->$configPaths);
-        }
         $res = [];
-        if (array_is_list($configPaths)) {
+        if (!is_array($configPaths)) {
+            $res[$configPaths] = $this->convertToJsonSerializable($config?->$configPaths);
+        } elseif (array_is_list($configPaths)) {
             foreach ($configPaths as $configPath) {
-                $res[$configPath] = $this->convertToArray($config?->$configPath);
+                $res[$configPath] = $this->convertToJsonSerializable($config?->$configPath);
             }
         } else {
             foreach ($configPaths as $configKey => $configPath) {
@@ -130,18 +129,18 @@ class JsConfigs extends AbstractHelper
     protected function filterNullAndEmpty(array $array): array
     {
         return array_filter($array, function ($value) {
-            return $value !== null && (!is_array($value) || !empty($value));
+            return $value !== null && $value !== [];
         });
     }
 
     /**
-     * Convert Config to array if necessary.
+     * Convert to json serializable.
      *
      * @param null|string|Config $input Input
      *
      * @return null|string|array
      */
-    protected function convertToArray(null|string|Config $input): null|string|array
+    protected function convertToJsonSerializable(null|string|Config $input): null|string|array
     {
         if ($input instanceof Config) {
             return $input->toArray();

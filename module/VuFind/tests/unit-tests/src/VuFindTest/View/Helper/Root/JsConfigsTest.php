@@ -83,6 +83,12 @@ class JsConfigsTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
+                'config3' => [
+                    'Section6' => [
+                        'key13' => 'val13',
+                        'key14' => 'val14',
+                    ],
+                ],
             ],
             [],
             $this->any()
@@ -98,6 +104,9 @@ class JsConfigsTest extends \PHPUnit\Framework\TestCase
                 'Section3' => ['missing'],
                 'Section4' => ['key10'],
             ],
+            'config3' => [
+                'Section6' => 'key13',
+            ],
             'missing' => ['Missing' => 'missing'],
         ]);
         $helper->addConfigPaths([
@@ -112,7 +121,8 @@ class JsConfigsTest extends \PHPUnit\Framework\TestCase
         ]);
         $json = $helper->getJSON();
         $expected = '{"config1":{"Section1":{"key2":"val2","key3":"val3"},"Section2":{"key4":"val4","key6":"val6"}},'
-        . '"config2":{"Section4":{"key10":["val10","val11"]},"Section5":{"key11":{"key12":"val12"}}}}';
+        . '"config2":{"Section4":{"key10":["val10","val11"]},"Section5":{"key11":{"key12":"val12"}}},'
+            . '"config3":{"Section6":{"key13":"val13"}}}';
         $this->assertEquals($expected, $json);
     }
 }
