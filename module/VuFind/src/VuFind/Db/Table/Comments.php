@@ -32,6 +32,7 @@ namespace VuFind\Db\Table;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\RowGateway;
 
 use function count;
@@ -102,14 +103,14 @@ class Comments extends Gateway
      * Delete a comment if the owner is logged in. Returns true on success.
      *
      * @param int                 $id   ID of row to delete
-     * @param \VuFind\Db\Row\User $user Logged in user object
+     * @param UserEntityInterface $user Logged in user object
      *
      * @return bool
      */
     public function deleteIfOwnedByUser($id, $user)
     {
         // User must be object with ID:
-        if (!is_object($user) || !isset($user->id)) {
+        if (!is_object($user) || !($userId = $user->getId())) {
             return false;
         }
 
@@ -120,7 +121,7 @@ class Comments extends Gateway
         }
 
         // Row must be owned by user:
-        if ($row->user_id != $user->id) {
+        if ($row->user_id != $userId) {
             return false;
         }
 

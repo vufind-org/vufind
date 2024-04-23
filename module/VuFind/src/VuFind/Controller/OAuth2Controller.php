@@ -38,7 +38,6 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use LmcRbacMvc\Service\AuthorizationService as LmAuthorizationService;
 use OpenIDConnectServer\ClaimExtractor;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\AccessTokenServiceInterface;
@@ -90,7 +89,6 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param callable                    $asf                OAuth2 authorization server factory
      * @param callable                    $rsf                OAuth2 resource server factory
-     * @param LmAuthorizationService      $authService        Laminas authorization service
      * @param CsrfInterface               $csrf               CSRF validator
      * @param SessionContainer            $session            Session container
      * @param IdentityRepository          $identityRepository Identity repository
@@ -104,7 +102,6 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         protected array $oauth2Config,
         callable $asf,
         callable $rsf,
-        protected LmAuthorizationService $authService,
         protected CsrfInterface $csrf,
         protected \Laminas\Session\Container $session,
         protected IdentityRepository $identityRepository,

@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
         CommentsServiceInterface::class => CommentsService::class,
+        OaiResumptionServiceInterface::class => OaiResumptionService::class,
         ResourceServiceInterface::class => ResourceService::class,
         SessionServiceInterface::class => SessionService::class,
         TagServiceInterface::class => TagService::class,
@@ -62,6 +63,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         AccessTokenService::class => AccessTokenServiceFactory::class,
         CommentsService::class => AbstractDbServiceFactory::class,
+        OaiResumptionService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
         SessionService::class => SessionServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,
