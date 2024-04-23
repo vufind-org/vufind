@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\ResourceService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -59,7 +59,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * @param ResourceService          $resourceService     Resource database service
      * @param CommentsServiceInterface $commentsService     Comments database service
      * @param Captcha                  $captcha             Captcha controller plugin
-     * @param ?User                    $user                Logged in user (or null)
+     * @param ?UserEntityInterface     $user                Logged in user (or null)
      * @param bool                     $enabled             Are comments enabled?
      * @param RecordLoader             $recordLoader        Record loader
      * @param AccountCapabilities      $accountCapabilities Account capabilities helper
@@ -68,7 +68,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         protected ResourceService $resourceService,
         protected CommentsServiceInterface $commentsService,
         protected Captcha $captcha,
-        protected ?User $user,
+        protected ?UserEntityInterface $user,
         protected bool $enabled,
         protected RecordLoader $recordLoader,
         protected AccountCapabilities $accountCapabilities
@@ -146,7 +146,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             || $this->accountCapabilities->isRatingRemovalAllowed())
         ) {
             $driver->addOrUpdateRating(
-                $this->user->id,
+                $this->user->getId(),
                 '' === $rating ? null : intval($rating)
             );
         }
