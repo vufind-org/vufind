@@ -22,9 +22,14 @@
         <?php
           $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
           $statusDescription = $availabilityStatus->getStatusDescription();
-          $schemaAvail = $availabilityStatus->getSchema();
+          $schemaAvailabilityUri = $availabilityStatus->getSchemaAvailabilityUri();
         ?>
-        <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?><link property="availability" <?=$schemaAvail ? 'href="' . $this->escapeHtmlAttr($schemaAvail) . '"' : ''?>></span>
+        <span class="<?=$statusClassEsc?>">
+              <?=$this->transEsc($statusDescription)?>
+          <?php if($schemaAvailabilityUri): ?>
+            <link property="availability" href="<?=$this->escapeHtmlAttr($schemaAvailabilityUri)?>">
+          <?php endif; ?>
+            </span>
         <?php if ($availabilityStatus->isAvailable()): ?>
           <?php /* Begin Available Items (Holds) */ ?>
           <?php if ($holding['link'] ?? false): ?>

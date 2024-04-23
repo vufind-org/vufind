@@ -98,7 +98,7 @@ interface AvailabilityStatusInterface
      *
      * @return ?string
      */
-    public function getSchema(): ?string;
+    public function getSchemaAvailabilityUri(): ?string;
 
     /**
      * Convert availability to a string

@@ -185,7 +185,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @return ?string
      */
-    public function getSchema(): ?string
+    public function getSchemaAvailabilityUri(): ?string
     {
         switch ($this->availability) {
             case self::STATUS_UNAVAILABLE:
