@@ -616,7 +616,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->assertEquals('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
     }
@@ -669,7 +669,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findAndAssertLink($page, 'Edit List');
         $button->click();
         $this->clickCss($page, '#list_public_1'); // radio button
-        $this->clickCss($page, 'input[name="submit"]'); // submit button
+        $this->clickCss($page, 'input[name="submitButton"]'); // submit button
 
         // Now log out:
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -796,7 +796,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findAndAssertLink($page, 'Edit List');
         $button->click();
         $this->findCssAndSetValue($page, '#list_tags', $listTags);
-        $this->clickCss($page, 'input[name="submit"]'); // submit button
+        $this->clickCss($page, 'input[name="submitButton"]'); // submit button
 
         // Now go to the channel page, where the tagged public list should appear:
         $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');

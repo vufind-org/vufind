@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Controller;
 
+use VuFind\Db\Service\CommentsServiceInterface;
+
 /**
  * Unit tests for Socialstats controller.
  *
@@ -51,11 +53,14 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $tables = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Db\Table\PluginManager::class, $tables);
+        $dbServices = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Db\Service\PluginManager::class, $dbServices);
         $c = new \VuFindAdmin\Controller\SocialstatsController($container);
-        $comments = $this->getMockBuilder(\VuFind\Db\Table\Comments::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
-        $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
-        $tables->set('comments', $comments);
+        $mockCommentsStats = ['users' => 5, 'resources' => 7, 'total' => 23];
+        $commentsService = $this->createMock(CommentsServiceInterface::class);
+        $commentsService->expects($this->once())->method('getStatistics')
+            ->will($this->returnValue($mockCommentsStats));
+        $dbServices->set(CommentsServiceInterface::class, $commentsService);
         $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
             ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
@@ -80,7 +85,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         // Confirm properly-constructed view object:
         $view = $c->homeAction();
         $this->assertEquals('admin/socialstats/home', $view->getTemplate());
-        $this->assertEquals('comments-data', $view->comments);
+        $this->assertEquals($mockCommentsStats, $view->comments);
         $this->assertEquals('userresource-data', $view->favorites);
         $this->assertEquals('resourcetags-data', $view->tags);
         $this->assertEquals(['ratings-data'], $view->ratings);

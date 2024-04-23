@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -57,4 +58,49 @@ interface CommentsServiceInterface extends DbServiceInterface
         int|UserEntityInterface $user,
         int|ResourceEntityInterface $resource
     ): ?int;
+
+    /**
+     * Get comments associated with the specified resource.
+     *
+     * @param string $id     Record ID to look up
+     * @param string $source Source of record to look up
+     *
+     * @return CommentsEntityInterface[]
+     */
+    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array;
+
+    /**
+     * Delete a comment if the owner is logged in.  Returns true on success.
+     *
+     * @param int                     $id   ID of row to delete
+     * @param int|UserEntityInterface $user User object or identifier
+     *
+     * @return bool
+     */
+    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool;
+
+    /**
+     * Deletes all comments by a user.
+     *
+     * @param int|UserEntityInterface $user User object or identifier
+     *
+     * @return void
+     */
+    public function deleteByUser(int|UserEntityInterface $user): void;
+
+    /**
+     * Get statistics on use of comments.
+     *
+     * @return array
+     */
+    public function getStatistics(): array;
+
+    /**
+     * Get a comment row by ID (or return null for no match).
+     *
+     * @param int $id ID of comment to retrieve.
+     *
+     * @return ?CommentsEntityInterface
+     */
+    public function getCommentById(int $id): ?CommentsEntityInterface;
 }

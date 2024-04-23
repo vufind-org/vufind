@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for oai_resumption table
  *
@@ -40,4 +42,42 @@ namespace VuFind\Db\Entity;
  */
 interface OaiResumptionEntityInterface extends EntityInterface
 {
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int;
+
+    /**
+     * Resumption parameters setter
+     *
+     * @param ?string $params Resumption parameters.
+     *
+     * @return OaiResumptionEntityInterface
+     */
+    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface;
+
+    /**
+     * Get resumption parameters.
+     *
+     * @return ?string
+     */
+    public function getResumptionParameters(): ?string;
+
+    /**
+     * Expiry date setter.
+     *
+     * @param Datetime $dateTime Expiration date
+     *
+     * @return OaiResumptionEntityInterface
+     */
+    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface;
+
+    /**
+     * Get expiry date.
+     *
+     * @return DateTime
+     */
+    public function getExpiry(): DateTime;
 }

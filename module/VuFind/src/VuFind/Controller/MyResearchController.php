@@ -285,7 +285,7 @@ class MyResearchController extends AbstractBase
         // Pass request to view so we can repopulate user parameters in form:
         $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
@@ -1003,7 +1003,7 @@ class MyResearchController extends AbstractBase
         );
 
         // Process save action if necessary:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             return $this->processEditSubmit($user, $driver, $listID);
         }
 
@@ -1245,7 +1245,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             if ($redirect = $this->processEditList($user, $list)) {
                 return $redirect;
             }
@@ -1722,7 +1722,7 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         $view->useCaptcha = $this->captcha()->active('passwordRecovery');
         // If we have a submitted form
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             if ($user) {
                 $this->sendRecoveryEmail($user, $this->getConfig());
             } else {
@@ -2011,7 +2011,7 @@ class MyResearchController extends AbstractBase
     public function newPasswordAction()
     {
         // Have we submitted the form?
-        if (!$this->formWasSubmitted('submit')) {
+        if (!$this->formWasSubmitted()) {
             return $this->redirect()->toRoute('home');
         }
         // Set up authentication so that we can retrieve the correct password policy:
@@ -2028,7 +2028,7 @@ class MyResearchController extends AbstractBase
         $view->passwordPolicy = $this->getAuthManager()->getPasswordPolicy();
         $view->useCaptcha = $this->captcha()->active('changePassword');
         // Check Captcha
-        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!$this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Missing or invalid hash
@@ -2097,7 +2097,7 @@ class MyResearchController extends AbstractBase
         // Identification
         $view->useCaptcha = $this->captcha()->active('changeEmail');
         // Special case: form was submitted:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -2255,7 +2255,7 @@ class MyResearchController extends AbstractBase
         }
 
         $view = $this->createViewModel(['accountDeleted' => false]);
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             $csrf = $this->serviceLocator->get(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
