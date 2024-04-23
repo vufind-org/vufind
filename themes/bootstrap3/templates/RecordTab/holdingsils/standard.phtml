@@ -24,7 +24,7 @@
           $statusDescription = $availabilityStatus->getStatusDescription();
           $schemaAvailEsc = $availabilityStatus->getSchema();
         ?>
-        <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?><link property="availability" <?=$schemaAvailEsc ? 'href="' . $schemaAvailEsc . '"' : ''?>></span>
+        <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?><link property="availability" <?=$schemaAvailEsc ? 'href="' . $this->escapeHtmlAttr($schemaAvailEsc) . '"' : ''?>></span>
         <?php if ($availabilityStatus->isAvailable()): ?>
           <?php /* Begin Available Items (Holds) */ ?>
           <?php if ($holding['link'] ?? false): ?>
