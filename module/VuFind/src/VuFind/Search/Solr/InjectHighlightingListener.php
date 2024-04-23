@@ -153,26 +153,14 @@ class InjectHighlightingListener
      * @param EventInterface $event Event
      *
      * @return EventInterface
+     *
+     * @deprecated
      */
     public function onSearchPost(EventInterface $event)
     {
-        // Do nothing if highlighting is disabled or context is wrong
-        $command = $event->getParam('command');
-        if (!$this->active || $command->getContext() != 'search') {
-            return $event;
-        }
-
-        // Inject highlighting details into record objects:
-        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
-            $result = $command->getResult();
-            $hlDetails = $result->getHighlighting();
-            foreach ($result->getRecords() as $record) {
-                $id = $record->getUniqueId();
-                if (isset($hlDetails[$id])) {
-                    $record->setHighlightDetails($hlDetails[$id]);
-                }
-            }
-        }
+        // The original functionality of this method has been moved to \VuFind\RecordDriver\PluginManager
+        // and \VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory. It will be removed in
+        // release 10.0.
         return $event;
     }
 }
