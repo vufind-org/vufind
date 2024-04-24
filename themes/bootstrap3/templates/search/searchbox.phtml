@@ -1,3 +1,21 @@
+<style>
+    .searchForm-inputs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .searchForm-inputs .searchForm-query {
+        width: auto;
+        flex-grow: 1;
+    }
+
+    @media screen and (min-width: 768px) {
+        .searchForm-inputs .searchForm-query {
+            flex-grow: 0;
+        }
+    }
+  </style>
 <?php
     // Initialize from current search (if available and not explicitly overridden) or defaults:
     if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
@@ -81,24 +99,6 @@
   </div>
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
-    <style>
-      .searchForm-inputs {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-      }
-
-      .searchForm-inputs .searchForm-query {
-          width: auto;
-          flex-grow: 1;
-      }
-
-      @media screen and (min-width: 768px) {
-          .searchForm-inputs .searchForm-query {
-              flex-grow: 0;
-          }
-      }
-    </style>
     <div class="searchForm-inputs">
       <?php
         $searchboxAttributes = [
