@@ -340,7 +340,7 @@ h6, .h6 {
   width: 100%;
   margin-bottom: 7.5px;
 
-  .nav-link {
+  > li > .nav-link {
     &.active {
       background-color: $nav-link-active-bg;
     }
