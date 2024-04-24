@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -95,5 +96,9 @@ interface RatingsServiceInterface extends DbServiceInterface
      * @throws \Exception
      * @return int ID of rating added, deleted or updated
      */
-    public function addOrUpdateRating($resource, $user, $rating): int;
+    public function addOrUpdateRating(
+        int|ResourceEntityInterface $resource,
+        int|UserEntityInterface $user,
+        ?int $rating
+    ): int;
 }

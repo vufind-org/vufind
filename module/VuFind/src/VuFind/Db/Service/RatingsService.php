@@ -199,8 +199,11 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
      * @throws \Exception
      * @return int ID of rating added, deleted or updated
      */
-    public function addOrUpdateRating($resource, $user, $rating): int
-    {
+    public function addOrUpdateRating(
+        int|ResourceEntityInterface $resource,
+        int|UserEntityInterface $user,
+        ?int $rating
+    ): int {
         if (null !== $rating && ($rating < 0 || $rating > 100)) {
             throw new \Exception('Rating value out of range');
         }
