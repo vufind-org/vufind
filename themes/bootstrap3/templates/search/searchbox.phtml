@@ -231,8 +231,8 @@
       ?>
     </div>
     <?=$this->context($this)->renderInContext(
-        'search/filters.phtml',
-        [
+          'search/filters.phtml',
+          [
           'params' => $params ?? null,
           'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
           'filterList' => $showFilters ? $filterList : [],
@@ -240,6 +240,6 @@
           'searchClassId' => $this->searchClassId,
           'searchType' => $this->searchType,
         ]
-    );?>
+      );?>
   </form>
 <?php endif; ?>
