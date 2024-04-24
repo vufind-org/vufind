@@ -150,7 +150,7 @@ class EmailTest extends \PHPUnit\Framework\TestCase
     protected function getHandler(array $config = []): Email
     {
         return new Email(
-            $this->createMock(\Laminas\View\Renderer\PhpRenderer::class),
+            $this->createMock(\Laminas\View\Renderer\RendererInterface::class),
             new \Laminas\Config\Config($config),
             $this->createMock(\VuFind\Mailer\Mailer::class)
         );

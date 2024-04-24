@@ -108,7 +108,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
     ): bool {
         $postParams = $params->fromPost();
         $fields = $form->mapRequestParamsToFieldValues($postParams);
-        $emailMessage = $this->viewRenderer->partial(
+        $emailMessage = $this->viewRenderer->render(
             'Email/form.phtml',
             compact('fields')
         );
