@@ -45,6 +45,18 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
+     * Get statistics on use of tags.
+     *
+     * @param bool $extended Include extended (unique/anonymous) stats.
+     *
+     * @return array
+     */
+    public function getStatistics(bool $extended = false): array
+    {
+        return $this->getDbTable('ResourceTags')->getStatistics($extended);
+    }
+
+    /**
      * Get the tags that match a string
      *
      * @param string $text Tag to look up.
