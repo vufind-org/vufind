@@ -299,10 +299,6 @@ class GetItemStatuses extends AbstractBase implements
         $callNumbers = $locations = [];
         $services = [];
         foreach ($record as $info) {
-            // Check for a use_unknown_message flag
-            if ($info['availability']->useUnknownMessage()) {
-                $combinedAvailability->setUseUnknownMessage(true);
-            }
             // Store call number/location info:
             $callNumbers[] = $this->formatCallNo(
                 $info['callnumber_prefix'] ?? '',
@@ -388,7 +384,6 @@ class GetItemStatuses extends AbstractBase implements
             }
             // Check for a use_unknown_message flag
             if ($availabilityStatus->useUnknownMessage()) {
-                $combinedAvailability->setUseUnknownMessage(true);
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:

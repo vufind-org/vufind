@@ -233,13 +233,16 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      */
     protected function getPriority(): int
     {
+        if ($this->useUnknownMessage) {
+            return 2;
+        }
         switch ($this->availability) {
             case AvailabilityStatus::STATUS_UNAVAILABLE:
                 return 0;
             case AvailabilityStatus::STATUS_UNCERTAIN:
                 return 1;
             default:
-                return 2;
+                return 3;
         }
     }
 }
