@@ -114,7 +114,7 @@ abstract class AbstractDbService implements DbServiceInterface
      *
      * @return T
      */
-    protected function getDoctrineReference(string $desiredClass, int|EntityInterface $objectOrId): EntityInterface
+    public function getDoctrineReference(string $desiredClass, int|EntityInterface $objectOrId): EntityInterface
     {
         if ($objectOrId instanceof $desiredClass) {
             return $objectOrId;

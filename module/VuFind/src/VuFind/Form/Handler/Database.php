@@ -33,6 +33,8 @@ declare(strict_types=1);
 namespace VuFind\Form\Handler;
 
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -91,28 +93,22 @@ class Database implements HandlerInterface, LoggerAwareInterface
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
+     * @param ?UserEntityInterface                  $user   Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
-        ?\VuFind\Db\Row\User $user = null
+        ?UserEntityInterface $user = null
     ): bool {
         $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
         $fields = array_column($fields, 'value', 'name');
-        // Backward compatibility: convert Laminas\Db to Doctrine;
-        // we can simplify after completing migration.
-        $userVal = null;
-        if ($user) {
-            $userVal = $this->userService->getUserById($user->id);
-        }
         $formData = $fields;
         unset($formData['message']);
         $now = new \DateTime();
         $data = $this->feedbackService->createEntity()
-            ->setUser($userVal)
+            ->setUser($user ? $this->userService->getDoctrineReference(User::class, $user) : null)
             ->setMessage($fields['message'] ?? '')
             ->setFormData($formData)
             ->setFormName($form->getFormId())
