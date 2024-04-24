@@ -475,7 +475,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return string
      */
-    protected function getAvailabilityMessage($availability): string
+    protected function getAvailabilityMessage(AvailabilityStatusInterface $availability): string
     {
         return $this->renderer->render(
             'ajax/status.phtml',
