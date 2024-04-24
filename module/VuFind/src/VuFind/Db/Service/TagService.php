@@ -45,6 +45,18 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
+     * Get the tags that match a string
+     *
+     * @param string $text Tag to look up.
+     *
+     * @return array
+     */
+    public function matchText(string $text): array
+    {
+        return $this->getDbTable('Tags')->matchText($text);
+    }
+
+    /**
      * Get tags associated with the specified resource.
      *
      * @param string $id          Record ID to look up

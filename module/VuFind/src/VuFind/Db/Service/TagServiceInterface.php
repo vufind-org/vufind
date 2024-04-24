@@ -43,6 +43,15 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface TagServiceInterface extends DbServiceInterface
 {
     /**
+     * Get the tags that match a string
+     *
+     * @param string $text Tag to look up.
+     *
+     * @return array
+     */
+    public function matchText(string $text): array;
+
+    /**
      * Get tags associated with the specified resource.
      *
      * @param string $id          Record ID to look up
