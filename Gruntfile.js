@@ -176,10 +176,15 @@ module.exports = function(grunt) {
               },
               order: 4
             },
+            { // Wrap variables set to css variables with #{}
+              pattern: /(--[\w-:]+:\s*)((\$|darken\(|lighten\()[^;]+)/gi,
+              replacement: '$1#{$2}',
+              order: 5
+            },
             { // Remove !default from extends (icons.scss)
               pattern: /@extend ([^;}]+) !default;/gi,
               replacement: '@extend $1;',
-              order: 5
+              order: 6
             }
           ]
         }

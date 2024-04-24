@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Abstract Relais Ajax Action
+ * Remote coverage helper methods for integration tests.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFind\AjaxHandler;
-
-use VuFind\Connection\Relais;
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\Session\Settings as SessionSettings;
+namespace VuFindTest\Feature;
 
 /**
- * Abstract Relais Ajax Action
+ * Remote coverage helper methods for integration tests.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAwareInterface
+trait RemoteCoverageTrait
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
     /**
-     * Constructor
+     * Get the remote coverage directory (or return null if remote coverage disabled)
      *
-     * @param SessionSettings      $ss     Session settings
-     * @param Relais               $relais Relais connector
-     * @param ?UserEntityInterface $user   Logged in user (or null if none)
+     * @return ?string
      */
-    public function __construct(
-        SessionSettings $ss,
-        protected Relais $relais,
-        protected ?UserEntityInterface $user
-    ) {
-        $this->sessionSettings = $ss;
+    public function getRemoteCoverageDirectory(): ?string
+    {
+        return getenv('VUFIND_REMOTE_COVERAGE_DIR') ?: null;
     }
 }
