@@ -65,7 +65,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             $formId = 'FeedbackSite';
         }
 
-        $user = $this->getUser();
+        $user = $this->getUser() ?: null;
 
         $form = $this->serviceLocator->get($this->formClass);
         $prefill = $this->params()->fromQuery();
