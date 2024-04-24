@@ -131,6 +131,9 @@ legend {
 .sr-only {
   @extend .visually-hidden;
 }
+.sr-only-focusable {
+  @extend .visually-hidden-focusable;
+}
 
 .btn {
   &:focus,
