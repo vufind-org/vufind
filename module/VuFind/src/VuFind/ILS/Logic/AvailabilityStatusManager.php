@@ -67,6 +67,9 @@ class AvailabilityStatusManager
         usort($items, function ($a, $b) {
             $availabilityA = $a['availability'] ?? null;
             $availabilityB = $b['availability'] ?? null;
+            if ($availabilityA === null && $availabilityB === null) {
+                return 0;
+            }
             if ($availabilityA === null) {
                 return 1;
             }
