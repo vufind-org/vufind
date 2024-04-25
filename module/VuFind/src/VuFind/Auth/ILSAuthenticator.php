@@ -203,12 +203,17 @@ class ILSAuthenticator
      * @param UserEntityInterface $user User
      *
      * @return ?string
+     * @throws \Exception
      */
     public function getCatPasswordForUser(UserEntityInterface $user)
     {
         if ($this->passwordEncryptionEnabled()) {
             $encrypted = $user->getCatPassEnc();
-            return !empty($encrypted) ? $this->decrypt($encrypted) : null;
+            $decrypted = !empty($encrypted) ? $this->decrypt($encrypted) : null;
+            if ($decrypted === false) {
+                throw new \Exception('Unexpected error decrypting password');
+            }
+            return $decrypted;
         }
         return $user->getRawCatPassword();
     }
