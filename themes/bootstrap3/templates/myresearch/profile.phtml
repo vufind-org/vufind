@@ -19,7 +19,11 @@
     <?=
       $this->renderArray(
           $arrTemplate,
-          $this->user,
+          [
+              'firstname' => $this->user->getFirstName(),
+              'lastname' => $this->user->getLastName(),
+              'email' => $this->user->getEmail(),
+          ],
           [
               $this->transEsc('First Name') => 'firstname',
               $this->transEsc('Last Name') => 'lastname',
@@ -82,10 +86,9 @@
     <?php endif; ?>
   </div>
 
-  <?php $user = $this->auth()->getUserObject(); ?>
-  <?php if ($user && $this->auth()->getManager()->supportsPersistentLogin($user->auth_method)): ?>
+  <?php if ($this->user && $this->auth()->getManager()->supportsPersistentLogin($this->user->getAuthMethod())): ?>
     <h3><?=$this->transEsc('Saved Logins')?></h3>
-    <?php $tokens = $user->getLoginTokens($user->id); ?>
+    <?php $tokens = $this->user->getLoginTokens($this->user->getId()); ?>
     <?php if (!$tokens): ?>
       <div class="my-profile-col"><?=$this->transEsc('No saved logins')?></div>
     <?php else: ?>
