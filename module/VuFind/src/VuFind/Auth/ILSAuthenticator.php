@@ -203,7 +203,6 @@ class ILSAuthenticator
      * @param UserEntityInterface $user User
      *
      * @return ?string
-     * @throws \Exception
      */
     public function getCatPasswordForUser(UserEntityInterface $user)
     {
