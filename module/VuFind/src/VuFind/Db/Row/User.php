@@ -508,8 +508,9 @@ class User extends RowGateway implements
             if ($row === false) {
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
-            if ($this->passwordEncryptionEnabled() && $row->cat_pass_enc) {
-                $row->cat_password = $this->ilsAuthenticator->decrypt($row->cat_pass_enc);
+            if ($this->passwordEncryptionEnabled()) {
+                $row->cat_password = $row->cat_pass_enc
+                    ? $this->ilsAuthenticator->decrypt($row->cat_pass_enc) : null;
             }
         }
 
