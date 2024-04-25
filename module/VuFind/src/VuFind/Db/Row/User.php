@@ -136,8 +136,8 @@ class User extends RowGateway implements
     /**
      * Set ILS login credentials without saving them.
      *
-     * @param string $username Username to save
-     * @param string $password Password to save
+     * @param string  $username Username to save
+     * @param ?string $password Password to save (null for none)
      *
      * @return void
      */
@@ -146,7 +146,7 @@ class User extends RowGateway implements
         $this->cat_username = $username;
         if ($this->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
+            $this->cat_pass_enc = $password === null ? null : $this->ilsAuthenticator->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;

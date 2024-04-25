@@ -198,11 +198,11 @@ class ILSAuthenticator
     }
 
     /**
-     * Given a user object, retrieve the decrypted password.
+     * Given a user object, retrieve the decrypted password (or null if unset/invalid).
      *
      * @param UserEntityInterface $user User
      *
-     * @return string
+     * @return ?string
      */
     public function getCatPasswordForUser(UserEntityInterface $user)
     {
