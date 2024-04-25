@@ -86,7 +86,7 @@
     <?php endif; ?>
   </div>
 
-  <?php if ($this->user && $this->auth()->getManager()->supportsPersistentLogin($this->user->getAuthMethod())): ?>
+  <?php if ($this->auth()->getManager()->supportsPersistentLogin($this->user->getAuthMethod())): ?>
     <h3><?=$this->transEsc('Saved Logins')?></h3>
     <?php $tokens = $this->user->getLoginTokens($this->user->getId()); ?>
     <?php if (!$tokens): ?>
