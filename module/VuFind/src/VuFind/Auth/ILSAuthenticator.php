@@ -211,7 +211,8 @@ class ILSAuthenticator
             $encrypted = $user->getCatPassEnc();
             $decrypted = !empty($encrypted) ? $this->decrypt($encrypted) : null;
             if ($decrypted === false) {
-                throw new \Exception('Unexpected error decrypting password');
+                // Unexpected error decrypting password; let's treat it as unset for now:
+                return null;
             }
             return $decrypted;
         }
