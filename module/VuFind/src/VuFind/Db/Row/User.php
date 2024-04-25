@@ -146,7 +146,7 @@ class User extends RowGateway implements
         $this->cat_username = $username;
         if ($this->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $password === null ? null : $this->ilsAuthenticator->encrypt($password);
+            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;
@@ -509,8 +509,7 @@ class User extends RowGateway implements
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
             if ($this->passwordEncryptionEnabled()) {
-                $row->cat_password = $row->cat_pass_enc
-                    ? $this->ilsAuthenticator->decrypt($row->cat_pass_enc) : null;
+                $row->cat_password = $this->ilsAuthenticator->decrypt($row->cat_pass_enc);
             }
         }
 
