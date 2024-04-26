@@ -197,6 +197,22 @@ interface UserEntityInterface extends EntityInterface
     public function getVerifyHash(): string;
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface;
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string;
+
+    /**
      * Get last language.
      *
      * @return string
