@@ -776,19 +776,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get login token data
-     *
-     * @param string $userId user identifier
-     *
-     * @return array
-     */
-    public function getLoginTokens(string $userId): array
-    {
-        $tokenTable = $this->getDbTable('LoginToken');
-        return $tokenTable->getByUserId($userId);
-    }
-
-    /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
@@ -1010,6 +997,29 @@ class User extends RowGateway implements
     public function getVerifyHash(): string
     {
         return $this->verify_hash;
+    }
+
+    /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->auth_method = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->auth_method;
     }
 
     /**
