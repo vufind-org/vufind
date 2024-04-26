@@ -1062,7 +1062,7 @@ class User extends RowGateway implements
      */
     public function hasUserProvidedEmail(): bool
     {
-        return (bool)$this->user_provided_email;
+        return (bool)($this->user_provided_email ?? false);
     }
 
     /**

@@ -77,7 +77,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
             return;
         }
         $this->auth = new Database();
-        $this->auth->setDbTableManager($this->getLiveTableManager());
+        $this->auth->setDbServiceManager($this->getLiveDbServiceManager());
     }
 
     /**
