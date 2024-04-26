@@ -5,7 +5,7 @@ $autocomplete-active-bg   : $brand-primary !default;
 $autocomplete-hover-bg    : lighten($brand-primary, 40%) !default;
 $autocomplete-disabled-bg : lightgray !default;
 $autocomplete-border      : lightgray !default;
-$autocomplete-secondary   : darkgray; // item description
+$autocomplete-secondary   : darkgray !default; // item description
 
 .autocomplete-results {
   position: absolute;
