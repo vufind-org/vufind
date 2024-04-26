@@ -129,7 +129,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @param string $tag Tag
      *
-     * @return Tags
+     * @return TagsEntityInterface
      */
     public function setTag(string $tag): TagsEntityInterface
     {
