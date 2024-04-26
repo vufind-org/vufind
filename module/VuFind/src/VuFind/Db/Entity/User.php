@@ -462,6 +462,29 @@ class User implements UserEntityInterface
     }
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->authMethod = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->authMethod;
+    }
+
+    /**
      * Get last language.
      *
      * @return string
