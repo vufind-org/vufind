@@ -35,6 +35,7 @@ use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
@@ -81,53 +82,11 @@ class Manager implements
     protected $legalAuthOptions;
 
     /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Session container
      *
      * @var \Laminas\Session\Container
      */
     protected $session;
-
-    /**
-     * Gateway to user table in database
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * Login token manager
-     *
-     * @var LoginTokenManager
-     */
-    protected $loginTokenManager;
-
-    /**
-     * Session manager
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
-     * Authentication plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
-
-    /**
-     * Cookie Manager
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
 
     /**
      * Cache for current logged in user object
@@ -137,13 +96,6 @@ class Manager implements
     protected $currentUser = null;
 
     /**
-     * CSRF validator
-     *
-     * @var CsrfInterface
-     */
-    protected $csrf;
-
-    /**
      * Cache for hideLogin setting
      *
      * @var ?bool
@@ -151,44 +103,29 @@ class Manager implements
     protected $hideLogin = null;
 
     /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
      * Constructor
      *
-     * @param Config            $config            VuFind configuration
-     * @param UserTable         $userTable         User table gateway
-     * @param SessionManager    $sessionManager    Session manager
-     * @param PluginManager     $pm                Authentication plugin manager
-     * @param CookieManager     $cookieManager     Cookie manager
-     * @param CsrfInterface     $csrf              CSRF validator
-     * @param LoginTokenManager $loginTokenManager Login Token manager
-     * @param Connection        $ils               ILS connection
+     * @param Config               $config            VuFind configuration
+     * @param UserTable            $userTable         User table gateway
+     * @param UserServiceInterface $userService       User database service
+     * @param SessionManager       $sessionManager    Session manager
+     * @param PluginManager        $pluginManager     Authentication plugin manager
+     * @param CookieManager        $cookieManager     Cookie manager
+     * @param CsrfInterface        $csrf              CSRF validator
+     * @param LoginTokenManager    $loginTokenManager Login Token manager
+     * @param Connection           $ils               ILS connection
      */
     public function __construct(
-        Config $config,
-        UserTable $userTable,
-        SessionManager $sessionManager,
-        PluginManager $pm,
-        CookieManager $cookieManager,
-        CsrfInterface $csrf,
-        LoginTokenManager $loginTokenManager,
-        Connection $ils
+        protected Config $config,
+        protected UserTable $userTable,
+        protected UserServiceInterface $userService,
+        protected SessionManager $sessionManager,
+        protected PluginManager $pluginManager,
+        protected CookieManager $cookieManager,
+        protected CsrfInterface $csrf,
+        protected LoginTokenManager $loginTokenManager,
+        protected Connection $ils
     ) {
-        // Store dependencies:
-        $this->config = $config;
-        $this->userTable = $userTable;
-        $this->loginTokenManager = $loginTokenManager;
-        $this->sessionManager = $sessionManager;
-        $this->pluginManager = $pm;
-        $this->cookieManager = $cookieManager;
-        $this->csrf = $csrf;
-        $this->ils = $ils;
-
         // Set up session:
         $this->session = new \Laminas\Session\Container('Account', $sessionManager);
 
@@ -196,7 +133,7 @@ class Manager implements
         // if no setting passed in):
         $method = $config->Authentication->method ?? 'Database';
         $this->legalAuthOptions = [$method];   // mark it as legal
-        $this->setAuthMethod($method);              // load it
+        $this->setAuthMethod($method);         // load it
     }
 
     /**
@@ -582,7 +519,7 @@ class Manager implements
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|false Object if user is logged in, false otherwise.
+     * @return UserEntityInterface|false Object if user is logged in, false otherwise.
      *
      * @deprecated Use getIdentity() or getUserObject() instead.
      */
@@ -711,7 +648,7 @@ class Manager implements
      * new account details.
      *
      * @throws AuthException
-     * @return UserRow New user row.
+     * @return UserEntityInterface New user entity.
      */
     public function create($request)
     {
@@ -728,7 +665,7 @@ class Manager implements
      * password change details.
      *
      * @throws AuthException
-     * @return UserRow New user row.
+     * @return UserEntityInterface Updated user entity.
      */
     public function updatePassword($request)
     {
@@ -757,7 +694,7 @@ class Manager implements
             // email address:
             $user->pending_email = ($email === $user->email) ? '' : $email;
         } else {
-            $user->updateEmail($email, true);
+            $this->userService->updateUserEmail($user, $email, true);
             $user->pending_email = '';
         }
         $user->save();
@@ -774,7 +711,7 @@ class Manager implements
      * @throws AuthException
      * @throws \VuFind\Exception\PasswordSecurity
      * @throws \VuFind\Exception\AuthInProgress
-     * @return UserRow Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function login($request)
     {

@@ -33,6 +33,7 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
 
@@ -746,23 +747,19 @@ class User extends RowGateway implements
     /**
      * Update the user's email address, if appropriate. Note that this does NOT
      * automatically save the row; it assumes a subsequent call will be made to
-     * the save() method.
+     * persist the data.
      *
      * @param string $email        New email address
      * @param bool   $userProvided Was this email provided by the user (true) or
      * an automated lookup (false)?
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Service\UserServiceInterface::updateUserEmail()
      */
     public function updateEmail($email, $userProvided = false)
     {
-        // Only change the email if it is a non-empty value and was user provided
-        // (the user is always right) or the previous email was NOT user provided
-        // (a value may have changed in an upstream system).
-        if (!empty($email) && ($userProvided || !$this->user_provided_email)) {
-            $this->email = $email;
-            $this->user_provided_email = $userProvided ? 1 : 0;
-        }
+        $this->getDbService(UserServiceInterface::class)->updateUserEmail($this, $email, $userProvided);
     }
 
     /**
@@ -809,6 +806,19 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface
+    {
+        $this->firstname = $firstName;
+        return $this;
+    }
+
+    /**
      * Get firstname.
      *
      * @return string
@@ -816,6 +826,19 @@ class User extends RowGateway implements
     public function getFirstname(): string
     {
         return $this->firstname;
+    }
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface
+    {
+        $this->lastname = $lastName;
+        return $this;
     }
 
     /**
@@ -1030,5 +1053,28 @@ class User extends RowGateway implements
     public function getLastLanguage(): string
     {
         return $this->last_language;
+    }
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool
+    {
+        return (bool)$this->user_provided_email;
+    }
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    {
+        $this->user_provided_email = $userProvided ? 1 : 0;
+        return $this;
     }
 }

@@ -59,6 +59,18 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createRowForUsername(string $username): UserEntityInterface
+    {
+        return $this->userTable->createRowForUsername($username);
+    }
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.
@@ -82,6 +94,8 @@ class UserService extends AbstractDbService implements
     public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
     {
         switch ($fieldName) {
+            case 'email':
+                return $this->userTable->getByEmail($fieldValue);
             case 'id':
                 return $this->userTable->getById($fieldValue);
             case 'username':
@@ -89,6 +103,42 @@ class UserService extends AbstractDbService implements
             case 'cat_id':
                 return $this->userTable->getByCatalogId($fieldValue);
         }
-        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+        throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
+    }
+
+    /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * persist the data.
+     *
+     * @param UserEntityInterface $user         User entity to update
+     * @param string              $email        New email address
+     * @param bool                $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateUserEmail(
+        UserEntityInterface $user,
+        string $email,
+        bool $userProvided = false
+    ): void {
+        // Only change the email if it is a non-empty value and was user provided
+        // (the user is always right) or the previous email was NOT user provided
+        // (a value may have changed in an upstream system).
+        if (!empty($email) && ($userProvided || !$user->hasUserProvidedEmail())) {
+            $user->setEmail($email);
+            $user->setHasUserProvidedEmail($userProvided);
+        }
+    }
+
+    /**
+     * Create a new user entity.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface
+    {
+        return $this->userTable->createRow();
     }
 }

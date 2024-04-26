@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function in_array;
@@ -104,7 +105,7 @@ class LDAP extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -123,7 +124,7 @@ class LDAP extends AbstractBase
      * @param string $password Password
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function checkLdap($username, $password)
     {
@@ -270,7 +271,7 @@ class LDAP extends AbstractBase
      * @param string $username Username
      * @param array  $data     Details from ldap_get_entries call.
      *
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function processLDAPUser($username, $data)
     {
@@ -281,7 +282,7 @@ class LDAP extends AbstractBase
         ];
 
         // User object to populate from LDAP:
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
         // attributes since we need to use saveCredentials method to store it):

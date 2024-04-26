@@ -557,15 +557,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     protected function getManager($config = [], $userTable = null, $sessionManager = null, $pm = null)
     {
         $config = new Config($config);
-        if (null === $userTable) {
-            $userTable = $this->getMockUserTable();
-        }
-        if (null === $sessionManager) {
-            $sessionManager = new SessionManager();
-        }
-        if (null === $pm) {
-            $pm = $this->getMockPluginManager();
-        }
         $cookies = new \VuFind\Cookie\CookieManager([]);
         $csrf = new \VuFind\Validator\SessionCsrf(
             [
@@ -573,20 +564,17 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
                 'salt' => 'csrftest',
             ]
         );
-        $loginTokenManager = $this->getMockBuilder(\VuFind\Auth\LoginTokenManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $ils = $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $loginTokenManager = $this->createMock(\VuFind\Auth\LoginTokenManager::class);
+        $ils = $this->createMock(\VuFind\ILS\Connection::class);
         $ils->expects($this->any())
             ->method('loginIsHidden')
             ->willReturn(false);
         return new Manager(
             $config,
-            $userTable,
-            $sessionManager,
-            $pm,
+            $userTable ?? $this->getMockUserTable(),
+            $this->createMock(\VuFind\Db\Service\UserServiceInterface::class),
+            $sessionManager ?? new SessionManager(),
+            $pm ?? $this->getMockPluginManager(),
             $cookies,
             $csrf,
             $loginTokenManager,

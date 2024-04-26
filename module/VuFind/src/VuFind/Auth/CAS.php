@@ -30,8 +30,8 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Log\PsrLoggerAdapter;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function constant;
@@ -128,7 +128,7 @@ class CAS extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -148,7 +148,8 @@ class CAS extends AbstractBase
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($username);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
@@ -160,7 +161,7 @@ class CAS extends AbstractBase
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
                 if ($attribute == 'email') {
-                    $user->updateEmail($value);
+                    $userService->updateUserEmail($user, $value);
                 } elseif ($attribute != 'cat_password') {
                     $user->$attribute = $value ?? '';
                 } else {

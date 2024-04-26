@@ -29,6 +29,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -66,7 +67,7 @@ class Email extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -83,7 +84,7 @@ class Email extends AbstractBase
 
         if (!$hash) {
             // Validate the credentials:
-            $user = $this->getUserTable()->getByEmail($email);
+            $user = $this->getUserService()->getUserByField('email', $email);
             if ($user) {
                 $loginData = [
                     'vufind_id' => $user['id'],
@@ -100,7 +101,7 @@ class Email extends AbstractBase
 
         $loginData = $this->emailAuthenticator->authenticate($hash);
         if (isset($loginData['vufind_id'])) {
-            return $this->getUserTable()->getById($loginData['vufind_id']);
+            return $this->getUserService()->getUserById($loginData['vufind_id']);
         } else {
             // Check if we have more granular data available:
             if (isset($loginData['userData'])) {
@@ -139,20 +140,19 @@ class Email extends AbstractBase
      * @param array $info User details returned by the login initiator like ILS.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function processUser($info)
     {
         // Check to see if we already have an account for this user:
-        $userTable = $this->getUserTable();
         if (!empty($info['id'])) {
-            $user = $userTable->getByCatalogId($info['id']);
+            $user = $this->getUserService()->getUserByField('cat_id', $info['id']);
             if (empty($user)) {
-                $user = $userTable->getByUsername($info['email']);
+                $user = $this->getOrCreateUserByUsername($info['email']);
                 $user->saveCatalogId($info['id']);
             }
         } else {
-            $user = $userTable->getByUsername($info['email']);
+            $user = $this->getOrCreateUserByUsername($info['email']);
         }
 
         // No need to store a password in VuFind's main password field:

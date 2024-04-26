@@ -30,8 +30,10 @@
 
 namespace VuFind\Auth;
 
+use Exception;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function get_class;
@@ -48,11 +50,11 @@ use function in_array;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
-    \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -178,7 +180,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     abstract public function authenticate($request);
 
@@ -199,7 +201,7 @@ abstract class AbstractBase implements
         } catch (AuthException $e) {
             return false;
         }
-        return $user instanceof User;
+        return $user instanceof UserEntityInterface;
     }
 
     /**
@@ -219,7 +221,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface New user entity.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -236,7 +238,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface Updated user entity.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -406,11 +408,11 @@ abstract class AbstractBase implements
     /**
      * Get access to the user table.
      *
-     * @return \VuFind\Db\Table\User
+     * @return UserServiceInterface
      */
-    public function getUserTable()
+    public function getUserService(): UserServiceInterface
     {
-        return $this->getDbTableManager()->get('User');
+        return $this->getDbService(UserServiceInterface::class);
     }
 
     /**
@@ -519,5 +521,20 @@ abstract class AbstractBase implements
                 throw new AuthException($this->translate("{$type}_error_invalid"));
             }
         }
+    }
+
+    /**
+     * Look up a user by username; create a new entity if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     * @throws Exception
+     */
+    protected function getOrCreateUserByUsername(string $username): UserEntityInterface
+    {
+        $userService = $this->getUserService();
+        $user = $userService->getUserByField('username', $username);
+        return $user ? $user : $userService->createEntity()->setUsername($username);
     }
 }

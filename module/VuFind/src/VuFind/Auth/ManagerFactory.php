@@ -71,6 +71,8 @@ class ManagerFactory implements FactoryInterface
         // Load dependencies:
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)->get('user');
+        $userService = $container->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(\VuFind\Db\Service\UserServiceInterface::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
@@ -82,6 +84,7 @@ class ManagerFactory implements FactoryInterface
         $manager = new $requestedName(
             $config,
             $userTable,
+            $userService,
             $sessionManager,
             $pm,
             $cookies,

@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -51,7 +52,7 @@ class SIP2 extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -128,11 +129,11 @@ class SIP2 extends AbstractBase
      * @param string $password The user's ILS password
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function processSIP2User($info, $username, $password)
     {
-        $user = $this->getUserTable()->getByUsername($info['variable']['AA'][0]);
+        $user = $this->getOrCreateUserByUsername($info['variable']['AA'][0]);
 
         // This could potentially be different depending on the ILS. Name could be
         // Bob Wicksall or Wicksall, Bob. This is currently assuming Wicksall, Bob

@@ -30,7 +30,7 @@
 
 namespace VuFind\Auth;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function in_array;
@@ -72,7 +72,7 @@ class PasswordAccess extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -84,6 +84,6 @@ class PasswordAccess extends AbstractBase
         }
 
         $userMap = array_flip($config['PasswordAccess']['access_user']);
-        return $this->getUserTable()->getByUsername($userMap[$req_password]);
+        return $this->getOrCreateUserByUsername($userMap[$req_password]);
     }
 }

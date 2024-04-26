@@ -93,7 +93,7 @@ class AlmaDatabase extends Database
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      *                                                   new account details.
      *
-     * @return NULL|\VuFind\Db\Row\User New user row.
+     * @return NULL|\VuFind\Db\Row\User New user entity.
      */
     public function create($request)
     {
@@ -110,11 +110,11 @@ class AlmaDatabase extends Database
         $this->validateUsername($params);
         $this->validatePassword($params);
 
-        // Get the user table
-        $userTable = $this->getUserTable();
+        // Get the user service
+        $userService = $this->getUserService();
 
         // Make sure parameters are correct
-        $this->validateParams($params, $userTable);
+        $this->validateParams($params, $userService);
 
         // Create user account in Alma
         $almaAnswer = $this->almaDriver->createAlmaUser($params);
@@ -122,7 +122,7 @@ class AlmaDatabase extends Database
         // Create user account in VuFind user table if Alma gave us an answer
         if ($almaAnswer !== null) {
             // If we got this far, we're ready to create the account:
-            $user = $this->createUserFromParams($params, $userTable);
+            $user = $this->createUserFromParams($params, $userService);
 
             // Add the Alma primary ID as cat_id to the VuFind user table
             $user->cat_id = $almaAnswer->primary_id ?? null;
