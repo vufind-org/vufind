@@ -1,15 +1,15 @@
 @import "../global";
 
-$cc-padding-y: 1em;
-$cc-padding-x: 1.4em;
+$cc-padding-y: 1em !default;
+$cc-padding-x: 1.4em !default;
 
-$cc-toggle-knob-height: 23px;
-$cc-toggle-knob-width: 50px;
-$cc-toggle-knob-icon-width: 2px;
+$cc-toggle-knob-height: 23px !default;
+$cc-toggle-knob-width: 50px !default;
+$cc-toggle-knob-icon-width: 2px !default;
 
-$cc-service-toggle-knob-height: 19px;
-$cc-service-toggle-knob-width: 42px;
-$cc-service-toggle-knob-icon-width: 1.7px;
+$cc-service-toggle-knob-height: 19px !default;
+$cc-service-toggle-knob-width: 42px !default;
+$cc-service-toggle-knob-icon-width: 1.7px !default;
 
 :root{
     --cc-pm-toggle-border-radius: 4em;

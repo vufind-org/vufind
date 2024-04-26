@@ -1,8 +1,8 @@
 @import "../global";
 
-$cc-sections-padding-y: 1rem;
-$cc-sections-padding-x: 1.3rem;
-$cc-footer-links-gap: 1.3rem;
+$cc-sections-padding-y: 1rem !default;
+$cc-sections-padding-x: 1.3rem !default;
+$cc-footer-links-gap: 1.3rem !default;
 
 #cc-main{
 
