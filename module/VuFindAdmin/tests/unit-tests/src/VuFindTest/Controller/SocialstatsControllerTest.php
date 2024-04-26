@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2014-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,7 @@ namespace VuFindTest\Controller;
 
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 
 /**
  * Unit tests for Socialstats controller.
@@ -68,11 +69,12 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
         $tables->set('userresource', $userresource);
-        $resourcetags = $this->getMockBuilder(\VuFind\Db\Table\ResourceTags::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
-            ->getMock();
-        $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
-        $tables->set('resourcetags', $resourcetags);
+
+        $mockTagStats = ['users' => 31, 'resources' => 32, 'total' => 33];
+        $tagService = $this->createMock(TagServiceInterface::class);
+        $tagService->expects($this->once())->method('getStatistics')
+            ->will($this->returnValue($mockTagStats));
+        $dbServices->set(TagServiceInterface::class, $tagService);
 
         $mockRatingsStats = ['users' => 1, 'resources' => 2, 'total' => 3];
         $ratingsService = $this->createMock(RatingsServiceInterface::class);
@@ -93,7 +95,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('admin/socialstats/home', $view->getTemplate());
         $this->assertEquals($mockCommentsStats, $view->comments);
         $this->assertEquals('userresource-data', $view->favorites);
-        $this->assertEquals('resourcetags-data', $view->tags);
+        $this->assertEquals($mockTagStats, $view->tags);
         $this->assertEquals($mockRatingsStats, $view->ratings);
     }
 }
