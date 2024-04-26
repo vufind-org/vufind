@@ -68,7 +68,7 @@ class TagFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     ) {
         return new $requestedName(
             $container->get(\VuFind\Db\Service\PluginManager::class)
-                ->get(\VuFind\Db\Service\TagService::class)
+                ->get(\VuFind\Db\Service\TagServiceInterface::class)
         );
     }
 }

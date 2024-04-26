@@ -29,7 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
-use VuFind\Db\Service\TagService;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 use function is_callable;
@@ -191,10 +191,8 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        $tagService = $this->getDbService(
-            \VuFind\Db\Service\TagService::class
-        );
-        return $tagService->getForResource(
+        $tags = $this->getDbService(TagServiceInterface::class);
+        return $tags->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             0,
@@ -213,11 +211,11 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use TagService::addTagsToRecord()
+     * @deprecated Use TagServiceInterface::addTagsToRecord()
      */
     public function addTags($user, $tags)
     {
-        $this->getDbService(TagService::class)
+        $this->getDbService(TagServiceInterface::class)
             ->addTagsToRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
@@ -229,11 +227,11 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use TagService::deleteTagsFromRecord()
+     * @deprecated Use TagServiceInterface::deleteTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
-        $this->getDbService(TagService::class)
+        $this->getDbService(TagServiceInterface::class)
             ->deleteTagsFromRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 

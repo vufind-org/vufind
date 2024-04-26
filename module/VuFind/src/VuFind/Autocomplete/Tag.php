@@ -29,7 +29,7 @@
 
 namespace VuFind\Autocomplete;
 
-use VuFind\Db\Service\TagService as TagService;
+use VuFind\Db\Service\TagServiceInterface;
 
 /**
  * Tag Autocomplete Module
@@ -45,20 +45,12 @@ use VuFind\Db\Service\TagService as TagService;
 class Tag implements AutocompleteInterface
 {
     /**
-     * Tag service
-     *
-     * @var TagService
-     */
-    protected $tagService;
-
-    /**
      * Constructor
      *
-     * @param TagService $tagService Tag database service
+     * @param TagServiceInterface $tagService Tag database service
      */
-    public function __construct(TagService $tagService)
+    public function __construct(protected TagServiceInterface $tagService)
     {
-        $this->tagService = $tagService;
     }
 
     /**

@@ -30,7 +30,7 @@
 namespace VuFindAdmin\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Db\Service\TagService;
+use VuFind\Db\Service\TagServiceInterface;
 
 use function count;
 use function intval;
@@ -58,7 +58,7 @@ class TagsController extends AbstractAdmin
     /**
      * Tag service
      *
-     * @var TagService
+     * @var TagServiceInterface
      */
     protected $tagService;
 
@@ -71,7 +71,7 @@ class TagsController extends AbstractAdmin
     {
         parent::__construct($sm);
         $this->tagService = $sm->get(\VuFind\Db\Service\PluginManager::class)
-            ->get(TagService::class);
+            ->get(TagServiceInterface::class);
     }
 
     /**

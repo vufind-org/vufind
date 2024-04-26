@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2014-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,7 @@ namespace VuFindTest\Controller;
 
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
-use VuFind\Db\Service\TagService;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserResourceService;
 
 /**
@@ -82,12 +82,10 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $dbServices->set(RatingsServiceInterface::class, $ratingsService);
 
         $mockTagStats = ['users' => 31, 'resources' => 32, 'total' => 33];
-        $tagService = $this->getMockBuilder(TagService::class)
-            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
-            ->getMock();
+        $tagService = $this->createMock(TagServiceInterface::class);
         $tagService->expects($this->once())->method('getStatistics')
             ->will($this->returnValue($mockTagStats));
-        $dbServices->set(TagService::class, $tagService);
+        $dbServices->set(TagServiceInterface::class, $tagService);
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()

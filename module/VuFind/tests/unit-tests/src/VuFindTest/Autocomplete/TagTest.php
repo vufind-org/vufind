@@ -29,7 +29,9 @@
 
 namespace VuFindTest\Autocomplete;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Autocomplete\Tag;
+use VuFind\Db\Service\TagServiceInterface;
 
 /**
  * Tag autocomplete test class.
@@ -47,7 +49,7 @@ class TagTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuggestions()
+    public function testSuggestions(): void
     {
         // Real object to test:
         $tag = new Tag($this->getTagServiceMock());
@@ -57,19 +59,18 @@ class TagTest extends \PHPUnit\Framework\TestCase
     /**
      * Get tagService mock.
      *
-     * @return MockObject
+     * @return MockObject&TagServiceInterface
      */
-    public function getTagServiceMock()
+    public function getTagServiceMock(): MockObject&TagServiceInterface
     {
-        $tagService = $this->getMockBuilder(\VuFind\Db\Service\TagService::class)
-            ->disableOriginalConstructor()->onlyMethods(['matchText'])->getMock();
+        $tagService = $this->createMock(TagServiceInterface::class);
         $tags = [
             ['tag' => 'bar1'],
             ['tag' => 'bar2'],
         ];
         $tagService->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue($tags));
+            ->willReturn($tags);
         return $tagService;
     }
 }

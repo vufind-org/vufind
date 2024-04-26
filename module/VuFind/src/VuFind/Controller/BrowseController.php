@@ -330,7 +330,7 @@ class BrowseController extends AbstractBase implements
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagServiceInterface::class);
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
