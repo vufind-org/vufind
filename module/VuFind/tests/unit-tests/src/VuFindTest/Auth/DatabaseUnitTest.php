@@ -30,9 +30,10 @@
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
-use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Stdlib\Parameters;
 use VuFind\Auth\Database;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Database authentication test class.
@@ -45,6 +46,8 @@ use VuFind\Auth\Database;
  */
 class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test validation of empty create request.
      *
@@ -137,13 +140,13 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $numericConfig,
                 '1234',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
             [
                 $numericConfig,
                 '12345',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
 
             // Alphanumeric:
@@ -169,13 +172,13 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $alnumConfig,
                 '1abc',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
             [
                 $alnumConfig,
                 '1abcd',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
 
             // Pattern:
@@ -195,13 +198,13 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $patternConfig,
                 '1abcÖ',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
             [
                 $patternConfig,
                 'abcδ',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
         ];
     }
@@ -306,7 +309,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $defaultConfig,
                 "!#$%&'*+-/=?^_`{|}~abcδä",
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
 
             // Numeric:
@@ -332,13 +335,13 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $numericConfig,
                 '1234',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
             [
                 $numericConfig,
                 '12345',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
 
             // Alphanumeric:
@@ -364,13 +367,13 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $alnumConfig,
                 '1abc',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
             [
                 $alnumConfig,
                 '1abcd',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
 
             // Pattern:
@@ -390,13 +393,13 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
                 $patternConfig,
                 '1abcÖ',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
             [
                 $patternConfig,
                 'abcδ',
                 \Exception::class,
-                'DB table manager missing.', // == success
+                'Service manager missing', // == success
             ],
         ];
     }
@@ -441,7 +444,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     public function testCreateWithMissingTableManager()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('DB table manager missing.');
+        $this->expectExceptionMessage('Service manager missing');
 
         $db = new Database();
         $db->create($this->getRequest($this->getCreateParams()));
@@ -458,14 +461,18 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('That email address is already used');
 
         // Fake services:
-        $table = $this->getMockTable(['getByEmail', 'getByUsername']);
-        $table->expects($this->once())->method('getByEmail')
-            ->with($this->equalTo('me@mysite.com'))
-            ->will($this->returnValue(true));
-        $table->expects($this->any())->method('getByUsername')
-            ->with($this->equalTo('good'))
-            ->will($this->returnValue(false));
-        $db = $this->getDatabase($table);
+        $service = $this->createMock(UserServiceInterface::class);
+        $mockUser = $this->createMock(UserEntityInterface::class);
+        $this->expectConsecutiveCalls(
+            $service,
+            'getUserByField',
+            [
+                ['username', 'good'],
+                ['email', 'me@mysite.com'],
+            ],
+            [null, $mockUser]
+        );
+        $db = $this->getDatabase($service);
         $this->assertEquals(
             false,
             $db->create($this->getRequest($this->getCreateParams()))
@@ -483,11 +490,11 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('That username is already taken');
 
         // Fake services:
-        $table = $this->getMockTable(['getByUsername']);
-        $table->expects($this->any())->method('getByUsername')
-            ->with($this->equalTo('good'))
-            ->will($this->returnValue(true));
-        $db = $this->getDatabase($table);
+        $service = $this->createMock(UserServiceInterface::class);
+        $mockUser = $this->createMock(UserEntityInterface::class);
+        $service->expects($this->once())->method('getUserByField')
+            ->with('username', 'good')->willReturn($mockUser);
+        $db = $this->getDatabase($service);
         $this->assertEquals(
             false,
             $db->create($this->getRequest($this->getCreateParams()))
@@ -502,16 +509,21 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     public function testSuccessfulCreation()
     {
         // Fake services:
-        $table = $this->getMockTable(['insert', 'getByEmail', 'getByUsername']);
-        $table->expects($this->once())->method('getByEmail')
-            ->with($this->equalTo('me@mysite.com'))
-            ->will($this->returnValue(false));
-        $table->expects($this->any())->method('getByUsername')
-            ->with($this->equalTo('good'))
-            ->will($this->returnValue(false));
-        $db = $this->getDatabase($table);
-        $prototype = $table->getResultSetPrototype()->getArrayObjectPrototype();
-        $prototype->expects($this->once())->method('save');
+        $service = $this->createMock(UserServiceInterface::class);
+        $mockUser = $this->createMock(UserEntityInterface::class);
+        $service->expects($this->once())->method('createRowForUsername')
+            ->with('good')->willReturn($mockUser);
+        $service->expects($this->once())->method('persistEntity')->with($mockUser);
+        $this->expectConsecutiveCalls(
+            $service,
+            'getUserByField',
+            [
+                ['username', 'good'],
+                ['email', 'me@mysite.com'],
+            ],
+            null
+        );
+        $db = $this->getDatabase($service);
         $user = $db->create($this->getRequest($this->getCreateParams()));
         $this->assertIsObject($user);
     }
@@ -548,32 +560,6 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock table object
-     *
-     * @param array $methods Methods to mock
-     *
-     * @return \VuFind\Db\Table\User
-     */
-    protected function getMockTable($methods = [])
-    {
-        $methods[] = 'getResultSetPrototype';
-        $mock = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
-            ->getMock();
-        $mock->expects($this->any())->method('getResultSetPrototype')
-            ->will(
-                $this->returnValue(
-                    new ResultSet(
-                        ResultSet::TYPE_ARRAYOBJECT,
-                        $this->getMockRow()
-                    )
-                )
-            );
-        return $mock;
-    }
-
-    /**
      * Get a fake HTTP request.
      *
      * @param array $post POST parameters
@@ -586,7 +572,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->onlyMethods(['getPost'])->getMock();
         $request->expects($this->any())->method('getPost')
-            ->will($this->returnValue($post));
+            ->willReturn($post);
         return $request;
     }
 
@@ -599,14 +585,14 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDatabase($table)
     {
-        $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
+        $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
-        $tableManager->expects($this->once())->method('get')
-            ->with($this->equalTo('User'))
-            ->will($this->returnValue($table));
+        $serviceManager->expects($this->any())->method('get')
+            ->with($this->equalTo(UserServiceInterface::class))
+            ->willReturn($table);
 
         $db = new Database();
-        $db->setDbTableManager($tableManager);
+        $db->setDbServiceManager($serviceManager);
         return $db;
     }
 }

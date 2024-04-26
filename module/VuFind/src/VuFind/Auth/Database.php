@@ -150,7 +150,7 @@ class Database extends AbstractBase
         // If we got this far, we're ready to create the account:
         $user = $this->createUserFromParams($params, $userService);
         try {
-            $user->save();
+            $userService->persistEntity($user);
         } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
             // In a scenario where the unique key of the user table is
             // shorter than the username field length, it is possible that
@@ -201,7 +201,7 @@ class Database extends AbstractBase
         } else {
             $user->password = $params['password'];
         }
-        $user->save();
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 

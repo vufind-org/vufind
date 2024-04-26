@@ -29,10 +29,12 @@
 
 namespace VuFindTest\Auth;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\MultiILS;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Driver\MultiBackend;
-use VuFindTest\Container\MockDbTablePluginManager;
+use VuFindTest\Container\MockDbServicePluginManager;
 
 /**
  * MultiILS authentication test class.
@@ -159,7 +161,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $user = $this->getMultiILS($driver)->authenticate($this->getLoginRequest());
         $this->assertEquals('ils1.testuser', $user->username);
         $this->assertEquals('user@test.com', $user->email);
@@ -182,7 +184,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $auth = $this->getMultiILS($driver);
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
@@ -240,7 +242,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     protected function getMockMultiBackend(
         $onlyMethods = [],
         $addMethods = ['patronLogin']
-    ): MultiBackend {
+    ): MockObject&MultiBackend {
         $onlyMethods[] = 'supportsMethod';
         $onlyMethods[] = 'getLoginDrivers';
         $onlyMethods[] = 'getConfig';
@@ -294,23 +296,21 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['saveCredentials', 'updateEmail'])
             ->getMock();
         $mockUser->username = 'ils1.testuser';
-        $mockUser->expects($this->any())
-            ->method('updateEmail')
+        $mockUserService = $this->createMock(UserServiceInterface::class);
+        $mockUserService->expects($this->any())
+            ->method('getUserByField')
+            ->willReturn($mockUser);
+        $mockUserService->expects($this->any())
+            ->method('updateUserEmail')
             ->willReturnCallback(
-                function ($email) use (&$mockUser) {
+                function ($mockUser, $email) {
                     $mockUser->email = $email;
                 }
             );
-        $mockUserTable = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockUserTable->expects($this->any())
-            ->method('getByUsername')
-            ->willReturn($mockUser);
-        $mockTableManager = new MockDbTablePluginManager($this);
-        $mockTableManager->set('User', $mockUserTable);
+        $mockDbServiceManager = new MockDbServicePluginManager($this);
+        $mockDbServiceManager->set(UserServiceInterface::class, $mockUserService);
         $this->container
-            ->set(\VuFind\Db\Table\PluginManager::class, $mockTableManager);
+            ->set(\VuFind\Db\Service\PluginManager::class, $mockDbServiceManager);
         $driverManager = new \VuFind\ILS\Driver\PluginManager($this->container);
         $parts = explode('\\', $driver::class);
         $driverClass = end($parts);
@@ -334,7 +334,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $connection->setDriver($driver);
 
         $auth = new \VuFind\Auth\MultiILS($connection, $mockAuthenticator);
-        $auth->setDbTableManager($mockTableManager);
+        $auth->setDbServiceManager($mockDbServiceManager);
         return $auth;
     }
 }
