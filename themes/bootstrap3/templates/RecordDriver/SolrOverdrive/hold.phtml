@@ -15,7 +15,7 @@
           <img class="media-left" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
         </span>
     </h2>
-         <div class="pull-right  img-col">
+         <div class="pull-right img-col">
              <?php if ($cover): ?>
                  <img alt="<?=$this->transEscAttr('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover)?>">
              <?php endif; ?>
@@ -159,7 +159,7 @@
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-control" name="suspendValue" id="select-suspension" data-open="false">
                     <option value="0" selected=""><?=$this->transEsc('od_susp_asap')?></option>
-                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations; ?>
+                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
                       <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
                     <?php endforeach; ?>
@@ -178,7 +178,7 @@
             <div class="form-group">
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-control" name="suspendValue"  id="select-suspension" data-open="false">
-                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations; ?>
+                     <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
                       <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
                     <?php endforeach; ?>
