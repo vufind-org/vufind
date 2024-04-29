@@ -543,9 +543,7 @@ class Manager implements
                 }
             } elseif (isset($this->session->userDetails)) {
                 // privacy mode
-                $results = $this->userService->createEntity();
-                $results->exchangeArray($this->session->userDetails);
-                $this->currentUser = $results;
+                $this->currentUser = $this->userService->getUserFromSessionContainer($this->session);
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {
                     $this->getAuth()->setStrategy($user->auth_method);
