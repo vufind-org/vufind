@@ -186,7 +186,7 @@ class CAS extends AbstractBase
         }
 
         // Save and return the user object:
-        $user->save();
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 

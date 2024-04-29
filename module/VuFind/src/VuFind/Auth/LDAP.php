@@ -334,7 +334,7 @@ class LDAP extends AbstractBase
         }
 
         // Update the user in the database, then return it to the caller:
-        $user->save();
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 }
