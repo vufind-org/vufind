@@ -48,29 +48,13 @@ use function in_array;
 class AccountCapabilities
 {
     /**
-     * Auth manager
-     *
-     * @var AuthManager
-     */
-    protected $auth;
-
-    /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
      * @param Config      $config VuFind configuration
      * @param AuthManager $auth   Auth manager
      */
-    public function __construct(Config $config, AuthManager $auth)
+    public function __construct(protected Config $config, protected AuthManager $auth)
     {
-        $this->auth = $auth;
-        $this->config = $config;
     }
 
     /**
@@ -194,5 +178,15 @@ class AccountCapabilities
     public function isRatingRemovalAllowed(): bool
     {
         return (bool)($this->config->Social->remove_rating ?? true);
+    }
+
+    /**
+     * Are library cards enabled and supported?
+     *
+     * @return bool
+     */
+    public function libraryCardsEnabled(): bool
+    {
+        return ($this->config->Catalog->library_cards ?? false) && !$this->auth->inPrivacyMode();
     }
 }

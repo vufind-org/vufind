@@ -63,16 +63,6 @@ class PrivateUser extends User
     }
 
     /**
-     * Whether library cards are enabled
-     *
-     * @return bool
-     */
-    public function libraryCardsEnabled()
-    {
-        return false; // not supported in this context
-    }
-
-    /**
      * Save
      *
      * @return int

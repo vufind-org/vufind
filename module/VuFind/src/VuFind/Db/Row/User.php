@@ -35,6 +35,7 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
+use function is_callable;
 
 /**
  * Row Definition for user
@@ -85,13 +86,25 @@ class User extends RowGateway implements
     protected $config = null;
 
     /**
+     * Callback to obtain account capabilities object
+     *
+     * @var callable
+     */
+    protected $getCapabilitiesCallback;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
+     * @param ?callable                   $getCapabilities  Callback to obtain account capabilities object
      */
-    public function __construct($adapter, protected ILSAuthenticator $ilsAuthenticator)
-    {
+    public function __construct(
+        $adapter,
+        protected ILSAuthenticator $ilsAuthenticator,
+        ?callable $getCapabilities = null
+    ) {
+        $this->getCapabilitiesCallback = $getCapabilities;
         parent::__construct('id', 'user', $adapter);
     }
 
@@ -459,11 +472,29 @@ class User extends RowGateway implements
      * Whether library cards are enabled
      *
      * @return bool
+     *
+     * @deprecated use \VuFind\Config\AccountCapabilities::libraryCardsEnabled()
      */
     public function libraryCardsEnabled()
     {
-        return isset($this->config->Catalog->library_cards)
-            && $this->config->Catalog->library_cards;
+        return $this->proxyCardsEnabledCheck();
+    }
+
+    /**
+     * Proxy \VuFind\Config\AccountCapabilities::libraryCardsEnabled()
+     *
+     * @return bool
+     */
+    protected function proxyCardsEnabledCheck(): bool
+    {
+        // Delegate this check to the account capabilities object; default to
+        // false if the object cannot be retrieved (a scenario which should only
+        // occur in tests, since the factory should normally inject the callback)
+        if (is_callable($this->getCapabilitiesCallback)) {
+            $capabilities = ($this->getCapabilitiesCallback)();
+            return $capabilities->libraryCardsEnabled();
+        }
+        return false;
     }
 
     /**
@@ -474,7 +505,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCards()
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->proxyCardsEnabledCheck()) {
             return new \Laminas\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
@@ -491,7 +522,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCard($id = null)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->proxyCardsEnabledCheck()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -526,7 +557,7 @@ class User extends RowGateway implements
      */
     public function deleteLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->proxyCardsEnabledCheck()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -562,7 +593,7 @@ class User extends RowGateway implements
      */
     public function activateLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->proxyCardsEnabledCheck()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -596,7 +627,7 @@ class User extends RowGateway implements
         $password,
         $homeLib = ''
     ) {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->proxyCardsEnabledCheck()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -657,7 +688,7 @@ class User extends RowGateway implements
      */
     protected function updateLibraryCardEntry()
     {
-        if (!$this->libraryCardsEnabled() || empty($this->cat_username)) {
+        if (!$this->proxyCardsEnabledCheck() || empty($this->cat_username)) {
             return;
         }
 

@@ -74,13 +74,15 @@ class UserFactory extends RowGatewayFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $privacy = isset($config->Authentication->privacy)
-            && $config->Authentication->privacy;
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $privacy = $config->Authentication->privacy ?? false;
+        // To avoid circular dependencies, pass in a callback to retrieve AccountCapabilities.
+        $getCapabilities = function () use ($container) {
+            return $container->get(\VuFind\Config\AccountCapabilities::class);
+        };
         $rowClass = $privacy ? $this->privateUserClass : $requestedName;
         $ilsAuthenticator = $container->get(\VuFind\Auth\ILSAuthenticator::class);
-        $prototype = parent::__invoke($container, $rowClass, [$ilsAuthenticator]);
+        $prototype = parent::__invoke($container, $rowClass, [$ilsAuthenticator, $getCapabilities]);
         $prototype->setConfig($config);
         if ($privacy) {
             $sessionManager = $container

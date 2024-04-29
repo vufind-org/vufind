@@ -243,8 +243,8 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      */
     public function checkLibraryCards(): bool
     {
-        $user = $this->getUser();
-        return $this->isIlsOnline() && $user && $user->libraryCardsEnabled();
+        return $this->isIlsOnline() && $this->getUser()
+            && $this->getView()->plugin('accountCapabilities')()->libraryCardsEnabled();
     }
 
     /**
