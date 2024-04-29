@@ -84,5 +84,5 @@
 }
 .media-left .external-links > span a.icon--eds {
     line-height: unset;
-    white-space: wrap;
+    white-space: normal;
 }
