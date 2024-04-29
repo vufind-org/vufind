@@ -1,12 +1,12 @@
 /* https://github.com/vufind-org/autocomplete.js (v2.1.3) */
 
 /* #LESS>
-@autocomplete-item-bg     : #fff;
-@autocomplete-active-bg   : @brand-primary;
-@autocomplete-hover-bg    : lighten(@brand-primary, 40%);
-@autocomplete-disabled-bg : lightgray;
-@autocomplete-border      : lightgray;
-@autocomplete-secondary   : darkgray; // item description
+$autocomplete-item-bg     : #fff;
+$autocomplete-active-bg   : $brand-primary;
+$autocomplete-hover-bg    : lighten($brand-primary, 40%);
+$autocomplete-disabled-bg : lightgray;
+$autocomplete-border      : lightgray;
+$autocomplete-secondary   : darkgray; // item description
 <#LESS */
 /* #SCSS> */
 $autocomplete-item-bg     : #fff !default;
