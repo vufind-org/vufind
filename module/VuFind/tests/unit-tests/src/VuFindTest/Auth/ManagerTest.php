@@ -34,7 +34,7 @@ use Laminas\Session\SessionManager;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function get_class;
 
@@ -502,13 +502,12 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testUserLoginFromSession()
     {
-        $table = $this->getMockUserTable();
         $user = $this->getMockUser();
-        $userArray = new \ArrayObject();
-        $userArray->append($user);
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
-        $manager = $this->getManager([], $table);
+        $userId = 1234;
+        $service = $this->createMock(UserServiceInterface::class);
+        $service->expects($this->once())->method('getUserById')
+            ->with($this->equalTo($userId))->willReturn($user);
+        $manager = $this->getManager([], $service);
 
         // Fake the session inside the manager:
         $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
@@ -517,7 +516,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $mockSession->expects($this->any())->method('__isset')
             ->with($this->equalTo('userId'))->will($this->returnValue(true));
         $mockSession->expects($this->any())->method('__get')
-            ->with($this->equalTo('userId'))->will($this->returnValue('foo'));
+            ->with($this->equalTo('userId'))->will($this->returnValue($userId));
         $this->setProperty($manager, 'session', $mockSession);
 
         $this->assertEquals($user, $manager->getUserObject());
@@ -547,14 +546,14 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a manager object to test with.
      *
-     * @param array          $config         Configuration
-     * @param UserTable      $userTable      User table gateway
-     * @param SessionManager $sessionManager Session manager
-     * @param PluginManager  $pm             Authentication plugin manager
+     * @param array                $config         Configuration
+     * @param UserServiceInterface $userService    User table gateway
+     * @param SessionManager       $sessionManager Session manager
+     * @param PluginManager        $pm             Authentication plugin manager
      *
      * @return Manager
      */
-    protected function getManager($config = [], $userTable = null, $sessionManager = null, $pm = null)
+    protected function getManager($config = [], $userService = null, $sessionManager = null, $pm = null)
     {
         $config = new Config($config);
         $cookies = new \VuFind\Cookie\CookieManager([]);
@@ -571,8 +570,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(false);
         return new Manager(
             $config,
-            $userTable ?? $this->getMockUserTable(),
-            $this->createMock(\VuFind\Db\Service\UserServiceInterface::class),
+            $userService ?? $this->createMock(UserServiceInterface::class),
             $sessionManager ?? new SessionManager(),
             $pm ?? $this->getMockPluginManager(),
             $cookies,
@@ -580,18 +578,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $loginTokenManager,
             $ils
         );
-    }
-
-    /**
-     * Get a mock user table.
-     *
-     * @return UserTable
-     */
-    protected function getMockUserTable()
-    {
-        return $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 
     /**
