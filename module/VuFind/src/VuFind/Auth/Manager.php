@@ -40,7 +40,6 @@ use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
-use function count;
 use function in_array;
 use function is_callable;
 
