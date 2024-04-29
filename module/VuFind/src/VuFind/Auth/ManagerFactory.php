@@ -70,7 +70,6 @@ class ManagerFactory implements FactoryInterface
         }
         // Load dependencies:
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)->get('user');
         $userService = $container->get(\VuFind\Db\Service\PluginManager::class)
             ->get(\VuFind\Db\Service\UserServiceInterface::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
@@ -83,7 +82,6 @@ class ManagerFactory implements FactoryInterface
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
             $config,
-            $userTable,
             $userService,
             $sessionManager,
             $pm,

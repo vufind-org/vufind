@@ -36,7 +36,6 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
@@ -106,7 +105,6 @@ class Manager implements
      * Constructor
      *
      * @param Config               $config            VuFind configuration
-     * @param UserTable            $userTable         User table gateway
      * @param UserServiceInterface $userService       User database service
      * @param SessionManager       $sessionManager    Session manager
      * @param PluginManager        $pluginManager     Authentication plugin manager
@@ -117,7 +115,6 @@ class Manager implements
      */
     public function __construct(
         protected Config $config,
-        protected UserTable $userTable,
         protected UserServiceInterface $userService,
         protected SessionManager $sessionManager,
         protected PluginManager $pluginManager,
@@ -540,17 +537,14 @@ class Manager implements
         if (!$this->currentUser) {
             if (isset($this->session->userId)) {
                 // normal mode
-                $results = $this->userTable
-                    ->select(['id' => $this->session->userId]);
-                $this->currentUser = count($results) < 1
-                    ? null : $results->current();
+                $this->currentUser = $this->userService->getUserById($this->session->userId);
                 // End the session since the logged-in user cannot be found:
                 if (null === $this->currentUser) {
                     $this->logout('');
                 }
             } elseif (isset($this->session->userDetails)) {
                 // privacy mode
-                $results = $this->userTable->createRow();
+                $results = $this->userService->createEntity();
                 $results->exchangeArray($this->session->userDetails);
                 $this->currentUser = $results;
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
