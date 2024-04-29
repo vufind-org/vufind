@@ -76,3 +76,13 @@
 .icon13.expanded {
     background-position: 0 -149px;
 }
+
+/* media component links */
+.media-left .external-links > span {
+    display: block;
+    margin-top: 1rem;
+}
+.media-left .external-links > span a.icon--eds {
+    line-height: unset;
+    white-space: wrap;
+}
