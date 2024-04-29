@@ -546,7 +546,7 @@ class Manager implements
                 $this->currentUser = $this->userService->getUserFromSessionContainer($this->session);
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {
-                    $this->getAuth()->setStrategy($user->auth_method);
+                    $this->getAuth()->setStrategy($user->getAuthMethod());
                 }
                 if ($this->supportsPersistentLogin()) {
                     $this->updateUser($user, null);
@@ -625,9 +625,9 @@ class Manager implements
     {
         $this->currentUser = $user;
         if ($this->inPrivacyMode()) {
-            $this->session->userDetails = $user->toArray();
+            $this->userService->addUserDataToSessionContainer($this->session, $user);
         } else {
-            $this->session->userId = $user->id;
+            $this->session->userId = $user->getId();
         }
         $this->cookieManager->clear('loggedOut');
     }
@@ -683,12 +683,12 @@ class Manager implements
         if ($this->config->Authentication->verify_email ?? false) {
             // If new email address is the current address, just reset any pending
             // email address:
-            $user->pending_email = ($email === $user->email) ? '' : $email;
+            $user->setPendingEmail($email === $user->getEmail() ? '' : $email);
         } else {
             $this->userService->updateUserEmail($user, $email, true);
-            $user->pending_email = '';
+            $user->setPendingEmail('');
         }
-        $user->save();
+        $this->userService->persistEntity($user);
         $this->updateSession($user);
     }
 
@@ -897,10 +897,10 @@ class Manager implements
     protected function updateUser($user, $authMethod)
     {
         if ($authMethod) {
-            $user->auth_method = strtolower($authMethod);
+            $user->setAuthMethod(strtolower($authMethod));
         }
-        $user->last_login = date('Y-m-d H:i:s');
-        $user->save();
+        $user->setLastLogin(new \DateTime());
+        $this->userService->persistEntity($user);
     }
 
     /**

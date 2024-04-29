@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Interface for representing a user account record.
  *
@@ -252,4 +254,20 @@ interface UserEntityInterface extends EntityInterface
      * @return UserEntityInterface
      */
     public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface;
+
+    /**
+     * Last login setter.
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Last login getter
+     *
+     * @return Datetime
+     */
+    public function getLastLogin(): Datetime;
 }

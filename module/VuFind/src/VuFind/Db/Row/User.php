@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
@@ -1076,5 +1077,28 @@ class User extends RowGateway implements
     {
         $this->user_provided_email = $userProvided ? 1 : 0;
         return $this;
+    }
+
+    /**
+     * Last login setter.
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    {
+        $this->last_login = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Last login getter
+     *
+     * @return Datetime
+     */
+    public function getLastLogin(): Datetime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login, new \DateTimeZone('UTC'));
     }
 }
