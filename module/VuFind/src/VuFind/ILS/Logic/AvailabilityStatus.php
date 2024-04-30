@@ -181,7 +181,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     }
 
     /**
-     * Get schema.
+     * Get schema.org availability URI.
      *
      * @return ?string
      */
