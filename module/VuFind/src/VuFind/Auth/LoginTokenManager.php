@@ -103,7 +103,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      * LoginToken constructor.
      *
      * @param Config               $config          Configuration
-     * @param UserServiceInterface $userServicee    User database service
+     * @param UserServiceInterface $userService     User database service
      * @param LoginTokenTable      $loginTokenTable Login Token table gateway
      * @param CookieManager        $cookieManager   Cookie manager
      * @param SessionManager       $sessionManager  Session manager
@@ -137,10 +137,12 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         $cookie = $this->getLoginTokenCookie();
         if ($cookie) {
             try {
-                if ($token = $this->loginTokenTable->matchToken($cookie)) {
+                if (
+                    ($token = $this->loginTokenTable->matchToken($cookie))
+                    && ($user = $this->userService->getUserById($token->user_id))
+                ) {
                     // Queue token update to be done after everything else is
                     // successfully processed:
-                    $user = $this->userService->getUserById($token->user_id);
                     $this->tokenToUpdate = compact('user', 'token', 'sessionId');
                     $this->debug(
                         "Token login successful for user {$token->user_id}"
