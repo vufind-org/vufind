@@ -33,6 +33,7 @@ use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
@@ -87,25 +88,17 @@ class User extends RowGateway implements
     protected $config = null;
 
     /**
-     * Callback to obtain account capabilities object
-     *
-     * @var callable
-     */
-    protected $getCapabilitiesCallback;
-
-    /**
      * Constructor
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
-     * @param ?callable                   $getCapabilities  Callback to obtain account capabilities object
+     * @param :AccountCapabilities        $capabilities     Account capabilities configuration (null for defaults)
      */
     public function __construct(
         $adapter,
         protected ILSAuthenticator $ilsAuthenticator,
-        ?callable $getCapabilities = null
+        protected ?AccountCapabilities $capabilities = null
     ) {
-        $this->getCapabilitiesCallback = $getCapabilities;
         parent::__construct('id', 'user', $adapter);
     }
 
@@ -478,24 +471,7 @@ class User extends RowGateway implements
      */
     public function libraryCardsEnabled()
     {
-        return $this->proxyCardsEnabledCheck();
-    }
-
-    /**
-     * Proxy \VuFind\Config\AccountCapabilities::libraryCardsEnabled()
-     *
-     * @return bool
-     */
-    protected function proxyCardsEnabledCheck(): bool
-    {
-        // Delegate this check to the account capabilities object; default to
-        // false if the object cannot be retrieved (a scenario which should only
-        // occur in tests, since the factory should normally inject the callback)
-        if (is_callable($this->getCapabilitiesCallback)) {
-            $capabilities = ($this->getCapabilitiesCallback)();
-            return $capabilities->libraryCardsEnabled();
-        }
-        return false;
+        return $this->capabilities?->libraryCardsEnabled() ?? false;
     }
 
     /**
@@ -506,7 +482,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCards()
     {
-        if (!$this->proxyCardsEnabledCheck()) {
+        if (!$this->capabilities?->libraryCardsEnabled() ?? false) {
             return new \Laminas\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
@@ -523,7 +499,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCard($id = null)
     {
-        if (!$this->proxyCardsEnabledCheck()) {
+        if (!$this->capabilities?->libraryCardsEnabled() ?? false) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -558,7 +534,7 @@ class User extends RowGateway implements
      */
     public function deleteLibraryCard($id)
     {
-        if (!$this->proxyCardsEnabledCheck()) {
+        if (!$this->capabilities?->libraryCardsEnabled() ?? false) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -594,7 +570,7 @@ class User extends RowGateway implements
      */
     public function activateLibraryCard($id)
     {
-        if (!$this->proxyCardsEnabledCheck()) {
+        if (!$this->capabilities?->libraryCardsEnabled() ?? false) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -628,7 +604,7 @@ class User extends RowGateway implements
         $password,
         $homeLib = ''
     ) {
-        if (!$this->proxyCardsEnabledCheck()) {
+        if (!$this->capabilities?->libraryCardsEnabled() ?? false) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -689,7 +665,7 @@ class User extends RowGateway implements
      */
     protected function updateLibraryCardEntry()
     {
-        if (!$this->proxyCardsEnabledCheck() || empty($this->cat_username)) {
+        if (!$this->capabilities?->libraryCardsEnabled() ?? false || empty($this->cat_username)) {
             return;
         }
 

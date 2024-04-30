@@ -33,7 +33,8 @@ use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\User;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -46,19 +47,12 @@ use VuFind\Log\LoggerAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class UserService extends AbstractDbService implements
+    DbTableAwareInterface,
     LoggerAwareInterface,
     UserServiceInterface
 {
+    use DbTableAwareTrait;
     use LoggerAwareTrait;
-
-    /**
-     * Constructor.
-     *
-     * @param User $userTable User table
-     */
-    public function __construct(protected User $userTable)
-    {
-    }
 
     /**
      * Create an entity for the specified username.
@@ -69,7 +63,7 @@ class UserService extends AbstractDbService implements
      */
     public function createRowForUsername(string $username): UserEntityInterface
     {
-        return $this->userTable->createRowForUsername($username);
+        return $this->getDbTable('User')->createRowForUsername($username);
     }
 
     /**
@@ -81,7 +75,7 @@ class UserService extends AbstractDbService implements
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        return $this->userTable->getById($id);
+        return $this->getDbTable('User')->getById($id);
     }
 
     /**
@@ -97,11 +91,11 @@ class UserService extends AbstractDbService implements
     {
         switch ($fieldName) {
             case 'id':
-                return $this->userTable->getById($fieldValue);
+                return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
-                return $this->userTable->getByUsername($fieldValue, false);
+                return $this->getDbTable('User')->getByUsername($fieldValue, false);
             case 'cat_id':
-                return $this->userTable->getByCatalogId($fieldValue);
+                return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
         throw new \InvalidArgumentException('Field name must be id, username or cat_id');
     }
@@ -145,6 +139,6 @@ class UserService extends AbstractDbService implements
      */
     public function createEntity(): UserEntityInterface
     {
-        return $this->userTable->createRow();
+        return $this->getDbTable('User')->createRow();
     }
 }
