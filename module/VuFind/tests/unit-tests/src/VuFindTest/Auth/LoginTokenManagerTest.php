@@ -36,7 +36,7 @@ use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use Laminas\Session\SessionManager;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
@@ -63,14 +63,14 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $mockToken = $this->getMockLoginToken();
-        $userTable = $this->getMockUserTable();
-        $userTable->expects($this->once())->method('getById')
+        $userService = $this->createMock(UserServiceInterface::class);
+        $userService->expects($this->once())->method('getUserById')
             ->with($this->equalTo(0))
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
             ->willReturn($mockToken);
-        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, false);
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, false);
 
         // Expect exception due to browscap cache requirement
         $this->expectException(\VuFind\Exception\Auth::class);
@@ -91,8 +91,8 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $mockToken = $this->getMockLoginToken();
-        $userTable = $this->getMockUserTable();
-        $userTable->expects($this->once())->method('getById')
+        $userService = $this->createMock(UserServiceInterface::class);
+        $userService->expects($this->once())->method('getUserById')
             ->with($this->equalTo(0))
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenTable();
@@ -100,7 +100,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->will($this->throwException(new LoginTokenException('Token does not match', 0)));
         $tokenTable->expects($this->once())->method('getByUserId')
             ->willReturn([$mockToken]);
-        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, true);
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);
         $this->assertNull($loginToken->tokenLogin('123'));
     }
 
@@ -111,7 +111,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testTokenLoginFail()
     {
-        $userTable = $this->getMockUserTable();
+        $userService = $this->createMock(UserServiceInterface::class);
         $cookieManager = $this->getCookieManager(
             [
               'loginToken' => '222;0;111',
@@ -120,21 +120,8 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
             ->willReturn(null);
-        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable, true);
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);
         $this->assertNull($loginToken->tokenLogin('123'));
-    }
-
-    /**
-     * Get a mock user table.
-     *
-     * @return UserTable
-     */
-    protected function getMockUserTable()
-    {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        return $table;
     }
 
     /**
@@ -144,16 +131,8 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUser()
     {
-        $userData = [
-            ['id', 0],
-        ];
-        $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $user->method('__get')
-            ->willReturnMap($userData);
-        $user->method('offsetGet')
-            ->willReturnMap($userData);
+        $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+        $user->method('getId')->wilLReturn(0);
         return $user;
     }
 
