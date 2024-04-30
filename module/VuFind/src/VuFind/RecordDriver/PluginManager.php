@@ -181,9 +181,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         );
         $recordType = $this->has($key) ? $key : $keyPrefix . $defaultKeySuffix;
 
+        // Extract highlighting details injected earlier by
+        // \VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory
+        $hl = $data['__highlight_details'] ?? [];
+        unset($data['__highlight_details']);
         // Build the object:
         $driver = $this->get($recordType);
         $driver->setRawData($data);
+        $driver->setHighlightDetails($hl);
         return $driver;
     }
 

@@ -1784,7 +1784,7 @@ class SierraRest extends AbstractBase implements
     {
         foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
-                return trim($varField['content']);
+                return trim($varField['subfields'][0]['content'] ?? '');
             }
         }
         return '';
@@ -2433,6 +2433,7 @@ class SierraRest extends AbstractBase implements
                 'id' => $id,
                 'item_id' => 'HLD_' . $holdings[0]['id'],
                 'location' => $location,
+                'callnumber' => '',
                 'requests_placed' => 0,
                 'number' => '',
                 'status' => '',

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Cover caching proxy factory.
+ * Factory for tag autocomplete suggester.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,32 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Autocomplete
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Cover;
+namespace VuFind\Autocomplete;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
-use function is_callable;
-
 /**
- * Cover caching proxy factory.
+ * Factory for tag autocomplete suggester.
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Autocomplete
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CachingProxyFactory implements FactoryInterface
+class TagFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -61,27 +58,17 @@ class CachingProxyFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $cacheOptions = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('cover')->getOptions();
-        $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
-            ? $cacheOptions->getCacheDir() : null;
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
-            ->toArray();
-        $allowedHosts = isset($config['Content']['coverproxyCache'])
-            ? (array)$config['Content']['coverproxyCache'] : [];
         return new $requestedName(
-            $container->get(\VuFindHttp\HttpService::class)->createClient(),
-            $cacheDir === null ? null : $cacheDir . '/proxy',
-            $allowedHosts
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(\VuFind\Db\Service\TagServiceInterface::class)
         );
     }
 }

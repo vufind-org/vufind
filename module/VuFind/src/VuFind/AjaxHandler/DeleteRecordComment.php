@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -51,12 +51,12 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
      * Constructor
      *
      * @param CommentsServiceInterface $commentsService Comments database service
-     * @param ?User                    $user            Logged in user (or null)
+     * @param ?UserEntityInterface     $user            Logged in user (or null)
      * @param bool                     $enabled         Are comments enabled?
      */
     public function __construct(
         protected CommentsServiceInterface $commentsService,
-        protected ?User $user,
+        protected ?UserEntityInterface $user,
         protected bool $enabled = true
     ) {
     }
