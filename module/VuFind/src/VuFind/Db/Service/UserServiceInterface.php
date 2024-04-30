@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
+use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -42,6 +44,15 @@ use VuFind\Db\Entity\UserEntityInterface;
  */
 interface UserServiceInterface extends DbServiceInterface
 {
+    /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createRowForUsername(string $username): UserEntityInterface;
+
     /**
      * Retrieve a user object from the database based on ID.
      *
@@ -60,4 +71,31 @@ interface UserServiceInterface extends DbServiceInterface
      * @return ?UserEntityInterface
      */
     public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
+
+    /**
+     * Create a new user entity.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface;
+
+    /**
+     * Update session container to store data representing a user (used by privacy mode).
+     *
+     * @param SessionContainer    $session Session container.
+     * @param UserEntityInterface $user    User to store in session.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function addUserDataToSessionContainer(SessionContainer $session, UserEntityInterface $user): void;
+
+    /**
+     * Build a user entity using data from a session container.
+     *
+     * @param SessionContainer $session Session container.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUserFromSessionContainer(SessionContainer $session): UserEntityInterface;
 }
