@@ -132,7 +132,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     protected function getMockUser()
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
-        $user->method('getId')->wilLReturn(0);
+        $user->method('getId')->willReturn(0);
         return $user;
     }
 
