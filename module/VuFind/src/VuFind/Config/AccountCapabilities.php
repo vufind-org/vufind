@@ -48,13 +48,31 @@ use function in_array;
 class AccountCapabilities
 {
     /**
+     * Function to fetch auth manager
+     *
+     * @var callable
+     */
+    protected $authCallback;
+
+    /**
      * Constructor
      *
-     * @param Config      $config VuFind configuration
-     * @param AuthManager $auth   Auth manager
+     * @param Config   $config  Top-level configuration
+     * @param callable $getAuth Function to fetch auth manager
      */
-    public function __construct(protected Config $config, protected AuthManager $auth)
+    public function __construct(protected Config $config, callable $getAuth)
     {
+        $this->authCallback = $getAuth;
+    }
+
+    /**
+     * Get authentication manager
+     *
+     * @return AuthManager
+     */
+    protected function getAuth(): AuthManager
+    {
+        return ($this->authCallback)();
     }
 
     /**
@@ -167,7 +185,8 @@ class AccountCapabilities
     protected function isAccountAvailable()
     {
         // We can't use account features if login is broken or privacy is on:
-        return $this->auth->loginEnabled() && !$this->auth->inPrivacyMode();
+        $auth = $this->getAuth();
+        return $auth->loginEnabled() && !$auth->inPrivacyMode();
     }
 
     /**
@@ -187,6 +206,6 @@ class AccountCapabilities
      */
     public function libraryCardsEnabled(): bool
     {
-        return ($this->config->Catalog->library_cards ?? false) && !$this->auth->inPrivacyMode();
+        return ($this->config->Catalog->library_cards ?? false) && !$this->getAuth()->inPrivacyMode();
     }
 }

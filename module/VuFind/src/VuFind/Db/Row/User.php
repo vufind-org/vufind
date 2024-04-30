@@ -37,7 +37,6 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
-use function is_callable;
 
 /**
  * Row Definition for user
