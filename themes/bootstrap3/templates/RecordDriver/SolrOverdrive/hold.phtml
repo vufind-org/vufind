@@ -178,7 +178,7 @@
             <div class="form-group">
                 <label id="select-suspension-label"><?=$this->transEsc('od_susp_hold_confirm')?></label>
                 <select class="form-control" name="suspendValue"  id="select-suspension" data-open="false">
-                     <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
+                    <?php $durations = $this->config()->get('Overdrive')->Overdrive->suspendDurations ?? [7, 14, 21, 28, 60, 90, 180]; ?>
                     <?php foreach ($durations as $duration): ?>
                       <option value="<?=$duration?>"><?=$this->transEsc('od_susp_after', ['%%days%%' => $duration])?></option>
                     <?php endforeach; ?>
