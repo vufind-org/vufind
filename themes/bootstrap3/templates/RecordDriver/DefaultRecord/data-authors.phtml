@@ -14,7 +14,7 @@ $formattedAuthors = [];
 <?php if (!empty($data[$type])): ?>
   <?php foreach ($data[$type] as $author => $dataFields): ?>
     <?php ob_start(); ?>
-    <span class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
+    <span class="author-data"<?=$this->schemaOrg()->getAttributes(['property' => $schemaLabel])?>>
       <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
         <?=$this->escapeHtml(rtrim($author, ','))?>
       </a>

@@ -4,7 +4,7 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
   ?>
-  <tr vocab="http://schema.org/" typeof="Offer">
+  <tr class="holding-row"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'typeof' => 'Offer'])?>>
     <td colspan="2" class="holding-<?=$holding['availability'] ? 'available' : 'unavailable' ?>">
       <div class="holding-details">
         <span class="holding-field copy-number">
@@ -20,7 +20,7 @@
         </span>
         <span class="holding-field availability">
           <?php if ($holding['reserve'] == 'Y'): ?>
-            <link property="availability" href="http://schema.org/InStoreOnly">
+            <?=$this->schemaOrg()->getLink('http://schema.org/InStoreOnly', 'availability')?>
             <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
           <?php endif; ?>
 
@@ -33,17 +33,17 @@
                 if ((int)$holding['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN) {
                   $statusClassEsc = 'text-warning';
                   $status = $holding['status'];
-                  $schemaAvailEsc = 'http://schema.org/LimitedAvailability';
+                  $schemaAvailUri = 'http://schema.org/LimitedAvailability';
                 } else {
                   $statusClassEsc = 'text-success';
                   $status = is_int($holding['availability']) && !empty($holding['status']) ? $holding['status'] : 'Available';
-                  $schemaAvailEsc = 'http://schema.org/InStock';
+                  $schemaAvailUri = 'http://schema.org/InStock';
                 }
               ?>
-              <span class="<?=$statusClassEsc?>"><?=$this->transEsc($status)?><link property="availability" href="<?=$schemaAvailEsc?>"></span>
+              <span class="<?=$statusClassEsc?>"><?=$this->transEsc($status)?><?=$this->schemaOrg()->getLink($schemaAvailUri, 'availability')?></span>
             <?php else: ?>
               <?php /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
+              <span class="text-danger"><?=$this->transEsc($holding['status'])?><?=$this->schemaOrg()->getLink('http://schema.org/OutOfStock', 'availability')?></span>
               <?php if ($holding['returnDate'] ?? false): ?>
                 <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
               <?php endif; ?>
@@ -121,17 +121,17 @@
       <?php endif; ?>
       <?php /* Embed item structured data: library, barcode, call number */ ?>
       <?php if ($holding['location'] ?? false): ?>
-        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>">
+        <?=$this->schemaOrg()->getMeta('seller', $holding['location'])?>
       <?php endif; ?>
       <?php if ($holding['barcode'] ?? false): ?>
-        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>">
+        <?=$this->schemaOrg()->getMeta('serialNumber', $holding['barcode'])?>
       <?php endif; ?>
       <?php if ($holding['callnumber'] ?? false): ?>
-        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>">
+        <?=$this->schemaOrg()->getMeta('sku', $holding['callnumber'])?>
       <?php endif; ?>
       <?php /* Declare that the item is to be borrowed, not for sale */ ?>
-      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut">
-      <link property="itemOffered" href="#record">
+      <?=$this->schemaOrg()->getLink('http://purl.org/goodrelations/v1#LeaseOut', 'businessFunction')?>
+      <?=$this->schemaOrg()->getLink('#record', 'itemOffered')?>
     </td>
   </tr>
 <?php endif; ?>

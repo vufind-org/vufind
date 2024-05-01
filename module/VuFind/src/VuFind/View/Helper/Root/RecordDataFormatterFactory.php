@@ -51,6 +51,13 @@ use function count;
 class RecordDataFormatterFactory implements FactoryInterface
 {
     /**
+     * Schema.org view helper
+     *
+     * @var SchemaOrg
+     */
+    protected $schemaOrgHelper = null;
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -74,6 +81,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $this->schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         $config = $container
             ->get(\VuFind\Config\PluginManager::class)
             ->get('RecordDataFormatter');
@@ -140,6 +148,28 @@ class RecordDataFormatterFactory implements FactoryInterface
     }
 
     /**
+     * Get the settings for formatting language lines.
+     *
+     * @return array
+     */
+    protected function getLanguageLineSettings(): array
+    {
+        if ($this->schemaOrgHelper) {
+            $langSpan = $this->schemaOrgHelper
+                ->getTag('span', ['property' => 'availableLanguage', 'typeof' => 'Language']);
+            $nameSpan = $this->schemaOrgHelper->getTag('span', ['property' => 'name']);
+            $itemPrefix = $langSpan . $nameSpan;
+            $itemSuffix = ($langSpan ? '</span>' : '') . ($nameSpan ? '</span>' : '');
+        } else {
+            $itemPrefix = $itemSuffix = '';
+        }
+        return compact('itemPrefix', 'itemSuffix') + [
+            'translate' => true,
+            'translationTextDomain' => 'ISO639-3::',
+        ];
+    }
+
+    /**
      * Get default specifications for displaying data in collection-info metadata.
      *
      * @return array
@@ -163,13 +193,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            [
-                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                    . '<span property="name">',
-                'itemSuffix' => '</span></span>',
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ]
+            $this->getLanguageLineSettings()
         );
         $spec->setTemplateLine(
             'Published',
@@ -230,13 +254,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            [
-                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                    . '<span property="name">',
-                'itemSuffix' => '</span></span>',
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ]
+            $this->getLanguageLineSettings()
         );
         $spec->setLine(
             'Format',
@@ -289,13 +307,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language',
             'getLanguages',
             null,
-            [
-                'itemPrefix' => '<span property="availableLanguage" typeof="Language">'
-                    . '<span property="name">',
-                'itemSuffix' => '</span></span>',
-                'translate' => true,
-                'translationTextDomain' => 'ISO639-3::',
-            ]
+            $this->getLanguageLineSettings()
         );
         $spec->setTemplateLine(
             'Published',
