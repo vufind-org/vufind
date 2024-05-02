@@ -80,13 +80,6 @@ class Manager implements
     protected $legalAuthOptions;
 
     /**
-     * Session container
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
      * Cache for current logged in user object
      *
      * @var ?UserEntityInterface
@@ -103,18 +96,18 @@ class Manager implements
     /**
      * Constructor
      *
-     * @param Config               $config            VuFind configuration
-     * @param UserServiceInterface $userService       User database service
-     * @param SessionManager       $sessionManager    Session manager
-     * @param PluginManager        $pluginManager     Authentication plugin manager
-     * @param CookieManager        $cookieManager     Cookie manager
-     * @param CsrfInterface        $csrf              CSRF validator
-     * @param LoginTokenManager    $loginTokenManager Login Token manager
-     * @param Connection           $ils               ILS connection
+     * @param Config                                               $config            VuFind configuration
+     * @param UserServiceInterface&UserSessionPersistenceInterface $userService       User database service
+     * @param SessionManager                                       $sessionManager    Session manager
+     * @param PluginManager                                        $pluginManager     Authentication plugin manager
+     * @param CookieManager                                        $cookieManager     Cookie manager
+     * @param CsrfInterface                                        $csrf              CSRF validator
+     * @param LoginTokenManager                                    $loginTokenManager Login Token manager
+     * @param Connection                                           $ils               ILS connection
      */
     public function __construct(
         protected Config $config,
-        protected UserServiceInterface $userService,
+        protected UserServiceInterface&UserSessionPersistenceInterface $userService,
         protected SessionManager $sessionManager,
         protected PluginManager $pluginManager,
         protected CookieManager $cookieManager,
@@ -122,9 +115,6 @@ class Manager implements
         protected LoginTokenManager $loginTokenManager,
         protected Connection $ils
     ) {
-        // Set up session:
-        $this->session = new \Laminas\Session\Container('Account', $sessionManager);
-
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
         $method = $config->Authentication->method ?? 'Database';
@@ -484,8 +474,7 @@ class Manager implements
 
         // Clear out the cached user object and session entry.
         $this->currentUser = null;
-        unset($this->session->userId);
-        unset($this->session->userDetails);
+        $this->userService->clearUserFromSession();
         $this->cookieManager->set('loggedOut', 1);
         $this->loginTokenManager->deleteActiveToken();
 
@@ -534,16 +523,12 @@ class Manager implements
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
         if (!$this->currentUser) {
-            if (isset($this->session->userId)) {
-                // normal mode
-                $this->currentUser = $this->userService->getUserById($this->session->userId);
-                // End the session since the logged-in user cannot be found:
+            if ($this->userService->hasUserSessionData()) {
+                $this->currentUser = $this->userService->getUserFromSession();
+                // End the session if the logged-in user cannot be found:
                 if (null === $this->currentUser) {
                     $this->logout('');
                 }
-            } elseif (isset($this->session->userDetails)) {
-                // privacy mode
-                $this->currentUser = $this->userService->getUserFromSessionContainer($this->session);
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {
                     $this->getAuth()->setStrategy($user->getAuthMethod());
@@ -625,9 +610,9 @@ class Manager implements
     {
         $this->currentUser = $user;
         if ($this->inPrivacyMode()) {
-            $this->userService->addUserDataToSessionContainer($this->session, $user);
+            $this->userService->addUserDataToSession($user);
         } else {
-            $this->session->userId = $user->getId();
+            $this->userService->addUserIdToSession($user->getId());
         }
         $this->cookieManager->clear('loggedOut');
     }
