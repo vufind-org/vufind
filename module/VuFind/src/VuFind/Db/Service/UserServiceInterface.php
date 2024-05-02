@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use Exception;
-use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
