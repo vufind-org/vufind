@@ -1102,6 +1102,6 @@ class User extends RowGateway implements
      */
     public function getLastLogin(): Datetime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login, new \DateTimeZone('UTC'));
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
     }
 }

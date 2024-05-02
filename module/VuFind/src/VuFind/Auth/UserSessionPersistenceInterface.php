@@ -83,11 +83,4 @@ interface UserSessionPersistenceInterface
      * @return bool
      */
     public function hasUserSessionData(): bool;
-
-    /**
-     * Create a new user entity.
-     *
-     * @return UserEntityInterface
-     */
-    public function createEntity(): UserEntityInterface;
 }

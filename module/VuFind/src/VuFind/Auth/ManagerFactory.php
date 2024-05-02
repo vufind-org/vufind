@@ -82,7 +82,8 @@ class ManagerFactory implements FactoryInterface
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
             $config,
-            $userService,
+            $userService,   // for UserServiceInterface
+            $userService,   // for UserSessionPersistenceInterface
             $sessionManager,
             $pm,
             $cookies,
