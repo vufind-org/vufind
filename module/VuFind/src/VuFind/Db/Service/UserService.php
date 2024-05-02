@@ -36,6 +36,8 @@ use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 use function in_array;
@@ -50,10 +52,12 @@ use function in_array;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class UserService extends AbstractDbService implements
+    DbTableAwareInterface,
     LoggerAwareInterface,
     DbServiceAwareInterface,
     UserServiceInterface
 {
+    use DbTableAwareTrait;
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
 
