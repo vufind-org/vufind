@@ -44,25 +44,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserSessionPersistenceInterface
 {
     /**
-     * Retrieve a user object from the database based on ID.
-     *
-     * @param int $id ID.
-     *
-     * @return ?UserEntityInterface
-     */
-    public function getUserById(int $id): ?UserEntityInterface;
-
-    /**
-     * Retrieve a user object from the database based on the given field.
-     *
-     * @param string          $fieldName  Field name
-     * @param int|null|string $fieldValue Field value
-     *
-     * @return ?UserEntityInterface
-     */
-    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
-
-    /**
      * Update session container to store data representing a user (used by privacy mode).
      *
      * @param UserEntityInterface $user User to store in session.
