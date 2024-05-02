@@ -30,7 +30,9 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
@@ -84,5 +86,47 @@ class UserService extends AbstractDbService implements
                 return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
         throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+    }
+
+    /**
+     * Update session container to store data representing a user (used by privacy mode).
+     *
+     * @param SessionContainer    $session Session container.
+     * @param UserEntityInterface $user    User to store in session.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function addUserDataToSessionContainer(SessionContainer $session, UserEntityInterface $user): void
+    {
+        if ($user instanceof UserRow) {
+            $session->userDetails = $user->toArray();
+        } else {
+            throw new \Exception($user::class . ' not supported by addUserDataToSessionContainer()');
+        }
+    }
+
+    /**
+     * Build a user entity using data from a session container.
+     *
+     * @param SessionContainer $session Session container.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUserFromSessionContainer(SessionContainer $session): UserEntityInterface
+    {
+        $user = $this->createEntity();
+        $user->exchangeArray($session->userDetails ?? []);
+        return $user;
+    }
+
+    /**
+     * Create a new user entity.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface
+    {
+        return $this->getDbTable('User')->createRow();
     }
 }
