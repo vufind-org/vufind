@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service interface for users.
+ * Interface for persisting user data in the session.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,26 +21,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @package  Auth
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\Auth;
 
+use Exception;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
- * Database service interface for users.
+ * Interface for persisting user data in the session.
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface UserServiceInterface extends DbServiceInterface
+interface UserSessionPersistenceInterface extends DbServiceInterface
 {
     /**
      * Create an entity for the specified username.
@@ -69,6 +70,47 @@ interface UserServiceInterface extends DbServiceInterface
      * @return ?UserEntityInterface
      */
     public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
+
+    /**
+     * Update session container to store data representing a user (used by privacy mode).
+     *
+     * @param UserEntityInterface $user User to store in session.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function addUserDataToSession(UserEntityInterface $user): void;
+
+    /**
+     * Update session container to store user ID (used outside of privacy mode).
+     *
+     * @param int $id User ID
+     *
+     * @return void
+     */
+    public function addUserIdToSession(int $id): void;
+
+    /**
+     * Clear the user data from the session.
+     *
+     * @return void
+     */
+    public function clearUserFromSession(): void;
+
+    /**
+     * Build a user entity using data from a session container. Return null if user
+     * data cannot be found.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserFromSession(): ?UserEntityInterface;
+
+    /**
+     * Is there user data currently stored in the session container?
+     *
+     * @return bool
+     */
+    public function hasUserSessionData(): bool;
 
     /**
      * Create a new user entity.
