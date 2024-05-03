@@ -157,22 +157,42 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Re-encrypt a row.
+     * Re-encrypt a card row.
      *
-     * @param UserRow|UserCardRow $row       Row to update
-     * @param ?BlockCipher        $oldcipher Old cipher (null for none)
-     * @param BlockCipher         $newcipher New cipher
+     * @param UserCardRow  $row       Row to update
+     * @param ?BlockCipher $oldcipher Old cipher (null for none)
+     * @param BlockCipher  $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
+    protected function fixCardRow(UserCardRow $row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
     {
         $pass = ($oldcipher && $row['cat_pass_enc'] !== null)
             ? $oldcipher->decrypt($row['cat_pass_enc'])
             : $row['cat_password'];
         $row['cat_password'] = null;
         $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
+        $row->save();
+    }
+
+    /**
+     * Re-encrypt a user row.
+     *
+     * @param UserRow      $row       Row to update
+     * @param ?BlockCipher $oldcipher Old cipher (null for none)
+     * @param BlockCipher  $newcipher New cipher
+     *
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    protected function fixUserRow(UserRow $row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
+    {
+        $pass = ($oldcipher && $row->getCatPassEnc() !== null)
+            ? $oldcipher->decrypt($row->getCatPassEnc())
+            : $row->getRawCatPassword();
+        $row->setRawCatPassword(null);
+        $row->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
         $row->save();
     }
 
@@ -261,16 +281,16 @@ class SwitchDbHashCommand extends Command
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             try {
-                $this->fixRow($row, $oldcipher, $newcipher);
+                $this->fixUserRow($row, $oldcipher, $newcipher);
             } catch (\Exception $e) {
-                $output->writeln("Problem with user {$row['username']}: " . (string)$e);
+                $output->writeln("Problem with user {$row->getUsername()}: " . (string)$e);
             }
         }
         if (count($cards) > 0) {
             $output->writeln("\tConverting hashes for " . count($cards) . ' card(s).');
             foreach ($cards as $row) {
                 try {
-                    $this->fixRow($row, $oldcipher, $newcipher);
+                    $this->fixCardRow($row, $oldcipher, $newcipher);
                 } catch (\Exception $e) {
                     $output->writeln("Problem with card {$row['id']}: " . (string)$e);
                 }
