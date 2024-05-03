@@ -270,4 +270,20 @@ interface UserEntityInterface extends EntityInterface
      * @return Datetime
      */
     public function getLastLogin(): Datetime;
+
+    /**
+     * Created setter.
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated(): Datetime;
 }
