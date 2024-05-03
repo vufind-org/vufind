@@ -92,7 +92,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $params = $this->params();
         $form->setData($params->fromPost());
 
-        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!$this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }

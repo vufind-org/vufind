@@ -70,9 +70,11 @@ use function count;
  */
 class User extends RowGateway implements
     UserEntityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
@@ -700,8 +702,10 @@ class User extends RowGateway implements
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
-            $comments = $this->getDbTable('Comments');
-            $comments->deleteByUser($this);
+            $comments = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
             $ratings = $this->getDbTable('Ratings');
@@ -785,11 +789,11 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

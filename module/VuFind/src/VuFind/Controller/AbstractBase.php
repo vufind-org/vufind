@@ -253,28 +253,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Set default values if applicable:
-        if (
-            (!isset($view->to) || empty($view->to)) && $user
-            && isset($config->Mail->user_email_in_to)
-            && $config->Mail->user_email_in_to
-        ) {
-            $view->to = $user->email;
+        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+            $view->to = $user->getEmail();
         }
-        if (!isset($view->from) || empty($view->from)) {
-            if (
-                $user && isset($config->Mail->user_email_in_from)
-                && $config->Mail->user_email_in_from
-            ) {
+        if (empty($view->from)) {
+            if ($user && ($config->Mail->user_email_in_from ?? false)) {
                 $view->userEmailInFrom = true;
-                $view->from = $user->email;
-            } elseif (
-                isset($config->Mail->default_from)
-                && $config->Mail->default_from
-            ) {
+                $view->from = $user->getEmail();
+            } elseif ($config->Mail->default_from ?? false) {
                 $view->from = $config->Mail->default_from;
             }
         }
-        if (!isset($view->subject) || empty($view->subject)) {
+        if (empty($view->subject)) {
             $view->subject = $defaultSubject;
         }
 
@@ -580,19 +570,29 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string $submitElement Name of the post field of the submit button
-     * @param bool   $useCaptcha    Are we using captcha in this situation?
+     * @param string|string[]|null $submitElements Name of the post field(s) to check
+     * to indicate a form submission (or null for default)
+     * @param bool                 $useCaptcha     Are we using captcha in this situation?
      *
      * @return bool
      */
     protected function formWasSubmitted(
-        $submitElement = 'submit',
+        $submitElements = null,
         $useCaptcha = false
     ) {
-        // Fail if the expected submission element was missing from the POST:
-        // Form was submitted; if CAPTCHA is expected, validate it now.
-        return $this->params()->fromPost($submitElement, false)
-            && (!$useCaptcha || $this->captcha()->verify());
+        $buttonFound = false;
+        // Use of 'submit' as an input name was deprecated in release 10.0, but the
+        // check is retained for backward compatibility with custom templates.
+        $defaultSubmitElements = ['submitButton', 'submit'];
+        foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
+            if ($this->params()->fromPost($submitElement, false)) {
+                $buttonFound = true;
+                break;
+            }
+        }
+        // Fail if all expected submission elements were missing from the POST or
+        // if the form was submitted but expected CAPTCHA does not validate.
+        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
     }
 
     /**
