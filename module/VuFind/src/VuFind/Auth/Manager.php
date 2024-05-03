@@ -96,18 +96,20 @@ class Manager implements
     /**
      * Constructor
      *
-     * @param Config                                               $config            VuFind configuration
-     * @param UserServiceInterface&UserSessionPersistenceInterface $userService       User database service
-     * @param SessionManager                                       $sessionManager    Session manager
-     * @param PluginManager                                        $pluginManager     Authentication plugin manager
-     * @param CookieManager                                        $cookieManager     Cookie manager
-     * @param CsrfInterface                                        $csrf              CSRF validator
-     * @param LoginTokenManager                                    $loginTokenManager Login Token manager
-     * @param Connection                                           $ils               ILS connection
+     * @param Config                          $config            VuFind configuration
+     * @param UserServiceInterface            $userService       User database service
+     * @param UserSessionPersistenceInterface $userSession       User session persistence service
+     * @param SessionManager                  $sessionManager    Session manager
+     * @param PluginManager                   $pluginManager     Authentication plugin manager
+     * @param CookieManager                   $cookieManager     Cookie manager
+     * @param CsrfInterface                   $csrf              CSRF validator
+     * @param LoginTokenManager               $loginTokenManager Login Token manager
+     * @param Connection                      $ils               ILS connection
      */
     public function __construct(
         protected Config $config,
-        protected UserServiceInterface&UserSessionPersistenceInterface $userService,
+        protected UserServiceInterface $userService,
+        protected UserSessionPersistenceInterface $userSession,
         protected SessionManager $sessionManager,
         protected PluginManager $pluginManager,
         protected CookieManager $cookieManager,
@@ -474,7 +476,7 @@ class Manager implements
 
         // Clear out the cached user object and session entry.
         $this->currentUser = null;
-        $this->userService->clearUserFromSession();
+        $this->userSession->clearUserFromSession();
         $this->cookieManager->set('loggedOut', 1);
         $this->loginTokenManager->deleteActiveToken();
 
@@ -523,8 +525,8 @@ class Manager implements
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
         if (!$this->currentUser) {
-            if ($this->userService->hasUserSessionData()) {
-                $this->currentUser = $this->userService->getUserFromSession();
+            if ($this->userSession->hasUserSessionData()) {
+                $this->currentUser = $this->userSession->getUserFromSession();
                 // End the session if the logged-in user cannot be found:
                 if (null === $this->currentUser) {
                     $this->logout('');
@@ -610,9 +612,9 @@ class Manager implements
     {
         $this->currentUser = $user;
         if ($this->inPrivacyMode()) {
-            $this->userService->addUserDataToSession($user);
+            $this->userSession->addUserDataToSession($user);
         } else {
-            $this->userService->addUserIdToSession($user->getId());
+            $this->userSession->addUserIdToSession($user->getId());
         }
         $this->cookieManager->clear('loggedOut');
     }

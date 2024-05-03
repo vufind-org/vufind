@@ -43,15 +43,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserServiceInterface extends DbServiceInterface
 {
     /**
-     * Create an entity for the specified username.
-     *
-     * @param string $username Username
-     *
-     * @return UserEntityInterface
-     */
-    public function createRowForUsername(string $username): UserEntityInterface;
-
-    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.

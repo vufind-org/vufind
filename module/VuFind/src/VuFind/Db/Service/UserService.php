@@ -66,18 +66,6 @@ class UserService extends AbstractDbService implements
     }
 
     /**
-     * Create an entity for the specified username.
-     *
-     * @param string $username Username
-     *
-     * @return UserEntityInterface
-     */
-    public function createRowForUsername(string $username): UserEntityInterface
-    {
-        return $this->getDbTable('User')->createRowForUsername($username);
-    }
-
-    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.

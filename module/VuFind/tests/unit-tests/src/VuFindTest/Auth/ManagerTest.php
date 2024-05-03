@@ -506,7 +506,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     public function testUserLoginFromSession(): void
     {
         $user = $this->getMockUser();
-        $service = $this->getMockUserService();
+        $service = $this->createMock(UserSessionPersistenceInterface::class);
         $service->expects($this->once())->method('hasUserSessionData')->willReturn(true);
         $service->expects($this->once())->method('getUserFromSession')->willReturn($user);
         $manager = $this->getManager([], $service);
@@ -537,18 +537,18 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a manager object to test with.
      *
-     * @param array                                                 $config         Configuration
-     * @param ?UserServiceInterface&UserSessionPersistenceInterface $userService    User service
-     * @param SessionManager                                        $sessionManager Session manager
-     * @param PluginManager                                         $pm             Authentication plugin manager
+     * @param array                            $config         Configuration
+     * @param ?UserSessionPersistenceInterface $userSession    User session persistence service
+     * @param ?SessionManager                  $sessionManager Session manager
+     * @param ?PluginManager                   $pm             Authentication plugin manager
      *
      * @return Manager
      */
     protected function getManager(
         array $config = [],
-        $userService = null,
-        SessionManager $sessionManager = null,
-        PluginManager $pm = null
+        ?UserSessionPersistenceInterface $userSession = null,
+        ?SessionManager $sessionManager = null,
+        ?PluginManager $pm = null
     ): Manager {
         $config = new Config($config);
         $cookies = new \VuFind\Cookie\CookieManager([]);
@@ -565,7 +565,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(false);
         return new Manager(
             $config,
-            $userService ?? $this->getMockUserService(),
+            $this->createMock(UserServiceInterface::class),
+            $userSession ?? $this->createMock(UserSessionPersistenceInterface::class),
             $sessionManager ?? new SessionManager(),
             $pm ?? $this->getMockPluginManager(),
             $cookies,
@@ -573,16 +574,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $loginTokenManager,
             $ils
         );
-    }
-
-    /**
-     * Get a mock user service.
-     *
-     * @return MockObject&UserServiceInterface&UserSessionPersistenceInterface
-     */
-    protected function getMockUserService(): MockObject&UserServiceInterface&UserSessionPersistenceInterface
-    {
-        return $this->createMock(\VuFind\Db\Service\UserService::class);
     }
 
     /**
