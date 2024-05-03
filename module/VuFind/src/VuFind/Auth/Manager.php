@@ -35,12 +35,11 @@ use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
-use function count;
 use function in_array;
 use function is_callable;
 
@@ -55,8 +54,10 @@ use function is_callable;
  */
 class Manager implements
     \LmcRbacMvc\Identity\IdentityProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface,
+    \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -81,67 +82,11 @@ class Manager implements
     protected $legalAuthOptions;
 
     /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Session container
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
-     * Gateway to user table in database
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * Login token manager
-     *
-     * @var LoginTokenManager
-     */
-    protected $loginTokenManager;
-
-    /**
-     * Session manager
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
-     * Authentication plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
-
-    /**
-     * Cookie Manager
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
-
-    /**
      * Cache for current logged in user object
      *
      * @var ?UserEntityInterface
      */
     protected $currentUser = null;
-
-    /**
-     * CSRF validator
-     *
-     * @var CsrfInterface
-     */
-    protected $csrf;
 
     /**
      * Cache for hideLogin setting
@@ -151,52 +96,34 @@ class Manager implements
     protected $hideLogin = null;
 
     /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
      * Constructor
      *
-     * @param Config            $config            VuFind configuration
-     * @param UserTable         $userTable         User table gateway
-     * @param SessionManager    $sessionManager    Session manager
-     * @param PluginManager     $pm                Authentication plugin manager
-     * @param CookieManager     $cookieManager     Cookie manager
-     * @param CsrfInterface     $csrf              CSRF validator
-     * @param LoginTokenManager $loginTokenManager Login Token manager
-     * @param Connection        $ils               ILS connection
+     * @param Config                          $config            VuFind configuration
+     * @param UserServiceInterface            $userService       User database service
+     * @param UserSessionPersistenceInterface $userSession       User session persistence service
+     * @param SessionManager                  $sessionManager    Session manager
+     * @param PluginManager                   $pluginManager     Authentication plugin manager
+     * @param CookieManager                   $cookieManager     Cookie manager
+     * @param CsrfInterface                   $csrf              CSRF validator
+     * @param LoginTokenManager               $loginTokenManager Login Token manager
+     * @param Connection                      $ils               ILS connection
      */
     public function __construct(
-        Config $config,
-        UserTable $userTable,
-        SessionManager $sessionManager,
-        PluginManager $pm,
-        CookieManager $cookieManager,
-        CsrfInterface $csrf,
-        LoginTokenManager $loginTokenManager,
-        Connection $ils
+        protected Config $config,
+        protected UserServiceInterface $userService,
+        protected UserSessionPersistenceInterface $userSession,
+        protected SessionManager $sessionManager,
+        protected PluginManager $pluginManager,
+        protected CookieManager $cookieManager,
+        protected CsrfInterface $csrf,
+        protected LoginTokenManager $loginTokenManager,
+        protected Connection $ils
     ) {
-        // Store dependencies:
-        $this->config = $config;
-        $this->userTable = $userTable;
-        $this->loginTokenManager = $loginTokenManager;
-        $this->sessionManager = $sessionManager;
-        $this->pluginManager = $pm;
-        $this->cookieManager = $cookieManager;
-        $this->csrf = $csrf;
-        $this->ils = $ils;
-
-        // Set up session:
-        $this->session = new \Laminas\Session\Container('Account', $sessionManager);
-
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
         $method = $config->Authentication->method ?? 'Database';
         $this->legalAuthOptions = [$method];   // mark it as legal
-        $this->setAuthMethod($method);              // load it
+        $this->setAuthMethod($method);         // load it
     }
 
     /**
@@ -551,8 +478,7 @@ class Manager implements
 
         // Clear out the cached user object and session entry.
         $this->currentUser = null;
-        unset($this->session->userId);
-        unset($this->session->userDetails);
+        $this->userSession->clearUserFromSession();
         $this->cookieManager->set('loggedOut', 1);
         $this->loginTokenManager->deleteActiveToken();
 
@@ -582,7 +508,7 @@ class Manager implements
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|false Object if user is logged in, false otherwise.
+     * @return UserEntityInterface|false Object if user is logged in, false otherwise.
      *
      * @deprecated Use getIdentity() or getUserObject() instead.
      */
@@ -601,24 +527,19 @@ class Manager implements
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
         if (!$this->currentUser) {
-            if (isset($this->session->userId)) {
-                // normal mode
-                $results = $this->userTable
-                    ->select(['id' => $this->session->userId]);
-                $this->currentUser = count($results) < 1
-                    ? null : $results->current();
-                // End the session since the logged-in user cannot be found:
+            if ($this->userSession->hasUserSessionData()) {
+                $this->currentUser = $this->userSession->getUserFromSession();
+                // End the session if the logged-in user cannot be found:
                 if (null === $this->currentUser) {
                     $this->logout('');
                 }
-            } elseif (isset($this->session->userDetails)) {
-                // privacy mode
-                $results = $this->userTable->createRow();
-                $results->exchangeArray($this->session->userDetails);
-                $this->currentUser = $results;
+                // Temporary backward-compatibility shim while we transition from Laminas to Doctrine:
+                if (!($this->currentUser instanceof \VuFind\Db\Row\User)) {
+                    $this->currentUser = $this->getDbTable('User')->getById($this->currentUser->getId());
+                }
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
                 if ($this->getAuth() instanceof ChoiceAuth) {
-                    $this->getAuth()->setStrategy($user->auth_method);
+                    $this->getAuth()->setStrategy($user->getAuthMethod());
                 }
                 if ($this->supportsPersistentLogin()) {
                     $this->updateUser($user, null);
@@ -697,9 +618,9 @@ class Manager implements
     {
         $this->currentUser = $user;
         if ($this->inPrivacyMode()) {
-            $this->session->userDetails = $user->toArray();
+            $this->userSession->addUserDataToSession($user);
         } else {
-            $this->session->userId = $user->id;
+            $this->userSession->addUserIdToSession($user->getId());
         }
         $this->cookieManager->clear('loggedOut');
     }
@@ -711,7 +632,7 @@ class Manager implements
      * new account details.
      *
      * @throws AuthException
-     * @return UserRow New user row.
+     * @return UserEntityInterface New user entity.
      */
     public function create($request)
     {
@@ -728,7 +649,7 @@ class Manager implements
      * password change details.
      *
      * @throws AuthException
-     * @return UserRow New user row.
+     * @return UserEntityInterface Updated user entity.
      */
     public function updatePassword($request)
     {
@@ -755,12 +676,12 @@ class Manager implements
         if ($this->config->Authentication->verify_email ?? false) {
             // If new email address is the current address, just reset any pending
             // email address:
-            $user->pending_email = ($email === $user->email) ? '' : $email;
+            $user->setPendingEmail($email === $user->getEmail() ? '' : $email);
         } else {
             $user->updateEmail($email, true);
-            $user->pending_email = '';
+            $user->setPendingEmail('');
         }
-        $user->save();
+        $this->userService->persistEntity($user);
         $this->updateSession($user);
     }
 
@@ -774,7 +695,7 @@ class Manager implements
      * @throws AuthException
      * @throws \VuFind\Exception\PasswordSecurity
      * @throws \VuFind\Exception\AuthInProgress
-     * @return UserRow Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function login($request)
     {
@@ -969,10 +890,10 @@ class Manager implements
     protected function updateUser($user, $authMethod)
     {
         if ($authMethod) {
-            $user->auth_method = strtolower($authMethod);
+            $user->setAuthMethod(strtolower($authMethod));
         }
-        $user->last_login = date('Y-m-d H:i:s');
-        $user->save();
+        $user->setLastLogin(new \DateTime());
+        $this->userService->persistEntity($user);
     }
 
     /**

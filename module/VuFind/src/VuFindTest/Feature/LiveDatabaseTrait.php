@@ -260,9 +260,11 @@ trait LiveDatabaseTrait
      * Static setup support function to fail if there is already data in the
      * database. We want to ensure a clean state for each test!
      *
+     * @param ?string $failMessage Failure message to display if data exists (null for default).
+     *
      * @return void
      */
-    protected static function failIfDataExists(): void
+    protected static function failIfDataExists(?string $failMessage = null): void
     {
         $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
@@ -294,7 +296,7 @@ trait LiveDatabaseTrait
             $dbService = $test->getDatabaseService($check['service']);
             if ($dbService->getRowCountForTable($check['entity']) > 0) {
                 self::fail(
-                    "Test cannot run with pre-existing {$check['name']} in database!"
+                    $failMessage ?? "Test cannot run with pre-existing {$check['name']} in database!"
                 );
                 return;
             }
