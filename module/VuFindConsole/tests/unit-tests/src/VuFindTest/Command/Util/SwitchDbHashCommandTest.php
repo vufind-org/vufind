@@ -277,12 +277,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $user->method('getLastLanguage')->willReturn('en');
         // Use mock setters and getters to actually store/retrieve an encrypted password value
         $pass = null;
-        $setPass = function ($new) use (& $pass) {
+        $setPass = function ($new) use (&$pass) {
             $pass = $new;
             return true;
         };
         $user->method('setCatPassEnc')->with($this->callback($setPass))->willReturn($user);
-        $getPass = function () use (& $pass) {
+        $getPass = function () use (&$pass) {
             return $pass;
         };
         $user->method('getCatPassEnc')->willReturnCallback($getPass);
