@@ -82,7 +82,7 @@ VuFind.register("recordVersions", function recordVersions() {
 
   function init() {
     updateContainer({container: document});
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
   return { init };

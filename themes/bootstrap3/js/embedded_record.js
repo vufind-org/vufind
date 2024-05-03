@@ -234,7 +234,7 @@ VuFind.register('embedded', function embedded() {
 
   function init() {
     updateContainer({container: document});
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
   return {

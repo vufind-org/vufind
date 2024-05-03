@@ -71,7 +71,7 @@ VuFind.register('openurl', function OpenUrl() {
 
   function init() {
     updateContainer({container: document.body});
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
 

@@ -261,7 +261,7 @@ VuFind.register('cart', function Cart() {
       placement: $(document.body).hasClass('rtl') ? 'left' : 'right'
     });
     updateCount();
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
   // Reveal

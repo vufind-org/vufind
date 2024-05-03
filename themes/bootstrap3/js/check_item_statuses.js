@@ -244,7 +244,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   function init() {
     updateContainer({container: document});
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
   return { init: init, check: checkAllItemStatuses, checkRecord: checkItemStatus };

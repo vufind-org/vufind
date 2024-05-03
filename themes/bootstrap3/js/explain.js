@@ -212,7 +212,7 @@ VuFind.register('explain', function explain() {
 
   function init() {
     updateContainer();
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
   return {

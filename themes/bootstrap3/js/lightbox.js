@@ -540,7 +540,7 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal(cmd);
       }
     };
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

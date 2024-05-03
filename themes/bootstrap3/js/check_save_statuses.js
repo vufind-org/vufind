@@ -161,7 +161,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
 
   function init() {
     updateContainer({container: document});
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
 
   return { init, refresh, check: checkAllSaveStatuses, checkRecord: checkSaveStatus };

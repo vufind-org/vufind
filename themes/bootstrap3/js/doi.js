@@ -74,7 +74,7 @@ VuFind.register('doi', function Doi() {
         Array.from(container.querySelectorAll('.doiLink'))
       );
     }
-    VuFind.listen('init-result', updateContainer);
+    VuFind.listen('results-init', updateContainer);
   }
   return {
     init: init,

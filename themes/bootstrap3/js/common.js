@@ -423,7 +423,7 @@ var VuFind = (function VuFind() {
    */
   var initResultScripts = function initResultScripts(_container) {
     let container = typeof _container === 'string' ? document.querySelector(_container) : _container;
-    emit('init-result', {container: container});
+    emit('results-init', {container: container});
     setupQRCodeLinks(container);
     if (typeof loadCovers === 'function') {
       loadCovers();
