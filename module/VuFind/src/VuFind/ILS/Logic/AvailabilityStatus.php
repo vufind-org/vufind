@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -172,10 +172,12 @@ class AvailabilityStatus implements AvailabilityStatusInterface
         switch ($this->availability) {
             case AvailabilityStatus::STATUS_UNAVAILABLE:
                 return 'false';
-            case AvailabilityStatus::STATUS_UNCERTAIN:
-                return 'uncertain';
-            default:
+            case AvailabilityStatus::STATUS_AVAILABLE:
                 return 'true';
+            case AvailabilityStatus::STATUS_UNKNOWN:
+                return 'unknown';
+            default:
+                return 'uncertain';
         }
     }
 
@@ -199,11 +201,11 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     protected function getPriority(): int
     {
         switch ($this->availability) {
-            case AvailabilityStatus::STATUS_UNAVAILABLE:
-                return 0;
-            case AvailabilityStatus::STATUS_UNCERTAIN:
-                return 1;
             case AvailabilityStatus::STATUS_UNKNOWN:
+                return 0;
+            case AvailabilityStatus::STATUS_UNAVAILABLE:
+                return 1;
+            case AvailabilityStatus::STATUS_UNCERTAIN:
                 return 2;
             default:
                 return 3;

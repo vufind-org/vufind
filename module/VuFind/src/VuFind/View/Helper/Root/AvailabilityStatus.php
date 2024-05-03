@@ -109,12 +109,12 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
     {
         if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNKNOWN)) {
             $key = 'ajax/status-unknown.phtml';
+        } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_AVAILABLE)) {
+            $key = 'ajax/status-available.phtml';
         } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNAVAILABLE)) {
             $key = 'ajax/status-unavailable.phtml';
-        } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNCERTAIN)) {
-            $key = 'ajax/status-uncertain.phtml';
         } else {
-            $key = 'ajax/status-available.phtml';
+            $key = 'ajax/status-uncertain.phtml';
         }
         if (!isset($this->messageCache[$key])) {
             $this->messageCache[$key] = $this->getView()->render($key);

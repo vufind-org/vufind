@@ -138,7 +138,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             [
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
-                    'value' => 'ajax/status-unknown.phtml',
+                    'value' => 'ajax/status-available.phtml',
                     'params' => [],
                 ],
             ]
@@ -148,7 +148,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $helper->setView($this->getMockView());
 
         $this->assertEquals(
-            '<span class="label label-default">status_unknown_message</span>',
+            '<span class="label label-success">Available</span>',
             trim($helper->getAlternateContent('permissionDeniedTemplate'))
         );
     }

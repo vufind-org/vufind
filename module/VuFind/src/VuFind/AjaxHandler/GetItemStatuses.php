@@ -291,10 +291,6 @@ class GetItemStatuses extends AbstractBase implements
         $locationSetting,
         $callnumberSetting
     ) {
-        // Get combined availability
-        $combinedInfo = $this->availabilityStatusManager->combine($record);
-        $combinedAvailability = $combinedInfo['availability'];
-
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
         $services = [];
@@ -332,6 +328,10 @@ class GetItemStatuses extends AbstractBase implements
             'location_'
         );
 
+        // Get combined availability
+        $combinedInfo = $this->availabilityStatusManager->combine($record);
+        $combinedAvailability = $combinedInfo['availability'];
+
         if (!empty($services)) {
             $availabilityMessage = $this->reduceServices($services);
         } else {
@@ -368,10 +368,6 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function getItemStatusGroup($record, $callnumberSetting)
     {
-        // Get combined availability
-        $combinedInfo = $this->availabilityStatusManager->combine($record);
-        $combinedAvailability = $combinedInfo['availability'];
-
         // Summarize call number, location and availability info across all items:
         $locations = [];
         foreach ($record as $info) {
@@ -422,7 +418,9 @@ class GetItemStatuses extends AbstractBase implements
             $locationList[] = $locationInfo;
         }
 
-        $availabilityMessage = $this->getAvailabilityMessage($combinedAvailability);
+        // Get combined availability
+        $combinedInfo = $this->availabilityStatusManager->combine($record);
+        $combinedAvailability = $combinedInfo['availability'];
 
         $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
 
@@ -430,7 +428,7 @@ class GetItemStatuses extends AbstractBase implements
         return [
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
-            'availability_message' => $availabilityMessage,
+            'availability_message' => $this->getAvailabilityMessage($combinedAvailability),
             'location' => false,
             'locationList' => $locationList,
             'reserve' => $reserve ? 'true' : 'false',
