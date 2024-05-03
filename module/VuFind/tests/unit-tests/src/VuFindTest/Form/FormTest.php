@@ -172,7 +172,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -298,7 +298,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -338,7 +338,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -390,7 +390,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -901,7 +901,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -956,7 +956,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],

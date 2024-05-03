@@ -137,7 +137,6 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $this->oauth2Config,
                 $this->getAuthorizationServerFactory(),
                 $this->getResourceServerFactory(),
-                $container->get(\LmcRbacMvc\Service\AuthorizationService::class),
                 $container->get(\VuFind\Validator\CsrfInterface::class),
                 $session,
                 $container->get(IdentityRepository::class),

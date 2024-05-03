@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
@@ -716,6 +717,52 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'bq' => ['a:foo'],
                 ],
             ],
+            'Value with SortIn condition' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SortIn' => [
+                                    'score desc',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => ['a:foo'],
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => null,
+                ],
+            ],
+            'Value with SortNotIn condition' => [
+                'GlobalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SortNotIn' => [
+                                    'score desc',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null,
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => ['a:foo'],
+                ],
+            ],
         ];
     }
 
@@ -736,7 +783,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $expected2
     ) {
         $q1 = new Query('q', 'test');
+        $params1 = new ParamBag(['sort' => 'score desc']);
         $q2 = new Query('q', 'test2');
+        $params2 = new ParamBag(['sort' => 'title asc']);
 
         $specs = [
             'test' => [
@@ -751,7 +800,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         }
 
         $qb = new QueryBuilder($specs);
-        $response = $qb->build($q1);
+        $response = $qb->build($q1, $params1);
         foreach ($expected1 as $field => $expected) {
             $values = $response->get($field);
             $this->assertEquals(
@@ -760,7 +809,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'query 1'
             );
         }
-        $response = $qb->build($q2);
+        $response = $qb->build($q2, $params2);
         foreach ($expected2 as $field => $expected) {
             $values = $response->get($field);
             $this->assertEquals(

@@ -12,7 +12,7 @@ $offcanvas-offset: 80vw;  // Width of open menu
 
 .close-offcanvas,
 .search-filter-toggle {
-  display: none;
+  display: none !important;
 
   &.btn-link,
   .icon-link__label {
@@ -32,7 +32,7 @@ $offcanvas-offset: 80vw;  // Width of open menu
 @media screen and (max-width: 767px) {
   .vufind-offcanvas .close-offcanvas,
   .search-filter-toggle {
-    display: block;
+    display: block !important;
   }
 
   body.vufind-offcanvas {
