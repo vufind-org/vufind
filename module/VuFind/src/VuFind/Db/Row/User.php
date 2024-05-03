@@ -91,7 +91,7 @@ class User extends RowGateway implements
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
-     * @param :AccountCapabilities        $capabilities     Account capabilities configuration (null for defaults)
+     * @param ?AccountCapabilities        $capabilities     Account capabilities configuration (null for defaults)
      */
     public function __construct(
         $adapter,
