@@ -157,16 +157,16 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Re-encrypt a card or user row.
+     * Re-encrypt a row.
      *
-     * @param UserCardRow|UserRow $row       Row to update
+     * @param UserRow|UserCardRow $row       Row to update
      * @param ?BlockCipher        $oldcipher Old cipher (null for none)
      * @param BlockCipher         $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixRow(UserCardRow|UserRow $row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
+    protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
     {
         $pass = ($oldcipher && $row->getCatPassEnc() !== null)
             ? $oldcipher->decrypt($row->getCatPassEnc())
