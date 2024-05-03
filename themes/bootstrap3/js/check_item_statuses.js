@@ -1,4 +1,4 @@
-/*global AjaxRequestQueue, VuFind, unwrapJQuery */
+/*global AjaxRequestQueue, VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function formatCallnumbers(callnumber, callnumber_handler) {
@@ -229,9 +229,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     records.forEach(checkItemStatus);
   }
 
-  function updateContainer($container) {
-    const container = unwrapJQuery($container);
-
+  function updateContainer(params) {
+    let container = params.container;
     if (VuFind.isPrinting()) {
       checkAllItemStatuses(container);
     } else {
@@ -244,8 +243,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   }
 
   function init() {
-    updateContainer(document);
-    VuFind.listen('result-scripts', updateContainer);
+    updateContainer({container: document});
+    VuFind.listen('init-result', updateContainer);
   }
 
   return { init: init, check: checkAllItemStatuses, checkRecord: checkItemStatus };

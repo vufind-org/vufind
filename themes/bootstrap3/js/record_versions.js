@@ -67,9 +67,8 @@ VuFind.register("recordVersions", function recordVersions() {
     });
   }
 
-  function updateContainer($container) {
-    const container = $container instanceof Node ? $container : $container[0];
-
+  function updateContainer(params) {
+    let container = params.container;
     if (VuFind.isPrinting()) {
       checkRecordVersions(container);
     } else {
@@ -82,8 +81,8 @@ VuFind.register("recordVersions", function recordVersions() {
   }
 
   function init() {
-    updateContainer(document);
-    VuFind.listen('result-scripts', updateContainer);
+    updateContainer({container: document});
+    VuFind.listen('init-result', updateContainer);
   }
 
   return { init };

@@ -1,4 +1,4 @@
-/*global userIsLoggedIn, AjaxRequestQueue, VuFind, unwrapJQuery */
+/*global userIsLoggedIn, AjaxRequestQueue, VuFind */
 
 VuFind.register("saveStatuses", function ItemStatuses() {
   function displaySaveStatus(itemLists, el) {
@@ -146,9 +146,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     checkAllSaveStatuses();
   }
 
-  function updateContainer($container) {
-    const container = unwrapJQuery($container);
-
+  function updateContainer(params) {
+    let container = params.container;
     if (VuFind.isPrinting()) {
       checkAllSaveStatuses(container);
     } else {
@@ -161,8 +160,8 @@ VuFind.register("saveStatuses", function ItemStatuses() {
   }
 
   function init() {
-    updateContainer(document);
-    VuFind.listen('result-scripts', updateContainer);
+    updateContainer({container: document});
+    VuFind.listen('init-result', updateContainer);
   }
 
   return { init, refresh, check: checkAllSaveStatuses, checkRecord: checkSaveStatus };

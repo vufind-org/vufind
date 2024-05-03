@@ -419,12 +419,12 @@ var VuFind = (function VuFind() {
   /**
    * Initialize result page scripts.
    *
-   * @param {string|JQuery} container
+   * @param {string|Element} _container
    */
-  var initResultScripts = function initResultScripts(container) {
-    let jqContainer = typeof container === 'string' ? $(container) : container;
-    emit('result-scripts', jqContainer);
-    setupQRCodeLinks(jqContainer[0]);
+  var initResultScripts = function initResultScripts(_container) {
+    let container = typeof _container === 'string' ? document.querySelector(_container) : _container;
+    emit('init-result', {container: container});
+    setupQRCodeLinks(container);
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
