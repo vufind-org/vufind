@@ -42,7 +42,7 @@ return [
             'VuFind\View\Helper\Root\HtmlSafeJsonEncode' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Icon' => 'VuFind\View\Helper\Root\IconFactory',
             'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\IlsFactory',
-            'VuFind\View\Helper\Root\JsConfigs' => 'VuFind\View\Helper\Root\ConfigFactory',
+            'VuFind\View\Helper\Root\JsConfigs' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\JsIcons' => 'VuFind\View\Helper\Root\JsIconsFactory',
             'VuFind\View\Helper\Root\JsTranslations' => 'VuFind\View\Helper\Root\JsTranslationsFactory',
             'VuFind\View\Helper\Root\KeepAlive' => 'VuFind\View\Helper\Root\KeepAliveFactory',
