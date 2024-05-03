@@ -1,0 +1,244 @@
+<?php
+
+/**
+ * Rate limiter manager.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) The National Library of Finland 2024.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Cache
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+
+namespace VuFind\RateLimiter;
+
+use Closure;
+use Laminas\EventManager\EventInterface;
+use Laminas\Log\LoggerAwareInterface;
+use Laminas\Mvc\MvcEvent;
+use VuFind\Log\LoggerAwareTrait;
+
+use function in_array;
+use function is_bool;
+
+/**
+ * Rate limiter manager.
+ *
+ * @category VuFind
+ * @package  Cache
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+class RateLimiterManager implements LoggerAwareInterface
+{
+    use LoggerAwareTrait;
+
+    /**
+     * Current event description for logging
+     *
+     * @var string
+     */
+    protected $eventDesc = '??';
+
+    /**
+     * Constructor
+     *
+     * @param array   $config                     Rate limiter configuration
+     * @param string  $clientId                   Client ID
+     * @param Closure $rateLimiterFactoryCallback Rate limiter factory callback
+     */
+    public function __construct(
+        protected array $config,
+        protected string $clientId,
+        protected Closure $rateLimiterFactoryCallback
+    ) {
+    }
+
+    /**
+     * Check if rate limiter is enabled
+     *
+     * @return bool|string False if disabled, true if enabled and enforcing,
+     * 'report_only' if enabled for logging only (not enforcing the limits)
+     */
+    public function isEnabled(): bool|string
+    {
+        $mode = $this->config['General']['enabled'] ?? false;
+        return is_bool($mode) ? $mode : (string)$mode;
+    }
+
+    /**
+     * Check if the given event is allowed
+     *
+     * @param EventInterface $event Event
+     *
+     * @return array Associative array with the following keys:
+     *   allow              bool  Whether to allow the request
+     *   requestsRemaining  ?int  Remaining requests
+     *   retryAfter         ?int  Retry after seconds if limit exceeded
+     *   requestLimit       ?int  Current limit
+     */
+    public function check(EventInterface $event): array
+    {
+        $result = [
+            'allow' => true,
+            'requestsRemaining' => null,
+            'retryAfter' => null,
+            'requestLimit' => null,
+        ];
+
+        if (!$this->isEnabled() || !($event instanceof MvcEvent)) {
+            return $result;
+        }
+        $routeMatch = $event->getRouteMatch();
+        $controller = $routeMatch?->getParam('controller') ?? '??';
+        $action = ($routeMatch?->getParam('action') ?? '??');
+        $this->eventDesc = "$controller/$action";
+        if ('AJAX' === $controller && 'JSON' === $action) {
+            $req = $event->getRequest();
+            $method = $req->getPost('method') ?? $req->getQuery('method');
+            $this->eventDesc .= " $method";
+        }
+        try {
+            // Check for a matching policy:
+            if (!($policyId = $this->getPolicyIdForEvent($event))) {
+                $this->verboseDebug('No policy matches event');
+                return $result;
+            }
+            // We have a policy matching the route, so check rate limiter:
+            $limiter = ($this->rateLimiterFactoryCallback)($this->config, $policyId, $this->clientId);
+            $limit = $limiter->consume(1);
+            $result = [
+                'allow' => true,
+                'requestsRemaining' => $limit->getRemainingTokens(),
+                'retryAfter' => $limit->getRetryAfter()->getTimestamp() - time(),
+                'requestLimit' => $limit->getLimit(),
+            ];
+            $this->verboseDebug(
+                ($limit->isAccepted() ? 'Accepted' : 'Refused')
+                . " by policy '$policyId'"
+                . ', remaining: ' . $limit->getRemainingTokens()
+                . ', retry-after: ' . $limit->getRetryAfter()->getTimestamp() - time()
+                . ', limit: ' . $limit->getLimit()
+            );
+
+            // Add headers if configured:
+            if ($this->config['Policies'][$policyId]['AddHeaders'] ?? false) {
+                $headers = $event->getResponse()->getHeaders();
+                $headers->addHeaders(
+                    [
+                        'X-RateLimit-Remaining' => $limit->getRemainingTokens(),
+                        'X-RateLimit-Retry-After' => $limit->getRetryAfter()->getTimestamp() - time(),
+                        'X-RateLimit-Limit' => $limit->getLimit(),
+                    ]
+                );
+            }
+            if ($limit->isAccepted()) {
+                return $result;
+            }
+            $logMsg = "$this->eventDesc: $this->clientId policy '$policyId' exceeded";
+            if ('report_only' === $this->isEnabled()) {
+                $this->logWarning("$logMsg (not enforced)");
+                return $result;
+            }
+            $this->logWarning("$logMsg (enforced)");
+            $result['allow'] = false;
+            return $result;
+        } catch (\Exception $e) {
+            $this->logError((string)$e);
+        }
+        // Allow access on failure:
+        return $result;
+    }
+
+    /**
+     * Try to find a policy that matches an event
+     *
+     * @param MvcEvent $event Event
+     *
+     * @return ?string policy id or null if no match
+     */
+    protected function getPolicyIdForEvent(MvcEvent $event): ?string
+    {
+        foreach ($this->config['Policies'] ?? [] as $name => $settings) {
+            if (!($filters = $settings['Filters'] ?? null)) {
+                return $name;
+            }
+            foreach ($filters as $filter) {
+                if ($this->eventMatchesFilter($event, $filter)) {
+                    return $name;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if an event matches a filter
+     *
+     * @param MvcEvent $event  Event
+     * @param array    $filter Filter from configuration
+     *
+     * @return bool
+     */
+    protected function eventMatchesFilter(MvcEvent $event, array $filter): bool
+    {
+        $routeMatch = $event->getRouteMatch();
+        foreach ($filter as $param => $value) {
+            if ('name' === $param) {
+                if ($routeMatch?->getMatchedRouteName() !== $value) {
+                    return false;
+                }
+            } elseif (in_array($param, ['Params', 'Query', 'Post'])) {
+                $req = $event->getRequest();
+                if ('Params' === $param) {
+                    $allParams = $req->getPost()->toArray() + $req->getQuery()->toArray();
+                } elseif ('Query' === $param) {
+                    $allParams = $req->getQuery()->toArray();
+                } else {
+                    $allParams = $req->getPost()->toArray();
+                }
+                foreach ($value as $key => $val) {
+                    if ($val !== $allParams[$key] ?? null) {
+                        return false;
+                    }
+                }
+            } elseif ($routeMatch?->getParam($param) !== $value) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Log a verbose debug message if configured
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function verboseDebug(string $msg): void
+    {
+        if (!($this->config['General']['verbose'] ?? false)) {
+            return;
+        }
+        $this->log('debug', "$this->eventDesc: $this->clientId $msg", [], true);
+    }
+}

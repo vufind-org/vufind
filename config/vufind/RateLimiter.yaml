@@ -1,0 +1,80 @@
+# Rate limiter configuration. Rate limiter can be used to enforce limits for requests
+# e.g. in a given time window. If a limit is exceeded, an error with HTTP status
+# 429 Too Many Requests is sent.
+
+# General settings
+General:
+  # enabled has three possible settings:
+  #   false        Rate limiter is disabled
+  #   true         Rate limiter is enabled
+  #   report_only  Requests that exceed limits are reported but not prevented
+  #enabled: false
+  # Enable verbose debug logging (default is false):
+  #verbose: true
+
+# Storage defines how rate limiter data is stored. It is recommended to use a quick
+# storage option. Only storage adapters that support TTL can be used. This usually
+# means either memcached or redis.
+# See https://docs.laminas.dev/laminas-cache/storage/adapter/ for
+# documentation on options for the memcached adapter.
+# Note that Redis uses Credis, not the Laminas cache adapter.
+Storage:
+  adapter: memcached
+  options:
+    # Comma-separated list of servers for Memcached adapter:
+    servers: "localhost:11211"
+
+    # Redis server settings (defaults are listed below):
+    #redis_host               : localhost
+    #redis_port               : 6379
+    #redis_connection_timeout : 0.5
+    #redis_db                 : 0
+    #redis_user               : null        (optional)
+    #redis_auth               : null
+    #redis_version            : 6
+    #redis_standalone         : true
+
+    # Other options:
+    # Namespace to use (default is RateLimiter):
+    #namespace: RateLimiter
+
+# Policies define the actual rate limiting settings. The route of the request is
+# checked against the list of policies, and the first matching policy is used.
+# Keys under Policies are used as rate limiter IDs.
+Policies:
+  # A strict policy that allows 100 searches initially and increases the limit by 50
+  # every 15 minutes:
+  search:
+    # Request filters can include the following fields:
+    #   controller   The controller handling the request
+    #   action       The action in the controller
+    #   name         Matched route name
+    #   Params       POST request or query parameters
+    #   Query        Query string parameters
+    #   Post         POST request parameters
+    Filters:
+      - controller: Search
+        action: Results
+      - controller: AJAX
+        action: JSON
+        Params:
+          method: getSearchResults
+    # Rate Limiter settings.
+    # See https://symfony.com/doc/current/rate_limiter.html#rate-limiting-policies
+    # for more information and policy settings.
+    RateLimiterSettings:
+      policy: token_bucket
+      # Allow 100 requests
+      limit: 100
+      # Increase the limit by 50 every 15 minutes
+      rate: { interval: '15 minutes', amount: 50 }
+    # Whether to add X-RateLimit-* headers (default is false):
+    #AddHeaders: false
+
+  # A catch-all policy that allows 2000 requests initially and increases the limit by
+  # 400 every 10 minutes:
+  general:
+    RateLimiterSettings:
+      policy: token_bucket
+      limit: 2000
+      rate: { interval: '10 minutes', amount: 400 }

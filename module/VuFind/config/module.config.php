@@ -464,6 +464,7 @@ $config = [
             'VuFind\OAuth2\Repository\RefreshTokenRepository' => 'VuFind\OAuth2\Repository\TokenRepositoryFactory',
             'VuFind\OAuth2\Repository\ScopeRepository' => 'VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
+            'VuFind\RateLimiter\RateLimiterManager' => 'VuFind\RateLimiter\RateLimiterManagerFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
             'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
