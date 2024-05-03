@@ -383,7 +383,7 @@ class GetItemStatuses extends AbstractBase implements
                 }
             }
             // Check for a use_unknown_message flag
-            if ($availabilityStatus->useUnknownMessage()) {
+            if ($availabilityStatus->is(AvailabilityStatus::STATUS_UNKNOWN)) {
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
@@ -557,9 +557,8 @@ class GetItemStatuses extends AbstractBase implements
                 // Check for errors
                 if (!empty($record[0]['error'])) {
                     $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
-                        AvailabilityStatus::STATUS_UNCERTAIN
+                        AvailabilityStatus::STATUS_UNKNOWN
                     );
-                    $unknownStatus->setUseUnknownMessage(true);
                     $current = $this
                         ->getItemStatusError(
                             $record,

@@ -64,18 +64,18 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     public const STATUS_UNCERTAIN = 2;
 
     /**
+     * Status code for items where no status information is available
+     *
+     * @var int
+     */
+    public const STATUS_UNKNOWN = 3;
+
+    /**
      * Items availability
      *
      * @var int
      */
     protected int $availability;
-
-    /**
-     * If unknown message shall be used
-     *
-     * @var bool
-     */
-    protected bool $useUnknownMessage = false;
 
     /**
      * Constructor
@@ -95,7 +95,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      */
     public function isAvailable(): bool
     {
-        return (bool)$this->availability;
+        return $this->availability === 1 || $this->availability === 2;
     }
 
     /**
@@ -122,28 +122,6 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     }
 
     /**
-     * Set use unknown message
-     *
-     * @param bool $useUnknownMessage If unknown message shall be used
-     *
-     * @return void
-     */
-    public function setUseUnknownMessage(bool $useUnknownMessage): void
-    {
-        $this->useUnknownMessage = $useUnknownMessage;
-    }
-
-    /**
-     * Check if unknown message should be used.
-     *
-     * @return bool
-     */
-    public function useUnknownMessage(): bool
-    {
-        return $this->useUnknownMessage;
-    }
-
-    /**
      * Get status description.
      *
      * @return string
@@ -158,25 +136,10 @@ class AvailabilityStatus implements AvailabilityStatusInterface
                 return 'Unavailable';
             case self::STATUS_AVAILABLE:
                 return 'Available';
+            case self::STATUS_UNKNOWN:
+                return 'status_unknown_message';
             default:
                 return 'Uncertain';
-        }
-    }
-
-    /**
-     * Get status label.
-     *
-     * @return string
-     */
-    public function getStatusLabel(): string
-    {
-        switch ($this->availability) {
-            case self::STATUS_UNAVAILABLE:
-                return 'Checked Out';
-            case self::STATUS_AVAILABLE:
-                return 'Available';
-            default:
-                return 'HoldingStatus::availability_uncertain';
         }
     }
 
@@ -192,6 +155,8 @@ class AvailabilityStatus implements AvailabilityStatusInterface
                 return 'http://schema.org/OutOfStock';
             case self::STATUS_AVAILABLE:
                 return 'http://schema.org/InStock';
+            case self::STATUS_UNKNOWN:
+                return null;
             default:
                 return 'http://schema.org/LimitedAvailability';
         }
@@ -233,14 +198,13 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      */
     protected function getPriority(): int
     {
-        if ($this->useUnknownMessage) {
-            return 2;
-        }
         switch ($this->availability) {
             case AvailabilityStatus::STATUS_UNAVAILABLE:
                 return 0;
             case AvailabilityStatus::STATUS_UNCERTAIN:
                 return 1;
+            case AvailabilityStatus::STATUS_UNKNOWN:
+                return 2;
             default:
                 return 3;
         }

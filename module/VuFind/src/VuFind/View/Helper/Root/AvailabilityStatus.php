@@ -47,21 +47,28 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      *
      * @var string
      */
-    protected $classAvailable = 'text-success';
+    protected string $classAvailable = 'text-success';
 
     /**
      * Html class for unavailable items.
      *
      * @var string
      */
-    protected $classUnavailable = 'text-danger';
+    protected string $classUnavailable = 'text-danger';
 
     /**
      * Html class for items where status is uncertain.
      *
      * @var string
      */
-    protected $classUncertain = 'text-warning';
+    protected string $classUncertain = 'text-warning';
+
+    /**
+     * Html class for items where status is unknown.
+     *
+     * @var string
+     */
+    protected string $classUnknown = 'text-muted';
 
     /**
      * Message cache
@@ -85,6 +92,9 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
         if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_AVAILABLE)) {
             return $this->classAvailable;
         }
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNKNOWN)) {
+            return $this->classUnknown;
+        }
         return $this->classUncertain;
     }
 
@@ -97,12 +107,11 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      */
     public function renderStatusForAjaxResponse(AvailabilityStatusInterface $availabilityStatus): string
     {
-        $availabilityStr = $availabilityStatus->availabilityAsString();
-        if ($availabilityStatus->useUnknownMessage()) {
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNKNOWN)) {
             $key = 'ajax/status-unknown.phtml';
-        } elseif ('false' === $availabilityStr) {
+        } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNAVAILABLE)) {
             $key = 'ajax/status-unavailable.phtml';
-        } elseif ('uncertain' === $availabilityStr) {
+        } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatus::STATUS_UNCERTAIN)) {
             $key = 'ajax/status-uncertain.phtml';
         } else {
             $key = 'ajax/status-available.phtml';

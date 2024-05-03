@@ -25,30 +25,26 @@
             <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
           <?php endif; ?>
 
-          <?php if ($availabilityStatus->useUnknownMessage()): ?>
-            <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
-          <?php else: ?>
-            <?php
-              $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
-              $statusDescription = $availabilityStatus->getStatusDescription();
-              $schemaAvailabilityUri = $availabilityStatus->getSchemaAvailabilityUri();
-            ?>
-            <span class="<?=$statusClassEsc?>">
-              <?=$this->transEsc($statusDescription)?>
-              <?php if($schemaAvailabilityUri): ?>
-                <link property="availability" href="<?=$this->escapeHtmlAttr($schemaAvailabilityUri)?>">
-              <?php endif; ?>
-            </span>
-            <?php if (!$availabilityStatus->isAvailable()): ?>
-              <?php if ($holding['returnDate'] ?? false): ?>
-                <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
-              <?php endif; ?>
-              <?php if ($holding['duedate'] ?? false): ?>
-                <span class="small due-date"><?=$this->transEsc('Due')?>: <?=$this->escapeHtml($holding['duedate'])?></span>
-              <?php endif; ?>
-              <?php if (($holding['requests_placed'] ?? 0) > 0): ?>
-                <span class="request-count"><?=$this->transEsc('Requests')?>: <?=$this->escapeHtml($holding['requests_placed'])?></span>
-              <?php endif; ?>
+          <?php
+            $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
+            $statusDescription = $availabilityStatus->getStatusDescription();
+            $schemaAvailabilityUri = $availabilityStatus->getSchemaAvailabilityUri();
+          ?>
+          <span class="<?=$statusClassEsc?>">
+            <?=$this->transEsc($statusDescription)?>
+            <?php if($schemaAvailabilityUri): ?>
+              <link property="availability" href="<?=$this->escapeHtmlAttr($schemaAvailabilityUri)?>">
+            <?php endif; ?>
+          </span>
+          <?php if (!$availabilityStatus->isAvailable()): ?>
+            <?php if ($holding['returnDate'] ?? false): ?>
+              <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
+            <?php endif; ?>
+            <?php if ($holding['duedate'] ?? false): ?>
+              <span class="small due-date"><?=$this->transEsc('Due')?>: <?=$this->escapeHtml($holding['duedate'])?></span>
+            <?php endif; ?>
+            <?php if (($holding['requests_placed'] ?? 0) > 0): ?>
+              <span class="request-count"><?=$this->transEsc('Requests')?>: <?=$this->escapeHtml($holding['requests_placed'])?></span>
             <?php endif; ?>
           <?php endif; ?>
         </span>

@@ -64,34 +64,11 @@ interface AvailabilityStatusInterface
     public function isVisible(): bool;
 
     /**
-     * Set use unknown message
-     *
-     * @param bool $useUnknownMessage If unknown message shall be used
-     *
-     * @return void
-     */
-    public function setUseUnknownMessage(bool $useUnknownMessage): void;
-
-    /**
-     * Check if unknown message should be used.
-     *
-     * @return bool
-     */
-    public function useUnknownMessage(): bool;
-
-    /**
      * Get status description.
      *
      * @return string
      */
     public function getStatusDescription(): string;
-
-    /**
-     * Get status label.
-     *
-     * @return string
-     */
-    public function getStatusLabel(): string;
 
     /**
      * Get schema.org availability URI.

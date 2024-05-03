@@ -1203,11 +1203,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         return function ($item) {
             if (!($item['availability'] instanceof AvailabilityStatus)) {
+                $availability = $item['availability'] ?? false;
+                if ($item['use_unknown_message'] ?? false) {
+                    $availability = AvailabilityStatus::STATUS_UNKNOWN;
+                }
                 $item['availability'] = new AvailabilityStatus(
-                    $item['availability'] ?? false,
+                    $availability,
                     $item['status'] ?? ''
                 );
-                $item['availability']->setUseUnknownMessage($item['use_unknown_message'] ?? false);
                 unset($item['status']);
                 unset($item['use_unknown_message']);
             }

@@ -31,9 +31,6 @@
       </td>
       <td class="fullAvailability">
         <?php $availabilityStatus = $item['availability']; ?>
-        <?php if ($availabilityStatus->useUnknownMessage()): ?>
-          <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
-        <?php else: ?>
           <?php
             $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
             if ($availabilityStatus->isAvailable() && $item['reserve'] === 'Y') {
@@ -43,7 +40,6 @@
             }
           ?>
           <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?></span>
-        <?php endif; ?>
       </td>
     </tr>
   <?php endforeach; ?>
