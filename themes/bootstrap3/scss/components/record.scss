@@ -340,3 +340,12 @@
   }
 }
 
+/* Pager */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25rem;
+  row-gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
