@@ -838,3 +838,10 @@ h2.querySuggestions, h2.spellingSuggestions {
   line-height: @line-height-base;
   margin: 0;
 }
+
+h2.spellingSuggestions + ul {
+  padding-inline-start: 0;
+  > li {
+    list-style: none;
+  }
+}
