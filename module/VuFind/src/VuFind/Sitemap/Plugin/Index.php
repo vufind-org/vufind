@@ -135,13 +135,17 @@ class Index extends AbstractGeneratorPlugin
                     $this->countPerPage,
                     $this->filters
                 );
-                foreach ($result['ids'] as $item) {
+                foreach ($result['ids'] as $index => $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
                     if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;
-                    yield $loc;
+                    if (isset($result['lastmods'][$index])) {
+                        yield ['url' => $loc, 'lastmod' => $result['lastmods'][$index]];
+                    } else {
+                        yield $loc;
+                    }
                 }
                 $currentPage++;
                 $this->verboseMsg("Page $currentPage, $recordCount processed");
