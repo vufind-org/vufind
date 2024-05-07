@@ -778,9 +778,31 @@ document.addEventListener('DOMContentLoaded', () => {
   setupOffcanvas();
   // Keyboard shortcuts in detail view
   keyboardShortcuts();
-
   // support "jump menu" dropdown boxes
   setupJumpMenus();
+
+  // Checkbox select all
+  $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    if (this.checked) {
+      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
+    } else {
+      $form.find('.checkbox-select-item:checked').trigger('click');
+    }
+    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+    $form.find('.checkbox-select-all').prop('checked', this.checked);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+  });
+  $('.checkbox-select-item').on('change', function selectAllDisable() {
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    if ($form.length === 0) {
+      return;
+    }
+    if (!$(this).prop('checked')) {
+      $form.find('.checkbox-select-all').prop('checked', false);
+      $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+    }
+  });
 
   // Print
   var url = window.location.href;

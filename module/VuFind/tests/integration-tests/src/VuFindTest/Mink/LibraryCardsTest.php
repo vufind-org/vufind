@@ -207,8 +207,8 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm the presence of a library card selector on the page:
-        $firstCard = $this->findCss($page, '#library_card option:nth-child(1)');
-        $secondCard = $this->findCss($page, '#library_card option:nth-child(2)');
+        $firstCard = $this->findCss($page, '.select-library-card li:nth-child(1) a');
+        $secondCard = $this->findCss($page, '.select-library-card li:nth-child(2) a');
         $card2Value = $secondCard->getValue();
         $this->assertEquals('card 1', $firstCard->getText());
         $this->assertEquals('card 2', $secondCard->getText());
