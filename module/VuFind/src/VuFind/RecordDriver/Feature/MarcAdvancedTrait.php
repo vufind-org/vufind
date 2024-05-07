@@ -120,11 +120,7 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if (
-            isset($this->mainConfig)
-            && $this->mainConfig->get('Record') !== null
-            && $this->mainConfig->get('Record')->get('subjectHeadingsSort') === 'marc'
-        ) {
+        if ($this->mainConfig->Record->subjectHeadingsSort ?? '' === 'marc') {
             $returnValues = $this->getAllSubjectHeadingsMarcOrder($extended);
         } else {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
@@ -159,7 +155,9 @@ trait MarcAdvancedTrait
         foreach ($allFields as $field) {
             if (isset($field['tag']) && in_array($field['tag'], $subjectFieldsKeys)) {
                 $fieldType = $this->subjectFields[$field['tag']];
-                $this->processSubjectHeadings($returnValues, $field, $extended, $fieldType);
+                if ($nextLine = $this->processSubjectHeadings($field, $extended, $fieldType)) {
+                    $returnValues[] = $nextLine;
+                }
             }
         }
         return $returnValues;
@@ -191,7 +189,9 @@ trait MarcAdvancedTrait
 
             // If we got here, we found results -- let's loop through them.
             foreach ($fields as $f) {
-                $this->processSubjectHeadings($returnValues, $f, $extended, $fieldType);
+                if ($nextLine = $this->processSubjectHeadings($f, $extended, $fieldType)) {
+                    $returnValues[] = $nextLine;
+                }
             }
         }
         return $returnValues;
@@ -201,7 +201,6 @@ trait MarcAdvancedTrait
      * Get subject headings of a given record field.
      * The heading is returned as a chunk, increasing from least specific to most specific.
      *
-     * @param array  $returnValues Array of return values to append to
      * @param array  $field        field to handle
      * @param bool   $extended     Whether to return a keyed array with the following keys:
      *                             - heading: the actual subject heading chunks
@@ -209,16 +208,16 @@ trait MarcAdvancedTrait
      *                             - source: source vocabulary
      * @param string $fieldType    Type of the field
      *
-     * @return void
+     * @return array|null
      */
     protected function processSubjectHeadings(
-        array &$returnValues,
         array $field,
         bool $extended,
         string $fieldType
-    ): void {
+    ): ?array {
         // Start an array for holding the chunks of the current heading:
         $current = [];
+        $returnValues = null;
 
         // Get all the chunks and collect them together:
         foreach ($field['subfields'] as $subfield) {
@@ -234,16 +233,17 @@ trait MarcAdvancedTrait
                 $sourceIndicator = $field['i2'];
                 $source = $this->subjectSources[$sourceIndicator]
                     ?? $this->getSubfield($field, '2');
-                $returnValues[] = [
+                $returnValues = [
                     'heading' => $current,
                     'type' => $fieldType,
                     'source' => $source,
                     'id' => $this->getSubfield($field, '0'),
                 ];
             } else {
-                $returnValues[] = $current;
+                $returnValues = $current;
             }
         }
+        return $returnValues;
     }
 
     /**
