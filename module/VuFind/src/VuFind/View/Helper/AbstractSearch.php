@@ -77,10 +77,10 @@ abstract class AbstractSearch extends AbstractHelper
         }
 
         $html = '<div class="' . $this->getContainerClass() . '">';
-        $html .= $msg;
+        $html .= '<h2 class="spellingSuggestions">' . $msg . '</h2>';
         $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br>' . $view->escapeHtml($term) . ' &raquo; ';
+            $html .= $view->escapeHtml($term) . ' &raquo; ';
             $i = 0;
             foreach ($details['suggestions'] as $word => $data) {
                 if ($i++ > 0) {
@@ -104,6 +104,7 @@ abstract class AbstractSearch extends AbstractHelper
                     $html .= $this->renderExpandLink($url, $view);
                 }
             }
+            $html .= '<br>';
         }
         $html .= '</div>';
         return $html;
