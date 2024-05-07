@@ -120,7 +120,11 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if ($this->mainConfig->get('Record')->get('subjectHeadingsSort') === 'marc') {
+        if (
+            isset($this->mainConfig)
+            && $this->mainConfig->get('Record') !== null
+            && $this->mainConfig->get('Record')->get('subjectHeadingsSort') === 'marc'
+        ) {
             $returnValues = $this->getAllSubjectHeadingsMarcOrder($extended);
         } else {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
@@ -138,7 +142,12 @@ trait MarcAdvancedTrait
      * returned as an array of chunks, increasing from least specific to most
      * specific. Sorted in the same way it is saved for the record.
      *
-     * @param bool $extended
+     * @param bool $extended Whether to return a keyed array with the following
+     *  keys:
+     *  - heading: the actual subject heading chunks
+     *  - type: heading type
+     *  - source: source vocabulary
+     *
      * @return array
      */
     protected function getAllSubjectHeadingsMarcOrder(bool $extended = false): array
@@ -161,7 +170,12 @@ trait MarcAdvancedTrait
      * returned as an array of chunks, increasing from least specific to most
      * specific. Sorted numerically on marc fields.
      *
-     * @param bool $extended
+     * @param bool $extended Whether to return a keyed array with the following
+     *  keys:
+     *  - heading: the actual subject heading chunks
+     *  - type: heading type
+     *  - source: source vocabulary
+     *
      * @return array
      */
     protected function getAllSubjectHeadingsNumericalOrder(bool $extended = false): array
@@ -187,14 +201,22 @@ trait MarcAdvancedTrait
      * Get subject headings of a given record field.
      * The heading is returned as a chunk, increasing from least specific to most specific.
      *
-     * @param array  $returnValues
-     * @param array  $field
-     * @param bool   $extended
-     * @param string $fieldType
+     * @param array  $returnValues Array of return values to append to
+     * @param array  $field        field to handle
+     * @param bool   $extended     Whether to return a keyed array with the following keys:
+     *                             - heading: the actual subject heading chunks
+     *                             - type: heading type
+     *                             - source: source vocabulary
+     * @param string $fieldType    Type of the field
+     *
      * @return void
      */
-    protected function processSubjectHeadings(array &$returnValues, array $field, bool $extended, string $fieldType): void
-    {
+    protected function processSubjectHeadings(
+        array &$returnValues,
+        array $field,
+        bool $extended,
+        string $fieldType
+    ): void {
         // Start an array for holding the chunks of the current heading:
         $current = [];
 
