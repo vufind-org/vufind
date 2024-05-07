@@ -1,7 +1,7 @@
 <?php
     $results = $this->recommend->getResults();
     $label = $results->getResultTotal() > 0
-        ? '<strong>' . $this->transEsc('spell_suggest') . '</strong>:'
+        ? '<h2 class="spelling">' . $this->transEsc('spell_suggest') . '</h2>:'
         : $this->transEsc('nohit_spelling') . ':';
     $suggestions = $this->search()->renderSpellingSuggestions($label, $results, $this);
 ?>
