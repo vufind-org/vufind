@@ -832,3 +832,9 @@ table.search-history-table {
     }
   }
 }
+
+h2.querySuggestions, h2.spellingSuggestions {
+  font-size: unset;
+  line-height: $line-height-base;
+  margin: 0;
+}
