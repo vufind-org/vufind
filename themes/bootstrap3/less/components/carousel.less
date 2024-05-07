@@ -1,0 +1,24 @@
+.splide { // specificity boost
+	.splide__arrow {
+		width: 2.5rem;
+		height: auto;
+		aspect-ratio: 1;
+		color: @btn-default-color;
+		background-color: @btn-default-bg;
+		border: 2px solid @btn-default-border;
+		opacity: 1;
+		transition: opacity 150ms;
+		will-change: opacity;
+	}
+	.splide__arrow:disabled {
+		opacity: 0;
+	}
+	.splide__arrow:hover {
+		border-color: @btn-default-color;
+	}
+}
+
+.splide.splide.is-focus-in .splide__arrow:focus {
+	border-color: @brand-primary;
+	outline-color: @brand-primary;
+}
