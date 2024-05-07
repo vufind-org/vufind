@@ -502,6 +502,11 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modalParams = {};
   }
+
+  function updateContainer(params) {
+    bind(params.container);
+  }
+
   function init() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
@@ -536,6 +541,7 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal(cmd);
       }
     };
+    VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

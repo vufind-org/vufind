@@ -29,6 +29,8 @@
 
 namespace VuFindAdmin\Controller;
 
+use VuFind\Db\Service\TagServiceInterface;
+
 use function count;
 use function intval;
 use function is_array;
@@ -78,7 +80,7 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
-        $view->statistics = $this->getTable('resourcetags')->getStatistics(true);
+        $view->statistics = $this->getDbService(TagServiceInterface::class)->getStatistics(true);
         return $view;
     }
 

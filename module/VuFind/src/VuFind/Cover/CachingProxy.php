@@ -69,9 +69,9 @@ class CachingProxy
     /**
      * Constructor
      *
-     * @param Client $client       HTTP client
-     * @param string $cache        Base directory for cache
-     * @param array  $allowedHosts Array of regular expressions for hosts to cache
+     * @param Client  $client       HTTP client
+     * @param ?string $cache        Base directory for cache (null to disable caching)
+     * @param array   $allowedHosts Array of regular expressions for hosts to cache
      */
     public function __construct(Client $client, $cache, array $allowedHosts = [])
     {
@@ -90,7 +90,7 @@ class CachingProxy
     public function fetch($url)
     {
         $file = $this->getCacheFile($url);
-        $cacheAllowed = $this->hasLegalHost($url);
+        $cacheAllowed = $this->cache && $this->hasLegalHost($url);
         if (!$cacheAllowed || !($response = $this->fetchCache($file))) {
             $response = $this->client->setUri($url)->send();
             if ($cacheAllowed) {
@@ -124,6 +124,9 @@ class CachingProxy
      */
     protected function setCache($file, Response $response)
     {
+        if (!$this->cache) {
+            return; // don't write if cache is disabled
+        }
         if (!file_exists($this->cache)) {
             mkdir($this->cache);
         }
@@ -157,9 +160,13 @@ class CachingProxy
      * @param string $url URL
      *
      * @return string
+     * @throws \Exception
      */
     protected function getCacheFile($url)
     {
+        if (!$this->cache) {
+            throw new \Exception('Unexpected call to getCacheFile -- cache is disabled.');
+        }
         $hash = md5($url);
         return $this->cache . '/' . substr($hash, 0, 3) . '/' . substr($hash, 3);
     }

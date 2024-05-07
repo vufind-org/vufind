@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Factory for login token authentication
@@ -82,8 +83,8 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)
                 ->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get('user'),
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(UserServiceInterface::class),
             $container->get(\VuFind\Db\Table\PluginManager::class)
                 ->get('logintoken'),
             $container->get(\VuFind\Cookie\CookieManager::class),

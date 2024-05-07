@@ -157,6 +157,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $recordURL = $this->stripHash($this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
+        // Did tags show up as expected?
+        $this->assertEquals('test 3', $this->findCssAndGetText($page, '.last a'));
+        $this->assertEquals('test1', $this->findCssAndGetText($page, '.last a', index: 1));
+        $this->assertEquals('test2', $this->findCssAndGetText($page, '.last a', index: 2));
+        // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
         $this->assertEquals(
