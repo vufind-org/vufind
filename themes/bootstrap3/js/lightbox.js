@@ -528,7 +528,7 @@ VuFind.register('lightbox', function Lightbox() {
       // retainFocus() above handles it better.
       // This is moot once that library (and bootstrap3) are retired.
       var focEls = _modal.find(":tabbable");
-      var lastEl = $(focEls[focEls.length-1]);
+      var lastEl = $(focEls[focEls.length - 1]);
       $(lastEl).off('keydown.bs.modal');
     });
 
