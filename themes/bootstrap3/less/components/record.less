@@ -44,6 +44,24 @@
     margin-top: 1rem;
   }
 }
+
+@media (max-width: 500px) {
+  .record .media-body > table > tbody {
+    > tr {
+      display: block;
+      > th {
+        display: block;
+        padding-bottom: 0;
+      }
+      > td {
+        display: block;
+        border-top: none;
+        padding-top: 0;
+      }    
+    }
+  }
+}
+
 // Comma-separate formatting
 .record .format::after { content: ", "; }
 .record .format.badge::after,
@@ -323,3 +341,12 @@
   }
 }
 
+/* Pager */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25rem;
+  row-gap: 10px;
+  align-items: center;
+  justify-content: center;
+}

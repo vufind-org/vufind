@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
@@ -70,9 +71,11 @@ use function count;
  */
 class User extends RowGateway implements
     UserEntityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
@@ -134,8 +137,8 @@ class User extends RowGateway implements
     /**
      * Set ILS login credentials without saving them.
      *
-     * @param string $username Username to save
-     * @param string $password Password to save
+     * @param string  $username Username to save
+     * @param ?string $password Password to save (null for none)
      *
      * @return void
      */
@@ -700,11 +703,13 @@ class User extends RowGateway implements
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
-            $comments = $this->getDbTable('Comments');
-            $comments->deleteByUser($this);
+            $comments = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
-            $ratings = $this->getDbTable('Ratings');
+            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
             $ratings->deleteByUser($this);
         }
 
@@ -772,24 +777,11 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get login token data
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @param string $userId user identifier
-     *
-     * @return array
+     * @return ?int
      */
-    public function getLoginTokens(string $userId): array
-    {
-        $tokenTable = $this->getDbTable('LoginToken');
-        return $tokenTable->getByUserId($userId);
-    }
-
-    /**
-     * Get identifier.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -818,6 +810,19 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface
+    {
+        $this->firstname = $firstName;
+        return $this;
+    }
+
+    /**
      * Get firstname.
      *
      * @return string
@@ -825,6 +830,19 @@ class User extends RowGateway implements
     public function getFirstname(): string
     {
         return $this->firstname;
+    }
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface
+    {
+        $this->lastname = $lastName;
+        return $this;
     }
 
     /**
@@ -881,6 +899,29 @@ class User extends RowGateway implements
     public function getPendingEmail(): string
     {
         return $this->pending_email;
+    }
+
+    /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface
+    {
+        $this->cat_id = $catId;
+        return $this;
+    }
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string
+    {
+        return $this->cat_id;
     }
 
     /**
@@ -986,6 +1027,29 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->auth_method = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->auth_method;
+    }
+
+    /**
      * Get last language.
      *
      * @return string
@@ -993,5 +1057,51 @@ class User extends RowGateway implements
     public function getLastLanguage(): string
     {
         return $this->last_language;
+    }
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool
+    {
+        return (bool)($this->user_provided_email ?? false);
+    }
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    {
+        $this->user_provided_email = $userProvided ? 1 : 0;
+        return $this;
+    }
+
+    /**
+     * Last login setter.
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    {
+        $this->last_login = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Last login getter
+     *
+     * @return Datetime
+     */
+    public function getLastLogin(): Datetime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
     }
 }

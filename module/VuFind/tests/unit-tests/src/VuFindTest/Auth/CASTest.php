@@ -62,9 +62,12 @@ class CASTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a working configuration for the CAS object
      *
+     * @param array $extraCasConfig Extra config parameters to include in [CAS] section
+     * @param array $extraTopConfig Extra top-level config settings to include
+     *
      * @return Config
      */
-    public function getAuthConfig(): Config
+    public function getAuthConfig(array $extraCasConfig = [], array $extraTopConfig = []): Config
     {
         $casConfig = new Config(
             [
@@ -72,12 +75,12 @@ class CASTest extends \PHPUnit\Framework\TestCase
                 'port' => 1234,
                 'context' => 'foo',
                 'CACert' => 'bar',
-                'login' => 'login',
-                'logout' => 'logout',
-            ],
+                'login' => 'http://cas/login',
+                'logout' => 'http://cas/logout',
+            ] + $extraCasConfig,
             true
         );
-        return new Config(['CAS' => $casConfig], true);
+        return new Config(['CAS' => $casConfig] + $extraTopConfig, true);
     }
 
     /**
@@ -113,5 +116,107 @@ class CASTest extends \PHPUnit\Framework\TestCase
         $config = $this->getAuthConfig();
         unset($config->CAS->$key);
         $this->getAuthObject($config)->getConfig();
+    }
+
+    /**
+     * Test getSessionInitiator().
+     *
+     * @return void
+     */
+    public function testGetSessionInitiator(): void
+    {
+        $cas = $this->getAuthObject();
+        $this->assertEquals(
+            'http://cas/login?service=http%3A%2F%2Ffoo%2Fbar%3Fauth_method%3DCAS',
+            $cas->getSessionInitiator('http://foo/bar')
+        );
+    }
+
+    /**
+     * Test logout().
+     *
+     * @return void
+     */
+    public function testLogout(): void
+    {
+        $cas = $this->getAuthObject();
+        $this->assertEquals(
+            'http://cas/logout?service=http%3A%2F%2Ffoo%2Fbar',
+            $cas->logout('http://foo/bar')
+        );
+    }
+
+    /**
+     * Test missing service base URL configuration.
+     *
+     * @return void
+     */
+    public function testMissingBaseUrlConfig(): void
+    {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Valid CAS/service_base_url or Site/url config parameters are required.');
+        $cas = $this->getAuthObject();
+        $cas->setConfig($this->getAuthConfig());
+        $this->callMethod($cas, 'getServiceBaseUrl');
+    }
+
+    /**
+     * Test working service base URL configuration.
+     *
+     * @return void
+     */
+    public function testWorkingBaseUrlConfig(): void
+    {
+        $cas = $this->getAuthObject();
+        $urls = ['http://foo', 'http://bar'];
+        $cas->setConfig($this->getAuthConfig(['service_base_url' => $urls]));
+        $this->assertEquals($urls, $this->callMethod($cas, 'getServiceBaseUrl'));
+    }
+
+    /**
+     * Data provider for testBaseUrlConfigFallback.
+     *
+     * @return void
+     */
+    public static function fallbackUrlProvider(): array
+    {
+        return [
+            'without port' => ['http://myuniversity.edu/foo/bar', 'http://myuniversity.edu'],
+            'with port' => ['https://myuniversity.edu:8080/foo/bar', 'https://myuniversity.edu:8080'],
+        ];
+    }
+
+    /**
+     * Test service base URL configuration fallback to site URL.
+     *
+     * @param string $url  URL for configuration
+     * @param string $host Expected hostname extracted from $url
+     *
+     * @return void
+     *
+     * @dataProvider fallbackUrlProvider
+     */
+    public function testBaseUrlConfigFallback(string $url, string $host): void
+    {
+        $cas = $this->getAuthObject();
+        $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);
+        $cas->setConfig($config);
+        $this->assertEquals([$host], $this->callMethod($cas, 'getServiceBaseUrl'));
+    }
+
+    /**
+     * Test service base URL configuration fallback to invalid site URL.
+     *
+     * @return void
+     */
+    public function testBaseUrlConfigInvalidFallback(): void
+    {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Valid CAS/service_base_url or Site/url config parameters are required.');
+        $cas = $this->getAuthObject();
+        $url = 'not-a-url';
+        $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);
+        $cas->setConfig($config);
+        $this->callMethod($cas, 'getServiceBaseUrl');
     }
 }

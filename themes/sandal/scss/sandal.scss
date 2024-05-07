@@ -23,7 +23,13 @@ body {
 
 /* -- Layout --- */
 .main .container { background-color: $white; }
-.mainbody { padding-top: 1rem; }
+.mainbody {
+  padding-top: 1rem;
+  // If an h2 is the first element in mainbody, avoid excessive space due to the padding:
+  & > h2:first-child {
+    margin-top: 0;
+  }
+}
 
 /* --- Header --- */
 .navbar { border-radius: 0; }

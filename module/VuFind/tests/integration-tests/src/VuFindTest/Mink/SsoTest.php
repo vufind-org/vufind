@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Mink;
 
-use VuFindTest\Feature\LiveDatabaseTrait;
-
 /**
  * Mink SSO test class.
  *

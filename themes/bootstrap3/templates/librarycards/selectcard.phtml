@@ -1,48 +1,50 @@
 <?php if ($this->user): ?>
   <?php $cards = $this->user->getLibraryCards(); ?>
   <?php if ($cards->count() > 1): ?>
+    <?php
+      // Standard case: map the cards:
+      $cardItems = array_map(
+        function ($card) {
+          $target = '';
+          $username = $card->getCatUsername();
+          if (strstr($username, '.')) {
+            [$target, $username] = explode('.', $username, 2);
+          }
+          $display = $this->escapeHtml($card->getCardName() ? $card->getCardName() : $card->getCatUsername());
+          if ($target) {
+            $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
+          }
+          $isSelected = strcasecmp($username, $this->user->getCatUsername() ?? '') == 0;
+          return [
+            'label' => $display,
+            'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => $card->id]]),
+            'extraLinkAttributes' => ['data-clear-account-cache' => ''],
+            'selected' => $isSelected,
+          ];
+        },
+        iterator_to_array($cards)
+      );
+
+      $initialItems = [];
+      // Special case: insert initial value if cat_username is empty:
+      if ($this->user->cat_username === null) {
+        $initialItems[] = [
+          'label' => '-',
+          'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => '']]),
+          'extraLinkAttributes' => ['data-clear-account-cache' => ''],
+          'selected' => true,
+        ];
+      }
+    ?>
     <?=
       $this->component(
-          'menu-button',
-          [
-            'wrapperClass' => 'select-library-card',
-            'showSelectedValue' => true,
-            'toggleLabel' => 'Library Card',
-            'menuItems' => array_merge(
-              // Special case: insert initial value if cat_username is empty:
-              null === $this->user->cat_username
-                ? [
-                    [
-                      'label' => '-',
-                      'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => '']]),
-                      'extraLinkAttributes' => ['data-clear-account-cache' => ''],
-                      'selected' => true,
-                    ],
-                ]
-                : [],
-              // Standard case: map the cards:
-              array_map(
-                  function ($card) {
-                    $target = '';
-                    $username = $card->cat_username;
-                    if (strstr($username, '.')) {
-                      [$target, $username] = explode('.', $username, 2);
-                    }
-                    $display = $this->escapeHtml($card->card_name ? $card->card_name : $card->cat_username);
-                    if ($target) {
-                      $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
-                    }
-                    return [
-                      'label' => $display,
-                      'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => $card->id]]),
-                      'extraLinkAttributes' => ['data-clear-account-cache' => ''],
-                      'selected' => strcasecmp($card->cat_username, $this->user->cat_username ?? '') == 0,
-                    ];
-                  },
-                  iterator_to_array($cards)
-              )
-            ),
-          ]
+        'menu-button',
+        [
+          'wrapperClass' => 'select-library-card',
+          'showSelectedValue' => true,
+          'toggleLabel' => 'Library Card',
+          'menuItems' => array_merge($initialItems, $cardItems),
+        ]
       )
     ?>
   <?php endif; ?>

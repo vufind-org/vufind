@@ -325,6 +325,9 @@ var VuFind = (function VuFind() {
       const scriptEl = document.createElement('script');
       scriptEl.innerHTML = script.innerHTML;
       scriptEl.setAttribute('nonce', getCspNonce());
+      if (script.src) {
+        scriptEl.src = script.src;
+      }
       newElm.appendChild(scriptEl);
     });
   }
@@ -363,7 +366,7 @@ var VuFind = (function VuFind() {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(VuFind.translate('error_occurred'));
+          throw new Error(translate('error_occurred'));
         }
         return response.text();
       })
@@ -375,7 +378,7 @@ var VuFind = (function VuFind() {
       })
       .catch(error => {
         console.error('Request failed:', error);
-        setInnerHtml(element, VuFind.translate('error_occurred'));
+        setInnerHtml(element, translate('error_occurred'));
         if (typeof success === 'function') {
           success(null, error);
         }
@@ -416,35 +419,14 @@ var VuFind = (function VuFind() {
   /**
    * Initialize result page scripts.
    *
-   * @param {string|JQuery} container
+   * @param {string|Element} _container
    */
-  var initResultScripts = function initResultScripts(container) {
-    let jqContainer = typeof container === 'string' ? $(container) : container;
-    if (typeof this.openurl !== 'undefined') {
-      this.openurl.init(jqContainer);
-    }
-    if (typeof this.itemStatuses !== 'undefined') {
-      this.itemStatuses.init(jqContainer);
-    }
-    if (typeof this.saveStatuses !== 'undefined') {
-      this.saveStatuses.init(jqContainer);
-    }
-    if (typeof this.recordVersions !== 'undefined') {
-      this.recordVersions.init(jqContainer);
-    }
-    if (typeof this.cart !== 'undefined') {
-      this.cart.registerToggles(jqContainer);
-    }
-    if (typeof this.embedded !== 'undefined') {
-      this.embedded.init(jqContainer);
-    }
-    this.lightbox.bind(jqContainer);
-    setupQRCodeLinks(jqContainer[0]);
+  var initResultScripts = function initResultScripts(_container) {
+    let container = typeof _container === 'string' ? document.querySelector(_container) : _container;
+    emit('results-init', {container: container});
+    setupQRCodeLinks(container);
     if (typeof loadCovers === 'function') {
       loadCovers();
-    }
-    if (typeof this.explain !== 'undefined') {
-      this.explain.init();
     }
   };
 

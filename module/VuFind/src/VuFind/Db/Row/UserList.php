@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use Laminas\Session\Container;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Tags;
@@ -50,7 +51,7 @@ use VuFind\Tags;
  * @property string $created
  * @property bool   $public
  */
-class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, UserListEntityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 

@@ -53,7 +53,7 @@
   <?=
     $this->makeTag(
       $toggleTag,
-      $buttonText . $this->icon('dropdown-caret'),
+      $this->transEsc($this->toggleLabel) . $this->icon('dropdown-caret'),
       $toggleAttrs,
       ['escapeContent' => false]
     )

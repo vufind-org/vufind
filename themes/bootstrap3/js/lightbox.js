@@ -305,7 +305,7 @@ VuFind.register('lightbox', function Lightbox() {
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
-    var buttonData = { name: 'submit', value: 1 };
+    var buttonData = { name: 'submitButton', value: 1 };
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-close') !== 'undefined') {
         close();
@@ -314,7 +314,7 @@ VuFind.register('lightbox', function Lightbox() {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
       }
-      buttonData.name = submit.attr('name') || 'submit';
+      buttonData.name = submit.attr('name') || 'submitButton';
       buttonData.value = submit.attr('value') || 1;
     }
     data.push(buttonData);
@@ -501,6 +501,11 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modalParams = {};
   }
+
+  function updateContainer(params) {
+    bind(params.container);
+  }
+
   function init() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
@@ -535,6 +540,7 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal(cmd);
       }
     };
+    VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

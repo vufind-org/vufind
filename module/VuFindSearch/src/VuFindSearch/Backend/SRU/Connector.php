@@ -113,7 +113,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                          'startRecord' => 1,
                          'recordSchema' => 'marcxml'];
 
-        $this->debug('More Like This Query: ' . print_r($query, true));
+        $this->debug('More Like This Query: ' . $query);
 
         return $this->call('GET', $options);
     }
@@ -161,7 +161,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $schema = 'marcxml',
         $process = true
     ) {
-        $this->debug('Query: ' . print_r($query, true));
+        $this->debug('Query: ' . $query);
 
         // Query String Parameters
         $options = ['operation' => 'searchRetrieve',
@@ -204,7 +204,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function call($method = 'GET', $params = null, $process = true)
     {
-        $queryString = null;
+        $queryString = '';
         if ($params) {
             $query = ['version=' . $this->sruVersion];
             foreach ($params as $function => $value) {
@@ -221,11 +221,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        $this->debug('Connect: ' . print_r($this->host . '?' . $queryString, true));
+        $url = $this->host . '?' . $queryString;
+        $this->debug('Connect: ' . $url);
 
         // Send Request
         $this->client->resetParameters();
-        $this->client->setUri($this->host . '?' . $queryString);
+        $this->client->setUri($url);
         $result = $this->client->setMethod($method)->send();
         $this->checkForHttpError($result);
 

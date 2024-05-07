@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -39,7 +39,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -67,9 +67,8 @@ class UserServiceFactory extends AbstractDbServiceFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('user');
-        $userService = parent::__invoke($container, $requestedName, [$userTable]);
-        return $userService;
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+        $session = new \Laminas\Session\Container('Account', $sessionManager);
+        return parent::__invoke($container, $requestedName, [$session]);
     }
 }
