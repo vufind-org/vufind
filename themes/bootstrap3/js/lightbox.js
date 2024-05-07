@@ -31,6 +31,7 @@ VuFind.register('lightbox', function Lightbox() {
     }
     _lightboxTitle = false;
     _modal.modal('handleUpdate');
+    VuFind.emit("lightbox:render", _modalBody.get(0));
   }
 
   function _addQueryParameters(url, params) {

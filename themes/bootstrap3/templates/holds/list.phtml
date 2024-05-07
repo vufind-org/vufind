@@ -28,12 +28,14 @@
               <input type="checkbox" name="selectAll" class="checkbox-select-all">
               <?=$this->transEsc('select_all_on_page')?>
             </label>
+
             <?php if ($this->updateForm): ?>
               <div class="btn-group">
                 <input id="update_selected" name="updateSelected" type="submit" value="<?=$this->transEscAttr('hold_edit_selected') ?>" class="btn btn-default hidden">
               </div>
             <?php endif; ?>
-              <?php if ($this->cancelForm): ?>
+
+            <?php if ($this->cancelForm): ?>
               <?=
                 $this->component(
                     'confirm-button',
