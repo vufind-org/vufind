@@ -114,31 +114,43 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test regular and extended subject heading support.
+     * Test regular and extended subject heading support for different possible config options.
      *
      * @return void
      */
     public function testSubjectHeadings()
     {
-        $config = new \Laminas\Config\Config([]);
-        $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->getJsonFixture('misc/testbug1.json');
-        $record->setRawData($fixture['response']['docs'][0]);
-        $this->assertEquals(
-            [['Matematica', 'Periodici.']],
-            $record->getAllSubjectHeadings()
-        );
-        $this->assertEquals(
-            [
+        $configOptions = [
+            null,
+            'marc',
+        ];
+
+        foreach ($configOptions as $option) {
+            $configArray = [
+                'Record' => [
+                    'subjectHeadingsSort' => $option
+                ]
+            ];
+            $config = new \Laminas\Config\Config($configArray);
+            $record = new \VuFind\RecordDriver\SolrMarc($config);
+            $fixture = $this->getJsonFixture('misc/testbug1.json');
+            $record->setRawData($fixture['response']['docs'][0]);
+            $this->assertEquals(
+                [['Matematica', 'Periodici.']],
+                $record->getAllSubjectHeadings()
+            );
+            $this->assertEquals(
                 [
-                    'heading' => ['Matematica', 'Periodici.'],
-                    'type' => '',
-                    'source' => '',
-                    'id' => '',
+                    [
+                        'heading' => ['Matematica', 'Periodici.'],
+                        'type' => '',
+                        'source' => '',
+                        'id' => '',
+                    ],
                 ],
-            ],
-            $record->getAllSubjectHeadings(true)
-        );
+                $record->getAllSubjectHeadings(true)
+            );
+        }
     }
 
     /**
