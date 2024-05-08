@@ -37,10 +37,6 @@ public class UpdateDateTracker
     private Timestamp lastRecordChange;
     private Timestamp deleted;
 
-    PreparedStatement insertSql;
-    PreparedStatement selectSql;
-    PreparedStatement updateSql;
-
     private static ThreadLocal<UpdateDateTracker> trackerCache =
         new ThreadLocal<UpdateDateTracker>()
         {
@@ -69,21 +65,37 @@ public class UpdateDateTracker
         lastRecordChange = newRecordChange;
 
         // Save new values to the database:
-        insertSql.setString(1, core);
-        insertSql.setString(2, id);
-        insertSql.setTimestamp(3, firstIndexed);
-        insertSql.setTimestamp(4, lastIndexed);
-        insertSql.setTimestamp(5, lastRecordChange);
-        insertSql.executeUpdate();
+        try (
+            PreparedStatement insertSql = db.prepareStatement(
+                "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
+                "VALUES(?, ?, ?, ?, ?);"
+            )
+        ) {
+            insertSql.setString(1, core);
+            insertSql.setString(2, id);
+            insertSql.setTimestamp(3, firstIndexed);
+            insertSql.setTimestamp(4, lastIndexed);
+            insertSql.setTimestamp(5, lastRecordChange);
+            insertSql.executeUpdate();
+        }
     }
 
     /* Private support method: read a row from the change_tracker table.
      */
     private boolean readRow() throws SQLException
     {
-        selectSql.setString(1, core);
-        selectSql.setString(2, id);
-        ResultSet result = selectSql.executeQuery();
+        ResultSet result;
+        try (
+            PreparedStatement selectSql = db.prepareStatement(
+                "SELECT first_indexed, last_indexed, last_record_change, deleted " +
+                "FROM change_tracker WHERE core = ? AND id = ?;",
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
+            )
+        ) {
+            selectSql.setString(1, core);
+            selectSql.setString(2, id);
+            result = selectSql.executeQuery();
+        }
 
         // No results?  Free resources and return false:
         if (!result.first()) {
@@ -116,13 +128,21 @@ public class UpdateDateTracker
         lastRecordChange = newRecordChange;
 
         // Save new values to the database:
-        updateSql.setTimestamp(1, firstIndexed);
-        updateSql.setTimestamp(2, lastIndexed);
-        updateSql.setTimestamp(3, lastRecordChange);
-        updateSql.setNull(4, java.sql.Types.NULL);
-        updateSql.setString(5, core);
-        updateSql.setString(6, id);
-        updateSql.executeUpdate();
+        try (
+            PreparedStatement updateSql = db.prepareStatement(
+                "UPDATE change_tracker " +
+                "SET first_indexed = ?, last_indexed = ?, last_record_change = ?, deleted = ? " +
+                "WHERE core = ? AND id = ?;"
+            )
+        ) {
+            updateSql.setTimestamp(1, firstIndexed);
+            updateSql.setTimestamp(2, lastIndexed);
+            updateSql.setTimestamp(3, lastRecordChange);
+            updateSql.setNull(4, java.sql.Types.NULL);
+            updateSql.setString(5, core);
+            updateSql.setString(6, id);
+            updateSql.executeUpdate();
+        }
     }
 
     /* Constructor:
@@ -130,16 +150,6 @@ public class UpdateDateTracker
     public UpdateDateTracker(Connection dbConnection) throws SQLException
     {
         db = dbConnection;
-        insertSql = db.prepareStatement(
-            "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
-            "VALUES(?, ?, ?, ?, ?);");
-        selectSql = db.prepareStatement(
-            "SELECT first_indexed, last_indexed, last_record_change, deleted " +
-            "FROM change_tracker WHERE core = ? AND id = ?;",
-            ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        updateSql = db.prepareStatement("UPDATE change_tracker " +
-            "SET first_indexed = ?, last_indexed = ?, last_record_change = ?, deleted = ? " +
-            "WHERE core = ? AND id = ?;");
     }
 
     /* Get the first indexed date (IMPORTANT: index() must be called before this method)
