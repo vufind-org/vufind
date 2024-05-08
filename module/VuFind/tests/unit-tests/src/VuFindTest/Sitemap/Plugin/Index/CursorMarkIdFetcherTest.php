@@ -161,6 +161,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             if (!empty($expectedFq)) {
                 $expectedParams['fq'] = $expectedFq;
             }
+            $expectedParams['fl'] = 'last_indexed';
             $this->assertEquals(
                 new \VuFindSearch\ParamBag($expectedParams),
                 $command->getSearchParameters()
