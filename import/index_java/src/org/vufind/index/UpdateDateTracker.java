@@ -69,7 +69,7 @@ public class UpdateDateTracker
             PreparedStatement insertSql = db.prepareStatement(
                 "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
                 "VALUES(?, ?, ?, ?, ?);"
-            )
+            );
         ) {
             insertSql.setString(1, core);
             insertSql.setString(2, id);
@@ -84,7 +84,6 @@ public class UpdateDateTracker
      */
     private boolean readRow() throws SQLException
     {
-        ResultSet result;
         try (
             PreparedStatement selectSql = db.prepareStatement(
                 "SELECT first_indexed, last_indexed, last_record_change, deleted " +
@@ -94,23 +93,23 @@ public class UpdateDateTracker
         ) {
             selectSql.setString(1, core);
             selectSql.setString(2, id);
-            result = selectSql.executeQuery();
-        }
+            ResultSet result = selectSql.executeQuery();
 
-        // No results?  Free resources and return false:
-        if (!result.first()) {
+            // No results?  Free resources and return false:
+            if (!result.first()) {
+                result.close();
+                return false;
+            }
+
+            // If we got this far, we have results -- load them into the object:
+            firstIndexed = result.getTimestamp(1);
+            lastIndexed = result.getTimestamp(2);
+            lastRecordChange = result.getTimestamp(3);
+            deleted = result.getTimestamp(4);
+
+            // Free resources and report success:
             result.close();
-            return false;
         }
-
-        // If we got this far, we have results -- load them into the object:
-        firstIndexed = result.getTimestamp(1);
-        lastIndexed = result.getTimestamp(2);
-        lastRecordChange = result.getTimestamp(3);
-        deleted = result.getTimestamp(4);
-
-        // Free resources and report success:
-        result.close();
         return true;
     }
 
