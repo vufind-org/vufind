@@ -180,7 +180,7 @@ class AbstractRecord extends AbstractBase
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $driver->addOrUpdateRating($user->id, intval($rating));
+                $driver->addOrUpdateRating($user->getId(), intval($rating));
             }
 
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -208,8 +208,10 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = $this->getTable('Comments');
-        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsServiceInterface::class
+        );
+        if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
@@ -322,7 +324,7 @@ class AbstractRecord extends AbstractBase
                 throw new BadRequestException('error_inconsistent_parameters');
             }
             $driver->addOrUpdateRating(
-                $user->id,
+                $user->getId(),
                 '' === $rating ? null : intval($rating)
             );
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
@@ -335,7 +337,7 @@ class AbstractRecord extends AbstractBase
         // Display the "add rating" form:
         $view = $this->createViewModel(
             [
-                'currentRating' => $user ? $driver->getRatingData($user->id) : null,
+                'currentRating' => $user ? $driver->getRatingData($user->getId()) : null,
             ]
         );
         return $view;
@@ -464,7 +466,7 @@ class AbstractRecord extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             return $this->processSave();
         }
 
@@ -556,7 +558,7 @@ class AbstractRecord extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
@@ -620,7 +622,7 @@ class AbstractRecord extends AbstractBase
         $view->to = $this->params()->fromPost('to');
         $view->provider = $this->params()->fromPost('provider');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(\VuFind\Validator\SessionCsrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {

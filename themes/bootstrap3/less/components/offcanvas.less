@@ -1,4 +1,9 @@
+/* #LESS> */
 @offcanvas-offset: 80vw;  // Width of open menu
+/* <#LESS */
+/* #SCSS>
+$offcanvas-offset: 80vw !default;  // Width of open menu
+<#SCSS */
 
 .vufind-offcanvas-overlay { display: none; }
 
@@ -12,7 +17,7 @@
 
 .close-offcanvas,
 .search-filter-toggle {
-  display: none;
+  display: none !important;
 
   &.btn-link,
   .icon-link__label {
@@ -32,7 +37,7 @@
 @media screen and (max-width: 767px) {
   .vufind-offcanvas .close-offcanvas,
   .search-filter-toggle {
-    display: block;
+    display: block !important;
   }
 
   body.vufind-offcanvas {
