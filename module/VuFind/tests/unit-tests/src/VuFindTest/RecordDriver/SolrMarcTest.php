@@ -128,8 +128,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         foreach ($configOptions as $option) {
             $configArray = [
                 'Record' => [
-                    'subjectHeadingsSort' => $option
-                ]
+                    'subjectHeadingsSort' => $option,
+                ],
             ];
             $config = new \Laminas\Config\Config($configArray);
             $record = new \VuFind\RecordDriver\SolrMarc($config);

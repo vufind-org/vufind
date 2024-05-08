@@ -201,14 +201,13 @@ trait MarcAdvancedTrait
      * Get subject headings of a given record field.
      * The heading is returned as a chunk, increasing from least specific to most specific.
      *
-     * @param array  $field        field to handle
-     * @param bool   $extended     Whether to return a keyed array with the following keys:
-     *                             - heading: the actual subject heading chunks
-     *                             - type: heading type
-     *                             - source: source vocabulary
-     * @param string $fieldType    Type of the field
+     * @param array  $field     field to handle
+     * @param bool   $extended  Whether to return a keyed array with the following keys:
+     *                          - heading: the actual subject heading chunks - type:
+     *                          heading type - source: source vocabulary
+     * @param string $fieldType Type of the field
      *
-     * @return array|null
+     * @return ?array
      */
     protected function processSubjectHeadings(
         array $field,
@@ -217,7 +216,6 @@ trait MarcAdvancedTrait
     ): ?array {
         // Start an array for holding the chunks of the current heading:
         $current = [];
-        $returnValues = null;
 
         // Get all the chunks and collect them together:
         foreach ($field['subfields'] as $subfield) {
@@ -233,17 +231,17 @@ trait MarcAdvancedTrait
                 $sourceIndicator = $field['i2'];
                 $source = $this->subjectSources[$sourceIndicator]
                     ?? $this->getSubfield($field, '2');
-                $returnValues = [
+                return [
                     'heading' => $current,
                     'type' => $fieldType,
                     'source' => $source,
                     'id' => $this->getSubfield($field, '0'),
                 ];
             } else {
-                $returnValues = $current;
+                return $current;
             }
         }
-        return $returnValues;
+        return null;
     }
 
     /**
