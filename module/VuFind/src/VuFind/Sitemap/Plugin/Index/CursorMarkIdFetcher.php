@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap\Plugin\Index;
 
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-use VuFindSearch\Command\GetSitemapFieldsCommand;
+use VuFindSearch\Command\GetIdsCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
@@ -135,13 +135,14 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
                 'rows' => $countPerPage,
                 'sort' => $key . ' asc',
                 'cursorMark' => $cursorMark,
+                'fl' => 'last_indexed',
             ]
         );
         // Apply filters:
         foreach ($filters as $filter) {
             $params->add('fq', $filter);
         }
-        $command = new GetSitemapFieldsCommand(
+        $command = new GetIdsCommand(
             $backend,
             new Query('*:*'),
             0,

@@ -37,7 +37,6 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\Feature\GetIdsInterface;
-use VuFindSearch\Feature\GetSitemapFieldsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
@@ -64,8 +63,7 @@ class Backend extends AbstractBackend implements
     RetrieveBatchInterface,
     RandomInterface,
     ExtraRequestDetailsInterface,
-    GetIdsInterface,
-    GetSitemapFieldsInterface
+    GetIdsInterface
 {
     /**
      * Limit for records per query in a batch retrieval.
@@ -214,39 +212,7 @@ class Backend extends AbstractBackend implements
 
         $params->set('rows', $limit);
         $params->set('start', $offset);
-        $params->set('fl', $this->getConnector()->getUniqueKey());
-        $params->mergeWith($this->getQueryBuilder()->build($query));
-        $response   = $this->connector->search($params);
-        $collection = $this->createRecordCollection($response);
-        $this->injectSourceIdentifier($collection);
-
-        return $collection;
-    }
-
-    /**
-     * Perform a search and return record identifiers and additional
-     * information required for sitemap generation, especially related to
-     * Change Tracking.
-     *
-     * @param AbstractQuery $query  Search query
-     * @param int           $offset Search offset
-     * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     */
-    public function getSitemapFields(
-        AbstractQuery $query,
-        $offset,
-        $limit,
-        ParamBag $params = null
-    ) {
-        $params = $params ?: new ParamBag();
-        $this->injectResponseWriter($params);
-
-        $params->set('rows', $limit);
-        $params->set('start', $offset);
-        $params->set('fl', [$this->getConnector()->getUniqueKey(), 'last_indexed']);
+        $params->add('fl', $this->getConnector()->getUniqueKey());
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
