@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for change_tracker table
  *
@@ -40,4 +42,99 @@ namespace VuFind\Db\Entity;
  */
 interface ChangeTrackerEntityInterface extends EntityInterface
 {
+    /**
+     * Id setter
+     *
+     * @param string $id Id
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setId(string $id): ChangeTrackerEntityInterface;
+
+    /**
+     * Id getter
+     *
+     * @return string
+     */
+    public function getId(): string;
+
+    /**
+     * Core setter
+     *
+     * @param string $core Core
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setCore(string $core): ChangeTrackerEntityInterface;
+
+    /**
+     * Core getter
+     *
+     * @return string
+     */
+    public function getCore(): string;
+
+    /**
+     * FirstIndexed setter.
+     *
+     * @param ?Datetime $dateTime Time first added to index.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
+
+    /**
+     * FirstIndexed Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getFirstIndexed(): ?Datetime;
+
+    /**
+     * LastIndexed setter.
+     *
+     * @param ?Datetime $dateTime Last time changed in index.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
+
+    /**
+     * LastIndexed Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getLastIndexed(): ?Datetime;
+
+    /**
+     * LastRecordChange setter.
+     *
+     * @param ?Datetime $dateTime Last time original record was edited
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface;
+
+    /**
+     * LastRecordChange Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getLastRecordChange(): ?Datetime;
+
+    /**
+     * Deleted setter.
+     *
+     * @param ?Datetime $dateTime Time record was removed from index
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface;
+
+    /**
+     * Deleted Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getDeleted(): ?Datetime;
 }

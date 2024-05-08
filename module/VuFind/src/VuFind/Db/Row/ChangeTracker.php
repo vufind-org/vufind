@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 
 /**
@@ -39,6 +40,13 @@ use VuFind\Db\Entity\ChangeTrackerEntityInterface;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property string  $core
+ * @property string  $id
+ * @property ?string $first_indexed
+ * @property ?string $last_indexed
+ * @property ?string $last_record_change
+ * @property ?string $deleted
  */
 class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
 {
@@ -50,5 +58,143 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     public function __construct($adapter)
     {
         parent::__construct(['core', 'id'], 'change_tracker', $adapter);
+    }
+
+    /**
+     * Id setter
+     *
+     * @param string $id Id
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setId(string $id): ChangeTrackerEntityInterface
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * Id getter
+     *
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * Core setter
+     *
+     * @param string $core Core
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setCore(string $core): ChangeTrackerEntityInterface
+    {
+        $this->core = $core;
+        return $this;
+    }
+
+    /**
+     * Core getter
+     *
+     * @return string
+     */
+    public function getCore(): string
+    {
+        return $this->core;
+    }
+
+    /**
+     * FirstIndexed setter.
+     *
+     * @param ?Datetime $dateTime Time first added to index.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface
+    {
+        $this->first_indexed = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * FirstIndexed Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getFirstIndexed(): ?Datetime
+    {
+        return $this->first_indexed ? DateTime::createFromFormat('Y-m-d H:i:s', $this->first_indexed) : null;
+    }
+
+    /**
+     * LastIndexed setter.
+     *
+     * @param ?Datetime $dateTime Last time changed in index.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface
+    {
+        $this->last_indexed = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * LastIndexed Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getLastIndexed(): ?Datetime
+    {
+        return $this->last_indexed ? DateTime::createFromFormat('Y-m-d H:i:s', $this->last_indexed) : null;
+    }
+
+    /**
+     * LastRecordChange setter.
+     *
+     * @param ?Datetime $dateTime Last time original record was edited
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface
+    {
+        $this->last_record_change = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * LastRecordChange Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getLastRecordChange(): ?Datetime
+    {
+        return $this->last_record_change ? DateTime::createFromFormat('Y-m-d H:i:s', $this->last_record_change) : null;
+    }
+
+    /**
+     * Deleted setter.
+     *
+     * @param ?Datetime $dateTime Time record was removed from index
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface
+    {
+        $this->deleted = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Deleted Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getDeleted(): ?Datetime
+    {
+        return $this->deleted ? DateTime::createFromFormat('Y-m-d H:i:s', $this->deleted) : null;
     }
 }
