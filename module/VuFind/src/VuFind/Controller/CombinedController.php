@@ -124,13 +124,15 @@ class CombinedController extends AbstractSearch
                 'currentSearch' => $settings,
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
-            // Load custom CSS, if necessary:
-            $html = ($this->getViewRenderer()->plugin('headLink'))();
+            // Initialize theme resources:
+            ($this->getViewRenderer()->plugin('headThemeResources'))();
             // Render content:
-            $html .= $this->getViewRenderer()->render(
+            $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
                 $viewParams
             );
+            // Prepend CSS in case of custom files added by templates:
+            $html = ($this->getViewRenderer()->plugin('headLink'))() . $html;
         }
         return $this->getAjaxResponse('text/html', $html);
     }
