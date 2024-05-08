@@ -142,16 +142,6 @@ public class UpdateDateTracker
             "WHERE core = ? AND id = ?;");
     }
 
-    /* Finalizer
-     */
-    protected void finalize() throws SQLException, Throwable
-    {
-        insertSql.close();
-        selectSql.close();
-        updateSql.close();
-        super.finalize();
-    }
-
     /* Get the first indexed date (IMPORTANT: index() must be called before this method)
      */
     public String getFirstIndexed()
