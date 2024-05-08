@@ -65,7 +65,8 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get a schema.org tag (if enabled).
+     * Get a schema.org tag (if enabled). Note that this only generates an open (or void)
+     * tag; if a close tag is required, you will need to add it yourself separately.
      *
      * @param string $tag        Tag name
      * @param array  $attributes Tag attributes

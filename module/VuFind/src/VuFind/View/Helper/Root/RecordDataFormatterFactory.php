@@ -159,7 +159,7 @@ class RecordDataFormatterFactory implements FactoryInterface
                 ->getTag('span', ['property' => 'availableLanguage', 'typeof' => 'Language']);
             $nameSpan = $this->schemaOrgHelper->getTag('span', ['property' => 'name']);
             $itemPrefix = $langSpan . $nameSpan;
-            $itemSuffix = ($langSpan ? '</span>' : '') . ($nameSpan ? '</span>' : '');
+            $itemSuffix = ($nameSpan ? '</span>' : '') . ($langSpan ? '</span>' : '');
         } else {
             $itemPrefix = $itemSuffix = '';
         }
