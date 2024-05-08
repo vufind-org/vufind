@@ -120,7 +120,7 @@ class Sitemap extends AbstractFile
         return "<url>\n"
             . "  <loc>$link</loc>\n"
             . "  <changefreq>$freq</changefreq>\n"
-            . ($lastmod ? "  <lastmod>" . $lastmod . "</lastmod>\n" : '')
+            . ($lastmod ? "  <lastmod>$lastmod</lastmod>\n" : '')
             . $alternativeLinks
             . "</url>\n";
     }
