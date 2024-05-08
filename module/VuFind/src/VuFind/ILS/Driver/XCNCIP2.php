@@ -2907,7 +2907,7 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $idList     List of bibliographic IDs.
      * @param array $agencyList List of possible toAgency values
      *
-     * @return array|false|\SimpleXMLElement[]
+     * @return \SimpleXMLElement[]
      * @throws ILSException
      */
     protected function getBibs(array $idList, array $agencyList): array

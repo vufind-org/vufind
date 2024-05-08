@@ -46,7 +46,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'user' => UserService::class,
+        AccessTokenServiceInterface::class => AccessTokenService::class,
+        CommentsServiceInterface::class => CommentsService::class,
+        OaiResumptionServiceInterface::class => OaiResumptionService::class,
+        RatingsServiceInterface::class => RatingsService::class,
+        ResourceServiceInterface::class => ResourceService::class,
+        SessionServiceInterface::class => SessionService::class,
+        TagServiceInterface::class => TagService::class,
+        UserServiceInterface::class => UserService::class,
     ];
 
     /**
@@ -55,6 +62,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        AccessTokenService::class => AccessTokenServiceFactory::class,
+        CommentsService::class => AbstractDbServiceFactory::class,
+        OaiResumptionService::class => AbstractDbServiceFactory::class,
+        RatingsService::class => AbstractDbServiceFactory::class,
+        ResourceService::class => ResourceServiceFactory::class,
+        SessionService::class => SessionServiceFactory::class,
+        TagService::class => AbstractDbServiceFactory::class,
         UserService::class => UserServiceFactory::class,
     ];
 
@@ -66,6 +80,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return AbstractDbService::class;
+        return DbServiceInterface::class;
     }
 }

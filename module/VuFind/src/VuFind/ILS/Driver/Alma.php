@@ -248,8 +248,8 @@ class Alma extends AbstractBase implements
             $errorMsg = "Alma error for $method request '$url' (status code"
                 . " $statusCode): $almaErrorMsg";
             $this->logError(
-                $errorMsg . '. GET params: ' . var_export($paramsGet, true)
-                . '. POST params: ' . var_export($paramsPost, true)
+                $errorMsg . '. GET params: ' . $this->varDump($paramsGet)
+                . '. POST params: ' . $this->varDump($paramsPost)
                 . '. Result body: ' . $result->getBody()
             );
             throw new ILSException($errorMsg, $statusCode);

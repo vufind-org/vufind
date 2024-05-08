@@ -29,6 +29,7 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Exception;
 use Laminas\View\Resolver\TemplatePathStack;
 
 /**

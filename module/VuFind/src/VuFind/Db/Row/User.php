@@ -29,8 +29,10 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
@@ -69,12 +71,12 @@ use function count;
  */
 class User extends RowGateway implements
     UserEntityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
-    \LmcRbacMvc\Identity\IdentityInterface,
-    \VuFind\Db\Service\DbServiceAwareInterface
+    \LmcRbacMvc\Identity\IdentityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\Db\Service\DbServiceAwareTrait;
+    use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
      * VuFind configuration
@@ -86,9 +88,10 @@ class User extends RowGateway implements
     /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
+     * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
      */
-    public function __construct($adapter)
+    public function __construct($adapter, protected ILSAuthenticator $ilsAuthenticator)
     {
         parent::__construct('id', 'user', $adapter);
     }
@@ -134,8 +137,8 @@ class User extends RowGateway implements
     /**
      * Set ILS login credentials without saving them.
      *
-     * @param string $username Username to save
-     * @param string $password Password to save
+     * @param string  $username Username to save
+     * @param ?string $password Password to save (null for none)
      *
      * @return void
      */
@@ -144,7 +147,7 @@ class User extends RowGateway implements
         $this->cat_username = $username;
         if ($this->passwordEncryptionEnabled()) {
             $this->cat_password = null;
-            $this->cat_pass_enc = $this->getUserService()->encrypt($password);
+            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
         } else {
             $this->cat_password = $password;
             $this->cat_pass_enc = null;
@@ -195,14 +198,12 @@ class User extends RowGateway implements
      *
      * @return string The Catalog password in plain text
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::getCatPasswordForUser()
      */
     public function getCatPassword()
     {
-        if ($this->passwordEncryptionEnabled()) {
-            return isset($this->cat_pass_enc)
-                ? $this->getUserService()->decrypt($this->cat_pass_enc) : null;
-        }
-        return $this->cat_password ?? null;
+        return $this->ilsAuthenticator->getCatPasswordForUser($this);
     }
 
     /**
@@ -212,7 +213,7 @@ class User extends RowGateway implements
      */
     protected function passwordEncryptionEnabled()
     {
-        return $this->getUserService()->passwordEncryptionEnabled();
+        return $this->ilsAuthenticator->passwordEncryptionEnabled();
     }
 
     /**
@@ -226,12 +227,12 @@ class User extends RowGateway implements
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
      *
-     * @deprecated Use $this->getUserService()->encrypt() or $this->getUserService()->decrypt()
+     * @deprecated Use ILSAuthenticator::encrypt() or ILSAuthenticator::decrypt()
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
         $method = $encrypt ? 'encrypt' : 'decrypt';
-        return $this->getUserService()->$method($text);
+        return $this->ilsAuthenticator->$method($text);
     }
 
     /**
@@ -509,7 +510,7 @@ class User extends RowGateway implements
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
             if ($this->passwordEncryptionEnabled()) {
-                $row->cat_password = $this->getUserService()->decrypt($row->cat_pass_enc);
+                $row->cat_password = $this->ilsAuthenticator->decrypt($row->cat_pass_enc);
             }
         }
 
@@ -628,7 +629,7 @@ class User extends RowGateway implements
         }
         if ($this->passwordEncryptionEnabled()) {
             $row->cat_password = null;
-            $row->cat_pass_enc = $this->getUserService()->encrypt($password);
+            $row->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
         } else {
             $row->cat_password = $password;
             $row->cat_pass_enc = null;
@@ -681,16 +682,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get a User service object.
-     *
-     * @return \VuFind\Db\Service\UserService
-     */
-    public function getUserService()
-    {
-        return $this->getDbService(\VuFind\Db\Service\UserService::class);
-    }
-
-    /**
      * Destroy the user.
      *
      * @param bool $removeComments Whether to remove user's comments
@@ -712,11 +703,13 @@ class User extends RowGateway implements
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
-            $comments = $this->getDbTable('Comments');
-            $comments->deleteByUser($this);
+            $comments = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
-            $ratings = $this->getDbTable('Ratings');
+            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
             $ratings->deleteByUser($this);
         }
 
@@ -784,24 +777,11 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get login token data
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @param string $userId user identifier
-     *
-     * @return array
+     * @return ?int
      */
-    public function getLoginTokens(string $userId): array
-    {
-        $tokenTable = $this->getDbTable('LoginToken');
-        return $tokenTable->getByUserId($userId);
-    }
-
-    /**
-     * Get identifier.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -830,6 +810,19 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface
+    {
+        $this->firstname = $firstName;
+        return $this;
+    }
+
+    /**
      * Get firstname.
      *
      * @return string
@@ -837,6 +830,19 @@ class User extends RowGateway implements
     public function getFirstname(): string
     {
         return $this->firstname;
+    }
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface
+    {
+        $this->lastname = $lastName;
+        return $this;
     }
 
     /**
@@ -893,6 +899,29 @@ class User extends RowGateway implements
     public function getPendingEmail(): string
     {
         return $this->pending_email;
+    }
+
+    /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface
+    {
+        $this->cat_id = $catId;
+        return $this;
+    }
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string
+    {
+        return $this->cat_id;
     }
 
     /**
@@ -998,6 +1027,29 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->auth_method = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->auth_method;
+    }
+
+    /**
      * Get last language.
      *
      * @return string
@@ -1005,5 +1057,51 @@ class User extends RowGateway implements
     public function getLastLanguage(): string
     {
         return $this->last_language;
+    }
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool
+    {
+        return (bool)($this->user_provided_email ?? false);
+    }
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    {
+        $this->user_provided_email = $userProvided ? 1 : 0;
+        return $this;
+    }
+
+    /**
+     * Last login setter.
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    {
+        $this->last_login = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Last login getter
+     *
+     * @return Datetime
+     */
+    public function getLastLogin(): Datetime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
     }
 }

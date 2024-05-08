@@ -124,4 +124,20 @@ class Config extends \Laminas\View\Helper\AbstractHelper
         return (bool)($this->get('config')->Record
             ->alwaysDisplayIndexRecordInStaffView ?? false);
     }
+
+    /**
+     * Get offcanvas sidebar side
+     *
+     * @return ?string 'left', 'right' or null for no offcanvas
+     */
+    public function offcanvasSide(): ?string
+    {
+        $config = $this->get('config');
+        if (!($config->Site->offcanvas ?? false)) {
+            return null;
+        }
+        return ($config->Site->sidebarOnLeft ?? false)
+            ? 'left'
+            : 'right';
+    }
 }

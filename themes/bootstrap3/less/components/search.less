@@ -1,7 +1,14 @@
 // Thumbnail sizes for media items: search results, list entries, record views
+/* #LESS> */
 @thumbnail-width-small:   60px;
 @thumbnail-width-medium: 100px;
 @thumbnail-width-large:  160px;
+/* <#LESS */
+/* #SCSS>
+$thumbnail-width-small:   60px !default;
+$thumbnail-width-medium: 100px !default;
+$thumbnail-width-large:  160px !default;
+<#SCSS */
 
 // record result list ol, ul that contains li.result
 .record-list {
@@ -45,7 +52,12 @@
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
-  .result .checkbox { display: none; }
+  // Bulk action checkboxes:
+  #search-cart-form .result .checkbox,
+  // Search result bulk action buttons:
+  #search-cart-form .bulkActionButtons,
+  // Favorites bulk action buttons:
+  form[name="bulkActionForm"] .bulkActionButtons { display: none; }
 }
 
 .searchHomeContent { .clearfix(); }
@@ -705,6 +717,10 @@ body.rtl {
   &:extend(.table all);
   &:extend(.table-striped all);
   &:extend(.table-responsive all);
+
+  td.history_results, td.history_actions {
+    word-wrap: normal;
+  }
 }
 table.search-history-table {
   table-layout: auto;
@@ -778,8 +794,14 @@ table.search-history-table {
     .mainbody,
     .sidebar {
       float: none;
+    }
+    .mainbody {
       width: auto;
       padding: 0;
+      margin-bottom: 1rem;
+    }
+    &:not(.vufind-offcanvas.active) .sidebar {
+      width: auto;
     }
   }
 }
@@ -807,6 +829,26 @@ table.search-history-table {
         color: @text-color;
         background-color: transparent;
       }
+    }
+  }
+}
+
+.querySuggestions > h2, .spellingSuggestions > h2 {
+  font-size: unset;
+  line-height: @line-height-base;
+  margin: 0;
+}
+
+.spellingSuggestions .terms > li {
+  .suggestions {
+    padding-inline-start: 0;
+    display: inline;
+    li {
+      display: inline;
+      list-style: none;
+    }
+    li:not(:last-child)::after {
+      content: ', ';
     }
   }
 }

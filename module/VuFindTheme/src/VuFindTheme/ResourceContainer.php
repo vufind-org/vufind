@@ -44,6 +44,8 @@ use function is_array;
  */
 class ResourceContainer
 {
+    use \VuFind\Log\VarDumperTrait;
+
     /**
      * Less CSS files
      *
@@ -125,7 +127,7 @@ class ResourceContainer
         } elseif ($js === []) {
             return;
         } else {
-            throw new \Exception('Invalid JS entry format: ' . print_r($js, true));
+            throw new \Exception('Invalid JS entry format: ' . $this->varDump($js));
         }
     }
 

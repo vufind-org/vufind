@@ -96,7 +96,7 @@ class AuthHash extends Gateway
      *
      * @param string $sessionId Session ID
      *
-     * @return \VuFind\Db\Row\AuthHash
+     * @return ?\VuFind\Db\Row\AuthHash
      */
     public function getLatestBySessionId($sessionId)
     {

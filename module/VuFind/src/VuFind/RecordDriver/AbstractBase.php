@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 use function is_callable;
@@ -45,10 +46,12 @@ use function is_callable;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFindSearch\Response\RecordTrait;
@@ -151,8 +154,8 @@ abstract class AbstractBase implements
      */
     public function getComments()
     {
-        $table = $this->getDbTable('Comments');
-        return $table->getForResource(
+        $comments = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
+        return $comments->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
@@ -188,7 +191,7 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        $tags = $this->getDbTable('Tags');
+        $tags = $this->getDbService(TagServiceInterface::class);
         return $tags->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
@@ -207,17 +210,13 @@ abstract class AbstractBase implements
      * @param array               $tags The user-provided tags
      *
      * @return void
+     *
+     * @deprecated Use TagServiceInterface::addTagsToRecord()
      */
     public function addTags($user, $tags)
     {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier()
-        );
-        foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
-        }
+        $this->getDbService(TagServiceInterface::class)
+            ->addTagsToRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
     /**
@@ -227,17 +226,13 @@ abstract class AbstractBase implements
      * @param array               $tags The user-provided tags
      *
      * @return void
+     *
+     * @deprecated Use TagServiceInterface::deleteTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier()
-        );
-        foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
-        }
+        $this->getDbService(TagServiceInterface::class)
+            ->deleteTagsFromRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
     }
 
     /**
@@ -257,8 +252,10 @@ abstract class AbstractBase implements
         // Cache data since comments list may ask for same information repeatedly:
         $cacheKey = $userId ?? '-';
         if (!isset($this->ratingCache[$cacheKey])) {
-            $table = $this->getDbTable('Ratings');
-            $this->ratingCache[$cacheKey] = $table->getForResource(
+            $ratingsService = $this->getDbService(
+                \VuFind\Db\Service\RatingsServiceInterface::class
+            );
+            $this->ratingCache[$cacheKey] = $ratingsService->getForResource(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
                 $userId
@@ -282,11 +279,12 @@ abstract class AbstractBase implements
      */
     public function getRatingBreakdown(array $groups)
     {
-        return $this->getDbTable('Ratings')->getCountsForResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $groups
-        );
+        return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
+            ->getCountsForResource(
+                $this->getUniqueId(),
+                $this->getSourceIdentifier(),
+                $groups
+            );
     }
 
     /**
@@ -307,7 +305,8 @@ abstract class AbstractBase implements
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
-        $resource->addOrUpdateRating($userId, $rating);
+        $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
+            ->addOrUpdateRating($resource, $userId, $rating);
     }
 
     /**

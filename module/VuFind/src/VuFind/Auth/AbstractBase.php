@@ -59,14 +59,14 @@ abstract class AbstractBase implements
     /**
      * Has the configuration been validated?
      *
-     * @param bool
+     * @var bool
      */
     protected $configValidated = false;
 
     /**
      * Configuration settings
      *
-     * @param \Laminas\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 

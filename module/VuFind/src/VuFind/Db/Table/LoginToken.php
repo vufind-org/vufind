@@ -69,7 +69,7 @@ class LoginToken extends Gateway
     /**
      * Save a token
      *
-     * @param string $userId    User identifier
+     * @param int    $userId    User identifier
      * @param string $token     Login token
      * @param string $series    Series the token belongs to
      * @param string $browser   User browser
@@ -77,7 +77,7 @@ class LoginToken extends Gateway
      * @param int    $expires   Token expiration timestamp
      * @param string $sessionId Session associated with the token
      *
-     * @return LoginToken
+     * @return LoginTokenRow
      */
     public function saveToken(
         int $userId,
@@ -106,7 +106,7 @@ class LoginToken extends Gateway
      *
      * @param array $token array containing user id, token and series
      *
-     * @return mixed
+     * @return ?LoginTokenRow
      * @throws LoginTokenException
      */
     public function matchToken(array $token): ?LoginTokenRow
