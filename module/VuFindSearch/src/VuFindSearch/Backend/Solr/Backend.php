@@ -215,9 +215,9 @@ class Backend extends AbstractBackend implements
         $flParts = [$this->getConnector()->getUniqueKey()];
         if ($fl = $params->get('fl')) {
             // Merge multiple values if necessary, then split on delimiter:
-            $flParts = array_merge($flParts, explode(',', implode(',', $fl)));
+            $flParts = array_unique(array_merge($flParts, explode(',', implode(',', $fl))));
         }
-        $params->set('fl', implode(',', array_unique($flParts)));
+        $params->set('fl', implode(',', $flParts));
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
