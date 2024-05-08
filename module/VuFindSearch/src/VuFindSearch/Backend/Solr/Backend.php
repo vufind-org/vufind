@@ -212,7 +212,10 @@ class Backend extends AbstractBackend implements
 
         $params->set('rows', $limit);
         $params->set('start', $offset);
-        $params->add('fl', $this->getConnector()->getUniqueKey());
+        $fl = implode(',', $params->get('fl'));
+        $flParts = explode(',', $fl);
+        $flParts[] = $this->getConnector()->getUniqueKey();
+        $params->set('fl', implode(',', array_unique($flParts)));
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
