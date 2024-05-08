@@ -473,55 +473,35 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test getting multiple IDs.
+     * Data provider for testGetIds
      *
-     * @return void
+     * @return array
      */
-    public function testGetIds(): void
+    public static function getIdsProvider(): array
     {
-        $paramBagChecker = function (ParamBag $params) {
-            $expected = [
-                'wt' => ['json'],
-                'json.nl' => ['arrarr'],
-                'fl' => ['id'],
-                'rows' => [10],
-                'start' => [0],
-                'q' => ['foo'],
-            ];
-            $paramsArr = $params->getArrayCopy();
-            foreach ($expected as $key => $vals) {
-                if (count(array_diff($vals, $paramsArr[$key] ?? [])) !== 0) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        // TODO: currently this test is concerned with ensuring that the right
-        // parameters are sent to Solr; it may be worth adding a more realistic
-        // return value to better test processing of retrieved records.
-        $conn = $this->getConnectorMock(['search']);
-        $conn->expects($this->once())->method('search')
-            ->with($this->callback($paramBagChecker))
-            ->willReturn(json_encode([]));
-        $back = new Backend($conn);
-        $query = new Query('foo');
-        $result = $back->getIds($query, 0, 10);
-        $this->assertInstanceOf(RecordCollection::class, $result);
-        $this->assertCount(0, $result);
+        return [
+            'default field list' => [null, 'id'],
+            'customized field list' => ['last_indexed', 'id,last_indexed'],
+        ];
     }
 
     /**
-     * Test getting multiple IDs and merging an extra fl value.
+     * Test getting multiple IDs.
+     *
+     * @param ?string $flIn          Additional field list in input (null = none)
+     * @param string  $expectedFlOut Expected field list in output
      *
      * @return void
+     *
+     * @dataProvider getIdsProvider
      */
-    public function testGetIdsWithExtraField(): void
+    public function testGetIds(?string $flIn, string $expectedFlOut): void
     {
-        $paramBagChecker = function (ParamBag $params) {
+        $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {
             $expected = [
                 'wt' => ['json'],
                 'json.nl' => ['arrarr'],
-                'fl' => ['id,last_indexed'],
+                'fl' => [$expectedFlOut],
                 'rows' => [10],
                 'start' => [0],
                 'q' => ['foo'],
@@ -544,7 +524,9 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $query = new Query('foo');
         $params = new ParamBag();
-        $params->set('fl', 'last_indexed');
+        if ($flIn) {
+            $params->set('fl', $flIn);
+        }
         $result = $back->getIds($query, 0, 10, $params);
         $this->assertInstanceOf(RecordCollection::class, $result);
         $this->assertCount(0, $result);
