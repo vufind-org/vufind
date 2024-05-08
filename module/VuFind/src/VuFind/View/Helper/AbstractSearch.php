@@ -81,7 +81,6 @@ abstract class AbstractSearch extends AbstractHelper
         $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
             $html .= '<li>' . $view->escapeHtml($term) . ' &raquo; <ul class="suggestions">';
-            $i = 0;
             foreach ($details['suggestions'] as $word => $data) {
                 $href = $results->getUrlQuery()
                     ->replaceTerm(
