@@ -1535,10 +1535,11 @@ class Aleph extends AbstractBase implements
                         false
                     );
                     $id = $result->xpath('//doc_number/text()');
+                    $idString = (string)$id[0];
                     if (count($this->bib) == 1) {
-                        return $id[0];
+                        return $idString;
                     } else {
-                        return $base . '-' . $id[0];
+                        return $base . '-' . $idString;
                     }
                 }
             } catch (\Exception $ex) {
@@ -1566,6 +1567,9 @@ class Aleph extends AbstractBase implements
         } elseif (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
             // 13/7/2012
             return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
+        } elseif (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{2}$/", $date) === 1) {
+            // 13/7/12
+            return $this->dateConverter->convertToDisplayDate('d/m/y', $date);
         } else {
             throw new \Exception("Invalid date: $date");
         }
