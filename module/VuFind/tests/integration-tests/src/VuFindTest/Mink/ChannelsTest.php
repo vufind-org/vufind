@@ -46,12 +46,14 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get a reference to a standard search results page.
      *
+     * @param string $q Search to perform on Channels page
+     *
      * @return Element
      */
-    protected function getChannelsPage(): Element
+    protected function getChannelsPage(string $q = 'building:"weird_ids.mrc"'): Element
     {
         $session = $this->getMinkSession();
-        $path = '/Channels/Search?lookfor=building%3A%22weird_ids.mrc%22';
+        $path = '/Channels/Search?lookfor=' . urlencode($q);
         $session->visit($this->getVuFindUrl() . $path);
         return $session->getPage();
     }
@@ -127,29 +129,72 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test popover behavior
+     * Data provider for testPopovers
+     *
+     * @return array
+     */
+    public static function popoversProvider(): array
+    {
+        return [
+            'different records (weird IDs)' => [
+                'building:"weird_ids.mrc"',
+                'hashes#coming@ya',
+                'Octothorpes: Why not?',
+                'dollar$ign/slashcombo',
+                'Of Money and Slashes',
+                '',
+            ],
+            'same record in two channels' => [
+                'id:017791359-1',
+                '017791359-1',
+                'Fake Record 1 with multiple relators/',
+                '017791359-1',
+                'Fake Record 1 with multiple relators/',
+                '[data-channel-id="channel-4afca2ef6c4d86c140a2d01513f9e2be"]',
+            ],
+        ];
+    }
+
+    /**
+     * Test popover behavior by clicking back and forth between two records
+     *
+     * @param string $query                Search query
+     * @param string $record1              ID of first record
+     * @param string $title1               Title of first record
+     * @param string $record2              ID of second record
+     * @param string $title2               Title of second record
+     * @param string $record2ExtraSelector Extra selector for accessing $record2 (needed when $record1 === $record2)
      *
      * @return void
+     *
+     * @dataProvider popoversProvider
      */
-    public function testPopovers(): void
-    {
-        $page = $this->getChannelsPage();
+    public function testPopovers(
+        string $query,
+        string $record1,
+        string $title1,
+        string $record2,
+        string $title2,
+        string $record2ExtraSelector
+    ): void {
+        $page = $this->getChannelsPage($query);
         // Click a record to open the popover:
-        $this->clickCss($page, '.channel-record[data-record-id="hashes#coming@ya"]');
+        $this->clickCss($page, '.channel-record[data-record-id="' . $record1 . '"]');
         $popoverContents = $this->findCssAndGetText($page, '.popover');
         // The popover should contain an appropriate title and metadata:
-        $this->assertStringContainsString('Octothorpes: Why not?', $popoverContents);
-        $this->assertStringContainsString('Physical Description', $popoverContents);
-        // Click a different record:
-        $this->clickCss($page, '.channel-record[data-record-id="dollar$ign/slashcombo"]');
+        $this->assertStringContainsString($title1, $popoverContents);
+        $this->assertStringContainsString('Description', $popoverContents);
+        // Click a different record (or the second instance of the same record, if that's what we're testing):
+        $extra = $record1 === $record2 ? '.channel-wrapper:nth-of-type(2) ' : '';
+        $this->clickCss($page, '.channel-record[data-record-id="' . $record2 . '"]' . $record2ExtraSelector);
         $popoverContents2 = $this->findCssAndGetText($page, '.popover');
         // The popover should contain an appropriate title and metadata:
-        $this->assertStringContainsString('Of Money and Slashes', $popoverContents2);
-        $this->assertStringContainsString('Physical Description', $popoverContents2);
+        $this->assertStringContainsString($title2, $popoverContents2);
+        $this->assertStringContainsString('Description', $popoverContents2);
         // Click outside of channels to move the focus away:
         $this->clickCss($page, 'li.active');
         // Now click back to the original record; the popover should contain the same contents.
-        $this->clickCss($page, '.channel-record[data-record-id="hashes#coming@ya"]');
+        $this->clickCss($page, '.channel-record[data-record-id="' . $record1 . '"]');
         $popoverContents3 = $this->findCssAndGetText($page, '.popover');
         $this->assertEquals($popoverContents, $popoverContents3);
         // Finally, click through to the record page.
@@ -157,6 +202,6 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('View Record', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
-        $this->assertEquals('Octothorpes: Why not?', $this->findCssAndGetText($page, 'h1'));
+        $this->assertEquals($title1, $this->findCssAndGetText($page, 'h1'));
     }
 }
