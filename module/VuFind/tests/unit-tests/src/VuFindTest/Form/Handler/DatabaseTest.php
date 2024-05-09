@@ -34,7 +34,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
-use VuFind\Db\Service\UserService;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Database;
 
