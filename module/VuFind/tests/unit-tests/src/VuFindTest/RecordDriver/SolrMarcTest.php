@@ -114,43 +114,103 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test regular and extended subject heading support for different possible config options.
+     * Test regular and extended subject heading support.
      *
      * @return void
      */
     public function testSubjectHeadings()
     {
-        $configOptions = [
-            null,
-            'marc',
-        ];
-
-        foreach ($configOptions as $option) {
-            $configArray = [
-                'Record' => [
-                    'subjectHeadingsSort' => $option,
-                ],
-            ];
-            $config = new \Laminas\Config\Config($configArray);
-            $record = new \VuFind\RecordDriver\SolrMarc($config);
-            $fixture = $this->getJsonFixture('misc/testbug1.json');
-            $record->setRawData($fixture['response']['docs'][0]);
-            $this->assertEquals(
-                [['Matematica', 'Periodici.']],
-                $record->getAllSubjectHeadings()
-            );
-            $this->assertEquals(
+        $config = new \Laminas\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+        $this->assertEquals(
+            [['Matematica', 'Periodici.']],
+            $record->getAllSubjectHeadings()
+        );
+        $this->assertEquals(
+            [
                 [
+                    'heading' => ['Matematica', 'Periodici.'],
+                    'type' => '',
+                    'source' => '',
+                    'id' => '',
+                ],
+            ],
+            $record->getAllSubjectHeadings(true)
+        );
+    }
+
+    /**
+     * Test regular and extended subject heading support for different possible config options.
+     *
+     * @param ?string $subjectHeadingsSortConfig the config value for $this->mainConfig->Record->subjectHeadingsSort
+     * @param array   $expectedResults           array of the expected values returned from
+     *                                           $record->getAllSubjectHeadings()
+     *
+     * @return void
+     *
+     * @dataProvider subjectHeadingsSortOptionsProvider
+     */
+    public function testSubjectHeadingsOrder(?string $subjectHeadingsSortConfig, array $expectedResults)
+    {
+        $configArray = [
+            'Record' => [
+                'subjectHeadingsSort' => $subjectHeadingsSortConfig,
+            ],
+        ];
+        $marc = $this->getFixture('marc/subjectheadingsorder.xml');
+        $config = new \Laminas\Config\Config($configArray);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals($expectedResults, $record->getAllSubjectHeadings());
+    }
+
+    /**
+     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
+     *
+     * @return array[]
+     */
+    public static function subjectHeadingsSortOptionsProvider()
+    {
+        return [
+            [
+                'config' => null,
+                'results' => [
                     [
-                        'heading' => ['Matematica', 'Periodici.'],
-                        'type' => '',
-                        'source' => '',
-                        'id' => '',
+                        'Street photography',
+                        'Mexico',
+                        'Guerrero (State)',
+                    ],
+                    [
+                        'Guerrero (Mexico : State)',
+                        'Social life and customs',
+                        'Pictorial works.',
+                    ],
+                    [
+                        'Photobooks.',
                     ],
                 ],
-                $record->getAllSubjectHeadings(true)
-            );
-        }
+            ],
+            [
+                'config' => 'marc',
+                'results' => [
+                    [
+                        'Guerrero (Mexico : State)',
+                        'Social life and customs',
+                        'Pictorial works.',
+                    ],
+                    [
+                        'Street photography',
+                        'Mexico',
+                        'Guerrero (State)',
+                    ],
+                    [
+                        'Photobooks.',
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
