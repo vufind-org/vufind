@@ -36,6 +36,7 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use InvalidArgumentException;
 
 use function count;
+use function in_array;
 
 /**
  * Mink favorites test class.
@@ -158,9 +159,16 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
         // Did tags show up as expected?
-        $this->assertEquals('test 3', $this->findCssAndGetText($page, '.last a'));
-        $this->assertEquals('test1', $this->findCssAndGetText($page, '.last a', index: 1));
-        $this->assertEquals('test2', $this->findCssAndGetText($page, '.last a', index: 2));
+        $tags = [
+            $this->findCssAndGetText($page, '.last a'),
+            $this->findCssAndGetText($page, '.last a', index: 1),
+            $this->findCssAndGetText($page, '.last a', index: 2),
+        ];
+        // The order of tags may differ by database platform, but as long as they
+        // all show up, it is okay:
+        foreach (['test1', 'test2', 'test 3'] as $tag) {
+            $this->assertTrue(in_array($tag, $tags));
+        }
         // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
