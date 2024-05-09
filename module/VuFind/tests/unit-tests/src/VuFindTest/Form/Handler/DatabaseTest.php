@@ -30,8 +30,11 @@
 namespace VuFindTest\Form\Handler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\Feedback;
+use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Database;
 
@@ -47,32 +50,43 @@ use VuFind\Form\Handler\Database;
 class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Get a mock feedback object configured for tests.
+     *
+     * @param ?UserEntityInterface $user User expected by feedback.
+     *
+     * @return MockObject&FeedbackEntityInterface
+     */
+    protected function getMockFeedback(?UserEntityInterface $user): MockObject&FeedbackEntityInterface
+    {
+        $feedback = $this->createMock(FeedbackEntityInterface::class);
+        $feedback->expects($this->once())->method('setUser')->with($user)->willReturn($feedback);
+        $feedback->expects($this->once())->method('setMessage')->with('')->willReturn($feedback);
+        $feedback->expects($this->once())->method('setFormData')->with([])->willReturn($feedback);
+        $feedback->expects($this->once())->method('setFormName')->with('formy-mcformface')->willReturn($feedback);
+        $feedback->expects($this->once())->method('setSiteUrl')->with('http://foo')->willReturn($feedback);
+        $feedback->expects($this->once())->method('setCreated')->willReturn($feedback);
+        $feedback->expects($this->once())->method('setUpdated')->willReturn($feedback);
+        return $feedback;
+    }
+
+    /**
      * Test success with a user.
      *
      * @return void
      */
     public function testSuccessWithUser(): void
     {
-        $feedback = $this->createMock(Feedback::class);
-        $callback = function ($data) {
-            $this->assertEquals(1234, $data['user_id']);
-            $this->assertEquals('', $data['message']);
-            $this->assertEquals('[]', $data['form_data']);
-            $this->assertEquals('formy-mcformface', $data['form_name']);
-            $this->assertEquals('http://foo', $data['site_url']);
-            $this->assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $data['created']);
-            $this->assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $data['updated']);
-            return true;
-        };
-        $feedback->expects($this->once())->method('insert')->with($this->callback($callback))->willReturn(true);
-        $handler = new Database($feedback, 'http://foo');
+        $user = $this->createMock(UserEntityInterface::class);
+        $feedback = $this->getMockFeedback($user);
+        $feedbackService = $this->createMock(FeedbackServiceInterface::class);
+        $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
+        $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
+        $handler = new Database($feedbackService, 'http://foo');
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');
         $params = $this->createMock(Params::class);
         $params->expects($this->once())->method('fromPost')->willReturn([]);
-        $user = $this->createMock(UserEntityInterface::class);
-        $user->expects($this->once())->method('getId')->willReturn(1234);
         $this->assertTrue($handler->handle($form, $params, $user));
     }
 
@@ -83,24 +97,17 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithoutUser(): void
     {
-        $feedback = $this->createMock(Feedback::class);
-        $callback = function ($data) {
-            $this->assertEquals(null, $data['user_id']);
-            $this->assertEquals('', $data['message']);
-            $this->assertEquals('[]', $data['form_data']);
-            $this->assertEquals('formy-mcformface', $data['form_name']);
-            $this->assertEquals('http://foo', $data['site_url']);
-            $this->assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $data['created']);
-            $this->assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $data['updated']);
-            return true;
-        };
-        $feedback->expects($this->once())->method('insert')->with($this->callback($callback))->willReturn(true);
-        $handler = new Database($feedback, 'http://foo');
+        $user = null;
+        $feedback = $this->getMockFeedback($user);
+        $feedbackService = $this->createMock(FeedbackServiceInterface::class);
+        $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
+        $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
+        $handler = new Database($feedbackService, 'http://foo');
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');
         $params = $this->createMock(Params::class);
         $params->expects($this->once())->method('fromPost')->willReturn([]);
-        $this->assertTrue($handler->handle($form, $params, null));
+        $this->assertTrue($handler->handle($form, $params, $user));
     }
 }
