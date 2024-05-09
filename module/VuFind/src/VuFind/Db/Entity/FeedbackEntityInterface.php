@@ -100,7 +100,7 @@ interface FeedbackEntityInterface extends EntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return FeedbackEntityInterface
      */
@@ -109,14 +109,14 @@ interface FeedbackEntityInterface extends EntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
     public function getCreated(): DateTime;
 
     /**
      * Updated setter.
      *
-     * @param Datetime $dateTime Last update date
+     * @param DateTime $dateTime Last update date
      *
      * @return FeedbackEntityInterface
      */

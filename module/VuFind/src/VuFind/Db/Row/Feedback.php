@@ -154,7 +154,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return FeedbackEntityInterface
      */
@@ -167,7 +167,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
     public function getCreated(): DateTime
     {
@@ -177,7 +177,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
     /**
      * Updated setter.
      *
-     * @param Datetime $dateTime Last update date
+     * @param DateTime $dateTime Last update date
      *
      * @return FeedbackEntityInterface
      */
