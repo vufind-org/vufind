@@ -84,7 +84,6 @@ public class UpdateDateTracker
      */
     private boolean readRow() throws SQLException
     {
-        boolean returnValue = true;
         try (
             PreparedStatement selectSql = db.prepareStatement(
                 "SELECT first_indexed, last_indexed, last_record_change, deleted " +
@@ -97,7 +96,7 @@ public class UpdateDateTracker
             try (ResultSet result = selectSql.executeQuery()) {
                 // No results? Return false:
                 if (!result.first()) {
-                    returnValue = false;
+                    return false;
                 } else {
                     // If we got this far, we have results -- load them into the object:
                     firstIndexed = result.getTimestamp(1);
@@ -107,7 +106,7 @@ public class UpdateDateTracker
                 }
             }
         }
-        return returnValue;
+        return true;
     }
 
     /* Private support method: update a row in the change_tracker table.
