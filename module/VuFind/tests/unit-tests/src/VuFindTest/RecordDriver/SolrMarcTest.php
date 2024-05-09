@@ -144,19 +144,20 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     /**
      * Test regular and extended subject heading support for different possible config options.
      *
-     * @param ?string $subjectHeadingsSortConfig the config value for $this->mainConfig->Record->subjectHeadingsSort
-     * @param array   $expectedResults           array of the expected values returned from
-     *                                           $record->getAllSubjectHeadings()
+     * @param ?string $marcSubjectHeadingsSortConfig the config value for
+     *                                               $this->mainConfig->Record->marcSubjectHeadingsSort
+     * @param array   $expectedResults               array of the expected values returned from
+     *                                               $record->getAllSubjectHeadings()
      *
      * @return void
      *
-     * @dataProvider subjectHeadingsSortOptionsProvider
+     * @dataProvider marcSubjectHeadingsSortOptionsProvider
      */
-    public function testSubjectHeadingsOrder(?string $subjectHeadingsSortConfig, array $expectedResults)
+    public function testSubjectHeadingsOrder(?string $marcSubjectHeadingsSortConfig, array $expectedResults)
     {
         $configArray = [
             'Record' => [
-                'subjectHeadingsSort' => $subjectHeadingsSortConfig,
+                'marcSubjectHeadingsSort' => $marcSubjectHeadingsSortConfig,
             ],
         ];
         $marc = $this->getFixture('marc/subjectheadingsorder.xml');
@@ -171,7 +172,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return array[]
      */
-    public static function subjectHeadingsSortOptionsProvider()
+    public static function marcSubjectHeadingsSortOptionsProvider()
     {
         return [
             [
@@ -193,7 +194,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             [
-                'config' => 'marc',
+                'config' => 'record',
                 'results' => [
                     [
                         'Guerrero (Mexico : State)',

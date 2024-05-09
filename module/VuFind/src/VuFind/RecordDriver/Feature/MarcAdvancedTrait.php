@@ -120,7 +120,7 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if ($this->mainConfig->Record->subjectHeadingsSort ?? '' === 'marc') {
+        if ($this->mainConfig->Record->marcSubjectHeadingsSort ?? '' === 'record') {
             $returnValues = $this->getAllSubjectHeadingsMarcOrder($extended);
         } else {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
