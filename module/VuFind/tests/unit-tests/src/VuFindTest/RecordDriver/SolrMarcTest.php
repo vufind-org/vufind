@@ -174,8 +174,26 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      */
     public static function marcSubjectHeadingsSortOptionsProvider()
     {
-        return [
+        // Record order is the default; save it to a variable so we
+        // can test both explicit and default configuration behaviors
+        // using the same values.
+        $recordOrderResults = [
             [
+                'Guerrero (Mexico : State)',
+                'Social life and customs',
+                'Pictorial works.',
+            ],
+            [
+                'Street photography',
+                'Mexico',
+                'Guerrero (State)',
+            ],
+            [
+                'Photobooks.',
+            ],
+        ];
+        return [
+            'field config' => [
                 'config' => 'field',
                 'results' => [
                     [
@@ -193,23 +211,13 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            [
+            'record config' => [
                 'config' => 'record',
-                'results' => [
-                    [
-                        'Guerrero (Mexico : State)',
-                        'Social life and customs',
-                        'Pictorial works.',
-                    ],
-                    [
-                        'Street photography',
-                        'Mexico',
-                        'Guerrero (State)',
-                    ],
-                    [
-                        'Photobooks.',
-                    ],
-                ],
+                'results' => $recordOrderResults,
+            ],
+            'default config' => [
+                'config' => null,
+                'results' => $recordOrderResults,
             ],
         ];
     }
