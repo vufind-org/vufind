@@ -77,7 +77,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     /**
      * FirstIndexed setter.
      *
-     * @param ?Datetime $dateTime Time first added to index.
+     * @param ?DateTime $dateTime Time first added to index.
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -86,14 +86,14 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     /**
      * FirstIndexed Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getFirstIndexed(): ?Datetime;
+    public function getFirstIndexed(): ?DateTime;
 
     /**
      * LastIndexed setter.
      *
-     * @param ?Datetime $dateTime Last time changed in index.
+     * @param ?DateTime $dateTime Last time changed in index.
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -102,14 +102,14 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     /**
      * LastIndexed Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getLastIndexed(): ?Datetime;
+    public function getLastIndexed(): ?DateTime;
 
     /**
      * LastRecordChange setter.
      *
-     * @param ?Datetime $dateTime Last time original record was edited
+     * @param ?DateTime $dateTime Last time original record was edited
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -118,14 +118,14 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     /**
      * LastRecordChange Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getLastRecordChange(): ?Datetime;
+    public function getLastRecordChange(): ?DateTime;
 
     /**
      * Deleted setter.
      *
-     * @param ?Datetime $dateTime Time record was removed from index
+     * @param ?DateTime $dateTime Time record was removed from index
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -134,7 +134,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     /**
      * Deleted Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getDeleted(): ?Datetime;
+    public function getDeleted(): ?DateTime;
 }
