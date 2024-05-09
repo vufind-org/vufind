@@ -176,7 +176,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                'config' => null,
+                'config' => 'field',
                 'results' => [
                     [
                         'Street photography',
