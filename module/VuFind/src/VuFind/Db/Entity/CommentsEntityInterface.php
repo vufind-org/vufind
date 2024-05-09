@@ -68,7 +68,7 @@ interface CommentsEntityInterface extends EntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return Comments
      */
@@ -77,9 +77,9 @@ interface CommentsEntityInterface extends EntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime;
+    public function getCreated(): DateTime;
 
     /**
      * User setter.

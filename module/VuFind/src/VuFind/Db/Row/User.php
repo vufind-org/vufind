@@ -1085,7 +1085,7 @@ class User extends RowGateway implements
     /**
      * Last login setter.
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -1098,9 +1098,9 @@ class User extends RowGateway implements
     /**
      * Last login getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getLastLogin(): Datetime
+    public function getLastLogin(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
     }
