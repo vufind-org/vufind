@@ -120,10 +120,11 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if ($this->mainConfig->Record->marcSubjectHeadingsSort ?? 'record' === 'record') {
-            $returnValues = $this->getAllSubjectHeadingsMarcOrder($extended);
-        } else {
+        if (($this->mainConfig->Record->marcSubjectHeadingsSort ?? '') === 'field') {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
+        } else {
+            // Default | value === 'marc'
+            $returnValues = $this->getAllSubjectHeadingsMarcOrder($extended);
         }
 
         // Remove duplicates and then send back everything we collected:
