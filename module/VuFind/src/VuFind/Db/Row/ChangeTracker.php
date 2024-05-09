@@ -109,7 +109,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * FirstIndexed setter.
      *
-     * @param ?Datetime $dateTime Time first added to index.
+     * @param ?DateTime $dateTime Time first added to index.
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -122,9 +122,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * FirstIndexed Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getFirstIndexed(): ?Datetime
+    public function getFirstIndexed(): ?DateTime
     {
         return $this->first_indexed ? DateTime::createFromFormat('Y-m-d H:i:s', $this->first_indexed) : null;
     }
@@ -132,7 +132,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * LastIndexed setter.
      *
-     * @param ?Datetime $dateTime Last time changed in index.
+     * @param ?DateTime $dateTime Last time changed in index.
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -145,9 +145,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * LastIndexed Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getLastIndexed(): ?Datetime
+    public function getLastIndexed(): ?DateTime
     {
         return $this->last_indexed ? DateTime::createFromFormat('Y-m-d H:i:s', $this->last_indexed) : null;
     }
@@ -155,7 +155,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * LastRecordChange setter.
      *
-     * @param ?Datetime $dateTime Last time original record was edited
+     * @param ?DateTime $dateTime Last time original record was edited
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -168,9 +168,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * LastRecordChange Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getLastRecordChange(): ?Datetime
+    public function getLastRecordChange(): ?DateTime
     {
         return $this->last_record_change ? DateTime::createFromFormat('Y-m-d H:i:s', $this->last_record_change) : null;
     }
@@ -178,7 +178,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * Deleted setter.
      *
-     * @param ?Datetime $dateTime Time record was removed from index
+     * @param ?DateTime $dateTime Time record was removed from index
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -191,9 +191,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     /**
      * Deleted Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getDeleted(): ?Datetime
+    public function getDeleted(): ?DateTime
     {
         return $this->deleted ? DateTime::createFromFormat('Y-m-d H:i:s', $this->deleted) : null;
     }
