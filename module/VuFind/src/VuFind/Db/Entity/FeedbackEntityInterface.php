@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for feedback table
  *
@@ -40,4 +42,154 @@ namespace VuFind\Db\Entity;
  */
 interface FeedbackEntityInterface extends EntityInterface
 {
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int;
+
+    /**
+     * Message setter
+     *
+     * @param string $message Message
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setMessage(string $message): FeedbackEntityInterface;
+
+    /**
+     * Message getter
+     *
+     * @return string
+     */
+    public function getMessage(): string;
+
+    /**
+     * Form data setter.
+     *
+     * @param array $data Form data
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setFormData(array $data): FeedbackEntityInterface;
+
+    /**
+     * Form data getter
+     *
+     * @return array
+     */
+    public function getFormData(): array;
+
+    /**
+     * Form name setter.
+     *
+     * @param string $name Form name
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setFormName(string $name): FeedbackEntityInterface;
+
+    /**
+     * Form name getter
+     *
+     * @return string
+     */
+    public function getFormName(): string;
+
+    /**
+     * Created setter.
+     *
+     * @param Datetime $dateTime Created date
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): FeedbackEntityInterface;
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Updated setter.
+     *
+     * @param Datetime $dateTime Last update date
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setUpdated(DateTime $dateTime): FeedbackEntityInterface;
+
+    /**
+     * Updated getter
+     *
+     * @return DateTime
+     */
+    public function getUpdated(): DateTime;
+
+    /**
+     * Status setter.
+     *
+     * @param string $status Status
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setStatus(string $status): FeedbackEntityInterface;
+
+    /**
+     * Status getter
+     *
+     * @return string
+     */
+    public function getStatus(): string;
+
+    /**
+     * Site URL setter.
+     *
+     * @param string $url Site URL
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setSiteUrl(string $url): FeedbackEntityInterface;
+
+    /**
+     * Site URL getter
+     *
+     * @return string
+     */
+    public function getSiteUrl(): string;
+
+    /**
+     * User setter.
+     *
+     * @param ?UserEntityInterface $user User that created request
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user): FeedbackEntityInterface;
+
+    /**
+     * User getter
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
+
+    /**
+     * Updatedby setter.
+     *
+     * @param ?UserEntityInterface $user User that updated request
+     *
+     * @return FeedbackEntityInterface
+     */
+    public function setUpdatedBy(?UserEntityInterface $user): FeedbackEntityInterface;
+
+    /**
+     * Updatedby getter
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUpdatedBy(): ?UserEntityInterface;
 }
