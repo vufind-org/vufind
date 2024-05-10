@@ -60,7 +60,7 @@
       <!-- Wrapper for slides -->
       <?php foreach ($channel['contents'] as $index => $item): ?>
         <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
-        <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
+        <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
           <div class="thumb">
             <img <?=$index < 6 ? 'src' : 'src="#" data-lazy' ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
           </div>
