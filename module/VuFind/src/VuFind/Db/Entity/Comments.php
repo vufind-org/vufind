@@ -144,7 +144,7 @@ class Comments implements CommentsEntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return CommentsEntityInterface
      */
@@ -157,9 +157,9 @@ class Comments implements CommentsEntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }

@@ -37,7 +37,9 @@ VuFind.register('channels', function Channels() {
   var currentPopover = false;
   function isCurrentPopoverRecord(record) {
     return record && currentPopover
-      && record.data('record-id') === currentPopover.data('record-id');
+      && record.data('record-id') === currentPopover.data('record-id')
+      && record.data('record-source') === currentPopover.data('record-source')
+      && record.data('channel-id') === currentPopover.data('channel-id');
   }
   function switchPopover(record) {
     // Hide the old popover:
