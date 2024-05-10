@@ -100,13 +100,13 @@
         </tr>
       <?php elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
         <tr id="html">
-          <td>
-            <?=$this->transEsc('Full text is not displayed to guests')?>
-          </td>
-          <td>
-            <a class="login" href="<?=$this->url('myresearch-userlogin')?>" rel="nofollow">
-              <strong><?=$this->transEsc('Login for full access')?></strong>
-            </a>
+          <td colspan="2">
+            <div class="alert alert-info">
+              <?=$this->transEsc('Full text is not displayed to guests')?>
+              <a class="login" href="<?=$this->url('myresearch-userlogin')?>" rel="nofollow">
+                <strong><?=$this->transEsc('Login for full access')?></strong>
+              </a>
+            </div>
           </td>
         </tr>
       <?php endif; ?>
