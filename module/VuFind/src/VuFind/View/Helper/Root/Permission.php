@@ -84,7 +84,7 @@ class Permission extends AbstractHelper
      */
     public function isAuthorized($context)
     {
-        return $this->permissionManager->isAuthorized($context )=== true;
+        return $this->permissionManager->isAuthorized($context) === true;
     }
 
     /**
