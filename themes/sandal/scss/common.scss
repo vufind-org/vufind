@@ -29,6 +29,11 @@ table { font-size: $reduced-font-size; }
   color: $white;
   border-color: transparent;
 }
+.btn-info:hover,
+.btn-info:focus {
+  color: $brand-primary;
+  border-color: $brand-primary;
+}
 .btn-link,
 .btn-primary { border-color: transparent; }
 .btn-primary:hover {
