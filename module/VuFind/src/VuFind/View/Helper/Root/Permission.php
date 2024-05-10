@@ -76,6 +76,18 @@ class Permission extends AbstractHelper
     }
 
     /**
+     * Determine if the current user is authorized for a permission.
+     *
+     * @param string $context Name of the permission rule
+     *
+     * @return bool
+     */
+    public function isAuthorized($context)
+    {
+        return $this->permissionManager->isAuthorized($context )=== true;
+    }
+
+    /**
      * Determine if a local block inside the template should be displayed
      *
      * @param string $context Name of the permission rule
