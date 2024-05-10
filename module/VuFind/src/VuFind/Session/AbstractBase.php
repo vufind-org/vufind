@@ -51,7 +51,7 @@ abstract class AbstractBase implements HandlerInterface
     }
     // Note that we intentionally omit the DbServiceAwareInterface above; the service
     // manager is injected by AbstractBaseFactory explicitly for compatibility with
-    // the secure delegator factor, so we don't need to auto-inject it.
+    // the secure delegator factory, so we don't need to auto-inject it.
     use DbServiceAwareTrait;
 
     /**
