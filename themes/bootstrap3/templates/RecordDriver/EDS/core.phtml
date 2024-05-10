@@ -26,28 +26,28 @@
       <?php if ($this->permission()->isAuthorized('access.EDSExtendedResults')): ?>
         <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
           <span>
-            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext" target="_blank">
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext">
               <?=$this->transEsc('HTML Full Text')?>
             </a>
           </span>
         <?php endif; ?>
         <?php if ($ftLink = $this->driver->getLinkedFullTextLink()): ?>
           <span>
-            <a href="<?=$ftLink?>" class="fulltext" target="_blank">
+            <a href="<?=$ftLink?>" class="fulltext">
               <?=$this->transEsc('Linked Full Text')?>
             </a>
           </span>
         <?php endif; ?>
         <?php if ($pdfLink = $this->driver->getPdfLink()): ?>
           <span>
-            <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext" target="_blank">
+            <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext">
               <?=$this->transEsc('PDF Full Text')?>
             </a>
           </span>
         <?php endif; ?>
         <?php if ($epubLink = $this->driver->getEpubLink()): ?>
           <span>
-            <a href="<?=$epubLink?>" class="icon--eds epub fulltext" target="_blank">
+            <a href="<?=$epubLink?>" class="icon--eds epub fulltext">
               <?=$this->transEsc('ePub Full Text')?>
             </a>
           </span>
