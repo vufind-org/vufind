@@ -252,26 +252,8 @@ VuFind.register('lightbox', function Lightbox() {
    */
   _constrainLink = function constrainLink(event) {
     var $link = $(this);
-    var urlRoot = location.origin + VuFind.path;
 
-    // Invalid or non-applicable links
-    if (
-      typeof $link.data("lightboxIgnore") !== "undefined" // programmatic escape
-      || typeof $link.attr("href") === "undefined"   // invalid link
-      || $link.attr("href").charAt(0) === "#"        // anchor to same page
-      || $link.attr("href").match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
-      || ($link.attr("href").slice(0, 4) === "http" // external links
-        && $link.attr("href").indexOf(urlRoot) === -1
-      )
-      || (typeof $link.attr("target") !== "undefined" // target to new tab/window
-        && (
-          $link.attr("target").toLowerCase() === "_new"
-          || $link.attr("target").toLowerCase() === "new"
-        )
-      )
-    ) {
-      return true;
-    }
+    // defaults in `init` below
 
     let doContrain = true;
     const cancelConstrain = () => doContrain = false;
@@ -585,6 +567,48 @@ VuFind.register('lightbox', function Lightbox() {
         _modal.modal(cmd);
       }
     };
+
+    // Default link constraint
+    VuFind.listen("lightbox.link", ({ link, cancel }) => {
+      // Programmatic Escape
+
+      if (link.getAttribute("data-lightbox-ignore")) {
+        cancel();
+        return;
+      }
+
+      // Invalid or non-applicable links
+
+      const urlRoot = location.origin + VuFind.path;
+      const href = link.getAttribute("href");
+      const reResourceLink = new RegExp("^[a-z]+:[^/]", "i");
+
+      if (
+        href === null   // invalid link
+        || href.charAt(0) === "#"        // anchor to same page
+        || reResourceLink.test(href) // ignore resource identifiers (mailto:, tel:, etc.)
+        || (
+          href.startsWith("http") // external links
+          && href.indexOf(urlRoot) === -1
+        )
+      ) {
+        cancel();
+        return;
+      }
+
+      // Link set to target a new tab/window
+
+      const target = link.getAttribute("target");
+      const reNewTarget = new RegExp("blank|new", "i");
+
+      if (
+        target !== null && reNewTarget
+        && reNewTarget.test(target)
+      ) {
+        cancel();
+      }
+    });
+
     VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
