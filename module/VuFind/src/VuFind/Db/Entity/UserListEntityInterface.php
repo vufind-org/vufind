@@ -102,14 +102,14 @@ interface UserListEntityInterface extends EntityInterface
      *
      * @return UserListEntityInterface
      */
-    public function setPublic(bool $public): UserListEntityInterface;
+    public function setIsPublic(bool $public): UserListEntityInterface;
 
     /**
-     * Get created date.
+     * Check if the list is public
      *
      * @return bool
      */
-    public function isPublic(): bool;
+    public function getPublic(): bool;
 
     /**
      * Set user ID.
