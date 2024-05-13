@@ -17,13 +17,13 @@
         <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
       <?php endif; ?>
       <?php
-        $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
+        $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
         $statusDescription = $availabilityStatus->getStatusDescription();
         $schemaAvailabilityUri = $availabilityStatus->getSchemaAvailabilityUri();
       ?>
-      <span class="<?=$statusClassEsc?>">
+      <span class="<?=$this->escapeHtmlAttr($statusClass)?>">
         <?=$this->transEsc($statusDescription)?>
-        <?php if($schemaAvailabilityUri): ?>
+        <?php if ($schemaAvailabilityUri): ?>
           <link property="availability" href="<?=$this->escapeHtmlAttr($schemaAvailabilityUri)?>">
         <?php endif; ?>
       </span>

@@ -32,14 +32,14 @@
       <td class="fullAvailability">
         <?php $availabilityStatus = $item['availability']; ?>
           <?php
-            $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
+            $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
             if ($availabilityStatus->isAvailable() && $item['reserve'] === 'Y') {
               $statusDescription = 'On Reserve';
             } else {
               $statusDescription = $availabilityStatus->getStatusDescription();
             }
           ?>
-          <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?></span>
+          <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription)?></span>
       </td>
     </tr>
   <?php endforeach; ?>

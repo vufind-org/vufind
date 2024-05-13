@@ -61,7 +61,7 @@ interface AvailabilityStatusInterface
      *
      * @return bool
      */
-    public function isVisible(): bool;
+    public function isVisibleInHoldings(): bool;
 
     /**
      * Get status description.

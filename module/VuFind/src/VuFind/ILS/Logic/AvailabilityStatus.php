@@ -95,7 +95,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      */
     public function isAvailable(): bool
     {
-        return $this->availability === 1 || $this->availability === 2;
+        return $this->availability === self::STATUS_AVAILABLE || $this->availability === self::STATUS_UNCERTAIN;
     }
 
     /**
@@ -115,7 +115,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @return bool
      */
-    public function isVisible(): bool
+    public function isVisibleInHoldings(): bool
     {
         // Can be overridden if the status should not be visible in the holdings tab,
         return true;

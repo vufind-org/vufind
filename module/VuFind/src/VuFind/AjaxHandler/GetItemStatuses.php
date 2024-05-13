@@ -72,64 +72,24 @@ class GetItemStatuses extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Top-level configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Holds logic
-     *
-     * @var Holds
-     */
-    protected $holdLogic;
-
-    /**
-     * Availability Status Manager
-     *
-     * @var AvailabilityStatusManager
-     */
-    protected $availabilityStatusManager;
-
-    /**
      * Constructor
      *
-     * @param SessionSettings           $ss            Session settings
-     * @param Config                    $config        Top-level configuration
-     * @param Connection                $ils           ILS connection
-     * @param RendererInterface         $renderer      View renderer
-     * @param Holds                     $holdLogic     Holds logic
-     * @param AvailabilityStatusManager $statusManager Availability status manager
+     * @param SessionSettings           $ss                        Session settings
+     * @param Config                    $config                    Top-level configuration
+     * @param Connection                $ils                       ILS connection
+     * @param RendererInterface         $renderer                  View renderer
+     * @param Holds                     $holdLogic                 Holds logic
+     * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
      */
     public function __construct(
         SessionSettings $ss,
-        Config $config,
-        Connection $ils,
-        RendererInterface $renderer,
-        Holds $holdLogic,
-        AvailabilityStatusManager $statusManager
+        protected Config $config,
+        protected Connection $ils,
+        protected RendererInterface $renderer,
+        protected Holds $holdLogic,
+        protected AvailabilityStatusManager $availabilityStatusManager
     ) {
         $this->sessionSettings = $ss;
-        $this->config = $config;
-        $this->ils = $ils;
-        $this->renderer = $renderer;
-        $this->holdLogic = $holdLogic;
-        $this->availabilityStatusManager = $statusManager;
     }
 
     /**

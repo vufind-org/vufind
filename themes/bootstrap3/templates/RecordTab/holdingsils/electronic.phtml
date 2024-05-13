@@ -13,10 +13,10 @@
       <td class="fullAvailability">
         <?php
           $availabilityStatus = $item['availability'];
-          $statusClassEsc = $this->availabilityStatus()->getClass($availabilityStatus);
+          $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
           $statusDescription = $availabilityStatus->getStatusDescription();
         ?>
-        <span class="<?=$statusClassEsc?>"><?=$this->transEsc($statusDescription)?></span>
+        <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription)?></span>
         <?php if (isset($item['item_notes'])): ?>
           <div class="item-notes">
             <b><?=$this->transEsc('Item Notes')?>:</b>
