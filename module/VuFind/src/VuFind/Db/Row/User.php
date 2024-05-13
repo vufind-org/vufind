@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
@@ -136,8 +137,8 @@ class User extends RowGateway implements
     /**
      * Set ILS login credentials without saving them.
      *
-     * @param string $username Username to save
-     * @param string $password Password to save
+     * @param string  $username Username to save
+     * @param ?string $password Password to save (null for none)
      *
      * @return void
      */
@@ -708,7 +709,7 @@ class User extends RowGateway implements
             $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
-            $ratings = $this->getDbTable('Ratings');
+            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
             $ratings->deleteByUser($this);
         }
 
@@ -776,19 +777,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get login token data
-     *
-     * @param string $userId user identifier
-     *
-     * @return array
-     */
-    public function getLoginTokens(string $userId): array
-    {
-        $tokenTable = $this->getDbTable('LoginToken');
-        return $tokenTable->getByUserId($userId);
-    }
-
-    /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
@@ -822,6 +810,19 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface
+    {
+        $this->firstname = $firstName;
+        return $this;
+    }
+
+    /**
      * Get firstname.
      *
      * @return string
@@ -829,6 +830,19 @@ class User extends RowGateway implements
     public function getFirstname(): string
     {
         return $this->firstname;
+    }
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface
+    {
+        $this->lastname = $lastName;
+        return $this;
     }
 
     /**
@@ -1013,6 +1027,29 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->auth_method = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->auth_method;
+    }
+
+    /**
      * Get last language.
      *
      * @return string
@@ -1020,5 +1057,51 @@ class User extends RowGateway implements
     public function getLastLanguage(): string
     {
         return $this->last_language;
+    }
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool
+    {
+        return (bool)($this->user_provided_email ?? false);
+    }
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    {
+        $this->user_provided_email = $userProvided ? 1 : 0;
+        return $this;
+    }
+
+    /**
+     * Last login setter.
+     *
+     * @param DateTime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    {
+        $this->last_login = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Last login getter
+     *
+     * @return DateTime
+     */
+    public function getLastLogin(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
     }
 }

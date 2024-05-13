@@ -31,6 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
+use VuFind\Db\Entity\UserEntityInterface;
+
 /**
  * Interface HandlerInterface
  *
@@ -47,13 +49,13 @@ interface HandlerInterface
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
+     * @param ?UserEntityInterface                  $user   Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
-        ?\VuFind\Db\Row\User $user = null
+        ?UserEntityInterface $user = null
     ): bool;
 }
