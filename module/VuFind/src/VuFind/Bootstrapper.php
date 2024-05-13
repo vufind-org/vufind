@@ -375,19 +375,7 @@ class Bootstrapper
             if (!$result['allow']) {
                 $response = $event->getResponse();
                 $response->setStatusCode(429);
-                $routeMatch = $event->getRouteMatch();
-                $msg = 'Too Many Requests';
-                if ($result['retryAfter']) {
-                    $msg .= '. Retry after ' . $result['retryAfter'] . ' seconds.';
-                }
-                if (
-                    $routeMatch?->getParam('controller') === 'AJAX'
-                    && $routeMatch?->getParam('action') === 'JSON'
-                ) {
-                    $response->setContent(json_encode(['error' => $msg]));
-                } else {
-                    $response->setContent($msg);
-                }
+                $response->setContent($result['message']);
                 $event->stopPropagation(true);
                 return $response;
             }

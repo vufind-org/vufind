@@ -33,7 +33,10 @@ use Closure;
 use Laminas\EventManager\EventInterface;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\MvcEvent;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\Net\IpAddressUtils;
 
 use function in_array;
 use function is_bool;
@@ -47,9 +50,10 @@ use function is_bool;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RateLimiterManager implements LoggerAwareInterface
+class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterface
 {
     use LoggerAwareTrait;
+    use TranslatorAwareTrait;
 
     /**
      * Current event description for logging
@@ -59,17 +63,32 @@ class RateLimiterManager implements LoggerAwareInterface
     protected $eventDesc = '??';
 
     /**
+     * Client ID for logging
+     *
+     * @var string
+     */
+    protected $clientId;
+
+    /**
      * Constructor
      *
-     * @param array   $config                     Rate limiter configuration
-     * @param string  $clientId                   Client ID
-     * @param Closure $rateLimiterFactoryCallback Rate limiter factory callback
+     * @param array          $config                     Rate limiter configuration
+     * @param string         $clientIp                   Client's IP address
+     * @param ?string        $userId                     User ID or null if not logged in
+     * @param Closure        $rateLimiterFactoryCallback Rate limiter factory callback
+     * @param IpAddressUtils $ipUtils                    IP address utilities
      */
     public function __construct(
         protected array $config,
-        protected string $clientId,
-        protected Closure $rateLimiterFactoryCallback
+        protected string $clientIp,
+        protected ?string $userId,
+        protected Closure $rateLimiterFactoryCallback,
+        protected IpAddressUtils $ipUtils
     ) {
+        $this->clientId = "ip:$clientIp";
+        if (null !== $userId) {
+            $this->clientId .= '/u:$userId';
+        }
     }
 
     /**
@@ -90,10 +109,11 @@ class RateLimiterManager implements LoggerAwareInterface
      * @param EventInterface $event Event
      *
      * @return array Associative array with the following keys:
-     *   allow              bool  Whether to allow the request
-     *   requestsRemaining  ?int  Remaining requests
-     *   retryAfter         ?int  Retry after seconds if limit exceeded
-     *   requestLimit       ?int  Current limit
+     *   bool    allow              Whether to allow the request
+     *   ?int    requestsRemaining  Remaining requests
+     *   ?int    retryAfter         Retry after seconds if limit exceeded
+     *   ?int    requestLimit       Current limit
+     *   ?string message            Response message if limit reached
      */
     public function check(EventInterface $event): array
     {
@@ -102,6 +122,7 @@ class RateLimiterManager implements LoggerAwareInterface
             'requestsRemaining' => null,
             'retryAfter' => null,
             'requestLimit' => null,
+            'message' => null,
         ];
 
         if (!$this->isEnabled() || !($event instanceof MvcEvent)) {
@@ -123,7 +144,7 @@ class RateLimiterManager implements LoggerAwareInterface
                 return $result;
             }
             // We have a policy matching the route, so check rate limiter:
-            $limiter = ($this->rateLimiterFactoryCallback)($this->config, $policyId, $this->clientId);
+            $limiter = ($this->rateLimiterFactoryCallback)($this->config, $policyId, $this->clientIp, $this->userId);
             $limit = $limiter->consume(1);
             $result = [
                 'allow' => true,
@@ -134,19 +155,19 @@ class RateLimiterManager implements LoggerAwareInterface
             $this->verboseDebug(
                 ($limit->isAccepted() ? 'Accepted' : 'Refused')
                 . " by policy '$policyId'"
-                . ', remaining: ' . $limit->getRemainingTokens()
-                . ', retry-after: ' . $limit->getRetryAfter()->getTimestamp() - time()
-                . ', limit: ' . $limit->getLimit()
+                . ', remaining: ' . $result['requestsRemaining']
+                . ', retry-after: ' . $result['retryAfter']
+                . ', limit: ' . $result['requestLimit']
             );
 
             // Add headers if configured:
-            if ($this->config['Policies'][$policyId]['AddHeaders'] ?? false) {
+            if ($this->config['Policies'][$policyId]['addHeaders'] ?? false) {
                 $headers = $event->getResponse()->getHeaders();
                 $headers->addHeaders(
                     [
-                        'X-RateLimit-Remaining' => $limit->getRemainingTokens(),
-                        'X-RateLimit-Retry-After' => $limit->getRetryAfter()->getTimestamp() - time(),
-                        'X-RateLimit-Limit' => $limit->getLimit(),
+                        'X-RateLimit-Remaining' => $result['requestsRemaining'],
+                        'X-RateLimit-Retry-After' => $result['retryAfter'],
+                        'X-RateLimit-Limit' => $result['requestLimit'],
                     ]
                 );
             }
@@ -154,12 +175,13 @@ class RateLimiterManager implements LoggerAwareInterface
                 return $result;
             }
             $logMsg = "$this->eventDesc: $this->clientId policy '$policyId' exceeded";
-            if ('report_only' === $this->isEnabled()) {
+            if ('report_only' === $this->isEnabled() || ($this->config['Policies'][$policyId]['reportOnly'] ?? false)) {
                 $this->logWarning("$logMsg (not enforced)");
                 return $result;
             }
             $this->logWarning("$logMsg (enforced)");
             $result['allow'] = false;
+            $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
             return $result;
         } catch (\Exception $e) {
             $this->logError((string)$e);
@@ -178,7 +200,7 @@ class RateLimiterManager implements LoggerAwareInterface
     protected function getPolicyIdForEvent(MvcEvent $event): ?string
     {
         foreach ($this->config['Policies'] ?? [] as $name => $settings) {
-            if (!($filters = $settings['Filters'] ?? null)) {
+            if (!($filters = $settings['filters'] ?? null)) {
                 return $name;
             }
             foreach ($filters as $filter) {
@@ -206,11 +228,15 @@ class RateLimiterManager implements LoggerAwareInterface
                 if ($routeMatch?->getMatchedRouteName() !== $value) {
                     return false;
                 }
-            } elseif (in_array($param, ['Params', 'Query', 'Post'])) {
+            } elseif ('ipRanges' === $param) {
+                if (!$this->ipUtils->isInRange($this->clientIp, (array)$value)) {
+                    return false;
+                }
+            } elseif (in_array($param, ['params', 'query', 'post'])) {
                 $req = $event->getRequest();
-                if ('Params' === $param) {
+                if ('params' === $param) {
                     $allParams = $req->getPost()->toArray() + $req->getQuery()->toArray();
-                } elseif ('Query' === $param) {
+                } elseif ('query' === $param) {
                     $allParams = $req->getQuery()->toArray();
                 } else {
                     $allParams = $req->getPost()->toArray();
@@ -239,6 +265,28 @@ class RateLimiterManager implements LoggerAwareInterface
         if (!($this->config['General']['verbose'] ?? false)) {
             return;
         }
-        $this->log('debug', "$this->eventDesc: $this->clientId $msg", [], true);
+        $this->log('debug', "$this->eventDesc [$this->clientId]: $msg", [], true);
+    }
+
+    /**
+     * Get a response message for too many requests
+     *
+     * @param MvcEvent $event  Request event
+     * @param array    $result Rate limiter result
+     *
+     * @return string
+     */
+    protected function getTooManyRequestsResponseMessage(MvcEvent $event, array $result): string
+    {
+        if ($result['retryAfter']) {
+            $msg = $this->translate('error_too_many_requests_retry_after', ['%%seconds%%' => $result['retryAfter']]);
+        } else {
+            $msg = $this->translate('error_too_many_requests');
+        }
+        $routeMatch = $event->getRouteMatch();
+        if ($routeMatch?->getParam('controller') === 'AJAX' && $routeMatch?->getParam('action') === 'JSON') {
+            return json_encode(['error' => $msg]);
+        }
+        return $msg;
     }
 }

@@ -89,29 +89,41 @@ class RateLimiterManagerFactory implements FactoryInterface
         $config = $yamlReader->get('RateLimiter.yaml');
 
         $authManager = $container->get(\VuFind\Auth\Manager::class);
-        if ($user = $authManager->getUserObject()) {
-            $id = 'u:' . $user->getId();
-        } else {
-            $request = $container->get('Request');
-            $id = 'ip:' . $request->getServer('REMOTE_ADDR');
-        }
+        $request = $container->get('Request');
 
-        return new $requestedName($config, $id, Closure::fromCallable([$this, 'getRateLimiter']));
+        return new $requestedName(
+            $config,
+            $request->getServer('REMOTE_ADDR'),
+            $authManager->getUserObject()?->getId(),
+            Closure::fromCallable([$this, 'getRateLimiter']),
+            $container->get(\VuFind\Net\IpAddressUtils::class)
+        );
     }
 
     /**
      * Get rate limiter
      *
-     * @param array  $config   Rate limiter configuration
-     * @param string $policyId Policy ID
-     * @param string $clientId Client ID
+     * @param array   $config   Rate limiter configuration
+     * @param string  $policyId Policy ID
+     * @param string  $clientIp Client's IP address
+     * @param ?string $userId   User ID or null if not logged in
      *
      * @return LimiterInterface
      */
-    protected function getRateLimiter(array $config, string $policyId, string $clientId): LimiterInterface
-    {
-        $rateLimiterConfig = $config['Policies'][$policyId]['RateLimiterSettings'] ?? [];
+    protected function getRateLimiter(
+        array $config,
+        string $policyId,
+        string $clientIp,
+        ?string $userId
+    ): LimiterInterface {
+        $policy = $config['Policies'][$policyId] ?? [];
+        $rateLimiterConfig = $policy['rateLimiterSettings'] ?? [];
         $rateLimiterConfig['id'] = $policyId;
+        if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
+            $clientId = "u:$userId";
+        } else {
+            $clientId = "ip:$clientIp";
+        }
         $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config));
         return $factory->create($clientId);
     }
