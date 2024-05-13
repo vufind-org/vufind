@@ -30,7 +30,6 @@
 namespace VuFind\Db\Entity;
 
 use DateTime;
-use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Entity model interface for user_list table

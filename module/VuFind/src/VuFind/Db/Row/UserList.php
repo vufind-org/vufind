@@ -29,13 +29,13 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Session\Container;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Tags;
-use DateTime;
-use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Row Definition for user_list
@@ -407,7 +407,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function getPublic(): bool
     {
-        return (bool) $this->public ?? false;
+        return (bool)$this->public ?? false;
     }
 
     /**
