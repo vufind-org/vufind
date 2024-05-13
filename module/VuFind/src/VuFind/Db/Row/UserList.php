@@ -314,7 +314,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return ?int
      */
-    public function getId() : ?int
+    public function getId(): ?int
     {
         return $this->id ?? null;
     }
@@ -326,7 +326,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setTitle(string $title) : UserListEntityInterface
+    public function setTitle(string $title): UserListEntityInterface
     {
         $this->title = $title;
         return $this;
@@ -337,7 +337,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return string
      */
-    public function getTitle() : string
+    public function getTitle(): string
     {
         $this->title;
     }
@@ -349,7 +349,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setDescription(string $description) : UserListEntityInterface
+    public function setDescription(string $description): UserListEntityInterface
     {
         $this->description = $description;
         return $this;
@@ -360,7 +360,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return string
      */
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -372,7 +372,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setCreated(DateTime $dateTime) : UserListEntityInterface
+    public function setCreated(DateTime $dateTime): UserListEntityInterface
     {
         $this->_created = $created;
     }
@@ -382,7 +382,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return DateTime
      */
-    public function getCreated() : DateTime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
@@ -394,7 +394,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setIsPublic(bool $public) : UserListEntityInterface
+    public function setIsPublic(bool $public): UserListEntityInterface
     {
         $this->public = $public ? 1 : 0;
         return $this;
@@ -403,9 +403,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Check if the list is public
      *
-     * @return bool 
+     * @return bool
      */
-    public function getPublic() : bool
+    public function getPublic(): bool
     {
         return (bool) $this->public ?? false;
     }
@@ -417,7 +417,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setUser(?UserEntityInterface $user) : UserListEntityInterface
+    public function setUser(?UserEntityInterface $user): UserListEntityInterface
     {
         $this->user_id = $user?->getId();
         return $this;
