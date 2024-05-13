@@ -87,7 +87,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     ) {
         $this->clientId = "ip:$clientIp";
         if (null !== $userId) {
-            $this->clientId .= '/u:$userId';
+            $this->clientId .= " u:$userId";
         }
     }
 
@@ -200,6 +200,17 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     protected function getPolicyIdForEvent(MvcEvent $event): ?string
     {
         foreach ($this->config['Policies'] ?? [] as $name => $settings) {
+            if (null !== ($loggedIn = $settings['loggedIn'] ?? null)) {
+                if ($loggedIn !== ($this->userId ? true : false)) {
+                    continue;
+                }
+            }
+            if ($ipRanges = $settings['ipRanges'] ?? null) {
+                if (!$this->ipUtils->isInRange($this->clientIp, (array)$ipRanges)) {
+                    continue;
+                }
+            }
+
             if (!($filters = $settings['filters'] ?? null)) {
                 return $name;
             }
@@ -226,10 +237,6 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         foreach ($filter as $param => $value) {
             if ('name' === $param) {
                 if ($routeMatch?->getMatchedRouteName() !== $value) {
-                    return false;
-                }
-            } elseif ('ipRanges' === $param) {
-                if (!$this->ipUtils->isInRange($this->clientIp, (array)$value)) {
                     return false;
                 }
             } elseif (in_array($param, ['params', 'query', 'post'])) {

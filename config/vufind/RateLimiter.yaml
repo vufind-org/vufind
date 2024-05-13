@@ -47,6 +47,14 @@ Storage:
 # Each rate limiter has the following settings:
 #
 # preferIPAddress       Use IP address as client ID even for logged-in users
+# ipRange               IP address range. Accepts a single IP address or a range with
+#                       a minus character without blanks as separator. Also partial
+#                       addresses can be used (e.g. 192.168 denotes
+#                       192.168.0.0-192.168.255.255) and IPv6 addresses are also
+#                       supported (unless PHP is compiled with IPv6 disabled).
+# loggedIn              Whether to limit the policy to logged-in users (true) or
+#                       anonymous users (false). Default is null for no limit.
+#
 # filters               An array of request filters that control the requests that
 #                       the policy applies to. Filters can include the following
 #                       fields:
@@ -57,13 +65,6 @@ Storage:
 #                         params       POST request or query parameters
 #                         query        Query string parameters
 #                         post         POST request parameters
-#                         ipRanges     IP address ranges. Each entry can be a single
-#                                      IP address or a range with a minus character
-#                                      without blanks as separator. Also partial
-#                                      addresses can be used (e.g. 192.168 denotes
-#                                      192.168.0.0-192.168.255.255) and IPv6
-#                                      addresses are also supported (unless PHP is
-#                                      compiled with IPv6 disabled).
 #
 # rateLimiterSettings   Rate Limiter settings.
 #                       See https://symfony.com/doc/current/rate_limiter.html#rate-limiting-policies
