@@ -30,6 +30,8 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Exception;
+use PHPUnit\Framework\ExpectationFailedException;
 
 /**
  * Mink channels test class.
@@ -142,7 +144,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 'Octothorpes: Why not?',
                 'dollar$ign/slashcombo',
                 'Of Money and Slashes',
-                '',
+                null,
             ],
             'same record in two channels' => [
                 'id:017791359-1',
@@ -150,20 +152,42 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 'Fake Record 1 with multiple relators/',
                 '017791359-1',
                 'Fake Record 1 with multiple relators/',
-                '[data-channel-id="channel-4afca2ef6c4d86c140a2d01513f9e2be"]',
+                1,
             ],
         ];
     }
 
     /**
+     * Assert that the popover contents contain the expected title and description; return the
+     * contents string.
+     *
+     * @param Element $page          Page element
+     * @param string  $expectedTitle Expected title for popover
+     *
+     * @return string
+     * @throws Exception
+     * @throws ExpectationFailedException
+     */
+    protected function assertPopoverTitleAndDescription(Element $page, string $expectedTitle): string
+    {
+        $popoverContents = $this->findCssAndGetText($page, '.popover');
+        // The popover should contain an appropriate title and metadata:
+        $this->assertStringContainsString($expectedTitle, $popoverContents);
+        $this->assertStringContainsString('Description', $popoverContents);
+        // Click outside of channels to move the focus away:
+        $this->clickCss($page, 'li.active');
+        return $popoverContents;
+    }
+
+    /**
      * Test popover behavior by clicking back and forth between two records
      *
-     * @param string $query                Search query
-     * @param string $record1              ID of first record
-     * @param string $title1               Title of first record
-     * @param string $record2              ID of second record
-     * @param string $title2               Title of second record
-     * @param string $record2ExtraSelector Extra selector for accessing $record2 (needed when $record1 === $record2)
+     * @param string $query               Search query
+     * @param string $record1             ID of first record
+     * @param string $title1              Title of first record
+     * @param string $record2             ID of second record
+     * @param string $title2              Title of second record
+     * @param ?int   $record2ChannelIndex Index of channel containing second record (needed when $record1 === $record2)
      *
      * @return void
      *
@@ -175,24 +199,18 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         string $title1,
         string $record2,
         string $title2,
-        string $record2ExtraSelector
+        ?int $record2ChannelIndex
     ): void {
         $page = $this->getChannelsPage($query);
         // Click a record to open the popover:
         $this->clickCss($page, '.channel-record[data-record-id="' . $record1 . '"]');
-        $popoverContents = $this->findCssAndGetText($page, '.popover');
         // The popover should contain an appropriate title and metadata:
-        $this->assertStringContainsString($title1, $popoverContents);
-        $this->assertStringContainsString('Description', $popoverContents);
+        $popoverContents = $this->assertPopoverTitleAndDescription($page, $title1);
         // Click a different record (or the second instance of the same record, if that's what we're testing):
-        $extra = $record1 === $record2 ? '.channel-wrapper:nth-of-type(2) ' : '';
-        $this->clickCss($page, '.channel-record[data-record-id="' . $record2 . '"]' . $record2ExtraSelector);
-        $popoverContents2 = $this->findCssAndGetText($page, '.popover');
-        // The popover should contain an appropriate title and metadata:
-        $this->assertStringContainsString($title2, $popoverContents2);
-        $this->assertStringContainsString('Description', $popoverContents2);
-        // Click outside of channels to move the focus away:
-        $this->clickCss($page, 'li.active');
+        $title2Target = $record2ChannelIndex === null
+            ? $page : $this->findCss($page, '.channel', index: $record2ChannelIndex);
+        $this->clickCss($title2Target, '.channel-record[data-record-id="' . $record2 . '"]');
+        $this->assertPopoverTitleAndDescription($page, $title2);
         // Now click back to the original record; the popover should contain the same contents.
         $this->clickCss($page, '.channel-record[data-record-id="' . $record1 . '"]');
         $popoverContents3 = $this->findCssAndGetText($page, '.popover');
