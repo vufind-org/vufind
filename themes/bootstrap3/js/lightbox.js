@@ -1,4 +1,9 @@
 /*global VuFind, getFocusableNodes, recaptchaOnLoad, resetCaptcha */
+
+const RESPONSE_OK = 200;
+const RESPONSE_NOCONTENT = 204;
+const RESPONSE_RESET = 205;
+
 VuFind.register('lightbox', function Lightbox() {
   var child = "";
   var parent = "";
@@ -174,11 +179,11 @@ VuFind.register('lightbox', function Lightbox() {
       .done(function lbAjaxDone(content, status, jq_xhr) {
         var errorMsgs = [];
         var flashMessages = [];
-        if (jq_xhr.status === 204) {
+        if (jq_xhr.status === RESPONSE_NOCONTENT) {
           // No content, close lightbox
           close();
           return;
-        } else if (jq_xhr.status !== 205) {
+        } else if (jq_xhr.status !== RESPONSE_RESET) {
           var testDiv = $('<div/>').html(content);
           errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
           flashMessages = testDiv.find('.flash-message:not([data-lightbox-ignore])');
@@ -193,6 +198,7 @@ VuFind.register('lightbox', function Lightbox() {
             }
           }
         }
+
         // Close the lightbox after deliberate login provided that:
         // - is a form
         // - catalog login for holds
@@ -210,10 +216,12 @@ VuFind.register('lightbox', function Lightbox() {
           VuFind.emit(
             "lightbox.login",
             {
+              cancel: cancelRefresh, // call this function to cancel refresh
+              status: jq_xhr.status,
+              content,
               form: obj,
               currentUrl: _currentUrl,
               originalUrl: _originalUrl,
-              cancel: cancelRefresh, // call this function to cancel refresh
             }
           );
 
@@ -223,11 +231,13 @@ VuFind.register('lightbox', function Lightbox() {
             }
             return false;
           } else {
-            VuFind.lightbox.refreshOnClose = true;
+            showAlert(VuFind.translate("logged_in"));
+            refreshOnClose = true;
+            return false;
           }
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
-        if (jq_xhr.status === 205) {
+        if (jq_xhr.status === RESPONSE_RESET) {
           VuFind.refreshPage();
           return;
         }
@@ -251,7 +261,12 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   _constrainLink = function constrainLink(event) {
-    var $link = $(this);
+    // Data attribute escape
+
+    if (this.getAttribute("data-lightbox-ignore")) {
+      cancel();
+      return;
+    }
 
     // defaults in `init` below
 
@@ -261,10 +276,10 @@ VuFind.register('lightbox', function Lightbox() {
     VuFind.emit(
       "lightbox.link",
       {
+        cancel: cancelConstrain, // call this function to escape Lightbox
         link: this,
         currentUrl: _currentUrl,
         originalUrl: _originalUrl,
-        cancel: cancelConstrain, // call this function to escape Lightbox
       }
     );
     if (!doContrain) {
@@ -272,13 +287,16 @@ VuFind.register('lightbox', function Lightbox() {
     }
 
     event.preventDefault();
-    var obj = { url: $(this).data('lightbox-href') || this.href };
-    if ("string" === typeof $(this).data('lightbox-post')) {
+
+    const $link = $(this);
+    var obj = { url: $link.data('lightbox-href') || this.href };
+    if ("string" === typeof $link.data('lightbox-post')) {
       obj.type = 'POST';
-      obj.data = $(this).data('lightbox-post');
+      obj.data = $link.data('lightbox-post');
     }
-    _lightboxTitle = $(this).data('lightbox-title') || false;
-    _modalParams = $(this).data();
+
+    _lightboxTitle = $link.data('lightbox-title') || false;
+    _modalParams = $link.data();
     VuFind.modal('show');
     ajax(obj);
     _currentUrl = this.href;
@@ -301,7 +319,7 @@ VuFind.register('lightbox', function Lightbox() {
   _formSubmit = function formSubmit(event) {
     const form = event.target;
 
-    // Lightbox escapes
+    // Data attribute escape
 
     if (typeof $(form).data('lightbox-ignore') !== 'undefined') {
       return true;
@@ -313,13 +331,13 @@ VuFind.register('lightbox', function Lightbox() {
     VuFind.emit(
       "lightbox.form",
       {
+        cancel: cancelConstrain, // call this function to escape Lightbox
         form,
         currentUrl: _currentUrl,
         originalUrl: _originalUrl,
-        cancel: cancelConstrain, // call this function to escape Lightbox
       }
     );
-    if (!doContrain) {
+    if (!doConstrain) {
       return true; // submit form normally
     }
 
@@ -487,7 +505,7 @@ VuFind.register('lightbox', function Lightbox() {
         });
         imageCheck.done(function lightboxImageCheckDone(content, status, jq_xhr) {
           if (
-            jq_xhr.status === 200 &&
+            jq_xhr.status === RESPONSE_OK &&
             jq_xhr.getResponseHeader("content-type").startsWith("image")
           ) {
             render('<div class="lightbox-image"><img src="' + url + '"/></div>');
@@ -537,7 +555,7 @@ VuFind.register('lightbox', function Lightbox() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
     _modal.on('hide.bs.modal', function lightboxHide() {
-      if (VuFind.lightbox.refreshOnClose) {
+      if (refreshOnClose) {
         VuFind.refreshPage();
       } else {
         if (_beforeOpenElement) {
@@ -570,13 +588,6 @@ VuFind.register('lightbox', function Lightbox() {
 
     // Default link constraint
     VuFind.listen("lightbox.link", ({ link, cancel }) => {
-      // Programmatic Escape
-
-      if (link.getAttribute("data-lightbox-ignore")) {
-        cancel();
-        return;
-      }
-
       // Invalid or non-applicable links
 
       const urlRoot = location.origin + VuFind.path;
