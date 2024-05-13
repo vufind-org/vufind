@@ -661,6 +661,7 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
+  // originalEvent check can be removed and event.submitter can directly used once jQuery is no longer used in the lightbox
   const submitter = event.originalEvent.submitter !== undefined && event.originalEvent.submitter !== null
     ? event.originalEvent.submitter
     : (event.submitter !== undefined && event.submitter !== null ? event.submitter : null);
