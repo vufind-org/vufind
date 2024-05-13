@@ -233,6 +233,15 @@ interface UserEntityInterface extends EntityInterface
     public function getAuthMethod(): ?string;
 
     /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface;
+
+    /**
      * Get last language.
      *
      * @return string

@@ -737,6 +737,9 @@ class User extends RowGateway implements
      * @param string $language New language
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Entity\UserEntityInterface::setLastLanguage()
+     * and \VuFind\Db\Service\UserService::persistEntity() instead.
      */
     public function updateLastLanguage($language)
     {
@@ -1047,6 +1050,19 @@ class User extends RowGateway implements
     public function getAuthMethod(): ?string
     {
         return $this->auth_method;
+    }
+
+    /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface
+    {
+        $this->last_language = $lang;
+        return $this;
     }
 
     /**
