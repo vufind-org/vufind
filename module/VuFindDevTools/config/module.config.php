@@ -53,6 +53,16 @@ $config = [
                     ],
                 ],
             ],
+            'devtools-user' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/user',
+                    'defaults' => [
+                        'controller' => 'DevTools',
+                        'action'     => 'User',
+                    ],
+                ],
+            ],
         ],
     ],
 ];

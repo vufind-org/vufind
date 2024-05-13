@@ -141,4 +141,14 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
             (bool)$this->params()->fromQuery('includeOptional', 1)
         );
     }
+
+    /**
+     * User action
+     *
+     * @return array
+     */
+    public function userAction()
+    {
+        return ['user' => $this->getUser()];
+    }
 }

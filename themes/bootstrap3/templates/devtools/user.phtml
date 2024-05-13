@@ -1,0 +1,17 @@
+<?php
+  $this->headTitle($this->translate('User Details'));
+?>
+
+<?php if ($user): ?>
+  <?php $methods = get_class_methods(\VuFind\Db\Entity\UserEntityInterface::class); ?>
+  <table>
+    <?php foreach ($methods as $method): ?>
+      <?php if (str_starts_with($method, 'get')): ?>
+        <?php $val = $user->$method(); ?>
+        <tr><th><?=$this->escapeHtml($method)?></th><td><?=$this->escapeHtml(is_object($val) ? $val::class . ' object' : $val ?? '**null**')?></td></tr>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </table>
+<?php else: ?>
+  <?=$this->transEsc('You must be logged in first')?>
+<?php endif; ?>
