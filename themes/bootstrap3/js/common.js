@@ -661,8 +661,12 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (event.submitter !== undefined) {
-    let limit = event.submitter.dataset.itemLimit;
+  const submitter = event.originalEvent.submitter !== undefined && event.originalEvent.submitter !== null
+    ? event.originalEvent.submitter
+    : (event.submitter !== undefined && event.submitter !== null ? event.submitter : null);
+
+  if (submitter !== null) {
+    let limit = submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
       VuFind.lightbox.alert(
         VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
