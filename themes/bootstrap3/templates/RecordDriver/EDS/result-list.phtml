@@ -81,7 +81,7 @@
 
       <?=$this->record($this->driver)->renderTemplate(
                 'result-list/full-text-links.phtml',
-                ['recordLinker' => $recordLinker]
+                ['recordLinker' => $recordLinker, 'newWindow' => true]
             );
       ?>
 
