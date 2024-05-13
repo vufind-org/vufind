@@ -252,7 +252,7 @@ class Feedback extends RowGateway implements FeedbackEntityInterface, DbServiceA
      */
     public function setUser(?UserEntityInterface $user): FeedbackEntityInterface
     {
-        $this->user_id = $user ? $user->getId() : null;
+        $this->user_id = $user?->getId();
         return $this;
     }
 
