@@ -40,4 +40,93 @@ namespace VuFind\Db\Entity;
  */
 interface UserListEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Title setter
+     *
+     * @param string $title Title
+     *
+     * @return UserListEntityInterface
+     */
+    public function setTitle(string $title): UserListEntityInterface;
+
+    /**
+     * Get Title.
+     *
+     * @return string
+     */
+    public function getTitle(): string;
+
+    /**
+     * Description setter
+     *
+     * @param string $description Description
+     *
+     * @return UserListEntityInterface
+     */
+    public function setDescription(string $description): UserListEntityInterface;
+
+    /**
+     * Get Description.
+     *
+     * @return string
+     */
+    public function getDescription(): string;
+
+    /**
+     * Created date setter.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserListEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set the list public.
+     *
+     * @param bool $public Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setPublic(bool $public): UserListEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return bool
+     */
+    public function isPublic(): bool;
+
+    /**
+     * Set user ID.
+     *
+     * @param ?UserEntityInterface $user User owning token
+     *
+     * @return UserListEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user): UserListEntityInterface;
+
+    /**
+     * Is the current user allowed to edit this list?
+     *
+     * @param User|int|null $user Logged-in user (null if none)
+     *
+     * @return bool
+     */
+    public function editAllowed(UserEntityInterface $user): bool;
+
 }

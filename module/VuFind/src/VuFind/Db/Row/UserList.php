@@ -305,4 +305,97 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         // Remove the list itself:
         return parent::delete();
     }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId() {
+        return $this->__get('id');
+    }
+
+    /**
+     * Title setter
+     *
+     * @param string $title Title
+     *
+     * @return UserListEntityInterface
+     */
+    public function setTitle(string $title) {
+        $this->__set('title',$title);
+    }
+
+    /**
+     * Get Title.
+     *
+     * @return string
+     */
+    public function getTitle() {
+        $this->__get('title');
+    }
+
+    /**
+     * Description setter
+     *
+     * @param string $description Description
+     *
+     * @return UserListEntityInterface
+     */
+    public function setDescription(string $description) {
+        $this->__set('description',$description);
+    }
+
+    /**
+     * Get Description.
+     *
+     * @return string
+     */
+    public function getDescription() {
+        return $this->__get('description');
+    }
+
+    /**
+     * Created date setter.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setCreated(DateTime $dateTime) {
+        $this->__set('created',$created);
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated() {
+        return $this->__get('created');
+    }
+
+    /**
+     * Set the list public.
+     *
+     * @param bool $public Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setPublic(bool $public) {
+        $this->__set('public',$public);
+    }
+
+    /**
+     * Set user ID.
+     *
+     * @param ?UserEntityInterface $user User owning token
+     *
+     * @return UserListEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user) {
+        $this->__set('user_id', $user?->getId());
+        return $this;
+    }
+
 }
