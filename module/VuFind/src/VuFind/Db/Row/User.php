@@ -1072,7 +1072,7 @@ class User extends RowGateway implements
      */
     public function getLastLanguage(): string
     {
-        return $this->last_language;
+        return $this->last_language ?? '';
     }
 
     /**
