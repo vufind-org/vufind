@@ -313,7 +313,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * @return ?int
      */
     public function getId() {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
