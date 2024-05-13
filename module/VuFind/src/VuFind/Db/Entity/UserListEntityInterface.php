@@ -120,13 +120,4 @@ interface UserListEntityInterface extends EntityInterface
      */
     public function setUser(?UserEntityInterface $user): UserListEntityInterface;
 
-    /**
-     * Is the current user allowed to edit this list?
-     *
-     * @param User|int|null $user Logged-in user (null if none)
-     *
-     * @return bool
-     */
-    public function editAllowed(UserEntityInterface $user): bool;
-
 }
