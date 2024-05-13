@@ -187,7 +187,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $title1              Title of first record
      * @param string $record2             ID of second record
      * @param string $title2              Title of second record
-     * @param ?int   $record2ChannelIndex Index of channel containing second record (null = no special filtering)
+     * @param ?int   $record2ChannelIndex Index of channel containing second record (needed when $record1 === $record2)
      *
      * @return void
      *
