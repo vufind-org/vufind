@@ -125,7 +125,7 @@
         ?>
         <div>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-            <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
+            <?php if ($icon): ?><img alt="" src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
           </a>
         </div>
       <?php endforeach; ?>
