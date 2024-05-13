@@ -339,7 +339,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function getTitle(): string
     {
-        $this->title;
+        return $this->title;
     }
 
     /**
@@ -374,7 +374,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function setCreated(DateTime $dateTime): UserListEntityInterface
     {
-        $this->_created = $created;
+        $this->_created = $dateTime;
     }
 
     /**
