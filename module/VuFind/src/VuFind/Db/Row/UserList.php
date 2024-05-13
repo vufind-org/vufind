@@ -374,7 +374,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function setCreated(DateTime $dateTime): UserListEntityInterface
     {
-        $this->_created = $dateTime;
+        return $this->created = $dateTime;
     }
 
     /**
