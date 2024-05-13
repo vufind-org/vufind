@@ -511,6 +511,19 @@ class User implements UserEntityInterface
     }
 
     /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface
+    {
+        $this->lastLanguage = $lang;
+        return $this;
+    }
+
+    /**
      * Get last language.
      *
      * @return string
