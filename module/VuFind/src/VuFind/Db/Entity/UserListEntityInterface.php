@@ -122,5 +122,4 @@ interface UserListEntityInterface extends EntityInterface
      * @return UserListEntityInterface
      */
     public function setUser(?UserEntityInterface $user): UserListEntityInterface;
-
 }

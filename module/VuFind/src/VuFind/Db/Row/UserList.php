@@ -274,7 +274,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Is this a public list?
      *
-     * @return bool
+     * @return     bool
      * @deprecated This method is deprecated and will be removed once laminas is no longer used.
      */
     public function isPublic()
@@ -287,7 +287,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
      * @param bool                     $force Should we force the delete without
-     * checking permissions?
+     *                                        checking permissions?
      *
      * @return int The number of rows deleted.
      */
@@ -314,7 +314,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return ?int
      */
-    public function getId() : ?int{
+    public function getId() : ?int
+    {
         return $this->id ?? null;
     }
 
@@ -325,7 +326,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setTitle(string $title) : UserListEntityInterface {
+    public function setTitle(string $title) : UserListEntityInterface
+    {
         $this->title = $title;
         return $this;
     }
@@ -335,7 +337,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return string
      */
-    public function getTitle() : string {
+    public function getTitle() : string
+    {
         $this->title;
     }
 
@@ -346,7 +349,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setDescription(string $description) : UserListEntityInterface{
+    public function setDescription(string $description) : UserListEntityInterface
+    {
         $this->description = $description;
         return $this;
     }
@@ -356,7 +360,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return string
      */
-    public function getDescription() : string{
+    public function getDescription() : string
+    {
         return $this->description;
     }
 
@@ -367,7 +372,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setCreated(DateTime $dateTime) : UserListEntityInterface{
+    public function setCreated(DateTime $dateTime) : UserListEntityInterface
+    {
         $this->_created = $created;
     }
 
@@ -376,7 +382,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return DateTime
      */
-    public function getCreated() : DateTime{
+    public function getCreated() : DateTime
+    {
         return $this->created;
     }
 
@@ -387,7 +394,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setIsPublic(bool $public) : UserListEntityInterface {
+    public function setIsPublic(bool $public) : UserListEntityInterface
+    {
         $this->public = $public ? 1 : 0;
         return $this;
     }
@@ -397,7 +405,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return bool 
      */
-    public function getPublic() : bool {
+    public function getPublic() : bool
+    {
         return (bool) $this->public ?? false;
     }
 
@@ -408,9 +417,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setUser(?UserEntityInterface $user) : UserListEntityInterface {
+    public function setUser(?UserEntityInterface $user) : UserListEntityInterface
+    {
         $this->user_id = $user?->getId();
         return $this;
     }
-
 }
