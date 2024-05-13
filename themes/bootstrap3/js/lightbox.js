@@ -269,8 +269,7 @@ VuFind.register('lightbox', function Lightbox() {
     // Data attribute escape
 
     if (this.getAttribute("data-lightbox-ignore")) {
-      cancel();
-      return;
+      return true;
     }
 
     // defaults in `init` below
@@ -600,8 +599,8 @@ VuFind.register('lightbox', function Lightbox() {
       const reResourceLink = new RegExp("^[a-z]+:[^/]", "i");
 
       if (
-        href === null   // invalid link
-        || href.charAt(0) === "#"        // anchor to same page
+        href === null // invalid link
+        || href.charAt(0) === "#" // anchor to same page
         || reResourceLink.test(href) // ignore resource identifiers (mailto:, tel:, etc.)
         || (
           href.startsWith("http") // external links
