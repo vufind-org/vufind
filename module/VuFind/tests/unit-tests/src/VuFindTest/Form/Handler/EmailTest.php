@@ -43,6 +43,7 @@ use VuFind\Form\Handler\Email;
  */
 class EmailTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -80,6 +81,63 @@ class EmailTest extends \PHPUnit\Framework\TestCase
             ['Bar', 'foo@example.com'],
             $this->callMethod($handler, 'getSender', [$form])
         );
+    }
+
+    /**
+     * Test user object handling.
+     *
+     * @return void
+     */
+    public function testExtractDataFromUserObject(): void
+    {
+        $handler = $this->getHandler();
+        $form = $this->createMock(Form::class);
+        $form->expects($this->once())->method('getRecipient')->willReturn([]);
+        $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+        $user->expects($this->once())->method('getFirstname')->willReturn('First');
+        $user->expects($this->once())->method('getLastname')->willReturn('Last');
+        $user->expects($this->once())->method('getEmail')->willReturn('foo@example.com');
+        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
+        $this->expectConsecutiveCalls(
+            $params,
+            'fromPost',
+            [
+                [null],
+                ['name', 'First Last'],
+                ['email', 'foo@example.com'],
+            ],
+            [
+                [], 'First Last', 'foo@example.com',
+            ]
+        );
+        $this->assertTrue($handler->handle($form, $params, $user));
+    }
+
+    /**
+     * Test absent user object handling.
+     *
+     * @return void
+     */
+    public function testHandleMissingUserObject(): void
+    {
+        $handler = $this->getHandler();
+        $form = $this->createMock(Form::class);
+        $form->expects($this->once())->method('getRecipient')->willReturn([]);
+        $user = null;
+        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
+        $this->expectConsecutiveCalls(
+            $params,
+            'fromPost',
+            [
+                [null],
+                ['name', null],
+                ['email', null],
+            ],
+            [
+                [], null, null,
+            ]
+        );
+        $this->assertTrue($handler->handle($form, $params, $user));
     }
 
     /**

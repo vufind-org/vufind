@@ -112,7 +112,7 @@
           <?php if (count($listTags) > 0): ?>
             <strong><?=$this->transEsc('Your Tags')?>:</strong>
             <?php foreach ($listTags as $tag): ?>
-              <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
+              <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
             <?php endforeach; ?>
             <br>
           <?php endif; ?>
