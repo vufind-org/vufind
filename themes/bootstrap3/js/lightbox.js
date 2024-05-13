@@ -204,11 +204,15 @@ VuFind.register('lightbox', function Lightbox() {
         // - catalog login for holds
         // - or that matches login/create account
         // - not a failed login
+
+        const objPathname = obj.url.split("?")[0]; // ignore queries like lbReferrer
         if (
-          obj.method && (
-            obj.url.match(/catalogLogin/)
-            || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
-          ) && flashMessages.length === 0
+          obj.method
+          && (
+            objPathname.match(/catalogLogin/)
+            || objPathname.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
+          )
+          && flashMessages.length === 0
         ) {
           let doRefresh = true;
           const cancelRefresh = () => doRefresh = false;
@@ -225,14 +229,15 @@ VuFind.register('lightbox', function Lightbox() {
             }
           );
 
-          if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
+          if (
+            objPathname.match(/catalogLogin/)
+            || _originalUrl.match(/UserLogin/)
+            || _originalUrl.match(/CompleteLogin/)
+          ) {
             if (doRefresh) {
-              VuFind.refreshPage();
+              showAlert(VuFind.translate("logged_in"));
+              refreshOnClose = true;
             }
-            return false;
-          } else {
-            showAlert(VuFind.translate("logged_in"));
-            refreshOnClose = true;
             return false;
           }
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
