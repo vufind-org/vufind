@@ -1184,7 +1184,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (!($item['availability'] instanceof AvailabilityStatus)) {
                 $availability = $item['availability'] ?? false;
                 if ($item['use_unknown_message'] ?? false) {
-                    $availability = AvailabilityStatus::STATUS_UNKNOWN;
+                    $availability = Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
                 }
                 $item['availability'] = new AvailabilityStatus(
                     $availability,

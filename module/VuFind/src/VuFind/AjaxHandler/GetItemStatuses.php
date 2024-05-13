@@ -39,7 +39,6 @@ use Laminas\View\Renderer\RendererInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
-use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\ILS\Logic\AvailabilityStatusManager;
 use VuFind\ILS\Logic\Holds;
@@ -339,7 +338,7 @@ class GetItemStatuses extends AbstractBase implements
                 }
             }
             // Check for a use_unknown_message flag
-            if ($availabilityStatus->is(AvailabilityStatus::STATUS_UNKNOWN)) {
+            if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNKNOWN)) {
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
@@ -515,7 +514,7 @@ class GetItemStatuses extends AbstractBase implements
                 // Check for errors
                 if (!empty($record[0]['error'])) {
                     $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
-                        AvailabilityStatus::STATUS_UNKNOWN
+                        AvailabilityStatusInterface::STATUS_UNKNOWN
                     );
                     $current = $this
                         ->getItemStatusError(

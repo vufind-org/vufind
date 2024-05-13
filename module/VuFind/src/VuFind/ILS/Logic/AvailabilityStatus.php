@@ -43,34 +43,6 @@ namespace VuFind\ILS\Logic;
 class AvailabilityStatus implements AvailabilityStatusInterface
 {
     /**
-     * Status code for unavailable items
-     *
-     * @var int
-     */
-    public const STATUS_UNAVAILABLE = 0;
-
-    /**
-     * Status code for available items
-     *
-     * @var int
-     */
-    public const STATUS_AVAILABLE = 1;
-
-    /**
-     * Status code for items with uncertain availability
-     *
-     * @var int
-     */
-    public const STATUS_UNCERTAIN = 2;
-
-    /**
-     * Status code for items where no status information is available
-     *
-     * @var int
-     */
-    public const STATUS_UNKNOWN = 3;
-
-    /**
      * Items availability
      *
      * @var int
@@ -170,11 +142,11 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     public function availabilityAsString(): string
     {
         switch ($this->availability) {
-            case AvailabilityStatus::STATUS_UNAVAILABLE:
+            case AvailabilityStatusInterface::STATUS_UNAVAILABLE:
                 return 'false';
-            case AvailabilityStatus::STATUS_AVAILABLE:
+            case AvailabilityStatusInterface::STATUS_AVAILABLE:
                 return 'true';
-            case AvailabilityStatus::STATUS_UNKNOWN:
+            case AvailabilityStatusInterface::STATUS_UNKNOWN:
                 return 'unknown';
             default:
                 return 'uncertain';
@@ -201,11 +173,11 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     protected function getPriority(): int
     {
         switch ($this->availability) {
-            case AvailabilityStatus::STATUS_UNKNOWN:
+            case AvailabilityStatusInterface::STATUS_UNKNOWN:
                 return 0;
-            case AvailabilityStatus::STATUS_UNAVAILABLE:
+            case AvailabilityStatusInterface::STATUS_UNAVAILABLE:
                 return 1;
-            case AvailabilityStatus::STATUS_UNCERTAIN:
+            case AvailabilityStatusInterface::STATUS_UNCERTAIN:
                 return 2;
             default:
                 return 3;

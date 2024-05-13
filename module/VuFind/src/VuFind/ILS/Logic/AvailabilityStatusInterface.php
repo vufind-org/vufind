@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2024.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  ILS_Logic
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -34,12 +35,41 @@ namespace VuFind\ILS\Logic;
  *
  * @category VuFind
  * @package  ILS_Logic
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 interface AvailabilityStatusInterface
 {
+    /**
+     * Status code for unavailable items
+     *
+     * @var int
+     */
+    public const STATUS_UNAVAILABLE = 0;
+
+    /**
+     * Status code for available items
+     *
+     * @var int
+     */
+    public const STATUS_AVAILABLE = 1;
+
+    /**
+     * Status code for items with uncertain availability
+     *
+     * @var int
+     */
+    public const STATUS_UNCERTAIN = 2;
+
+    /**
+     * Status code for items where no status information is available
+     *
+     * @var int
+     */
+    public const STATUS_UNKNOWN = 3;
+
     /**
      * Check if available.
      *

@@ -30,7 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\DocumentElement;
-use VuFind\ILS\Logic\AvailabilityStatus;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
 
 /**
  * Test class for holdings and item statuses.
@@ -55,9 +55,9 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         $set = [
             [true, 'On Shelf', 'On Shelf', 'success'],
             [false, 'Checked Out', 'Checked Out', 'danger'],
-            [AvailabilityStatus::STATUS_AVAILABLE, 'On Shelf', 'On Shelf', 'success'],
-            [AvailabilityStatus::STATUS_UNAVAILABLE, 'Checked Out', 'Checked Out', 'danger'],
-            [AvailabilityStatus::STATUS_UNCERTAIN, 'Check with Staff', 'Check with Staff', 'warning'],
+            [AvailabilityStatusInterface::STATUS_AVAILABLE, 'On Shelf', 'On Shelf', 'success'],
+            [AvailabilityStatusInterface::STATUS_UNAVAILABLE, 'Checked Out', 'Checked Out', 'danger'],
+            [AvailabilityStatusInterface::STATUS_UNCERTAIN, 'Check with Staff', 'Check with Staff', 'warning'],
             [null, 'Live Status Unavailable', 'Live Status Unavailable', 'muted'],
         ];
         $msgSet = array_map(
@@ -116,9 +116,10 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
 
         // The simple availability display will only show Available/Unavailable/Uncertain:
         $expectedMap = [
-            // 'loan' service is displayed when availability is AvailabilityStatus::STATUS_AVAILABLE
+            // 'loan' service is displayed when availability is AvailabilityStatusInterface::STATUS_AVAILABLE
             // for non-grouped items:
-            'success' => AvailabilityStatus::STATUS_AVAILABLE === $availability && 'group' !== $multipleLocations
+            'success' => AvailabilityStatusInterface::STATUS_AVAILABLE === $availability
+                && 'group' !== $multipleLocations
                 ? 'Available for Loan' : 'Available',
             'danger' => 'Checked Out',
             'warning' => 'Uncertain',
@@ -135,7 +136,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         if ($availability) {
             // Extra items, check for different display styles:
             if ('group' === $multipleLocations) {
-                if (AvailabilityStatus::STATUS_AVAILABLE === $availability) {
+                if (AvailabilityStatusInterface::STATUS_AVAILABLE === $availability) {
                     // For this case we have available items in both locations:
                     $this->assertEquals(
                         'Test Location',
@@ -319,19 +320,19 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         if ($addExtraItems && $availability) {
             // Test Location:
             $item = $this->getFakeItem();
-            $item['availability'] = AvailabilityStatus::STATUS_UNAVAILABLE;
+            $item['availability'] = AvailabilityStatusInterface::STATUS_UNAVAILABLE;
             $item['status'] = 'Foo';
             $items[] = $item;
 
             // "main" location:
             $item = $this->getFakeItem();
-            $item['availability'] = AvailabilityStatus::STATUS_UNAVAILABLE;
+            $item['availability'] = AvailabilityStatusInterface::STATUS_UNAVAILABLE;
             $item['status'] = 'Foo';
             $item['location'] = 'main';
             $items[] = $item;
-            if (AvailabilityStatus::STATUS_UNCERTAIN !== $availability) {
+            if (AvailabilityStatusInterface::STATUS_UNCERTAIN !== $availability) {
                 $item = $this->getFakeItem();
-                $item['availability'] = AvailabilityStatus::STATUS_UNCERTAIN;
+                $item['availability'] = AvailabilityStatusInterface::STATUS_UNCERTAIN;
                 $item['status'] = 'Foo';
                 $item['location'] = 'main';
                 $items[] = $item;
@@ -346,17 +347,17 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         }
         $item['status'] = $statusMsg;
         $item['location'] = 'main';
-        if (AvailabilityStatus::STATUS_AVAILABLE === $item['availability']) {
+        if (AvailabilityStatusInterface::STATUS_AVAILABLE === $item['availability']) {
             $item['services'] = ['loan', 'presentation'];
         }
         $items[] = $item;
 
         // If the requested item is available or uncertain, add one more item to test
         // handling order:
-        if ($addExtraItems && AvailabilityStatus::STATUS_AVAILABLE === $availability) {
+        if ($addExtraItems && AvailabilityStatusInterface::STATUS_AVAILABLE === $availability) {
             // Test Location:
             $item = $this->getFakeItem();
-            $item['availability'] = AvailabilityStatus::STATUS_AVAILABLE;
+            $item['availability'] = AvailabilityStatusInterface::STATUS_AVAILABLE;
             $item['status'] = 'Foo';
             $items[] = $item;
         }
