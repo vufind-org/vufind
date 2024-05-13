@@ -206,7 +206,8 @@ class MyResearchController extends AbstractBase
                     // Return early to avoid unnecessary processing if we are being
                     // called from login lightbox and don't have a followup action or
                     // followup is set to referrer.
-                    if ($this->inLightbox()
+                    if (
+                        $this->inLightbox()
                         && (
                             $this->hasFollowupUrl() === false
                             || $this->followup()->retrieve('isReferrer') === true
