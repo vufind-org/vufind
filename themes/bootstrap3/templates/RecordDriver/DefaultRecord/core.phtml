@@ -1,7 +1,5 @@
 <?php
   $this->metadata()->generateMetatags($this->driver);
-  $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
-  $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
 ?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
