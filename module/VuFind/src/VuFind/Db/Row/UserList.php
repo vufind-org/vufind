@@ -277,7 +277,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * @return     bool
      * @deprecated This method is deprecated and will be removed once laminas is no longer used.
      */
-    public function isPublic()
+    public function isPublic(): bool
     {
         return isset($this->public) && ($this->public == 1);
     }
@@ -286,8 +286,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Destroy the list.
      *
      * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
-     * @param bool                     $force Should we force the delete without
-     *                                        checking permissions?
+     * @param bool                     $force Should we force the delete without checking permissions?
      *
      * @return int The number of rows deleted.
      */
@@ -316,7 +315,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
@@ -374,7 +373,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function setCreated(DateTime $dateTime): UserListEntityInterface
     {
-        return $this->created = $dateTime;
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
     }
 
     /**
@@ -384,7 +384,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
     }
 
     /**
@@ -394,20 +394,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setIsPublic(bool $public): UserListEntityInterface
-    {
-        $this->public = $public ? 1 : 0;
+    public function setPublic(bool $public): UserListEntityInterface {
+        $this->public = $public ? '1' : '0';
         return $this;
-    }
-
-    /**
-     * Check if the list is public
-     *
-     * @return bool
-     */
-    public function getPublic(): bool
-    {
-        return (bool)$this->public ?? false;
     }
 
     /**
@@ -421,5 +410,17 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     {
         $this->user_id = $user?->getId();
         return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface
+    {
+        return $this->user_id
+            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
+            : null;
     }
 }
