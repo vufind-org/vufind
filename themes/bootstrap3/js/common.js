@@ -692,7 +692,7 @@ function setupOffcanvas() {
   if (sidebar && body.classList.contains("vufind-offcanvas")) {
     const offcanvasToggle = document.querySelectorAll('[data-toggle="vufind-offcanvas"]');
     
-    offcanvasToggle.forEach(function(element) {
+    offcanvasToggle.forEach((element) => {
       element.addEventListener("click", function offcanvasClick(e) {
         e.preventDefault();
         body.classList.toggle('active');
