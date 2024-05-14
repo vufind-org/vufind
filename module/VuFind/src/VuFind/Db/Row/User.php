@@ -1120,4 +1120,27 @@ class User extends RowGateway implements
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
     }
+
+    /**
+     * Created setter
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated(): Datetime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
 }
