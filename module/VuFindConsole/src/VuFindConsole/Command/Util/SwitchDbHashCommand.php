@@ -157,36 +157,16 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Re-encrypt a card row.
+     * Re-encrypt a row.
      *
-     * @param UserCardRow  $row       Row to update
-     * @param ?BlockCipher $oldcipher Old cipher (null for none)
-     * @param BlockCipher  $newcipher New cipher
-     *
-     * @return void
-     * @throws InvalidArgumentException
-     */
-    protected function fixCardRow(UserCardRow $row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
-    {
-        $pass = ($oldcipher && $row->getCatPassEnc() !== null)
-            ? $oldcipher->decrypt($row->getCatPassEnc())
-            : $row->getRawCatPassword();
-        $row->setRawCatPassword(null);
-        $row->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
-        $row->save();
-    }
-
-    /**
-     * Re-encrypt a user row.
-     *
-     * @param UserRow      $row       Row to update
-     * @param ?BlockCipher $oldcipher Old cipher (null for none)
-     * @param BlockCipher  $newcipher New cipher
+     * @param UserRow|UserCardRow $row       Row to update
+     * @param ?BlockCipher        $oldcipher Old cipher (null for none)
+     * @param BlockCipher         $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixUserRow(UserRow $row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
+    protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
     {
         $pass = ($oldcipher && $row->getCatPassEnc() !== null)
             ? $oldcipher->decrypt($row->getCatPassEnc())
@@ -281,7 +261,7 @@ class SwitchDbHashCommand extends Command
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             try {
-                $this->fixUserRow($row, $oldcipher, $newcipher);
+                $this->fixRow($row, $oldcipher, $newcipher);
             } catch (\Exception $e) {
                 $output->writeln("Problem with user {$row->getUsername()}: " . (string)$e);
             }
@@ -290,7 +270,7 @@ class SwitchDbHashCommand extends Command
             $output->writeln("\tConverting hashes for " . count($cards) . ' card(s).');
             foreach ($cards as $row) {
                 try {
-                    $this->fixCardRow($row, $oldcipher, $newcipher);
+                    $this->fixRow($row, $oldcipher, $newcipher);
                 } catch (\Exception $e) {
                     $output->writeln("Problem with card {$row['id']}: " . (string)$e);
                 }
