@@ -45,7 +45,10 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserResourceService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
+class UserResourceService extends AbstractDbService implements
+    LoggerAwareInterface,
+    DbServiceAwareInterface,
+    UserResourceServiceInterface
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;

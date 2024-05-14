@@ -766,7 +766,7 @@ class User extends RowGateway implements
      */
     public function getPendingEmail(): string
     {
-        return $this->pending_email;
+        return $this->pending_email ?? '';
     }
 
     /**
@@ -891,7 +891,7 @@ class User extends RowGateway implements
      */
     public function getVerifyHash(): string
     {
-        return $this->verify_hash;
+        return $this->verify_hash ?? '';
     }
 
     /**
@@ -937,7 +937,7 @@ class User extends RowGateway implements
      */
     public function getLastLanguage(): string
     {
-        return $this->last_language;
+        return $this->last_language ?? '';
     }
 
     /**
