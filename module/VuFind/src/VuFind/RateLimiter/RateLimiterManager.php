@@ -63,11 +63,11 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     protected $eventDesc = '??';
 
     /**
-     * Client ID for logging
+     * Client details for logging
      *
      * @var string
      */
-    protected $clientId;
+    protected $clientLogDetails;
 
     /**
      * Constructor
@@ -81,13 +81,13 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     public function __construct(
         protected array $config,
         protected string $clientIp,
-        protected ?string $userId,
+        protected ?int $userId,
         protected Closure $rateLimiterFactoryCallback,
         protected IpAddressUtils $ipUtils
     ) {
-        $this->clientId = "ip:$clientIp";
+        $this->clientLogDetails = "ip:$clientIp";
         if (null !== $userId) {
-            $this->clientId .= " u:$userId";
+            $this->clientLogDetails .= " u:$userId";
         }
     }
 
@@ -174,7 +174,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             if ($limit->isAccepted()) {
                 return $result;
             }
-            $logMsg = "$this->eventDesc: $this->clientId policy '$policyId' exceeded";
+            $logMsg = "$this->eventDesc: $this->clientLogDetails policy '$policyId' exceeded";
             if ('report_only' === $this->isEnabled() || ($this->config['Policies'][$policyId]['reportOnly'] ?? false)) {
                 $this->logWarning("$logMsg (not enforced)");
                 return $result;
@@ -199,9 +199,16 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      */
     protected function getPolicyIdForEvent(MvcEvent $event): ?string
     {
+        $isCrawler = null;
         foreach ($this->config['Policies'] ?? [] as $name => $settings) {
             if (null !== ($loggedIn = $settings['loggedIn'] ?? null)) {
                 if ($loggedIn !== ($this->userId ? true : false)) {
+                    continue;
+                }
+            }
+            if (null !== ($crawler = $settings['crawler'] ?? null)) {
+                $isCrawler ??= $this->isCrawlerRequest($event);
+                if ($crawler !== $isCrawler) {
                     continue;
                 }
             }
@@ -241,13 +248,11 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 }
             } elseif (in_array($param, ['params', 'query', 'post'])) {
                 $req = $event->getRequest();
-                if ('params' === $param) {
-                    $allParams = $req->getPost()->toArray() + $req->getQuery()->toArray();
-                } elseif ('query' === $param) {
-                    $allParams = $req->getQuery()->toArray();
-                } else {
-                    $allParams = $req->getPost()->toArray();
-                }
+                $allParams = match ($param) {
+                    'query' => $req->getQuery()->toArray(),
+                    'post' => $req->getPost()->toArray(),
+                    default => $req->getPost()->toArray() + $req->getQuery()->toArray(),
+                };
                 foreach ($value as $key => $val) {
                     if ($val !== $allParams[$key] ?? null) {
                         return false;
@@ -269,10 +274,9 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      */
     protected function verboseDebug(string $msg): void
     {
-        if (!($this->config['General']['verbose'] ?? false)) {
-            return;
+        if ($this->config['General']['verbose'] ?? false) {
+            $this->log('debug', "$this->eventDesc [$this->clientLogDetails]: $msg", [], true);
         }
-        $this->log('debug', "$this->eventDesc [$this->clientId]: $msg", [], true);
     }
 
     /**
@@ -295,5 +299,23 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
             return json_encode(['error' => $msg]);
         }
         return $msg;
+    }
+
+    /**
+     * Check if the request is from a crawler
+     *
+     * @param MvcEvent $event Request event
+     *
+     * @return bool
+     */
+    protected function isCrawlerRequest(MvcEvent $event): bool
+    {
+        $headers = $event->getRequest()->getHeaders();
+        if (!$headers->has('User-Agent')) {
+            return false;
+        }
+        $agent = $headers->get('User-Agent')->toString();
+        $crawlerDetect = new \Jaybizzle\CrawlerDetect\CrawlerDetect();
+        return $crawlerDetect->isCrawler($agent);
     }
 }

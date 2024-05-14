@@ -137,20 +137,19 @@ class RateLimiterManagerFactory implements FactoryInterface
      */
     protected function createCache(array $config): StorageInterface
     {
-        if (empty($config['Storage']['namespace'])) {
-            $config['Storage']['namespace'] = 'RateLimiter';
-        }
         $storageConfig = $config['Storage'] ?? [];
         $adapter = $storageConfig['adapter'] ?? 'memcached';
+        $storageConfig['options']['namespace'] ??= 'RateLimiter';
+
         // Handle Redis cache separately:
         if ('redis' === $adapter || 'Redis' === $adapter) {
-            return $this->createRedisCache($config);
+            return $this->createRedisCache($storageConfig);
         }
 
         // Laminas cache:
         $settings = [
-            'adapter' => $storageConfig['adapter'],
-            'options' => $storageConfig['options'] ?? [],
+            'adapter' => $adapter,
+            'options' => $storageConfig['options'],
         ];
         $laminasCache = $this->serviceLocator
             ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
@@ -162,14 +161,14 @@ class RateLimiterManagerFactory implements FactoryInterface
     /**
      * Create Redis cache for the rate limiter
      *
-     * @param array $config Rate limiter configuration
+     * @param array $storageConfig Storage configuration
      *
      * @return ?StorageInterface
      */
-    protected function createRedisCache(array $config): StorageInterface
+    protected function createRedisCache(array $storageConfig): StorageInterface
     {
         // Set defaults if nothing set in config file:
-        $options = $config['Storage']['options'] ?? [];
+        $options = $storageConfig['options'];
         $host = $options['redis_host'] ?? 'localhost';
         $port = $options['redis_port'] ?? 6379;
         $timeout = $options['redis_connection_timeout'] ?? 0.5;
@@ -183,6 +182,6 @@ class RateLimiterManagerFactory implements FactoryInterface
             $redis->forceStandalone();
         }
 
-        return new CredisStorage($redis, $config['Storage'] ?? []);
+        return new CredisStorage($redis, $options);
     }
 }

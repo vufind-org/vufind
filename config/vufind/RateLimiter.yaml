@@ -47,13 +47,18 @@ Storage:
 # Each rate limiter has the following settings:
 #
 # preferIPAddress       Use IP address as client ID even for logged-in users
+#
 # ipRange               IP address range. Accepts a single IP address or a range with
 #                       a minus character without blanks as separator. Also partial
 #                       addresses can be used (e.g. 192.168 denotes
 #                       192.168.0.0-192.168.255.255) and IPv6 addresses are also
 #                       supported (unless PHP is compiled with IPv6 disabled).
+#
 # loggedIn              Whether to limit the policy to logged-in users (true) or
 #                       anonymous users (false). Default is null for no limit.
+#
+# crawler               Whether to limit the policy to bots or crawlers (true) or
+#                       normal users (false). Default is null for no limit.
 #
 # filters               An array of request filters that control the requests that
 #                       the policy applies to. Filters can include the following
@@ -78,9 +83,12 @@ Storage:
 #                         rate: { interval: '10 minutes', amount: 100 }
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
+#
 # reportOnly            If set to true, will not enforce the policy even if the main
 #                       "enabled" setting is true (default is false)
-#
+
+# The policies below are are just examples, and the limits and rates chosen do not
+# represent meaningful choices for any particular instance.
 Policies:
   # A policy that allows 200 searches initially and increases the limit by 100 every
   # 15 minutes:
