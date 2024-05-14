@@ -105,6 +105,20 @@ class Bootstrapper
     }
 
     /**
+     * Get a database service object.
+     *
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
+    {
+        return $this->container->get(\VuFind\Db\Service\PluginManager::class)->get($name);
+    }
+
+    /**
      * Set up cookie to flag test mode.
      *
      * @return void
@@ -208,9 +222,10 @@ class Bootstrapper
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
         if (
             ($user = $authManager->getUserObject())
-            && $user->last_language != $language
+            && $user->getLastLanguage() != $language
         ) {
-            $user->updateLastLanguage($language);
+            $user->setLastLanguage($language);
+            $this->getDbService(\VuFind\Db\Service\UserService::class)->persistEntity($user);
         }
     }
 

@@ -85,7 +85,7 @@ class Session extends RowGateway implements SessionEntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return SessionEntityInterface
      */

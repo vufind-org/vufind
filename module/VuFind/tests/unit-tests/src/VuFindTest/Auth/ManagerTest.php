@@ -35,6 +35,7 @@ use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
+use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
@@ -339,7 +340,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('create')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $this->assertNull($manager->getUserObject());
         $this->assertEquals($user, $manager->create($request));
@@ -505,22 +506,10 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     public function testUserLoginFromSession(): void
     {
         $user = $this->getMockUser();
-        $userId = 1234;
-        $service = $this->createMock(UserServiceInterface::class);
-        $service->expects($this->once())->method('getUserById')
-            ->with($this->equalTo($userId))->willReturn($user);
+        $service = $this->createMock(UserSessionPersistenceInterface::class);
+        $service->expects($this->once())->method('hasUserSessionData')->willReturn(true);
+        $service->expects($this->once())->method('getUserFromSession')->willReturn($user);
         $manager = $this->getManager([], $service);
-
-        // Fake the session inside the manager:
-        $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
-            ->disableOriginalConstructor()->getMock();
-        $mockSession->expects($this->any())->method('__isset')
-            ->with($this->equalTo('userId'))->willReturn(true);
-        $mockSession->expects($this->any())->method('__get')
-            ->with($this->equalTo('userId'))->willReturn($userId);
-        $this->setProperty($manager, 'session', $mockSession);
-
         $this->assertEquals($user, $manager->getUserObject());
     }
 
@@ -548,18 +537,18 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a manager object to test with.
      *
-     * @param array                $config         Configuration
-     * @param UserServiceInterface $userService    User table gateway
-     * @param SessionManager       $sessionManager Session manager
-     * @param PluginManager        $pm             Authentication plugin manager
+     * @param array                            $config         Configuration
+     * @param ?UserSessionPersistenceInterface $userSession    User session persistence service
+     * @param ?SessionManager                  $sessionManager Session manager
+     * @param ?PluginManager                   $pm             Authentication plugin manager
      *
      * @return Manager
      */
     protected function getManager(
         array $config = [],
-        UserServiceInterface $userService = null,
-        SessionManager $sessionManager = null,
-        PluginManager $pm = null
+        ?UserSessionPersistenceInterface $userSession = null,
+        ?SessionManager $sessionManager = null,
+        ?PluginManager $pm = null
     ): Manager {
         $config = new Config($config);
         $cookies = new \VuFind\Cookie\CookieManager([]);
@@ -576,7 +565,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(false);
         return new Manager(
             $config,
-            $userService ?? $this->createMock(UserServiceInterface::class),
+            $this->createMock(UserServiceInterface::class),
+            $userSession ?? $this->createMock(UserSessionPersistenceInterface::class),
             $sessionManager ?? new SessionManager(),
             $pm ?? $this->getMockPluginManager(),
             $cookies,
@@ -626,7 +616,9 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUser(): MockObject&UserEntityInterface
     {
-        return $this->createMock(UserEntityInterface::class);
+        $user = $this->createMock(UserEntityInterface::class);
+        $user->method('getId')->willReturn(-1);
+        return $user;
     }
 
     /**

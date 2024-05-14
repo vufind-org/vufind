@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Row;
 
-use VuFind\Db\Service\UserServiceInterface;
-
 use function array_key_exists;
 
 /**
@@ -44,13 +42,6 @@ use function array_key_exists;
  */
 class PrivateUser extends User
 {
-    /**
-     * Session container for account information.
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session = null;
-
     /**
      * __get
      *
@@ -83,10 +74,7 @@ class PrivateUser extends User
     {
         $this->initialize();
         $this->id = -1; // fake ID
-        if (null === $this->session) {
-            throw new \Exception('Expected session container missing.');
-        }
-        $this->getDbService(UserServiceInterface::class)->addUserDataToSessionContainer($this->session, $this);
+        $this->getDbService(\VuFind\Db\Service\UserService::class)->addUserDataToSession($this);
         return 1;
     }
 
@@ -96,9 +84,10 @@ class PrivateUser extends User
      * @param \Laminas\Session\Container $session Session container
      *
      * @return void
+     *
+     * @deprecated No longer used or needed
      */
     public function setSession(\Laminas\Session\Container $session)
     {
-        $this->session = $session;
     }
 }

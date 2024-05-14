@@ -36,6 +36,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Crypt\HMAC;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -298,7 +299,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @param \VuFind\Db\Row\Search $s Current search row.
      *
-     * @return \VuFind\Db\Row\User|bool
+     * @return UserEntityInterface|bool
      */
     protected function getUserForSearch($s)
     {
@@ -306,7 +307,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // database lookups, since we're loading rows in user order).
         static $user = false;
 
-        if ($user === false || $s->user_id != $user->id) {
+        if ($user === false || $s->user_id != $user->getId()) {
             if (!$user = $this->userTable->getById($s->user_id)) {
                 $user = false;  // make sure static variable is cleared
                 $this->warn(
@@ -316,9 +317,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 return false;
             }
         }
-        if (!$user->email || trim($user->email) == '') {
+        if (!$user->getEmail()) {
             $this->warn(
-                'User ' . $user->username
+                'User ' . $user->getUsername()
                 . ' does not have an email address, bypassing alert ' . $s->id
             );
             return false;
@@ -357,7 +358,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @param \VuFind\Db\Row\Search $s Current search row.
      *
-     * @return \VuFind\Db\Row\User|bool
+     * @return \VuFind\Search\Base\Results|bool
      */
     protected function getObjectForSearch($s)
     {
@@ -432,7 +433,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * Build the email message.
      *
      * @param \VuFind\Db\Row\Search       $s            Search table row
-     * @param \VuFind\Db\Row\User         $user         User owning search row
+     * @param UserEntityInterface         $user         User owning search row
      * @param \VuFind\Search\Base\Results $searchObject Search results object
      * @param array                       $newRecords   New results in search
      *
@@ -479,7 +480,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * Try to send an email message to a user. Return true on success, false on
      * error.
      *
-     * @param \VuFind\Db\Row\User $user    User to email
+     * @param UserEntityInterface $user    User to email
      * @param string              $message Email message body
      *
      * @return bool
@@ -489,7 +490,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         $subject = $this->mainConfig->Site->title
             . ': ' . $this->translate('Scheduled Alert Results');
         $from = $this->mainConfig->Site->email;
-        $to = $user->email;
+        $to = $user->getEmail();
         try {
             $this->mailer->send($to, $from, $subject, $message);
             return true;
@@ -505,7 +506,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             $this->mailer->send($to, $from, $subject, $message);
         } catch (\Exception $e) {
             $this->err(
-                "Failed to send message to {$user->email}: " . $e->getMessage()
+                "Failed to send message to {$user->getEmail()}: " . $e->getMessage()
             );
             return false;
         }
@@ -534,7 +535,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 continue;
             }
             // Set email language
-            $this->setLanguage($user->last_language);
+            $this->setLanguage($user->getLastLanguage());
 
             // Prepare email content
             $message = $this->buildEmail($s, $user, $searchObject, $newRecords);
