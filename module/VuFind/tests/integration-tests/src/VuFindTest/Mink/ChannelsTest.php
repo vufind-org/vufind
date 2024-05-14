@@ -170,6 +170,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function assertPopoverTitleAndDescription(Element $page, string $expectedTitle): string
     {
+        // Ensure that any "Loading..." popover is not being displayed:
+        $this->waitForPageLoad($page);
         $popoverContents = $this->findCssAndGetText($page, '.popover');
         // The popover should contain an appropriate title and metadata:
         $this->assertStringContainsString($expectedTitle, $popoverContents);
