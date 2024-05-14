@@ -33,6 +33,8 @@ use DateTime;
 use Laminas\Session\Container;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Tags;
@@ -56,6 +58,7 @@ use VuFind\Tags;
 class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, UserListEntityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Session container for last list information.
@@ -211,7 +214,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Set session container
+     * Set session container.
      *
      * @param Container $session Session container
      *
@@ -236,7 +239,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Given an array of item ids, remove them from all lists
+     * Given an array of item ids, remove them from all lists.
      *
      * @param \VuFind\Db\Row\User|bool $user   Logged-in user (false if none)
      * @param array                    $ids    IDs to remove from the list
@@ -275,7 +278,6 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Is this a public list?
      *
      * @return     bool
-     * @deprecated This method is deprecated and will be removed once laminas is no longer used.
      */
     public function isPublic(): bool
     {
@@ -319,7 +321,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Title setter
+     * Set Title.
      *
      * @param string $title Title
      *
@@ -342,7 +344,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Description setter
+     * Set Description.
      *
      * @param string $description Description
      *
@@ -365,7 +367,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Created date setter.
+     * Set Created date.
      *
      * @param DateTime $dateTime Created date
      *
@@ -401,7 +403,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Set user ID.
+     * Set user.
      *
      * @param ?UserEntityInterface $user User owning token
      *
@@ -414,12 +416,14 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * User getter
+     * Get user.
      *
      * @return ?UserEntityInterface
      */
     public function getUser(): ?UserEntityInterface
     {
-        return $this->user_id;
+        return $this->user_id
+            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
+            : null;
     }
 }
