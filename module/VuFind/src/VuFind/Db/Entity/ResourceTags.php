@@ -131,7 +131,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     public function __construct()
     {
         // Set the default value as a \DateTime object
-        $this->posted = new \DateTime();
+        $this->posted = new DateTime();
     }
 
     /**
