@@ -394,7 +394,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return UserListEntityInterface
      */
-    public function setPublic(bool $public): UserListEntityInterface {
+    public function setPublic(bool $public): UserListEntityInterface
+    {
         $this->public = $public ? '1' : '0';
         return $this;
     }
