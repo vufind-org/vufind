@@ -277,7 +277,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Is this a public list?
      *
-     * @return     bool
+     * @return bool
      */
     public function isPublic(): bool
     {
