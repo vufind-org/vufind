@@ -1122,7 +1122,7 @@ class User extends RowGateway implements
     }
 
     /**
-     * Created setter.
+     * Created setter
      *
      * @param Datetime $dateTime Last login date
      *
