@@ -6,7 +6,7 @@
 ?>
 <div class="truncate-subjects" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <?php foreach ($data as $field): ?>
-    <div class="subject-line" property="keywords">
+    <div class="subject-line"<?=$this->schemaOrg()->getAttributes(['property' => 'keywords'])?>>
       <?php
         $subject = '';
         if (count($field) == 1) {

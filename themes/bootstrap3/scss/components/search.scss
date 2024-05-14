@@ -832,3 +832,23 @@ table.search-history-table {
     }
   }
 }
+
+.querySuggestions > h2, .spellingSuggestions > h2 {
+  font-size: unset;
+  line-height: $line-height-base;
+  margin: 0;
+}
+
+.spellingSuggestions .terms > li {
+  .suggestions {
+    padding-inline-start: 0;
+    display: inline;
+    li {
+      display: inline;
+      list-style: none;
+    }
+    li:not(:last-child)::after {
+      content: ', ';
+    }
+  }
+}
