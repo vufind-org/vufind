@@ -31,6 +31,8 @@ namespace VuFindAdmin\Controller;
 
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 /**
  * Class controls VuFind social statistical data.
@@ -54,8 +56,8 @@ class SocialstatsController extends AbstractAdmin
         $view->setTemplate('admin/socialstats/home');
         $view->comments = $this->getDbService(CommentsServiceInterface::class)->getStatistics();
         $view->ratings = $this->getDbService(RatingsServiceInterface::class)->getStatistics();
-        $view->favorites = $this->getTable('userresource')->getStatistics();
-        $view->tags = $this->getTable('resourcetags')->getStatistics();
+        $view->favorites = $this->getDbService(UserResourceServiceInterface::class)->getStatistics();
+        $view->tags = $this->getDbService(TagServiceInterface::class)->getStatistics();
         return $view;
     }
 }

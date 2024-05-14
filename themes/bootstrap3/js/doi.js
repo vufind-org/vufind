@@ -56,6 +56,10 @@ VuFind.register('doi', function Doi() {
       });
   }
 
+  function updateContainer(params) {
+    embedDoiLinks(params.container);
+  }
+
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
   function init(_container) {
@@ -70,6 +74,7 @@ VuFind.register('doi', function Doi() {
         Array.from(container.querySelectorAll('.doiLink'))
       );
     }
+    VuFind.listen('results-init', updateContainer);
   }
   return {
     init: init,

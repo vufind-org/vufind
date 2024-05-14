@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\Tags;
+use VuFind\Db\Service\TagServiceInterface;
 
 /**
  * AJAX handler to get all tags for a record as HTML.
@@ -48,12 +48,12 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param Tags                 $table    Tags table
-     * @param ?UserEntityInterface $user     Logged in user (or null)
-     * @param RendererInterface    $renderer View renderer
+     * @param TagServiceInterface  $tagService Tags database service
+     * @param ?UserEntityInterface $user       Logged in user (or null)
+     * @param RendererInterface    $renderer   View renderer
      */
     public function __construct(
-        protected Tags $table,
+        protected TagServiceInterface $tagService,
         protected ?UserEntityInterface $user,
         protected RendererInterface $renderer
     ) {
@@ -71,7 +71,7 @@ class GetRecordTags extends AbstractBase
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $tags = $this->table->getForResource(
+        $tags = $this->tagService->getForResource(
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0,
@@ -85,9 +85,9 @@ class GetRecordTags extends AbstractBase
         $tagList = [];
         foreach ($tags as $tag) {
             $tagList[] = [
-                'tag'   => $tag->tag,
-                'cnt'   => $tag->cnt,
-                'is_me' => !empty($tag->is_me),
+                'tag'   => $tag['tag'],
+                'cnt'   => $tag['cnt'],
+                'is_me' => !empty($tag['is_me']),
             ];
         }
 

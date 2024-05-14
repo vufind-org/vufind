@@ -244,6 +244,10 @@ VuFind.register('cart', function Cart() {
     }
   }
 
+  function updateContainer(params) {
+    registerToggles(params.container);
+  }
+
   function init() {
     // Record buttons
     registerToggles();
@@ -257,6 +261,7 @@ VuFind.register('cart', function Cart() {
       placement: $(document.body).hasClass('rtl') ? 'left' : 'right'
     });
     updateCount();
+    VuFind.listen('results-init', updateContainer);
   }
 
   // Reveal

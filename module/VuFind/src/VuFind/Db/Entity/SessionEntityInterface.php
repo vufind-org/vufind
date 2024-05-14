@@ -61,7 +61,7 @@ interface SessionEntityInterface extends EntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return SessionEntityInterface
      */
