@@ -251,7 +251,7 @@ class UserList implements UserListEntityInterface
      */
     public function editAllowed($user): bool
     {
-        if ($user instanceof User && $user->getId() == $this->getUser()->getId()) {
+        if ($user instanceof UserEntityInterface && $user->getId() == $this->getUser()->getId()) {
             return true;
         }
         if (is_int($user) && $user == $this->getUser()->getId()) {
