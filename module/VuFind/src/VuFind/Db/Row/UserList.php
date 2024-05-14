@@ -31,7 +31,6 @@ namespace VuFind\Db\Row;
 
 use DateTime;
 use Laminas\Session\Container;
-use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
