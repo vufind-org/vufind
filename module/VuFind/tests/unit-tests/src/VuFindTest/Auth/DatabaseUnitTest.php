@@ -511,7 +511,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         // Fake services:
         $service = $this->createMock(UserServiceInterface::class);
         $mockUser = $this->createMock(UserEntityInterface::class);
-        $service->expects($this->once())->method('createRowForUsername')
+        $service->expects($this->once())->method('createEntityForUsername')
             ->with('good')->willReturn($mockUser);
         $service->expects($this->once())->method('persistEntity')->with($mockUser);
         $this->expectConsecutiveCalls(

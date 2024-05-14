@@ -448,7 +448,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Create a user row object from given parameters.
+     * Create a user entity object from given parameters.
      *
      * @param string[]             $params      Parameters returned from collectParamsFromRequest()
      * @param UserServiceInterface $userService User service
@@ -457,7 +457,7 @@ class Database extends AbstractBase
      */
     protected function createUserFromParams(array $params, UserServiceInterface $userService)
     {
-        $user = $userService->createRowForUsername($params['username']);
+        $user = $userService->createEntityForUsername($params['username']);
         $user->setFirstname($params['firstname']);
         $user->setLastname($params['lastname']);
         $this->getUserService()->updateUserEmail($user, $params['email'], true);

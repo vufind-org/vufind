@@ -72,7 +72,7 @@ class UserService extends AbstractDbService implements
      *
      * @return UserEntityInterface
      */
-    public function createRowForUsername(string $username): UserEntityInterface
+    public function createEntityForUsername(string $username): UserEntityInterface
     {
         return $this->getDbTable('User')->createRowForUsername($username);
     }

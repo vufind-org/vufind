@@ -49,7 +49,7 @@ interface UserServiceInterface extends DbServiceInterface
      *
      * @return UserEntityInterface
      */
-    public function createRowForUsername(string $username): UserEntityInterface;
+    public function createEntityForUsername(string $username): UserEntityInterface;
 
     /**
      * Retrieve a user object from the database based on ID.
