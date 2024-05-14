@@ -33,6 +33,7 @@ use DateTime;
 use Laminas\Session\Container;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -55,7 +56,10 @@ use VuFind\Tags;
  * @property string $created
  * @property bool   $public
  */
-class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, UserListEntityInterface
+class UserList extends RowGateway implements
+    \VuFind\Db\Table\DbTableAwareInterface,
+    UserListEntityInterface,
+    DbServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use DbServiceAwareTrait;
