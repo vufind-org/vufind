@@ -218,7 +218,7 @@ class User implements UserEntityInterface
      *          options={"default"="2000-01-01 00:00:00"}
      * )
      */
-    protected $created = '2000-01-01 00:00:00';
+    protected $created;
 
     /**
      * Verify hash.
@@ -240,7 +240,7 @@ class User implements UserEntityInterface
      *          options={"default"="2000-01-01 00:00:00"}
      * )
      */
-    protected $lastLogin = '2000-01-01 00:00:00';
+    protected $lastLogin;
 
     /**
      * Method of authentication.
@@ -259,6 +259,15 @@ class User implements UserEntityInterface
      * @ORM\Column(name="last_language", type="string", length=30, nullable=false)
      */
     protected $lastLanguage = '';
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Set the default values as \DateTime objects
+        $this->created = $this->lastLogin = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00');
+    }
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -577,6 +586,29 @@ class User implements UserEntityInterface
     public function getLastLogin(): Datetime
     {
         return $this->lastLogin;
+    }
+
+    /**
+     * Created setter
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return UserEntityInterface
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
     }
 
     /**
