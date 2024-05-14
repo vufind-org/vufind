@@ -31,6 +31,7 @@ namespace VuFind\Db\Row;
 
 use DateTime;
 use Laminas\Session\Container;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -420,8 +421,6 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function getUser(): ?UserEntityInterface
     {
-        return $this->user_id
-            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-            : null;
+        return $this->user_id;
     }
 }
