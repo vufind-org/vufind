@@ -168,11 +168,11 @@ class SwitchDbHashCommand extends Command
      */
     protected function fixCardRow(UserCardRow $row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
     {
-        $pass = ($oldcipher && $row['cat_pass_enc'] !== null)
-            ? $oldcipher->decrypt($row['cat_pass_enc'])
-            : $row['cat_password'];
-        $row['cat_password'] = null;
-        $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
+        $pass = ($oldcipher && $row->getCatPassEnc() !== null)
+            ? $oldcipher->decrypt($row->getCatPassEnc())
+            : $row->getRawCatPassword();
+        $row->setRawCatPassword(null);
+        $row->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
         $row->save();
     }
 

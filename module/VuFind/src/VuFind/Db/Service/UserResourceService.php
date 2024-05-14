@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Entity model interface for oai_resumption table
+ * Database service for UserResource.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,17 +22,18 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Entity;
+namespace VuFind\Db\Service;
 
-use DateTime;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
- * Entity model interface for oai_resumption table
+ * Database service for UserResource.
  *
  * @category VuFind
  * @package  Database
@@ -40,44 +41,19 @@ use DateTime;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface OaiResumptionEntityInterface extends EntityInterface
+class UserResourceService extends AbstractDbService implements
+    DbTableAwareInterface,
+    UserResourceServiceInterface
 {
-    /**
-     * Id getter
-     *
-     * @return int
-     */
-    public function getId(): int;
+    use DbTableAwareTrait;
 
     /**
-     * Resumption parameters setter
+     * Get statistics on use of UserResource.
      *
-     * @param ?string $params Resumption parameters.
-     *
-     * @return OaiResumptionEntityInterface
+     * @return array
      */
-    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface;
-
-    /**
-     * Get resumption parameters.
-     *
-     * @return ?string
-     */
-    public function getResumptionParameters(): ?string;
-
-    /**
-     * Expiry date setter.
-     *
-     * @param DateTime $dateTime Expiration date
-     *
-     * @return OaiResumptionEntityInterface
-     */
-    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface;
-
-    /**
-     * Get expiry date.
-     *
-     * @return DateTime
-     */
-    public function getExpiry(): DateTime;
+    public function getStatistics(): array
+    {
+        return $this->getDbTable('UserResource')->getStatistics();
+    }
 }

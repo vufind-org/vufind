@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for oai_resumption table
+ * Database service interface for UserResource.
  *
  * PHP version 8
  *
@@ -27,12 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Entity;
-
-use DateTime;
+namespace VuFind\Db\Service;
 
 /**
- * Entity model interface for oai_resumption table
+ * Database service interface for UserResource.
  *
  * @category VuFind
  * @package  Database
@@ -40,44 +38,12 @@ use DateTime;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface OaiResumptionEntityInterface extends EntityInterface
+interface UserResourceServiceInterface extends DbServiceInterface
 {
     /**
-     * Id getter
+     * Get statistics on use of UserResource.
      *
-     * @return int
+     * @return array
      */
-    public function getId(): int;
-
-    /**
-     * Resumption parameters setter
-     *
-     * @param ?string $params Resumption parameters.
-     *
-     * @return OaiResumptionEntityInterface
-     */
-    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface;
-
-    /**
-     * Get resumption parameters.
-     *
-     * @return ?string
-     */
-    public function getResumptionParameters(): ?string;
-
-    /**
-     * Expiry date setter.
-     *
-     * @param DateTime $dateTime Expiration date
-     *
-     * @return OaiResumptionEntityInterface
-     */
-    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface;
-
-    /**
-     * Get expiry date.
-     *
-     * @return DateTime
-     */
-    public function getExpiry(): DateTime;
+    public function getStatistics(): array;
 }
