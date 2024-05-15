@@ -705,33 +705,31 @@ function setupOffcanvas() {
  * Handle arrow keys to jump to next record
  */
 function keyboardShortcuts() {
-  var $searchform = $('#searchForm_lookfor');
-  if ($('.pager').length > 0) {
-    $(window).on("keydown", function shortcutKeyDown(e) {
-      if (!$searchform.is(':focus')) {
-        var $target = null;
+  var searchform = document.getElementById('searchForm_lookfor');
+  
+  if (document.querySelector('.pager')) {
+    window.addEventListener("keydown", function shortcutKeyDown(e) {
+      if (!searchform.contains(document.activeElement)) {
+        var target = null;
         switch (e.keyCode) {
         case 37: // left arrow key
-          $target = $('.pager').find('a.previous');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
+          target = document.querySelector('.pager a.previous');
+          if (target) {
+            target.click();
           }
           break;
         case 38: // up arrow key
           if (e.ctrlKey) {
-            $target = $('.pager').find('a.backtosearch');
-            if ($target.length > 0) {
-              $target[0].click();
-              return;
+            target = document.querySelector('.pager a.backtosearch');
+            if (target) {
+              target.click();
             }
           }
           break;
-        case 39: //right arrow key
-          $target = $('.pager').find('a.next');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
+        case 39: // right arrow key
+          target = document.querySelector('.pager a.next');
+          if (target) {
+            target.click();
           }
           break;
         case 40: // down arrow key
