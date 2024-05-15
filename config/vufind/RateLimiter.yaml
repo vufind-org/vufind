@@ -26,8 +26,8 @@ Storage:
     #namespace: RateLimiter
 
     # ----- Memcached settings -----
-    # Comma-separated list of servers for Memcached adapter:
-    servers: "localhost:11211"
+    # Comma-separated list of servers for Memcached adapter (defaults below):
+    #servers: "localhost:11211"
 
     # ----- Redis settings -----
     # Redis server settings (defaults are listed below):

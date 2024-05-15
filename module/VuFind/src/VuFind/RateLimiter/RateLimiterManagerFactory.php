@@ -31,11 +31,13 @@ namespace VuFind\RateLimiter;
 
 use Closure;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
+use Laminas\Cache\Storage\Capabilities;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use stdClass;
 use Symfony\Component\RateLimiter\LimiterInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
@@ -142,18 +144,44 @@ class RateLimiterManagerFactory implements FactoryInterface
         $storageConfig['options']['namespace'] ??= 'RateLimiter';
 
         // Handle Redis cache separately:
-        if ('redis' === $adapter || 'Redis' === $adapter) {
+        $adapterLc = strtolower($adapter);
+        if ('redis' === $adapterLc) {
             return $this->createRedisCache($storageConfig);
         }
 
-        // Laminas cache:
-        $settings = [
-            'adapter' => $adapter,
-            'options' => $storageConfig['options'],
-        ];
-        $laminasCache = $this->serviceLocator
-            ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
-            ->createFromArrayConfiguration($settings);
+        if ('vufind' === $adapterLc) {
+            // Use cache manager for "VuFind" cache (only for testing purposes):
+            $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+            $laminasCache = $cacheManager->getCache('object', $storageConfig['options']['namespace']);
+            // Fake the capabilities to include static TTL support:
+            $eventManager = $laminasCache->getEventManager();
+            $eventManager->attach(
+                'getCapabilities.post',
+                function ($event) use ($laminasCache) {
+                    $oldCapacities = $event->getResult();
+                    $newCapacities = new Capabilities(
+                        $laminasCache,
+                        new stdClass(),
+                        ['staticTtl' => true],
+                        $oldCapacities
+                    );
+                    $event->setResult($newCapacities);
+                }
+            );
+        } else {
+            if ('memcached' === $adapterLc) {
+                $storageConfig['options']['servers'] ??= 'localhost:11211';
+            }
+
+            // Laminas cache:
+            $settings = [
+                'adapter' => $adapter,
+                'options' => $storageConfig['options'],
+            ];
+            $laminasCache = $this->serviceLocator
+                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+                ->createFromArrayConfiguration($settings);
+        }
 
         return new CacheStorage(new CacheItemPoolDecorator($laminasCache));
     }

@@ -314,7 +314,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         if (!$headers->has('User-Agent')) {
             return false;
         }
-        $agent = $headers->get('User-Agent')->toString();
+        $agent = $headers->get('User-Agent')->getFieldValue();
         $crawlerDetect = new \Jaybizzle\CrawlerDetect\CrawlerDetect();
         return $crawlerDetect->isCrawler($agent);
     }
