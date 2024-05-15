@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use VuFind\Crypt\HMAC;
+use VuFind\Db\Entity\UserEntityInterface;
 
 use function is_resource;
 
@@ -145,8 +146,8 @@ class Search extends RowGateway implements \VuFind\Db\Entity\SearchEntityInterfa
      * Utility function for generating a token for unsubscribing a
      * saved search.
      *
-     * @param HMAC   $hmac HMAC hash generator
-     * @param object $user User object
+     * @param HMAC                $hmac HMAC hash generator
+     * @param UserEntityInterface $user User object
      *
      * @return string token
      */
@@ -154,8 +155,8 @@ class Search extends RowGateway implements \VuFind\Db\Entity\SearchEntityInterfa
     {
         $data = [
             'id' => $this->id,
-            'user_id' => $user->id,
-            'created' => $user->created,
+            'user_id' => $user->getId(),
+            'created' => $user->getCreated()->format('Y-m-d H:i:s'),
         ];
         return $hmac->generate(array_keys($data), $data);
     }

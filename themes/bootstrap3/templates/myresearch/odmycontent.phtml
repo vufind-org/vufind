@@ -62,7 +62,7 @@
           <?php endif; ?>
           <div class="media-body">
 
-          <h4 property="name">
+          <h4<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>>
             <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($resource['record']))?>" class="title">
              <?=$this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
             </a>
@@ -143,7 +143,7 @@
               <?=$thumbnail?>
             <?php endif; ?>
             <div class="media-body">
-              <h4 property="name">
+              <h4<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>>
                 <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($resource['record']))?>" class="title">
                   <?=$this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
                 </a>
