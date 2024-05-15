@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params as ParamsHelper;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\Search;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
@@ -109,23 +109,23 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Constructor
      *
-     * @param SessionSettings  $sessionSettings  Session settings
-     * @param ResultsManager   $resultsManager   Results Manager
-     * @param PhpRenderer      $renderer         View renderer
-     * @param RecordLoader     $recordLoader     Record loader
-     * @param ?UserRow         $user             Logged-in user
-     * @param string           $sessionId        Session ID
-     * @param SearchNormalizer $searchNormalizer Search normalizer
-     * @param Search           $searchTable      Search table
-     * @param array            $config           Main configuration
-     * @param Memory           $searchMemory     Search memory
+     * @param SessionSettings      $sessionSettings  Session settings
+     * @param ResultsManager       $resultsManager   Results Manager
+     * @param PhpRenderer          $renderer         View renderer
+     * @param RecordLoader         $recordLoader     Record loader
+     * @param ?UserEntityInterface $user             Logged-in user
+     * @param string               $sessionId        Session ID
+     * @param SearchNormalizer     $searchNormalizer Search normalizer
+     * @param Search               $searchTable      Search table
+     * @param array                $config           Main configuration
+     * @param Memory               $searchMemory     Search memory
      */
     public function __construct(
         SessionSettings $sessionSettings,
         protected ResultsManager $resultsManager,
         protected PhpRenderer $renderer,
         protected RecordLoader $recordLoader,
-        protected ?UserRow $user,
+        protected ?UserEntityInterface $user,
         protected string $sessionId,
         protected SearchNormalizer $searchNormalizer,
         protected Search $searchTable,
@@ -365,7 +365,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             $this->searchNormalizer,
             $results,
             $this->sessionId,
-            $this->user->id ?? null
+            $this->user?->getId()
         );
     }
 }

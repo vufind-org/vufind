@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Interface for representing a user account record.
  *
@@ -41,11 +43,11 @@ namespace VuFind\Db\Entity;
 interface UserEntityInterface extends EntityInterface
 {
     /**
-     * Get identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId();
+    public function getId(): ?int;
 
     /**
      * Username setter
@@ -64,11 +66,29 @@ interface UserEntityInterface extends EntityInterface
     public function getUsername(): string;
 
     /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface;
+
+    /**
      * Get firstname.
      *
      * @return string
      */
     public function getFirstname(): string;
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface;
 
     /**
      * Get lastname.
@@ -197,9 +217,57 @@ interface UserEntityInterface extends EntityInterface
     public function getVerifyHash(): string;
 
     /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface;
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string;
+
+    /**
      * Get last language.
      *
      * @return string
      */
     public function getLastLanguage(): string;
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool;
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface;
+
+    /**
+     * Last login setter.
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Last login getter
+     *
+     * @return Datetime
+     */
+    public function getLastLogin(): Datetime;
 }

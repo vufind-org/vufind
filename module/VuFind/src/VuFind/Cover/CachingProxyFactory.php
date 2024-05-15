@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function is_callable;
+
 /**
  * Cover caching proxy factory.
  *
@@ -68,13 +70,18 @@ class CachingProxyFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('cover')->getOptions()->getCacheDir();
-        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
+        $cacheOptions = $container->get(\VuFind\Cache\Manager::class)
+            ->getCache('cover')->getOptions();
+        $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
+            ? $cacheOptions->getCacheDir() : null;
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
             ->toArray();
         $allowedHosts = isset($config['Content']['coverproxyCache'])
             ? (array)$config['Content']['coverproxyCache'] : [];
-        return new $requestedName($client, $cacheDir . '/proxy', $allowedHosts);
+        return new $requestedName(
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
+            $cacheDir === null ? null : $cacheDir . '/proxy',
+            $allowedHosts
+        );
     }
 }
