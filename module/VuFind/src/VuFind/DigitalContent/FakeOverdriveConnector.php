@@ -194,6 +194,84 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
+     * Updates the email address for a hold on an item within OverDrive
+     *
+     * @param string $overDriveId The overdrive id for the title
+     * @param string $email       The email overdrive should use for notif
+     *
+     * @return \stdClass Object with result
+     */
+    public function updateOverDriveHold($overDriveId, $email)
+    {
+        return (object)[
+            'status' => true,
+            'msg' => '',
+            'data' => false,
+            'code' => 0,
+        ];
+    }
+
+    /**
+     * Suspend Hold
+     * Suspend an existing Overdrive Hold
+     *
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
+     * @param string $suspensionType indefinite or limited
+     * @param int    $numberOfDays   number of days to suspend the hold
+     *
+     * @return \stdClass Object with result
+     */
+    public function suspendHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
+    {
+        return (object)[
+            'status' => true,
+            'msg' => '',
+            'data' => false,
+            'code' => 0,
+        ];
+    }
+
+    /**
+     * Edit Suspended Hold
+     * Change the redelivery date on an already suspended hold
+     *
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
+     * @param string $suspensionType indefinite or limited
+     * @param int    $numberOfDays   number of days to suspend the hold
+     *
+     * @return \stdClass Object with result
+     */
+    public function editSuspendedHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
+    {
+        return (object)[
+            'status' => true,
+            'msg' => '',
+            'data' => false,
+            'code' => 0,
+        ];
+    }
+
+    /**
+     * Delete Suspended Hold
+     * Removes the suspension from a hold
+     *
+     * @param string $overDriveId The overdrive id for the title
+     *
+     * @return \stdClass Object with result
+     */
+    public function deleteHoldSuspension($overDriveId)
+    {
+        return (object)[
+            'status' => true,
+            'msg' => '',
+            'data' => false,
+            'code' => 0,
+        ];
+    }
+
+    /**
      * Cancel Hold
      * Cancel and existing Overdrive Hold
      *
@@ -220,31 +298,50 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Download Link for an Overdrive Resource
+     * Retrieves the auth header needed to get the Download HTML snippet
      *
-     * @param string $overDriveId Overdrive ID
-     * @param string $format      Overdrive string for this format
-     * @param string $errorURL    A URL to show err if the download doesn't wk
-     *
-     * @return object Object with result. If successful, then data will
-     * have the download URI ($result->downloadLink)
+     * @return object Object containing the auth header in the data property
      */
-    public function getDownloadLink($overDriveId, $format, $errorURL)
+    public function getAuthHeader()
     {
-        return new \stdClass();
+        return (object)[
+            'status' => true,
+            'msg' => '',
+            'data' => false,
+            'code' => 0,
+        ];
     }
 
     /**
-     * Lock In Overdrive Resource for a particular format
+     * Returns permanant links for Ovedrive resources
      *
-     * @param string $overDriveId Overdrive Resource ID
-     * @param string $format      Overdrive string for the format
+     * @param array $overDriveIds An array of overdrive IDs we need links for
      *
-     * @return object|bool Result of the call.
+     * @return array<string>
      */
-    public function lockinResource($overDriveId, $format)
+    public function getPermanentLinks($overDriveIds = [])
     {
-        return new \stdClass();
+        return [];
+    }
+
+    /**
+     * Returns all the issues for an overdrive magazine title
+     *
+     * @param string $overDriveId Overdrive Identifier for magazine title
+     * @param bool   $checkouts   Whether to add checkout information to each issue
+     * @param int    $limit       maximum number of issues to retrieve (default 100)
+     * @param int    $offset      page of results (default 0)
+     *
+     * @return object results of metadata fetch
+     */
+    public function getMagazineIssues($overDriveId = false, $checkouts = false, $limit = 100, $offset = 0)
+    {
+        return (object)[
+            'status' => true,
+            'msg' => '',
+            'data' => false,
+            'code' => 0,
+        ];
     }
 
     /**
@@ -255,6 +352,20 @@ class FakeOverdriveConnector extends OverdriveConnector
      * @return array results of metadata fetch
      */
     public function getMetadata($overDriveIds = [])
+    {
+        return [];
+    }
+
+    /**
+     * For  array of titles passed in this will return the same array
+     * with metadata attached to the records with the property name of 'metadata'
+     *
+     * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
+     *                               you get from getCheckouts and getHolds)
+     *
+     * @return array initial array with results of metadata attached as "metadata" property
+     */
+    public function getMetadataForTitles($overDriveTitles = [])
     {
         return [];
     }

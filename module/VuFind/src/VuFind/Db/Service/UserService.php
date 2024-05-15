@@ -30,8 +30,12 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Session\Container as SessionContainer;
+use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\User;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -44,17 +48,20 @@ use VuFind\Log\LoggerAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class UserService extends AbstractDbService implements
+    DbTableAwareInterface,
     LoggerAwareInterface,
-    UserServiceInterface
+    UserServiceInterface,
+    UserSessionPersistenceInterface
 {
+    use DbTableAwareTrait;
     use LoggerAwareTrait;
 
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param User $userTable User table
+     * @param SessionContainer $userSessionContainer Session container for user data
      */
-    public function __construct(protected User $userTable)
+    public function __construct(protected SessionContainer $userSessionContainer)
     {
     }
 
@@ -67,7 +74,7 @@ class UserService extends AbstractDbService implements
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        return $this->userTable->getById($id);
+        return $this->getDbTable('User')->getById($id);
     }
 
     /**
@@ -83,12 +90,93 @@ class UserService extends AbstractDbService implements
     {
         switch ($fieldName) {
             case 'id':
-                return $this->userTable->getById($fieldValue);
+                return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
-                return $this->userTable->getByUsername($fieldValue, false);
+                return $this->getDbTable('User')->getByUsername($fieldValue, false);
             case 'cat_id':
-                return $this->userTable->getByCatalogId($fieldValue);
+                return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
         throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+    }
+
+    /**
+     * Update session container to store data representing a user (used by privacy mode).
+     *
+     * @param UserEntityInterface $user User to store in session.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function addUserDataToSession(UserEntityInterface $user): void
+    {
+        if ($user instanceof UserRow) {
+            $this->userSessionContainer->userDetails = $user->toArray();
+        } else {
+            throw new \Exception($user::class . ' not supported by addUserDataToSession()');
+        }
+    }
+
+    /**
+     * Update session container to store user ID (used outside of privacy mode).
+     *
+     * @param int $id User ID
+     *
+     * @return void
+     */
+    public function addUserIdToSession(int $id): void
+    {
+        $this->userSessionContainer->userId = $id;
+    }
+
+    /**
+     * Clear the user data from the session.
+     *
+     * @return void
+     */
+    public function clearUserFromSession(): void
+    {
+        unset($this->userSessionContainer->userId);
+        unset($this->userSessionContainer->userDetails);
+    }
+
+    /**
+     * Build a user entity using data from a session container. Return null if user
+     * data cannot be found.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserFromSession(): ?UserEntityInterface
+    {
+        // If a user ID was persisted, that takes precedence:
+        if (isset($this->userSessionContainer->userId)) {
+            return $this->getUserById($this->userSessionContainer->userId);
+        }
+        if (isset($this->userSessionContainer->userDetails)) {
+            $user = $this->createEntity();
+            $user->exchangeArray($this->userSessionContainer->userDetails);
+            return $user;
+        }
+        return null;
+    }
+
+    /**
+     * Is there user data currently stored in the session container?
+     *
+     * @return bool
+     */
+    public function hasUserSessionData(): bool
+    {
+        return isset($this->userSessionContainer->userId)
+            || isset($this->userSessionContainer->userDetails);
+    }
+
+    /**
+     * Create a new user entity.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface
+    {
+        return $this->getDbTable('User')->createRow();
     }
 }

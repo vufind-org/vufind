@@ -42,12 +42,12 @@ VuFind.register('openurl', function OpenUrl() {
 
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
-  function init(_container) {
-    var container = $(_container || 'body');
+  function updateContainer(params) {
+    var container = $(params.container);
     // assign action to the openUrlWindow link class
     container.find('a.openUrlWindow').off('click').on("click", function openUrlWindowClick() {
-      var params = extractClassParams(this);
-      var settings = params.window_settings;
+      var classParams = extractClassParams(this);
+      var settings = classParams.window_settings;
       window.open($(this).attr('href'), 'openurl', settings);
       return false;
     });
@@ -68,6 +68,13 @@ VuFind.register('openurl', function OpenUrl() {
       );
     }
   }
+
+  function init() {
+    updateContainer({container: document.body});
+    VuFind.listen('results-init', updateContainer);
+  }
+
+
   return {
     init: init,
     embedOpenUrlLinks: embedOpenUrlLinks

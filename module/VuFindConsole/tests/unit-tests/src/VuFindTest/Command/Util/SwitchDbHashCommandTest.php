@@ -268,20 +268,24 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUserObject(): UserRow
     {
-        $data = [
-            'id' => 2,
-            'username' => 'foo',
-            'email' => 'fake@myuniversity.edu',
-            'created' => '2000-01-01 00:00:00',
-            'cat_password' => 'mypassword',
-            'last_language' => 'en',
-        ];
-        $adapter = $this->createMock(\Laminas\Db\Adapter\Adapter::class);
-        $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->setConstructorArgs([$adapter, $this->createMock(\VuFind\Auth\ILSAuthenticator::class)])
-            ->onlyMethods(['save'])
-            ->getMock();
-        $user->populate($data, true);
+        $user = $this->createMock(UserRow::class);
+        $user->method('getId')->willReturn(2);
+        $user->method('getUsername')->willReturn('foo');
+        $user->method('getEmail')->willReturn('fake@myuniversity.edu');
+        $user->method('getCreated')->willReturn(\DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00'));
+        $user->method('getRawCatPassword')->willReturn('mypassword');
+        $user->method('getLastLanguage')->willReturn('en');
+        // Use mock setters and getters to actually store/retrieve an encrypted password value
+        $pass = null;
+        $setPass = function ($new) use (&$pass) {
+            $pass = $new;
+            return true;
+        };
+        $user->method('setCatPassEnc')->with($this->callback($setPass))->willReturn($user);
+        $getPass = function () use (&$pass) {
+            return $pass;
+        };
+        $user->method('getCatPassEnc')->willReturnCallback($getPass);
         return $user;
     }
 
@@ -369,7 +373,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $user['cat_password']);
-        $this->assertEquals('mypassword', $this->decode($user['cat_pass_enc']));
+        $this->assertEquals('mypassword', $this->decode($user->getCatPassEnc()));
     }
 
     /**

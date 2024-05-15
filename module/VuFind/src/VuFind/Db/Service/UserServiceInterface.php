@@ -60,4 +60,11 @@ interface UserServiceInterface extends DbServiceInterface
      * @return ?UserEntityInterface
      */
     public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
+
+    /**
+     * Create a new user entity.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface;
 }
