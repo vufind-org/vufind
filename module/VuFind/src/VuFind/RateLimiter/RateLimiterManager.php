@@ -74,7 +74,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      *
      * @param array          $config                     Rate limiter configuration
      * @param string         $clientIp                   Client's IP address
-     * @param ?string        $userId                     User ID or null if not logged in
+     * @param ?int           $userId                     User ID or null if not logged in
      * @param Closure        $rateLimiterFactoryCallback Rate limiter factory callback
      * @param IpAddressUtils $ipUtils                    IP address utilities
      */
