@@ -49,9 +49,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AccessTokenServiceInterface::class => AccessTokenService::class,
         CommentsServiceInterface::class => CommentsService::class,
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
+        RatingsServiceInterface::class => RatingsService::class,
         ResourceServiceInterface::class => ResourceService::class,
         SessionServiceInterface::class => SessionService::class,
         TagServiceInterface::class => TagService::class,
+        UserResourceServiceInterface::class => UserResourceService::class,
         UserServiceInterface::class => UserService::class,
     ];
 
@@ -64,9 +66,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AccessTokenService::class => AccessTokenServiceFactory::class,
         CommentsService::class => AbstractDbServiceFactory::class,
         OaiResumptionService::class => AbstractDbServiceFactory::class,
+        RatingsService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
         SessionService::class => SessionServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,
+        UserResourceService::class => AbstractDbServiceFactory::class,
         UserService::class => UserServiceFactory::class,
     ];
 
