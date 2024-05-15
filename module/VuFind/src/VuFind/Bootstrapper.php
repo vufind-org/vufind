@@ -370,4 +370,31 @@ class Bootstrapper
             $headers->addHeader($cspHeader);
         }
     }
+
+    /**
+     * Set up rate limiter
+     *
+     * @return void
+     */
+    protected function initRateLimiter(): void
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        $rateLimiterManager = $this->container->get(\VuFind\RateLimiter\RateLimiterManager::class);
+        if (!$rateLimiterManager->isEnabled()) {
+            return;
+        }
+        $callback = function ($event) use ($rateLimiterManager) {
+            $result = $rateLimiterManager->check($event);
+            if (!$result['allow']) {
+                $response = $event->getResponse();
+                $response->setStatusCode(429);
+                $response->setContent($result['message']);
+                $event->stopPropagation(true);
+                return $response;
+            }
+        };
+        $this->events->attach('dispatch', $callback, 11000);
+    }
 }
