@@ -745,13 +745,13 @@ table.search-history-table {
     }
 
     #searchForm_lookfor {
-      padding-right: 34px;
+      padding-right: 38px;
     }
 
     /* Adjust padding for the virtual keyboard button */
     @media (min-width: 401px) {
       #searchForm_lookfor.with-keyboard-selection {
-        padding-right: 72px;
+        padding-right: 80px;
       }
     }
 
@@ -763,6 +763,7 @@ table.search-history-table {
       height: 100%;
       display: flex;
       align-items: center;
+      gap: 0.2rem;
     }
 
     #searchForm-reset {
