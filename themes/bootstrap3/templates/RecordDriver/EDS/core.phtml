@@ -8,7 +8,7 @@
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
     $cover = $coverDetails['html'];
 ?>
-<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+<div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->driver->getSchemaOrgFormats() . ' Product'])?>>
   <div class="media-left medium img-col">
     <?php if ($cover): ?>
       <?=$cover?>
@@ -21,43 +21,44 @@
           <a href="<?=$this->escapeHtmlAttr($pLink)?>">
             <?=$this->transEsc('View in EDS')?>
           </a>
-        </span><br>
+        </span>
       <?php endif; ?>
-      <?php $ftLink = $this->driver->getLinkedFullTextLink();
-          if ($ftLink): ?>
-        <span>
-          <a href="<?=$ftLink?>" class="fulltext">
-            <?=$this->transEsc('Linked Full Text')?>
-          </a>
-        </span><br>
-      <?php endif; ?>
-      <?php $pdfLink = $this->driver->getPdfLink();
-          if ($pdfLink): ?>
-        <span>
-          <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext">
-            <?=$this->transEsc('PDF Full Text')?>
-          </a>
-        </span><br>
-      <?php endif; ?>
-      <?php $epubLink = $this->driver->getEpubLink();
-          if ($epubLink): ?>
-        <span>
-          <a href="<?=$epubLink?>" class="icon--eds epub fulltext">
-            <?=$this->transEsc('ePub Full Text')?>
-          </a>
-        </span><br>
-      <?php endif; ?>
-      <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
-        <span>
-          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext">
-            <?=$this->transEsc('HTML Full Text')?>
-          </a>
-        </span><br>
+      <?php if ($this->permission()->isAuthorized('access.EDSExtendedResults')): ?>
+        <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
+          <span>
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext">
+              <?=$this->transEsc('HTML Full Text')?>
+            </a>
+          </span>
+        <?php endif; ?>
+        <?php if ($ftLink = $this->driver->getLinkedFullTextLink()): ?>
+          <span>
+            <a href="<?=$ftLink?>" class="fulltext">
+              <?=$this->transEsc('Linked Full Text')?>
+            </a>
+          </span>
+        <?php endif; ?>
+        <?php if ($pdfLink = $this->driver->getPdfLink()): ?>
+          <span>
+            <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext">
+              <?=$this->transEsc('PDF Full Text')?>
+            </a>
+          </span>
+        <?php endif; ?>
+        <?php if ($epubLink = $this->driver->getEpubLink()): ?>
+          <span>
+            <a href="<?=$epubLink?>" class="icon--eds epub fulltext">
+              <?=$this->transEsc('ePub Full Text')?>
+            </a>
+          </span>
+        <?php endif; ?>
+      <?php else: ?>
+        <?=$this->render('RecordDriver/EDS/result-list/full-text-links.phtml', ['driver' => $this->driver, 'recordLinker' => $this->recordLinker()])?>
       <?php endif; ?>
     </div>
   </div>
   <div class="media-body info-col">
-    <h1 property="name"><?=$this->driver->getTitle()?></h1>
+    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->driver->getTitle()?></h1>
 
     <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
       <?php /* Display the lists that this record is saved to */ ?>
@@ -99,13 +100,13 @@
         </tr>
       <?php elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
         <tr id="html">
-          <td>
-            <?=$this->transEsc('Full text is not displayed to guests')?>
-          </td>
-          <td>
-            <a class="login" href="<?=$this->url('myresearch-userlogin')?>" rel="nofollow">
-              <strong><?=$this->transEsc('Login for full access')?></strong>
-            </a>
+          <td colspan="2">
+            <div class="alert alert-info">
+              <?=$this->transEsc('Full text is not displayed to guests')?>
+              <a class="login" href="<?=$this->url('myresearch-userlogin')?>" rel="nofollow">
+                <strong><?=$this->transEsc('Login for full access')?></strong>
+              </a>
+            </div>
           </td>
         </tr>
       <?php endif; ?>
@@ -124,7 +125,7 @@
         ?>
         <div>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-            <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
+            <?php if ($icon): ?><img alt="" src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
           </a>
         </div>
       <?php endforeach; ?>

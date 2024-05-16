@@ -1,0 +1,10 @@
+<?php /* Global context config only */
+
+// You can insert configs that should be accessible via Javascript here.
+// WARNING: Any settings here are exposed to all users in plain text, so do not include any secrets.
+
+// Examples:
+//$this->jsConfigs()->add('myConfig', true);
+//$this->jsConfigs()->add('siteTitle', $this->config()->get('config')->Site->title);
+
+echo $this->jsConfigs()->getJSON();
