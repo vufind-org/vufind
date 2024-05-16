@@ -3,7 +3,7 @@
   $list = $this->results->getListObject();
 
   // Set up page title:
-  $this->headTitle(isset($list) ? $list->title : $this->translate('saved_items'));
+  $this->headTitle(isset($list) ? $list->getTitle() : $this->translate('saved_items'));
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
@@ -28,9 +28,9 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('saved_items')?></h2>
+  <h2><?=$list ? $this->escapeHtml($list->getTitle()) : $this->transEsc('saved_items')?></h2>
 
-  <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
+  <?php if ($list && $user && $list->getUser() === $user->id && $list->isPublic()): ?>
     <strong>
       <?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?>
       <?=$this->transEscAttr('public_list_indicator') ?>
@@ -55,7 +55,7 @@
     <div class="search-controls">
       <?php if (isset($list)): ?>
         <?php if ($list->editAllowed($account->getUserObject())): ?>
-          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link icon-link">
+          <a href="<?=$this->url('editList', ['id' => $list->getId()]) ?>" class="btn btn-link icon-link">
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
           </a>
@@ -63,10 +63,10 @@
             $this->component(
                 'confirm-button',
                 [
-                    'buttonLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->id]]),
+                    'buttonLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->getId()]]),
                     'buttonIcon' => 'user-list-delete',
                     'buttonLabel' => 'delete_list',
-                    'confirmLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->id, 'confirm' => 1]]),
+                    'confirmLink' => $this->url('myresearch-deletelist', [], ['query' => ['listID' => $list->getId(), 'confirm' => 1]]),
                 ]
             )
           ?>
@@ -78,15 +78,15 @@
       <?php endif; ?>
     </div>
   </nav>
-  <?php if ($list && !empty($list->description)): ?>
-    <p><?=$this->escapeHtml($list->description)?></p>
+  <?php if ($list && !empty($list->getDescription())): ?>
+    <p><?=$this->escapeHtml($list->getDescription())?></p>
   <?php endif; ?>
   <?php if (!empty($listTags)): ?>
     <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
   <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
     <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
-    <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->id)) ? '-' . $list->id : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+    <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->getId())) ? '-' . $list->getId() : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
       <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
       <ul class="record-list">
@@ -102,7 +102,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render(isset($list) ? 'list' . $list['id'] : 'favorites')?>
+  <?=$this->accountMenu()->render(isset($list) ? 'list' . $list->getId() : 'favorites')?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

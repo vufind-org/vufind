@@ -15,7 +15,7 @@
   <?php if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
     <?php foreach ($this->containingLists as $i => $list): ?>
-      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><?php if ($i < count($this->containingLists) - 1): ?>, <?php endif; ?>
+      <a href="<?=$this->url('userList', ['id' => $list->getId()]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list->getTitle())?></a><?php if ($i < count($this->containingLists) - 1): ?>, <?php endif; ?>
     <?php endforeach; ?>
     </p><hr>
   <?php endif; ?>
@@ -32,8 +32,8 @@
       <select class="form-control" id="save_list" name="list">
       <?php if ($this->nonContainingLists): ?>
         <?php foreach ($this->nonContainingLists as $list): ?>
-          <option value="<?=$this->escapeHtmlAttr($list['id']) ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
-            <?=$this->escapeHtml($list['title'])?><?php if ($list['public']):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+          <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+            <?=$this->escapeHtml($list->getTitle())?><?php if ($list->isPublic()):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
           </option>
         <?php endforeach; ?>
       <?php else: ?>
