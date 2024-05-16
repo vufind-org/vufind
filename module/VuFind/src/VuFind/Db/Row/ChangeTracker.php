@@ -61,7 +61,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Id setter
+     * Setter for identifier.
      *
      * @param string $id Id
      *
@@ -74,7 +74,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Id getter
+     * Getter for identifier.
      *
      * @return string
      */
@@ -84,24 +84,24 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Core setter
+     * Setter for index name.
      *
      * @param string $core Core
      *
      * @return ChangeTrackerEntityInterface
      */
-    public function setCore(string $core): ChangeTrackerEntityInterface
+    public function setIndexName(string $name): ChangeTrackerEntityInterface
     {
-        $this->core = $core;
+        $this->core = $name;
         return $this;
     }
 
     /**
-     * Core getter
+     * Getter for index name.
      *
      * @return string
      */
-    public function getCore(): string
+    public function getIndexName(): string
     {
         return $this->core;
     }
@@ -120,7 +120,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * FirstIndexed Getter.
+     * FirstIndexed getter.
      *
      * @return ?DateTime
      */
@@ -143,7 +143,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * LastIndexed Getter.
+     * LastIndexed getter.
      *
      * @return ?DateTime
      */
@@ -166,7 +166,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * LastRecordChange Getter.
+     * LastRecordChange getter.
      *
      * @return ?DateTime
      */
@@ -189,7 +189,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Deleted Getter.
+     * Deleted getter.
      *
      * @return ?DateTime
      */

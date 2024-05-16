@@ -43,7 +43,7 @@ use DateTime;
 interface ChangeTrackerEntityInterface extends EntityInterface
 {
     /**
-     * Id setter
+     * Setter for identifier.
      *
      * @param string $id Id
      *
@@ -52,27 +52,27 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setId(string $id): ChangeTrackerEntityInterface;
 
     /**
-     * Id getter
+     * Getter for identifier.
      *
      * @return string
      */
     public function getId(): string;
 
     /**
-     * Core setter
+     * Setter for index name.
      *
-     * @param string $core Core
+     * @param string $name Index name
      *
      * @return ChangeTrackerEntityInterface
      */
-    public function setCore(string $core): ChangeTrackerEntityInterface;
+    public function setIndexName(string $name): ChangeTrackerEntityInterface;
 
     /**
-     * Core getter
+     * Getter for index name.
      *
      * @return string
      */
-    public function getCore(): string;
+    public function getIndexName(): string;
 
     /**
      * FirstIndexed setter.
@@ -84,7 +84,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
 
     /**
-     * FirstIndexed Getter.
+     * FirstIndexed getter.
      *
      * @return ?DateTime
      */
@@ -100,7 +100,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
 
     /**
-     * LastIndexed Getter.
+     * LastIndexed getter.
      *
      * @return ?DateTime
      */
@@ -116,7 +116,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface;
 
     /**
-     * LastRecordChange Getter.
+     * LastRecordChange getter.
      *
      * @return ?DateTime
      */
@@ -132,7 +132,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface;
 
     /**
-     * Deleted Getter.
+     * Deleted getter.
      *
      * @return ?DateTime
      */
