@@ -701,45 +701,6 @@ function setupOffcanvas() {
   }
 }
 
-/**
- * Handle arrow keys to jump to next record
- */
-function keyboardShortcuts() {
-  var searchform = document.getElementById('searchForm_lookfor');
-  
-  if (document.querySelector('.pager')) {
-    window.addEventListener("keydown", function shortcutKeyDown(e) {
-      if (!searchform.contains(document.activeElement)) {
-        var target = null;
-        switch (e.keyCode) {
-        case 37: // left arrow key
-          target = document.querySelector('.pager a.previous');
-          if (target) {
-            target.click();
-          }
-          break;
-        case 38: // up arrow key
-          if (e.ctrlKey) {
-            target = document.querySelector('.pager a.backtosearch');
-            if (target) {
-              target.click();
-            }
-          }
-          break;
-        case 39: // right arrow key
-          target = document.querySelector('.pager a.next');
-          if (target) {
-            target.click();
-          }
-          break;
-        case 40: // down arrow key
-          break;
-        }
-      }
-    });
-  }
-}
-
 function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
@@ -786,8 +747,6 @@ document.addEventListener('DOMContentLoaded', () => {
   VuFind.init();
   // Off canvas
   setupOffcanvas();
-  // Keyboard shortcuts in detail view
-  keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
