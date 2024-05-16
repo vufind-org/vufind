@@ -686,10 +686,17 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
-    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
-      e.preventDefault();
-      $('body.vufind-offcanvas').toggleClass('active');
+  const sidebar = document.querySelector('.sidebar');
+  const body = document.body;
+
+  if (sidebar && body.classList.contains("vufind-offcanvas")) {
+    const offcanvasToggle = document.querySelectorAll('[data-toggle="vufind-offcanvas"]');
+    
+    offcanvasToggle.forEach((element) => {
+      element.addEventListener("click", function offcanvasClick(e) {
+        e.preventDefault();
+        body.classList.toggle('active');
+      });
     });
   }
 }
