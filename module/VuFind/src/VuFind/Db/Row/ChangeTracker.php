@@ -84,9 +84,9 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Setter for index name.
+     * Setter for index name (formerly core).
      *
-     * @param string $core Core
+     * @param string $name Index name
      *
      * @return ChangeTrackerEntityInterface
      */
@@ -97,7 +97,7 @@ class ChangeTracker extends RowGateway implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Getter for index name.
+     * Getter for index name (formerly core).
      *
      * @return string
      */

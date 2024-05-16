@@ -59,7 +59,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function getId(): string;
 
     /**
-     * Setter for index name.
+     * Setter for index name (formerly core).
      *
      * @param string $name Index name
      *
@@ -68,7 +68,7 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setIndexName(string $name): ChangeTrackerEntityInterface;
 
     /**
-     * Getter for index name.
+     * Getter for index name (formerly core).
      *
      * @return string
      */
