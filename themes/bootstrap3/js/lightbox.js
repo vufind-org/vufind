@@ -235,8 +235,7 @@ VuFind.register('lightbox', function Lightbox() {
             || _originalUrl.match(/CompleteLogin/)
           ) {
             if (doRefresh) {
-              showAlert(VuFind.translate("logged_in"));
-              refreshOnClose = true;
+              VuFind.refreshPage();
             }
             return false;
           }

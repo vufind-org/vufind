@@ -203,6 +203,8 @@ class MyResearchController extends AbstractBase
                 if (!$this->getAuthManager()->getIdentity()) {
                     $this->getAuthManager()->login($this->getRequest());
 
+                    $this->flashMessenger()->addMessage('logged_in', 'info');
+
                     // Return early to avoid unnecessary processing if we are being
                     // called from login lightbox and don't have a followup action or
                     // followup is set to referrer.
@@ -216,8 +218,6 @@ class MyResearchController extends AbstractBase
                         $this->clearFollowupUrl();
                         return $this->getRefreshResponse();
                     }
-
-                    $this->flashMessenger()->addMessage('logged_in', 'info');
                 }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
