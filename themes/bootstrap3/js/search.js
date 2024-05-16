@@ -329,6 +329,9 @@ VuFind.register('search', function search() {
     fetch(VuFind.path + '/AJAX/JSON?' + queryParams.toString())
       .then((response) => response.json())
       .then((result) => {
+        if (result.error) {
+          throw result.error;
+        }
         // We expect to get the results list in elements, but reset it to hide spinner just in case:
         recordList.innerHTML = '';
         Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
