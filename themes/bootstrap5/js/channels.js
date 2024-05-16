@@ -37,7 +37,9 @@ VuFind.register('channels', function Channels() {
   var currentPopoverRecord = false;
   function isCurrentPopoverRecord(record) {
     return record && currentPopoverRecord
-      && record.data('record-id') === currentPopoverRecord.data('record-id');
+      && record.data('record-id') === currentPopoverRecord.data('record-id')
+      && record.data('record-source') === currentPopoverRecord.data('record-source')
+      && record.data('channel-id') === currentPopoverRecord.data('channel-id');
   }
   function switchPopover(record) {
     // Hide the old popover:
@@ -49,10 +51,10 @@ VuFind.register('channels', function Channels() {
     if (isCurrentPopoverRecord(record)) {
       currentPopoverRecord = false;
     } else {
-      // Default case: set the currentPopoverRecord to the new incoming value:
+      // Default case: set the currentPopover to the new incoming value:
       currentPopoverRecord = record;
     }
-    // currentPopoverRecord has now been updated; show it if appropriate:
+    // currentPopover has now been updated; show it if appropriate:
     if (currentPopoverRecord) {
       bootstrap.Popover.getInstance(currentPopoverRecord).show();
     }
@@ -94,10 +96,11 @@ VuFind.register('channels', function Channels() {
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
+
     $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
       var record = $(event.delegateTarget);
-      if (!record.data("popover-loaded")) {
-        record.data("popover-loaded", true);
+      if (!record.data('popover-loaded')) {
+        record.data('popover-loaded', true);
         switchPopover(false);
         let loadingPopover = new bootstrap.Popover(
           record,
@@ -117,13 +120,13 @@ VuFind.register('channels', function Channels() {
         })
           .done(function channelPopoverDone(data) {
             var newContent = '<div class="btn-group btn-group-justified">'
-            + '<a href="' + VuFind.path + '/Channels/Record?'
+              + '<a href="' + VuFind.path + '/Channels/Record?'
               + 'id=' + encodeURIComponent(record.attr('data-record-id'))
               + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-            + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-            + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-            + '</div>'
-            + data;
+              + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+              + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
+              + data;
             loadingPopover.dispose();
             new bootstrap.Popover(
               record,
@@ -143,6 +146,7 @@ VuFind.register('channels', function Channels() {
       }
       return false;
     });
+
     // Channel add buttons
     addLinkButtons(op);
     $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
@@ -200,7 +204,7 @@ VuFind.register('channels', function Channels() {
     });
   };
 
-  function init() {
+  function init () {
     $('.channel').each(setupChannelSlider);
     $('.channel').each(bindChannelAddMenu);
     document.addEventListener('hidden.bs.popover', (e) => {

@@ -503,6 +503,11 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modalParams = {};
   }
+
+  function updateContainer(params) {
+    bind(params.container);
+  }
+
   function init() {
     _modal = document.querySelector('#modal');
     if (!_modal) {
@@ -544,6 +549,7 @@ VuFind.register('lightbox', function Lightbox() {
         console.error("Unknown modal command: " + cmd);
       }
     };
+    VuFind.listen('results-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

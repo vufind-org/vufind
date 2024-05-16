@@ -255,12 +255,17 @@ VuFind.register('cart', function Cart() {
     }
   }
 
+  function updateContainer(params) {
+    registerToggles(params.container);
+  }
+
   function init() {
     // Record buttons
     registerToggles();
     // Search results
     _registerUpdate();
     updateCount();
+    VuFind.listen('results-init', updateContainer);
   }
 
   // Reveal

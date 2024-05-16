@@ -419,38 +419,14 @@ var VuFind = (function VuFind() {
   /**
    * Initialize result page scripts.
    *
-   * @param {string|JQuery} container
+   * @param {string|Element} _container
    */
-  var initResultScripts = function initResultScripts(container) {
-    let jqContainer = typeof container === 'string' ? $(container) : container;
-    if (typeof this.doi !== 'undefined') {
-      this.doi.embedDoiLinks(jqContainer);
-    }
-    if (typeof this.openurl !== 'undefined') {
-      this.openurl.init(jqContainer);
-    }
-    if (typeof this.itemStatuses !== 'undefined') {
-      this.itemStatuses.init(jqContainer);
-    }
-    if (typeof this.saveStatuses !== 'undefined') {
-      this.saveStatuses.init(jqContainer);
-    }
-    if (typeof this.recordVersions !== 'undefined') {
-      this.recordVersions.init(jqContainer);
-    }
-    if (typeof this.cart !== 'undefined') {
-      this.cart.registerToggles(jqContainer);
-    }
-    if (typeof this.embedded !== 'undefined') {
-      this.embedded.init(jqContainer);
-    }
-    this.lightbox.bind(jqContainer);
-    setupQRCodeLinks(jqContainer[0]);
+  var initResultScripts = function initResultScripts(_container) {
+    let container = typeof _container === 'string' ? document.querySelector(_container) : _container;
+    emit('results-init', {container: container});
+    setupQRCodeLinks(container);
     if (typeof loadCovers === 'function') {
       loadCovers();
-    }
-    if (typeof this.explain !== 'undefined') {
-      this.explain.init();
     }
   };
 
@@ -685,8 +661,13 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (event.originalEvent !== undefined) {
-    let limit = event.originalEvent.submitter.dataset.itemLimit;
+  // originalEvent check can be removed and event.submitter can directly used once jQuery is no longer used in the lightbox
+  const submitter = event.originalEvent.submitter !== undefined && event.originalEvent.submitter !== null
+    ? event.originalEvent.submitter
+    : (event.submitter !== undefined && event.submitter !== null ? event.submitter : null);
+
+  if (submitter !== null) {
+    let limit = submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
       VuFind.lightbox.alert(
         VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
