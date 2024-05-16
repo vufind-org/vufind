@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Item Status Logic Class
+ * JsConfigs helper for passing configs to Javascript
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Hebis Verbundzentrale 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,43 +21,57 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\ILS\Logic;
+namespace VuFind\View\Helper\Root;
+
+use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Item Status Logic Class
+ * JsConfigs helper for passing configs to Javascript
  *
  * @category VuFind
- * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ItemStatus
+class JsConfigs extends AbstractHelper
 {
     /**
-     * Status code for unavailable items
+     * Config
      *
-     * @var int
+     * @var array
      */
-    public const STATUS_UNAVAILABLE = 0;
+    protected array $config = [];
 
     /**
-     * Status code for available items
+     * Add config.
      *
-     * @var int
+     * @param string $key   Config key
+     * @param mixed  $value Config value
+     *
+     * @return void
      */
-    public const STATUS_AVAILABLE = 1;
+    public function add(string $key, mixed $value): void
+    {
+        $this->config[$key] = $value;
+    }
 
     /**
-     * Status code for items with uncertain availability
+     * Generate JSON from the internal array.
      *
-     * @var int
+     * @return string
      */
-    public const STATUS_UNCERTAIN = 2;
+    public function getJSON(): string
+    {
+        if (empty($this->config)) {
+            return '{}';
+        }
+        return json_encode($this->config);
+    }
 }
