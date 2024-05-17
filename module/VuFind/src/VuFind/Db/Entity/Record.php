@@ -206,7 +206,7 @@ class Record implements RecordEntityInterface
     /**
      * Updated setter.
      *
-     * @param Datetime $dateTime updated date
+     * @param DateTime $dateTime updated date
      *
      * @return Record
      */

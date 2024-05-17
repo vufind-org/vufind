@@ -239,7 +239,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     /**
      * Posted setter.
      *
-     * @param ?Datetime $dateTime Posted date
+     * @param ?DateTime $dateTime Posted date
      *
      * @return ResourceTags
      */
@@ -252,9 +252,9 @@ class ResourceTags implements ResourceTagsEntityInterface
     /**
      * Posted getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getPosted(): ?Datetime
+    public function getPosted(): ?DateTime
     {
         return $this->posted;
     }

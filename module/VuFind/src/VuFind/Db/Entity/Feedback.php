@@ -188,7 +188,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -198,9 +198,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $message Message
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setMessage(string $message): Feedback
+    public function setMessage(string $message): FeedbackEntityInterface
     {
         $this->message = $message;
         return $this;
@@ -211,7 +211,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -221,9 +221,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param mixed $data Form data
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setFormData($data): Feedback
+    public function setFormData($data): FeedbackEntityInterface
     {
         $this->formData = $data;
         return $this;
@@ -232,9 +232,9 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Form data getter
      *
-     * @return mixed
+     * @return array
      */
-    public function getFormData()
+    public function getFormData(): array
     {
         return $this->formData;
     }
@@ -244,9 +244,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $name Form name
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setFormName(string $name): Feedback
+    public function setFormName(string $name): FeedbackEntityInterface
     {
         $this->formName = $name;
         return $this;
@@ -257,7 +257,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @return string
      */
-    public function getFormName()
+    public function getFormName(): string
     {
         return $this->formName;
     }
@@ -265,11 +265,11 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setCreated(DateTime $dateTime): Feedback
+    public function setCreated(DateTime $dateTime): FeedbackEntityInterface
     {
         $this->created = $dateTime;
         return $this;
@@ -278,9 +278,9 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated()
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
@@ -288,11 +288,11 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Updated setter.
      *
-     * @param Datetime $dateTime Last update date
+     * @param DateTime $dateTime Last update date
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setUpdated(DateTime $dateTime): Feedback
+    public function setUpdated(DateTime $dateTime): FeedbackEntityInterface
     {
         $this->updated = $dateTime;
         return $this;
@@ -301,9 +301,9 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Updated getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getUpdated()
+    public function getUpdated(): DateTime
     {
         return $this->updated;
     }
@@ -313,9 +313,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $status Status
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setStatus(string $status): Feedback
+    public function setStatus(string $status): FeedbackEntityInterface
     {
         $this->status = $status;
         return $this;
@@ -326,7 +326,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -336,9 +336,9 @@ class Feedback implements FeedbackEntityInterface
      *
      * @param string $url Site URL
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setSiteUrl(string $url): Feedback
+    public function setSiteUrl(string $url): FeedbackEntityInterface
     {
         $this->siteUrl = $url;
         return $this;
@@ -349,7 +349,7 @@ class Feedback implements FeedbackEntityInterface
      *
      * @return string
      */
-    public function getSiteUrl()
+    public function getSiteUrl(): string
     {
         return $this->siteUrl;
     }
@@ -357,11 +357,11 @@ class Feedback implements FeedbackEntityInterface
     /**
      * User setter.
      *
-     * @param User $user User that created request
+     * @param ?UserEntityInterface $user User that created request
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setUser(?User $user): Feedback
+    public function setUser(?UserEntityInterface $user): FeedbackEntityInterface
     {
         $this->user = $user;
         return $this;
@@ -370,9 +370,9 @@ class Feedback implements FeedbackEntityInterface
     /**
      * User getter
      *
-     * @return User
+     * @return ?UserEntityInterface
      */
-    public function getUser()
+    public function getUser(): ?UserEntityInterface
     {
         return $this->user;
     }
@@ -380,11 +380,11 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Updatedby setter.
      *
-     * @param User $user User that updated request
+     * @param ?UserEntityInterface $user User that updated request
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function setUpdatedBy(?User $user): Feedback
+    public function setUpdatedBy(?UserEntityInterface $user): FeedbackEntityInterface
     {
         $this->updatedBy = $user;
         return $this;
@@ -393,9 +393,9 @@ class Feedback implements FeedbackEntityInterface
     /**
      * Updatedby getter
      *
-     * @return User
+     * @return ?UserEntityInterface
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ?UserEntityInterface
     {
         return $this->updatedBy;
     }

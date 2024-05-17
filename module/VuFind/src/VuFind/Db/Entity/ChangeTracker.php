@@ -161,7 +161,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * FirstIndexed setter.
      *
-     * @param ?Datetime $dateTime Time first added to index.
+     * @param ?DateTime $dateTime Time first added to index.
      *
      * @return ChangeTracker
      */
@@ -174,9 +174,9 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * FirstIndexed Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getFirstIndexed(): ?Datetime
+    public function getFirstIndexed(): ?DateTime
     {
         return $this->firstIndexed;
     }
@@ -184,7 +184,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * LastIndexed setter.
      *
-     * @param ?Datetime $dateTime Last time changed in index.
+     * @param ?DateTime $dateTime Last time changed in index.
      *
      * @return ChangeTracker
      */
@@ -197,9 +197,9 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * LastIndexed Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getLastIndexed(): ?Datetime
+    public function getLastIndexed(): ?DateTime
     {
         return $this->lastIndexed;
     }
@@ -207,7 +207,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * LastRecordChange setter.
      *
-     * @param ?Datetime $dateTime Last time original record was edited
+     * @param ?DateTime $dateTime Last time original record was edited
      *
      * @return ChangeTracker
      */
@@ -220,9 +220,9 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * LastRecordChange Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getLastRecordChange(): ?Datetime
+    public function getLastRecordChange(): ?DateTime
     {
         return $this->lastRecordChange;
     }
@@ -230,7 +230,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * Deleted setter.
      *
-     * @param ?Datetime $dateTime Time record was removed from index
+     * @param ?DateTime $dateTime Time record was removed from index
      *
      * @return ChangeTracker
      */
@@ -243,9 +243,9 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     /**
      * Deleted Getter.
      *
-     * @return ?Datetime
+     * @return ?DateTime
      */
-    public function getDeleted(): ?Datetime
+    public function getDeleted(): ?DateTime
     {
         return $this->deleted;
     }

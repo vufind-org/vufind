@@ -153,7 +153,7 @@ class Shortlinks implements ShortlinksEntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return Shortlinks
      */

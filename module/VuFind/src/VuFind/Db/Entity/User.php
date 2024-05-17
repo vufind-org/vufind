@@ -568,7 +568,7 @@ class User implements UserEntityInterface
     /**
      * Last login setter.
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -581,9 +581,9 @@ class User implements UserEntityInterface
     /**
      * Last login getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getLastLogin(): Datetime
+    public function getLastLogin(): DateTime
     {
         return $this->lastLogin;
     }
@@ -591,7 +591,7 @@ class User implements UserEntityInterface
     /**
      * Created setter
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */

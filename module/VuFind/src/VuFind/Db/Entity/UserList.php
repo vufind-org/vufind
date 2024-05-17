@@ -222,7 +222,7 @@ class UserList implements UserListEntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return UserList
      */
@@ -235,9 +235,9 @@ class UserList implements UserListEntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }

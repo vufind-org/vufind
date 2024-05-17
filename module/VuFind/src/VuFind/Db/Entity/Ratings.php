@@ -190,7 +190,7 @@ class Ratings implements RatingsEntityInterface
     /**
      * Created setter.
      *
-     * @param Datetime $dateTime Created date
+     * @param DateTime $dateTime Created date
      *
      * @return UserList
      */
@@ -203,9 +203,9 @@ class Ratings implements RatingsEntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
