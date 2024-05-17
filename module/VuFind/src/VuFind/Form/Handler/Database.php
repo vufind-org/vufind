@@ -96,7 +96,6 @@ class Database implements HandlerInterface, LoggerAwareInterface
         try {
             $this->feedbackService->persistEntity($data);
         } catch (\Exception $e) {
-            throw $e;
             $this->logError('Could not save feedback data: ' . $e->getMessage());
             return false;
         }
