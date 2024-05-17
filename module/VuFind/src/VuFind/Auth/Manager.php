@@ -769,13 +769,12 @@ class Manager implements
      * Delete a login token
      *
      * @param string $series Series to identify the token
-     * @param int    $userId User identifier
      *
      * @return void
      */
-    public function deleteToken(string $series, int $userId)
+    public function deleteToken(string $series)
     {
-        $this->loginTokenManager->deleteTokenSeries($series, $userId);
+        $this->loginTokenManager->deleteTokenSeries($series);
     }
 
     /**

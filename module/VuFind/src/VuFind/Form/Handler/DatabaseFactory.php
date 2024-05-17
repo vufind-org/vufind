@@ -77,7 +77,7 @@ class DatabaseFactory implements FactoryInterface
         $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         return new $requestedName(
-            $dbServiceManager->get(\VuFind\Db\Service\FeedbackService::class),
+            $dbServiceManager->get(\VuFind\Db\Service\FeedbackServiceInterface::class),
             $dbServiceManager->get(\VuFind\Db\Service\UserService::class),
             $baseUrl
         );

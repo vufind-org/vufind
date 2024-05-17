@@ -35,6 +35,8 @@ namespace VuFind\Form\Handler;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -51,41 +53,17 @@ class Database implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Feedback database service
-     *
-     * @var \VuFind\Db\Service\FeedbackService
-     */
-    protected $feedbackService;
-
-    /**
-     * User database service
-     *
-     * @var \VuFind\Db\Service\UserService
-     */
-    protected $userService;
-
-    /**
-     * Site base url
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Db\Service\FeedbackService $fs      Feedback database service
-     * @param \VuFind\Db\Service\UserService     $us      User database service
-     * @param string                             $baseUrl Site base url
+     * @param FeedbackServiceInterface $feedbackService Feedback database service
+     * @param UserService              $userService     User database service
+     * @param string                   $baseUrl         Site base url
      */
     public function __construct(
-        \VuFind\Db\Service\FeedbackService $fs,
-        \VuFind\Db\Service\UserService $us,
-        string $baseUrl
+        protected FeedbackServiceInterface $feedbackService,
+        protected UserService $userService,
+        protected string $baseUrl
     ) {
-        $this->feedbackService = $fs;
-        $this->userService = $us;
-        $this->baseUrl = $baseUrl;
     }
 
     /**

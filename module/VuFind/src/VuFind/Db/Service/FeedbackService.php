@@ -31,6 +31,7 @@ namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use VuFind\Db\Entity\Feedback;
+use VuFind\Db\Entity\FeedbackEntityInterface;
 
 use function count;
 use function intval;
@@ -62,9 +63,9 @@ class FeedbackService extends AbstractDbService
     /**
      * Create a feedback entity object.
      *
-     * @return Feedback
+     * @return FeedbackEntityInterface
      */
-    public function createEntity(): Feedback
+    public function createEntity(): FeedbackEntityInterface
     {
         $class = $this->getEntityClass(Feedback::class);
         return new $class();

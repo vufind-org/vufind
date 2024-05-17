@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
         CommentsServiceInterface::class => CommentsService::class,
+        FeedbackServiceInterface::class => FeedbackService::class,
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
         RatingsServiceInterface::class => RatingsService::class,
         ResourceServiceInterface::class => ResourceService::class,

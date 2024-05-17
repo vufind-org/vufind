@@ -31,9 +31,10 @@ namespace VuFindTest\Form\Handler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Entity\Feedback;
+use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Entity\User;
-use VuFind\Db\Service\FeedbackService;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\FeedbackServiceInterface;
 use VuFind\Db\Service\UserService;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Database;
@@ -52,13 +53,13 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock feedback object configured for tests.
      *
-     * @param ?User $user User expected by feedback.
+     * @param ?UserEntityInterface $user User expected by feedback.
      *
-     * @return MockObject&Feedback
+     * @return MockObject&FeedbackEntityInterface
      */
-    protected function getMockFeedback(?User $user): MockObject&Feedback
+    protected function getMockFeedback(?UserEntityInterface $user): MockObject&FeedbackEntityInterface
     {
-        $feedback = $this->createMock(Feedback::class);
+        $feedback = $this->createMock(FeedbackEntityInterface::class);
         $feedback->expects($this->once())->method('setUser')->with($user)->willReturn($feedback);
         $feedback->expects($this->once())->method('setMessage')->with('')->willReturn($feedback);
         $feedback->expects($this->once())->method('setFormData')->with([])->willReturn($feedback);
@@ -76,9 +77,9 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithUser(): void
     {
-        $user = $this->createMock(User::class);
+        $user = $this->createMock(UserEntityInterface::class);
         $feedback = $this->getMockFeedback($user);
-        $feedbackService = $this->createMock(FeedbackService::class);
+        $feedbackService = $this->createMock(FeedbackServiceInterface::class);
         $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
         $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
         $userService = $this->createMock(UserService::class);
@@ -102,7 +103,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     {
         $user = null;
         $feedback = $this->getMockFeedback($user);
-        $feedbackService = $this->createMock(FeedbackService::class);
+        $feedbackService = $this->createMock(FeedbackServiceInterface::class);
         $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
         $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
         $userService = $this->createMock(UserService::class);
