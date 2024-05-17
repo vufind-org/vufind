@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TemplateBased ContentBlack Test Class
+ * TemplateBased ContentBlock Test Class
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\ContentBlock;
 
 /**
- * TemplateBased ContentBlack Test Class
+ * TemplateBased ContentBlock Test Class
  *
  * @category VuFind
  * @package  Tests
