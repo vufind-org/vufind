@@ -989,7 +989,7 @@ class User extends RowGateway implements
     /**
      * Created setter
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -1002,9 +1002,9 @@ class User extends RowGateway implements
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
     }
