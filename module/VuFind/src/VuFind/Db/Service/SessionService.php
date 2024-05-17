@@ -31,7 +31,8 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\SessionEntityInterface;
-use VuFind\Db\Table\Session;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for Session.
@@ -43,16 +44,9 @@ use VuFind\Db\Table\Session;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SessionService extends AbstractDbService implements SessionServiceInterface
+class SessionService extends AbstractDbService implements DbTableAwareInterface, SessionServiceInterface
 {
-    /**
-     * Constructor
-     *
-     * @param Session $session Session table object
-     */
-    public function __construct(protected Session $session)
-    {
-    }
+    use DbTableAwareTrait;
 
     /**
      * Retrieve an object from the database based on session ID; create a new
@@ -65,6 +59,68 @@ class SessionService extends AbstractDbService implements SessionServiceInterfac
      */
     public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface
     {
-        return $this->session->getBySessionId($sid, $create);
+        return $this->getDbTable('Session')->getBySessionId($sid, $create);
+    }
+
+    /**
+     * Retrieve data for the given session ID.
+     *
+     * @param string $sid      Session ID to retrieve
+     * @param int    $lifetime Session lifetime (in seconds)
+     *
+     * @throws SessionExpiredException
+     * @return string     Session data
+     */
+    public function readSession(string $sid, int $lifetime): string
+    {
+        return $this->getDbTable('Session')->readSession($sid, $lifetime);
+    }
+
+    /**
+     * Store data for the given session ID.
+     *
+     * @param string $sid  Session ID to retrieve
+     * @param string $data Data to store
+     *
+     * @return bool
+     */
+    public function writeSession(string $sid, string $data): bool
+    {
+        $this->getDbTable('Session')->writeSession($sid, $data);
+        return true;
+    }
+
+    /**
+     * Destroy data for the given session ID.
+     *
+     * @param string $sid Session ID to erase
+     *
+     * @return void
+     */
+    public function destroySession(string $sid): void
+    {
+        $this->getDbTable('Session')->destroySession($sid);
+    }
+
+    /**
+     * Garbage collect expired sessions.
+     *
+     * @param int $maxLifetime Maximum session lifetime.
+     *
+     * @return void
+     */
+    public function garbageCollect(int $maxLifetime): void
+    {
+        $this->getDbTable('Session')->garbageCollect($maxLifetime);
+    }
+
+    /**
+     * Create a session entity object.
+     *
+     * @return SessionEntityInterface
+     */
+    public function createEntity(): SessionEntityInterface
+    {
+        return $this->getDbTable('Session')->createRow();
     }
 }

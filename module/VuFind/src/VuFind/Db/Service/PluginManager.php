@@ -70,7 +70,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         OaiResumptionService::class => AbstractDbServiceFactory::class,
         RatingsService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
-        SessionService::class => SessionServiceFactory::class,
+        SessionService::class => AbstractDbServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,
         UserResourceService::class => AbstractDbServiceFactory::class,
         UserService::class => UserServiceFactory::class,
