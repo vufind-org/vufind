@@ -47,7 +47,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SessionService extends AbstractDbService implements LoggerAwareInterface
+class SessionService extends AbstractDbService implements LoggerAwareInterface, SessionServiceInterface
 {
     use LoggerAwareTrait;
 
@@ -93,7 +93,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
      * @throws SessionExpiredException
      * @return string     Session data
      */
-    public function readSession($sid, $lifetime)
+    public function readSession(string $sid, int $lifetime): string
     {
         $s = $this->getSessionById($sid);
         if (!$s) {
@@ -126,7 +126,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function writeSession($sid, $data)
+    public function writeSession(string $sid, string $data): bool
     {
         $session = $this->getSessionById($sid);
         try {
@@ -150,7 +150,7 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
      *
      * @return void
      */
-    public function destroySession($sid)
+    public function destroySession(string $sid): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
@@ -163,16 +163,16 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface
     /**
      * Garbage collect expired sessions.
      *
-     * @param int $sess_maxlifetime Maximum session lifetime.
+     * @param int $maxLifetime Maximum session lifetime.
      *
      * @return void
      */
-    public function garbageCollect($sess_maxlifetime)
+    public function garbageCollect(int $maxLifetime): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
             ->where('s.lastUsed < :used')
-            ->setParameter('used', time() - intval($sess_maxlifetime));
+            ->setParameter('used', time() - intval($maxLifetime));
         $query = $queryBuilder->getQuery();
         $query->execute();
     }

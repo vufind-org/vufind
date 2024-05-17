@@ -29,6 +29,9 @@
 
 namespace VuFindTest\Session;
 
+use Laminas\Config\Config;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Session\Database;
 
 /**
@@ -47,13 +50,13 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testRead()
+    public function testRead(): void
     {
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(3600))
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
@@ -62,15 +65,13 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testReadWithNonDefaultLifetime()
+    public function testReadWithNonDefaultLifetime(): void
     {
-        $handler = $this->getHandler(
-            new \Laminas\Config\Config(['lifetime' => 1000])
-        );
+        $handler = $this->getHandler(new Config(['lifetime' => 1000]));
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(1000))
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
@@ -79,7 +80,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testGc()
+    public function testGc(): void
     {
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
@@ -93,12 +94,13 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testWrite()
+    public function testWrite(): void
     {
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('writeSession')
-            ->with($this->equalTo('foo'), $this->equalTo('stuff'));
+            ->with($this->equalTo('foo'), $this->equalTo('stuff'))
+            ->willReturn(true);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
 
@@ -107,7 +109,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testDestroy()
+    public function testDestroy(): void
     {
         $handler = $this->getHandler();
         $this->setUpDestroyExpectations('foo');
@@ -120,11 +122,11 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Laminas\Config\Config $config Optional configuration
+     * @param Config $config Optional configuration
      *
      * @return Database
      */
-    protected function getHandler($config = null)
+    protected function getHandler(Config $config = null): Database
     {
         $handler = new Database($config);
         $this->injectMockDatabaseServices($handler);
@@ -135,10 +137,10 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get a mock session service.
      *
-     * @return \VuFind\Db\Service\SessionService
+     * @return MockObject&SessionServiceInterface
      */
-    protected function getMockSessionService()
+    protected function getMockSessionService(): MockObject&SessionServiceInterface
     {
-        return $this->services->get(\VuFind\Db\Service\SessionService::class);
+        return $this->services->get(SessionServiceInterface::class);
     }
 }
