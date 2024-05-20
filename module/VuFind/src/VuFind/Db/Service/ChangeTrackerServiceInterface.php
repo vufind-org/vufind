@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database session service factory
+ * Database service interface for change tracker.
  *
  * PHP version 8
  *
@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -29,45 +30,33 @@
 
 namespace VuFind\Db\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 
 /**
- * Database session service factory
+ * Database service interface for change tracker.
  *
  * @category VuFind
  * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SessionServiceFactory extends AbstractDbServiceFactory
+interface ChangeTrackerServiceInterface extends DbServiceInterface
 {
     /**
-     * Create an object
+     * Update the change_tracker table to reflect that a record has been indexed.
+     * We need to know the date of the last change to the record (independent of
+     * its addition to the index) in order to tell the difference between a
+     * reindex of a previously-encountered record and a genuine change.
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * The method returns the updated/created row when complete.
      *
-     * @return object
+     * @param string $core   The Solr core holding the record.
+     * @param string $id     The ID of the record being indexed.
+     * @param int    $change The timestamp of the last record change.
      *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
+     * @return ChangeTrackerEntityInterface
      */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        array $options = null
-    ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory!');
-        }
-        $sessionTable = $container->get(\VuFind\Db\Table\PluginManager::class)->get('session');
-        return parent::__invoke($container, $requestedName, [$sessionTable]);
-    }
+    public function index(string $core, string $id, int $change): ChangeTrackerEntityInterface;
 }

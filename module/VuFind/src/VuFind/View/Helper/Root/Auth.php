@@ -31,8 +31,9 @@ namespace VuFind\View\Helper\Root;
 
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -44,10 +45,10 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Auth extends \Laminas\View\Helper\AbstractHelper implements DbTableAwareInterface
+class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
-    use DbTableAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Authentication manager
@@ -202,14 +203,13 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbTableAwareIn
     /**
      * Get login token data
      *
-     * @param string $userId user identifier
+     * @param int $userId user identifier
      *
      * @return array
      */
-    public function getLoginTokens(string $userId): array
+    public function getLoginTokens(int $userId): array
     {
-        $tokenTable = $this->getDbTable('LoginToken');
-        return $tokenTable->getByUserId($userId);
+        return $this->getDbService(LoginTokenServiceInterface::class)->getByUser($userId);
     }
 
     /**
