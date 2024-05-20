@@ -202,11 +202,11 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test saving a new token.
+     * Test creating and persisting a new token.
      *
      * @return void
      */
-    public function testSaveToken(): void
+    public function testCreateAndPersistToken(): void
     {
         $entityManager = $this->getEntityManager(1);
         $pluginManager = $this->getPluginManager();
@@ -226,6 +226,6 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $oaiResumption->expects($this->once())->method('getId')
             ->willReturn(1);
         $resumptionService = $this->getService($entityManager, $pluginManager, $oaiResumption);
-        $this->assertEquals(1, $resumptionService->saveToken($params, 1666782990));
+        $this->assertEquals(1, $resumptionService->createAndPersistToken($params, 1666782990)->getId());
     }
 }
