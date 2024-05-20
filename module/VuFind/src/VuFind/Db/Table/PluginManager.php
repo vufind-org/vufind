@@ -50,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'changetracker' => ChangeTracker::class,
         'comments' => Comments::class,
         'externalsession' => ExternalSession::class,
+        'feedback' => Feedback::class,
         'logintoken' => LoginToken::class,
         'oairesumption' => OaiResumption::class,
         'ratings' => Ratings::class,

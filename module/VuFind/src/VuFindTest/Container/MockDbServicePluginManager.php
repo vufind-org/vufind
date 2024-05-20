@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Item Status Logic Class
+ * DB service plugin container that produces mock objects.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,43 +21,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Tests
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\ILS\Logic;
+namespace VuFindTest\Container;
 
 /**
- * Item Status Logic Class
+ * DB service plugin container that produces mock objects.
  *
  * @category VuFind
- * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Tests
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
-class ItemStatus
+class MockDbServicePluginManager extends \VuFind\Db\Service\PluginManager
 {
-    /**
-     * Status code for unavailable items
-     *
-     * @var int
-     */
-    public const STATUS_UNAVAILABLE = 0;
-
-    /**
-     * Status code for available items
-     *
-     * @var int
-     */
-    public const STATUS_AVAILABLE = 1;
-
-    /**
-     * Status code for items with uncertain availability
-     *
-     * @var int
-     */
-    public const STATUS_UNCERTAIN = 2;
+    use MockContainerTrait;
 }
