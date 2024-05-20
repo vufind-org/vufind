@@ -59,9 +59,9 @@ class CommentsService extends AbstractDbService implements
     /**
      * Create a comments entity object.
      *
-     * @return Comments
+     * @return CommentsEntityInterface
      */
-    public function createEntity(): Comments
+    public function createEntity(): CommentsEntityInterface
     {
         $class = $this->getEntityClass(Comments::class);
         return new $class();
