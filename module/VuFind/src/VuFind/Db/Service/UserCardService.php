@@ -217,10 +217,7 @@ class UserCardService extends AbstractDbService implements
         $user = is_int($user)
             ? $this->getDbService(UserServiceInterface::class)->getUserById($user) : $user;
 
-        $row = null;
-        if ($id !== null) {
-            $row = current($this->getLibraryCards($user, $id));
-        }
+        $row = ($id !== null) ? current($this->getLibraryCards($user, $id)) : null;
         if (empty($row)) {
             $row = $this->createEntity()
                 ->setUser($user)
