@@ -15,7 +15,7 @@
 /themes/minktest
 /vendor
 ChangeLog
-TAGS
+/TAGS
 composer.phar
 env.bat
 env.sh

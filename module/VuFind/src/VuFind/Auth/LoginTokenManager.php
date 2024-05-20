@@ -39,8 +39,8 @@ use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\LoginToken as LoginTokenTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -102,19 +102,19 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     /**
      * LoginToken constructor.
      *
-     * @param Config               $config          Configuration
-     * @param UserServiceInterface $userService     User database service
-     * @param LoginTokenTable      $loginTokenTable Login Token table gateway
-     * @param CookieManager        $cookieManager   Cookie manager
-     * @param SessionManager       $sessionManager  Session manager
-     * @param Mailer               $mailer          Mailer
-     * @param RendererInterface    $viewRenderer    View Renderer
-     * @param callable             $browscapCB      Callback for creating Browscap
+     * @param Config                     $config            Configuration
+     * @param UserServiceInterface       $userService       User database service
+     * @param LoginTokenServiceInterface $loginTokenService Login Token database service
+     * @param CookieManager              $cookieManager     Cookie manager
+     * @param SessionManager             $sessionManager    Session manager
+     * @param Mailer                     $mailer            Mailer
+     * @param RendererInterface          $viewRenderer      View Renderer
+     * @param callable                   $browscapCB        Callback for creating Browscap
      */
     public function __construct(
         protected Config $config,
         protected UserServiceInterface $userService,
-        protected LoginTokenTable $loginTokenTable,
+        protected LoginTokenServiceInterface $loginTokenService,
         protected CookieManager $cookieManager,
         protected SessionManager $sessionManager,
         protected Mailer $mailer,
@@ -138,7 +138,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         if ($cookie) {
             try {
                 if (
-                    ($token = $this->loginTokenTable->matchToken($cookie))
+                    ($token = $this->loginTokenService->matchToken($cookie))
                     && ($user = $this->userService->getUserById($token->user_id))
                 ) {
                     // Queue token update to be done after everything else is
@@ -240,10 +240,10 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
             $this->cookieManager->clear($this->getCookieName());
         }
         $handler = $this->sessionManager->getSaveHandler();
-        foreach ($this->loginTokenTable->getBySeries($series) as $token) {
+        foreach ($this->loginTokenService->getBySeries($series) as $token) {
             $handler->destroy($token->last_session_id);
         }
-        $this->loginTokenTable->deleteBySeries($series);
+        $this->loginTokenService->deleteBySeries($series);
     }
 
     /**
@@ -256,12 +256,12 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      */
     public function deleteUserLoginTokens($userId)
     {
-        $userTokens = $this->loginTokenTable->getByUserId($userId, false);
+        $userTokens = $this->loginTokenService->getByUser($userId, false);
         $handler = $this->sessionManager->getSaveHandler();
         foreach ($userTokens as $t) {
             $handler->destroy($t->last_session_id);
         }
-        $this->loginTokenTable->deleteByUserId($userId);
+        $this->loginTokenService->deleteByUser($userId);
     }
 
     /**
@@ -293,7 +293,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     {
         $cookie = $this->getLoginTokenCookie();
         if (!empty($cookie) && $cookie['series']) {
-            $this->loginTokenTable->deleteBySeries($cookie['series']);
+            $this->loginTokenService->deleteBySeries($cookie['series']);
         }
         $this->cookieManager->clear($this->getCookieName());
     }
@@ -331,14 +331,14 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         try {
             if ($series) {
                 $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
-                $this->loginTokenTable->deleteBySeries($series, $lenient ? $currentTokenId : null);
+                $this->loginTokenService->deleteBySeries($series, $lenient ? $currentTokenId : null);
                 $this->debug("Updating login token $token series $series for user {$userId}");
             } else {
                 $series = bin2hex(random_bytes(32));
                 $this->debug("Creating login token $token series $series for user {$userId}");
             }
-            $this->loginTokenTable->saveToken(
-                $userId,
+            $this->loginTokenService->createAndPersistToken(
+                $user,
                 $token,
                 $series,
                 $browser->browser,
