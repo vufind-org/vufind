@@ -24,7 +24,7 @@
       <span class="<?=$this->escapeHtmlAttr($statusClass)?>">
         <?=$this->transEsc($statusDescription)?>
         <?php if ($schemaAvailabilityUri): ?>
-          <?=$this->transEsc($status)?><?=$this->schemaOrg()->getLink($schemaAvailabilityUri, 'availability')?>
+          <?=$this->schemaOrg()->getLink($schemaAvailabilityUri, 'availability')?>
         <?php endif; ?>
       </span>
       <?php if ($availabilityStatus->isAvailable()): ?>
