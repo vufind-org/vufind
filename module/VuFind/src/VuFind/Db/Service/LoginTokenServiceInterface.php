@@ -52,7 +52,7 @@ interface LoginTokenServiceInterface extends DbServiceInterface
     public function createEntity(): LoginTokenEntityInterface;
 
     /**
-     * Create and save a token.
+     * Create and persist a token.
      *
      * @param UserEntityInterface $user      User identifier
      * @param string              $token     Login token
@@ -64,7 +64,7 @@ interface LoginTokenServiceInterface extends DbServiceInterface
      *
      * @return LoginTokenEntityInterface
      */
-    public function createAndSaveToken(
+    public function createAndPersistToken(
         UserEntityInterface $user,
         string $token,
         string $series,
