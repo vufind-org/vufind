@@ -96,8 +96,6 @@ function refreshRecordRating(recordId, recordSource) {
     .then(response => response.json())
     .then(result => {
       rating.outerHTML = result.data.html;
-      // Bind lightbox to the new content:
-      VuFind.lightbox.bind(document.querySelector('.media-left .rating'));
     });
 }
 
@@ -185,8 +183,6 @@ function registerTabEvents() {
   setUpCheckRequest();
 
   handleAjaxTabLinks();
-
-  VuFind.lightbox.bind('.tab-pane.active');
 
   if (typeof VuFind.openurl !== 'undefined') {
     VuFind.openurl.init($('.tab-pane.active'));
