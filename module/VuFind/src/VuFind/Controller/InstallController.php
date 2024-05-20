@@ -833,7 +833,7 @@ class InstallController extends AbstractBase
         $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
         if (count($cardRows) > 0) {
             foreach ($cardRows as $row) {
-                $row->setCatPassEnc($ilsAuthenticator->encrypt($row->cat_password));
+                $row->setCatPassEnc($ilsAuthenticator->encrypt($row->getRawCatPassword()));
                 $row->setRawCatPassword(null);
                 $cardService->persistEntity($row);
             }
