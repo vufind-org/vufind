@@ -30,7 +30,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$list ? $this->escapeHtml($list->getTitle()) : $this->transEsc('saved_items')?></h2>
 
-  <?php if ($list && $user && $list->getUser() === $user->id && $list->isPublic()): ?>
+  <?php if ($list && $user && $list->getUser()->getId() === $user->id && $list->isPublic()): ?>
     <strong>
       <?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?>
       <?=$this->transEscAttr('public_list_indicator') ?>

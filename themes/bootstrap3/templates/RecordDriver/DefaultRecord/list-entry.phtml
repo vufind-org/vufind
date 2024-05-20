@@ -4,7 +4,7 @@
   $source = $this->driver->getSourceIdentifier();
   if (isset($this->list) && is_object($this->list)) {
     $list_id = $this->list->getId();
-    $user_id = $this->list->getUser();
+    $user_id = $this->list->getUser()->getId();
   } else {
     $list_id = null;
     $user_id = $this->user ? $this->user->id : null;
