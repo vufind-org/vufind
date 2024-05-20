@@ -100,11 +100,11 @@ class OaiResumption extends Gateway implements DbServiceAwareInterface
      *
      * @return int          ID of new token
      *
-     * @deprecated Use \VuFind\Db\Service\OaiResumptionService::saveToken()
+     * @deprecated Use \VuFind\Db\Service\OaiResumptionService::createAndPersistToken()
      */
     public function saveToken($params, $expire)
     {
         return $this->getDbService(\VuFind\Db\Service\OaiResumptionServiceInterface::class)
-            ->saveToken($params, $expire);
+            ->createAndPersistToken($params, $expire)->getId();
     }
 }

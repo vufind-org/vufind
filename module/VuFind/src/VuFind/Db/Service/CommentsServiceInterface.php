@@ -45,6 +45,13 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface CommentsServiceInterface extends DbServiceInterface
 {
     /**
+     * Create a comments entity object.
+     *
+     * @return CommentsEntityInterface
+     */
+    public function createEntity(): CommentsEntityInterface;
+
+    /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
      * @param string                      $comment  The comment to save.

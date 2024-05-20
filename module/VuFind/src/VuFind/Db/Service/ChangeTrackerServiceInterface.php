@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service interface for OaiResumption.
+ * Database service interface for change tracker.
  *
  * PHP version 8
  *
@@ -22,60 +22,41 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\OaiResumptionEntityInterface;
+use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 
 /**
- * Database service interface for OaiResumption.
+ * Database service interface for change tracker.
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface OaiResumptionServiceInterface
+interface ChangeTrackerServiceInterface extends DbServiceInterface
 {
     /**
-     * Remove all expired tokens from the database.
+     * Update the change_tracker table to reflect that a record has been indexed.
+     * We need to know the date of the last change to the record (independent of
+     * its addition to the index) in order to tell the difference between a
+     * reindex of a previously-encountered record and a genuine change.
      *
-     * @return void
+     * The method returns the updated/created row when complete.
+     *
+     * @param string $core   The Solr core holding the record.
+     * @param string $id     The ID of the record being indexed.
+     * @param int    $change The timestamp of the last record change.
+     *
+     * @return ChangeTrackerEntityInterface
      */
-    public function removeExpired(): void;
-
-    /**
-     * Retrieve a row from the database based on primary key; return null if it
-     * is not found.
-     *
-     * @param string $token The resumption token to retrieve.
-     *
-     * @return ?OaiResumptionEntityInterface
-     */
-    public function findToken(string $token): ?OaiResumptionEntityInterface;
-
-    /**
-     * Create and persist a new resumption token.
-     *
-     * @param array $params Parameters associated with the token.
-     * @param int   $expire Expiration time for token (Unix timestamp).
-     *
-     * @return OaiResumptionEntityInterface
-     * @throws \Exception
-     */
-    public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface;
-
-    /**
-     * Create a OaiResumption entity object.
-     *
-     * @return OaiResumptionEntityInterface
-     */
-    public function createEntity(): OaiResumptionEntityInterface;
+    public function index(string $core, string $id, int $change): ChangeTrackerEntityInterface;
 }
