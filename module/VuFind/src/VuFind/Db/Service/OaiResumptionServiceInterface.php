@@ -62,14 +62,14 @@ interface OaiResumptionServiceInterface
     public function findToken(string $token): ?OaiResumptionEntityInterface;
 
     /**
-     * Create a new resumption token
+     * Create and persist a new resumption token
      *
      * @param array $params Parameters associated with the token.
      * @param int   $expire Expiration time for token (Unix timestamp).
      *
      * @return int          ID of new token
      */
-    public function saveToken(array $params, int $expire): int;
+    public function createAndPersistToken(array $params, int $expire): int;
 
     /**
      * Create a OaiResumption entity object.

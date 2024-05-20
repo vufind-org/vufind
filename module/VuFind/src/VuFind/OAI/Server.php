@@ -1323,7 +1323,7 @@ class Server
 
         // Save everything to the database:
         $expire = time() + 24 * 60 * 60;
-        $token = $this->resumptionService->saveToken($params, $expire);
+        $token = $this->resumptionService->createAndPersistToken($params, $expire);
 
         // Add details to the xml:
         $token = $xml->addChild('resumptionToken', $token);
