@@ -337,7 +337,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
                 $series = bin2hex(random_bytes(32));
                 $this->debug("Creating login token $token series $series for user {$userId}");
             }
-            $this->loginTokenService->saveToken(
+            $this->loginTokenService->createAndSaveToken(
                 $user,
                 $token,
                 $series,

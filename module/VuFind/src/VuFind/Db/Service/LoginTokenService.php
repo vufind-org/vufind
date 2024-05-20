@@ -61,7 +61,7 @@ class LoginTokenService extends AbstractDbService implements LoginTokenServiceIn
     }
 
     /**
-     * Save a token.
+     * Create and save a token.
      *
      * @param UserEntityInterface $user      User identifier
      * @param string              $token     Login token
@@ -73,7 +73,7 @@ class LoginTokenService extends AbstractDbService implements LoginTokenServiceIn
      *
      * @return LoginTokenEntityInterface
      */
-    public function saveToken(
+    public function createAndSaveToken(
         UserEntityInterface $user,
         string $token,
         string $series,
