@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Comments;
 use VuFind\Db\Entity\CommentsEntityInterface;
+use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -81,20 +82,11 @@ class CommentsService extends AbstractDbService implements
         int|UserEntityInterface $user,
         int|ResourceEntityInterface $resource
     ): ?int {
-        // We need $userVal to be a User object; if it's an integer or a different implementation
-        // of UserEntityInterface, do conversion below:
-        $userVal = $user instanceof User
-            ? $user
-            : $this->getDbService(UserService::class)->getUserById(is_int($user) ? $user : $user->getId());
-        $resourceVal = is_int($resource)
-            ? $this->getDbService(ResourceService::class)->getResourceById($resource)
-            : $resource;
-        $now = new \DateTime();
         $data = $this->createEntity()
-            ->setUser($userVal)
+            ->setUser($this->getDoctrineReference(User::class, $user))
             ->setComment($comment)
-            ->setCreated($now)
-            ->setResource($resourceVal);
+            ->setCreated(new \DateTime())
+            ->setResource($this->getDoctrineReference(Resource::class, $resource));
 
         try {
             $this->persistEntity($data);
@@ -205,7 +197,7 @@ class CommentsService extends AbstractDbService implements
     public function getCommentById(int $id): ?CommentsEntityInterface
     {
         return $this->entityManager->find(
-            $this->getEntityClass(\VuFind\Db\Entity\Comments::class),
+            $this->getEntityClass(Comments::class),
             $id
         );
     }
