@@ -1,0 +1,9 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Preview') . ': ' . $this->driver->getBreadcrumb());
+
+    // load the embedded preview javascript file
+    $this->headScript()->appendFile('https://www.google.com/books/jsapi.js');
+    $this->headScript()->appendFile('embedGBS.js');
+?>
+<div id="gbsViewer" style="height: 600px;"></div>

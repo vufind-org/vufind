@@ -1,0 +1,13 @@
+<p><?=$this->transEsc('choose_login_method')?></p>
+<div id="authcontainer">
+<?php $methods = $this->auth()->getManager()->getSelectableAuthOptions(); ?>
+<?php $count = count($methods); ?>
+<?php foreach ($methods as $loop => $method):?>
+  <div class="authmethod<?=$loop?> span<?=floor(12 / $count) ?>">
+    <?php $this->auth()->getManager()->setAuthMethod($method) ?>
+    <?=$this->auth()->getLoginDesc() ?>
+    <?=$this->auth()->getLogin() ?>
+  </div>
+<?php endforeach ?>
+</div>
+<?php $this->auth()->getManager()->setAuthMethod('ChoiceAuth') ?>

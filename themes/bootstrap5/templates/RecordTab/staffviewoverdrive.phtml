@@ -1,0 +1,28 @@
+<?php
+  if ($this->driver->getIsMarc()) {
+    echo $this->render('RecordTab/staffviewmarc.phtml');
+    return;
+  }
+
+  // Set page title.
+  $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+
+  // Note that heading below is not translated because it's a proper noun.
+?>
+<h2>OverDrive</h2>
+<table class="staff-view table table-striped">
+  <?php
+    $rawData = json_decode($this->driver->getRawData()['fullrecord'] ?? '[]', true);
+    ksort($rawData);
+  ?>
+  <?php foreach ($rawData as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td><?=$this->printArrayHtml($values)?></td>
+    </tr>
+  <?php endforeach; ?>
+</table>
+<?php if ($this->config()->alwaysDisplayIndexRecordInStaffView()): ?>
+    <h2><?=$this->transEsc('Record in the Search Index')?></h2>
+    <?=$this->render('RecordTab/staffviewarray.phtml')?>
+<?php endif; ?>
