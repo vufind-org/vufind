@@ -156,8 +156,6 @@
     border: 1px solid $btn-default-border;
     // Use bootstrap mixin to make tags look like buttons
     @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $border-radius-base);
-    padding: var(--#{$prefix}btn-padding-y) var(--#{$prefix}btn-padding-x);
-    @include border-radius(var(--#{$prefix}btn-border-radius));
     &.selected {
       background-color: $btn-primary-bg;
       border-color: $btn-primary-border;

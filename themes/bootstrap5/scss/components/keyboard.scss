@@ -1,6 +1,5 @@
 .keyboard-selection {
   display: inline-block;
-  margin-top: 2px;
 
   button.dropdown-toggle {
     color: $input-color;
@@ -31,9 +30,6 @@
 
   #keyboard-selection-button {
     padding: 0 2px 0 4px;
-    border: 0;
-    // Bootstrap forces display to block when dropdown is open, so do it right away:
-    display: block;
     .icon {
       margin: 0;
     }

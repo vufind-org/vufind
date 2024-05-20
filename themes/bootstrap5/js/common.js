@@ -686,51 +686,17 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
-    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
-      e.preventDefault();
-      $('body.vufind-offcanvas').toggleClass('active');
-    });
-  }
-}
+  const sidebar = document.querySelector('.sidebar');
+  const body = document.body;
 
-/**
- * Handle arrow keys to jump to next record
- */
-function keyboardShortcuts() {
-  var $searchform = $('#searchForm_lookfor');
-  if ($('.pager').length > 0) {
-    $(window).on("keydown", function shortcutKeyDown(e) {
-      if (!$searchform.is(':focus')) {
-        var $target = null;
-        switch (e.keyCode) {
-        case 37: // left arrow key
-          $target = $('.pager').find('a.previous');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
-          }
-          break;
-        case 38: // up arrow key
-          if (e.ctrlKey) {
-            $target = $('.pager').find('a.backtosearch');
-            if ($target.length > 0) {
-              $target[0].click();
-              return;
-            }
-          }
-          break;
-        case 39: //right arrow key
-          $target = $('.pager').find('a.next');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
-          }
-          break;
-        case 40: // down arrow key
-          break;
-        }
-      }
+  if (sidebar && body.classList.contains("vufind-offcanvas")) {
+    const offcanvasToggle = document.querySelectorAll('[data-toggle="vufind-offcanvas"]');
+    
+    offcanvasToggle.forEach((element) => {
+      element.addEventListener("click", function offcanvasClick(e) {
+        e.preventDefault();
+        body.classList.toggle('active');
+      });
     });
   }
 }
@@ -781,8 +747,6 @@ document.addEventListener('DOMContentLoaded', () => {
   VuFind.init();
   // Off canvas
   setupOffcanvas();
-  // Keyboard shortcuts in detail view
-  keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
