@@ -11,27 +11,54 @@ VuFind.register('bs3-compat', function cookie() {
   }
 
   function initNav() {
-    document.querySelectorAll('.nav li').forEach((el) => {
-      const aEl = el.querySelector(':scope > a');
-      if (el.classList.contains('dropdown__item')) {
-        if (aEl && !aEl.classList.contains('btn')) {
-          aEl.classList.add('dropdown-item');
-          if (el.classList.contains('active')) {
-            aEl.classList.add('active');
-          }
-        }
-      } else if (aEl) {
-        if (!aEl.classList.contains('btn')) {
-          aEl.classList.add('nav-link');
-        }
-        if (el.classList.contains('active')) {
-          aEl.classList.add('active');
-          if (null === el.closest('.searchForm')) {
-            el.classList.remove('active');
-          }
-        }
+    document.querySelectorAll('.nav').forEach((navEl) => {
+      // tablist role for tabs:
+      if (navEl.classList.contains('nav-tabs')) {
+        navEl.setAttribute('role', 'tablist');
       }
+      navEl.querySelectorAll('li').forEach((liEl) => {
+        const aEl = liEl.querySelector(':scope > a');
+        if (liEl.classList.contains('dropdown__item')) {
+          if (aEl && !aEl.classList.contains('btn')) {
+            aEl.classList.add('dropdown-item');
+            if (liEl.classList.contains('active')) {
+              aEl.classList.add('active');
+            }
+          }
+        } else if (aEl) {
+          if (!aEl.classList.contains('btn')) {
+            aEl.classList.add('nav-link');
+          }
+          if (liEl.classList.contains('active')) {
+            aEl.classList.add('active');
+            if (null === liEl.closest('.searchForm')) {
+              liEl.classList.remove('active');
+            }
+          }
+        }
+        // Move tab role from li to a:
+        if (aEl && liEl.parentElement.classList.contains('nav-tabs')) {
+          liEl.setAttribute('role', 'presentation');
+          liEl.classList.add('nav-item');
+          aEl.classList.add('nav-link');
+          aEl.setAttribute('role', 'tab');
+          if (aEl.classList.contains('active')) {
+            aEl.setAttribute('aria-selected', 'true');
+          }
+        }
+      });
     });
+
+    // Reverse effects of record.js:
+    setTimeout(
+      () => {
+        $('.record-tabs .nav-tabs a').off('shown.bs.tab');
+        document.querySelectorAll('.record-tabs .nav-tabs li').forEach((liEl) => {
+          liEl.removeAttribute('aria-selected');
+        });
+      },
+      0
+    );
   }
 
   function initBreadcrumbs() {
@@ -92,8 +119,8 @@ VuFind.register('bs3-compat', function cookie() {
   }
 
   function init() {
-    initNav();
     initNavbar();
+    initNav();
     initFormElements();
     initBreadcrumbs();
     initCollapse();
