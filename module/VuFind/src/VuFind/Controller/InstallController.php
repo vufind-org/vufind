@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -773,7 +774,7 @@ class InstallController extends AbstractBase
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
         $userRows = $this->getTable('user')->getInsecureRows();
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
@@ -827,13 +828,14 @@ class InstallController extends AbstractBase
             $msg = count($userRows) . ' user row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $cardRows = $cardService->getInsecureRows();
         $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
         if (count($cardRows) > 0) {
             foreach ($cardRows as $row) {
-                $row->cat_pass_enc = $ilsAuthenticator->encrypt($row->cat_password);
-                $row->cat_password = null;
-                $row->save();
+                $row->setCatPassEnc($ilsAuthenticator->encrypt($row->cat_password));
+                $row->setRawCatPassword(null);
+                $cardService->persistEntity($row);
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
