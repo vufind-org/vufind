@@ -162,7 +162,7 @@ class UserCardService extends AbstractDbService implements
             throw new \Exception('Library card not found');
         }
         if (!$row instanceof \VuFind\Db\Row\UserCard) {
-            $row = $this->getDbTable('UserCard')->select(['id' => $userCard->getId()])->current();
+            $row = $this->getDbTable('UserCard')->select(['id' => $cardId])->current();
         }
         $row->delete();
 
