@@ -56,6 +56,16 @@ class CommentsService extends AbstractDbService implements
     use DbTableAwareTrait;
 
     /**
+     * Create a comments entity object.
+     *
+     * @return CommentsEntityInterface
+     */
+    public function createEntity(): CommentsEntityInterface
+    {
+        return $this->getDbTable('comments')->createRow();
+    }
+
+    /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
      * @param string                      $comment  The comment to save.
