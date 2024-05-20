@@ -113,20 +113,20 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     protected $deleted;
 
     /**
-     * Id setter
+     * Setter for identifier.
      *
      * @param string $id Id
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function setId(string $id): ChangeTracker
+    public function setId(string $id): ChangeTrackerEntityInterface
     {
         $this->id = $id;
         return $this;
     }
 
     /**
-     * Id getter
+     * Getter for identifier.
      *
      * @return string
      */
@@ -136,24 +136,24 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     }
 
     /**
-     * Core setter
+     * Setter for index name (formerly core).
      *
-     * @param string $core Core
+     * @param string $name Index name
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function setCore(string $core): ChangeTracker
+    public function setIndexName(string $name): ChangeTrackerEntityInterface
     {
-        $this->core = $core;
+        $this->core = $name;
         return $this;
     }
 
     /**
-     * Core getter
+     * Getter for index name (formerly core).
      *
      * @return string
      */
-    public function getCore(): string
+    public function getIndexName(): string
     {
         return $this->core;
     }
@@ -163,16 +163,16 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Time first added to index.
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function setFirstIndexed(?DateTime $dateTime): ChangeTracker
+    public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface
     {
         $this->firstIndexed = $dateTime;
         return $this;
     }
 
     /**
-     * FirstIndexed Getter.
+     * FirstIndexed getter.
      *
      * @return ?DateTime
      */
@@ -186,16 +186,16 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Last time changed in index.
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function setLastIndexed(?DateTime $dateTime): ChangeTracker
+    public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface
     {
         $this->lastIndexed = $dateTime;
         return $this;
     }
 
     /**
-     * LastIndexed Getter.
+     * LastIndexed getter.
      *
      * @return ?DateTime
      */
@@ -209,16 +209,16 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Last time original record was edited
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function setLastRecordChange(?DateTime $dateTime): ChangeTracker
+    public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface
     {
         $this->lastRecordChange = $dateTime;
         return $this;
     }
 
     /**
-     * LastRecordChange Getter.
+     * LastRecordChange getter.
      *
      * @return ?DateTime
      */
@@ -232,16 +232,16 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      *
      * @param ?DateTime $dateTime Time record was removed from index
      *
-     * @return ChangeTracker
+     * @return ChangeTrackerEntityInterface
      */
-    public function setDeleted(?DateTime $dateTime): ChangeTracker
+    public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface
     {
         $this->deleted = $dateTime;
         return $this;
     }
 
     /**
-     * Deleted Getter.
+     * Deleted getter.
      *
      * @return ?DateTime
      */

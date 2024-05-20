@@ -50,6 +50,13 @@ use function strlen;
 class VuFind
 {
     /**
+     * ISO8601 date format string
+     *
+     * @var string
+     */
+    protected const ISO8601_FORMAT = 'Y-m-d\TH:i:s\Z';
+
+    /**
      * Service locator
      *
      * @var ServiceLocatorInterface
@@ -71,12 +78,12 @@ class VuFind
     /**
      * Get the change tracker service object.
      *
-     * @return \VuFind\Db\Service\ChangeTrackerService
+     * @return \VuFind\Db\Service\ChangeTrackerServiceInterface
      */
     public static function getChangeTracker()
     {
         return static::$serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
-            ->get(\VuFind\Db\Service\ChangeTrackerService::class);
+            ->get(\VuFind\Db\Service\ChangeTrackerServiceInterface::class);
     }
 
     /**
@@ -105,7 +112,7 @@ class VuFind
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
-        return $row->getFirstIndexed()->format('Y-m-d\TH:i:s\Z');
+        return $row->getFirstIndexed()->format(self::ISO8601_FORMAT);
     }
 
     /**
@@ -121,8 +128,7 @@ class VuFind
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
-        $iso8601 = 'Y-m-d\TH:i:s\Z';
-        return $row->getLastIndexed()->format('Y-m-d\TH:i:s\Z');
+        return $row->getLastIndexed()->format(self::ISO8601_FORMAT);
     }
 
     /**

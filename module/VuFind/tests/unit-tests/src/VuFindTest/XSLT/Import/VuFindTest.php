@@ -68,7 +68,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     {
         VuFind::setServiceLocator($this->getMockContainer());
         $this->assertTrue(
-            VuFind::getChangeTracker() instanceof \VuFind\Db\Service\ChangeTrackerService
+            VuFind::getChangeTracker() instanceof \VuFind\Db\Service\ChangeTrackerServiceInterface
         );
     }
 

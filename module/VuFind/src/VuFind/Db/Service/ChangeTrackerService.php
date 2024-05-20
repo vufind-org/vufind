@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -32,6 +33,7 @@ namespace VuFind\Db\Service;
 use DateTime;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ChangeTracker;
+use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -138,7 +140,7 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
         if (empty($row)) {
             $now = new \DateTime('now', new \DateTimeZone('UTC'));
             $row = $this->createEntity()
-                ->setCore($core)
+                ->setIndexName($core)
                 ->setId($id)
                 ->setFirstIndexed($now)
                 ->setLastIndexed($now);
@@ -195,9 +197,9 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
      * @param string $id     The ID of the record being indexed.
      * @param int    $change The timestamp of the last record change.
      *
-     * @return ChangeTracker|false
+     * @return ChangeTrackerEntityInterface
      */
-    public function index(string $core, string $id, int $change): ChangeTracker|false
+    public function index(string $core, string $id, int $change): ChangeTrackerEntityInterface
     {
         // Get a row matching the specified details:
         $row = $this->retrieveOrCreate($core, $id);
@@ -236,12 +238,7 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
 
         // Save the row if changes were made:
         if ($saveNeeded) {
-            try {
-                $this->persistEntity($row);
-            } catch (\Exception $e) {
-                $this->logError('Could not update the change tracker table: ' . $e->getMessage());
-                return false;
-            }
+            $this->persistEntity($row);
         }
 
         // Send back the row:
