@@ -230,11 +230,10 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      * sessions associated with the login token.
      *
      * @param string $series Series to identify the token
-     * @param int    $userId User identifier
      *
      * @return void
      */
-    public function deleteTokenSeries(string $series, int $userId)
+    public function deleteTokenSeries(string $series)
     {
         $cookie = $this->getLoginTokenCookie();
         if (!empty($cookie) && $cookie['series'] === $series) {
