@@ -103,12 +103,12 @@
         <tbody>
           <?php foreach ($tokens as $i => $token): ?>
             <tr>
-              <td data-label="<?=$this->transEsc('saved_login_platform_and_browser')?>" id="login_platform_<?=$i?>"><?=$this->transEsc($token->platform)?> / <?=$this->transEsc($token->browser)?></td>
-              <td data-label="<?=$this->transEsc('Last Login')?>" id="login_date_<?=$i?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $token->last_login)?></td>
+              <td data-label="<?=$this->transEsc('saved_login_platform_and_browser')?>" id="login_platform_<?=$i?>"><?=$this->transEsc($token->getPlatform())?> / <?=$this->transEsc($token->getBrowser())?></td>
+              <td data-label="<?=$this->transEsc('Last Login')?>" id="login_date_<?=$i?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $token->getLastLogin()->getTimestamp())?></td>
               <td data-label="<?=$this->transEsc('saved_login_actions')?>">
                 <form id="delete-login-token" method="post" action="<?=$this->url('myresearch-deletelogintoken')?>">
                   <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
-                  <input type="hidden" name="series" value="<?=$this->escapeHtmlAttr($token->series)?>">
+                  <input type="hidden" name="series" value="<?=$this->escapeHtmlAttr($token->getSeries())?>">
                   <input id="delete-login-token-submit" class="btn btn-danger" type="submit" name="submitButton" value="<?=$this->transEscAttr('Forget Login'); ?>" aria-labelledby="delete-login-token-submit login_platform_<?=$i?> login_date_<?=$i?>">
                 </form>
               </td>
