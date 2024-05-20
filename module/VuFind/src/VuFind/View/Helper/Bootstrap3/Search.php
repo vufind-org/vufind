@@ -38,7 +38,7 @@ namespace VuFind\View\Helper\Bootstrap3;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Search extends \VuFind\View\Helper\AbstractSearch
+class Search extends \VuFind\View\Helper\Bootstrap5\Search
 {
     /**
      * Get the CSS classes for the container holding the suggestions.

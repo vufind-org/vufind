@@ -38,12 +38,6 @@ namespace VuFind\View\Helper\Bootstrap3;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BulkAction extends \VuFind\View\Helper\Root\BulkAction
+class BulkAction extends \VuFind\View\Helper\Bootstrap5\BulkAction
 {
-    /**
-     * CSS class for button
-     *
-     * @var ?string
-     */
-    protected $buttonClass = 'toolbar-btn';
 }
