@@ -273,8 +273,8 @@ VuFind.register('lightbox', function Lightbox() {
 
     // defaults in `init` below
 
-    let doContrain = true;
-    const cancelConstrain = () => doContrain = false;
+    let doConstrain = true;
+    const cancelConstrain = () => doConstrain = false;
 
     VuFind.emit(
       "lightbox.link",
@@ -285,7 +285,7 @@ VuFind.register('lightbox', function Lightbox() {
         originalUrl: _originalUrl,
       }
     );
-    if (!doContrain) {
+    if (!doConstrain) {
       return true;
     }
 
