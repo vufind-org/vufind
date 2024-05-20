@@ -26,6 +26,7 @@ node_modules
 package-lock.json
 public/swagger-ui
 tests/phpcs.cache.json
+themes/bootstrap5/scss/vendor/bootstrap
 local/DirLocations.ini
 local/config/vufind/*.ini
 local/config/vufind/*.json
