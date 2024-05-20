@@ -116,6 +116,7 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+    <phingcall target="check-bootstrap5"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
@@ -123,6 +124,7 @@
     <!-- Call standard tasks -->
     <phingcall target="qa-js-and-less"/>
     <phingcall target="qa-php"/>
+    <phingcall target="check-bootstrap5"/>
   </target>
 
   <!-- Quality Assurance Javascript Tasks -->
