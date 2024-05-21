@@ -69,16 +69,16 @@ interface UserCardServiceInterface extends DbServiceInterface
      * @param int|UserEntityInterface $user User object or identifier
      * @param ?int                    $id   Card ID to fetch (or null to create a new card)
      *
-     * @return UserCardEntityInterface Card data if found, null otherwise
+     * @return UserCardEntityInterface Card data if found; throws exception otherwise
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function getOrCreateLibraryCard($user, $id = null): ?UserCardEntityInterface;
+    public function getOrCreateLibraryCard(int|UserEntityInterface $user, ?int $id = null): UserCardEntityInterface;
 
     /**
      * Delete library card
      *
-     * @param UserEntityInterface     $user     User owning card to delete
-     * @param UserCardEntityInterface $userCard UserCard id or object to be deleted
+     * @param UserEntityInterface         $user     User owning card to delete
+     * @param int|UserCardEntityInterface $userCard UserCard id or object to be deleted
      *
      * @return bool
      * @throws \Exception
@@ -88,19 +88,19 @@ interface UserCardServiceInterface extends DbServiceInterface
     /**
      * Save library card with the given information
      *
-     * @param int|UserEntityInterface $user     User object or identifier
-     * @param ?int                    $id       Card ID (null = create new)
-     * @param string                  $cardName Card name
-     * @param string                  $username Username
-     * @param string                  $password Password
-     * @param string                  $homeLib  Home Library
+     * @param int|UserEntityInterface          $user     User object or identifier
+     * @param int|UserCardEntityInterface|null $card     Card ID (null = create new)
+     * @param string                           $cardName Card name
+     * @param string                           $username Username
+     * @param string                           $password Password
+     * @param string                           $homeLib  Home Library
      *
      * @return UserCardEntityInterface
      * @throws \VuFind\Exception\LibraryCard
      */
     public function saveLibraryCard(
         int|UserEntityInterface $user,
-        ?int $id,
+        int|UserCardEntityInterface|null $card,
         string $cardName,
         string $username,
         string $password,
