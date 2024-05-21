@@ -87,7 +87,7 @@ class Loader
      *
      * @param string $isbn ISBN to use for lookup
      *
-     * @return array
+     * @return array|string
      */
     public function loadByIsbn($isbn)
     {
@@ -95,7 +95,6 @@ class Loader
         if (!($isbnObj = $this->getIsbnObject($isbn))) {
             return $results;
         }
-
         // Fetch from provider
         $providers = explode(',', $this->providers);
         foreach ($providers as $provider) {
