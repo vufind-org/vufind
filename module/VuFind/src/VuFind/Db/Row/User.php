@@ -33,6 +33,7 @@ use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
@@ -90,9 +91,13 @@ class User extends RowGateway implements
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
+     * @param AccountCapabilities         $capabilities     Account capabilities configuration (null for defaults)
      */
-    public function __construct($adapter, protected ILSAuthenticator $ilsAuthenticator)
-    {
+    public function __construct(
+        $adapter,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected AccountCapabilities $capabilities
+    ) {
         parent::__construct('id', 'user', $adapter);
     }
 
@@ -460,11 +465,12 @@ class User extends RowGateway implements
      * Whether library cards are enabled
      *
      * @return bool
+     *
+     * @deprecated use \VuFind\Config\AccountCapabilities::libraryCardsEnabled()
      */
     public function libraryCardsEnabled()
     {
-        return isset($this->config->Catalog->library_cards)
-            && $this->config->Catalog->library_cards;
+        return $this->capabilities->libraryCardsEnabled();
     }
 
     /**
@@ -475,7 +481,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCards()
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             return new \Laminas\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
@@ -492,7 +498,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCard($id = null)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -527,7 +533,7 @@ class User extends RowGateway implements
      */
     public function deleteLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -563,7 +569,7 @@ class User extends RowGateway implements
      */
     public function activateLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -597,7 +603,7 @@ class User extends RowGateway implements
         $password,
         $homeLib = ''
     ) {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -658,7 +664,7 @@ class User extends RowGateway implements
      */
     protected function updateLibraryCardEntry()
     {
-        if (!$this->libraryCardsEnabled() || empty($this->cat_username)) {
+        if (!$this->capabilities->libraryCardsEnabled() || empty($this->cat_username)) {
             return;
         }
 
@@ -1124,7 +1130,7 @@ class User extends RowGateway implements
     /**
      * Created setter
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -1137,9 +1143,9 @@ class User extends RowGateway implements
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
     }

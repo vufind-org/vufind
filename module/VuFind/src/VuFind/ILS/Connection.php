@@ -1181,7 +1181,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function getStatusParser()
     {
         return function ($item) {
-            if (!($item['availability'] instanceof AvailabilityStatus)) {
+            if (!(($item['availability'] ?? null) instanceof AvailabilityStatus)) {
                 $availability = $item['availability'] ?? false;
                 if ($item['use_unknown_message'] ?? false) {
                     $availability = Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
