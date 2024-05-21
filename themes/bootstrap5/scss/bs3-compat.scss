@@ -262,10 +262,16 @@ textarea.form-control {
 }
 
 @media (min-width: map-get($grid-breakpoints, "sm")) {
-  .form-inline .form-control {
-    display: inline-block;
-    width: auto;
-    vertical-align: middle;
+  .form-inline {
+    .control-label {
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+    .form-control, .form-group {
+      display: inline-block;
+      width: auto;
+      vertical-align: middle;
+    }
   }
 }
 

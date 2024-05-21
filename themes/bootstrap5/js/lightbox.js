@@ -543,6 +543,8 @@ VuFind.register('lightbox', function Lightbox() {
         _bsModal.show();
         // Set keyboard focus
         setFocusToFirstNode();
+        // Trigger jQuery event for back-compatibility with facets.js:
+        $(_modal).trigger('show.bs.modal');
       } else if (cmd === 'hide') {
         _bsModal.hide();
       } else {
