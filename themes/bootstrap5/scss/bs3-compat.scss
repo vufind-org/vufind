@@ -251,6 +251,12 @@ button.list-group-item {
   appearance: auto;
 }
 
+/* Hide browser's own X button in the search field (Safari, Chrome) */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
 textarea.form-control {
   height: auto;
 }
