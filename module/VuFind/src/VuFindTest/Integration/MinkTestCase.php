@@ -162,6 +162,15 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $pagePrevSelector = 'a.page-prev, .page-prev a';
 
     /**
+     * Selector for active record tab
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
+
+    /**
      * Get name of the current test
      *
      * @return string

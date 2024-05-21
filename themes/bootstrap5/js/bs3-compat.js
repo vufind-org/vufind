@@ -12,9 +12,25 @@ VuFind.register('bs3-compat', function cookie() {
 
   function initNav() {
     document.querySelectorAll('.nav').forEach((navEl) => {
-      // tablist role for tabs:
       if (navEl.classList.contains('nav-tabs')) {
+        // tablist role for tabs:
         navEl.setAttribute('role', 'tablist');
+
+        // Apply active class to tab li for back-compatibility:
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if ('attributes' !== mutation.type || mutation.attributeName !== 'class') {
+              return;
+            }
+            const target = mutation.target;
+            if (target.nodeName === 'A' && target.parentNode && target.classList.contains('active')) {
+              target.parentNode.classList.add('active');
+            } else {
+              target.parentNode.classList.remove('active');
+            }
+          });
+        });
+        observer.observe(navEl, { attributes: true, attributeFilter: ['class'], subtree: true });
       }
       navEl.querySelectorAll('li').forEach((liEl) => {
         const aEl = liEl.querySelector(':scope > a');
