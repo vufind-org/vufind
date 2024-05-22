@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'demo' => Demo::class,
+        'obalkyknih' => ObalkyKnih::class,
         'syndetics' => Syndetics::class,
         'syndeticsplus' => SyndeticsPlus::class,
     ];
@@ -58,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+        ObalkyKnih::class => \VuFind\Content\ObalkyKnihContentFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
         SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];
