@@ -3,8 +3,8 @@
   $id = $this->driver->getUniqueId();
   $source = $this->driver->getSourceIdentifier();
   if (isset($this->list) && is_object($this->list)) {
-    $list_id = $this->list->id;
-    $user_id = $this->list->user_id;
+    $list_id = $this->list->getId();
+    $user_id = $this->list->getUser()->getId();
   } else {
     $list_id = null;
     $user_id = $this->user ? $this->user->id : null;
@@ -129,7 +129,7 @@
               <strong><?=$this->transEsc('Saved in')?>:</strong>
               <?php $i = 0; ?>
               <?php foreach ($this->lists as $current): ?>
-                <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+                <a href="<?=$this->url('userList', ['id' => $current[0]->getId()])?>"><?=$this->escapeHtml($current[0]->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
               <?php endforeach; ?>
               <br>
           <?php endif; ?>
