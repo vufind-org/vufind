@@ -188,6 +188,8 @@ class UserCardService extends AbstractDbService implements
      * row when appropriate. Will throw an exception if a duplicate $username value
      * is provided; there should only be one card row per username.
      *
+     * Returns the row that was added or updated.
+     *
      * @param int|UserEntityInterface          $user     User object or identifier
      * @param int|UserCardEntityInterface|null $card     Card ID (null = create new)
      * @param string                           $cardName Card name
