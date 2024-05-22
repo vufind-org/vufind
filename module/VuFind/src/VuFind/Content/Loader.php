@@ -95,6 +95,7 @@ class Loader
         if (!($isbnObj = $this->getIsbnObject($isbn))) {
             return $results;
         }
+
         // Fetch from provider
         $providers = explode(',', $this->providers);
         foreach ($providers as $provider) {
