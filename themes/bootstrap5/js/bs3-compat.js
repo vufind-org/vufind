@@ -1,5 +1,5 @@
 /*global VuFind*/
-VuFind.register('bs3-compat', function cookie() {
+VuFind.register('bootstrap3CompatibilityLayer', function cookie() {
 
   function initNavbar() {
     document.querySelectorAll('.navbar').forEach((el) => {
