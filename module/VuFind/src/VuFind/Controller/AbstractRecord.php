@@ -511,7 +511,7 @@ class AbstractRecord extends AbstractBase
         foreach ($user->getLists() as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
-            if (in_array($list->id, $listIds)) {
+            if (in_array($list->getId(), $listIds)) {
                 $containingLists[] = $list;
             } else {
                 $nonContainingLists[] = $list;

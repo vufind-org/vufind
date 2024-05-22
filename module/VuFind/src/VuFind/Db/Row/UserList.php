@@ -321,11 +321,11 @@ class UserList extends RowGateway implements
      */
     public function getId(): ?int
     {
-        return $this->id ?? null;
+        return $this->id;
     }
 
     /**
-     * Set Title.
+     * Set title.
      *
      * @param string $title Title
      *
@@ -338,17 +338,17 @@ class UserList extends RowGateway implements
     }
 
     /**
-     * Get Title.
+     * Get title.
      *
      * @return ?string
      */
     public function getTitle(): ?string
     {
-        return $this->title ?? '';
+        return $this->title;
     }
 
     /**
-     * Set Description.
+     * Set description.
      *
      * @param string $description Description
      *
@@ -361,17 +361,17 @@ class UserList extends RowGateway implements
     }
 
     /**
-     * Get Description.
+     * Get description.
      *
      * @return ?string
      */
     public function getDescription(): ?string
     {
-        return $this->description ?? '';
+        return $this->description;
     }
 
     /**
-     * Set Created date.
+     * Set created date.
      *
      * @param DateTime $dateTime Created date
      *
@@ -394,9 +394,9 @@ class UserList extends RowGateway implements
     }
 
     /**
-     * Set the list public.
+     * Set whether the list is public.
      *
-     * @param bool $public Created date
+     * @param bool $public Is the list public?
      *
      * @return UserListEntityInterface
      */
@@ -409,7 +409,7 @@ class UserList extends RowGateway implements
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User owning token
+     * @param ?UserEntityInterface $user User owning the list.
      *
      * @return UserListEntityInterface
      */

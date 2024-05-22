@@ -50,7 +50,7 @@ interface UserListEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Set Title.
+     * Set title.
      *
      * @param string $title Title
      *
@@ -59,14 +59,14 @@ interface UserListEntityInterface extends EntityInterface
     public function setTitle(string $title): UserListEntityInterface;
 
     /**
-     * Get Title.
+     * Get title.
      *
      * @return ?string
      */
     public function getTitle(): ?string;
 
     /**
-     * Set Description.
+     * Set description.
      *
      * @param string $description Description
      *
@@ -75,14 +75,14 @@ interface UserListEntityInterface extends EntityInterface
     public function setDescription(string $description): UserListEntityInterface;
 
     /**
-     * Get Description.
+     * Get description.
      *
      * @return ?string
      */
     public function getDescription(): ?string;
 
     /**
-     * Set Created date.
+     * Set created date.
      *
      * @param DateTime $dateTime Created date
      *
@@ -98,16 +98,16 @@ interface UserListEntityInterface extends EntityInterface
     public function getCreated(): DateTime;
 
     /**
-     * Set the list public.
+     * Set whether the list is public.
      *
-     * @param bool $public Created date
+     * @param bool $public Is the list public?
      *
      * @return UserListEntityInterface
      */
     public function setPublic(bool $public): UserListEntityInterface;
 
     /**
-     * Check if the list is public
+     * Is this a public list?
      *
      * @return bool
      */
@@ -116,7 +116,7 @@ interface UserListEntityInterface extends EntityInterface
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User owning token
+     * @param ?UserEntityInterface $user User owning the list.
      *
      * @return UserListEntityInterface
      */
