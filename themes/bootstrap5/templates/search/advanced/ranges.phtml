@@ -1,0 +1,77 @@
+<?php if (isset($this->ranges) && !empty($this->ranges)): ?>
+  <?php $params = $this->searchParams($this->searchClassId); ?>
+  <?php foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
+    <?php $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+    <fieldset class="range" id="<?=$escField?>-range-container">
+      <legend><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
+      <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>">
+      <div class="date-fields">
+        <div class="date-from">
+          <label for="<?=$escField?>from" id="<?=$escField?>from-label"><?=$this->transEsc('date_from')?>:</label>
+          <input type="text" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0]) ? $this->escapeHtmlAttr($current['values'][0]) : ''?>" class="form-control" <?=$extraInputAttribs?>>
+        </div>
+        <div class="date-to">
+          <label for="<?=$escField?>to" id="<?=$escField?>to-label"><?=$this->transEsc('date_to')?>:</label>
+          <input type="text" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1]) ? $this->escapeHtmlAttr($current['values'][1]) : ''?>" class="form-control" <?=$extraInputAttribs?>>
+        </div>
+      </div>
+      <?php if ($current['type'] == 'date'): ?>
+        <div class="slider-container">
+          <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider"  aria-label="<?=$this->transEsc('slider_label', ['%%title%%' => $this->translate($params->getFacetLabel($current['field']))])?>">
+        </div>
+        <?php
+          $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+          $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+          $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
+          $future = date('Y', time() + 31536000);
+          $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
+          $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
+          $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
+          $min = intval($min);
+          $max = intval($max);
+          $low = intval($low);
+          $high = intval($high);
+          $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
+          $script = <<<JS
+              $(document).ready(function() {
+                var fillTexts = function() {
+                  var v = {$escField}dateSlider.getValue();
+                  $('#{$escField}from').val(v[0]);
+                  $('#{$escField}to').val(v[1]);
+                };
+                var {$escField}dateSlider = $('#{$escField}dateSlider')
+                  .slider({
+                     'min':{$min},
+                     'max':{$max},
+                     'handle':"square",
+                     'tooltip':"hide",
+                     'value':[{$low},{$high}],
+                     'id': '{$escField}date_slider_control'
+                  })
+                  .on('change', fillTexts)
+                  .data('slider');
+
+                $("#{$escField}-range-container .slider-handle.min-slider-handle").attr("aria-labelledby", "{$escField}from-label");
+                $("#{$escField}-range-container .slider-handle.max-slider-handle").attr("aria-labelledby", "{$escField}to-label");
+                {$init}
+              });
+
+              $('#{$escField}from, #{$escField}to').change(function () {
+                var fromValue = Number($('#{$escField}from').val());
+                var toValue = Number($('#{$escField}to').val());
+                $('#{$escField}dateSlider').slider(
+                  'setValue',
+                  [
+                    isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+                    isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+                  ],
+                  true
+                );
+              });
+              JS;
+        ?>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+      <?php endif; ?>
+    </fieldset>
+  <?php endforeach; ?>
+<?php endif; ?>
