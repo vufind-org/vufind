@@ -1,0 +1,53 @@
+<?php $this->headScript()->appendFile('collection_record.js'); ?>
+<div class="media">
+  <?php
+    $QRCode = $this->record($this->driver)->getQRCode('core');
+    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $cover = $coverDetails['html'];
+    $preview = $this->record($this->driver)->getPreviews();
+  ?>
+  <?php if ($QRCode || $cover || $preview): ?>
+    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+      <?php /* Display thumbnail if appropriate: */ ?>
+      <?php if ($cover): ?>
+        <?=$cover?>
+      <?php endif; ?>
+
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if ($QRCode): ?>
+        <span class="hidden-xs">
+          <br><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>">
+        </span>
+      <?php endif; ?>
+
+      <?php if ($preview): ?><?=$preview?><?php endif; ?>
+    </div>
+  <?php endif; ?>
+  <div class="media-body">
+    <h1><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+
+    <?php $summary = $this->driver->getSummary(); ?>
+    <?php if ($summary = $summary[0] ?? false): ?>
+      <p><?=$this->escapeHtml($summary)?></p>
+    <?php endif; ?>
+
+    <?php /* Display the lists that this record is saved to */ ?>
+    <div class="savedLists" id="savedLists">
+      <strong><?=$this->transEsc('Saved in')?>:</strong>
+    </div>
+
+    <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
+    <?php /* Display Main Details */ ?>
+    <?=
+      $this->record($this->driver)->renderTemplate(
+          'core-fields.phtml',
+          [
+            'driver' => $this->driver,
+            'defaults' => 'collection-info',
+            'tableId' => 'collectionInfo',
+          ]
+      );
+    ?>
+    <?php /* End Main Details */ ?>
+  </div>
+</div>

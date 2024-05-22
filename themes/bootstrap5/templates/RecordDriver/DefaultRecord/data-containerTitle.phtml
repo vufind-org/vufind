@@ -1,0 +1,10 @@
+<?php
+  $containerSource = $this->driver->getSourceIdentifier();
+  $containerID = $this->driver->getContainerRecordID();
+  $ref = $this->driver->getContainerReference();
+  $linkEsc = $containerID
+    ? $this->escapeHtmlAttr($this->recordLinker()->getUrl("$containerSource|$containerID"))
+    : $this->record($this->driver)->getLink('journaltitle', $data);
+?>
+<a href="<?=$linkEsc?>"><?=$this->escapeHtml($data)?></a>
+<?=empty($ref) ? '' : $this->escapeHtml($ref)?>

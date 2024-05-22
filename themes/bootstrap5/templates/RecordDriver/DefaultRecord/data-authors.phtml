@@ -1,0 +1,42 @@
+<?php
+$formatProperty = function ($datafield, $name, $label) {
+    if (count($datafield) == 0) {
+        return '';
+    }
+    $that = $this;
+    $translate = function ($str) use ($that, $label) {
+        return $that->transEsc($label . $str);
+    };
+    return '<span class="author-property-' . $name . '">(' . implode(', ', array_unique(array_map($translate, $datafield))) . ')</span>';
+};
+$formattedAuthors = [];
+?>
+<?php if (!empty($data[$type])): ?>
+  <?php foreach ($data[$type] as $author => $dataFields): ?>
+    <?php ob_start(); ?>
+    <span class="author-data"<?=$this->schemaOrg()->getAttributes(['property' => $schemaLabel])?>>
+      <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+        <?=$this->escapeHtml(rtrim($author, ','))?>
+      </a>
+      <?php
+        // Display additional data using the appropriate translation prefix
+        // (for example, to render author roles correctly):
+        if (!empty($requiredDataFields)) {
+          foreach ($requiredDataFields as $field) {
+              $name = $field['name'];
+              $prefix = $field['prefix'] ?? '';
+              if (isset($dataFields[$name])) {
+                  echo $formatProperty($dataFields[$name], $name, $prefix);
+              }
+          }
+        }
+      ?>
+    </span>
+    <?php
+      // Strip whitespace before close tags to avoid spaces in front of commas:
+      $formattedAuthors[] = trim(preg_replace('/\s+<\//', '</', ob_get_contents()));
+      ob_end_clean();
+    ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?=implode(', ', $formattedAuthors)?>
