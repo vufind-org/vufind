@@ -1,0 +1,23 @@
+<?php
+  $max = $this->tab->getMaxResults();
+  $showMore = false;
+?>
+<?php foreach ($this->tab->getResults() as $i => $current): ?>
+  <?php
+    if ($max == $i) {
+      $showMore = true;
+      break;
+    }
+  ?>
+  <div>
+    <?=($i + 1)?>.
+    <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($current))?>">
+      <?=$this->record($current)->getTitleHtml()?>
+    </a>
+  </div>
+<?php endforeach; ?>
+<?php if ($showMore): ?>
+  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getChildRecordSearchUrl($this->driver))?>">
+    <?=$this->transEsc('see all')?>
+  </a>
+<?php endif; ?>

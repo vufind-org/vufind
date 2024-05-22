@@ -1,0 +1,64 @@
+<?php
+  $this->results = $results = $this->recommend->getResults();
+  $this->options = $options = $results->getOptions();
+  $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions();
+  $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
+  $rangeFacets = $this->recommend->getAllRangeFacets();
+  $facet = $this->facet;
+?>
+<?php if (isset($rangeFacets[$facet])): // special display for ranges ?>
+  <?=
+    $this->context($this)->renderInContext(
+        'Recommend/SideFacets/range-slider.phtml',
+        ['title' => $facet, 'cluster' => $cluster, 'facet' => $rangeFacets[$facet]]
+    );
+  ?>
+<?php else: ?>
+  <?php
+    // Set some variables so we can figure out which sub-template(s) to
+    // render. If we have a hierarchical facet, we will need some JavaScript support.
+    // If we also support non-JS browsers, we will also need to render the basic
+    // default template. If we do NOT support non-JS browsers, we should instead
+    // display an error message.
+    $isHierarchical = in_array($facet, $hierarchicalFacets);
+    $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
+  ?>
+  <?php if ($isHierarchical): // do we need hierarchical JS display? ?>
+    <?=
+      $this->context($this)->renderInContext(
+          'Recommend/SideFacets/hierarchical-facet.phtml',
+          [
+            'allowExclude' => $this->recommend->excludeAllowed($facet),
+            // Allow hierarchical facets to be untruncated with showMore setting < 1
+            'facets_before_more' => $this->recommend->getShowMoreSetting($facet, 0),
+            'title' => $facet,
+            'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? $hierarchicalFacetSortOptions['*'] ?? null,
+            'collapsedFacets' => $this->collapsedFacets,
+            'results' => $this->results,
+          ]
+      );
+    ?>
+    <noscript>
+    <?php if (!$noJsSupport): ?>
+      <span class="facet"><?=$this->transEsc('Please enable JavaScript.')?></span>
+    <?php endif; ?>
+  <?php endif; ?>
+  <?php if (!$isHierarchical || $noJsSupport): // do we need regular display? ?>
+    <?=
+      $this->context($this)->renderInContext(
+          'Recommend/SideFacets/cluster-list.phtml',
+          [
+              'options' => $options,
+              'title' => $facet,
+              'cluster' => $cluster,
+              'allowExclude' => $this->recommend->excludeAllowed($facet),
+              'facets_before_more' => $this->recommend->getShowMoreSetting($facet),
+              'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($facet),
+          ]
+      );
+    ?>
+  <?php endif; ?>
+  <?php if ($isHierarchical): // close tag opened in matching if above ?>
+    </noscript>
+  <?php endif; ?>
+<?php endif; ?>

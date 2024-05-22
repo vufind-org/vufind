@@ -1,0 +1,33 @@
+$img-path: "../../sandal/images/";
+
+$banner-height: 60px;
+$banner-height-sm: 40px;
+$search-tab-height: 2rem;
+
+$result-checkbox-width: 28px;
+$result-checkbox-height: 80px;
+$result-sm-icon-size: 1.5rem;
+
+$font-size-base: 1rem; // Assumes the browser default, typically `16px`
+
+$font-size-reduced: ($font-size-base - 0.1);  // ~14px from default 16px
+$font-size-min:     ($font-size-base - 0.38); // ~10px from default 16px
+$reduced-font-size: $font-size-reduced;       // Deprecated, for back-compatibility
+
+// Increase base line height to accommodate 16px font (affects at least Chrome on Windows):
+$line-height-base: 1.5;
+
+$pagination-border-width: 0;
+
+/* ------ Mixins ------ */
+@mixin full-width(){ // Break out of the container
+  margin-right: calc(50% - 50vw + .5rem); // .5rem seems to be the margin of error in Chrome
+  margin-left: calc(50% - 50vw + .5rem);
+  @media (min-width: 992px) {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+}
+@mixin background-image($file){
+  background-image: url("#{$img-path}#{$file}");
+}

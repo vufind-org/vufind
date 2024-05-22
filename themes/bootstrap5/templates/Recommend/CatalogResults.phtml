@@ -1,0 +1,37 @@
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+  $heading = $this->recommend->getHeading();
+?>
+<?php if (!empty($results)): ?>
+  <h2><?=$this->transEsc($heading)?></h2>
+  <ul class="list-group">
+    <?php foreach ($results as $driver): ?>
+      <li class="list-group-item catalog-result">
+        <?php
+          $formats = $driver->getFormats();
+          $format = $formats[0] ?? '';
+        ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+          <?=$this->record($driver)->getTitleHtml()?>
+        </a>
+        <?php $summDate = $driver->getPublicationDates(); ?>
+        <?php $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
+        <?php if (!empty($summDate) || !empty($summAuthors)): ?>
+          <?php if (!empty($summDate)): ?>
+            <br>
+            <span class="small author">
+              <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
+            </span>
+          <?php endif; ?>
+          <?php if (!empty($summAuthors)): ?>
+            <br>
+            <span class="small"><?=$this->transEsc('By')?></span>
+            <a class="small date" href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (count($summAuthors) > 1): ?><span class="small">, <?=$this->transEsc('more_authors_abbrev')?></span><?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
+      </li>
+    <?php endforeach; ?>
+    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More catalog results')?>...</a>
+  </ul>
+<?php endif ?>
