@@ -55,9 +55,10 @@
 
       <?php
         $script = <<<JS
-          VuFind.listen("lightbox.form.success", ({ form }) => {
+          VuFind.listen("lightbox.form", ({ form, cancel }) => {
             if (form.matches(".form-catalog-login")) {
-              window.location.reload();
+              form.action = form.action.replace("&layout=lightbox", "");
+              cancel();
             }
           });
         JS;
