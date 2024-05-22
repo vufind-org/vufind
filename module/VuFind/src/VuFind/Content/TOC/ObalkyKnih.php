@@ -54,14 +54,13 @@ class ObalkyKnih extends \VuFind\Content\AbstractBase
     }
 
     /**
-     * This method is responsible for generating fake TOC data for testing
-     * purposes.
+     * Load TOC for a particular ISBN.
      *
      * @param string           $key     API key
      * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
-     * @return array|string    Returns html string with preview image and link to TOC PDF file
+     * @return array|string    Returns HTML string with preview image and link to TOC PDF file
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
