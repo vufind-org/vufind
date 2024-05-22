@@ -78,7 +78,7 @@
       <?php endif; ?>
     </div>
   </nav>
-  <?php if ($list && !empty($listDescription=$list->getDescription())): ?>
+  <?php if ($list && !empty($listDescription = $list->getDescription())): ?>
     <p><?=$this->escapeHtml($listDescription)?></p>
   <?php endif; ?>
   <?php if (!empty($listTags)): ?>
