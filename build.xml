@@ -962,7 +962,7 @@ ${git_status}
   </target>
 
   <!-- Update bootstrap3 templates from bootstrap5 -->
-  <!-- N.B. This destroys any existing bootstrap5 templates (except explicitly excluded ones) -->
+  <!-- N.B. This destroys any existing bootstrap3 templates (except explicitly excluded ones) -->
   <target name="update-bootstrap3">
     <property name="templatesdir" value="${srcdir}/themes/bootstrap3/templates" />
     <if>
