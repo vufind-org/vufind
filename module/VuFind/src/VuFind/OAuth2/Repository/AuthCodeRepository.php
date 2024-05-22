@@ -50,12 +50,22 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
     /**
      * Constructor
      *
+     * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessTokenServiceInterface $accessTokenService, UserServiceInterface $userService)
-    {
-        parent::__construct('oauth2_auth_code', AuthCodeEntity::class, $accessTokenService, $userService);
+    public function __construct(
+        array $oauth2Config,
+        AccessTokenServiceInterface $accessTokenService,
+        UserServiceInterface $userService
+    ) {
+        parent::__construct(
+            'oauth2_auth_code',
+            AuthCodeEntity::class,
+            $oauth2Config,
+            $accessTokenService,
+            $userService
+        );
     }
 
     /**

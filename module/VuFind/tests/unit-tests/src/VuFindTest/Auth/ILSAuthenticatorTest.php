@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Auth;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Db\Row\User;
@@ -50,7 +52,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNewCatalogLoginSuccess()
+    public function testNewCatalogLoginSuccess(): void
     {
         $user = $this->getMockUser(['saveCredentials']);
         $user->expects($this->once())->method('saveCredentials')
@@ -71,7 +73,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNewCatalogFailure()
+    public function testNewCatalogFailure(): void
     {
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn(null);
@@ -88,7 +90,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNewCatalogFailureByException()
+    public function testNewCatalogFailureByException(): void
     {
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('kaboom');
@@ -107,7 +109,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoggedOutStoredLoginAttempt()
+    public function testLoggedOutStoredLoginAttempt(): void
     {
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn(null);
@@ -120,7 +122,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulStoredLoginAttempt()
+    public function testSuccessfulStoredLoginAttempt(): void
     {
         $user = $this->getMockUser(['getCatUsername', 'getRawCatPassword']);
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
@@ -144,7 +146,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnsuccessfulStoredLoginAttempt()
+    public function testUnsuccessfulStoredLoginAttempt(): void
     {
         $user = $this->getMockUser(['clearCredentials', 'getCatUsername', 'getRawCatPassword']);
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
@@ -164,7 +166,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExceptionDuringStoredLoginAttempt()
+    public function testExceptionDuringStoredLoginAttempt(): void
     {
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('kaboom');
@@ -184,15 +186,62 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test encryption and decryption of a string.
+     *
+     * @return void
+     */
+    public function testStringEncryptionAndDecryption(): void
+    {
+        $string = 'gobbledygook';
+        $auth = $this->getAuthenticator(config: $this->getAuthConfig());
+        $encrypted = $auth->encrypt($string);
+        $this->assertNotEquals($string, $encrypted);
+        $this->assertEquals($string, $auth->decrypt($encrypted));
+    }
+
+    /**
+     * Test encryption and decryption of null.
+     *
+     * @return void
+     */
+    public function testNullEncryptionAndDecryption(): void
+    {
+        $auth = $this->getAuthenticator(config: $this->getAuthConfig());
+        $this->assertNull($auth->encrypt(null));
+        $this->assertNull($auth->decrypt(null));
+    }
+
+    /**
+     * Get authentication-specific configuration.
+     *
+     * @return array
+     */
+    protected function getAuthConfig(): array
+    {
+        return [
+            'Authentication' => [
+                'ils_encryption_key' => 'foo',
+                'ils_encryption_algo' => 'aes',
+            ],
+        ];
+    }
+
+    /**
      * Get an authenticator
      *
-     * @param Manager       $manager    Auth manager (null for default mock)
-     * @param ILSConnection $connection ILS connection (null for default mock)
+     * @param Manager            $manager    Auth manager (null for default mock)
+     * @param ILSConnection      $connection ILS connection (null for default mock)
+     * @param EmailAuthenticator $emailAuth  Email authenticator (null for default mock)
+     * @param array              $config     Configuration (null for empty)
      *
      * @return ILSAuthenticator
      */
-    protected function getAuthenticator(Manager $manager = null, ILSConnection $connection = null)
-    {
+    protected function getAuthenticator(
+        Manager $manager = null,
+        ILSConnection $connection = null,
+        EmailAuthenticator $emailAuth = null,
+        array $config = []
+    ): ILSAuthenticator {
         if (null === $manager) {
             $manager = $this->getMockManager();
         }
@@ -203,7 +252,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
             function () use ($manager) {
                 return $manager;
             },
-            $connection
+            $connection,
+            $emailAuth ?? $this->createMock(EmailAuthenticator::class),
+            new \Laminas\Config\Config($config)
         );
     }
 
@@ -212,9 +263,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return User
+     * @return MockObject&User
      */
-    protected function getMockUser($methods = [])
+    protected function getMockUser(array $methods = []): MockObject&User
     {
         return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
@@ -227,9 +278,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return Manager
+     * @return MockObject&Manager
      */
-    protected function getMockManager($methods = [])
+    protected function getMockManager(array $methods = []): MockObject&Manager
     {
         return $this->getMockBuilder(\VuFind\Auth\Manager::class)
             ->disableOriginalConstructor()
@@ -242,9 +293,9 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return ILSConnection
+     * @return MockObject&ILSConnection
      */
-    protected function getMockConnection($methods = [])
+    protected function getMockConnection(array $methods = []): MockObject&ILSConnection
     {
         // We need to use addMethods here instead of onlyMethods, because
         // we're generally mocking behavior that gets handled by __call

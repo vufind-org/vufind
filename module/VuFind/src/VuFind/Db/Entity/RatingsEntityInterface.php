@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Item Status Logic Class
+ * Entity model interface for ratings table
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,43 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\ILS\Logic;
+namespace VuFind\Db\Entity;
 
 /**
- * Item Status Logic Class
+ * Entity model interface for ratings table
  *
  * @category VuFind
- * @package  ILS_Logic
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ItemStatus
+interface RatingsEntityInterface extends EntityInterface
 {
-    /**
-     * Status code for unavailable items
-     *
-     * @var int
-     */
-    public const STATUS_UNAVAILABLE = 0;
-
-    /**
-     * Status code for available items
-     *
-     * @var int
-     */
-    public const STATUS_AVAILABLE = 1;
-
-    /**
-     * Status code for items with uncertain availability
-     *
-     * @var int
-     */
-    public const STATUS_UNCERTAIN = 2;
 }

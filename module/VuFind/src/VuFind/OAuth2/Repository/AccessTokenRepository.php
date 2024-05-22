@@ -52,12 +52,22 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
     /**
      * Constructor
      *
+     * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      * @param UserServiceInterface        $userService        User service
      */
-    public function __construct(AccessTokenServiceInterface $accessTokenService, UserServiceInterface $userService)
-    {
-        parent::__construct('oauth2_access_token', AccessTokenEntity::class, $accessTokenService, $userService);
+    public function __construct(
+        array $oauth2Config,
+        AccessTokenServiceInterface $accessTokenService,
+        UserServiceInterface $userService
+    ) {
+        parent::__construct(
+            'oauth2_access_token',
+            AccessTokenEntity::class,
+            $oauth2Config,
+            $accessTokenService,
+            $userService
+        );
     }
 
     /**

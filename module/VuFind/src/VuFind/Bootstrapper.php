@@ -105,6 +105,20 @@ class Bootstrapper
     }
 
     /**
+     * Get a database service object.
+     *
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
+    {
+        return $this->container->get(\VuFind\Db\Service\PluginManager::class)->get($name);
+    }
+
+    /**
      * Set up cookie to flag test mode.
      *
      * @return void
@@ -208,9 +222,10 @@ class Bootstrapper
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
         if (
             ($user = $authManager->getUserObject())
-            && $user->last_language != $language
+            && $user->getLastLanguage() != $language
         ) {
-            $user->updateLastLanguage($language);
+            $user->setLastLanguage($language);
+            $this->getDbService(\VuFind\Db\Service\UserService::class)->persistEntity($user);
         }
     }
 
@@ -351,8 +366,35 @@ class Bootstrapper
         $headers = $this->event->getResponse()->getHeaders();
         $cspHeaderGenerator = $this->container
             ->get(\VuFind\Security\CspHeaderGenerator::class);
-        if ($cspHeader = $cspHeaderGenerator->getHeader()) {
+        foreach ($cspHeaderGenerator->getHeaders() as $cspHeader) {
             $headers->addHeader($cspHeader);
         }
+    }
+
+    /**
+     * Set up rate limiter
+     *
+     * @return void
+     */
+    protected function initRateLimiter(): void
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        $rateLimiterManager = $this->container->get(\VuFind\RateLimiter\RateLimiterManager::class);
+        if (!$rateLimiterManager->isEnabled()) {
+            return;
+        }
+        $callback = function ($event) use ($rateLimiterManager) {
+            $result = $rateLimiterManager->check($event);
+            if (!$result['allow']) {
+                $response = $event->getResponse();
+                $response->setStatusCode(429);
+                $response->setContent($result['message']);
+                $event->stopPropagation(true);
+                return $response;
+            }
+        };
+        $this->events->attach('dispatch', $callback, 11000);
     }
 }

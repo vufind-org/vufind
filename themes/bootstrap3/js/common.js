@@ -325,6 +325,9 @@ var VuFind = (function VuFind() {
       const scriptEl = document.createElement('script');
       scriptEl.innerHTML = script.innerHTML;
       scriptEl.setAttribute('nonce', getCspNonce());
+      if (script.src) {
+        scriptEl.src = script.src;
+      }
       newElm.appendChild(scriptEl);
     });
   }
@@ -363,7 +366,7 @@ var VuFind = (function VuFind() {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(VuFind.translate('error_occurred'));
+          throw new Error(translate('error_occurred'));
         }
         return response.text();
       })
@@ -375,7 +378,7 @@ var VuFind = (function VuFind() {
       })
       .catch(error => {
         console.error('Request failed:', error);
-        setInnerHtml(element, VuFind.translate('error_occurred'));
+        setInnerHtml(element, translate('error_occurred'));
         if (typeof success === 'function') {
           success(null, error);
         }
@@ -416,35 +419,14 @@ var VuFind = (function VuFind() {
   /**
    * Initialize result page scripts.
    *
-   * @param {string|JQuery} container
+   * @param {string|Element} _container
    */
-  var initResultScripts = function initResultScripts(container) {
-    let jqContainer = typeof container === 'string' ? $(container) : container;
-    if (typeof this.openurl !== 'undefined') {
-      this.openurl.init(jqContainer);
-    }
-    if (typeof this.itemStatuses !== 'undefined') {
-      this.itemStatuses.init(jqContainer);
-    }
-    if (typeof this.saveStatuses !== 'undefined') {
-      this.saveStatuses.init(jqContainer);
-    }
-    if (typeof this.recordVersions !== 'undefined') {
-      this.recordVersions.init(jqContainer);
-    }
-    if (typeof this.cart !== 'undefined') {
-      this.cart.registerToggles(jqContainer);
-    }
-    if (typeof this.embedded !== 'undefined') {
-      this.embedded.init(jqContainer);
-    }
-    this.lightbox.bind(jqContainer);
-    setupQRCodeLinks(jqContainer[0]);
+  var initResultScripts = function initResultScripts(_container) {
+    let container = typeof _container === 'string' ? document.querySelector(_container) : _container;
+    emit('results-init', {container: container});
+    setupQRCodeLinks(container);
     if (typeof loadCovers === 'function') {
       loadCovers();
-    }
-    if (typeof this.explain !== 'undefined') {
-      this.explain.init();
     }
   };
 
@@ -679,8 +661,13 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (event.originalEvent !== undefined) {
-    let limit = event.originalEvent.submitter.dataset.itemLimit;
+  // originalEvent check can be removed and event.submitter can directly used once jQuery is no longer used in the lightbox
+  const submitter = event.originalEvent.submitter !== undefined && event.originalEvent.submitter !== null
+    ? event.originalEvent.submitter
+    : (event.submitter !== undefined && event.submitter !== null ? event.submitter : null);
+
+  if (submitter !== null) {
+    let limit = submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
       VuFind.lightbox.alert(
         VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
@@ -699,51 +686,17 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
-    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
-      e.preventDefault();
-      $('body.vufind-offcanvas').toggleClass('active');
-    });
-  }
-}
+  const sidebar = document.querySelector('.sidebar');
+  const body = document.body;
 
-/**
- * Handle arrow keys to jump to next record
- */
-function keyboardShortcuts() {
-  var $searchform = $('#searchForm_lookfor');
-  if ($('.pager').length > 0) {
-    $(window).on("keydown", function shortcutKeyDown(e) {
-      if (!$searchform.is(':focus')) {
-        var $target = null;
-        switch (e.keyCode) {
-        case 37: // left arrow key
-          $target = $('.pager').find('a.previous');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
-          }
-          break;
-        case 38: // up arrow key
-          if (e.ctrlKey) {
-            $target = $('.pager').find('a.backtosearch');
-            if ($target.length > 0) {
-              $target[0].click();
-              return;
-            }
-          }
-          break;
-        case 39: //right arrow key
-          $target = $('.pager').find('a.next');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
-          }
-          break;
-        case 40: // down arrow key
-          break;
-        }
-      }
+  if (sidebar && body.classList.contains("vufind-offcanvas")) {
+    const offcanvasToggle = document.querySelectorAll('[data-toggle="vufind-offcanvas"]');
+    
+    offcanvasToggle.forEach((element) => {
+      element.addEventListener("click", function offcanvasClick(e) {
+        e.preventDefault();
+        body.classList.toggle('active');
+      });
     });
   }
 }
@@ -794,8 +747,6 @@ document.addEventListener('DOMContentLoaded', () => {
   VuFind.init();
   // Off canvas
   setupOffcanvas();
-  // Keyboard shortcuts in detail view
-  keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();

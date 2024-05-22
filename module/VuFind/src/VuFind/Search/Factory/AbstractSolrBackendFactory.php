@@ -337,8 +337,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Spellcheck
         if ($config->Spelling->enabled ?? true) {
-            $dictionaries = ($config->Spelling->simple ?? false)
-                ? ['basicSpell'] : ['default', 'basicSpell'];
+            $dictionaries = $config->Spelling->dictionaries?->toArray() ?? [];
+            if (empty($dictionaries)) {
+                // Respect the deprecated 'simple' configuration setting.
+                $dictionaries = ($config->Spelling->simple ?? false)
+                    ? ['basicSpell'] : ['default', 'basicSpell'];
+            }
             $spellingListener = new InjectSpellingListener(
                 $backend,
                 $dictionaries,

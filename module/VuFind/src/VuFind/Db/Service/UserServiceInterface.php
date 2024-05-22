@@ -45,9 +45,26 @@ interface UserServiceInterface extends DbServiceInterface
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param string $id ID.
+     * @param int $id ID.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserById(int $id): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object from the database based on the given field.
+     *
+     * @param string          $fieldName  Field name
+     * @param int|null|string $fieldValue Field value
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
+
+    /**
+     * Create a new user entity.
      *
      * @return UserEntityInterface
      */
-    public function getUserById($id);
+    public function createEntity(): UserEntityInterface;
 }

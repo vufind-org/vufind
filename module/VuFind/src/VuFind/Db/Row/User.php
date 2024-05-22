@@ -29,9 +29,11 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 
 use function count;
@@ -70,9 +72,11 @@ use function count;
  */
 class User extends RowGateway implements
     UserEntityInterface,
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
@@ -87,9 +91,13 @@ class User extends RowGateway implements
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
+     * @param AccountCapabilities         $capabilities     Account capabilities configuration (null for defaults)
      */
-    public function __construct($adapter, protected ILSAuthenticator $ilsAuthenticator)
-    {
+    public function __construct(
+        $adapter,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected AccountCapabilities $capabilities
+    ) {
         parent::__construct('id', 'user', $adapter);
     }
 
@@ -134,8 +142,8 @@ class User extends RowGateway implements
     /**
      * Set ILS login credentials without saving them.
      *
-     * @param string $username Username to save
-     * @param string $password Password to save
+     * @param string  $username Username to save
+     * @param ?string $password Password to save (null for none)
      *
      * @return void
      */
@@ -457,11 +465,12 @@ class User extends RowGateway implements
      * Whether library cards are enabled
      *
      * @return bool
+     *
+     * @deprecated use \VuFind\Config\AccountCapabilities::libraryCardsEnabled()
      */
     public function libraryCardsEnabled()
     {
-        return isset($this->config->Catalog->library_cards)
-            && $this->config->Catalog->library_cards;
+        return $this->capabilities->libraryCardsEnabled();
     }
 
     /**
@@ -472,7 +481,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCards()
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             return new \Laminas\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
@@ -489,7 +498,7 @@ class User extends RowGateway implements
      */
     public function getLibraryCard($id = null)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -524,7 +533,7 @@ class User extends RowGateway implements
      */
     public function deleteLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
 
@@ -560,7 +569,7 @@ class User extends RowGateway implements
      */
     public function activateLibraryCard($id)
     {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -594,7 +603,7 @@ class User extends RowGateway implements
         $password,
         $homeLib = ''
     ) {
-        if (!$this->libraryCardsEnabled()) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
@@ -655,7 +664,7 @@ class User extends RowGateway implements
      */
     protected function updateLibraryCardEntry()
     {
-        if (!$this->libraryCardsEnabled() || empty($this->cat_username)) {
+        if (!$this->capabilities->libraryCardsEnabled() || empty($this->cat_username)) {
             return;
         }
 
@@ -700,11 +709,13 @@ class User extends RowGateway implements
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
-            $comments = $this->getDbTable('Comments');
-            $comments->deleteByUser($this);
+            $comments = $this->getDbService(
+                \VuFind\Db\Service\CommentsServiceInterface::class
+            );
+            $comments->deleteByUser($this->getId());
         }
         if ($removeRatings) {
-            $ratings = $this->getDbTable('Ratings');
+            $ratings = $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class);
             $ratings->deleteByUser($this);
         }
 
@@ -732,6 +743,9 @@ class User extends RowGateway implements
      * @param string $language New language
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Entity\UserEntityInterface::setLastLanguage()
+     * and \VuFind\Db\Service\UserService::persistEntity() instead.
      */
     public function updateLastLanguage($language)
     {
@@ -772,24 +786,11 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get login token data
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @param string $userId user identifier
-     *
-     * @return array
+     * @return ?int
      */
-    public function getLoginTokens(string $userId): array
-    {
-        $tokenTable = $this->getDbTable('LoginToken');
-        return $tokenTable->getByUserId($userId);
-    }
-
-    /**
-     * Get identifier.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -818,6 +819,19 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set firstname.
+     *
+     * @param string $firstName New first name
+     *
+     * @return UserEntityInterface
+     */
+    public function setFirstname(string $firstName): UserEntityInterface
+    {
+        $this->firstname = $firstName;
+        return $this;
+    }
+
+    /**
      * Get firstname.
      *
      * @return string
@@ -825,6 +839,19 @@ class User extends RowGateway implements
     public function getFirstname(): string
     {
         return $this->firstname;
+    }
+
+    /**
+     * Set lastname.
+     *
+     * @param string $lastName New last name
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastname(string $lastName): UserEntityInterface
+    {
+        $this->lastname = $lastName;
+        return $this;
     }
 
     /**
@@ -880,7 +907,30 @@ class User extends RowGateway implements
      */
     public function getPendingEmail(): string
     {
-        return $this->pending_email;
+        return $this->pending_email ?? '';
+    }
+
+    /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface
+    {
+        $this->cat_id = $catId;
+        return $this;
+    }
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string
+    {
+        return $this->cat_id;
     }
 
     /**
@@ -982,7 +1032,43 @@ class User extends RowGateway implements
      */
     public function getVerifyHash(): string
     {
-        return $this->verify_hash;
+        return $this->verify_hash ?? '';
+    }
+
+    /**
+     * Set active authentication method (if any).
+     *
+     * @param ?string $authMethod New value (null for none)
+     *
+     * @return UserEntityInterface
+     */
+    public function setAuthMethod(?string $authMethod): UserEntityInterface
+    {
+        $this->auth_method = $authMethod;
+        return $this;
+    }
+
+    /**
+     * Get active authentication method (if any).
+     *
+     * @return ?string
+     */
+    public function getAuthMethod(): ?string
+    {
+        return $this->auth_method;
+    }
+
+    /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface
+    {
+        $this->last_language = $lang;
+        return $this;
     }
 
     /**
@@ -992,6 +1078,75 @@ class User extends RowGateway implements
      */
     public function getLastLanguage(): string
     {
-        return $this->last_language;
+        return $this->last_language ?? '';
+    }
+
+    /**
+     * Does the user have a user-provided (true) vs. automatically looked up (false) email address?
+     *
+     * @return bool
+     */
+    public function hasUserProvidedEmail(): bool
+    {
+        return (bool)($this->user_provided_email ?? false);
+    }
+
+    /**
+     * Set the flag indicating whether the email address is user-provided.
+     *
+     * @param bool $userProvided New value
+     *
+     * @return UserEntityInterface
+     */
+    public function setHasUserProvidedEmail(bool $userProvided): UserEntityInterface
+    {
+        $this->user_provided_email = $userProvided ? 1 : 0;
+        return $this;
+    }
+
+    /**
+     * Last login setter.
+     *
+     * @param DateTime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLogin(DateTime $dateTime): UserEntityInterface
+    {
+        $this->last_login = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Last login getter
+     *
+     * @return DateTime
+     */
+    public function getLastLogin(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_login);
+    }
+
+    /**
+     * Created setter
+     *
+     * @param DateTime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
     }
 }

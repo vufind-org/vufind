@@ -22,6 +22,9 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/font-awesome/font-awesome";
 <#LESS */
 
+@import "../vendor/bootstrap-accessibility/bootstrap-accessibility";
+@import "../vendor/a11y";
+
 @import "components/accessibility";
 @import "components/variables";
 
@@ -612,6 +615,12 @@ div.holding-notes {
 
 .odbrand {
   padding: 7px;
+}
+
+.od_download {
+    width: 100%;
+    border-width: 0px;
+    height: 450px;
 }
 
 .oauth2-prompt {

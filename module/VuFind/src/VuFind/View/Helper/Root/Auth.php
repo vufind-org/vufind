@@ -31,6 +31,9 @@ namespace VuFind\View\Helper\Root;
 
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -42,9 +45,10 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Auth extends \Laminas\View\Helper\AbstractHelper
+class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Authentication manager
@@ -194,6 +198,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     public function getLoginDesc($context = [])
     {
         return $this->renderTemplate('logindesc.phtml', $context);
+    }
+
+    /**
+     * Get login token data
+     *
+     * @param int $userId user identifier
+     *
+     * @return array
+     */
+    public function getLoginTokens(int $userId): array
+    {
+        return $this->getDbService(LoginTokenServiceInterface::class)->getByUser($userId);
     }
 
     /**
