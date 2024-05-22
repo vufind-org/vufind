@@ -78,15 +78,15 @@ class SortFacetList extends AbstractHelper implements
     /**
      * Convert a facet array to a string.
      *
-     * @param array  $value  Facet value array
+     * @param array  $values Facet value array
      * @param string $format Format string
      *
      * @return string
      */
-    protected function facetValueToString(array $value, string $format): string
+    protected function facetValueToString(array $values, string $format): string
     {
         $search = $replace = [];
-        foreach ($value as $key => $value) {
+        foreach ($values as $key => $value) {
             $search[] = "%%$key%%";
             $replace[] = $value;
         }
