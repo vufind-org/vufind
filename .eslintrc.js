@@ -11,7 +11,7 @@ module.exports = {
     "jquery": true
   },
   parserOptions: {
-    "ecmaVersion": "latest"
+    "ecmaVersion": "2020"
   },
   rules: {
     // errors
