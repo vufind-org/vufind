@@ -1,0 +1,48 @@
+/* ACCESSIBILITY IMPROVEMENTS */
+
+a {
+  text-decoration: underline;
+
+  &:hover { color: black; }
+}
+
+/* AAA Color Contrasts */
+/* #LESS>
+$badge-bg: #595959;
+<#LESS */
+/* #SCSS> */
+$badge-bg: #595959 !default;
+/* <#SCSS */
+
+/* #LESS>
+$breadcrumb-color: #535353;
+<#LESS */
+/* #SCSS> */
+$breadcrumb-color: #535353 !default;
+/* <#SCSS */
+
+/* #LESS>
+$breadcrumb-active-color: #444;
+<#LESS */
+/* #SCSS> */
+$breadcrumb-active-color: #444 !default;
+/* <#SCSS */
+
+/* #LESS>
+$state-danger-text: #8a211e;
+<#LESS */
+/* #SCSS> */
+$state-danger-text: #8a211e !default;
+/* <#SCSS */
+
+
+.alert-danger,
+.alert-danger a {
+  color: $state-danger-text;
+  .btn-danger {
+    color: white;
+  }
+  .btn-danger:hover {
+    color: $state-danger-text;
+  }
+}

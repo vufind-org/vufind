@@ -1,0 +1,163 @@
+<?php
+  // Set up page title:
+  $this->headTitle($this->translate('Storage Retrieval Requests'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
+
+  $this->headScript()->appendFile('requests.js');
+?>
+
+<?=$this->component('show-account-menu-button')?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Storage Retrieval Requests') ?></h2>
+
+  <?=$this->flashmessages()?>
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+
+  <?php if (!empty($this->recordList)): ?>
+    <?php if ($this->cancelForm): ?>
+      <form name="updateForm" class="inline" method="post" id="cancelStorageRetrievalRequest" data-clear-account-cache="storageRetrievalRequests">
+        <input type="hidden" id="submitType" name="cancelSelected" value="1">
+        <input type="hidden" id="cancelConfirm" name="confirm" value="0">
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'storage_retrieval_request_cancel_selected',
+                  'header' => 'confirm_storage_retrieval_request_cancel_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+              ]
+          )
+        ?>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelAll',
+                  'buttonName' => 'cancelAll',
+                  'buttonLabel' => 'storage_retrieval_request_cancel_all',
+                  'header' => 'confirm_storage_retrieval_request_cancel_all_text',
+                  'confirmId' => 'confirm_cancel_all_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+              ]
+          )
+        ?>
+    <?php endif; ?>
+
+    <ul class="record-list">
+      <?php $iteration = 0; ?>
+      <?php foreach ($this->recordList as $resource): ?>
+        <?php $iteration++; ?>
+        <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+        <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
+          <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
+            <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+            <div class="checkbox">
+              <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
+              <label class="pull-left flip">
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_storage_retrieval_request_cancel')?>">
+              </label>
+            </div>
+          <?php endif; ?>
+
+          <?php
+            $coverDetails = $this->record($resource)->getCoverDetails('storageretrievalrequests', 'small', $this->recordLinker()->getUrl($resource));
+            $cover = $coverDetails['html'];
+            $thumbnail = false;
+            $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
+            if ($cover):
+              ob_start(); ?>
+              <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+                <?=$cover ?>
+              </div>
+              <?php $thumbnail = ob_get_contents(); ?>
+            <?php ob_end_clean(); ?>
+          <?php endif; ?>
+          <div class="media">
+            <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+              <?=$thumbnail ?>
+            <?php endif ?>
+            <div class="media-body">
+              <?=$this->record($resource)->renderTemplate('account-entry.phtml')?>
+              <?php /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
+                value to display... */ ?>
+              <?php $pickupDisplay = ''; ?>
+              <?php $pickupTranslate = false; ?>
+              <?php if (isset($ilsDetails['location'])): ?>
+                <?php if ($this->pickup): ?>
+                  <?php foreach ($this->pickup as $library): ?>
+                    <?php if ($library['locationID'] == $ilsDetails['location']): ?>
+                      <?php $pickupDisplay = $library['locationDisplay']; ?>
+                      <?php $pickupTranslate = true; ?>
+                    <?php endif; ?>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+                <?php if (empty($pickupDisplay)): ?>
+                  <?php $pickupDisplay = $ilsDetails['location']; ?>
+                <?php endif; ?>
+              <?php endif; ?>
+              <?php if (!empty($pickupDisplay)): ?>
+                <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
+                <?=$pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
+                <br>
+              <?php endif; ?>
+
+              <?php if (!empty($ilsDetails['create'])): ?>
+                <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+                <?php if (!empty($ilsDetails['expire'])): ?>|<?php endif; ?>
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['expire'])): ?>
+                <strong><?=$this->transEsc('storage_retrieval_request_expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+              <?php endif; ?>
+              <br>
+
+              <?php if (isset($this->cancelResults['items'])): ?>
+                <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
+                  <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
+                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php
+                      if ($cancelResult['sysMessage']) {
+                        echo ' : ' . $this->transEsc($cancelResult['sysMessage']);
+                      }
+                    ?></div>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              <?php endif; ?>
+
+              <?php if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
+                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_processed') . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
+              <?php endif; ?>
+              <?php if (isset($ilsDetails['available']) && $ilsDetails['available']): ?>
+                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_available') ?></div>
+              <?php endif; ?>
+              <?php if (isset($ilsDetails['canceled']) && $ilsDetails['canceled']): ?>
+                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_canceled') . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
+              <?php endif; ?>
+              <?php if (isset($ilsDetails['cancel_link'])): ?>
+                <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc('storage_retrieval_request_cancel') ?></a></p>
+              <?php endif; ?>
+            </div>
+            <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+              <?=$thumbnail ?>
+            <?php endif ?>
+          </div>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+    <?php if ($this->cancelForm): ?></form><?php endif; ?>
+  <?php else: ?>
+    <?=$this->transEsc('You do not have any storage retrieval requests placed') ?>.
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('storageRetrievalRequests')?>
+</div>
+
+<?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'storageRetrievalRequests', 'accountStatus' => $this->accountStatus]); ?>

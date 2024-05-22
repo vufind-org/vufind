@@ -1,0 +1,79 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Search History'));
+
+  // Hide the account breadcrumb when login is disabled:
+  $account = $this->auth()->getManager();
+  $parentBreadcrumb = is_object($account) && $account->loginEnabled()
+    ? '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    : '';
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs
+    = $parentBreadcrumb . '<li class="active">' . $this->transEsc('Search History') . '</li>';
+
+  $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
+  $loggedInUser = $this->auth()->getUserObject();
+?>
+
+<?php if ($saveSupported): // do not show menu toggle if not showing menu! ?>
+  <?=$this->component('show-account-menu-button')?>
+<?php endif; ?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?php if (!empty($this->alertemail)): ?>
+    <div class="alert alert-info alert-email-notification">
+      <?=$this->transEsc('alert_email_address') . ': ' . $this->escapeHtml($this->alertemail) ?>
+      <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
+        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('edit');?></a>)
+      <?php endif; ?>
+    </div>
+  <?php elseif (!empty($this->schedule) && $loggedInUser): ?>
+    <div class="alert alert-danger alert-email-notification">
+      <?=$this->transEsc('no_email_address') . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('check_profile');?></a>
+    </div>
+  <?php endif; ?>
+  <?=$this->flashmessages()?>
+  <?php if ($saveSupported): ?>
+    <h2><?=$this->transEsc('history_saved_searches')?></h2>
+    <?php if (!empty($this->saved)): ?>
+      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
+    <?php else: ?>
+      <?=
+        $loggedInUser
+          ? $this->transEsc('history_no_saved_searches')
+          : $this->translate('history_login_html', ['%%url%%' => '?require_login'])
+      ?>
+    <?php endif; ?>
+  <?php endif; ?>
+
+  <h2><?=$this->transEsc('history_recent_searches')?></h2>
+  <?php if (!empty($this->unsaved)): ?>
+    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
+    <a class="icon-link" href="?purge=true">
+      <?=$this->icon('search-delete', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc('history_purge')?></span>
+    </a>
+  <?php else: ?>
+    <?=$this->transEsc('history_no_searches')?>
+  <?php endif; ?>
+</div>
+
+<?php if ($saveSupported): ?>
+  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+    <?=$this->accountMenu()->render('history')?>
+  </div>
+<?php endif; ?>
+
+<?php
+    $explanation = $this->transEsc('schedule_explanation');
+    $script = <<<JS
+        $(".search-schedule-header").popover({
+            content: "$explanation",
+            placement: "top",
+            trigger: "hover",
+            container: "body",
+        })
+        JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

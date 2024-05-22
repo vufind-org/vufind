@@ -1,0 +1,100 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
+
+  // Get search results
+  $results = $this->tab->getResults();
+  $params = $this->tab->getParams();
+  $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1];
+
+  $filterList = $params->getFilterList(true);
+  $checkboxFilters = $params->getCheckboxFacets();
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <?php foreach ($results->getRecommendations('top') as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
+  <div class="collection-list-controls">
+    <div class="collection-control">
+      <form class="form-inline" method="get" name="keywordFilterForm" id="keywordFilterForm">
+        <div class="input-group">
+          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEscAttr('Search within collection')?>" value="<?=$this->escapeHtmlAttr($params->getDisplayQuery())?>" class="form-control">
+          <?php foreach ($filterList as $field => $filters): ?>
+            <?php foreach ($filters as $filter): ?>
+              <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;">
+            <?php endforeach; ?>
+          <?php endforeach; ?>
+          <input type="hidden" name="limit" value="<?=$this->escapeHtmlAttr($params->getLimit()) ?>">
+          <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($params->getSort()) ?>">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="submit" name="submitButton">
+              <span class="sr-only"><?=$this->transEsc('Search')?></span>
+              <?=$this->icon('search') ?>
+            </button>
+          </span>
+        </div>
+      </form>
+    </div>
+    <div class="collection-control">
+      <?=$this->render('search/controls/limit.phtml', $searchDetails)?>
+    </div>
+    <div class="collection-control">
+      <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
+    </div>
+  </div>
+
+
+  <?php if ($filterList || $checkboxFilters): ?>
+    <?=
+      $this->render(
+          'search/filters.phtml',
+          [
+            'urlQuery' => $results->getUrlQuery(),
+            'filterList' => $filterList,
+            'checkboxFilters' => $checkboxFilters,
+            'searchClassId' => $this->searchClassId,
+            'searchType' => 'basic',
+          ]
+      );
+    ?>
+  <?php endif; ?>
+
+  <div class="collection-list-results">
+    <?php if ($recordTotal > 0): ?>
+      <div class="clearfix hidden-print">
+        <div class="pull-left flip">
+          <?php
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($results->getStartRecord()),
+              '%%end%%' => $this->localizedNumber($results->getEndRecord()),
+              '%%total%%' => $this->localizedNumber($recordTotal),
+            ];
+          ?>
+          <?php if (!isset($this->skipTotalCount)): ?>
+            <?=$this->translate('showing_items_of_html', $transParams); ?>
+          <?php else: ?>
+            <?=$this->translate('showing_items_html', $transParams); ?>
+          <?php endif; ?>
+        </div>
+      </div>
+      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
+        <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+        <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+      </form>
+    <?php else: ?>
+      <h4><?=$this->transEsc($params->getDisplayQuery() || ($filterCount ?? 0) > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
+      <div class="clearfix">
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?php foreach ($results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <?php endforeach; ?>
+</div>

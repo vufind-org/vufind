@@ -1,0 +1,20 @@
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+  $heading = $this->recommend->getHeading();
+?>
+<?php if (!empty($results)): ?>
+  <h2><?=$this->transEsc($heading)?></h2>
+  <ul class="list-group">
+    <?php foreach ($results as $driver): ?>
+      <li class="list-group-item">
+        <span>
+          <a href="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" class="title">
+            <?=$this->record($driver)->getTitleHtml()?>
+          </a>
+        </span>
+      </li>
+    <?php endforeach; ?>
+    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('libguidesaz_recommendations_more')?></a>
+  </ul>
+<?php endif ?>
