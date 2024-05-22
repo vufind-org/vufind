@@ -87,7 +87,7 @@ class Loader
      *
      * @param string $isbn ISBN to use for lookup
      *
-     * @return array|string
+     * @return array
      */
     public function loadByIsbn($isbn)
     {

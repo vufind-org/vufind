@@ -96,7 +96,7 @@ abstract class AbstractContent extends AbstractBase
     /**
      * Get content for ISBN.
      *
-     * @return array|string
+     * @return array
      */
     public function getContent()
     {
