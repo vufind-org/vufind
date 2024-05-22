@@ -176,7 +176,7 @@ class User extends RowGateway implements
 
         // Update library card entry after saving the user so that we always have a
         // user id:
-        $this->getUserCardService()->updateLibraryCardEntry($this);
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
 
         return $result;
     }
@@ -254,7 +254,7 @@ class User extends RowGateway implements
     public function changeHomeLibrary($homeLibrary)
     {
         $this->home_library = $homeLibrary;
-        $this->getUserCardService()->updateLibraryCardEntry($this);
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
         return $this->save();
     }
 
@@ -548,7 +548,7 @@ class User extends RowGateway implements
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
      *
-     * @deprecated Use UserCardServiceInterface::saveLibraryCard()
+     * @deprecated Use UserCardServiceInterface::persistLibraryCardData()
      */
     public function saveLibraryCard(
         $id,
@@ -558,7 +558,7 @@ class User extends RowGateway implements
         $homeLib = ''
     ) {
         return $this->getUserCardService()
-            ->saveLibraryCard($this, $id, $cardName, $username, $password, $homeLib)
+            ->persistLibraryCardData($this, $id, $cardName, $username, $password, $homeLib)
             ->getId();
     }
 
@@ -569,11 +569,11 @@ class User extends RowGateway implements
      * @return void
      * @throws \VuFind\Exception\PasswordSecurity
      *
-     * @deprecated Use UserCardServiceInterface::updateLibraryCardEntry()
+     * @deprecated Use UserCardServiceInterface::synchronizeUserLibraryCardData()
      */
     protected function updateLibraryCardEntry()
     {
-        $this->getUserCardService()->updateLibraryCardEntry($this);
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
     }
 
     /**

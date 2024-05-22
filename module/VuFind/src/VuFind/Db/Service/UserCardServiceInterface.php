@@ -86,7 +86,10 @@ interface UserCardServiceInterface extends DbServiceInterface
     public function deleteLibraryCard(UserEntityInterface $user, int|UserCardEntityInterface $userCard): bool;
 
     /**
-     * Save library card with the given information
+     * Persist the provided library card data, either by updating a specified card
+     * or by creating a new one (when $card is null). Also updates the primary user
+     * row when appropriate. Will throw an exception if a duplicate $username value
+     * is provided; there should only be one card row per username.
      *
      * @param int|UserEntityInterface          $user     User object or identifier
      * @param int|UserCardEntityInterface|null $card     Card ID (null = create new)
@@ -98,7 +101,7 @@ interface UserCardServiceInterface extends DbServiceInterface
      * @return UserCardEntityInterface
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function saveLibraryCard(
+    public function persistLibraryCardData(
         int|UserEntityInterface $user,
         int|UserCardEntityInterface|null $card,
         string $cardName,
@@ -108,15 +111,16 @@ interface UserCardServiceInterface extends DbServiceInterface
     ): UserCardEntityInterface;
 
     /**
-     * Verify that the current card information exists in user's library cards
-     * (if enabled) and is up to date.
+     * Verify that the user's current ILS settings exist in their library card data
+     * (if enabled) and are up to date. Designed to be called after updating the
+     * user row; will create or modify library card rows as needed.
      *
      * @param int|UserEntityInterface $user User object or identifier
      *
      * @return bool
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function updateLibraryCardEntry(int|UserEntityInterface $user): bool;
+    public function synchronizeUserLibraryCardData(int|UserEntityInterface $user): bool;
 
     /**
      * Activate a library card for the given username

@@ -341,7 +341,7 @@ class LibraryCardsController extends AbstractBase
         }
 
         try {
-            $cardService->saveLibraryCard(
+            $cardService->persistLibraryCardData(
                 $user,
                 $id == 'NEW' ? null : $id,
                 $cardName,
@@ -371,7 +371,7 @@ class LibraryCardsController extends AbstractBase
         try {
             $info = $emailAuthenticator->authenticate($hash);
             $cardService = $this->getDbService(UserCardServiceInterface::class);
-            $cardService->saveLibraryCard(
+            $cardService->persistLibraryCardData(
                 $user,
                 'NEW' === $info['cardID'] ? null : $info['cardID'],
                 $info['cardName'],

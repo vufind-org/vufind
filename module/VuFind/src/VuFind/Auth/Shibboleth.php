@@ -333,7 +333,7 @@ class Shibboleth extends AbstractBase
             $username = $shib['prefix'] . '.' . $username;
         }
         $password = $shib['cat_password'] ?? null;
-        $this->getDbService(UserCardServiceInterface::class)->saveLibraryCard(
+        $this->getDbService(UserCardServiceInterface::class)->persistLibraryCardData(
             $connectingUser,
             null,
             $shib['prefix'],
