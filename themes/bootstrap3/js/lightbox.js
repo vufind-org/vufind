@@ -418,8 +418,11 @@ VuFind.register('lightbox', function Lightbox() {
       url: $(form).attr('action') || _currentUrl || window.location.href,
       method: $(form).attr('method') || 'GET',
       data: data
-    }).done(function recaptchaReset() {
+    }).done(function formAjaxDone(data, textStatus, jqXHR) {
+      VuFind.emit("lightbox.form.success", { form });
       resetCaptcha($(form));
+    }).fail(function formAjaxFail(qXHR, textStatus, errorThrown) {
+      VuFind.emit("lightbox.form.failure", { form });
     });
 
     VuFind.modal('show');

@@ -55,8 +55,7 @@
 
       <?php
         $script = <<<JS
-          VuFind.listen("lightbox.form", ({ form }) => {
-            console.log("lightbox.form", form);
+          VuFind.listen("lightbox.form.success", ({ form }) => {
             if (form.matches(".form-catalog-login")) {
               window.location.reload();
             }
