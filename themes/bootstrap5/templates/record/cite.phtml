@@ -1,0 +1,38 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Record Citations'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('Record Citations') . '</li>';
+
+  // Collect citation data:
+  $helper = $this->citation($this->driver);
+  $citations = [];
+  foreach ($this->driver->getCitationFormats() as $format) {
+    $citations[$format] = $helper->getCitation($format);
+  }
+?>
+<?php if (count($citations) == 0): ?>
+  <?=$this->transEsc('No citations are available for this record')?>
+<?php else: ?>
+  <?php foreach ($citations as $format => $citation): ?>
+    <?php
+      // Some language files only contain translations for a short caption;
+      // let's try to detect whether or not long captions are getting translated
+      // properly and display the appropriate one accordingly. This logic can be
+      // removed once all of the language files contain the "Edition Citation"
+      // version of the relevant strings.
+      $shortCaption = $this->translate($format . ' Citation');
+      $longCaption = $this->translate($format . ' Edition Citation');
+      $caption = (strpos($longCaption, 'Citation') > 0 && !str_contains($shortCaption, 'Citation'))
+        ? $shortCaption : $longCaption;
+    ?>
+    <strong><?=$this->escapeHtml($caption)?></strong>
+    <p class="text-left">
+      <?=$citation?>
+    </p>
+  <?php endforeach; ?>
+  <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
+<?php endif; ?>

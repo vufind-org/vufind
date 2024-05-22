@@ -1,0 +1,23 @@
+<?php
+  // Create a css class for results from the search class:
+  $searchClass = $searchClassCss = $this->params->getSearchClassId();
+  // Convert camelCase to hyphenated-text, unless it's all-uppercase, like EDS:
+  if (!ctype_upper($searchClassCss)) {
+    $searchClassCss = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClassCss);
+  }
+  $this->resultsClass = 'search-results-' . strtolower($searchClassCss);
+  // Add any additional classes and attributes:
+  if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+    $this->resultsClass .= ' js-result-list';
+    if ($this->resultsAttrs) {
+      if (!($this->resultsAttrs instanceof \Laminas\View\HtmlAttributesSet)) {
+        throw new \Exception('$this->resultsAttrs must be created with the htmlAttributes view helper');
+      }
+      $this->resultsAttrs->add('data-backend', $searchClass);
+    } else {
+      $this->resultsAttrs = $this->htmlAttributes(['data-backend' => $searchClass,]);
+    }
+    $this->resultsAttrs->add('data-history', $this->saveToHistory ? '1' : '0');
+  }
+?>
+<?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>

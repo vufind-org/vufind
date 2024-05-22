@@ -1,0 +1,20 @@
+<?php
+    $data = $this->recommend->getRecommendations();
+    $results = $this->recommend->getResults();
+    $displayQuery = $results->getParams()->getDisplayQuery();
+    $that = $this;
+    $callback = function ($heading) use ($results, $displayQuery, $that) {
+        // Generate a new search URL that replaces the user's current term
+        // with the authority term:
+        $url = $that->url($results->getOptions()->getSearchAction())
+            . $results->getUrlQuery()->replaceTerm($displayQuery, $heading);
+        return "<a href=\"$url\">" . $that->escapeHtml($heading) . '</a>';
+    };
+    $content = implode(', ', array_map($callback, $data));
+?>
+<?php if (!empty($content)): ?>
+  <div class="authoritybox">
+    <div><strong><?=$this->transEsc($this->recommend->getHeader())?>:</strong></div>
+    <div><?=$content?></div>
+  </div>
+<?php endif; ?>

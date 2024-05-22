@@ -736,7 +736,7 @@ class MyResearchController extends AbstractBase
             $this->addAccountBlocksToFlashMessenger($catalog, $patron);
             $profile = $catalog->getMyProfile($patron);
             $profile['home_library'] = $allowHomeLibrary
-                ? $user->home_library
+                ? $user->getHomeLibrary()
                 : ($profile['home_library'] ?? '');
             $view->profile = $profile;
             $pickup = $defaultPickupLocation = null;
@@ -2183,7 +2183,7 @@ class MyResearchController extends AbstractBase
             );
         }
         $series = $this->params()->fromPost('series', '');
-        $this->getAuthManager()->deleteToken($series, $this->getUser()->id);
+        $this->getAuthManager()->deleteToken($series);
         return $this->redirect()->toRoute('myresearch-profile');
     }
 

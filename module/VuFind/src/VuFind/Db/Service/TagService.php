@@ -45,6 +45,60 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
+     * Get statistics on use of tags.
+     *
+     * @param bool $extended Include extended (unique/anonymous) stats.
+     *
+     * @return array
+     */
+    public function getStatistics(bool $extended = false): array
+    {
+        return $this->getDbTable('ResourceTags')->getStatistics($extended);
+    }
+
+    /**
+     * Get the tags that match a string
+     *
+     * @param string $text Tag to look up.
+     *
+     * @return array
+     */
+    public function matchText(string $text): array
+    {
+        return $this->getDbTable('Tags')->matchText($text);
+    }
+
+    /**
+     * Get tags associated with the specified resource.
+     *
+     * @param string $id          Record ID to look up
+     * @param string $source      Source of record to look up
+     * @param int    $limit       Max. number of tags to return (0 = no limit)
+     * @param ?int   $list        ID of list to load tags from (null for no
+     * restriction,  true for on ANY list, false for on NO list)
+     * @param ?int   $user        ID of user to load tags from (null for all users)
+     * @param string $sort        Sort type ('count' or 'tag')
+     * @param ?int   $userToCheck ID of user to check for ownership (this will
+     * not filter the result list, but rows owned by this user will have an is_me
+     * column set to 1)
+     *
+     * @return array
+     */
+    public function getForResource(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        ?int $list = null,
+        ?int $user = null,
+        string $sort = 'count',
+        ?int $userToCheck = null
+    ): array {
+        return $this->getDbTable('Tags')
+            ->getForResource($id, $source, $limit, $list, $user, $sort, $userToCheck)
+            ->toArray();
+    }
+
+    /**
      * Add tags to the record.
      *
      * @param string              $id     Unique record ID

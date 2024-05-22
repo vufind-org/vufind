@@ -1,0 +1,85 @@
+<?php
+  $this->headTitle($this->translate('Browse the Catalog'));
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a></li>';
+
+  $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
+  $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
+?>
+
+<?php if (!isset($this->currentAction)): ?>
+  <h2><?=$this->transEsc('Choose a Category to Begin Browsing') ?>:</h2>
+<?php endif; ?>
+
+<div class="browse-container">
+  <div class="browse-list<?php if (!empty($this->categoryList) || !empty($this->secondaryList)): ?> hidden-xs<?php endif ?>" id="list1">
+    <?php foreach ($this->browseOptions as $item => $currentOption): ?>
+      <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="browse-item<?php if ($currentOption['action'] == $this->currentAction): ?> active<?php endif; ?>">
+        <?=$this->transEsc($currentOption['description']) ?>
+        <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
+  <?php if (!empty($this->categoryList)): ?>
+    <div class="browse-list<?php if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<?php endif ?>" id="list2">
+      <?php foreach ($this->categoryList as $findby => $category): ?>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=urlencode($this->browse()->getSolrField($findby, $this->currentAction)) ?>" class="browse-item<?php if (!is_string($category)): ?> with-badge<?php endif; ?><?php if ($this->findby == $findby): ?> active<?php endif; ?>">
+          <?php if (is_string($category)): ?>
+            <?=$this->transEsc($category)?>
+            <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
+          <?php else: ?>
+            <?=$this->transEsc($category['text'])?>
+            <span class="badge"><?=$this->localizedNumber($category['count'])?></span>
+          <?php endif; ?>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (!empty($this->secondaryList)): ?>
+    <div class="browse-list<?php if (!empty($this->resultList)): ?> hidden-xs<?php endif ?>" id="list3">
+    <?php foreach ($this->secondaryList as $secondary): ?>
+      <?php $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
+          . '&amp;category=' . urlencode($this->category)
+          . '&amp;query=' . urlencode($secondary['value']);
+        if ($this->facetPrefix) {
+          $url .= '&amp;facet_prefix=' . urlencode($secondary['displayText']);
+        }
+        if ($this->secondaryParams) {
+          foreach ($this->secondaryParams as $var => $val) {
+            $url .= '&amp;' . $var . '=' . urlencode($val);
+          }
+        }
+        $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
+        $hasBadge = $this->findby != 'alphabetical' && isset($secondary['count']);
+      ?>
+      <a href="<?=$url ?>" class="browse-item<?php if ($hasBadge): ?> with-badge<?php endif; ?><?php if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<?php endif; ?>">
+        <?=$this->escapeHtml($secondary['displayText']) ?>
+        <?php if ($hasBadge): ?>
+          <span class="badge"><?=$this->localizedNumber($secondary['count']) ?></span>
+        <?php else: ?>
+          <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
+        <?php endif; ?>
+      </a>
+      <?php if ($viewRecord): ?>
+        <a class="browse-item view-record" href="<?=$SEARCH_BASE ?>?lookfor=<?php if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+', '&amp;filter[]=', urlencode($secondary['value'])) ?><?php endif; ?>&amp;filter[]=<?=urlencode($this->browse()->getSolrField($this->currentAction)) ?>%3A[* TO *]<?php if ($this->dewey_flag): ?>&amp;sort=dewey-sort<?php endif; ?>"><?=$this->transEsc('View Records') ?></a>
+      <?php endif; ?>
+    <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (!empty($this->resultList)): ?>
+    <div class="browse-list" id="list4">
+    <?php foreach ($this->resultList as $result): ?>
+      <a class="browse-item with-badge" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><?php if ($this->searchParams): foreach ($this->searchParams as $var => $val): ?>&amp;<?=$var ?>=<?=urlencode($val) ?><?php endforeach;endif; ?>">
+        <?=$this->escapeHtml($result['displayText'])?>
+        <span class="badge"><?=$this->localizedNumber($result['count']) ?></span>
+      </a>
+    <?php endforeach; ?>
+    </div>
+  <?php elseif (isset($this->query)): ?>
+    <div class="browse-list" id="list4">
+      <span class="browse-item"><?=$this->transEsc('nohit_heading') ?></span>
+    </div>
+  <?php endif; ?>
+</div>

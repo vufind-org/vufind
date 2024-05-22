@@ -1,0 +1,24 @@
+<?php
+    $options = $this->searchOptions($this->searchClassId);
+    $searchHome = $options->getSearchHomeAction();
+    $advSearch = $options->getAdvancedSearchAction();
+
+    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, false, false);
+    if (empty($hiddenFilters)) {
+        $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
+        if (empty($hiddenFilters)) {
+            $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId);
+        }
+    }
+    $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, false, '?');
+?>
+<?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, '', $this->searchIndex, 'basic', $hiddenFilters); ?>
+<?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
+<?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
+  <p class="adv_search_links">
+    <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc('Start a new Basic Search')?></a>
+    <?php if ($advSearch): ?>
+      | <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc('Start a new Advanced Search')?></a>
+    <?php endif; ?>
+  </p>
+<?php if (!empty($tabs)): ?></div><?php endif; ?>

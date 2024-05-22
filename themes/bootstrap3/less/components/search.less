@@ -1,7 +1,14 @@
 // Thumbnail sizes for media items: search results, list entries, record views
+/* #LESS> */
 @thumbnail-width-small:   60px;
 @thumbnail-width-medium: 100px;
 @thumbnail-width-large:  160px;
+/* <#LESS */
+/* #SCSS>
+$thumbnail-width-small:   60px !default;
+$thumbnail-width-medium: 100px !default;
+$thumbnail-width-large:  160px !default;
+<#SCSS */
 
 // record result list ol, ul that contains li.result
 .record-list {
@@ -655,6 +662,11 @@ body.rtl {
   flex: none;
 }
 
+.toolbar-btn {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .clear-selection{
   font-weight: 700;
   padding: .25rem .4rem .15rem .4rem;
@@ -738,26 +750,28 @@ table.search-history-table {
     }
 
     #searchForm_lookfor {
-      padding-right: 34px;
+      padding-right: 38px;
     }
 
     /* Adjust padding for the virtual keyboard button */
     @media (min-width: 401px) {
       #searchForm_lookfor.with-keyboard-selection {
-        padding-right: 72px;
+        padding-right: 80px;
       }
     }
 
     #searchForm_controls {
       position: absolute;
+      top: 0;
       right: 3px;
-      top: 5px;
       z-index: 4;
-      height: 2em;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
     }
 
     #searchForm-reset {
-      bottom: 0;
       width: 2em;
       border: none;
       border-radius: 50%;
@@ -822,6 +836,26 @@ table.search-history-table {
         color: @text-color;
         background-color: transparent;
       }
+    }
+  }
+}
+
+.querySuggestions > h2, .spellingSuggestions > h2 {
+  font-size: unset;
+  line-height: @line-height-base;
+  margin: 0;
+}
+
+.spellingSuggestions .terms > li {
+  .suggestions {
+    padding-inline-start: 0;
+    display: inline;
+    li {
+      display: inline;
+      list-style: none;
+    }
+    li:not(:last-child)::after {
+      content: ', ';
     }
   }
 }

@@ -50,6 +50,13 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     protected $tables = false;
 
     /**
+     * Mock database services.
+     *
+     * @var \VuFind\Db\Service\PluginManager
+     */
+    protected $services = false;
+
+    /**
      * Get mock database plugin manager
      *
      * @return \VuFind\Db\Table\PluginManager
@@ -64,6 +71,20 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get mock database service plugin manager
+     *
+     * @return \VuFind\Db\Service\PluginManager
+     */
+    protected function getServices()
+    {
+        if (!$this->services) {
+            $this->services
+                = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        }
+        return $this->services;
+    }
+
+    /**
      * Set up mock databases for a session handler.
      *
      * @param SessionHandler $handler Session handler
@@ -73,6 +94,18 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     protected function injectMockDatabaseTables(SessionHandler $handler)
     {
         $handler->setDbTableManager($this->getTables());
+    }
+
+    /**
+     * Set up mock database services for a session handler.
+     *
+     * @param SessionHandler $handler Session handler
+     *
+     * @return void
+     */
+    protected function injectMockDatabaseServices(SessionHandler $handler)
+    {
+        $handler->setDbServiceManager($this->getServices());
     }
 
     /**
