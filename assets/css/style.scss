@@ -6,11 +6,22 @@
 
 // Styles
 
+html {
+  font-size: 16px;
+}
+
 body {
   background: $lgrey;
-  font:
-    16px "Roboto",
-    Arial;
+  font-family: "Roboto", Arial;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: max(0.08em, 1px);
+  text-underline-offset: 0.15em;
 }
 
 h1,
@@ -112,6 +123,7 @@ iframe {
     padding: 29px 10px;
     font-size: 17px;
     font-family: "Questrial";
+    color: black;
     text-decoration: none;
     vertical-align: top;
 
@@ -134,12 +146,18 @@ iframe {
   @extend .blue;
   padding: 16px 6px;
 
+  .container {
+    width: 100%;
+    max-width: 1170px;
+    padding-inline: 1rem;
+  }
+
   a {
-    color: lighten($blue, 42%);
-    text-decoration: underline;
+    font-weight: 500;
+    text-decoration-thickness: max(0.08em, 2px);
 
     &:hover {
-      color: #fff;
+      color: $green;
     }
   }
 
@@ -219,8 +237,8 @@ iframe {
 }
 
 .content {
-  padding: 20px;
-  color: #fff;
+  padding: 1rem;
+  color: white;
 }
 
 .footer {
