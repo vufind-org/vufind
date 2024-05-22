@@ -321,7 +321,7 @@ class UserList extends RowGateway implements
      */
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
@@ -344,7 +344,7 @@ class UserList extends RowGateway implements
      */
     public function getTitle(): ?string
     {
-        return $this->title;
+        return $this->title ?? null;
     }
 
     /**
@@ -367,7 +367,7 @@ class UserList extends RowGateway implements
      */
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? null;
     }
 
     /**
