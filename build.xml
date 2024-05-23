@@ -104,6 +104,20 @@
     <phingcall target="shutdown" />
   </target>
 
+  <!-- Run tests, shut down if anything fails (useful when chaining multiple phpunitfast runs in continuous
+       integration with different settings; e.g. to repeat tests with different themes) -->
+  <target name="phpunitfast-with-shutdown-on-fail" description="run phpunitfast task; shutdown if anything fails">
+    <trycatch property="exceptionmsg">
+      <try>
+        <phingcall target="phpunitfast" />
+      </try>
+      <catch>
+        <phingcall target="shutdown" />
+        <fail>${exceptionmsg}</fail>
+      </catch>
+    </trycatch>
+  </target>
+
   <!-- Continuous Integration Tasks -->
   <target name="ci-tasks" description="continuous integration tasks">
 
