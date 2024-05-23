@@ -571,7 +571,6 @@ class OverdriveConnector implements
                 $this->error('Update hold - Overdrive patron APIs are disabled.');
                 return $holdResult;
             }
-    
             $autoCheckout = true;
             $ignoreHoldEmail = false;
             $url = $config->circURL . '/v1/patrons/me/holds/' . $overDriveId;
