@@ -162,8 +162,8 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
 
         $this->assertEquals(
-            $this->getMinkSession()->getCurrentUrl(),
-            $this->getVuFindUrl() . '/Collection/subcollection1/HierarchyTree'
+            $this->getVuFindUrl() . '/Collection/subcollection1/HierarchyTree',
+            $this->getMinkSession()->getCurrentUrl()
         );
     }
 }
