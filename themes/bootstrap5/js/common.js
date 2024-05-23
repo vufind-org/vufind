@@ -706,12 +706,15 @@ function unwrapJQuery(node) {
 }
 
 function setupJumpMenus(_container) {
-  var container = _container || $('body');
-  container.find('select.jumpMenu').on("change", function jumpMenu() {
-    // Check if jumpMenu is still enabled (search.js may have disabled it):
-    if ($(this).hasClass('jumpMenu')) {
-      $(this).parent('form').trigger("submit");
-    }
+  var container = unwrapJQuery(_container || document.body);
+  var selects = container.querySelectorAll('select.jumpMenu');
+  selects.forEach((select) => {
+    select.addEventListener('change', function jumpMenu() {
+      // Check if jumpMenu is still enabled (search.js may have disabled it):
+      if (select.classList.contains('jumpMenu')) {
+        select.parentElement.submit();
+      }
+    });
   });
 }
 
