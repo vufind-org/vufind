@@ -1,0 +1,12 @@
+<h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+<a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
+
+<?=
+  $this->record($this->driver)->renderTemplate(
+      'core-fields.phtml',
+      [
+        'driver' => $this->driver,
+        'defaults' => 'collection-record',
+      ]
+  );
+?>

@@ -85,7 +85,8 @@ abstract class AbstractBase implements
      * @param string $key     API key
      * @param ISBN   $isbnObj ISBN object
      *
-     * @return array
+     * @return array|string For array of strings returned, they all are escaped in the template and presented as list.
+     * If string is returned it is considered as raw HTML and is NOT escaped.
      */
     abstract public function loadByIsbn($key, ISBN $isbnObj);
 }

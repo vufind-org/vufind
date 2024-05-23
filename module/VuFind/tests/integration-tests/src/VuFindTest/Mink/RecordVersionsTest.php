@@ -65,7 +65,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Other Versions (3)',
-            $this->findCssAndGetText($page, 'li.record-tab.active')
+            $this->findCssAndGetText($page, $this->activeRecordTabSelector)
         );
 
         // Click the "see all versions" link:

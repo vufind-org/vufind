@@ -1,0 +1,27 @@
+<?php $this->headTitle($this->title) ?>
+<div class="alignleft">
+  <h3><?=$this->transEsc($this->title) ?></h3>
+
+  <?=$this->flashmessages();?>
+
+  <div id="popupDetails" class="confirmDialog">
+    <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post" data-lightbox-onclose="VuFind.refreshPage">
+      <?php if (isset($this->extras)): ?>
+        <?php foreach ($this->extras as $extra => $value): ?>
+          <?php if (is_array($value)): ?>
+            <?php foreach ($value as $current): ?>
+              <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>[]" value="<?=$this->escapeHtmlAttr($current) ?>">
+            <?php endforeach; ?>
+          <?php else: ?>
+            <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>" value="<?=$this->escapeHtmlAttr($value) ?>">
+          <?php endif; ?>
+        <?php endforeach; ?>
+      <?php endif;?>
+      <input class="btn btn-primary" type="submit" name="confirm" value="<?=$this->transEscAttr('confirm_dialog_yes') ?>">
+    </form>
+    <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->cancel) ?>" method="post">
+      <input class="btn btn-default" data-lightbox-close type="submit" name="cancel" value="<?=$this->transEscAttr('confirm_dialog_no') ?>">
+    </form>
+    <div class="clearfix"></div>
+  </div>
+</div>

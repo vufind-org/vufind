@@ -1,0 +1,114 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Advanced Search'));
+
+    // Disable top search box -- this page has a special layout.
+    $this->layout()->searchbox = false;
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Advanced Search') . '</li>';
+
+    // Set up saved search details:
+    if (isset($this->saved) && is_object($this->saved)) {
+        $searchDetails = $this->saved->getParams()->getQuery();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
+        $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
+        $searchFilters = $this->saved->getParams()->getFilterList();
+    } else {
+        $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+    }
+?>
+<form class="primo-adv-search" id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>">
+  <input type="hidden" name="join" value="AND">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h3><?=$this->transEsc('Advanced Search')?></h3>
+    <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
+    <?php if ($groups !== false) {
+        $numGroups = count($groups);
+      }
+      if (!isset($numGroups) || $numGroups < 3) {
+        $numGroups = 1;
+      }
+    ?>
+    <?php for ($i = 0; $i < $numGroups; $i++): ?>
+      <input type="hidden" name="bool<?=$i?>[]" value="AND">
+      <div class="primo adv-group" id="group<?=$i?>">
+        <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc('adv_search_label')?>:</label>
+        <div class="search-container">
+          <?php
+            if (isset($groups[$i])) {
+              $currentGroup = $groups[$i]->getQueries();
+              $numRows = count($currentGroup);
+            } else {
+              $currentGroup = false;
+            }
+            if (!isset($numRows) || $numRows < 3) {
+              $numRows = 3;
+            }
+          ?>
+          <?php for ($j = 0; $j < $numRows; $j++): ?>
+            <?php $currRow = $currentGroup[$j] ?? false; ?>
+            <div class="search">
+              <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control adv-term-type">
+                <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+                <?php endforeach; ?>
+              </select>
+              <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control adv-term-type">
+                <?php foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+                <?php endforeach; ?>
+              </select>
+              <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow ? $this->escapeHtmlAttr($currRow->getString()) : ''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEscAttr('search_terms')?>">
+            </div>
+          <?php endfor; ?>
+        </div>
+      </div>
+    <?php endfor; ?>
+    <?php $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
+    <?php if (!empty($lastSort)): ?>
+      <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
+    <?php endif; ?>
+    <input type="submit" class="btn btn-primary" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?php if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1">
+    <?php endif ?>
+    <?php if (!empty($searchFilters)): ?>
+      <h4><?=$this->transEsc('adv_search_filters')?></h4>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="checkbox">
+            <label>
+              <?=$this->transEsc('adv_search_select_all')?>
+              <input type="checkbox" checked="checked" class="checkbox-select-all">
+            </label>
+          </div>
+        </li>
+      </ul>
+      <?php foreach ($searchFilters as $field => $data): ?>
+        <div>
+          <ul class="list-group">
+            <li class="list-group-item title"><?=$this->transEsc($field)?></li>
+            <?php foreach ($data as $value): ?>
+              <li class="list-group-item">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"'> <?=$this->escapeHtml($value['displayText'])?>
+                  </label>
+                </div>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+</form>

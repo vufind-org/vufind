@@ -56,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ResourceServiceInterface::class => ResourceService::class,
         SessionServiceInterface::class => SessionService::class,
         TagServiceInterface::class => TagService::class,
+        UserCardServiceInterface::class => UserCardService::class,
         UserResourceServiceInterface::class => UserResourceService::class,
         UserServiceInterface::class => UserService::class,
     ];
@@ -76,6 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ResourceService::class => ResourceServiceFactory::class,
         SessionService::class => AbstractDbServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,
+        UserCardService::class => UserCardServiceFactory::class,
         UserResourceService::class => AbstractDbServiceFactory::class,
         UserService::class => UserServiceFactory::class,
     ];
