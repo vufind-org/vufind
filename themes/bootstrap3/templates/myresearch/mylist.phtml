@@ -30,7 +30,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$list ? $this->escapeHtml($list->getTitle()) : $this->transEsc('saved_items')?></h2>
 
-  <?php if ($list && $user && $list->getUser()->getId() === $user->id && $list->isPublic()): ?>
+  <?php if ($list && $user && $list->getUser()->getId() === $user->getId() && $list->isPublic()): ?>
     <strong>
       <?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?>
       <?=$this->transEscAttr('public_list_indicator') ?>
@@ -78,15 +78,15 @@
       <?php endif; ?>
     </div>
   </nav>
-  <?php if ($list && strlen($description = $list->getDescription() ?? '')): ?>
-    <p><?=$this->escapeHtml($description)?></p>
+  <?php if ($list && !empty($listDescription = $list->getDescription())): ?>
+    <p><?=$this->escapeHtml($listDescription)?></p>
   <?php endif; ?>
   <?php if (!empty($listTags)): ?>
     <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
   <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
     <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
-    <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->id)) ? '-' . $list->id : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+    <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->getId())) ? '-' . $list->getId() : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
       <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
       <ul class="record-list">

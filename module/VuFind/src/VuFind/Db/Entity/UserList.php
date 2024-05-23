@@ -71,7 +71,7 @@ class UserList implements UserListEntityInterface
      *
      * @ORM\Column(name="title", type="string", length=200, nullable=false)
      */
-    protected $title;
+    protected $title = '';
 
     /**
      * Description of the list.
@@ -118,13 +118,95 @@ class UserList implements UserListEntityInterface
     protected $user;
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param string $title Title
+     *
+     * @return UserListEntityInterface
+     */
+    public function setTitle(string $title): UserListEntityInterface
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set description.
+     *
+     * @param ?string $description Description
+     *
+     * @return UserListEntityInterface
+     */
+    public function setDescription(?string $description): UserListEntityInterface
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return ?string
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserListEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set whether the list is public.
+     *
+     * @param bool $public Is the list public?
+     *
+     * @return UserListEntityInterface
+     */
+    public function setPublic(bool $public): UserListEntityInterface
+    {
+        $this->public = $public;
+        return $this;
     }
 
     /**
@@ -138,108 +220,26 @@ class UserList implements UserListEntityInterface
     }
 
     /**
-     * Userlist title setter
+     * Set user.
      *
-     * @param string $title List title
+     * @param ?UserEntityInterface $user User object
      *
-     * @return UserList
+     * @return UserListEntityInterface
      */
-    public function setTitle(string $title): UserList
-    {
-        $this->title = $title;
-        return $this;
-    }
-
-    /**
-     * Get list title
-     *
-     * @return ?string
-     */
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    /**
-     * Set description of the list
-     *
-     * @param ?string $description List description
-     *
-     * @return UserList
-     */
-    public function setDescription(?string $description): UserList
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * Get description of the list
-     *
-     * @return ?string
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set the public list flag
-     *
-     * @param bool $public Public flag
-     *
-     * @return UserList
-     */
-    public function setPublic(bool $public): UserList
-    {
-        $this->public = $public;
-        return $this;
-    }
-
-    /**
-     * User setter.
-     *
-     * @param ?User $user User object
-     *
-     * @return UserList
-     */
-    public function setUser(?User $user): UserList
+    public function setUser(?UserEntityInterface $user): UserListEntityInterface
     {
         $this->user = $user;
         return $this;
     }
 
     /**
-     * User getter
+     * Get user.
      *
      * @return User
      */
     public function getUser(): User
     {
         return $this->user;
-    }
-
-    /**
-     * Created setter.
-     *
-     * @param DateTime $dateTime Created date
-     *
-     * @return UserList
-     */
-    public function setCreated(DateTime $dateTime): UserList
-    {
-        $this->created = $dateTime;
-        return $this;
-    }
-
-    /**
-     * Created getter
-     *
-     * @return DateTime
-     */
-    public function getCreated(): DateTime
-    {
-        return $this->created;
     }
 
     /**
