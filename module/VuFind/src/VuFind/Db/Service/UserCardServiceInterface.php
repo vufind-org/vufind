@@ -46,11 +46,18 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserCardServiceInterface extends DbServiceInterface
 {
     /**
-     * Get user_card rows with insecure catalog passwords
+     * Get user_card rows with insecure catalog passwords.
      *
      * @return UserCardEntityInterface[]
      */
     public function getInsecureRows(): array;
+
+    /**
+     * Get user_card rows with catalog usernames set.
+     *
+     * @return UserCardEntityInterface[]
+     */
+    public function getAllRowsWithUsernames(): array;
 
     /**
      * Get all library cards associated with the user.
@@ -75,7 +82,7 @@ interface UserCardServiceInterface extends DbServiceInterface
     public function getOrCreateLibraryCard(int|UserEntityInterface $user, ?int $id = null): UserCardEntityInterface;
 
     /**
-     * Delete library card
+     * Delete library card.
      *
      * @param UserEntityInterface         $user     User owning card to delete
      * @param int|UserCardEntityInterface $userCard UserCard id or object to be deleted
@@ -125,7 +132,7 @@ interface UserCardServiceInterface extends DbServiceInterface
     public function synchronizeUserLibraryCardData(int|UserEntityInterface $user): bool;
 
     /**
-     * Activate a library card for the given username
+     * Activate a library card for the given username.
      *
      * @param int|UserEntityInterface $user User owning card
      * @param int                     $id   Library card ID to activate
