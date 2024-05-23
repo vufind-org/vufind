@@ -1,0 +1,55 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('System Maintenance')?></h2>
+
+  <h3>Utilities</h3>
+  <?=$this->flashmessages()?>
+  <form class="form-admin-maintenance expired-searches" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'DeleteExpiredSearches'])?>">
+    <label for="del_daysOld">Delete unsaved user search histories older than</label>
+    <input id="del_daysOld" type="number" name="daysOld" size="5" value="2" class="form-control"> days.
+    <input type="submit" name="submitButton" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger">
+  </form>
+  <hr>
+  <form class="form-admin-maintenance expired-sessions" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'DeleteExpiredSessions'])?>">
+    <label for="delsess_daysOld">Delete user sessions older than</label>
+    <input id="delsess_daysOld" type="number" name="daysOld" size="5" value="2" class="form-control"> days.
+    <input type="submit" name="submitButton" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger">
+  </form>
+  <hr>
+  <form class="form-admin-maintenance clear-cache" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'ClearCache'])?>">
+    Clear cache(s):
+    <?php foreach ($caches as $cache): ?>
+      <label>
+        <input type="checkbox"<?=in_array($cache, $nonPersistentCaches) ? ' checked="checked"' : ''?> name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>">
+        <?=$this->escapeHtml($cache) ?>
+      </label>
+    <?php endforeach; ?>
+    <input type="submit" name="submitButton" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger">
+  </form>
+  <hr>
+  <form class="form-admin-maintenance browscap-cache" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'UpdateBrowscapCache'])?>">
+    <label for="update_browscap_cache_type">Update <a href="https://browscap.org/" target="_blank">browscap</a> cache using the </label>
+    <select id="update_browscap_cache_type" name="cacheType" class="form-control">
+      <option value="standard">standard</option>
+      <option value="full">full</option>
+      <option value="lite">lite</option>
+    </select> version (note: may use more memory than configured for PHP).
+    <input type="submit" name="submitButton" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-primary">
+  </form>
+
+  <?php if (!empty($scripts)): ?>
+    <h3>Scripts</h3>
+    <ul>
+      <?php foreach ($scripts as $script => $details): ?>
+        <li><a href="<?=$this->url('admin/script', ['name' => $script])?>"><?=$this->escapeHtml($details['label'] ?? $script)?></a></li>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render('admin/menu.phtml')?>
+</div>

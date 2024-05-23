@@ -1,0 +1,10 @@
+<div class="combined-jump-links">
+  <span><?=$this->translate('combined_jump_links_intro')?></span>
+  <ul>
+    <?php foreach ($combinedResults as $section) : ?>
+      <li class="<?= $this->escapeHtmlAttr($section['domId']) ?>">
+        <a href="#<?= $this->escapeHtmlAttr($section['domId']) ?>"><?= $this->transEsc($section['label']) ?></a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+</div>

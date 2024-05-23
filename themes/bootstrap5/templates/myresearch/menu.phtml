@@ -1,0 +1,48 @@
+<?php
+  $user = $this->auth()->getUserObject();
+?>
+<?=$this->component('hide-offcanvas-button')?>
+<h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
+<nav class="myresearch-menu" aria-labelledby="acc-menu-acc-header">
+  <ul class="account-menu">
+    <?php foreach ($this->items as $item): ?>
+      <?=$this->render('myresearch/menu-item.phtml', ['active' => $this->active, ...$item])?>
+    <?php endforeach; ?>
+  </ul>
+</nav>
+<?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
+  <h3 id="acc-menu-lists-header"><?=$this->transEsc('Your Lists')?></h3>
+  <nav class="myresearch-menu" aria-labelledby="acc-menu-lists-header">
+    <ul>
+      <?php
+        // Use a variable so that we can output this nicely without whitespace that would get underlined:
+        $publicInd = $this->icon(
+            'user-public-list-indicator',
+            [
+              'class' => 'user-list__public-icon',
+              'title' => $this->transEscAttr('public_list_indicator'),
+            ]
+        );
+        $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
+      ?>
+
+      <?php $lists = $user->getLists() ?>
+      <?php foreach ($lists as $list): ?>
+      <li>
+        <a class="user-list-link icon-link <?=$this->active == 'list' . $list['id'] ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list['id']])?>">
+          <?=$this->icon('user-list', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->escapeHtml($list['title'])?></span>
+          <?=$list['public'] ? $publicInd : ''?>
+          <span class="badge"><?=$list->cnt ?></span>
+        </a>
+      </li>
+      <?php endforeach; ?>
+      <li>
+        <a href="<?=$this->url('editList', ['id' => 'NEW'])?>" class="icon-link <?=$this->active == 'editlist/NEW' ? ' active' : ''?>">
+          <?=$this->icon('ui-add', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Create a List') ?></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<?php endif ?>

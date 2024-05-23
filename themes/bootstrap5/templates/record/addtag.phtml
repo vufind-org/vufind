@@ -1,0 +1,23 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Add Tag'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+      . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
+      . '<li class="active">' . $this->transEsc('Add Tag') . '</li>';
+?>
+<h2><?=$this->transEsc('Add Tags') ?></h2>
+<form method="post" name="tagRecord" class="form-add-tag" data-lightbox-onclose="refreshTagListCallback">
+  <input type="hidden" name="submitButton" value="1">
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <div class="form-group">
+    <label class="control-label" for="addtag_tag"><?=$this->transEsc('Tags')?>:</label>
+    <input id="addtag_tag" type="text" name="tag" value="" size="40"  class="form-control">
+    <p class="help-block"><?=$this->transEsc('add_tag_note')?></p>
+  </div>
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>">
+  </div>
+</form>

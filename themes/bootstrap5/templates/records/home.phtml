@@ -1,0 +1,9 @@
+<?php
+    $this->slot('head-title')->set($this->translate('View Records'));
+    $this->slot('search-heading')->set('');
+
+    // Load standard settings from the default search results screen:
+    echo $this->render('search/results.phtml');
+
+    // Disable top search box -- it doesn't make sense in this module.
+    $this->layout()->searchbox = false;
