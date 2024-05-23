@@ -1,0 +1,54 @@
+// Make sure Font Awesome icons are loaded properly
+/* #LESS>
+$fa-font-path: "../../../../../../themes/bootstrap3/css/fonts";
+<#LESS */
+
+/**
+ * The following are useful Bootstrap variables that are used throughout the code,
+ * with comments and their defaults. See /themes/bootstrap3/less/vendor/bootstrap/variables.less for more.
+ */
+
+// $padding-base-vertical:   6px;  // Buttons, tabs, and other padding
+// $padding-base-horizontal: 12px;
+
+// $navbar-height:                    50px;
+
+// $border-radius-base: 4px;
+
+/* ------ COLORS ------ */
+
+// $gray-base:    #000;
+// $gray-darker:  lighten($gray-base, 13.5%); // #222
+// $gray-dark:    lighten($gray-base, 20.0%); // #333
+// $gray:         lighten($gray-base, 33.5%); // #555
+// $gray-light:   lighten($gray-base, 46.7%); // #777
+// $gray-lighter: lighten($gray-base, 93.5%); // #eee
+//
+// $brand-primary: darken(#428bca, 6.5%); // #337ab7 (primary buttons, links, and active elements)
+// $brand-success: #5cb85c;
+// $brand-info:    #5bc0de;
+// $brand-warning: #f0ad4e;
+// $brand-danger:  #d9534f;
+
+// $list-group-border:  #ddd; // Borders on menus and sidebars
+
+// $text-color:            $gray-dark;
+// $link-color:            $brand-primary;
+// $link-hover-color:      darken($link-color, 15%);
+
+// Define colors for form feedback states and, by default, alerts.
+// $state-success-text:             #3c763d;
+// $state-success-bg:               #dff0d8;
+// $state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%);
+//
+// $state-info-text:                #31708f;
+// $state-info-bg:                  #d9edf7;
+// $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%);
+//
+// $state-warning-text:             #8a6d3b;
+// $state-warning-bg:               #fcf8e3;
+// $state-warning-border:           darken(adjust-hue($state-warning-bg, -10), 5%);
+//
+// $state-danger-text:              #a94442;
+// $state-danger-bg:                #f2dede;
+// $state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%);

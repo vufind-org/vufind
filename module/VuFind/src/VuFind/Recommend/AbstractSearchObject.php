@@ -62,6 +62,13 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $limit;
 
     /**
+     * Sort order for results (null = default)
+     *
+     * @var ?string
+     */
+    protected $sort;
+
+    /**
      * Heading for this recommendation module
      *
      * @var string
@@ -125,6 +132,7 @@ abstract class AbstractSearchObject implements RecommendInterface
 
         $this->heading = $settings[2] ?? $this->getDefaultHeading();
         $this->filterIniSection = $settings[3] ?? false;
+        $this->sort = $settings[4] ?? null;
     }
 
     /**
@@ -158,9 +166,11 @@ abstract class AbstractSearchObject implements RecommendInterface
         }
 
         // Set up the callback to initialize the parameters:
-        $limit = $this->limit;
-        $callback = function ($runner, $params) use ($lookfor, $limit, $typeLabel) {
-            $params->setLimit($limit);
+        $callback = function ($runner, $params) use ($lookfor, $typeLabel) {
+            $params->setLimit($this->limit);
+            if ($this->sort) {
+                $params->setSort($this->sort, true);
+            }
             $params->setBasicSearch(
                 $lookfor,
                 $params->getOptions()->getHandlerForLabel($typeLabel)

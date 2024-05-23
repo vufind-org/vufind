@@ -1,0 +1,30 @@
+<?php
+  // We need to pass the current URL query to the Javascript; we use substr() to
+  // strip off the leading ? character. The "suppress query" option is used for
+  // special search types like course reserves / new items. The AJAX handler needs
+  // the real Solr query in order to process facets correctly, so we need to
+  // unsuppress it here.
+  $querySuppressed = $this->results->getUrlQuery()->isQuerySuppressed();
+  $urlQuery = substr($this->results->getUrlQuery()->setSuppressQuery(false)->getParams(false), 1);
+  $this->results->getUrlQuery()->setSuppressQuery($querySuppressed); // restore original config
+  // We also need to inform the helper about any special parameters used in place
+  // of the suppressed query:
+  $extraUrlFields = $this->results->getUrlQuery()->getParamsWithConfiguredDefaults();
+?>
+<?php
+  $truncateSettings = $this->facets_before_more < 1 ? false : [
+    'rows' => $this->facets_before_more,
+    'btn-class' => 'facet',
+    'wrapper-class' => false,
+    'wrapper-tagname' => 'li',
+  ];
+?>
+<ul class="facet-tree<?php if ($truncateSettings): ?> truncate-hierarchical-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?><?php endif; ?>">
+  <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+    'allowExclude' => $this->allowExclude,
+    'facetList' => $this->cluster['list'],
+    'group' => $this->title,
+    'url' => $this->results->getUrlQuery(),
+    'urlBase' => '',
+  ]) ?>
+</ul>
