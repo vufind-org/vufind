@@ -1,11 +1,7 @@
 <?php
 
 /**
-<<<<<<<< HEAD:module/VuFind/src/VuFind/Db/Service/FeedbackServiceInterface.php
- * Database service interface for feedback.
-========
  * Database usercard service factory
->>>>>>>> dev:module/VuFind/src/VuFind/Db/Service/UserCardServiceFactory.php
  *
  * PHP version 8
  *
@@ -33,14 +29,13 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\FeedbackEntityInterface;
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
-<<<<<<<< HEAD:module/VuFind/src/VuFind/Db/Service/FeedbackServiceInterface.php
- * Database service interface for feedback.
-========
  * Database usercard service factory
->>>>>>>> dev:module/VuFind/src/VuFind/Db/Service/UserCardServiceFactory.php
  *
  * @category VuFind
  * @package  Database
@@ -48,20 +43,22 @@ use VuFind\Db\Entity\FeedbackEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-<<<<<<<< HEAD:module/VuFind/src/VuFind/Db/Service/FeedbackServiceInterface.php
-interface FeedbackServiceInterface extends DbServiceInterface
-========
 class UserCardServiceFactory extends AbstractDbServiceFactory
->>>>>>>> dev:module/VuFind/src/VuFind/Db/Service/UserCardServiceFactory.php
 {
     /**
-     * Create a feedback entity object.
+     * Create an object
      *
-     * @return FeedbackEntityInterface
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-<<<<<<<< HEAD:module/VuFind/src/VuFind/Db/Service/FeedbackServiceInterface.php
-    public function createEntity(): FeedbackEntityInterface;
-========
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -79,5 +76,4 @@ class UserCardServiceFactory extends AbstractDbServiceFactory
             ]
         );
     }
->>>>>>>> dev:module/VuFind/src/VuFind/Db/Service/UserCardServiceFactory.php
 }
