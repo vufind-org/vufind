@@ -87,6 +87,11 @@
   <!-- Main Target -->
   <target name="main" description="main target">
     <phingcall target="startup" />
+    <phingcall target="ci-tasks-with-shutdown" />
+  </target>
+
+  <!-- Continuous Integration Tasks with guaranteed shutdown -->
+  <target name="ci-tasks-with-shutdown" description="continuous integration tasks (with shutdown on success or failure)">
     <trycatch property="exceptionmsg">
       <try>
         <phingcall target="ci-tasks" />
