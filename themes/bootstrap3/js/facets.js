@@ -134,7 +134,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet], .checkbox-filter[data-facet]');
+    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filter[data-facet]');
     $facets.each(function addFacet() {
       if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
@@ -143,12 +143,19 @@ VuFind.register('sideFacets', function SideFacets() {
     if (facetList.length === 0) {
       return;
     }
+    // Update existing query from the current URL since it may have changed
+    // parameters (we can't use it as is, because it doesn't contain any suppressed query):
+    const query = new URLSearchParams($container.data('query'));
+    const windowQuery = new URLSearchParams(window.location.search.substring(1));
+    for (const [key, value] of windowQuery) {
+      query.set(key, value);
+    }
     var request = {
       method: 'getSideFacets',
       searchClassId: $container.data('searchClassId'),
       location: $container.data('location'),
       configIndex: $container.data('configIndex'),
-      query: $container.data('query'),
+      query: query.toString(),
       querySuppressed: $container.data('querySuppressed'),
       extraFields: $container.data('extraFields'),
       enabledFacets: facetList
