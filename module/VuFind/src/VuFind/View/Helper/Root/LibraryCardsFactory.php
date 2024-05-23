@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database usercard service factory
+ * LibraryCards helper factory.
  *
  * PHP version 8
  *
@@ -21,29 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
- * Database usercard service factory
+ * LibraryCards helper factory.
  *
  * @category VuFind
- * @package  Database
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class UserCardServiceFactory extends AbstractDbServiceFactory
+class LibraryCardsFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,15 +66,11 @@ class UserCardServiceFactory extends AbstractDbServiceFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory!');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return parent::__invoke(
-            $container,
-            $requestedName,
-            [
-                $container->get(\VuFind\Auth\ILSAuthenticator::class),
-                $container->get(\VuFind\Config\AccountCapabilities::class),
-            ]
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        return new $requestedName(
+            $serviceManager->get(\VuFind\Db\Service\UserCardServiceInterface::class)
         );
     }
 }

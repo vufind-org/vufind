@@ -23,20 +23,26 @@
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserCard;
+use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
+use function count;
 use function is_int;
 
 /**
@@ -45,13 +51,17 @@ use function is_int;
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserCardService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
+class UserCardService extends AbstractDbService implements
+    DbServiceAwareInterface,
+    LoggerAwareInterface,
+    UserCardServiceInterface
 {
-    use LoggerAwareTrait;
     use DbServiceAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Constructor
@@ -59,11 +69,13 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
      * @param ILSAuthenticator    $ilsAuthenticator    ILS authenticator
+     * @param AccountCapabilities $capabilities        Account capabilities configuration
      */
     public function __construct(
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
-        protected ILSAuthenticator $ilsAuthenticator
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected AccountCapabilities $capabilities
     ) {
         parent::__construct($entityManager, $entityPluginManager);
     }
@@ -73,7 +85,7 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
      *
      * @return array
      */
-    public function getInsecureRows()
+    public function getInsecureRows(): array
     {
         $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCard::class)
             . ' UC WHERE UC.catPassword IS NOT NULL';
@@ -86,7 +98,7 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
      *
      * @return array
      */
-    public function getAllRowsWithUsernames()
+    public function getAllRowsWithUsernames(): array
     {
         $dql = 'SELECT UC FROM ' . $this->getEntityClass(UserCard::class)
             . ' UC WHERE UC.catUsername IS NOT NULL';
@@ -97,18 +109,21 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
     /**
      * Get all library cards associated with the user.
      *
-     * @param int|User $user        User object or identifier
-     * @param ?int     $id          UserCard id
-     * @param ?string  $catUsername CatUsername
+     * @param int|UserEntityInterface $user        User object or identifier
+     * @param ?int                    $id          Optional card ID filter
+     * @param ?string                 $catUsername Optional catalog username filter
      *
-     * @return array
+     * @return UserCardEntityInterface[]
      */
-    public function getLibraryCards($user, $id = null, $catUsername = null)
+    public function getLibraryCards(int|UserEntityInterface $user, ?int $id = null, ?string $catUsername = null): array
     {
+        if (!$this->capabilities->libraryCardsEnabled()) {
+            return [];
+        }
         $dql = 'SELECT UC '
         . 'FROM ' . $this->getEntityClass(UserCard::class) . ' UC ';
         $dqlWhere = ['UC.user = :user'];
-        $parameters['user'] = $user;
+        $parameters['user'] = $this->getDoctrineReference(User::class, $user);
         if (null !== $id) {
             $dqlWhere[] = 'UC.id = :id';
             $parameters['id'] = $id;
@@ -125,25 +140,23 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
     }
 
     /**
-     * Get library card data
+     * Get or create library card data.
      *
-     * @param int|User $user User object or identifier
-     * @param int      $id   Library card ID
+     * @param int|UserEntityInterface $user User object or identifier
+     * @param ?int                    $id   Card ID to fetch (or null to create a new card)
      *
-     * @return UserCard|false Card data if found, false otherwise
+     * @return UserCardEntityInterface Card data if found; throws exception otherwise
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function getLibraryCard($user, $id = null)
+    public function getOrCreateLibraryCard(int|UserEntityInterface $user, ?int $id = null): UserCardEntityInterface
     {
+        if (!$this->capabilities->libraryCardsEnabled()) {
+            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
+        }
         if ($id === null) {
-            if (is_int($user)) {
-                $user = $this->getDbService(UserService::class)
-                    ->getUserById($user);
-            }
-
             $row = $this->createEntity()
                 ->setCardName('')
-                ->setUser($user)
+                ->setUser($this->getDoctrineReference(User::class, $user))
                 ->setCatUsername('')
                 ->setRawCatPassword('');
         } else {
@@ -158,131 +171,189 @@ class UserCardService extends AbstractDbService implements LoggerAwareInterface,
     /**
      * Delete library card
      *
-     * @param ?UserCard $userCard UserCard to be deleted
+     * @param UserEntityInterface         $user     User owning card to delete
+     * @param int|UserCardEntityInterface $userCard UserCard id or object to be deleted
      *
      * @return bool
-     * @throws \VuFind\Exception\LibraryCard
+     * @throws \Exception
      */
-    public function deleteLibraryCard($userCard)
+    public function deleteLibraryCard(UserEntityInterface $user, int|UserCardEntityInterface $userCard): bool
     {
-        if (empty($userCard)) {
+        if (!$this->capabilities->libraryCardsEnabled()) {
+            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
+        }
+        $cardId = is_int($userCard) ? $userCard : $userCard->getId();
+        $row = current($this->getLibraryCards($user, $cardId));
+        if (!$row) {
             throw new \Exception('Library card not found');
         }
 
         try {
-            $this->deleteEntity($userCard);
+            $this->deleteEntity($row);
         } catch (\Exception $e) {
             $this->logError('Could not delete UserCard: ' . $e->getMessage());
             return false;
         }
+
+        if ($row->getCatUsername() == $user->getCatUsername()) {
+            // Activate another card (if any) or remove cat_username and cat_password
+            $cards = $this->getLibraryCards($user);
+            if (count($cards) > 0) {
+                $this->activateLibraryCard($user, current($cards)->getId());
+            } else {
+                $user->setCatUsername(null);
+                $user->setRawCatPassword(null);
+                $user->setCatPassEnc(null);
+                $this->persistEntity($user);
+            }
+        }
+
         return true;
     }
 
     /**
-     * Save library card with the given information
+     * Persist the provided library card data, either by updating a specified card
+     * or by creating a new one (when $card is null). Also updates the primary user
+     * row when appropriate. Will throw an exception if a duplicate $username value
+     * is provided; there should only be one card row per username.
      *
-     * @param int|User $user     User object or identifier
-     * @param int      $id       Card ID
-     * @param string   $cardName Card name
-     * @param string   $username Username
-     * @param string   $password Password
-     * @param string   $homeLib  Home Library
+     * Returns the row that was added or updated.
      *
-     * @return UserCard|false
+     * @param int|UserEntityInterface          $user     User object or identifier
+     * @param int|UserCardEntityInterface|null $card     Card ID (null = create new)
+     * @param string                           $cardName Card name
+     * @param string                           $username Username
+     * @param string                           $password Password
+     * @param string                           $homeLib  Home Library
+     *
+     * @return UserCardEntityInterface
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function saveLibraryCard(
-        $user,
-        $id,
-        $cardName,
-        $username,
-        $password,
-        $homeLib = ''
-    ) {
-        $userService = $this->getDbService(UserService::class);
-        if (is_int($user)) {
-            $user = $userService->getUserById($user);
+    public function persistLibraryCardData(
+        int|UserEntityInterface $user,
+        int|UserCardEntityInterface|null $card,
+        string $cardName,
+        string $username,
+        string $password,
+        string $homeLib = ''
+    ): UserCardEntityInterface {
+        if (!$this->capabilities->libraryCardsEnabled()) {
+            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
-        $userCard = current($this->getLibraryCards($user, null, $username));
-        if (!empty($userCard) && ($id === null || $userCard->getId() != $id)) {
+        // Extract a card ID, if available:
+        $id = $card instanceof UserCardEntityInterface ? $card->getId() : $card;
+        // Check that the username is not already in use in another card
+        $usernameCheck = current($this->getLibraryCards($user, catUsername: $username));
+        if (!empty($usernameCheck) && ($id === null || $usernameCheck->getId() != $id)) {
             throw new \VuFind\Exception\LibraryCard(
                 'Username is already in use in another library card'
             );
         }
-        $userCard = null;
-        if ($id !== null) {
-            $userCard = current($this->getLibraryCards($user, $id));
+
+        $user = is_int($user)
+            ? $this->getDbService(UserServiceInterface::class)->getUserById($user) : $user;
+
+        $row = ($id !== null) ? current($this->getLibraryCards($user, $id)) : null;
+        if (empty($row)) {
+            $row = $this->createEntity()
+                ->setUser($this->getDoctrineReference(User::class, $user))
+                ->setCreated(new DateTime());
         }
-        if (empty($userCard)) {
-            $userCard = $this->createEntity()
-                ->setUser($user)
-                ->setCreated(new \DateTime());
-        }
-        $userCard->setCardName($cardName);
-        $userCard->setCatUsername($username);
+        $row->setCardName($cardName);
+        $row->setCatUsername($username);
         if (!empty($homeLib)) {
-            $userCard->setHomeLibrary($homeLib);
+            $row->setHomeLibrary($homeLib);
         }
-
         if ($this->ilsAuthenticator->passwordEncryptionEnabled()) {
-            $userCard->setRawCatPassword(null);
-            $userCard->setCatPassEnc($this->ilsAuthenticator->encrypt($password));
+            $row->setRawCatPassword(null);
+            $row->setCatPassEnc($this->ilsAuthenticator->encrypt($password));
         } else {
-            $userCard->setRawCatPassword($password);
-            $userCard->setCatPassEnc(null);
-        }
-        try {
-            $this->persistEntity($userCard);
-        } catch (\Exception $e) {
-            $this->logError('Could not save UserCard: ' . $e->getMessage());
-            return false;
+            $row->setRawCatPassword($password);
+            $row->setCatPassEnc(null);
         }
 
-        return $userCard;
+        $this->persistEntity($row);
+
+        // If this is the first or active library card, or no credentials are
+        // currently set, activate the card now
+        if (
+            count($this->getLibraryCards($user)) == 1 || !$user->getCatUsername()
+            || $user->getCatUsername() === $row->getCatUsername()
+        ) {
+            $this->activateLibraryCard($user, $row->getId());
+        }
+
+        return $row;
     }
 
     /**
-     * Verify that the current card information exists in user's library cards
-     * (if enabled) and is up to date.
+     * Verify that the user's current ILS settings exist in their library card data
+     * (if enabled) and are up to date. Designed to be called after updating the
+     * user row; will create or modify library card rows as needed.
      *
-     * @param int|User $user User object or identifier
+     * @param int|UserEntityInterface $user User object or identifier
      *
      * @return bool
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function updateLibraryCardEntry($user)
+    public function synchronizeUserLibraryCardData(int|UserEntityInterface $user): bool
     {
-        if (is_int($user)) {
-            $user = $this->getDbService(UserService::class)
-                ->getUserById($user);
+        if (!$this->capabilities->libraryCardsEnabled() || !$user->getCatUsername()) {
+            return true; // success, because there's nothing to do
         }
 
-        $userCard = current($this->getLibraryCards($user->getId(), null, $user->getCatUsername()));
-        if (empty($userCard)) {
-            $userCard = $this->createEntity()
-                ->setUser($user)
+        if (is_int($user)) {
+            $user = $this->getDbService(UserServiceInterface::class)->getUserById($user);
+        }
+        $row = current($this->getLibraryCards($user, catUsername: $user->getCatUsername()));
+        if (empty($row)) {
+            $row = $this->createEntity()
+                ->setUser($this->getDoctrineReference(User::class, $user))
                 ->setCatUsername($user->getCatUsername())
                 ->setCardName($user->getCatUsername())
-                ->setCreated(new \DateTime());
+                ->setCreated(new DateTime());
         }
-        $userCard->setHomeLibrary($user->getHomeLibrary())
-            ->setRawCatPassword($user->getRawCatPassword())
-            ->setCatPassEnc($user->getCatPassEnc());
-        try {
-            $this->persistEntity($userCard);
-        } catch (\Exception $e) {
-            $this->logError('Could not update UserCard: ' . $e->getMessage());
-            return false;
-        }
+        // Always update home library and password
+        $row->setHomeLibrary($user->getHomeLibrary());
+        $row->setRawCatPassword($user->getRawCatPassword());
+        $row->setCatPassEnc($user->getCatPassEnc());
+
+        $this->persistEntity($row);
+
         return true;
+    }
+
+    /**
+     * Activate a library card for the given username
+     *
+     * @param int|UserEntityInterface $user User owning card
+     * @param int                     $id   Library card ID to activate
+     *
+     * @return void
+     * @throws \VuFind\Exception\LibraryCard
+     */
+    public function activateLibraryCard(int|UserEntityInterface $user, int $id): void
+    {
+        if (!$this->capabilities->libraryCardsEnabled()) {
+            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
+        }
+        $row = $this->getOrCreateLibraryCard($user, $id);
+        if (is_int($user)) {
+            $user = $this->getDbService(UserServiceInterface::class)->getUserById($user);
+        }
+        $user->setCatUsername($row->getCatUsername());
+        $user->setRawCatPassword($row->getRawCatPassword());
+        $user->setCatPassEnc($row->getCatPassEnc());
+        $user->setHomeLibrary($row->getHomeLibrary());
+        $this->persistEntity($user);
     }
 
     /**
      * Create a UserCard entity object.
      *
-     * @return UserCard
+     * @return UserCardEntityInterface
      */
-    public function createEntity(): UserCard
+    public function createEntity(): UserCardEntityInterface
     {
         $class = $this->getEntityClass(UserCard::class);
         return new $class();

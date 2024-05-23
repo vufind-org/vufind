@@ -34,6 +34,7 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 
 use function count;
 
@@ -174,7 +175,7 @@ class User extends RowGateway implements
 
         // Update library card entry after saving the user so that we always have a
         // user id:
-        $this->updateLibraryCardEntry();
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
 
         return $result;
     }
@@ -252,9 +253,8 @@ class User extends RowGateway implements
     public function changeHomeLibrary($homeLibrary)
     {
         $this->home_library = $homeLibrary;
-        $rowsAffected = $this->save();
-        $this->updateLibraryCardEntry();
-        return $rowsAffected;
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
+        return $this->save();
     }
 
     /**
@@ -396,6 +396,8 @@ class User extends RowGateway implements
      *
      * @return array
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::getLibraryCards()
      */
     public function getLibraryCards()
     {
@@ -412,13 +414,12 @@ class User extends RowGateway implements
      *
      * @return UserCard|false Card data if found, false otherwise
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use LibraryCardServiceInterface::getOrCreateLibraryCard()
      */
     public function getLibraryCard($id = null)
     {
-        if (!$this->capabilities->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-        return $this->getUserCardService()->getLibraryCard($this->id, $id);
+        return $this->getUserCardService()->getOrCreateLibraryCard($this, $id);
     }
 
     /**
@@ -428,28 +429,12 @@ class User extends RowGateway implements
      *
      * @return void
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::deleteLibraryCard()
      */
     public function deleteLibraryCard($id)
     {
-        if (!$this->capabilities->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-        $userCardService = $this->getUserCardService();
-        $row = current($userCardService->getLibraryCards($this->id, $id));
-        $userCardService->deleteLibraryCard($row);
-
-        if ($row->getCatUsername() == $this->cat_username) {
-            // Activate another card (if any) or remove cat_username and cat_password
-            $cards = $this->getLibraryCards();
-            if (count($cards) > 0) {
-                $this->activateLibraryCard(current($cards)->getId());
-            } else {
-                $this->cat_username = null;
-                $this->cat_password = null;
-                $this->cat_pass_enc = null;
-                $this->save();
-            }
-        }
+        return $this->getUserCardService()->deleteLibraryCard($this, $id);
     }
 
     /**
@@ -459,31 +444,12 @@ class User extends RowGateway implements
      *
      * @return void
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::activateLibraryCard()
      */
     public function activateLibraryCard($id)
     {
-        if (!$this->capabilities->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-        $row = current($this->getUserCardService()->getLibraryCards($this->id, $id));
-        if (!empty($row)) {
-            $this->cat_username = $row->getCatUsername();
-            $this->home_library = $row->getHomeLibrary();
-
-            // Make sure we're properly encrypting everything:
-            if ($this->passwordEncryptionEnabled()) {
-                $this->cat_password = null;
-                $this->cat_pass_enc = $row->getCatPassEnc();
-                if (empty($this->cat_pass_enc) && $row->getRawCatPassword()) {
-                    throw new \Exception('Unexpected raw password in library card ' . $row->getId());
-                }
-            } else {
-                $this->cat_password = $row->getRawCatPassword();
-                $this->cat_pass_enc = null;
-            }
-
-            $this->save();
-        }
+        return $this->getUserCardService()->activateLibraryCard($this, $id);
     }
 
     /**
@@ -497,6 +463,8 @@ class User extends RowGateway implements
      *
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
+     *
+     * @deprecated Use UserCardServiceInterface::persistLibraryCardData()
      */
     public function saveLibraryCard(
         $id,
@@ -505,28 +473,9 @@ class User extends RowGateway implements
         $password,
         $homeLib = ''
     ) {
-        if (!$this->capabilities->libraryCardsEnabled()) {
-            throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
-        }
-        $row = $this->getUserCardService()->saveLibraryCard(
-            $this->id,
-            $id,
-            $cardName,
-            $username,
-            $password,
-            $homeLib
-        );
-
-        // If this is the first or active library card, or no credentials are
-        // currently set, activate the card now
-        if (
-            count($this->getLibraryCards()) == 1 || empty($this->cat_username)
-            || $this->cat_username === $row->getCatUsername()
-        ) {
-            $this->activateLibraryCard($row->getId());
-        }
-
-        return $row->getId();
+        return $this->getUserCardService()
+            ->persistLibraryCardData($this, $id, $cardName, $username, $password, $homeLib)
+            ->getId();
     }
 
     /**
@@ -535,24 +484,22 @@ class User extends RowGateway implements
      *
      * @return void
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use UserCardServiceInterface::synchronizeUserLibraryCardData()
      */
     protected function updateLibraryCardEntry()
     {
-        if (!$this->capabilities->libraryCardsEnabled() || empty($this->cat_username)) {
-            return;
-        }
-
-        $this->getUserCardService()->updateLibraryCardEntry($this->id);
+        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
     }
 
     /**
      * Get a UserCard service object.
      *
-     * @return \VuFind\Db\Service\UserCardService
+     * @return UserCardServiceInterface
      */
     public function getUserCardService()
     {
-        return $this->getDbService(\VuFind\Db\Service\UserCardService::class);
+        return $this->getDbService(UserCardServiceInterface::class);
     }
 
     /**
