@@ -292,7 +292,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&UserCardEntityInterface
      */
-    protected function getUserCardEntity(): MockObject&UserCardEntityInterface
+    protected function getMockUserCardEntity(): MockObject&UserCardEntityInterface
     {
         $card = $this->createMock(UserCardEntityInterface::class);
         $rawPass = 'mypassword';
@@ -400,7 +400,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $writer->expects($this->once())->method('save')->willReturn(true);
-        $card = $this->getUserCardEntity();
+        $card = $this->getMockUserCardEntity();
         $userTable = $this->getMockUserTable();
         $userTable->expects($this->once())->method('select')->willReturn([]);
         $cardService = $this->getMockCardService();
