@@ -1,0 +1,16 @@
+<?php foreach ($data as $field): ?>
+  <?php /* Depending on the record driver, $field may either be an array with
+     "name" and "number" keys or a flat string containing only the series
+     name.  We should account for both cases to maximize compatibility. */ ?>
+  <?php if (is_array($field)): ?>
+    <?php if (!empty($field['name'])): ?>
+      <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>"><?=$this->escapeHtml($field['name'])?></a>
+      <?php if (!empty($field['number'])): ?>
+        <?=$this->escapeHtml($field['number'])?>
+      <?php endif; ?>
+      <br>
+    <?php endif; ?>
+  <?php else: ?>
+    <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escapeHtml($field)?></a><br>
+  <?php endif; ?>
+<?php endforeach; ?>

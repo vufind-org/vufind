@@ -1,0 +1,42 @@
+<?php /* Global context icons only */
+
+// Set up icons
+$list = [
+    'spinner',
+    // Channels
+    'ui-dots-menu',
+    // Facets
+    'facet-checked',
+    'facet-collapse',
+    'facet-exclude',
+    'facet-expand',
+    'facet-noncollapsible',
+    'facet-unchecked',
+    // Hierarchy tree
+    'format-file',
+    'format-folder',
+    // My Account AJAX
+    'my-account',
+    'my-account-notification',
+    'my-account-warning',
+    // Record statuses
+    'place-hold',
+    'place-ill-request',
+    'place-storage-retrieval',
+    'status-available',
+    'status-pending',
+    'status-ready',
+    'status-unavailable',
+    'status-unknown',
+    'ui-failure',
+    'ui-success',
+    // Truncate
+    'truncate-less',
+    'truncate-more',
+];
+
+// Zip list together
+// ala 'icon' => 'icon'
+$this->jsIcons()->addStrings(array_combine($list, $list));
+
+echo $this->jsIcons()->getJSON();

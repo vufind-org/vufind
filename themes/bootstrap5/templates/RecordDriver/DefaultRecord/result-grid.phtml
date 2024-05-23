@@ -1,0 +1,58 @@
+<?php
+/* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+   but even if we don't plan to display the link, we still want to get the $openUrl
+   value for use in generating a COinS (Z3988) tag -- see bottom of file.
+*/
+$openUrl = $this->openUrl($this->driver, 'results');
+$openUrlActive = $openUrl->isActive();
+$doi = $this->doi($this->driver, 'results');
+$doiActive = $doi->isActive();
+// Account for replace_other_urls setting
+$urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+$recordLinker = $this->recordLinker($this->results);
+$showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
+?>
+
+<div class="grid-result<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+  <?php if ($showCheckboxes): ?>
+    <label class="grid-checkbox">
+      <?=$this->record($this->driver)->getCheckbox('', 'search-cart-form') ?>
+    </label>
+  <?php endif; ?>
+  <div class="grid-body">
+    <?=$this->record($this->driver)->getCover('result-grid', 'small', $recordLinker->getUrl($this->driver)); ?>
+    <?php if (!$openUrlActive && empty($urls)): ?>
+      <?php if ($this->driver->supportsAjaxStatus()): ?>
+        <div class="result-formats status ajax-availability hidden">
+          <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+    <div>
+      <h2>
+        <a class="title" href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>">
+          <?=$this->record($this->driver)->getTitleHtml(80)?>
+        </a>
+      </h2>
+      <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
+        <br><br>
+        <?php if ($openUrlActive): ?>
+          <?=$openUrl->renderTemplate()?><br>
+        <?php endif; ?>
+        <?php if ($doiActive): ?>
+          <?=$doi->renderTemplate()?><br>
+        <?php endif; ?>
+        <?php foreach (is_array($urls) ? $urls : [] as $current): ?>
+          <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
+            <?=$this->icon('external-link') ?>
+            <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+          <br>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+  </div>
+
+  <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+</div>
+

@@ -15,7 +15,7 @@
     "build-dev": "npm run build-dev:css",
     "watch-dev": "npm run watch-dev:css",
 
-    "build:css": "npm run build:less",
+    "build:css": "npm run build:less && npm run build:scssonly",
     "watch:css": "npm run watch:less",
     "build-dev:css": "npm run build-dev:less",
     "watch-dev:css": "npm run watch-dev:less",
@@ -28,6 +28,7 @@
     "build:scss": "grunt scss",
     "check:scss": "grunt check:scss",
     "watch:scss": "grunt watch:scss",
+    "build:scssonly": "grunt scssonly",
 
     "lessToSass": "grunt lessToSass",
     "watch:lessToSass": "grunt watch:lessToSass"
