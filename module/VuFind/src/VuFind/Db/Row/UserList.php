@@ -340,21 +340,21 @@ class UserList extends RowGateway implements
     /**
      * Get title.
      *
-     * @return ?string
+     * @return string
      */
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
-        return $this->title ?? null;
+        return $this->title ?? '';
     }
 
     /**
      * Set description.
      *
-     * @param string $description Description
+     * @param ?string $description Description
      *
      * @return UserListEntityInterface
      */
-    public function setDescription(string $description): UserListEntityInterface
+    public function setDescription(?string $description): UserListEntityInterface
     {
         $this->description = $description;
         return $this;

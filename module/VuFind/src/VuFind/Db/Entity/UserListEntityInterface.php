@@ -61,18 +61,18 @@ interface UserListEntityInterface extends EntityInterface
     /**
      * Get title.
      *
-     * @return ?string
+     * @return string
      */
-    public function getTitle(): ?string;
+    public function getTitle(): string;
 
     /**
      * Set description.
      *
-     * @param string $description Description
+     * @param ?string $description Description
      *
      * @return UserListEntityInterface
      */
-    public function setDescription(string $description): UserListEntityInterface;
+    public function setDescription(?string $description): UserListEntityInterface;
 
     /**
      * Get description.
