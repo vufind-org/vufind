@@ -154,8 +154,8 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToCollectionHierarchy();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            trim($this->findCssAndGetText($page, '#tree-preview h2')),
-            'Subcollection 1'
+            'Subcollection 1',
+            trim($this->findCssAndGetText($page, '#tree-preview h2'))
         );
         $this->clickCss($page, 'a[data-record-id="colitem2"]');
 
