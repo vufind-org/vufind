@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global bootstrap, VuFind */
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
@@ -186,48 +186,60 @@ VuFind.register('sideFacets', function SideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
   }
 
-  function facetSessionStorage(e) {
+  function facetSessionStorage(e, data) {
     var source = $('#result0 .hiddenSource').val();
     var id = e.target.id;
     var key = 'sidefacet-' + source + id;
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, document.getElementById(id).className);
-    } else {
-      sessionStorage.removeItem(key);
-    }
+    sessionStorage.setItem(key, data);
   }
 
   function init() {
     // Display "loading" message after user clicks facet:
     activateFacetBlocking();
 
-    // Side facet status saving
-    $('.facet-group .collapse').each(function openStoredFacets(index, item) {
-      var source = $('#result0 .hiddenSource').val();
-      var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-      if (storedItem) {
-        var saveTransition = $.support.transition;
-        try {
-          $.support.transition = false;
+    // Restore state of collapsed and expanded side facets:
+    var saveTransition = null;
+    // Handle transitions only with Bootstrap 3 (bootstrap is undefined):
+    let handleTransitions = (typeof bootstrap === 'undefined') && (typeof $.support.transition !== 'undefined');
+    if (handleTransitions) {
+      saveTransition = $.support.transition;
+      $.support.transition = false;
+    }
+    try {
+      $('.facet-group .collapse').each(function openStoredFacets(index, item) {
+        var source = $('#result0 .hiddenSource').val();
+        var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
+        if (storedItem) {
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
           } else if (!$(item).data('forceIn')) {
             $(item).collapse('hide');
           }
-        } finally {
-          $.support.transition = saveTransition;
         }
+      });
+    } finally {
+      if (handleTransitions) {
+        $.support.transition = saveTransition;
       }
-    });
-    $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
-    $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
+    }
+    // Save state on collapse/expand:
+    $('.facet-group').on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
+    $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
-    $('.side-facets-container-ajax')
-      .find('div.collapse[data-facet]:not(.in)')
-      .on('shown.bs.collapse', function expandFacet() {
-        loadAjaxSideFacets();
+    if (typeof bootstrap === 'undefined') {
+      // Bootstrap 3:
+      $('.side-facets-container-ajax')
+        .find('div.collapse[data-facet]:not(.in)')
+        .on('shown.bs.collapse', function expandFacet() {
+          loadAjaxSideFacets();
+        });
+    } else {
+      // Bootstrap 5:
+      document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
+        collapseEl.addEventListener('shown.bs.collapse', loadAjaxSideFacets);
       });
+    }
     loadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
@@ -290,13 +302,13 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       });
       return false;
     });
-    const margin = 230;
-    $('#modal').on('show.bs.modal', function facetListHeight() {
+    const updateFacetListHeightFunc = function () {
+      const margin = 230;
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
-    });
-    $(window).on("resize", function facetListResize() {
-      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
-    });
+    };
+    $(window).on('resize', updateFacetListHeightFunc);
+    // Initial resize:
+    updateFacetListHeightFunc();
   }
 
   return { setup: setup };
