@@ -319,6 +319,16 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Returns a boolean indicating if patron actions are supported
+     *
+     * @return bool
+     */
+    public function supportsPatronActions()
+    {
+        return $this->config->usePatronAPI;
+    }
+
+    /**
      * Is Checked Out
      *
      * Is this resource already checked out to the user?
@@ -330,7 +340,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function isCheckedOut()
     {
         $result = $this->connector->getResultObject();
-        if ($this->isLoggedIn()) {
+        if ($this->isLoggedIn() && $this->supportsPatronActions()) {
             $overdriveID = $this->getOverdriveID();
             $result = $this->connector->getCheckouts(true);
             if ($result->status) {
@@ -374,7 +384,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isHeld()
     {
-        if ($this->isLoggedIn()) {
+        if ($this->isLoggedIn() && $this->supportsPatronActions()) {
             $overDriveId = $this->getOverdriveID();
             $result = $this->connector->getHolds(true);
             if ($result->status) {
@@ -581,6 +591,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         return $this->getIsMarc()
             ? parent::getURLs()
+            // ? $this->getPermanentLink()
             : $this->getPermanentLink();
     }
 

@@ -395,7 +395,7 @@ class OverdriveConnector implements
         $userCollectionToken = $this->getSessionContainer(
         )->userCollectionToken;
         $conf = $this->getConfig();
-        if ($conf->consortiumSupport && $user = $this->getUser()) {
+        if ($conf->consortiumSupport && $conf->usePatronAPI && $user = $this->getUser()) {
             if (empty($userCollectionToken)) {
                 $baseUrl = $conf->circURL;
                 $patronURL = "$baseUrl/v1/patrons/me";
@@ -449,6 +449,10 @@ class OverdriveConnector implements
             return $result;
         }
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Checkout - Overdrive patron APIs are disabled.');
+                return $result;
+            }
             $url = $config->circURL . '/v1/patrons/me/checkouts';
             $params = [
                 'reserveId' => $overDriveId,
@@ -506,6 +510,10 @@ class OverdriveConnector implements
         }
 
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Place hold - Overdrive patron APIs are disabled.');
+                return $holdResult;
+            }
             $ignoreHoldEmail = false;
             $url = $config->circURL . '/v1/patrons/me/holds';
             $action = 'POST';
@@ -559,6 +567,11 @@ class OverdriveConnector implements
         }
 
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Update hold - Overdrive patron APIs are disabled.');
+                return $holdResult;
+            }
+    
             $autoCheckout = true;
             $ignoreHoldEmail = false;
             $url = $config->circURL . '/v1/patrons/me/holds/' . $overDriveId;
@@ -607,6 +620,10 @@ class OverdriveConnector implements
             return $holdResult;
         }
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Suspend hold - Overdrive patron APIs are disabled.');
+                return $holdResult;
+            }
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId/suspension";
             $action = 'POST';
             $params = [
@@ -659,6 +676,10 @@ class OverdriveConnector implements
             return $holdResult;
         }
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Edit suspended hold - Overdrive patron APIs are disabled.');
+                return $holdResult;
+            }
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId/suspension";
             $action = 'PUT';
             $params = [
@@ -704,6 +725,10 @@ class OverdriveConnector implements
             return $holdResult;
         }
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Delete hold suspension - Overdrive patron APIs are disabled.');
+                return $holdResult;
+            }
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId/suspension";
             $action = 'DELETE';
             $response = $this->callPatronUrl(
@@ -741,6 +766,10 @@ class OverdriveConnector implements
             return $holdResult;
         }
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Cancel hold - Overdrive patron APIs are disabled.');
+                return $holdResult;
+            }
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId";
             $action = 'DELETE';
             $response = $this->callPatronUrl(
@@ -777,6 +806,10 @@ class OverdriveConnector implements
             return $result;
         }
         if ($config = $this->getConfig()) {
+            if (!$config->usePatronAPI) {
+                $this->error('Return resource - Overdrive patron APIs are disabled.');
+                return $result;
+            }
             $url = $config->circURL . "/v1/patrons/me/checkouts/$resourceID";
             $action = 'DELETE';
             $response = $this->callPatronUrl(
@@ -811,6 +844,10 @@ class OverdriveConnector implements
         $downloadLink = false;
         if (!$user = $this->getUser()) {
             $this->error('user is not logged in', false, true);
+            return $result;
+        }
+        if (($config = $this->getConfig()) && !$config->usePatronAPI) {
+            $this->error('Get download redirect - Overdrive patron APIs are disabled.');
             return $result;
         }
         $checkout = $this->getCheckout($overDriveId, false);
@@ -904,6 +941,7 @@ class OverdriveConnector implements
         $conf->clientSecret = $this->recordConfig->API->clientSecret;
         $conf->tokenURL = $this->recordConfig->API->tokenURL;
         $conf->patronTokenURL = $this->recordConfig->API->patronTokenURL;
+        $conf->usePatronAPI = (bool)($this->recordConfig->API->usePatronAPI ?? true);
         $conf->idField = $this->recordConfig->Overdrive->overdriveIdMarcField;
         $conf->idSubfield
             = $this->recordConfig->Overdrive->overdriveIdMarcSubfield;
@@ -1156,6 +1194,10 @@ class OverdriveConnector implements
         $checkouts = $this->getSessionContainer()->checkouts;
         if (!$checkouts || $refresh) {
             if ($config = $this->getConfig()) {
+                if (!$config->usePatronAPI) {
+                    $this->error('Get checkouts - Overdrive patron APIs are disabled.');
+                    return $result;
+                }
                 $url = $config->circURL . '/v1/patrons/me/checkouts';
 
                 $response = $this->callPatronUrl(
@@ -1227,6 +1269,10 @@ class OverdriveConnector implements
         $holds = $this->getSessionContainer()->holds;
         if (!$holds || $refresh) {
             if ($config = $this->getConfig()) {
+                if (!$config->usePatronAPI) {
+                    $this->error('Get holds - Overdrive patron APIs are disabled.');
+                    return $result;
+                }
                 $url = $config->circURL . '/v1/patrons/me/holds';
 
                 $response = $this->callPatronUrl(
@@ -1587,6 +1633,9 @@ class OverdriveConnector implements
     ) {
         $patronTokenData = $this->getSessionContainer()->patronTokenData;
         $config = $this->getConfig();
+        if (!$config->usePatronAPI) {
+            return false;
+        }
         if (
             $forceNewConnection
             || $patronTokenData == null

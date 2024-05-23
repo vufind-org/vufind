@@ -14,8 +14,10 @@
     $rec_id = $this->driver->getUniqueID();
     $hold_url = $this->url('overdrive-hold');
     $avail = $this->driver->getOverdriveAvailability();
+    $supportsPatronActions = $this->driver->supportsPatronActions();
     $checkedOutResult = $this->driver->isCheckedOut();
     $checkedOut = $checkedOutResult->data;
+    $urls = $this->driver->getURLs();
     if (!$checkedOut):
         $hold = $this->driver->isHeld();
     endif; ?>
@@ -50,21 +52,27 @@
         <?php endif; ?>
       </p>
 
-      <?php if (!$checkedOut || $checkedOutResult->isMagazine): ?>
+      <?php if ((!$checkedOut || $checkedOutResult->isMagazine) && ($supportsPatronActions || count($urls))): ?>
         <?php if (($avail->data->copiesAvailable ?? 0) > 0): ?>
           <p>
             <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=checkoutConfirm'?>">
+              href="<?=$supportsPatronActions ?
+                "$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=checkoutConfirm' :
+                $urls[0]['url']
+              ?>">
               <?=$this->transEsc('od_but_checkout')?>
             </a>
           <p>
-          <?php endif; ?>
         <?php endif; ?>
-        <?php if (!$checkedOut && !$hold): ?>
-          <?php if (($avail->data->copiesAvailable ?? 0) == 0): ?>
+      <?php endif; ?>
+      <?php if ((!$checkedOut && !$hold) && ($supportsPatronActions || count($urls))): ?>
+        <?php if (($avail->data->copiesAvailable ?? 0) == 0): ?>
           <p>
             <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_texts')?>"
-              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=holdConfirm'?>">
+              href="<?=$supportsPatronActions && count($urls) ?
+                "$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=holdConfirm' :
+                $urls[0]['url']
+              ?>">
               <?=$this->icon('place-hold', 'icon-link__icon')?>
               <?=$this->transEsc('od_but_hold')?>
             </a>
