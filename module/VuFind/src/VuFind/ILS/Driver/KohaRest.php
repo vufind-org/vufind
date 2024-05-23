@@ -2436,21 +2436,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Map a Koha renewal block reason code to a VuFind translation string
      *
      * @param string $reason Koha block code
+     * @param string $itype Koha item type
      *
      * @return string
      */
     protected function mapRenewalBlockReason($reason, $itype)
     {
-        if (isset($this->config['ItypeRenewalBlockMappings'][$itype])) {
-            $itypeRenewalBlockMapping = explode(':', $this->config['ItypeRenewalBlockMappings'][$itype]);
-            if ( $itypeRenewalBlockMapping[0] == $reason ) {
-                return $itypeRenewalBlockMapping[1];
-            } else {
-                return 'renew_item_no';
-            }
-        } else {
-            return $this->renewalBlockMappings[$reason] ?? 'renew_item_no';
-        }
+        return $this->config['ItypeRenewalBlockMappings'][$itype][$reason]
+            ?? $this->renewalBlockMappings[$reason]
+            ?? 'renew_item_no';
     }
 
     /**
