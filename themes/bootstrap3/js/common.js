@@ -706,7 +706,7 @@ function unwrapJQuery(node) {
 }
 
 function setupJumpMenus(_container) {
-  var container = _container || document.body;
+  var container = unwrapJQuery(_container || document.body);
   var selects = container.querySelectorAll('select.jumpMenu');
   selects.forEach((select) => {
     select.addEventListener('change', function jumpMenu() {
