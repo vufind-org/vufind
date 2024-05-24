@@ -42,8 +42,9 @@ use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Service\AbstractDbService;
+use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Table\User as UserTable;
 
@@ -70,7 +71,7 @@ class SwitchDbHashCommand extends Command
      * @param Config                   $config          VuFind configuration
      * @param UserTable                $userTable       User table gateway
      * @param UserCardServiceInterface $userCardService UserCard database service
-     * @param string|null              $name            The name of the command; passing null means
+     * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
      * @param ?PathResolver            $pathResolver    Config file path resolver
      */
@@ -78,7 +79,7 @@ class SwitchDbHashCommand extends Command
         protected Config $config,
         protected UserTable $userTable,
         protected UserCardServiceInterface $userCardService,
-        $name = null,
+        ?string $name = null,
         protected ?PathResolver $pathResolver = null
     ) {
         parent::__construct($name);
@@ -148,16 +149,20 @@ class SwitchDbHashCommand extends Command
     /**
      * Re-encrypt an entity.
      *
-     * @param AbstractDbService       $service   Database service
-     * @param UserCardEntityInterface $entity    Row to update
-     * @param ?BlockCipher            $oldcipher Old cipher (null for none)
-     * @param BlockCipher             $newcipher New cipher
+     * @param AbstractDbService                           $service   Database service
+     * @param UserEntityInterface|UserCardEntityInterface $entity    Row to update
+     * @param ?BlockCipher                                $oldcipher Old cipher (null for none)
+     * @param BlockCipher                                 $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixEntity($service, $entity, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
-    {
+    protected function fixEntity(
+        DbServiceInterface $service,
+        UserEntityInterface|UserCardEntityInterface $entity,
+        ?BlockCipher $oldcipher,
+        BlockCipher $newcipher
+    ): void {
         $oldEncrypted = $entity->getCatPassEnc();
         $pass = ($oldcipher && $oldEncrypted !== null)
             ? $oldcipher->decrypt($oldEncrypted)
