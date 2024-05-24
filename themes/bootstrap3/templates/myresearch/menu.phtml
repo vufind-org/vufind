@@ -31,7 +31,7 @@
       <li>
         <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
           <?=$this->icon('user-list', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->escapeHtml($list['title'])?></span>
+          <span class="icon-link__label"><?=$this->escapeHtml($list->getTitle())?></span>
           <?=$list->isPublic() ? $publicInd : ''?>
           <span class="badge"><?=$list->cnt ?></span>
         </a>
