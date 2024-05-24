@@ -88,11 +88,11 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that a new list contains the appropriate user ID.
+     * Test that a new list is populated appropriately.
      *
      * @return void
      */
-    public function testNewListContainsCreatorUserId()
+    public function testNewListIsPopulatedCorrectly()
     {
         $user = $this->getMockUser();
         $newList = $this->createMock(UserListEntityInterface::class);
