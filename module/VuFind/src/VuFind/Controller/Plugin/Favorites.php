@@ -138,7 +138,7 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         }
 
         // Load helper objects needed for the saving process:
-        $list = $this->favoritesService->getOrCreateListObject(
+        $list = $this->favoritesService->getAndRememberListObject(
             $this->favoritesService->getListIdFromParams($params),
             $user
         );

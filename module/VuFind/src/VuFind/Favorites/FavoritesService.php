@@ -88,6 +88,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
     /**
      * Get a list object for the specified ID (or null to create a new list).
+     * Ensure that the object is persisted to the database if it does not
+     * already exist, and remember it as the user's last-accessed list.
      *
      * @param ?int                $listId List ID (or null to create a new list)
      * @param UserEntityInterface $user   The user saving the record
@@ -96,7 +98,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @throws \VuFind\Exception\ListPermission
      */
-    public function getOrCreateListObject(?int $listId, UserEntityInterface $user): UserListEntityInterface
+    public function getAndRememberListObject(?int $listId, UserEntityInterface $user): UserListEntityInterface
     {
         if (empty($listId)) {
             $list = $this->createListForUser($user)
@@ -173,7 +175,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
 
         // Get or create a list object as needed:
-        $list = $this->getOrCreateListObject($this->getListIdFromParams($params), $user);
+        $list = $this->getAndRememberListObject($this->getListIdFromParams($params), $user);
 
         // Get or create a resource object as needed:
         $resource = $this->resourceTable->findResource(
