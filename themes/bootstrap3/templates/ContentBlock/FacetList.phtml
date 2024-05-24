@@ -4,6 +4,7 @@
   $basicSearch = $options->getSearchAction();
   $advSearch = $options->getAdvancedSearchAction();
   $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
+  $format = '%%displayText%%'; // change to '%%displayText%% (%%count%%)' if you want to show counts
 ?>
 <?php if (!empty($facetList)): ?>
   <div class="search-home-facets">
@@ -24,7 +25,7 @@
               ]) ?>
             <?php else: ?>
               <?php
-                $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch);
+                $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch, $format);
 
                 // Special case: two columns for LC call numbers...
                 $maxListLength = $field == 'callnumber-first'

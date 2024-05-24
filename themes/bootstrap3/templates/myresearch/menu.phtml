@@ -29,10 +29,10 @@
       <?php $lists = $user->getLists() ?>
       <?php foreach ($lists as $list): ?>
       <li>
-        <a class="user-list-link icon-link <?=$this->active == 'list' . $list['id'] ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list['id']])?>">
+        <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
           <?=$this->icon('user-list', 'icon-link__icon') ?>
           <span class="icon-link__label"><?=$this->escapeHtml($list['title'])?></span>
-          <?=$list['public'] ? $publicInd : ''?>
+          <?=$list->isPublic() ? $publicInd : ''?>
           <span class="badge"><?=$list->cnt ?></span>
         </a>
       </li>
