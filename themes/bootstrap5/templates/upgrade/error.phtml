@@ -1,0 +1,10 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Upgrade VuFind'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('upgrade-home') . '">' . $this->transEsc('Upgrade') . '</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+?>
+<h2><?=$this->transEsc('Upgrade VuFind')?></h2>
+<?=$this->flashmessages()?>
+<p><?=$this->transEsc('vufind_upgrade_fail') ?>.  You can try <a href="<?=$this->url('upgrade-reset')?>">starting over</a>.</p>

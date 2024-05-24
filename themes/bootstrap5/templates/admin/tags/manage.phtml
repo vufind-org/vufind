@@ -1,0 +1,73 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
+?>
+
+<h2><?=$this->transEsc('Tag Management')?></h2>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h3><?=$this->transEsc('Manage Tags')?></h3>
+
+  <?=$this->render('admin/tags/menu.phtml', ['active' => 'manage'])?>
+
+  <?=$this->flashmessages()?>
+
+  <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Manage']);?>" method="post">
+    <div class="form-group">
+      <label for="type" class="control-label"><?=$this->transEsc('delete_tags_by')?>:</label>
+      <select id="type" name="type" class="form-control">
+        <option value="user" <?=('user' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Username')?></option>
+        <option value="tag" <?=('tag' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Tag')?></option>
+        <option value="resource" <?=('resource' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Title')?></option>
+      </select>
+      <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-primary">
+    </div>
+  </form>
+
+  <?php if (false !== $this->type):?>
+    <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
+      <input type="hidden" name="origin" value="manage">
+      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($this->type) ?>">
+      <?php if ('user' == $type):?>
+        <div class="form-group">
+          <label for="user_id" class="control-label"><?=$this->transEsc('Username')?></label>
+          <select name="user_id" id="user_id" class="form-control">
+            <?php foreach ($this->uniqueUsers as $user):?>
+              <option value="<?=$this->escapeHtmlAttr($user['user_id']) ?>">
+                <?=$this->escapeHtml($user['username']) ?>
+              </option>
+            <?php endforeach;?>
+          </select>
+          <input type="submit"  name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary">
+        </div>
+      <?php elseif ('tag' == $type):?>
+        <div class="form-group">
+          <label for="tag_id" class="control-label"><?=$this->transEsc('Tag')?></label>
+          <select name="tag_id" id="tag_id" class="form-control">
+            <?php foreach ($this->uniqueTags as $tag):?>
+              <option value="<?=$this->escapeHtmlAttr($tag['tag_id']) ?>">
+                <?= $tag['tag'] ?>
+              </option>
+            <?php endforeach;?>
+          </select>
+          <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary">
+        </div>
+      <?php elseif ('resource' == $type):?>
+        <div class="form-group">
+          <label for="resource_id" class="control-label"><?=$this->transEsc('Title')?></label>
+          <select name="resource_id" id="resource_id" class="form-control">
+            <?php foreach ($this->uniqueResources as $resource):?>
+              <option value="<?=$this->escapeHtmlAttr($resource['resource_id']) ?>" title="<?=$this->escapeHtmlAttr($resource['title']) ?>">
+                <?=$this->escapeHtml($this->truncate($resource['title'], 80)) ?> (<?=$this->escapeHtml($resource['resource_id']) ?>)
+              </option>
+            <?php endforeach;?>
+          </select>
+          <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary">
+        </div>
+      <?php endif;?>
+    </form>
+  <?php endif;?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render('admin/menu.phtml')?>
+</div>

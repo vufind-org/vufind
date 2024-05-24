@@ -29,8 +29,13 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use Laminas\Session\Container;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Tags;
@@ -51,9 +56,13 @@ use VuFind\Tags;
  * @property string $created
  * @property bool   $public
  */
-class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, UserListEntityInterface
+class UserList extends RowGateway implements
+    \VuFind\Db\Table\DbTableAwareInterface,
+    UserListEntityInterface,
+    DbServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Session container for last list information.
@@ -209,7 +218,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Set session container
+     * Set session container.
      *
      * @param Container $session Session container
      *
@@ -234,7 +243,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Given an array of item ids, remove them from all lists
+     * Given an array of item ids, remove them from all lists.
      *
      * @param \VuFind\Db\Row\User|bool $user   Logged-in user (false if none)
      * @param array                    $ids    IDs to remove from the list
@@ -274,7 +283,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return bool
      */
-    public function isPublic()
+    public function isPublic(): bool
     {
         return isset($this->public) && ($this->public == 1);
     }
@@ -283,8 +292,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Destroy the list.
      *
      * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
-     * @param bool                     $force Should we force the delete without
-     * checking permissions?
+     * @param bool                     $force Should we force the delete without checking permissions?
      *
      * @return int The number of rows deleted.
      */
@@ -304,5 +312,122 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
         // Remove the list itself:
         return parent::delete();
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param string $title Title
+     *
+     * @return UserListEntityInterface
+     */
+    public function setTitle(string $title): UserListEntityInterface
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title ?? '';
+    }
+
+    /**
+     * Set description.
+     *
+     * @param ?string $description Description
+     *
+     * @return UserListEntityInterface
+     */
+    public function setDescription(?string $description): UserListEntityInterface
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return ?string
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description ?? null;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserListEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set whether the list is public.
+     *
+     * @param bool $public Is the list public?
+     *
+     * @return UserListEntityInterface
+     */
+    public function setPublic(bool $public): UserListEntityInterface
+    {
+        $this->public = $public ? '1' : '0';
+        return $this;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param ?UserEntityInterface $user User owning the list.
+     *
+     * @return UserListEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user): UserListEntityInterface
+    {
+        $this->user_id = $user?->getId();
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface
+    {
+        return $this->user_id
+            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
+            : null;
     }
 }

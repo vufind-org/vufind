@@ -72,7 +72,6 @@ class ObalkyKnihContentFactory implements FactoryInterface
         }
 
         $service = $container->get(\VuFind\Content\ObalkyKnihService::class);
-        $covers = new $requestedName($service);
-        return $covers;
+        return new $requestedName($service);
     }
 }

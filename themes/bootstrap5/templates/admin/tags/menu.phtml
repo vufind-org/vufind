@@ -1,0 +1,6 @@
+<nav class="nav navbar">
+  <ul class="nav nav-pills">
+    <li<?=strtolower($this->active ?? '') == 'list' ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags', ['action' => 'List'])?>"><?=$this->transEsc('List Tags')?></a></li>
+    <li<?=strtolower($this->active ?? '') == 'manage' ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags', ['action' => 'Manage'])?>"><?=$this->transEsc('Manage Tags')?></a></li>
+  </ul>
+</nav>

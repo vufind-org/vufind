@@ -256,6 +256,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $numberOfSelectedGlobal,
         $multiPageSelectionEnabled = false
     ) {
+        $this->waitForPageLoad($page);
         switch ($selectAllOnPageCheckbox) {
             case self::NONE:
                 $this->checkSelectAllOnPageDoesExists($page, false);
@@ -347,7 +348,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoPrevPage($page)
     {
-        $this->clickCss($page, '.page-prev');
+        $this->clickCss($page, $this->pagePrevSelector);
     }
 
     /**
@@ -359,7 +360,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoNextPage(Element $page)
     {
-        $this->clickCss($page, '.page-next');
+        $this->clickCss($page, $this->pageNextSelector);
     }
 
     /**

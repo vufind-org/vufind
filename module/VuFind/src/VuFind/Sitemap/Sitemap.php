@@ -89,10 +89,12 @@ class Sitemap extends AbstractFile
             $link = $url['url'];
             $languages = $url['languages'] ?? [];
             $frequency = $url['frequency'] ?? '';
+            $lastmod = $url['lastmod'] ?? '';
         } else {
             $link = $url;
             $languages = [];
             $frequency = '';
+            $lastmod = '';
         }
         $alternativeLinks = '';
         if ($languages) {
@@ -114,9 +116,11 @@ class Sitemap extends AbstractFile
         }
         $link = htmlspecialchars($link);
         $freq = htmlspecialchars($frequency ?: $this->frequency);
+        $lastmod = htmlspecialchars($lastmod);
         return "<url>\n"
             . "  <loc>$link</loc>\n"
             . "  <changefreq>$freq</changefreq>\n"
+            . ($lastmod ? "  <lastmod>$lastmod</lastmod>\n" : '')
             . $alternativeLinks
             . "</url>\n";
     }

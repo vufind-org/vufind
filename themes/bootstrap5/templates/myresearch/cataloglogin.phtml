@@ -1,0 +1,75 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
+
+    // Convenience variable:
+    $offlineMode = $this->ils()->getOfflineMode();
+
+    // We should show the account menu unless it's been switched off or we're in the lightbox:
+    $showMenu = ($this->showMenu ?? true) && !$this->inLightbox;
+?>
+<?php if ($offlineMode == 'ils-offline'): ?>
+  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+<?php elseif (!$this->auth()->getManager()->allowsUserIlsLogin()): ?>
+  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>
+<?php else: ?>
+  <div class="<?=$showMenu ? $this->layoutClass('mainbody') : ''?>">
+    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <?=$this->flashmessages()?>
+    <p>
+      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+    </p>
+    <p><?=$this->transEsc('cat_establish_account')?></p>
+    <form method="post" action="<?=$this->serverUrl(true)?>" class="form-catalog-login">
+      <?php if ($this->targets !== null): ?>
+        <div class="form-group">
+          <label class="control-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
+          <select id="profile_cat_target" name="target" class="form-control">
+            <?php foreach ($this->targets as $target): ?>
+              <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target === $this->defaultTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      <?php endif; ?>
+      <div class="form-group">
+        <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+          <label class="control-label password-login" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+        <?php endif; ?>
+        <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
+          <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
+        <?php endif; ?>
+        <input id="profile_cat_username" type="<?='email' === $this->loginMethod ? 'email' : 'text'?>" name="cat_username" value="" class="form-control" autocomplete="<?='email' === $this->loginMethod ? 'email' : 'username'?>">
+      </div>
+      <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+        <div class="form-group">
+          <label class="control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+          <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control" autocomplete="current-password">
+        </div>
+      <?php else: ?>
+        <input type="hidden" name="cat_password" value="****">
+      <?php endif; ?>
+      <div class="form-group">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEscAttr('Login')?>">
+      </div>
+    </form>
+  </div>
+
+  <?php if ($showMenu): ?>
+    <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+      <?=$this->accountMenu()->render('')?>
+    </div>
+  <?php endif; ?>
+  <?php
+    if (null !== $this->targets) {
+      $methods = json_encode($this->loginMethods);
+      $script = "setupMultiILSLoginFields($methods, 'profile_cat_');";
+
+      // Inline the script for lightbox compatibility
+      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    }
+  ?>
+<?php endif; ?>

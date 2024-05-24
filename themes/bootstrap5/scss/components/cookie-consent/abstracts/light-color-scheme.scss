@@ -1,0 +1,51 @@
+/** Light color-scheme **/
+:root{
+    --cc-bg: #{$modal-content-bg};
+    --cc-primary-color: #{$text-color};
+    --cc-secondary-color: #{lighten($text-color, 10%)};
+
+    --cc-btn-primary-bg: #{$btn-primary-bg};
+    --cc-btn-primary-color: #{$btn-primary-color};
+    --cc-btn-primary-border-color: #{$btn-primary-bg};
+    --cc-btn-primary-hover-bg: #{$btn-primary-color};
+    --cc-btn-primary-hover-color: #{$btn-primary-bg};
+    --cc-btn-primary-hover-border-color: #{darken($btn-primary-border, 12%)};
+
+    --cc-btn-secondary-bg: #{$btn-default-bg};
+    --cc-btn-secondary-color: #{$btn-default-color};
+    --cc-btn-secondary-border-color: #{$btn-default-border};
+    --cc-btn-secondary-hover-bg: #{$btn-default-color};
+    --cc-btn-secondary-hover-color: #{$btn-default-bg};
+    --cc-btn-secondary-hover-border-color: #{darken($btn-default-border, 12%)};
+
+    --cc-separator-border-color: #{$well-border};
+
+    --cc-toggle-on-bg: #{$gray-light};
+    --cc-toggle-off-bg: #{lighten($gray-light, 10%)};
+    --cc-toggle-on-knob-bg: #{$body-bg};
+    --cc-toggle-off-knob-bg: #{$body-bg};
+
+    --cc-toggle-enabled-icon-color: #{$modal-content-bg};   // yes (v tick)
+    --cc-toggle-disabled-icon-color: #{$modal-content-bg};  // no (x tick)
+
+    --cc-toggle-readonly-bg: #{lighten($gray-light, 20%)};
+    --cc-toggle-readonly-knob-bg: #{$body-bg};
+    --cc-toggle-readonly-knob-icon-color: #{lighten($gray-light, 20%)};
+
+    --cc-section-category-border: #{$gray-lighter};
+
+    --cc-cookie-category-block-bg: #{$gray-lighter};
+    --cc-cookie-category-block-border: #{$list-group-border};
+    --cc-cookie-category-block-hover-bg: #{darken($gray-lighter, 10%)};
+    --cc-cookie-category-block-hover-border: #{$list-group-border};
+    --cc-cookie-category-expanded-block-bg: #{$gray-lighter};
+    --cc-cookie-category-expanded-block-hover-bg: #{darken($gray-lighter, 10%)};
+
+    --cc-overlay-bg: #{$modal-backdrop-bg};
+    --cc-webkit-scrollbar-bg: #{$gray-lighter};
+    --cc-webkit-scrollbar-hover-bg: #{$btn-primary-color};
+
+    --cc-footer-bg: #{$panel-footer-bg};
+    --cc-footer-color: #{$text-color};
+    --cc-footer-border-color: #{$panel-default-border};
+}

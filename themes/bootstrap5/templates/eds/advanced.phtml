@@ -1,0 +1,50 @@
+<?php
+  // Load the EDS-specific advanced search controls and inject them into the
+  // standard advanced search layout:
+  $this->extraAdvancedControls = $this->render('search/advanced/eds.phtml');
+  $this->buildPageOverride = '/search/advanced/build_page_eds.phtml';
+
+  ob_start();
+?>
+<div id="new_group_template">
+  <div class="adv-group eds-adv">
+    <input type="hidden" name="join" value="AND">
+    <input type="hidden" name="bool0[]" value="AND">
+    <label class="adv-group-label"><?=$this->transEsc('adv_search_label')?>:</label>
+    <?php for ($search = 0; $search < 3; $search++): ?>
+      <?php if ($search === 0): ?>
+        <div id="new_search_template">
+      <?php endif; ?>
+      <div class="adv-search">
+        <?php if ($search === 0): ?><input type="hidden" value="AND" class="first-op"><?php endif; ?>
+        <select id="search_op0_<?=$search ?>" name="op0[]" class="adv-term-op form-control">
+          <option value="AND"><?=$this->transEsc('AND')?></option>
+          <option value="OR"><?=$this->transEsc('OR')?></option>
+          <option value="NOT"><?=$this->transEsc('NOT')?></option>
+        </select>
+        <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="adv-term-input form-control" type="text" value="" aria-label="<?=$this->transEscAttr('search_terms')?>">
+        <span class="help-block hidden-xs"><?=$this->transEsc('in')?></span>
+        <select id="search_type0_<?=$search ?>" name="type0[]" class="adv-term-type form-control" aria-label="<?=$this->transEscAttr('Search type')?>">
+          <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+            <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+          <?php endforeach; ?>
+        </select>
+        <a href="#" class="adv-term-remove">
+          <?=$this->icon('ui-remove') ?>
+          <span class="sr-only"><?=$this->transEsc('remove') ?></span>
+        </a>
+      </div>
+      <?php if ($search === 0): ?>
+        </div>
+      <?php endif; ?>
+    <?php endfor; ?>
+    <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
+    <a href="#" class="add_search_link hidden"><?=$this->transEsc('add_search')?></a>
+  </div>
+</div>
+<?php
+  $this->formOverride = ob_get_contents();
+  ob_end_clean();
+
+  echo $this->render('search/advanced/layout.phtml');
+?>

@@ -1,0 +1,560 @@
+// Mappings for improved back-compatibility with Boostrap 3
+// See also components/variables.scss
+
+@use 'sass:math';
+
+// *** Variables ***
+$brand-primary: $primary !default;
+$brand-success: $success !default;
+$brand-info:    $info !default;
+$brand-warning: $warning !default;
+$brand-danger:  $danger !default;
+
+$border-radius-base:   $border-radius !default;
+$border-radius-large:  $border-radius-lg !default;
+
+$breadcrumb-separator: $breadcrumb-divider !default;
+
+$btn-border-radius-base: $btn-border-radius;
+$btn-default-color:      #333 !default;
+$btn-default-bg:         #fff !default;
+$btn-default-border:     #ccc !default;
+$btn-primary-color:      $body-bg !default;
+$btn-primary-bg:         $primary !default;
+$btn-primary-border:     shade-color($primary, $btn-active-bg-shade-amount) !default;
+
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+
+$input-height-base: $input-height !default;
+
+$list-group-border: $list-group-border-color !default;
+
+$nav-link-hover-bg:       $gray-lighter !default;
+$nav-link-active-bg:      $primary !default;
+$nav-link-padding:        $nav-link-padding-y !default;
+
+$nav-tabs-active-link-hover-color: $gray !default;
+$navbar-padding-horizontal:        math.floor(math.div($grid-gutter-width, 2)) !default;
+$navbar-height:                    50px !default;
+$navbar-nav-link-hover-color:      $body-bg !default;
+$navbar-nav-link-hover-bg:         $body-color !default;
+
+$padding-base-vertical:            $btn-padding-y !default;
+$padding-base-horizontal:          $btn-padding-x !default;
+
+$panel-default-border:   $primary-border-subtle !default;
+$panel-bg:               #f5f5f5 !default;
+$panel-footer-bg:        $panel-bg !default;
+
+$screen-xs:              map-get($grid-breakpoints, "xs");
+$screen-xs-min:          $screen-xs;
+$screen-sm:              map-get($grid-breakpoints, "sm");
+$screen-sm-min:          $screen-sm;
+$screen-md:              map-get($grid-breakpoints, "md");
+$screen-md-min:          $screen-md;
+$screen-lg:              map-get($grid-breakpoints, "lg");
+$screen-lg-min:          $screen-lg;
+$screen-xl:              map-get($grid-breakpoints, "xl");
+$screen-xl-min:          $screen-xl;
+
+$screen-xs-max:          ($screen-sm-min - 1);
+$screen-sm-max:          ($screen-md-min - 1);
+$screen-md-max:          ($screen-lg-min - 1);
+$screen-lg-max:          ($screen-xl-min - 1);
+
+$grid-float-breakpoint:     $screen-sm-min !default;
+$grid-float-breakpoint-max: ($grid-float-breakpoint - 1) !default;
+
+$state-danger-text:           var(--#{$prefix}danger) !default;
+$state-danger-bg:             var(--#{$prefix}danger-bg-subtle) !default;
+$state-info-text:             var(--#{$prefix}info) !default;
+$state-info-bg:               var(--#{$prefix}body-bg) !default;
+$state-success-text:          var(--#{$prefix}success) !default;
+$state-success-bg:            var(--#{$prefix}success-bg-subtle) !default;
+$state-warning-text:          var(--#{$prefix}warning) !default;
+$state-warning-bg:            var(--#{$prefix}warning-bg-subtle) !default;
+
+$text-color: $body-color !default;
+
+$modal-title-padding: $modal-header-padding !default;
+
+$well-bg:                #f5f5f5 !default;
+$well-border:            darken($well-bg, 7%) !default;
+
+$pager-bg:                             $pagination-bg !default;
+$pager-border:                         $pagination-border-color !default;
+$pager-border-radius:                  15px !default;
+$pager-hover-bg:                       $pagination-hover-bg !default;
+$pager-active-bg:                      $pagination-active-bg !default;
+$pager-active-color:                   $pagination-active-color !default;
+$pager-disabled-color:                 $pagination-disabled-color !default;
+
+$cursor-disabled:                not-allowed !default;
+
+$table-bg-accent: var(--bs-table-accent-bg) !default;
+
+$line-height-computed: $line-height-base * $font-size-base;
+
+$legend-color:                   $gray-dark !default;
+$legend-border-color:            #e5e5e5 !default;
+
+
+// *** Mixins ***
+@mixin opacity($opacity) {
+  opacity: $opacity;
+}
+
+@mixin label-variant($color) {
+  background-color: $color;
+
+  &[href] {
+    &:hover,
+    &:focus {
+      background-color: darken($color, 10%);
+    }
+  }
+}
+
+
+// *** Styles ***
+legend {
+  float: none;
+  border: 0;
+  border-bottom: 1px solid $legend-border-color;
+}
+
+.sr-only {
+  @extend .visually-hidden;
+}
+.sr-only-focusable {
+  @extend .visually-hidden-focusable;
+}
+
+.btn {
+  &:focus,
+  &.focus {
+    outline: dotted 1px $text-color;
+  }
+}
+.btn.btn-more {
+  background-color: revert;
+  &:hover {
+    background-color: revert;
+    border-color: #999;
+  }
+}
+.btn-default {
+  @include button-variant(
+    $btn-default-bg,
+    $btn-default-border,
+    $color: $btn-default-color,
+    $hover-background: $btn-default-color,
+    $hover-border: $btn-default-border,
+    $hover-color: $btn-default-bg,
+    $active-background: shade-color($btn-default-bg, $btn-active-bg-shade-amount),
+    $active-border: shade-color($btn-default-border, $btn-active-border-shade-amount),
+    $active-color: $btn-default-color,
+  );
+}
+.btn-primary {
+  @include button-variant(
+    $primary,
+    $text-color,
+    $color: $body-bg,
+    $hover-background: $body-bg,
+    $hover-border: $text-color,
+    $hover-color: $primary
+  );
+}
+.btn-group {
+  display: inline-block;
+}
+.btn-group-justified {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  > .btn,
+  > .btn-group {
+    display: table-cell;
+    float: none;
+    width: 1%;
+  }
+  > .btn-group .btn {
+    width: 100%;
+  }
+
+  > .btn-group .dropdown-menu {
+    left: auto;
+  }
+}
+button.list-group-item {
+  width: 100%;
+  text-align: left;
+}
+
+.badge {
+  background-color: #595959; // $badge-bg is not yet defined here
+}
+
+.label {
+  @extend .badge;
+  margin-bottom: 5px;
+}
+.label-info {
+  color: $body-bg;
+  background-color: $primary;
+}
+.label-success {
+  color: $body-bg;
+  background-color: $success;
+}
+.label-warning {
+  color: $body-bg;
+  background-color: $warning;
+}
+.label-danger {
+  color: $body-bg;
+  background-color: $danger;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.navbar-form {
+  .form-control {
+    display: block;
+    width: 100%;
+
+    @media (min-width: $screen-sm-min) {
+      display: inline-block;
+      width: auto;
+    }
+  }
+  .btn {
+    vertical-align: baseline;
+  }
+}
+
+.form-control:not([multiple]):not([size]) {
+  appearance: auto;
+  height: $input-height;
+}
+
+.form-select {
+  appearance: auto;
+}
+
+/* Hide browser's own X button in the search field (Safari, Chrome) */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+textarea.form-control {
+  height: auto;
+}
+
+@media (min-width: map-get($grid-breakpoints, "sm")) {
+  .form-inline {
+    .control-label {
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+    .form-control, .form-group {
+      display: inline-block;
+      width: auto;
+      vertical-align: middle;
+    }
+  }
+}
+
+.control-label {
+  @extend .form-label;
+}
+
+.form-group {
+  @extend .mb-3;
+}
+
+.input-group {
+  width: initial;
+}
+
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+  margin-left: -20px;
+}
+.radio label, .checkbox label {
+  min-height: 20px;
+  padding-left: 20px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+h1, .h1,
+h2, .h2,
+h3:not(.popover-header), .h3 {
+  margin-top: $line-height-base * 1rem;
+  margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: math.div($line-height-base, 2) * 1rem;
+  margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
+
+.result.embedded .getFull.expanded {
+  position: relative;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  border: 1px solid #ddd;
+}
+
+.footer {
+  clear: both;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#modal .modal-content > .close {
+  border: 0;
+}
+
+.fade.show {
+  @extend .fade, .in;
+}
+
+// See .nav > li > a in bootstrap.scss
+.nav.navbar-nav button.dropdown-toggle {
+  color: inherit;
+  padding: var(--#{$prefix}nav-link-padding-y) var(--#{$prefix}navbar-nav-link-padding-x);
+
+  &:hover,
+  &:focus {
+    color: $dropdown-bg;
+    background-color: #333;
+  }
+}
+.navbar nav {
+  width: 100%;
+  margin-bottom: 7.5px;
+
+  > li > .nav-link {
+    &.active {
+      background-color: $nav-link-active-bg;
+    }
+    &:not(.active):hover {
+      --#{$prefix}nav-link-hover-color: #{$navbar-nav-link-hover-color};
+      background-color: $navbar-nav-link-hover-bg;
+    }
+  }
+}
+.navbar-right {
+  justify-content: right;
+}
+
+.media-body, .media-left, .media-right {
+  display: table-cell;
+  vertical-align: top;
+}
+.media-body {
+  width: 10000px;
+}
+
+// Responsive utilities (that avoid `display: *` that would override any existing value)
+@media(max-width: $screen-xs-max) {
+  .hidden-xs {
+    display: none !important;
+  }
+  :not(.visible-xs) {
+    &.visible-sm, &.visible-md, &.visible-lg {
+      display: none !important;
+    }
+  }
+}
+@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+  .hidden-sm {
+    display: none !important;
+  }
+  :not(.visible-sm) {
+    &.visible-xs, &.visible-md, &.visible-lg {
+      display: none !important;
+    }
+  }
+}
+@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+  .hidden-md {
+    display: none !important;
+  }
+  :not(.visible-md) {
+    &.visible-xs, &.visible-sm, &.visible-lg {
+      display: none !important;
+    }
+  }
+}
+@media (min-width: $screen-lg-min) {
+  .hidden-lg {
+    display: none !important;
+  }
+  :not(.visible-lg) {
+    &.visible-xs, &.visible-sm, &.visible-md {
+      display: none !important;
+    }
+  }
+}
+
+
+.hidden-print {
+  @extend .d-print-none;
+}
+
+.panel {
+  @extend .card;
+}
+.panel-heading {
+  @extend .card-body;
+  background-color: #f5f5f5;
+  padding: 10px 15px;
+}
+.panel-title {
+  @extend .card-title;
+  font-size: 1.15rem;
+  margin: 0;
+  > a {
+    color: inherit;
+  }
+}
+.panel-body {
+  @extend .card-body;
+}
+
+
+// clearfix
+.container, .container-fluid {
+  &::before, &::after {
+    clear: both;
+    display: table;
+    content: " ";
+
+    // but not in header
+    header & {
+      display: none;
+    }
+  }
+}
+
+.pager {
+  padding-left: 0;
+  margin: $line-height-base * 1rem 0;
+  text-align: center;
+  list-style: none;
+  @include clearfix;
+  li {
+    display: inline;
+    > a {
+      display: inline-block;
+      padding: 5px 14px;
+      background-color: $pager-bg;
+      border: 1px solid $pager-border;
+      border-radius: $pager-border-radius;
+    }
+
+    > a:hover,
+    > a:focus {
+      text-decoration: none;
+      background-color: $pager-hover-bg;
+    }
+  }
+  .page-item:first-child .page-link, .page-item:last-child .page-link {
+    border-radius: $pager-border-radius;
+  }
+
+  .next {
+    > a {
+      float: right;
+    }
+  }
+
+  .previous {
+    > a,
+    > span {
+      float: left;
+    }
+  }
+
+  .disabled {
+    > a,
+    > a:hover,
+    > a:focus,
+    > span {
+      color: $pager-disabled-color;
+      cursor: $cursor-disabled;
+      background-color: $pager-bg;
+    }
+  }
+}
+
+.pagination {
+  margin: $line-height-base * 1rem;
+}
+
+.list-group {
+  margin-bottom: 1rem;
+}
+
+@media print {
+  .table {
+    td,
+    th {
+      box-shadow: none;
+    }
+  }
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+  text-decoration: underline;
+}
+
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
+}
+
+.keyboard-selection #keyboard-selection-button {
+  border: 0;
+}
+
+.tagList .tag {
+  padding: var(--#{$prefix}btn-padding-y) var(--#{$prefix}btn-padding-x);
+  @include border-radius(var(--#{$prefix}btn-border-radius));
+}
+
+@media screen and (max-width: 768px) {
+  .table-responsive {
+    > :not(caption) > * > * {
+      box-shadow: none;
+    }
+    > tbody > tr > *:first-child {
+      border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+    }
+  }
+}

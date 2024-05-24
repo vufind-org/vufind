@@ -67,41 +67,6 @@ class LoginToken extends Gateway
     }
 
     /**
-     * Save a token
-     *
-     * @param int    $userId    User identifier
-     * @param string $token     Login token
-     * @param string $series    Series the token belongs to
-     * @param string $browser   User browser
-     * @param string $platform  User platform
-     * @param int    $expires   Token expiration timestamp
-     * @param string $sessionId Session associated with the token
-     *
-     * @return LoginTokenRow
-     */
-    public function saveToken(
-        int $userId,
-        string $token,
-        string $series,
-        string $browser = '',
-        string $platform = '',
-        int $expires = 0,
-        string $sessionId = ''
-    ): LoginTokenRow {
-        $row = $this->createRow();
-        $row->token = hash('sha256', $token);
-        $row->series = $series;
-        $row->user_id = $userId;
-        $row->last_login = date('Y-m-d H:i:s');
-        $row->browser = $browser;
-        $row->platform = $platform;
-        $row->expires = $expires;
-        $row->last_session_id = $sessionId;
-        $row->save();
-        return $row;
-    }
-
-    /**
      * Check if a login token matches one in database.
      *
      * @param array $token array containing user id, token and series
