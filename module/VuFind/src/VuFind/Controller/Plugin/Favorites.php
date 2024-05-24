@@ -30,6 +30,7 @@
 namespace VuFind\Controller\Plugin;
 
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Record\Cache;
@@ -196,8 +197,8 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
                 $user->removeResourcesById($ids, $source);
             }
         } else {
-            $table = $this->getController()->getTable('UserList');
-            $list = $table->getExisting($listID);
+            $service = $this->getController()->getDbService(UserListServiceInterface::class);
+            $list = $service->getUserListById($listID);
             foreach ($sorted as $source => $ids) {
                 $list->removeResourcesById($user, $ids, $source);
             }
