@@ -591,7 +591,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         return $this->getIsMarc()
             ? parent::getURLs()
-            // ? $this->getPermanentLink()
             : $this->getPermanentLink();
     }
 
