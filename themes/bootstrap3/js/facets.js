@@ -1,4 +1,4 @@
-/*global bootstrap, VuFind */
+/*global VuFind */
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
@@ -204,31 +204,23 @@ VuFind.register('sideFacets', function SideFacets() {
     // Display "loading" message after user clicks facet:
     activateFacetBlocking();
 
-    // Restore state of collapsed and expanded side facets:
-    var saveTransition = null;
-    // Handle transitions only with Bootstrap 3 (bootstrap is undefined):
-    let handleTransitions = (typeof bootstrap === 'undefined') && (typeof $.support.transition !== 'undefined');
-    if (handleTransitions) {
-      saveTransition = $.support.transition;
-      $.support.transition = false;
-    }
-    try {
-      $('.facet-group .collapse').each(function openStoredFacets(index, item) {
-        var source = $('#result0 .hiddenSource').val();
-        var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-        if (storedItem) {
+    $('.facet-group .collapse').each(function openStoredFacets(index, item) {
+      var source = $('#result0 .hiddenSource').val();
+      var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
+      if (storedItem) {
+        const oldTransitionState = VuFind.disableTransitions(item);
+        try {
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
           } else if (!$(item).data('forceIn')) {
             $(item).collapse('hide');
           }
+        } finally {
+          VuFind.restoreTransitions(item, oldTransitionState);
         }
-      });
-    } finally {
-      if (handleTransitions) {
-        $.support.transition = saveTransition;
       }
-    }
+    });
+
     // Save state on collapse/expand:
     $('.facet-group').on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
     $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
