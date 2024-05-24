@@ -49,41 +49,17 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record cache
-     *
-     * @var RecordCache
-     */
-    protected $recordCache = null;
-
-    /**
-     * Resource database table
-     *
-     * @var ResourceTable
-     */
-    protected $resourceTable;
-
-    /**
-     * UserList database table
-     *
-     * @var UserListTable
-     */
-    protected $userListTable;
-
-    /**
      * Constructor
      *
-     * @param UserListTable $userList UserList table object
-     * @param ResourceTable $resource Resource table object
-     * @param RecordCache   $cache    Record cache
+     * @param UserListTable $userListTable UserList table object
+     * @param ResourceTable $resourceTable Resource table object
+     * @param ?RecordCache  $cache         Record cache
      */
     public function __construct(
-        UserListTable $userList,
-        ResourceTable $resource,
-        RecordCache $cache = null
+        protected UserListTable $userListTable,
+        protected ResourceTable $resourceTable,
+        protected ?RecordCache $recordCache = null
     ) {
-        $this->recordCache = $cache;
-        $this->userListTable = $userList;
-        $this->resourceTable = $resource;
     }
 
     /**
