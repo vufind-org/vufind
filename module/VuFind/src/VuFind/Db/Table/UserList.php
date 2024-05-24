@@ -86,6 +86,8 @@ class UserList extends Gateway
      *
      * @return \VuFind\Db\Row\UserList
      * @throws LoginRequiredException
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::createListForUser()
      */
     public function getNew($user)
     {

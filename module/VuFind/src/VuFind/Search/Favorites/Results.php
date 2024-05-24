@@ -31,8 +31,10 @@ namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\Resource as ResourceTable;
-use VuFind\Db\Table\UserList as ListTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
@@ -57,30 +59,16 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Object if user is logged in, false otherwise.
      *
-     * @var \VuFind\Db\Row\User|bool
+     * @var ?UserEntityInterface
      */
     protected $user = null;
 
     /**
-     * Active user list (false if none).
+     * Active user list (false if we haven't tried to load yet; null if inapplicable).
      *
-     * @var \VuFind\Db\Row\UserList|bool
+     * @var UserListEntityInterface|null|false
      */
     protected $list = false;
-
-    /**
-     * Resource table
-     *
-     * @var ResourceTable
-     */
-    protected $resourceTable;
-
-    /**
-     * UserList table
-     *
-     * @var ListTable
-     */
-    protected $listTable;
 
     /**
      * Facet list
@@ -99,23 +87,20 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params        Object representing user
-     * search parameters.
-     * @param SearchService              $searchService Search service
-     * @param Loader                     $recordLoader  Record loader
-     * @param ResourceTable              $resourceTable Resource table
-     * @param ListTable                  $listTable     UserList table
+     * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
+     * @param SearchService              $searchService   Search service
+     * @param Loader                     $recordLoader    Record loader
+     * @param ResourceTable              $resourceTable   Resource table
+     * @param UserListServiceInterface   $userListService UserList database service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        ResourceTable $resourceTable,
-        ListTable $listTable
+        protected ResourceTable $resourceTable,
+        protected UserListServiceInterface $userListService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->resourceTable = $resourceTable;
-        $this->listTable = $listTable;
     }
 
     /**
@@ -129,7 +114,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     public function getFacetList($filter = null)
     {
         // Make sure we have processed the search before proceeding:
-        if (null === $this->user) {
+        if (null === $this->results) {
             $this->performAndProcessSearch();
         }
 
@@ -151,8 +136,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 ];
                 switch ($field) {
                     case 'tags':
-                        if ($this->list) {
-                            $tags = $this->list->getResourceTags();
+                        if ($list = $this->getListObject()) {
+                            $tags = $list->getResourceTags();
                         } else {
                             $tags = $this->user ? $this->user->getTags() : [];
                         }
@@ -185,28 +170,25 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     {
         $list = $this->getListObject();
         $auth = $this->getAuthorizationService();
-        $this->user = $auth ? $auth->getIdentity() : false;
+        $this->user = $auth ? $auth->getIdentity() : null;
 
         // Make sure the user and/or list objects make it possible to view
         // the current result set -- we need to check logged in status and
         // list permissions.
-        if (null === $list && !$this->user) {
+        if (!$list && !$this->user) {
             throw new ListPermissionException(
                 'Cannot retrieve favorites without logged in user.'
             );
         }
-        if (
-            null !== $list && !$list->public
-            && (!$this->user || $list->user_id != $this->user->id)
-        ) {
+        if ($list && !$list->isPublic() && $list->getUser()->getId() !== $this->user?->getId()) {
             throw new ListPermissionException(
                 $this->translate('list_access_denied')
             );
         }
 
         // How many results were there?
-        $userId = null === $list ? $this->user->id : $list->user_id;
-        $listId = null === $list ? null : $list->id;
+        $userId = $list ? $list->getUser()->getId() : $this->user->getId();
+        $listId = $list?->getId();
         // Get results as an array so that we can rewind it:
         $rawResults = $this->resourceTable->getFavorites(
             $userId,
@@ -263,9 +245,9 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * Get the list object associated with the current search (null if no list
      * selected).
      *
-     * @return \VuFind\Db\Row\UserList|null
+     * @return ?UserListEntityInterface
      */
-    public function getListObject()
+    public function getListObject(): ?UserListEntityInterface
     {
         // If we haven't previously tried to load a list, do it now:
         if ($this->list === false) {
@@ -273,8 +255,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             // if one is found:
             $filters = $this->getParams()->getRawFilters();
             $listId = $filters['lists'][0] ?? null;
-            $this->list = (null === $listId)
-                ? null : $this->listTable->getExisting($listId);
+            $this->list = (null === $listId) ? null : $this->userListService->getUserListById($listId);
         }
         return $this->list;
     }

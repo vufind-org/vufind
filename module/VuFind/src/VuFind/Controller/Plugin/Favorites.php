@@ -137,7 +137,10 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         }
 
         // Load helper objects needed for the saving process:
-        $list = $this->favoritesService->getListObject($params['list'] ?? '', $user);
+        $list = $this->favoritesService->getOrCreateListObject(
+            $this->favoritesService->getListIdFromParams($params),
+            $user
+        );
         $this->cache->setContext(Cache::CONTEXT_FAVORITE);
 
         $cacheRecordIds = [];   // list of record IDs to save to cache

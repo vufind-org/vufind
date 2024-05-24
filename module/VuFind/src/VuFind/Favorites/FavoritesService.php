@@ -29,11 +29,16 @@
 
 namespace VuFind\Favorites;
 
+use DateTime;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\Resource as ResourceTable;
-use VuFind\Db\Table\UserList as UserListTable;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
+use function intval;
 
 /**
  * Favorites service
@@ -51,35 +56,54 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param UserListTable $userListTable UserList table object
-     * @param ResourceTable $resourceTable Resource table object
-     * @param ?RecordCache  $cache         Record cache
+     * @param UserListServiceInterface $userListService UserList database service
+     * @param ResourceTable            $resourceTable   Resource table object
+     * @param ?RecordCache             $recordCache     Record cache (optional)
      */
     public function __construct(
-        protected UserListTable $userListTable,
+        protected UserListServiceInterface $userListService,
         protected ResourceTable $resourceTable,
         protected ?RecordCache $recordCache = null
     ) {
     }
 
     /**
-     * Get a list object for the specified ID (or 'NEW' to create a new list).
+     * Create a new list object for the specified user.
      *
-     * @param string              $listId List ID (or 'NEW')
-     * @param \VuFind\Db\Row\User $user   The user saving the record
+     * @param ?UserEntityInterface $user Logged in user (null if logged out)
      *
-     * @return \VuFind\Db\Row\UserList
+     * @return UserListEntityInterface
+     * @throws LoginRequiredException
+     */
+    public function createListForUser(?UserEntityInterface $user): UserListEntityInterface
+    {
+        if (!$user) {
+            throw new LoginRequiredException('Log in to create lists.');
+        }
+
+        return $this->userListService->createEntity()
+            ->setCreated(new DateTime())
+            ->setUser($user);
+    }
+
+    /**
+     * Get a list object for the specified ID (or null to create a new list).
+     *
+     * @param ?int                $listId List ID (or null to create a new list)
+     * @param UserEntityInterface $user   The user saving the record
+     *
+     * @return UserListEntityInterface
      *
      * @throws \VuFind\Exception\ListPermission
      */
-    public function getListObject($listId, \VuFind\Db\Row\User $user)
+    public function getOrCreateListObject(?int $listId, UserEntityInterface $user): UserListEntityInterface
     {
-        if (empty($listId) || $listId == 'NEW') {
-            $list = $this->userListTable->getNew($user);
-            $list->title = $this->translate('default_list_title');
+        if (empty($listId)) {
+            $list = $this->createListForUser($user)
+                ->setTitle($this->translate('default_list_title'));
             $list->save($user);
         } else {
-            $list = $this->userListTable->getExisting($listId);
+            $list = $this->userListService->getUserListById($listId);
             // Validate incoming list ID:
             if (!$list->editAllowed($user)) {
                 throw new \VuFind\Exception\ListPermission('Access denied.');
@@ -87,6 +111,19 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $list->rememberLastUsed(); // handled by save() in other case
         }
         return $list;
+    }
+
+    /**
+     * Given an array of parameters, extract a list ID if possible. Return null
+     * if no valid ID is found or if a "NEW" record is requested.
+     *
+     * @param array $params Parameters to process
+     *
+     * @return ?int
+     */
+    public function getListIdFromParams(array $params): ?int
+    {
+        return intval($params['list'] ?? 'NEW') ?: null;
     }
 
     /**
@@ -136,10 +173,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
 
         // Get or create a list object as needed:
-        $list = $this->getListObject(
-            $params['list'] ?? '',
-            $user
-        );
+        $list = $this->getOrCreateListObject($this->getListIdFromParams($params), $user);
 
         // Get or create a resource object as needed:
         $resource = $this->resourceTable->findResource(
