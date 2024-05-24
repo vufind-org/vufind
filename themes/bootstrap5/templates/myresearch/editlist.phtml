@@ -25,7 +25,7 @@
   </div>
   <div class="form-group">
     <label class="control-label" for="list_desc"><?=$this->transEsc('Description') ?></label>
-    <textarea id="list_desc" class="form-control" name="desc" rows="3"><?=$this->escapeHtmlAttr($this->list->getDescription() ?? '')?></textarea>
+    <textarea id="list_desc" class="form-control" name="desc" rows="3"><?=$this->escapeHtml($this->list->getDescription() ?? '')?></textarea>
   </div>
   <?php if ($this->usertags()->getListMode() === 'enabled'): ?>
     <div class="form-group">
@@ -60,6 +60,6 @@
 <?php if ($this->auth()->getIdentity() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   </div>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->accountMenu()->render(empty($this->list->id) ? 'editlist/NEW' : 'list' . $this->list->getId())?>
+    <?=$this->accountMenu()->render(empty($listId) ? 'editlist/NEW' : 'list' . $listId)?>
   </div>
 <?php endif; ?>
