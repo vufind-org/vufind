@@ -1233,11 +1233,12 @@ class MyResearchController extends AbstractBase
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $favorites = $this->serviceLocator->get(FavoritesService::class);
         $newList = ($id == 'NEW');
-        // If we pass a null ID to getOrCreateListObject(), it will save data to the database prematurely,
-        // so we need to make a direct call to createListForUser when a new list is being made.
-        $list = $newList ? $favorites->createListForUser($user) : $favorites->getOrCreateListObject($id, $user);
+        // If this is a new list, use the FavoritesService to pre-populate some values in
+        // a fresh object; if it's an existing list, we can just fetch from the database.
+        $list = $newList
+            ? $this->serviceLocator->get(FavoritesService::class)->createListForUser($user)
+            : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
         if (!$newList && !$list->editAllowed($user)) {
