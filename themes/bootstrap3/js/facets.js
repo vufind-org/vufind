@@ -230,9 +230,7 @@ VuFind.register('sideFacets', function SideFacets() {
       // Bootstrap 3:
       $('.side-facets-container-ajax')
         .find('div.collapse[data-facet]:not(.in)')
-        .on('shown.bs.collapse', function expandFacet() {
-          loadAjaxSideFacets();
-        });
+        .on('shown.bs.collapse', loadAjaxSideFacets);
     } else {
       // Bootstrap 5:
       document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
