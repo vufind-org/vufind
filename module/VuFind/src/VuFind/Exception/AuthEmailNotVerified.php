@@ -31,7 +31,6 @@ namespace VuFind\Exception;
 
 use Throwable;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\OAuth2\Entity\UserEntity;
 
 /**
  * Unverified email address exception.
@@ -47,16 +46,16 @@ class AuthEmailNotVerified extends \VuFind\Exception\Auth
     /**
      * Constructor
      *
+     * @param UserEntityInterface $user     User object with unverified email.
      * @param string              $message  The exception message
      * @param int                 $code     The exception code
      * @param ?Throwable          $previous The previous exception used for exception chaining
-     * @param UserEntityInterface $user     User object with unverified email.
      */
     public function __construct(
-        string $message = "",
+        protected UserEntityInterface $user,
+        string $message = '',
         int $code = 0,
-        ?Throwable $previous = null,
-        protected UserEntityInterface $user
+        ?Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
     }
