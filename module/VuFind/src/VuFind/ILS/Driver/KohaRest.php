@@ -2436,7 +2436,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Map a Koha renewal block reason code to a VuFind translation string
      *
      * @param string $reason Koha block code
-     * @param string $itype Koha item type
+     * @param string $itype  Koha item type
      *
      * @return string
      */
