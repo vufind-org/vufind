@@ -69,6 +69,10 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getUserListById(int $id): UserListEntityInterface
     {
-        return $this->getDbTable('UserList')->getExisting($id);
+        $result = $this->getDbTable('UserList')->select(['id' => $id])->current();
+        if (empty($result)) {
+            throw new RecordMissingException('Cannot load list ' . $id);
+        }
+        return $result;
     }
 }
