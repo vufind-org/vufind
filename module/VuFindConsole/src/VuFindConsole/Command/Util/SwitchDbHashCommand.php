@@ -41,10 +41,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
-use VuFind\Db\Entity\UserCard as UserCard;
+use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Service\AbstractDbService;
-use VuFind\Db\Service\UserCardService;
+use VuFind\Db\Service\DbServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Table\User as UserTable;
 
 use function count;
@@ -65,54 +66,22 @@ use function count;
 class SwitchDbHashCommand extends Command
 {
     /**
-     * VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * User table gateway
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * UserCard database service
-     *
-     * @var UserCardService
-     */
-    protected $userCardService;
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param Config          $config          VuFind configuration
-     * @param UserTable       $userTable       User table gateway
-     * @param UserCardService $userCardService UserCard database service
-     * @param string|null     $name            The name of the command; passing null means
+     * @param Config                   $config          VuFind configuration
+     * @param UserTable                $userTable       User table gateway
+     * @param UserCardServiceInterface $userCardService UserCard database service
+     * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
-     * @param PathResolver    $pathResolver    Config file path resolver
+     * @param ?PathResolver            $pathResolver    Config file path resolver
      */
     public function __construct(
-        Config $config,
-        UserTable $userTable,
-        UserCardService $userCardService,
-        $name = null,
-        PathResolver $pathResolver = null
+        protected Config $config,
+        protected UserTable $userTable,
+        protected UserCardServiceInterface $userCardService,
+        ?string $name = null,
+        protected ?PathResolver $pathResolver = null
     ) {
-        $this->config = $config;
-        $this->userTable = $userTable;
-        $this->userCardService = $userCardService;
-        $this->pathResolver = $pathResolver;
         parent::__construct($name);
     }
 
@@ -180,16 +149,20 @@ class SwitchDbHashCommand extends Command
     /**
      * Re-encrypt an entity.
      *
-     * @param AbstractDbService $service   Database service
-     * @param UserCard          $entity    Row to update
-     * @param ?BlockCipher      $oldcipher Old cipher (null for none)
-     * @param BlockCipher       $newcipher New cipher
+     * @param AbstractDbService                           $service   Database service
+     * @param UserEntityInterface|UserCardEntityInterface $entity    Row to update
+     * @param ?BlockCipher                                $oldcipher Old cipher (null for none)
+     * @param BlockCipher                                 $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixEntity($service, $entity, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
-    {
+    protected function fixEntity(
+        DbServiceInterface $service,
+        UserEntityInterface|UserCardEntityInterface $entity,
+        ?BlockCipher $oldcipher,
+        BlockCipher $newcipher
+    ): void {
         $oldEncrypted = $entity->getCatPassEnc();
         $pass = ($oldcipher && $oldEncrypted !== null)
             ? $oldcipher->decrypt($oldEncrypted)

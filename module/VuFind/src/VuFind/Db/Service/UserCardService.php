@@ -81,9 +81,9 @@ class UserCardService extends AbstractDbService implements
     }
 
     /**
-     * Get user_card rows with insecure catalog passwords
+     * Get user_card rows with insecure catalog passwords.
      *
-     * @return array
+     * @return UserCardEntityInterface[]
      */
     public function getInsecureRows(): array
     {
@@ -94,9 +94,9 @@ class UserCardService extends AbstractDbService implements
     }
 
     /**
-     * Get user_card rows with catalog usernames set
+     * Get user_card rows with catalog usernames set.
      *
-     * @return array
+     * @return UserCardEntityInterface[]
      */
     public function getAllRowsWithUsernames(): array
     {
@@ -169,7 +169,7 @@ class UserCardService extends AbstractDbService implements
     }
 
     /**
-     * Delete library card
+     * Delete library card.
      *
      * @param UserEntityInterface         $user     User owning card to delete
      * @param int|UserCardEntityInterface $userCard UserCard id or object to be deleted
@@ -324,7 +324,7 @@ class UserCardService extends AbstractDbService implements
     }
 
     /**
-     * Activate a library card for the given username
+     * Activate a library card for the given username.
      *
      * @param int|UserEntityInterface $user User owning card
      * @param int                     $id   Library card ID to activate
