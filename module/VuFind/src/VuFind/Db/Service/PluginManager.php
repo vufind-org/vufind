@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\ResourceTagsEntityInterface;
-
 /**
  * Database service plugin manager
  *

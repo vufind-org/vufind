@@ -31,6 +31,8 @@ namespace VuFind\Db\Service;
 
 use Laminas\Paginator\Paginator;
 
+use function count;
+
 /**
  * Database service for resource_tags.
  *
