@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -134,5 +135,17 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
         }
+    }
+
+    /**
+     * Retrieve a tag by ID.
+     *
+     * @param int $id Tag ID
+     *
+     * @return ?TagsEntityInterface
+     */
+    public function getTagById(int $id): ?TagsEntityInterface
+    {
+        return $this->getDbTable('Tags')->select(['id' => $id])->current();
     }
 }

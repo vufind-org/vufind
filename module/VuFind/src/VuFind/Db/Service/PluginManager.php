@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
+
 /**
  * Database service plugin manager
  *
@@ -54,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
         RatingsServiceInterface::class => RatingsService::class,
         ResourceServiceInterface::class => ResourceService::class,
+        ResourceTagsServiceInterface::class => ResourceTagsService::class,
         SessionServiceInterface::class => SessionService::class,
         TagServiceInterface::class => TagService::class,
         UserCardServiceInterface::class => UserCardService::class,
@@ -75,6 +78,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         OaiResumptionService::class => AbstractDbServiceFactory::class,
         RatingsService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
+        ResourceTagsService::class => AbstractDbServiceFactory::class,
         SessionService::class => AbstractDbServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,
         UserCardService::class => UserCardServiceFactory::class,

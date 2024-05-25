@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -109,4 +110,13 @@ interface TagServiceInterface extends DbServiceInterface
      * @return void
      */
     public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
+
+    /**
+     * Retrieve a tag by ID.
+     *
+     * @param int $id Tag ID
+     *
+     * @return ?TagsEntityInterface
+     */
+    public function getTagById(int $id): ?TagsEntityInterface;
 }
