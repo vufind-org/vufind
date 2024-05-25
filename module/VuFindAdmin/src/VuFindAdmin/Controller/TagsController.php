@@ -388,17 +388,10 @@ class TagsController extends AbstractAdmin
      */
     protected function deleteResourceTagsByFilter(): int
     {
-        $rtService = $this->getDbService(ResourceTagsServiceInterface::class);
-        $count = $rtService->getResourceTagsPaginator(
-            $this->convertFilter($this->getParam('user_id')),
-            $this->convertFilter($this->getParam('resource_id')),
-            $this->convertFilter($this->getParam('tag_id'))
-        )->getTotalItemCount();
-        $rtService->deleteResourceTags(
+        return $this->getDbService(ResourceTagsServiceInterface::class)->deleteResourceTags(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id'))
         );
-        return $count;
     }
 }

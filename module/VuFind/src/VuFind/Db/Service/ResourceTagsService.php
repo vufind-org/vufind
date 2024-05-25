@@ -133,29 +133,31 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
-     * Delete resource tags rows matching specified filter(s).
+     * Delete resource tags rows matching specified filter(s). Return count of IDs deleted.
      *
      * @param ?int $userId     ID of user (null for any)
      * @param ?int $resourceId ID of the resource (null for any)
      * @param ?int $tagId      ID of the tag (null for any)
      *
-     * @return void
+     * @return int
      */
     public function deleteResourceTags(
         ?int $userId = null,
         ?int $resourceId = null,
         ?int $tagId = null
-    ): void {
+    ): int {
+        $deleted = 0;
         while (true) {
             $nextBatch = $this->getResourceTagsPaginator($userId, $resourceId, $tagId);
             if ($nextBatch->getTotalItemCount() < 1) {
-                return;
+                return $deleted;
             }
             $ids = [];
             foreach ($nextBatch as $row) {
                 $ids[] = $row['id'];
             }
             $this->getDbTable('ResourceTags')->deleteByIdArray($ids);
+            $deleted += count($ids);
         }
     }
 }
