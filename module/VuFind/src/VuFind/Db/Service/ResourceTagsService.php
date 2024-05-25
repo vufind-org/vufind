@@ -158,8 +158,7 @@ class ResourceTagsService extends AbstractDbService implements
             foreach ($nextBatch as $row) {
                 $ids[] = $row['id'];
             }
-            $this->getDbTable('ResourceTags')->deleteByIdArray($ids);
-            $deleted += count($ids);
+            $deleted += $this->deleteLinksByResourceTagsIdArray($ids);
         }
     }
 }
