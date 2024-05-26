@@ -230,16 +230,13 @@ class Resource extends Gateway implements DbServiceAwareInterface
      * Get a set of records that do not have metadata stored in the resource
      * table.
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return ResourceEntityInterface[]
+     *
+     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::findMissingMetadata()
      */
     public function findMissingMetadata()
     {
-        $callback = function ($select) {
-            $select->where->equalTo('title', '')
-                ->OR->isNull('author')
-                ->OR->isNull('year');
-        };
-        return $this->select($callback);
+        return $this->getDbService(ResourceServiceInterface::class)->findMissingMetadata();
     }
 
     /**

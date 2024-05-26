@@ -67,10 +67,36 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
     }
 
     /**
+     * Create a resource entity object.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function createEntity(): ResourceEntityInterface
+    {
+        return $this->resourceTable->createRow();
+    }
+
+    /**
+     * Get a set of records that do not have metadata stored in the resource
+     * table.
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function findMissingMetadata(): array
+    {
+        $callback = function ($select) {
+            $select->where->equalTo('title', '')
+                ->OR->isNull('author')
+                ->OR->isNull('year');
+        };
+        return iterator_to_array($this->resourceTable->select($callback));
+    }
+
+    /**
      * Retrieve resource entities matching a set of specified records.
      *
-     * @param int[]  $ids    Array of IDs
-     * @param string $source Source of records to look up
+     * @param string[] $ids    Array of IDs
+     * @param string   $source Source of records to look up
      *
      * @return ResourceEntityInterface[]
      */
