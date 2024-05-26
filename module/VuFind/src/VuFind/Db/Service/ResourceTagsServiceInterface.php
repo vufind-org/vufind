@@ -49,7 +49,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @param ?int    $resourceId ID of the resource (null for any)
      * @param ?int    $tagId      ID of the tag (null for any)
      * @param ?string $order      The order in which to return the data
-     * @param ?string $page       The page number to select
+     * @param ?int    $page       The page number to select
      * @param int     $limit      The number of items to fetch
      *
      * @return Paginator
@@ -59,7 +59,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
         ?int $resourceId = null,
         ?int $tagId = null,
         ?string $order = null,
-        ?string $page = null,
+        ?int $page = null,
         int $limit = 20
     ): Paginator;
 

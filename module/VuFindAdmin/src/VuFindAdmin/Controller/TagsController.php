@@ -116,7 +116,7 @@ class TagsController extends AbstractAdmin
         $view->uniqueTags = $this->getUniqueTags();
         $view->uniqueUsers = $this->getUniqueUsers();
         $view->uniqueResources = $this->getUniqueResources();
-        $page = $this->getParam('page', false, '1');
+        $page = intval($this->getParam('page', false, '1'));
         $view->results = $this->getDbService(ResourceTagsServiceInterface::class)->getResourceTagsPaginator(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
