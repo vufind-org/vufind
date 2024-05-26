@@ -52,4 +52,14 @@ interface ResourceServiceInterface extends DbServiceInterface
      * @return ?ResourceEntityInterface
      */
     public function getResourceById($id): ?ResourceEntityInterface;
+
+    /**
+     * Retrieve resource entities matching a set of specified records.
+     *
+     * @param int[]  $ids    Array of IDs
+     * @param string $source Source of records to look up
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array;
 }

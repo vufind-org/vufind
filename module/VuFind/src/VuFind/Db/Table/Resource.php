@@ -34,6 +34,9 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\Loader;
 
 use function in_array;
@@ -47,8 +50,10 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Resource extends Gateway
+class Resource extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Date converter
      *
@@ -140,15 +145,13 @@ class Resource extends Gateway
      * @param array  $ids    Array of IDs
      * @param string $source Source of records to look up
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return ResourceEntityInterface[]
+     *
+     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::getResourcesByRecordIds()
      */
     public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $callback = function ($select) use ($ids, $source) {
-            $select->where->in('record_id', $ids);
-            $select->where->equalTo('source', $source);
-        };
-        return $this->select($callback);
+        return $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
     }
 
     /**

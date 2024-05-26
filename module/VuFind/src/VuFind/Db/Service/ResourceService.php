@@ -65,4 +65,21 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
     {
         return $this->resourceTable->select(['id' => $id])->current();
     }
+
+    /**
+     * Retrieve resource entities matching a set of specified records.
+     *
+     * @param int[]  $ids    Array of IDs
+     * @param string $source Source of records to look up
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
+    {
+        $callback = function ($select) use ($ids, $source) {
+            $select->where->in('record_id', $ids);
+            $select->where->equalTo('source', $source);
+        };
+        return iterator_to_array($this->resourceTable->select($callback));
+    }
 }
