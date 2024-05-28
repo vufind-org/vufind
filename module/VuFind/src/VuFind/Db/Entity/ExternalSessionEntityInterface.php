@@ -59,7 +59,7 @@ interface ExternalSessionEntityInterface extends EntityInterface
     /**
      * Set PHP session id string.
      *
-     * @param string $sessionId PHP Session id string
+     * @param string $sessionId PHP session id string
      *
      * @return ExternalSessionEntityInterface
      */
@@ -75,7 +75,7 @@ interface ExternalSessionEntityInterface extends EntityInterface
     /**
      * Set external session id string.
      *
-     * @param string $externalSessionId external session id string
+     * @param string $externalSessionId External session id string
      *
      * @return ExternalSessionEntityInterface
      */
