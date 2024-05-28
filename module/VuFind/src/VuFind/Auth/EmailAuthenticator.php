@@ -131,7 +131,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         ];
         $hash = $this->csrf->getHash(true);
 
-        $row = $this->authHashService->getByHashAndType($hash, AuthHashService::TYPE_EMAIL);
+        $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL);
 
         $row->setSessionId($sessionId)
             ->setData(json_encode($linkData));
@@ -166,7 +166,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      */
     public function authenticate($hash)
     {
-        $row = $this->authHashService->getByHashAndType($hash, AuthHashService::TYPE_EMAIL, false);
+        $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL, false);
         if (!$row) {
             // Assume the hash has already been used or has expired
             throw new AuthException('authentication_error_expired');
@@ -207,7 +207,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             $request->getQuery()->get('hash', '')
         );
         if ($hash) {
-            $row = $this->authHashService->getByHashAndType($hash, AuthHashService::TYPE_EMAIL, false);
+            $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL, false);
             return !empty($row);
         }
         return false;
