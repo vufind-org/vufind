@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Auth;
 
+use DateTime;
 use Laminas\Config\Config;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Session\SessionManager;
@@ -37,6 +38,7 @@ use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Validator\CsrfInterface;
@@ -74,7 +76,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         Mailer $mailer = null,
         RendererInterface $renderer = null,
         RemoteAddress $remoteAddress = null,
-        $config = [],
+        array $config = [],
         AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         return new EmailAuthenticator(
@@ -83,9 +85,31 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             $mailer ?? $this->createMock(Mailer::class),
             $renderer ?? $this->createMock(RendererInterface::class),
             $remoteAddress ?? $this->createMock(RemoteAddress::class),
-            new Config($config ?? []),
+            new Config($config),
             $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
         );
+    }
+
+    /**
+     * Test that we can't send links too frequently.
+     *
+     * @return void
+     */
+    public function testRecoveryInterval(): void
+    {
+        $this->expectExceptionMessage('authentication_error_in_progress');
+        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
+        $authHashService = $this->createMock(AuthHashServiceInterface::class);
+        $row = $this->createMock(AuthHashEntityInterface::class);
+        $row->expects($this->once())->method('getCreated')->willReturn(new DateTime());
+        $authHashService->expects($this->once())->method('getLatestBySessionId')->with('foo-session')
+            ->willReturn($row);
+        $authenticator = $this->getEmailAuthenticator(
+            sessionManager: $sessionManager,
+            authHashService: $authHashService
+        );
+        $authenticator->sendAuthenticationLink('', [], [], '', [], '', '');
     }
 
     /**
