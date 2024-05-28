@@ -102,6 +102,35 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that results scripts are properly initialized for the versions tab.
+     *
+     * @return void
+     */
+    public function testVersionsTabInit()
+    {
+        // Enable QRCodes:
+        $extraConfigs = [
+            'config' => [
+                'QRCode' => [
+                    'showInResults' => true,
+                ],
+            ],
+        ];
+        $this->changeConfigs($extraConfigs);
+        $session = $this->getMinkSession();
+        // Go to the tab by clicking it so that any global init in common.js doesn't
+        // mask issues:
+        $session->visit($this->getVuFindUrl() . '/Record/0001732009-0');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '#record-tab-versions a');
+        $this->waitForPageLoad($page);
+        // Click the QR code link and verify that the image gets added dynamically:
+        $this->clickCss($page, '.result-links .qrcodeLink');
+        $this->findCss($page, '.result-links .qrcode img');
+    }
+
+    /**
      * Confirm that links operate differently when the record versions tab is
      * disabled but other version settings are enabled.
      *
