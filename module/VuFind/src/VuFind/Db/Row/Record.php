@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
+
 /**
  * Row Definition for user
  *
@@ -37,6 +39,13 @@ namespace VuFind\Db\Row;
  * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int    $id
+ * @property string $record_id
+ * @property string $source
+ * @property string $version
+ * @property string $data
+ * @property string $updated
  */
 class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterface
 {
@@ -48,5 +57,130 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
     public function __construct($adapter)
     {
         parent::__construct('id', 'record', $adapter);
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Get record id.
+     *
+     * @return ?string
+     */
+    public function getRecordId(): ?string
+    {
+        return $this->record_id ?? null;
+    }
+
+    /**
+     * Set record id.
+     *
+     * @param ?string $recordId Record id
+     *
+     * @return RecordEntityInterface
+     */
+    public function setRecordId(?string $recordId): RecordEntityInterface
+    {
+        $this->record_id = $recordId;
+        return $this;
+    }
+
+    /**
+     * Get record source.
+     *
+     * @return ?string
+     */
+    public function getRecordSource(): ?string
+    {
+        return $this->source ?? null;
+    }
+
+    /**
+     * Set record source.
+     *
+     * @param ?string $recordSource Record source
+     *
+     * @return RecordEntityInterface
+     */
+    public function setRecordSource(?string $recordSource): RecordEntityInterface
+    {
+        $this->source = $recordSource;
+        return $this;
+    }
+
+    /**
+     * Get record version.
+     *
+     * @return string
+     */
+    public function getRecordVersion(): string
+    {
+        return $this->version ?? '';
+    }
+
+    /**
+     * Set record version.
+     *
+     * @param string $recordVersion Record version
+     *
+     * @return RecordEntityInterface
+     */
+    public function setRecordVersion(string $recordVersion): RecordEntityInterface
+    {
+        $this->vesion = $recordVersion;
+        return $this;
+    }
+
+    /**
+     * Get record data.
+     *
+     * @return ?string
+     */
+    public function getRecordData(): ?string
+    {
+        return $this->data ?? null;
+    }
+
+    /**
+     * Set record data.
+     *
+     * @param ?string $recordData Record data
+     *
+     * @return RecordEntityInterface
+     */
+    public function setRecordData(?string $recordData): RecordEntityInterface
+    {
+        $this->data = $recordData;
+        return $this;
+    }
+
+    /**
+     * Get updated date.
+     *
+     * @return DateTime
+     */
+    public function getUpdated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->updated);
+    }
+
+    /**
+     * Set updated date.
+     *
+     * @param DateTime $dateTime Updated date
+     *
+     * @return RecordEntityInterface
+     */
+    public function setUpdated(DateTime $dateTime): RecordEntityInterface
+    {
+        $this->updated = $dateTime->format('Y-m-d H:i:s');
+        return $this;
     }
 }
