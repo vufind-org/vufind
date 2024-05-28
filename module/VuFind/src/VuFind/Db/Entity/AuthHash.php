@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -113,4 +114,129 @@ class AuthHash implements AuthHashEntityInterface
      * )
      */
     protected $created = 'CURRENT_TIMESTAMP';
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get PHP session id string.
+     *
+     * @return ?string
+     */
+    public function getSessionId(): ?string
+    {
+        return $this->sessionId;
+    }
+
+    /**
+     * Set PHP session id string.
+     *
+     * @param ?string $sessionId PHP Session id string
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setSessionId(?string $sessionId): AuthHashEntityInterface
+    {
+        $this->sessionId = $sessionId;
+        return $this;
+    }
+
+    /**
+     * Get hash value.
+     *
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * Set hash value.
+     *
+     * @param string $hash Hash Value
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setHash(string $hash): AuthHashEntityInterface
+    {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get type of hash.
+     *
+     * @return ?string
+     */
+    public function getHashType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set type of hash.
+     *
+     * @param ?string $type Hash Type
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setHashType(?string $type): AuthHashEntityInterface
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set data.
+     *
+     * @param ?string $data Data
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setData(?string $data): AuthHashEntityInterface
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): AuthHashEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
 }
