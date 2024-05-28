@@ -85,7 +85,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @return ?SessionEntityInterface
      */
-    public function getSessionId(): SessionEntityInterface
+    public function getSessionId(): ?SessionEntityInterface
     {
         return $this->session_id
             ? $this->getDbServiceManager()->get(SessionEntityInterface::class)->setSessionId($this->session_id)
