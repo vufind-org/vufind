@@ -54,4 +54,129 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface
     {
         parent::__construct('id', 'auth_hash', $adapter);
     }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Get session id.
+     *
+     * @return Session
+     */
+    public function getSessionId(): Session
+    {
+        return $this->sessionId;
+    }
+
+    /**
+     * Set session id.
+     *
+     * @param ?string $sessionId Session Id
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setSessionId(?string $sessionId): AuthHashEntityInterface
+    {
+        $this->sessionId=$sessionId;
+        return $this;
+    }
+
+    /**
+     * Get hash value.
+     *
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return $this->hash ?? '';
+    }
+
+    /**
+     * Set hash value.
+     *
+     * @param string $hash Hash Value
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setHash(string $hash): AuthHashEntityInterface
+    {
+        $this->hash=$hash;
+        return $this;
+    }
+
+    /**
+     * Get type of hash.
+     * 
+     * @return ?string
+     */
+    public function getType(): ?string
+    {
+        return $this->type ?? null;
+    }
+
+    /**
+     * Set type of hash.
+     * 
+     * @param ?string $type Hash Type
+     * 
+     * @return AuthHashEntityInterface
+     */
+    public function setHashType(?string $type): AuthHashEntityInterface
+    {
+        $this->type=$type;
+        return $this;
+    }
+
+    /**
+     * Get data.
+     * 
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set data.
+     * 
+     * @param ?string $data Data
+     * 
+     * @return AuthHashEntityInterface
+     */
+    public function setData(?string $data): AuthHashEntityInterface
+    {
+        $this->data=$data;
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return AuthHashEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): AuthHashEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
 }
