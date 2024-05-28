@@ -714,7 +714,7 @@ class Folio extends AbstractAPI implements
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,
             'location_code' => $locationCode,
-            'location_is_active' => $locationIsActive,
+            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,
