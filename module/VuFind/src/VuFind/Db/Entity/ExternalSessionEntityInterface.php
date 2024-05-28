@@ -66,16 +66,16 @@ interface ExternalSessionEntityInterface extends EntityInterface
     public function setSessionId(string $sessionId): ExternalSessionEntityInterface;
 
     /**
-     * Get PHP external session id string.
+     * Get external session id string.
      *
      * @return string
      */
     public function getExternalSessionId(): string;
 
     /**
-     * Set PHP external session id string.
+     * Set external session id string.
      *
-     * @param string $externalSessionId PHP external session id string
+     * @param string $externalSessionId external session id string
      *
      * @return ExternalSessionEntityInterface
      */

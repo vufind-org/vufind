@@ -101,19 +101,19 @@ class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSe
      */
     public function getExternalSessionId(): string
     {
-        return $this->session_id ?? '';
+        return $this->external_session_id ?? '';
     }
 
     /**
-     * Set PHP external session id string.
+     * Set external session id string.
      *
-     * @param string $externalSessionId PHP external session id string
+     * @param string $externalSessionId external session id string
      *
      * @return ExternalSessionEntityInterface
      */
     public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface
     {
-        $this->session_id = $externalSessionId;
+        $this->external_session_id = $externalSessionId;
         return $this;
     }
 
