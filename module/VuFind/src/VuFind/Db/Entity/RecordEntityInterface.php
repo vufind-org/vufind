@@ -70,7 +70,7 @@ interface RecordEntityInterface extends EntityInterface
      *
      * @return ?string
      */
-    public function getRecordSource(): ?string;
+    public function getSource(): ?string;
 
     /**
      * Set record source.
@@ -79,14 +79,14 @@ interface RecordEntityInterface extends EntityInterface
      *
      * @return RecordEntityInterface
      */
-    public function setRecordSource(?string $recordSource): RecordEntityInterface;
+    public function setSource(?string $recordSource): RecordEntityInterface;
 
     /**
      * Get record version.
      *
      * @return string
      */
-    public function getRecordVersion(): string;
+    public function getVersion(): string;
 
     /**
      * Set record version.
@@ -95,14 +95,14 @@ interface RecordEntityInterface extends EntityInterface
      *
      * @return RecordEntityInterface
      */
-    public function setRecordVersion(string $recordVersion): RecordEntityInterface;
+    public function setVersion(string $recordVersion): RecordEntityInterface;
 
     /**
      * Get record data.
      *
      * @return ?string
      */
-    public function getRecordData(): ?string;
+    public function getData(): ?string;
 
     /**
      * Set record data.
@@ -111,7 +111,7 @@ interface RecordEntityInterface extends EntityInterface
      *
      * @return RecordEntityInterface
      */
-    public function setRecordData(?string $recordData): RecordEntityInterface;
+    public function setData(?string $recordData): RecordEntityInterface;
 
     /**
      * Get updated date.

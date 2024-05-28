@@ -98,7 +98,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      *
      * @return ?string
      */
-    public function getRecordSource(): ?string
+    public function getSource(): ?string
     {
         return $this->source ?? null;
     }
@@ -110,7 +110,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      *
      * @return RecordEntityInterface
      */
-    public function setRecordSource(?string $recordSource): RecordEntityInterface
+    public function setSource(?string $recordSource): RecordEntityInterface
     {
         $this->source = $recordSource;
         return $this;
@@ -121,7 +121,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      *
      * @return string
      */
-    public function getRecordVersion(): string
+    public function getVersion(): string
     {
         return $this->version ?? '';
     }
@@ -133,7 +133,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      *
      * @return RecordEntityInterface
      */
-    public function setRecordVersion(string $recordVersion): RecordEntityInterface
+    public function setVersion(string $recordVersion): RecordEntityInterface
     {
         $this->version = $recordVersion;
         return $this;
@@ -144,7 +144,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      *
      * @return ?string
      */
-    public function getRecordData(): ?string
+    public function getData(): ?string
     {
         return $this->data ?? null;
     }
@@ -156,7 +156,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      *
      * @return RecordEntityInterface
      */
-    public function setRecordData(?string $recordData): RecordEntityInterface
+    public function setData(?string $recordData): RecordEntityInterface
     {
         $this->data = $recordData;
         return $this;
