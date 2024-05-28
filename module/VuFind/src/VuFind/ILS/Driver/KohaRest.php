@@ -887,7 +887,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        if ( $this->config['Holds']['enableRecalls'] ) {
+        if ($this->config['Holds']['enableRecalls'] ?? false) {
             $result = $this->makeRequest(
                 [
                     'path' => 'v1/recalls',
