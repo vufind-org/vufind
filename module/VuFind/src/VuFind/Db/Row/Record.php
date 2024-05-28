@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use DateTime;
+use VuFind\Db\Entity\RecordEntityInterface;
 
 /**
  * Row Definition for user
@@ -134,7 +135,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      */
     public function setRecordVersion(string $recordVersion): RecordEntityInterface
     {
-        $this->vesion = $recordVersion;
+        $this->version = $recordVersion;
         return $this;
     }
 
