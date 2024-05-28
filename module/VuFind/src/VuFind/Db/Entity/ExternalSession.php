@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -98,4 +99,83 @@ class ExternalSession implements ExternalSessionEntityInterface
      * )
      */
     protected $created = '2000-01-01 00:00:00';
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get PHP session id string.
+     *
+     * @return string
+     */
+    public function getSessionId(): string
+    {
+        return $this->sessionId;
+    }
+
+    /**
+     * Set PHP session id string.
+     *
+     * @param string $sessionId PHP session id string
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function setSessionId(string $sessionId): ExternalSessionEntityInterface
+    {
+        $this->sessionId = $sessionId;
+        return $this;
+    }
+
+    /**
+     * Get external session id string.
+     *
+     * @return string
+     */
+    public function getExternalSessionId(): string
+    {
+        return $this->externalSessionId;
+    }
+
+    /**
+     * Set external session id string.
+     *
+     * @param string $externalSessionId External session id string
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface
+    {
+        $this->externalSessionId = $externalSessionId;
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): ExternalSessionEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
 }
