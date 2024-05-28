@@ -31,7 +31,6 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Session;
-use VuFind\Db\Entity\SessionEntityInterface;
 
 /**
  * Entity model interface for auth_hash table
@@ -85,32 +84,32 @@ interface AuthHashEntityInterface extends EntityInterface
 
     /**
      * Get type of hash.
-     * 
+     *
      * @return ?string
      */
     public function getType(): ?string;
 
     /**
      * Set type of hash.
-     * 
+     *
      * @param ?string $type Hash Type
-     * 
+     *
      * @return AuthHashEntityInterface
      */
     public function setHashType(?string $type): AuthHashEntityInterface;
 
     /**
      * Get data.
-     * 
+     *
      * @return ?string
      */
     public function getData(): ?string;
 
     /**
      * Set data.
-     * 
+     *
      * @param ?string $data Data
-     * 
+     *
      * @return AuthHashEntityInterface
      */
     public function setData(?string $data): AuthHashEntityInterface;

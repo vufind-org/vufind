@@ -33,8 +33,10 @@ namespace VuFind\Db\Row;
 
 use DateTime;
 use Session;
-use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\Entity\AuthHashEntityInterface;
+use VuFind\Db\Entity\SessionEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
  * Row Definition for auth_hash
@@ -45,9 +47,19 @@ use VuFind\Db\Entity\AuthHashEntityInterface;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int    $id
+ * @property string $session_id
+ * @property string $hash
+ * @property string $type
+ * @property string $data
+ * @property string $created
  */
-class AuthHash extends RowGateway implements AuthHashEntityInterface
+class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -89,7 +101,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface
      */
     public function setSessionId(?SessionEntityInterface $session): AuthHashEntityInterface
     {
-        $this->session_id=$session->getId();
+        $this->session_id = $session->getId();
         return $this;
     }
 
@@ -112,13 +124,13 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface
      */
     public function setHash(string $hash): AuthHashEntityInterface
     {
-        $this->hash=$hash;
+        $this->hash = $hash;
         return $this;
     }
 
     /**
      * Get type of hash.
-     * 
+     *
      * @return ?string
      */
     public function getType(): ?string
@@ -128,20 +140,20 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface
 
     /**
      * Set type of hash.
-     * 
+     *
      * @param ?string $type Hash Type
-     * 
+     *
      * @return AuthHashEntityInterface
      */
     public function setHashType(?string $type): AuthHashEntityInterface
     {
-        $this->type=$type;
+        $this->type = $type;
         return $this;
     }
 
     /**
      * Get data.
-     * 
+     *
      * @return ?string
      */
     public function getData(): ?string
@@ -151,14 +163,14 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface
 
     /**
      * Set data.
-     * 
+     *
      * @param ?string $data Data
-     * 
+     *
      * @return AuthHashEntityInterface
      */
     public function setData(?string $data): AuthHashEntityInterface
     {
-        $this->data=$data;
+        $this->data = $data;
         return $this;
     }
 
