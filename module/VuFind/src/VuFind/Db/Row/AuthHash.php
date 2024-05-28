@@ -32,9 +32,7 @@
 namespace VuFind\Db\Row;
 
 use DateTime;
-use Session;
 use VuFind\Db\Entity\AuthHashEntityInterface;
-use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 
@@ -83,25 +81,23 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
     /**
      * Get session id.
      *
-     * @return ?SessionEntityInterface
+     * @return ?string
      */
-    public function getSessionId(): ?SessionEntityInterface
+    public function getSessionId(): ?string
     {
-        return $this->session_id
-            ? $this->getDbServiceManager()->get(SessionEntityInterface::class)->setSessionId($this->session_id)
-            : null;
+        return $this->session_id ?? null;
     }
 
     /**
      * Set session id.
      *
-     * @param ?SessionEntityInterface $session Session
+     * @param ?string $session Session
      *
      * @return AuthHashEntityInterface
      */
-    public function setSessionId(?SessionEntityInterface $session): AuthHashEntityInterface
+    public function setSessionId(?string $session): AuthHashEntityInterface
     {
-        $this->session_id = $session->getId();
+        $this->session_id = $session;
         return $this;
     }
 
@@ -133,7 +129,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      *
      * @return ?string
      */
-    public function getType(): ?string
+    public function getHashType(): ?string
     {
         return $this->type ?? null;
     }
