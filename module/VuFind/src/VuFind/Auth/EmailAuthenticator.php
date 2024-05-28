@@ -31,7 +31,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Service\AuthHashService;
+use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
 
@@ -74,7 +74,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
      * @param RemoteAddress                            $remoteAddr      Remote address
      * @param \Laminas\Config\Config                   $config          Configuration
-     * @param AuthHashService                          $authHashService AuthHash database service
+     * @param AuthHashServiceInterface                 $authHashService AuthHash database service
      */
     public function __construct(
         protected \Laminas\Session\SessionManager $sessionManager,
@@ -83,7 +83,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         protected \Laminas\View\Renderer\RendererInterface $viewRenderer,
         protected RemoteAddress $remoteAddr,
         protected \Laminas\Config\Config $config,
-        protected AuthHashService $authHashService
+        protected AuthHashServiceInterface $authHashService
     ) {
     }
 
