@@ -32,10 +32,7 @@
 namespace VuFind\Db\Row;
 
 use DateTime;
-use VuFind\Db\Entity\SessionEntityInterface;
-use VuFind\Db\Service\SessionServiceInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Entity\ExternalSessionEntityInterface;
 
 /**
  * Row Definition for external_session
@@ -46,12 +43,14 @@ use VuFind\Db\Service\DbServiceAwareTrait;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int    $id
+ * @property string $session_id
+ * @property string $external_session_id
+ * @property string $created
  */
-class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSessionEntityInterface,DbServiceAwareInterface
+class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSessionEntityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
-    use DbServiceAwareTrait;
-
     /**
      * Constructor
      *
@@ -73,52 +72,48 @@ class ExternalSession extends RowGateway implements \VuFind\Db\Entity\ExternalSe
     }
 
     /**
-     * Get session.
+     * Get PHP session id string.
      *
-     * @return ?SessionEntityInterface
+     * @return string
      */
-    public function getSession(): ?SessionEntityInterface
+    public function getSessionId(): string
     {
-        return $this->session_id
-            ? $this->getDbServiceManager()->get(SessionServiceInterface::class)->getSessionById($this->session_id)
-            : null;
+        return $this->session_id ?? '';
     }
 
     /**
-     * Set session.
+     * Set PHP session id string.
      *
-     * @param ?SessionEntityInterface $session Session
+     * @param string $sessionId PHP Session id string
      *
      * @return ExternalSessionEntityInterface
      */
-    public function setSession(?SessionEntityInterface $session): ExternalSessionEntityInterface
+    public function setSessionId(string $sessionId): ExternalSessionEntityInterface
     {
-        $this->session_id = $session->getId();
+        $this->session_id = $sessionId;
         return $this;
     }
 
     /**
-     * Get external session.
+     * Get PHP external session id string.
      *
-     * @return ?SessionEntityInterface
+     * @return string
      */
-    public function getExternalSession(): ?SessionEntityInterface
+    public function getExternalSessionId(): string
     {
-        return $this->session_id
-            ? $this->$this->getDbServiceManager()->get(SessionServiceInterface::class)->getSessionById($this->session_id)
-            : null;
+        return $this->session_id ?? '';
     }
 
     /**
-     * Set external session.
+     * Set PHP external session id string.
      *
-     * @param ?SessionEntityInterface $session Session
+     * @param string $externalSessionId PHP external session id string
      *
      * @return ExternalSessionEntityInterface
      */
-    public function setExternalSession(?SessionEntityInterface $session): ExternalSessionEntityInterface
+    public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface
     {
-        $this->session_id = $session->getId();
+        $this->session_id = $externalSessionId;
         return $this;
     }
 
