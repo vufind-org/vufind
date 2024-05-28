@@ -50,20 +50,20 @@ interface AuthHashEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Get session id.
+     * Get PHP session id string.
      *
      * @return ?string
      */
     public function getSessionId(): ?string;
 
     /**
-     * Set session id.
+     * Set PHP session id string.
      *
-     * @param ?string $session Session
+     * @param ?string $sessionId PHP Session id string
      *
      * @return AuthHashEntityInterface
      */
-    public function setSessionId(?string $session): AuthHashEntityInterface;
+    public function setSessionId(?string $sessionId): AuthHashEntityInterface;
 
     /**
      * Get hash value.
