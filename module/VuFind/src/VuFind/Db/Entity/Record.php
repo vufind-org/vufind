@@ -112,16 +112,13 @@ class Record implements RecordEntityInterface
     protected $updated = '2000-01-01 00:00:00';
 
     /**
-     * Record Id setter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @param ?string $id Record Id.
-     *
-     * @return Record
+     * @return ?int
      */
-    public function setRecordId(?string $id): Record
+    public function getId(): ?int
     {
-        $this->recordId = $id;
-        return $this;
+        return $this->id;
     }
 
     /**
@@ -135,15 +132,15 @@ class Record implements RecordEntityInterface
     }
 
     /**
-     * Record source setter
+     * Set record id.
      *
-     * @param ?string $source Record source.
+     * @param ?string $recordId Record id
      *
-     * @return Record
+     * @return RecordEntityInterface
      */
-    public function setSource(?string $source): Record
+    public function setRecordId(?string $recordId): RecordEntityInterface
     {
-        $this->source = $source;
+        $this->recordId = $recordId;
         return $this;
     }
 
@@ -158,38 +155,15 @@ class Record implements RecordEntityInterface
     }
 
     /**
-     * Record data setter
+     * Set record source.
      *
-     * @param ?string $data Record data.
+     * @param ?string $source Record source
      *
-     * @return Record
+     * @return RecordEntityInterface
      */
-    public function setData(?string $data): Record
+    public function setSource(?string $source): RecordEntityInterface
     {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
-     * Get record data.
-     *
-     * @return ?string
-     */
-    public function getData(): ?string
-    {
-        return $this->data;
-    }
-
-    /**
-     * Record version setter
-     *
-     * @param string $version Record version.
-     *
-     * @return Record
-     */
-    public function setVersion(string $version): Record
-    {
-        $this->version = $version;
+        $this->source = $source;
         return $this;
     }
 
@@ -204,25 +178,61 @@ class Record implements RecordEntityInterface
     }
 
     /**
-     * Updated setter.
+     * Set record version.
      *
-     * @param DateTime $dateTime updated date
+     * @param string $recordVersion Record version
      *
-     * @return Record
+     * @return RecordEntityInterface
      */
-    public function setUpdated(DateTime $dateTime): Record
+    public function setVersion(string $recordVersion): RecordEntityInterface
     {
-        $this->updated = $dateTime;
+        $this->version = $recordVersion;
         return $this;
     }
 
     /**
-     * Get record updation date.
+     * Get record data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set record data.
+     *
+     * @param ?string $recordData Record data
+     *
+     * @return RecordEntityInterface
+     */
+    public function setData(?string $recordData): RecordEntityInterface
+    {
+        $this->data = $recordData;
+        return $this;
+    }
+
+    /**
+     * Get updated date.
      *
      * @return DateTime
      */
     public function getUpdated(): DateTime
     {
         return $this->updated;
+    }
+
+    /**
+     * Set updated date.
+     *
+     * @param DateTime $dateTime Updated date
+     *
+     * @return RecordEntityInterface
+     */
+    public function setUpdated(DateTime $dateTime): RecordEntityInterface
+    {
+        $this->updated = $dateTime;
+        return $this;
     }
 }
