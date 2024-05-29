@@ -110,8 +110,6 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getting feedback based on filters.
      *
-     * @param int|null $page Page number
-     *
      * @return void
      */
     public function testGetFeedbackPaginator(): void
