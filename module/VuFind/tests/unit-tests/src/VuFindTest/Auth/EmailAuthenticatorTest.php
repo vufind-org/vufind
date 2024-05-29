@@ -118,7 +118,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             sessionManager: $sessionManager,
             authHashService: $authHashService
         );
-        $authenticator->sendAuthenticationLink('', [], [], '', [], '', '');
+        $authenticator->sendAuthenticationLink('', [], []);
     }
 
     /**
@@ -133,12 +133,15 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
         $row->expects($this->once())->method('setSessionId')->with('foo-session')->willReturn($row);
-        $checkJson = function ($json) {
-            $data = json_decode($json);
-            $this->assertIsInt($data->timestamp);
-            $this->assertEquals(['foo-data'], $data->data);
-            $this->assertEquals('me@example.com', $data->email);
-            $this->assertEquals('foo-ip', $data->ip);
+        $assertData = function ($data) {
+            $this->assertIsInt($data['timestamp']);
+            $this->assertEquals(['foo-data'], $data['data']);
+            $this->assertEquals('me@example.com', $data['email']);
+            $this->assertEquals('foo-ip', $data['ip']);
+        };
+        $checkJson = function ($json) use ($assertData) {
+            $data = json_decode($json, true);
+            $assertData($data);
             return true;
         };
         $row->expects($this->once())->method('setData')->with($this->callback($checkJson))->willReturn($row);
@@ -151,13 +154,15 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $csrf->expects($this->once())->method('trimTokenList')->with(5);
         $csrf->expects($this->once())->method('getHash')->with(true)->willReturn('foo-hash');
         $mailer = $this->createMock(Mailer::class);
+        $mailer->expects($this->once())->method('send')
+            ->with('me@example.com', 'from@example.com', 'email_login_subject', 'foo-message');
         $renderer = $this->createMock(PhpRenderer::class);
         $mockServerUrl = function ($url) {
             $this->assertEquals('foo-url', $url);
             return 'foo-serverurl';
         };
         $mockUrl = function ($route, $params, $query) {
-            $this->assertEquals('', $route);
+            $this->assertEquals('myresearch-home', $route);
             $this->assertEquals([], $params);
             $this->assertEquals(['query' => ['hash' => 'foo-hash']], $query);
             return 'foo-url';
@@ -171,6 +176,15 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
                 };
             }
         );
+        $checkViewParams = function ($params) use ($assertData) {
+            $assertData($params);
+            $this->assertEquals('foo-serverurl', $params['url']);
+            $this->assertEquals('foo-site-title', $params['title']);
+            return true;
+        };
+        $renderer->expects($this->once())->method('render')
+            ->with('Email/login-link.phtml', $this->callback($checkViewParams))
+            ->willReturn('foo-message');
         $remoteAddress = $this->createMock(RemoteAddress::class);
         $remoteAddress->expects($this->once())->method('getIpAddress')->willReturn('foo-ip');
         $authenticator = $this->getEmailAuthenticator(
@@ -179,10 +193,10 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             mailer: $mailer,
             renderer: $renderer,
             remoteAddress: $remoteAddress,
-            config: ['Site' => ['title' => 'foo-site-title']],
+            config: ['Site' => ['title' => 'foo-site-title', 'email' => 'from@example.com']],
             authHashService: $authHashService
         );
-        $authenticator->sendAuthenticationLink('me@example.com', ['foo-data'], [], '', [], '', '');
+        $authenticator->sendAuthenticationLink('me@example.com', ['foo-data'], []);
     }
 
     /**
