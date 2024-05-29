@@ -944,7 +944,7 @@ class MyResearchController extends AbstractBase
      *
      * @return object
      */
-    protected function processEditSubmit($user, $driver, $listID)
+    protected function processEditSubmit(UserEntityInterface $user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists', []);
         $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
@@ -1166,7 +1166,7 @@ class MyResearchController extends AbstractBase
      * @return object|bool                  Response object if redirect is
      * needed, false if form needs to be redisplayed.
      */
-    protected function processEditList($user, $list)
+    protected function processEditList(UserEntityInterface $user, $list)
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
@@ -1743,7 +1743,7 @@ class MyResearchController extends AbstractBase
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config)
+    protected function sendRecoveryEmail(UserEntityInterface $user, $config)
     {
         // If we can't find a user
         if (!$user) {
@@ -1795,7 +1795,7 @@ class MyResearchController extends AbstractBase
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendFirstVerificationEmail($user)
+    protected function sendFirstVerificationEmail(UserEntityInterface $user)
     {
         if (!$user->getVerifyHash()) {
             $this->sendVerificationEmail($user);
