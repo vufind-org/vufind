@@ -51,7 +51,7 @@ interface ResourceServiceInterface extends DbServiceInterface
      *
      * @return ?ResourceEntityInterface
      */
-    public function getResourceById($id): ?ResourceEntityInterface;
+    public function getResourceById(int $id): ?ResourceEntityInterface;
 
     /**
      * Create a resource entity object.
