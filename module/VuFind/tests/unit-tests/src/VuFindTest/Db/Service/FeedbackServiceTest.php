@@ -30,7 +30,6 @@
 namespace VuFindTest\Db\Service;
 
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use VuFind\Db\Entity\Feedback;
 use VuFind\Db\Service\FeedbackService;
 
