@@ -36,6 +36,7 @@ use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -45,6 +46,7 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Exception\MissingField as MissingFieldException;
+use VuFind\Favorites\FavoritesService;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
@@ -879,12 +881,9 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, the operation has not been confirmed yet; show
         // the necessary dialog box:
-        if (empty($listID)) {
-            $list = false;
-        } else {
-            $table = $this->getTable('UserList');
-            $list = $table->getExisting($listID);
-        }
+        $list = empty($listID)
+            ? false
+            : $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
         return $this->createViewModel(
             [
                 'list' => $list, 'deleteIDS' => $ids,
@@ -919,8 +918,7 @@ class MyResearchController extends AbstractBase
         // Perform delete and send appropriate flash message:
         if (null !== $listID) {
             // ...Specific List
-            $table = $this->getTable('UserList');
-            $list = $table->getExisting($listID);
+            $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
             $list->removeResourcesById($user, [$id], $source);
             $this->flashMessenger()->addMessage('Item removed from list', 'success');
         } else {
@@ -1237,9 +1235,12 @@ class MyResearchController extends AbstractBase
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $table = $this->getTable('UserList');
         $newList = ($id == 'NEW');
-        $list = $newList ? $table->getNew($user) : $table->getExisting($id);
+        // If this is a new list, use the FavoritesService to pre-populate some values in
+        // a fresh object; if it's an existing list, we can just fetch from the database.
+        $list = $newList
+            ? $this->serviceLocator->get(FavoritesService::class)->createListForUser($user)
+            : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
         if (!$newList && !$list->editAllowed($user)) {
@@ -1318,8 +1319,7 @@ class MyResearchController extends AbstractBase
         );
         if ($confirm) {
             try {
-                $table = $this->getTable('UserList');
-                $list = $table->getExisting($listID);
+                $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
                 $list->delete($this->getUser());
 
                 // Success Message
