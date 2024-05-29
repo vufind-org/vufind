@@ -30,7 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
-use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Http\Request;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -180,7 +180,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         // it may end up deleted due to e.g. safe link check by the email server.
         $this->authHashService->deleteAuthHash($row);
 
-        if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
+        if (time() - $row->getCreated()->getTimestamp() > $this->loginRequestValidTime) {
             throw new AuthException('authentication_error_expired');
         }
 

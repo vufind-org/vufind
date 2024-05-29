@@ -52,6 +52,15 @@ interface AuthHashServiceInterface extends DbServiceInterface
     public function createEntity(): AuthHashEntityInterface;
 
     /**
+     * Delete an auth_hash entity object.
+     *
+     * @param int|AuthHashEntityInterface $objOrId Object or ID value representing auth_hash to delete
+     *
+     * @return void
+     */
+    public function deleteAuthHash(int|AuthHashEntityInterface $objOrId);
+
+    /**
      * Retrieve an object from the database based on hash and type; possibly create a new
      * row if no existing match is found.
      *

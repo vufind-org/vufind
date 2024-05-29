@@ -32,6 +32,7 @@ namespace VuFindTest\Auth;
 use DateTime;
 use Laminas\Config\Config;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
+use Laminas\Http\Request;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\PhpRenderer;
@@ -209,5 +210,79 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('authentication_error_expired');
         $authenticator = $this->getEmailAuthenticator();
         $authenticator->authenticate('foo');
+    }
+
+    /**
+     * If there's a session/IP mismatch, an exception should be thrown.
+     *
+     * @return void
+     */
+    public function testSessionAndIpMismatch(): void
+    {
+        $this->expectExceptionMessage('authentication_error_session_ip_mismatch');
+        $row = $this->createMock(AuthHashEntityInterface::class);
+        $row->expects($this->once())->method('getSessionId')->willReturn('bad-session');
+        $row->expects($this->once())->method('getData')->willReturn(json_encode(['ip' => 'foo-ip']));
+        $authHashService = $this->createMock(AuthHashServiceInterface::class);
+        $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
+            ->willReturn($row);
+        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
+        $authenticator = $this->getEmailAuthenticator(
+            sessionManager: $sessionManager,
+            authHashService: $authHashService
+        );
+        $authenticator->authenticate('foo-hash');
+    }
+
+    /**
+     * Test a successful authentication.
+     *
+     * @return void
+     */
+    public function testSuccessfulAuthentication(): void
+    {
+        $row = $this->createMock(AuthHashEntityInterface::class);
+        $row->expects($this->once())->method('getSessionId')->willReturn('foo-session');
+        $row->expects($this->once())->method('getData')->willReturn(json_encode(['ip' => 'foo-ip', 'data' => ['bar']]));
+        $row->expects($this->once())->method('getCreated')->willReturn(new DateTime());
+        $authHashService = $this->createMock(AuthHashServiceInterface::class);
+        $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
+            ->willReturn($row);
+        $sessionManager = $this->createMock(SessionManager::class);
+        $sessionManager->expects($this->once())->method('getId')->willReturn('foo-session');
+        $authenticator = $this->getEmailAuthenticator(
+            sessionManager: $sessionManager,
+            authHashService: $authHashService
+        );
+        $this->assertEquals(['bar'], $authenticator->authenticate('foo-hash'));
+    }
+
+    /**
+     * Test invalid login request.
+     *
+     * @return void
+     */
+    public function testInvalidLoginRequest(): void
+    {
+        $request = new Request();
+        $this->assertFalse($this->getEmailAuthenticator()->isValidLoginRequest($request));
+    }
+
+    /**
+     * Test valid login request.
+     *
+     * @return void
+     */
+    public function testValidLoginRequest(): void
+    {
+        $request = new Request();
+        $request->getPost()->set('hash', 'foo-hash');
+        $row = $this->createMock(AuthHashEntityInterface::class);
+        $authHashService = $this->createMock(AuthHashServiceInterface::class);
+        $authHashService->expects($this->once())->method('getByHashAndType')->with('foo-hash', 'email')
+            ->willReturn($row);
+        $authenticator = $this->getEmailAuthenticator(authHashService: $authHashService);
+        $this->assertTrue($authenticator->isValidLoginRequest($request));
     }
 }
