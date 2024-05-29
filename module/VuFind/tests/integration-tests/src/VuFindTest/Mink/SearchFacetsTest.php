@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -231,6 +231,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                         'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
                     ],
                 ],
+                'facets' => [
+                    'Results_Settings' => [
+                        'collapsedFacets' => '*',
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -240,6 +245,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that we ARE using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
         $this->assertCount(1, $ajaxContainer);
+
+        // Uncollapse the genre facet to load its contents:
+        $this->clickCss($page, '#side-panel-genre_facet .collapsed');
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
