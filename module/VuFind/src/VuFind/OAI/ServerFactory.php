@@ -74,9 +74,7 @@ class ServerFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFind\Record\Loader::class),
-            $servicePluginManager->get(
-                \VuFind\Db\Service\ChangeTrackerService::class
-            ),
+            $servicePluginManager->get(\VuFind\Db\Service\ChangeTrackerServiceInterface::class),
             $servicePluginManager->get(\VuFind\Db\Service\OaiResumptionServiceInterface::class)
         );
     }

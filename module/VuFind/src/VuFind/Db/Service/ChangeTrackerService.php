@@ -41,11 +41,12 @@ use VuFind\Log\LoggerAwareTrait;
  *
  * @category VuFind
  * @package  Database
- * @author   sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ChangeTrackerService extends AbstractDbService implements LoggerAwareInterface
+class ChangeTrackerService extends AbstractDbService implements ChangeTrackerServiceInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -53,17 +54,17 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
      * Retrieve a row from the database based on primary key; return null if it
      * is not found.
      *
-     * @param string $core The Solr core holding the record.
-     * @param string $id   The ID of the record being indexed.
+     * @param string $indexName The name of the Solr index holding the record.
+     * @param string $id        The ID of the record being indexed.
      *
-     * @return ?ChangeTracker
+     * @return ?ChangeTrackerEntityInterface
      */
-    public function retrieve(string $core, string $id): ?ChangeTracker
+    public function getChangeTrackerEntity(string $indexName, string $id): ?ChangeTrackerEntityInterface
     {
         $dql = 'SELECT c '
             . 'FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c '
             . 'WHERE c.core = :core AND c.id = :id';
-        $parameters = compact('core', 'id');
+        $parameters = ['core' => $indexName, 'id' => $id];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $queryResult = $query->getResult();
@@ -72,20 +73,20 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
     }
 
     /**
-     * Retrieve a set of deleted rows from the database.
+     * Retrieve a count of deleted rows from the database.
      *
-     * @param string   $core  The Solr core holding the record.
-     * @param DateTime $from  The beginning date of the range to search.
-     * @param DateTime $until The end date of the range to search.
+     * @param string   $indexName The name of the Solr index holding the record.
+     * @param DateTime $from      The beginning date of the range to search.
+     * @param DateTime $until     The end date of the range to search.
      *
      * @return int
      */
-    public function retrieveDeletedCount(string $core, DateTime $from, DateTime $until): int
+    public function getDeletedCount(string $indexName, DateTime $from, DateTime $until): int
     {
         $dql = 'SELECT COUNT(c) as deletedcount '
             . 'FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c '
             . 'WHERE c.core = :core AND c.deleted BETWEEN :from AND :until';
-        $parameters = compact('core', 'from', 'until');
+        $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $result = $query->getResult();
@@ -95,26 +96,26 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
     /**
      * Retrieve a set of deleted rows from the database.
      *
-     * @param string   $core   The Solr core holding the record.
-     * @param DateTime $from   The beginning date of the range to search.
-     * @param DateTime $until  The end date of the range to search.
-     * @param int      $offset Record number to retrieve first.
-     * @param int      $limit  Retrieval limit (null for no limit)
+     * @param string   $indexName The name of the Solr index holding the record.
+     * @param DateTime $from      The beginning date of the range to search.
+     * @param DateTime $until     The end date of the range to search.
+     * @param int      $offset    Record number to retrieve first.
+     * @param ?int     $limit     Retrieval limit (null for no limit)
      *
-     * @return array
+     * @return ChangeTrackerEntityInterface[]
      */
-    public function retrieveDeleted(
-        string $core,
+    public function getDeletedEntities(
+        string $indexName,
         DateTime $from,
         DateTime $until,
         int $offset = 0,
-        int $limit = null
+        ?int $limit = null
     ): array {
         $dql = 'SELECT c '
             . 'FROM ' . $this->getEntityClass(ChangeTracker::class) . ' c '
             . 'WHERE c.core = :core AND c.deleted BETWEEN :from AND :until '
             . 'ORDER BY c.deleted';
-        $parameters = compact('core', 'from', 'until');
+        $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->setFirstResult($offset);
@@ -136,7 +137,7 @@ class ChangeTrackerService extends AbstractDbService implements LoggerAwareInter
      */
     public function retrieveOrCreate(string $core, string $id): ChangeTracker|false
     {
-        $row = $this->retrieve($core, $id);
+        $row = $this->getChangeTrackerEntity($core, $id);
         if (empty($row)) {
             $now = new \DateTime('now', new \DateTimeZone('UTC'));
             $row = $this->createEntity()

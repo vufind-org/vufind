@@ -104,11 +104,11 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock change tracker service
      *
-     * @return MockObject&\VuFind\Db\Service\ChangeTrackerService
+     * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
-    protected function getMockChangeTracker(): MockObject&\VuFind\Db\Service\ChangeTrackerService
+    protected function getMockChangeTracker(): MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
     {
-        return $this->createMock(\VuFind\Db\Service\ChangeTrackerService::class);
+        return $this->createMock(\VuFind\Db\Service\ChangeTrackerServiceInterface::class);
     }
 
     /**

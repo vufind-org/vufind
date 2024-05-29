@@ -32,8 +32,8 @@
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
-use VuFind\Db\Entity\ChangeTracker;
-use VuFind\Db\Service\ChangeTrackerService;
+use VuFind\Db\Entity\ChangeTrackerEntityInterface;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
@@ -215,13 +215,13 @@ class Server
      *
      * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
      * @param \VuFind\Record\Loader                $recordLoader      Record loader
-     * @param ChangeTrackerService                 $tracker           ChangeTracker Service
+     * @param ChangeTrackerServiceInterface        $trackerService    ChangeTracker Service
      * @param OaiResumptionServiceInterface        $resumptionService Database service for resumption tokens
      */
     public function __construct(
         protected \VuFind\Search\Results\PluginManager $resultsManager,
         protected \VuFind\Record\Loader $recordLoader,
-        protected ChangeTrackerService $tracker,
+        protected ChangeTrackerServiceInterface $trackerService,
         protected OaiResumptionServiceInterface $resumptionService
     ) {
     }
@@ -323,13 +323,13 @@ class Server
     /**
      * Assign necessary interface variables to display a deleted record.
      *
-     * @param SimpleXMLElement $xml        XML to update
-     * @param ChangeTracker    $tracker    ChangeTracker row
-     * @param bool             $headerOnly Only attach the header?
+     * @param SimpleXMLElement             $xml           XML to update
+     * @param ChangeTrackerEntityInterface $trackerEntity ChangeTracker entity
+     * @param bool                         $headerOnly    Only attach the header?
      *
      * @return void
      */
-    protected function attachDeleted($xml, $tracker, $headerOnly = false)
+    protected function attachDeleted($xml, $trackerEntity, $headerOnly = false)
     {
         // Deleted records only have a header, no metadata. However, depending
         // on the context we are attaching them, they may or may not need a
@@ -337,8 +337,8 @@ class Server
         $record = $headerOnly ? $xml : $xml->addChild('record');
         $this->attachRecordHeader(
             $record,
-            $this->prefixID($tracker->getId()),
-            date($this->iso8601, $tracker->getDeleted()->getTimestamp()),
+            $this->prefixID($trackerEntity->getId()),
+            date($this->iso8601, $trackerEntity->getDeleted()->getTimestamp()),
             [],
             'deleted'
         );
@@ -533,7 +533,7 @@ class Server
         } else {
             // No record in index -- is this deleted?
 
-            $row = $this->tracker->retrieve(
+            $row = $this->trackerService->getChangeTrackerEntity(
                 $this->core,
                 $this->stripID($this->params['identifier'])
             );
@@ -946,14 +946,14 @@ class Server
      * @param int $until         End date.
      * @param int $currentCursor Offset into result set
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return ChangeTrackerEntityInterface[]
      */
     protected function listRecordsGetDeleted($from, $until, $currentCursor)
     {
-        return $this->tracker->retrieveDeleted(
+        return $this->trackerService->getDeletedEntities(
             $this->core,
-            \DateTime::createFromFormat('U', $from, new \DateTimeZone('UTC')),
-            \DateTime::createFromFormat('U', $until, new \DateTimeZone('UTC')),
+            \DateTime::createFromFormat('U', $from),
+            \DateTime::createFromFormat('U', $until),
             $currentCursor,
             $this->pageSize
         );
@@ -969,10 +969,10 @@ class Server
      */
     protected function listRecordsGetDeletedCount($from, $until)
     {
-        return $this->tracker->retrieveDeletedCount(
+        return $this->trackerService->getDeletedCount(
             $this->core,
-            \DateTime::createFromFormat('U', $from, new \DateTimeZone('UTC')),
-            \DateTime::createFromFormat('U', $until, new \DateTimeZone('UTC'))
+            \DateTime::createFromFormat('U', $from),
+            \DateTime::createFromFormat('U', $until)
         );
     }
 
