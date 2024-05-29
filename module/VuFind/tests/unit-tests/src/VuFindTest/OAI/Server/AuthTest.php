@@ -74,7 +74,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
         $auth = new Auth(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager(),
+            $this->getMockChangeTracker(),
             $this->getMockResumptionService()
         );
         $auth->setRecordFormatter($this->getMockRecordFormatter());
@@ -84,7 +84,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock results manager
      *
-     * @return \VuFind\Search\Results\PluginManager
+     * @return MockObject&\VuFind\Search\Results\PluginManager
      */
     protected function getMockResultsManager(): MockObject&\VuFind\Search\Results\PluginManager
     {
@@ -94,7 +94,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock record loader
      *
-     * @return \VuFind\Record\Loader
+     * @return MockObject&\VuFind\Record\Loader
      */
     protected function getMockRecordLoader(): MockObject&\VuFind\Record\Loader
     {
@@ -102,13 +102,13 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock table manager
+     * Get a mock change tracker service
      *
-     * @return MockObject&\VuFind\Db\Table\PluginManager
+     * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
-    protected function getMockTableManager(): MockObject&\VuFind\Db\Table\PluginManager
+    protected function getMockChangeTracker(): MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
     {
-        return $this->createMock(\VuFind\Db\Table\PluginManager::class);
+        return $this->createMock(\VuFind\Db\Service\ChangeTrackerServiceInterface::class);
     }
 
     /**
