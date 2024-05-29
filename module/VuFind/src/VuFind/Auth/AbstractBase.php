@@ -48,10 +48,12 @@ use function in_array;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
+    \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

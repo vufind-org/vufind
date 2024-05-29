@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for user_list table
  *
@@ -40,4 +42,90 @@ namespace VuFind\Db\Entity;
  */
 interface UserListEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Set title.
+     *
+     * @param string $title Title
+     *
+     * @return UserListEntityInterface
+     */
+    public function setTitle(string $title): UserListEntityInterface;
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle(): string;
+
+    /**
+     * Set description.
+     *
+     * @param ?string $description Description
+     *
+     * @return UserListEntityInterface
+     */
+    public function setDescription(?string $description): UserListEntityInterface;
+
+    /**
+     * Get description.
+     *
+     * @return ?string
+     */
+    public function getDescription(): ?string;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserListEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserListEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set whether the list is public.
+     *
+     * @param bool $public Is the list public?
+     *
+     * @return UserListEntityInterface
+     */
+    public function setPublic(bool $public): UserListEntityInterface;
+
+    /**
+     * Is this a public list?
+     *
+     * @return bool
+     */
+    public function isPublic(): bool;
+
+    /**
+     * Set user.
+     *
+     * @param ?UserEntityInterface $user User owning the list.
+     *
+     * @return UserListEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user): UserListEntityInterface;
+
+    /**
+     * Get user.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
 }

@@ -213,6 +213,9 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
         $patron = $this->catalogLogin();
         $patronLoginView = is_array($patron) ? null : $patron;
+        if ($patronLoginView instanceof \Laminas\View\Model\ViewModel) {
+            $patronLoginView->showMenu = false;
+        }
         return $this->createViewModel(
             compact('authRequest', 'user', 'patron', 'patronLoginView', 'userIdentifierField')
         );

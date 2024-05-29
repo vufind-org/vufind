@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for record table
  *
@@ -40,4 +42,90 @@ namespace VuFind\Db\Entity;
  */
 interface RecordEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get record id.
+     *
+     * @return ?string
+     */
+    public function getRecordId(): ?string;
+
+    /**
+     * Set record id.
+     *
+     * @param ?string $recordId Record id
+     *
+     * @return RecordEntityInterface
+     */
+    public function setRecordId(?string $recordId): RecordEntityInterface;
+
+    /**
+     * Get record source.
+     *
+     * @return ?string
+     */
+    public function getSource(): ?string;
+
+    /**
+     * Set record source.
+     *
+     * @param ?string $recordSource Record source
+     *
+     * @return RecordEntityInterface
+     */
+    public function setSource(?string $recordSource): RecordEntityInterface;
+
+    /**
+     * Get record version.
+     *
+     * @return string
+     */
+    public function getVersion(): string;
+
+    /**
+     * Set record version.
+     *
+     * @param string $recordVersion Record version
+     *
+     * @return RecordEntityInterface
+     */
+    public function setVersion(string $recordVersion): RecordEntityInterface;
+
+    /**
+     * Get record data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string;
+
+    /**
+     * Set record data.
+     *
+     * @param ?string $recordData Record data
+     *
+     * @return RecordEntityInterface
+     */
+    public function setData(?string $recordData): RecordEntityInterface;
+
+    /**
+     * Get updated date.
+     *
+     * @return DateTime
+     */
+    public function getUpdated(): DateTime;
+
+    /**
+     * Set updated date.
+     *
+     * @param DateTime $dateTime Updated date
+     *
+     * @return RecordEntityInterface
+     */
+    public function setUpdated(DateTime $dateTime): RecordEntityInterface;
 }
