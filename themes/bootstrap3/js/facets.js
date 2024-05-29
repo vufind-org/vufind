@@ -226,13 +226,11 @@ VuFind.register('sideFacets', function SideFacets() {
     $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
-    if (typeof bootstrap === 'undefined') {
-      // Bootstrap 3:
+    if (VuFind.getBootstrapMajorVersion() === 3) {
       $('.side-facets-container-ajax')
         .find('div.collapse[data-facet]:not(.in)')
         .on('shown.bs.collapse', loadAjaxSideFacets);
     } else {
-      // Bootstrap 5:
       document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
         collapseEl.addEventListener('shown.bs.collapse', loadAjaxSideFacets);
       });
