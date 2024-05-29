@@ -29,7 +29,9 @@
 
 namespace VuFind\Db\Service;
 
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
+use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\Feedback;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 
@@ -72,22 +74,34 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
+     * Fetch a feedback entity by ID.
+     *
+     * @param int $id ID of feedback entity
+     *
+     * @return ?FeedbackEntityInterface
+     */
+    public function getFeedbackById(int $id): ?FeedbackEntityInterface
+    {
+        return $this->entityManager->find($this->getEntityClass(Feedback::class), $id);
+    }
+
+    /**
      * Get feedback by filter
      *
-     * @param string|null $formName Form name
-     * @param string|null $siteUrl  Site URL
-     * @param string|null $status   Current status
-     * @param int|null    $page     Current page
-     * @param int         $limit    Limit per page
+     * @param ?string $formName Form name (optional filter)
+     * @param ?string $siteUrl  Site URL (optional filter)
+     * @param ?string $status   Current status (optional filter)
+     * @param ?int    $page     Current page (optional)
+     * @param int     $limit    Limit per page
      *
      * @return Paginator
      */
-    public function getFeedbackByFilter(
-        $formName = null,
-        $siteUrl = null,
-        $status = null,
-        $page = null,
-        $limit = 20
+    public function getFeedbackPaginator(
+        ?string $formName = null,
+        ?string $siteUrl = null,
+        ?string $status = null,
+        ?int $page = null,
+        int $limit = 20
     ): Paginator {
         $dql = "SELECT f, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
             . "CONCAT(m.firstname, ' ', m.lastname) AS manager_name "
@@ -120,7 +134,11 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
             $query->setMaxResults($limit);
             $query->setFirstResult($limit * ($page - 1));
         }
-        $paginator = new Paginator($query);
+        $paginator = new Paginator(new DoctrinePaginatorAdapter(new DoctrinePaginator($query)));
+        if (null !== $page) {
+            $paginator->setCurrentPageNumber($page);
+            $paginator->setItemCountPerPage($limit);
+        }
         return $paginator;
     }
 
@@ -162,36 +180,26 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
-     * Update a column
-     *
-     * @param string $column Column name
-     * @param mixed  $value  Column value
-     * @param int    $id     id value
-     *
-     * @return bool
-     */
-    public function updateColumn($column, $value, $id)
-    {
-        $parameters = [];
-        $dql = 'UPDATE ' . $this->getEntityClass(Feedback::class) . ' f '
-            . 'SET f.' . $this->mapField($column) . ' = :value '
-            . 'WHERE f.id = :id';
-        $parameters['value'] = $value;
-        $parameters['id'] = $id;
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        return $query->execute();
-    }
-
-    /**
      * Column mapper
      *
      * @param string $column Column name
      *
      * @return string
      */
-    public function mapField($column)
+    protected function mapField($column)
     {
         return $this->fieldMap[$column] ?? $column;
+    }
+
+    /**
+     * Get unique values for a column of the feedback table
+     *
+     * @param string $column Column name
+     *
+     * @return array
+     */
+    public function getUniqueColumn(string $column): array
+    {
+        return array_unique(array_column($this->getColumn($column), $this->mapField($column)));
     }
 }

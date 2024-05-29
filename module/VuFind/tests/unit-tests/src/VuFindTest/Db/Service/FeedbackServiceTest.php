@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Db\Service;
 
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 use VuFind\Db\Entity\Feedback;
 use VuFind\Db\Service\FeedbackService;
 
@@ -106,54 +108,13 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test Update a column.
-     *
-     * @return void
-     */
-    public function testUpdateColumn(): void
-    {
-        $mocks = $this->getConfiguredFeedbackService();
-        $entityManager = $mocks['entityManager'];
-        $feedbackService = $mocks['feedbackService'];
-        $queryStmt = "UPDATE VuFind\Db\Entity\Feedback f SET f.status "
-            . '= :value WHERE f.id = :id';
-
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['execute', 'setParameters'])
-            ->getMockForAbstractClass();
-        $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
-            ->willReturn($query);
-        $query->expects($this->once())->method('execute');
-        $query->expects($this->once())->method('setParameters')
-            ->with(['value' => 'closed', 'id' => 1])
-            ->willReturn($query);
-        $feedbackService->updateColumn('status', 'closed', 1);
-    }
-
-    /**
-     * Data provider for testGetFeedbackByFilter.
-     *
-     * @return array
-     */
-    public static function pageProvider(): array
-    {
-        return ['Test1' => [1],
-                'Test2' => [null],
-            ];
-    }
-
-    /**
      * Test getting feedback based on filters.
      *
      * @param int|null $page Page number
      *
      * @return void
-     *
-     * @dataProvider pageProvider
      */
-    public function testGetFeedbackByFilter($page): void
+    public function testGetFeedbackPaginator(): void
     {
         $mocks = $this->getConfiguredFeedbackService();
         $entityManager = $mocks['entityManager'];
@@ -164,11 +125,11 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             . 'WHERE f.formName = :formName AND f.siteUrl = :siteUrl AND '
             . 'f.status = :status ORDER BY f.created DESC';
 
-        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['setParameters'])
-            ->addMethods(['setMaxResults', 'setFirstResult'])
-            ->getMockForAbstractClass();
+        $entityManager->method('getConfiguration')->willReturn($this->createMock(Configuration::class));
+        $query = $this->getMockBuilder(\Doctrine\ORM\Query::class)
+            ->setConstructorArgs([$entityManager])
+            ->onlyMethods(['setParameters', 'setFirstResult', 'setMaxResults'])
+            ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
             ->with($this->equalTo($queryStmt))
             ->willReturn($query);
@@ -180,14 +141,8 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
                     'status' => 'closed']
             )
             ->willReturn($query);
-        if ($page) {
-            $query->expects($this->once())->method('setFirstResult')
-                ->with($this->equalTo(0));
-            $query->expects($this->once())->method('setMaxResults')
-                ->with($this->equalTo(20));
-        }
 
-        $feedbackService->getFeedbackByFilter('foo', 'bar', 'closed', $page);
+        $feedbackService->getFeedbackPaginator('foo', 'bar', 'closed');
     }
 
     /**
@@ -197,12 +152,8 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredFeedbackService()
     {
-        $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $entityPluginManager = $this->getMockBuilder(\VuFind\Db\Entity\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
+        $entityPluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         $entityPluginManager->expects($this->once())->method('get')
             ->with($this->equalTo(Feedback::class))
             ->willReturn(new Feedback());

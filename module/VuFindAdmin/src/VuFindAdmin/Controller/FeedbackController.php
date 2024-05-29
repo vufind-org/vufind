@@ -31,11 +31,10 @@ declare(strict_types=1);
 
 namespace VuFindAdmin\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Db\Service\FeedbackService;
-use VuFind\Db\Table\Feedback;
+use VuFind\Db\Service\FeedbackServiceInterface;
 
 use function count;
+use function intval;
 use function is_array;
 
 /**
@@ -49,25 +48,6 @@ use function is_array;
  */
 class FeedbackController extends AbstractAdmin
 {
-    /**
-     * Feedback service
-     *
-     * @var FeedbackService
-     */
-    protected $feedbackService;
-
-    /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface $sm Service locator
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        parent::__construct($sm);
-        $this->feedbackService = $sm->get(\VuFind\Db\Service\PluginManager::class)
-            ->get(FeedbackService::class);
-    }
-
     /**
      * Get the url parameters
      *
@@ -92,29 +72,23 @@ class FeedbackController extends AbstractAdmin
      */
     public function homeAction()
     {
-        $feedback = $this->feedbackService->getFeedbackByFilter(
+        $feedbackService = $this->getDbService(FeedbackServiceInterface::class);
+        $feedback = $feedbackService->getFeedbackPaginator(
             $this->convertFilter($this->getParam('form_name')),
             $this->convertFilter($this->getParam('site_url')),
             $this->convertFilter($this->getParam('status')),
-            $this->getParam('page')
+            intval($this->getParam('page', default: '1'))
         );
         $view = $this->createViewModel(
             [
-                'feedback' => new \Laminas\Paginator\Paginator(
-                    new \DoctrineORMModule\Paginator\Adapter\DoctrinePaginator(
-                        $feedback
-                    )
-                ),
+                'feedback' => $feedback,
                 'statuses' => $this->getStatuses(),
-                'uniqueForms' => $this->getUniqueColumn('form_name'),
-                'uniqueSites' => $this->getUniqueColumn('site_url'),
+                'uniqueForms' => $feedbackService->getUniqueColumn('form_name'),
+                'uniqueSites' => $feedbackService->getUniqueColumn('site_url'),
                 'params'
                     => $this->params()->fromQuery() + $this->params()->fromPost(),
             ]
         );
-        $page = $this->getParam('page', false, '1');
-        $view->feedback->setCurrentPageNumber($page);
-        $view->feedback->setItemCountPerPage(20);
         $view->setTemplate('admin/feedback/home');
         return $view;
     }
@@ -151,7 +125,7 @@ class FeedbackController extends AbstractAdmin
         if (!$confirm) {
             return $this->confirmDelete($ids, $originUrl, $newUrl);
         }
-        $delete = $this->feedbackService->deleteByIdArray($ids);
+        $delete = $this->getDbService(FeedbackServiceInterface::class)->deleteByIdArray($ids);
         if (0 == $delete) {
             $this->flashMessenger()->addMessage('feedback_delete_failure', 'error');
             return $this->redirect()->toUrl($originUrl);
@@ -244,8 +218,18 @@ class FeedbackController extends AbstractAdmin
     public function updateStatusAction()
     {
         $newStatus = $this->getParam('new_status', true);
-        $id = $this->getParam('id', true);
-        $success = $this->feedbackService->updateColumn('status', $newStatus, $id);
+        $id = intval($this->getParam('id', true));
+        $success = false;
+        $feedbackService = $this->getDbService(FeedbackServiceInterface::class);
+        try {
+            $feedback = $feedbackService->getFeedbackById($id);
+            if ($feedback) {
+                $feedback->setStatus($newStatus);
+                $feedbackService->persistEntity($feedback);
+                $success = true;
+            }
+        } catch (\Exception $e) {
+        }
         if ($success) {
             $this->flashMessenger()->addMessage(
                 'feedback_status_update_success',
@@ -270,20 +254,6 @@ class FeedbackController extends AbstractAdmin
                 ),
             ]
         );
-    }
-
-    /**
-     * Get unique values for a column
-     *
-     * @param string $column Column name
-     *
-     * @return array
-     */
-    protected function getUniqueColumn(string $column): array
-    {
-        $feedbackArray = $this->feedbackService->getColumn($column);
-        $column = $this->feedbackService->mapField($column);
-        return array_unique(array_column($feedbackArray, $column));
     }
 
     /**

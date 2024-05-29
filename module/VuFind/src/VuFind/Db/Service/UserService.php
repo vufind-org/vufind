@@ -89,11 +89,7 @@ class UserService extends AbstractDbService implements
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        $user = $this->entityManager->find(
-            $this->getEntityClass(\VuFind\Db\Entity\User::class),
-            $id
-        );
-        return $user;
+        return $this->entityManager->find($this->getEntityClass(User::class), $id);
     }
 
     /**
