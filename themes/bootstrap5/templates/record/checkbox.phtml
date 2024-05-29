@@ -1,0 +1,6 @@
+<label class="record-checkbox hidden-print">
+  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-label="<?=$this->transEscAttr('select_item')?>">
+  <span class="checkbox-icon"></span>
+  <?php if (strlen($this->number ?? '') > 0): ?><span class="sr-only"><?=$this->transEsc('result_checkbox_label', ['%%number%%' => $this->number]) ?></span><?php endif; ?>
+</label>
+<input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>

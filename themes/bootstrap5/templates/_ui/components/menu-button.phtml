@@ -1,0 +1,56 @@
+<?php
+  $wrapperTag = $this->wrapperTag ?? 'div';
+  $wrapperClass = 'dropdown'; // Bootstrap class
+
+  if ($this->wrapperClass ?? false) {
+    $wrapperClass = $this->wrapperClass . ' dropdown'; // Bootstrap class
+  }
+
+  $toggleTag = 'button';
+  $defaultAttrs = [
+    'type' => 'button', // Accessible default
+    'class' => 'dropdown-toggle', // Bootstrap class
+    'data-bs-toggle' => 'dropdown', // Bootstrap data-attr
+    'aria-expanded' => 'false',
+    'aria-haspopup' => 'true',
+  ];
+
+  // An anchor tag with an href should only be used as
+  // a non-js fallback to open the menu on another page
+  if ($this->href ?? false) {
+    $toggleTag = 'a';
+    $defaultAttrs['href'] = $this->href;
+    $defaultAttrs['type'] = null;
+  }
+
+  $toggleAttrs = array_merge($defaultAttrs, $this->toggleAttrs ?? []);
+?>
+
+<?php ob_start(); ?>
+  <?=$this
+      ->makeTag(
+          $toggleTag,
+          $this->transEsc($this->toggleLabel) . $this->icon('dropdown-caret'),
+          $toggleAttrs,
+          ['escapeContent' => false]
+      )
+  ?>
+
+  <ul class="dropdown-menu">
+    <?php foreach ($this->menuItems as $current): ?>
+      <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
+        <a class="dropdown__link"
+          href="<?=$this->escapeHtmlAttr($current['url']) ?>"
+          <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
+          <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
+          rel="nofollow"
+        >
+          <?=$this->transEsc($current['label']) ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+<?php $menuContents = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+
+<?=$this->makeTag($wrapperTag, $menuContents, $wrapperClass, ['escapeContent' => false]) ?>

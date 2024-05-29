@@ -1,0 +1,27 @@
+<?php
+  if (!isset($this->indexStart)) {
+    $this->indexStart = 0;
+  }
+  $i = $this->indexStart;
+  $listStart = $this->results->getStartRecord() + $i - $this->indexStart;
+  $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
+?>
+<ol class="<?=$this->escapeHtmlAttr(trim('record-list ' . ($this->resultsClass ?? '')))?>" start="<?=$listStart?>"<?=isset($this->resultsAttrs) ? ' ' . $this->resultsAttrs : ''?>>
+  <?php foreach ($this->results->getResults() as $current): ?>
+    <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
+    <?php // Data-record-number attribute is for analytics use.  Do not remove. ?>
+    <li<?php if (empty($this->excludeResultIds)): ?> id="result<?=$i?>"<?php endif; ?> class="result<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>" data-record-number="<?=$this->escapeHtmlAttr($recordNumber)?>">
+      <?php if ($showCheckboxes): ?>
+        <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
+      <?php endif; ?>
+      <div class="record-number">
+        <?=$recordNumber ?>
+      </div>
+      <?=$this->record($current)->getSearchResult('list', $this->results)?>
+    </li>
+    <?php
+      // First record is 0, so increment the counter after each record:
+      $i++;
+    ?>
+  <?php endforeach; ?>
+</ol>

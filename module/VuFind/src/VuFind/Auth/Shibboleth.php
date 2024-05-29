@@ -38,6 +38,7 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
@@ -338,7 +339,8 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
             $username = $shib['prefix'] . '.' . $username;
         }
         $password = $shib['cat_password'] ?? null;
-        $connectingUser->saveLibraryCard(
+        $this->getDbService(UserCardServiceInterface::class)->persistLibraryCardData(
+            $connectingUser,
             null,
             $shib['prefix'],
             $username,

@@ -1,0 +1,34 @@
+<?php
+    $view = $currentSearch['view'];
+    $results = $view->results;
+    $params = $results->getParams();
+    $lookfor = $params->getDisplayQuery();
+
+    // Set up Javascript for use below:
+    $searchClassIdEncoded = urlencode($searchClassId);
+    $targetIdHtmlEscaped = $this->escapeHtml('#' . $currentSearch['domId']);
+    $lookforEncoded = urlencode($lookfor);
+    $typeEncoded = urlencode($params->getSearchHandler() ?? '');
+    $loadJs = <<<JS
+        $(document).ready(function() {
+            var url = VuFind.path
+                + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded'
+                + '&type=$typeEncoded';
+            VuFind.combinedSearch.init('$targetIdHtmlEscaped', url);
+        });
+        JS;
+
+?>
+<h2><?=$this->transEsc($currentSearch['label'])?></h2>
+
+<?php $permission = $currentSearch['permission'] ?? null ?>
+<?php if (isset($permission) && !$this->permission()->allowDisplay($permission)): ?>
+  <?php if ($block = $this->permission()->getAlternateContent($permission)): ?>
+    <?=$block?>
+  <?php endif; ?>
+  <?php return; // if permission is denied, don't render the rest of the template! ?>
+<?php endif; ?>
+
+<p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+<noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>

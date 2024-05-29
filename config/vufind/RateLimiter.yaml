@@ -48,11 +48,11 @@ Storage:
 #
 # preferIPAddress       Use IP address as client ID even for logged-in users
 #
-# ipRange               IP address range. Accepts a single IP address or a range with
-#                       a minus character without blanks as separator. Also partial
-#                       addresses can be used (e.g. 192.168 denotes
-#                       192.168.0.0-192.168.255.255) and IPv6 addresses are also
-#                       supported (unless PHP is compiled with IPv6 disabled).
+# ipRanges              IP address ranges. Accepts a list with either single IP
+#                       addresses or ranges with a minus character without blanks as
+#                       separator. Also partial addresses can be used (e.g. 192.168
+#                       denotes 192.168.0.0-192.168.255.255), and IPv6 addresses are
+#                       also supported (unless PHP is compiled with IPv6 disabled).
 #
 # loggedIn              Whether to limit the policy to logged-in users (true) or
 #                       anonymous users (false). Default is null for no limit.

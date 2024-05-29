@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 
 /**
@@ -48,4 +49,50 @@ interface FeedbackServiceInterface extends DbServiceInterface
      * @return FeedbackEntityInterface
      */
     public function createEntity(): FeedbackEntityInterface;
+
+    /**
+     * Fetch a feedback entity by ID.
+     *
+     * @param int $id ID of feedback entity
+     *
+     * @return ?FeedbackEntityInterface
+     */
+    public function getFeedbackById(int $id): ?FeedbackEntityInterface;
+
+    /**
+     * Get feedback by filter
+     *
+     * @param ?string $formName Form name (optional filter)
+     * @param ?string $siteUrl  Site URL (optional filter)
+     * @param ?string $status   Current status (optional filter)
+     * @param ?int    $page     Current page (optional)
+     * @param int     $limit    Limit per page
+     *
+     * @return Paginator
+     */
+    public function getFeedbackPaginator(
+        ?string $formName = null,
+        ?string $siteUrl = null,
+        ?string $status = null,
+        ?int $page = null,
+        int $limit = 20
+    ): Paginator;
+
+    /**
+     * Delete feedback by ids
+     *
+     * @param array $ids IDs
+     *
+     * @return int Count of deleted rows
+     */
+    public function deleteByIdArray(array $ids): int;
+
+    /**
+     * Get unique values for a column of the feedback table
+     *
+     * @param string $column Column name
+     *
+     * @return array
+     */
+    public function getUniqueColumn(string $column): array;
 }
