@@ -42,6 +42,7 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
             }
           }
         } else if (aEl) {
+          const oldStateA = VuFind.disableTransitions(aEl);
           if (!aEl.classList.contains('btn')) {
             aEl.classList.add('nav-link');
           }
@@ -51,6 +52,8 @@ VuFind.register('bootstrap3CompatibilityLayer', function bootstrap3Compatibility
               liEl.classList.remove('active');
             }
           }
+          // Use a timeout to allow the transition to complete before restoring the state:
+          setTimeout(() => { VuFind.restoreTransitions(aEl, oldStateA); }, 0);
         }
         // Move tab role from li to a:
         if (aEl && liEl.parentElement.classList.contains('nav-tabs')) {
