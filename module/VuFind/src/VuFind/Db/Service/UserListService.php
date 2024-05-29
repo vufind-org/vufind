@@ -373,8 +373,7 @@ class UserListService extends AbstractDbService implements
         }
 
         // Retrieve a list of resource IDs:
-        $resources = $this->getDbService(ResourceService::class)
-            ->findResources($ids, $source);
+        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
 
         $resourceIDs = [];
         foreach ($resources as $current) {
@@ -382,7 +381,7 @@ class UserListService extends AbstractDbService implements
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceService = $this->getDbService(UserResourceService::class);
+        $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
         $userResourceService->destroyLinks(
             $user,
             $resourceIDs,

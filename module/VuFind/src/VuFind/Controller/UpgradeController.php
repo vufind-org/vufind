@@ -48,6 +48,7 @@ use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
@@ -767,10 +768,7 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $resourceService = $this->getDbService(
-            \VuFind\Db\Service\ResourceService::class
-        );
-
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
         $problems = $resourceService->findMissingMetadata();
 
         // No problems?  We're done here!
@@ -786,19 +784,16 @@ class UpgradeController extends AbstractBase
                 $recordId = $problem->getRecordId();
                 $source = $problem->getSource();
                 try {
-                    $driver = $this->getRecordLoader()
-                        ->load($recordId, $source);
+                    $driver = $this->getRecordLoader()->load($recordId, $source);
                     $resourceService->assignMetadata($driver, $converter, $problem);
                     $resourceService->persistEntity($problem);
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
-                        'Unable to load metadata for record '
-                        . "{$source}:{$recordId}"
+                        "Unable to load metadata for record {$source}:{$recordId}"
                     );
                 } catch (\Exception $e) {
                     $this->session->warnings->append(
-                        'Problem saving metadata updates for record '
-                        . "{$source}:{$recordId}"
+                        "Problem saving metadata updates for record {$source}:{$recordId}"
                     );
                 }
             }

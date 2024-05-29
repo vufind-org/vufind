@@ -155,7 +155,7 @@ class ResourceService extends AbstractDbService implements
      *
      * @return ?ResourceEntityInterface
      */
-    public function getResourceById($id): ?ResourceEntityInterface
+    public function getResourceById(int $id): ?ResourceEntityInterface
     {
         $resource = $this->entityManager->find(
             $this->getEntityClass(\VuFind\Db\Entity\Resource::class),
@@ -223,9 +223,9 @@ class ResourceService extends AbstractDbService implements
     /**
      * Create a resource entity object.
      *
-     * @return Resource
+     * @return ResourceEntityInterface
      */
-    public function createEntity(): Resource
+    public function createEntity(): ResourceEntityInterface
     {
         $class = $this->getEntityClass(Resource::class);
         return new $class();
@@ -235,9 +235,9 @@ class ResourceService extends AbstractDbService implements
      * Get a set of records that do not have metadata stored in the resource
      * table.
      *
-     * @return array|null
+     * @return ResourceEntityInterface[]
      */
-    public function findMissingMetadata()
+    public function findMissingMetadata(): array
     {
         $dql = 'SELECT r '
             . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
@@ -311,14 +311,14 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Look up a rowset for a set of specified resources.
+     * Retrieve resource entities matching a set of specified records.
      *
-     * @param array  $ids    Array of IDs
-     * @param string $source Source of records to look up
+     * @param string[] $ids    Array of IDs
+     * @param string   $source Source of records to look up
      *
-     * @return array
+     * @return ResourceEntityInterface[]
      */
-    public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
+    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
     {
         $repo = $this->entityManager->getRepository($this->getEntityClass(Resource::class));
         $criteria = [

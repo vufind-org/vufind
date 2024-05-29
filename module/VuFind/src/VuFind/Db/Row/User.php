@@ -34,8 +34,10 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 use function count;
 
@@ -371,11 +373,11 @@ class User extends RowGateway implements
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Retrieve a list of resource IDs:
-        $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
-        $resources = $resourceService->findResources($ids, $source);
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resources = $resourceService->getResourcesByRecordIds($ids, $source);
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+        $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
         // true here makes sure that only tags in lists are deleted
         $userResourceService->destroyLinks($this->id, $resources, true);
     }
