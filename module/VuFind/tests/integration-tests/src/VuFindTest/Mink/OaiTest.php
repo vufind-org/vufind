@@ -166,7 +166,6 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         $rawXml2 = $this->httpGet(
             $this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&resumptionToken=' . urlencode($resumptionToken)
         )->getBody();
-        //echo "\n$rawXml2\n";
         $xml2 = simplexml_load_string($rawXml2);
         $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
         $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));
