@@ -51,5 +51,30 @@ interface ResourceServiceInterface extends DbServiceInterface
      *
      * @return ?ResourceEntityInterface
      */
-    public function getResourceById($id): ?ResourceEntityInterface;
+    public function getResourceById(int $id): ?ResourceEntityInterface;
+
+    /**
+     * Create a resource entity object.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function createEntity(): ResourceEntityInterface;
+
+    /**
+     * Get a set of records that do not have metadata stored in the resource
+     * table.
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function findMissingMetadata(): array;
+
+    /**
+     * Retrieve resource entities matching a set of specified records.
+     *
+     * @param string[] $ids    Array of IDs
+     * @param string   $source Source of records to look up
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array;
 }

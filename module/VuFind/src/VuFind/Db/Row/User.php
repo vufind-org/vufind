@@ -35,6 +35,7 @@ use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 
@@ -449,12 +450,11 @@ class User extends RowGateway implements
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Retrieve a list of resource IDs:
-        $resourceTable = $this->getDbTable('Resource');
-        $resources = $resourceTable->findResources($ids, $source);
+        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
 
         $resourceIDs = [];
         foreach ($resources as $current) {
-            $resourceIDs[] = $current->id;
+            $resourceIDs[] = $current->getId();
         }
 
         // Remove Resource (related tags are also removed implicitly)
