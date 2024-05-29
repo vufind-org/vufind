@@ -31,6 +31,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
@@ -52,13 +53,6 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Remote address
-     *
-     * @var RemoteAddress
-     */
-    protected $remoteAddress;
-
-    /**
      * How long a login request is considered to be valid (seconds)
      *
      * @var int
@@ -68,20 +62,20 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Constructor
      *
-     * @param \Laminas\Session\SessionManager          $sessionManager  Session Manager
-     * @param CsrfInterface                            $csrf            CSRF Validator
-     * @param \VuFind\Mailer\Mailer                    $mailer          Mailer
-     * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
-     * @param RemoteAddress                            $remoteAddr      Remote address
-     * @param \Laminas\Config\Config                   $config          Configuration
-     * @param AuthHashServiceInterface                 $authHashService AuthHash database service
+     * @param \Laminas\Session\SessionManager $sessionManager  Session Manager
+     * @param CsrfInterface                   $csrf            CSRF Validator
+     * @param \VuFind\Mailer\Mailer           $mailer          Mailer
+     * @param PhpRenderer                     $viewRenderer    View Renderer
+     * @param RemoteAddress                   $remoteAddress   Remote address
+     * @param \Laminas\Config\Config          $config          Configuration
+     * @param AuthHashServiceInterface        $authHashService AuthHash database service
      */
     public function __construct(
         protected \Laminas\Session\SessionManager $sessionManager,
         protected CsrfInterface $csrf,
         protected \VuFind\Mailer\Mailer $mailer,
-        protected \Laminas\View\Renderer\RendererInterface $viewRenderer,
-        protected RemoteAddress $remoteAddr,
+        protected PhpRenderer $viewRenderer,
+        protected RemoteAddress $remoteAddress,
         protected \Laminas\Config\Config $config,
         protected AuthHashServiceInterface $authHashService
     ) {
