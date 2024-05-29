@@ -169,8 +169,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     protected function performSearch()
     {
         $list = $this->getListObject();
-        $auth = $this->getAuthorizationService();
-        $this->user = $auth ? $auth->getIdentity() : null;
+        $this->user = $this->getAuthorizationService()?->getIdentity();
 
         // Make sure the user and/or list objects make it possible to view
         // the current result set -- we need to check logged in status and
