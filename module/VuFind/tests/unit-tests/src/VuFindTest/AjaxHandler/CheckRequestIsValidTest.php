@@ -33,7 +33,7 @@ use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
 
 /**
@@ -50,11 +50,11 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Set up a CheckRequestIsValid handler for testing.
      *
-     * @param ?User $user Return value for getUserObject() in auth manager
+     * @param ?UserEntityInterface $user Return value for getUserObject() in auth manager
      *
      * @return CheckRequestIsValid
      */
-    protected function getHandler(?User $user = null)
+    protected function getHandler(?UserEntityInterface $user = null): CheckRequestIsValid
     {
         // Set up auth manager with user:
         $this->container->set(Manager::class, $this->getMockAuthManager($user));
@@ -69,7 +69,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testLoggedOutUser()
+    public function testLoggedOutUser(): void
     {
         $handler = $this->getHandler();
         $this->assertEquals(
@@ -83,7 +83,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testEmptyQuery()
+    public function testEmptyQuery(): void
     {
         $handler = $this->getHandler($this->getMockUser());
         $this->assertEquals(
@@ -100,16 +100,15 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return array
      */
-    protected function runSuccessfulTest($ilsMethod, $requestType = null)
+    protected function runSuccessfulTest($ilsMethod, $requestType = null): array
     {
         $ilsAuth = $this->container
             ->createMock(ILSAuthenticator::class, ['storedCatalogLogin']);
-        $ilsAuth->expects($this->once())->method('storedCatalogLogin')
-            ->will($this->returnValue([3]));
+        $ilsAuth->expects($this->once())->method('storedCatalogLogin')->willReturn([3]);
         $ils = $this->container->createMock(Connection::class, [$ilsMethod]);
         $ils->expects($this->once())->method($ilsMethod)
             ->with($this->equalTo(1), $this->equalTo(2), $this->equalTo([3]))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->container->set(Connection::class, $ils);
         $this->container->set(ILSAuthenticator::class, $ilsAuth);
         $handler = $this->getHandler($this->getMockUser());
@@ -122,7 +121,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testHoldResponse()
+    public function testHoldResponse(): void
     {
         $this->assertEquals(
             [['status' => true, 'msg' => 'request_place_text']],
@@ -135,7 +134,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testILLResponse()
+    public function testILLResponse(): void
     {
         $this->assertEquals(
             [['status' => true, 'msg' => 'ill_request_place_text']],
@@ -148,7 +147,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testStorageResponse()
+    public function testStorageResponse(): void
     {
         $this->assertEquals(
             [
