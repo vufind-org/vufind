@@ -235,9 +235,9 @@ class UserList implements UserListEntityInterface
     /**
      * Get user.
      *
-     * @return User
+     * @return ?UserEntityInterface
      */
-    public function getUser(): User
+    public function getUser(): ?UserEntityInterface
     {
         return $this->user;
     }

@@ -29,11 +29,18 @@
 
 namespace VuFind\Favorites;
 
+use DateTime;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
+use function intval;
 
 /**
  * Favorites service
@@ -50,49 +57,77 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     use DbServiceAwareTrait;
 
     /**
-     * Record cache
-     *
-     * @var RecordCache
-     */
-    protected $recordCache = null;
-
-    /**
      * Constructor
      *
-     * @param RecordCache $cache Record cache
+     * @param UserListServiceInterface $userListService UserList database service
+     * @param ?RecordCache             $recordCache     Record cache (optional)
      */
     public function __construct(
-        RecordCache $cache = null
+        protected UserListServiceInterface $userListService,
+        protected ?RecordCache $recordCache = null
     ) {
-        $this->recordCache = $cache;
     }
 
     /**
-     * Get a list object for the specified ID (or 'NEW' to create a new list).
+     * Create a new list object for the specified user.
      *
-     * @param string              $listId List ID (or 'NEW')
-     * @param \VuFind\Db\Row\User $user   The user saving the record
+     * @param ?UserEntityInterface $user Logged in user (null if logged out)
      *
-     * @return \VuFind\Db\Entity\UserList
+     * @return UserListEntityInterface
+     * @throws LoginRequiredException
+     */
+    public function createListForUser(?UserEntityInterface $user): UserListEntityInterface
+    {
+        if (!$user) {
+            throw new LoginRequiredException('Log in to create lists.');
+        }
+
+        return $this->userListService->createEntity()
+            ->setCreated(new DateTime())
+            // Stopgap until we've fully converted to Doctrine:
+            ->setUser($this->userListService->getDoctrineReference(User::class, $user));
+    }
+
+    /**
+     * Get a list object for the specified ID (or null to create a new list).
+     * Ensure that the object is persisted to the database if it does not
+     * already exist, and remember it as the user's last-accessed list.
+     *
+     * @param ?int                $listId List ID (or null to create a new list)
+     * @param UserEntityInterface $user   The user saving the record
+     *
+     * @return UserListEntityInterface
      *
      * @throws \VuFind\Exception\ListPermission
      */
-    public function getListObject($listId, \VuFind\Db\Row\User $user)
+    public function getAndRememberListObject(?int $listId, UserEntityInterface $user): UserListEntityInterface
     {
-        $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
-        if (empty($listId) || $listId == 'NEW') {
-            $list = $listService->getNew($user->id);
-            $list->setTitle($this->translate('default_list_title'));
-            $listService->save($list, $user->id);
+        if (empty($listId)) {
+            $list = $this->createListForUser($user)
+                ->setTitle($this->translate('default_list_title'));
+            $this->userListService->save($list, $user);
         } else {
-            $list = $listService->getExisting($listId);
+            $list = $this->userListService->getUserListById($listId);
             // Validate incoming list ID:
             if (!$list->editAllowed($user->id)) {
                 throw new \VuFind\Exception\ListPermission('Access denied.');
             }
-            $listService->rememberLastUsed($list); // handled by save() in other case
+            $this->userListService->rememberLastUsed($list); // handled by save() in other case
         }
         return $list;
+    }
+
+    /**
+     * Given an array of parameters, extract a list ID if possible. Return null
+     * if no valid ID is found or if a "NEW" record is requested.
+     *
+     * @param array $params Parameters to process
+     *
+     * @return ?int
+     */
+    public function getListIdFromParams(array $params): ?int
+    {
+        return intval($params['list'] ?? 'NEW') ?: null;
     }
 
     /**
@@ -142,10 +177,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
 
         // Get or create a list object as needed:
-        $list = $this->getListObject(
-            $params['list'] ?? '',
-            $user
-        );
+        $list = $this->getAndRememberListObject($this->getListIdFromParams($params), $user);
 
         // Get or create a resource object as needed:
         $resource = $this->getDbService(\VuFind\Db\Service\ResourceService::class)->findResource(

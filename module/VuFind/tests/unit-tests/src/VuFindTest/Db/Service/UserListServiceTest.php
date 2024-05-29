@@ -99,7 +99,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         $session = $mockContainer->get(\Laminas\Session\Container::class);
         $listService = $this->getMockBuilder(\VuFind\Db\Service\UserListService::class)
             ->setConstructorArgs([$entityManager, $pluginManager, $tags, $session])
-            ->onlyMethods(['createUserList'])
+            ->onlyMethods(['createEntity'])
             ->getMock();
         $callback = function () {
             static $i = 0;
@@ -108,7 +108,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             $list->setTitle("Title$i");
             return $list;
         };
-        $listService->expects($this->atMost(3))->method('createUserList')
+        $listService->expects($this->atMost(3))->method('createEntity')
             ->willReturnCallback($callback);
         return $listService;
     }

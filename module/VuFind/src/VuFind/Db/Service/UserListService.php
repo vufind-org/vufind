@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -36,6 +37,7 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserList;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
@@ -50,10 +52,14 @@ use VuFind\Tags;
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
+class UserListService extends AbstractDbService implements
+    UserListServiceInterface,
+    LoggerAwareInterface,
+    DbServiceAwareInterface
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
@@ -107,11 +113,11 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
     }
 
     /**
-     * Create a userlist entity object.
+     * Create a UserList entity object.
      *
-     * @return UserList
+     * @return UserListEntityInterface
      */
-    public function createUserList(): UserList
+    public function createEntity(): UserListEntityInterface
     {
         $class = $this->getEntityClass(UserList::class);
         return new $class();
@@ -132,7 +138,7 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
             throw new LoginRequiredException('Log in to create lists.');
         }
         $user = $this->getDoctrineReference(User::class, $user);
-        $row = $this->createUserList()
+        $row = $this->createEntity()
             ->setCreated(new \DateTime())
             ->setUser($user);
         return $row;
@@ -143,10 +149,10 @@ class UserListService extends AbstractDbService implements LoggerAwareInterface,
      *
      * @param int $id Numeric ID for existing list.
      *
-     * @return UserList
+     * @return UserListEntityInterface
      * @throws RecordMissingException
      */
-    public function getExisting($id)
+    public function getUserListById(int $id): UserListEntityInterface
     {
         $result = $this->getEntityById(\VuFind\Db\Entity\UserList::class, $id);
         if (empty($result)) {

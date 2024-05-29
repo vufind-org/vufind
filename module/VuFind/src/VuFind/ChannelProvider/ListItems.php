@@ -31,7 +31,9 @@ namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
-use VuFind\Db\Entity\UserList;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 
@@ -87,54 +89,22 @@ class ListItems extends AbstractChannelProvider
     protected $initialListsToDisplay;
 
     /**
-     * UserList database service
-     *
-     * @var \VuFind\Db\Service\UserListService
-     */
-    protected $listService;
-
-    /**
-     * Tag database service
-     *
-     * @var \VuFind\Db\Service\TagService
-     */
-    protected $tagService;
-
-    /**
-     * Results manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Db\Service\UserListService   $listService    UserList table
-     * @param \VuFind\Db\Service\TagService        $tagService     Tag database service
-     * @param Url                                  $url            URL helper
-     * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param array                                $options        Settings
+     * @param UserListServiceInterface             $userListService UserList database service
+     * @param TagServiceInterface                  $tagService      Tag database service
+     * @param Url                                  $url             URL helper
+     * @param \VuFind\Search\Results\PluginManager $resultsManager  Results manager
+     * @param array                                $options         Settings
      * (optional)
      */
     public function __construct(
-        \VuFind\Db\Service\UserListService $listService,
-        \VuFind\Db\Service\TagService $tagService,
-        Url $url,
-        \VuFind\Search\Results\PluginManager $resultsManager,
+        protected UserListServiceInterface $userListService,
+        protected TagServiceInterface $tagService,
+        protected Url $url,
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
         array $options = []
     ) {
-        $this->listService = $listService;
-        $this->tagService = $tagService;
-        $this->url = $url;
-        $this->resultsManager = $resultsManager;
         $this->setOptions($options);
     }
 
@@ -201,7 +171,7 @@ class ListItems extends AbstractChannelProvider
     {
         $channels = [];
         $lists = $channelToken
-            ? $this->listService->getPublicLists([$channelToken]) : $this->getLists();
+            ? $this->userListService->getPublicLists([$channelToken]) : $this->getLists();
         foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
             $channel = $this->getChannelFromList($list, $tokenOnly);
@@ -215,20 +185,20 @@ class ListItems extends AbstractChannelProvider
     /**
      * Get a list of public lists to display:
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    protected function getLists()
+    protected function getLists(): array
     {
         // Depending on whether tags are configured, we use different methods to
         // fetch the base list of lists...
         $baseLists = $this->tags
             ? $this->getListsByTagAndId()
-            : $this->listService->getPublicLists($this->ids);
+            : $this->userListService->getPublicLists($this->ids);
 
         // Next, we add other public lists if necessary:
         $publicLists = [];
         if ($this->displayPublicLists) {
-            $publicLists = $this->listService->getPublicLists([], $baseLists);
+            $publicLists = $this->userListService->getPublicLists([], $baseLists);
         }
         return array_merge($baseLists, $publicLists);
     }
@@ -236,9 +206,9 @@ class ListItems extends AbstractChannelProvider
     /**
      * Get a list of public lists, identified by ID and tag.
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    protected function getListsByTagAndId()
+    protected function getListsByTagAndId(): array
     {
         // Get public lists by search criteria
         $listIds = $this->tagService->getListsForTag(
@@ -248,12 +218,12 @@ class ListItems extends AbstractChannelProvider
             $this->andTags
         );
 
-        $result = $this->listService->getListsById($listIds);
+        $result = $this->userListService->getListsById($listIds);
 
         // Sort lists by ID list, if necessary:
         if (!empty($result) && $this->ids) {
             $orderIds = (array)$this->ids;
-            $sortFn = function ($left, $right) use ($orderIds) {
+            $sortFn = function (UserListEntityInterface $left, UserListEntityInterface $right) use ($orderIds) {
                 return
                     array_search($left->getId(), $orderIds)
                     <=> array_search($right->getId(), $orderIds);
@@ -267,12 +237,12 @@ class ListItems extends AbstractChannelProvider
     /**
      * Given a list object, return a channel array.
      *
-     * @param \VuFind\Db\Row\UserList $list      User list
+     * @param UserListEntityInterface $list      User list
      * @param bool                    $tokenOnly Return only token information?
      *
      * @return array
      */
-    protected function getChannelFromList($list, $tokenOnly)
+    protected function getChannelFromList(UserListEntityInterface $list, bool $tokenOnly): array
     {
         $retVal = [
             'title' => $list->getTitle(),

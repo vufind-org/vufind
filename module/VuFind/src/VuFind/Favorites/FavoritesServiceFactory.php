@@ -31,6 +31,7 @@ namespace VuFind\Favorites;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 /**
  * Favorites service
@@ -58,7 +59,9 @@ class FavoritesServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
+        $serviceManager = $sm->get(\VuFind\Db\Service\PluginManager::class);
         return new FavoritesService(
+            $serviceManager->get(UserListServiceInterface::class),
             $sm->get(\VuFind\Record\Cache::class)
         );
     }

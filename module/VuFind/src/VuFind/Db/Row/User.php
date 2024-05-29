@@ -35,6 +35,7 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 use function count;
 
@@ -513,7 +514,7 @@ class User extends RowGateway implements
     public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
-        $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
+        $listService = $this->getDbService(UserListServiceInterface::class);
         $lists = $listService->getListsForUser($this->id);
         foreach ($lists as $current) {
             $listService->delete($current[0], $this->id, true);

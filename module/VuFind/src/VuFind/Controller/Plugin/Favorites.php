@@ -30,6 +30,7 @@
 namespace VuFind\Controller\Plugin;
 
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Record\Cache;
@@ -141,7 +142,10 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         }
 
         // Load helper objects needed for the saving process:
-        $list = $this->favoritesService->getListObject($params['list'] ?? '', $user);
+        $list = $this->favoritesService->getAndRememberListObject(
+            $this->favoritesService->getListIdFromParams($params),
+            $user
+        );
         $this->cache->setContext(Cache::CONTEXT_FAVORITE);
 
         $cacheRecordIds = [];   // list of record IDs to save to cache
@@ -198,10 +202,10 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
                 $user->removeResourcesById($ids, $source);
             }
         } else {
-            $listService = $this->getController()->getDbService(\VuFind\Db\Service\UserListService::class);
-            $list = $listService->getExisting($listID);
+            $service = $this->getController()->getDbService(UserListServiceInterface::class);
+            $list = $service->getUserListById($listID);
             foreach ($sorted as $source => $ids) {
-                $listService->removeResourcesById($user->id, $list, $ids, $source);
+                $service->removeResourcesById($user->id, $list, $ids, $source);
             }
         }
     }
