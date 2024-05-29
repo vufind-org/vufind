@@ -999,7 +999,7 @@ ${git_status}
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap5/templates" defaultexcludes="false">
+      <fileset dir="${srcdir}/themes/bootstrap5/templates">
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
@@ -1041,7 +1041,7 @@ ${git_status}
     </if>
     <mkdir dir="${templatesdir}"></mkdir>
     <copy todir="${templatesdir}">
-      <fileset dir="${srcdir}/themes/bootstrap3/templates" defaultexcludes="false">
+      <fileset dir="${srcdir}/themes/bootstrap3/templates">
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
       </fileset>
@@ -1094,7 +1094,6 @@ ${git_status}
         <exclude name="account_ajax.js" />
         <exclude name="cart.js" />
         <exclude name="channels.js" />
-        <exclude name="facets.js" />
         <exclude name="lightbox.js" />
         <exclude name="vendor" />
         <exclude name="vendor/bootstrap-accessibility.min.js" />
