@@ -56,7 +56,7 @@ class ChangeTrackerService extends AbstractDbService implements
      *
      * @var string
      */
-    protected $dateFormat = 'Y-m-d H:i:s';
+    protected string $dateFormat = 'Y-m-d H:i:s';
 
     /**
      * Retrieve a row from the database based on primary key; return null if it
@@ -83,7 +83,6 @@ class ChangeTrackerService extends AbstractDbService implements
      */
     public function getDeletedCount(string $indexName, DateTime $from, DateTime $until): int
     {
-        $format = 'Y-m-d H:i:s';
         return $this->getDbTable('ChangeTracker')->retrieveDeletedCount(
             $indexName,
             $from->format($this->dateFormat),
@@ -98,7 +97,7 @@ class ChangeTrackerService extends AbstractDbService implements
      * @param DateTime $from      The beginning date of the range to search.
      * @param DateTime $until     The end date of the range to search.
      * @param int      $offset    Record number to retrieve first.
-     * @param int      $limit     Retrieval limit (null for no limit)
+     * @param ?int     $limit     Retrieval limit (null for no limit)
      *
      * @return ChangeTrackerEntityInterface[]
      */
@@ -107,7 +106,7 @@ class ChangeTrackerService extends AbstractDbService implements
         DateTime $from,
         DateTime $until,
         int $offset = 0,
-        int $limit = null
+        ?int $limit = null
     ): array {
         return iterator_to_array(
             $this->getDbTable('ChangeTracker')->retrieveDeleted(

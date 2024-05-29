@@ -74,7 +74,7 @@ interface ChangeTrackerServiceInterface extends DbServiceInterface
      * @param DateTime $from      The beginning date of the range to search.
      * @param DateTime $until     The end date of the range to search.
      * @param int      $offset    Record number to retrieve first.
-     * @param int      $limit     Retrieval limit (null for no limit)
+     * @param ?int     $limit     Retrieval limit (null for no limit)
      *
      * @return ChangeTrackerEntityInterface[]
      */
@@ -83,7 +83,7 @@ interface ChangeTrackerServiceInterface extends DbServiceInterface
         DateTime $from,
         DateTime $until,
         int $offset = 0,
-        int $limit = null
+        ?int $limit = null
     ): array;
 
     /**
