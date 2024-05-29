@@ -260,11 +260,10 @@ class Database extends AbstractBase
         $config = $this->getConfig();
         $verify_email = $config->Authentication->verify_email ?? false;
         if ($verify_email && !$user->checkEmailVerified()) {
-            $exception = new AuthEmailNotVerifiedException(
+            throw new AuthEmailNotVerifiedException(
+                $user,
                 'authentication_error_email_not_verified_html'
             );
-            $exception->user = $user;
-            throw $exception;
         }
     }
 

@@ -149,9 +149,9 @@ class MyResearchController extends AbstractBase
             return;
         }
         if ($e instanceof AuthEmailNotVerifiedException) {
-            $this->sendFirstVerificationEmail($e->user);
+            $this->sendFirstVerificationEmail($e->getUser());
             if ($msg == 'authentication_error_email_not_verified_html') {
-                $this->getUserVerificationContainer()->user = $e->user->username;
+                $this->getUserVerificationContainer()->user = $e->getUser()->getUsername();
                 $url = $this->url()->fromRoute('myresearch-emailnotverified')
                     . '?reverify=true';
                 $msg = [
@@ -291,7 +291,7 @@ class MyResearchController extends AbstractBase
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
             } catch (AuthEmailNotVerifiedException $e) {
-                $this->sendFirstVerificationEmail($e->user);
+                $this->sendFirstVerificationEmail($e->getUser());
                 return $this->redirect()->toRoute('myresearch-emailnotverified');
             } catch (AuthException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
