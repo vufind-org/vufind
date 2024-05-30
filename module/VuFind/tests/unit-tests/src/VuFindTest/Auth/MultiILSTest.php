@@ -294,7 +294,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockAuthenticator = $this->getMockILSAuthenticator($patron);
         $mockUser = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['saveCredentials', 'updateEmail'])
+            ->onlyMethods(['saveCredentials'])
             ->getMock();
         $mockUser->username = 'ils1.testuser';
         $mockUserService = $this->createMock(UserServiceInterface::class);
