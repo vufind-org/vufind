@@ -594,7 +594,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a handler w/ fake table manager.
      *
-     * @param o bject               $table   Mock table
+     * @param object                $table   Mock table
      * @param ?UserServiceInterface $service Mock user database service (null = default)
      *
      * @return Database
