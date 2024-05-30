@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -135,6 +136,24 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
         }
+    }
+
+    /**
+     * Delete orphaned tags (those not present in resource_tags) from the tags table.
+     *
+     * @return void
+     */
+    public function deleteOrphanedTags(): void
+    {
+        $callback = function ($select) {
+            $subQuery = $this->getDbTable('ResourceTags')
+                ->getSql()
+                ->select()
+                ->quantifier(Select::QUANTIFIER_DISTINCT)
+                ->columns(['tag_id']);
+            $select->where->notIn('id', $subQuery);
+        };
+        $this->getDbTable('Tags')->delete($callback);
     }
 
     /**

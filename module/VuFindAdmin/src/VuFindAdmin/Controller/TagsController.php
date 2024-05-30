@@ -186,6 +186,9 @@ class TagsController extends AbstractAdmin
             return $this->redirect()->toUrl($originUrl);
         }
 
+        // If we got this far, we should clean up orphans:
+        $this->getDbService(TagServiceInterface::class)->deleteOrphanedTags();
+
         $this->flashMessenger()->addMessage(
             [
                 'msg' => 'tags_deleted',

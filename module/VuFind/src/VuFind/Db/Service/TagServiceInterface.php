@@ -112,6 +112,13 @@ interface TagServiceInterface extends DbServiceInterface
     public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
 
     /**
+     * Delete orphaned tags (those not present in resource_tags) from the tags table.
+     *
+     * @return void
+     */
+    public function deleteOrphanedTags(): void;
+
+    /**
      * Retrieve a tag by ID.
      *
      * @param int $id Tag ID
