@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -46,7 +47,8 @@ use function is_int;
  */
 class AuthHashService extends AbstractDbService implements
     AuthHashServiceInterface,
-    DbTableAwareInterface
+    DbTableAwareInterface,
+    Feature\DeleteExpiredInterface
 {
     use DbTableAwareTrait;
 
@@ -106,5 +108,19 @@ class AuthHashService extends AbstractDbService implements
     public function getLatestBySessionId(string $sessionId): ?AuthHashEntityInterface
     {
         return $this->getDbTable('AuthHash')->getLatestBySessionId($sessionId);
+    }
+
+    /**
+     * Delete expired records. Allows setting of 'from' and 'to' ID's so that rows
+     * can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        return $this->getDbTable('AuthHash')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
     }
 }
