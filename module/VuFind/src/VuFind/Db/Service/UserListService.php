@@ -40,7 +40,6 @@ use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Exception\ListPermission as ListPermissionException;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Log\LoggerAwareTrait;
