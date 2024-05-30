@@ -55,20 +55,20 @@ trait LiveDatabaseTrait
     public $hasLiveDatabaseTrait = true;
 
     /**
-     * Table manager connected to live database.
+     * Container connected to live database.
      *
-     * @var \VuFind\Db\Table\PluginManager
+     * @var \VuFindTest\Container\MockContainer
      */
-    protected $liveTableManager = null;
+    protected $liveDatabaseContainer = null;
 
     /**
      * Get a real, working table manager.
      *
-     * @return \VuFind\Db\Table\PluginManager
+     * @return \VuFindTest\Container\MockContainer
      */
-    public function getLiveTableManager()
+    public function getLiveDatabaseContainer()
     {
-        if (!$this->liveTableManager) {
+        if (!$this->liveDatabaseContainer) {
             // Set up the bare minimum services to actually load real configs:
             $config = include APPLICATION_PATH
                 . '/module/VuFind/config/module.config.php';
@@ -97,16 +97,47 @@ trait LiveDatabaseTrait
                 \VuFind\Db\Service\PluginManager::class,
                 new \VuFind\Db\Service\PluginManager($container, [])
             );
-            $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
+            $liveTableManager = new \VuFind\Db\Table\PluginManager(
                 $container,
                 []
             );
             $container->set(
                 \VuFind\Db\Table\PluginManager::class,
-                $this->liveTableManager
+                $liveTableManager
             );
+            $liveServiceManager = new \VuFind\Db\Service\PluginManager(
+                $container,
+                []
+            );
+            $container->set(
+                \VuFind\Db\Service\PluginManager::class,
+                $liveServiceManager
+            );
+            $this->liveDatabaseContainer = $container;
         }
-        return $this->liveTableManager;
+        return $this->liveDatabaseContainer;
+    }
+
+    /**
+     * Get a real, working database service manager.
+     *
+     * @return \VuFind\Db\Service\PluginManager
+     */
+    public function getLiveDbServiceManager()
+    {
+        return $this->getLiveDatabaseContainer()
+            ->get(\VuFind\Db\Service\PluginManager::class);
+    }
+
+    /**
+     * Get a real, working table manager.
+     *
+     * @return \VuFind\Db\Table\PluginManager
+     */
+    public function getLiveTableManager()
+    {
+        return $this->getLiveDatabaseContainer()
+            ->get(\VuFind\Db\Table\PluginManager::class);
     }
 
     /**

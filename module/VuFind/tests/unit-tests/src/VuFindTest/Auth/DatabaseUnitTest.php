@@ -33,6 +33,8 @@ use Laminas\Config\Config;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Stdlib\Parameters;
 use VuFind\Auth\Database;
+use VuFind\Db\Service\UserService;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Database authentication test class.
@@ -593,19 +595,26 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a handler w/ fake table manager.
      *
-     * @param object $table Mock table.
+     * @param o bject               $table   Mock table
+     * @param ?UserServiceInterface $service Mock user database service (null = default)
      *
      * @return Database
      */
-    protected function getDatabase($table)
+    protected function getDatabase($table, ?UserServiceInterface $service = null)
     {
+        $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
+            ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
+        $serviceManager->expects($this->any())->method('get')
+            ->with($this->equalTo(UserServiceInterface::class))
+            ->willReturn($service ?? $this->createMock(UserServiceInterface::class));
         $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
-            ->will($this->returnValue($table));
+            ->willReturn($table);
 
         $db = new Database();
+        $db->setDbServiceManager($serviceManager);
         $db->setDbTableManager($tableManager);
         return $db;
     }
