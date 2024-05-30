@@ -35,7 +35,9 @@ use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
@@ -449,12 +451,11 @@ class User extends RowGateway implements
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Retrieve a list of resource IDs:
-        $resourceTable = $this->getDbTable('Resource');
-        $resources = $resourceTable->findResources($ids, $source);
+        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
 
         $resourceIDs = [];
         foreach ($resources as $current) {
-            $resourceIDs[] = $current->id;
+            $resourceIDs[] = $current->getId();
         }
 
         // Remove Resource (related tags are also removed implicitly)
@@ -599,11 +600,11 @@ class User extends RowGateway implements
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
-        $table = $this->getDbTable('UserList');
+        $listService = $this->getDbService(UserListServiceInterface::class);
         foreach ($lists as $current) {
             // The rows returned by getLists() are read-only, so we need to retrieve
             // a new object for each row in order to perform a delete operation:
-            $list = $table->getExisting($current->id);
+            $list = $listService->getUserListById($current->getId());
             $list->delete($this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');

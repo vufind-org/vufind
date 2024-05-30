@@ -31,6 +31,8 @@ namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 
@@ -86,54 +88,24 @@ class ListItems extends AbstractChannelProvider
     protected $initialListsToDisplay;
 
     /**
-     * UserList table
-     *
-     * @var \VuFind\Db\Table\UserList
-     */
-    protected $userList;
-
-    /**
-     * UserList table
-     *
-     * @var \VuFind\Db\Table\UserList
-     */
-    protected $resourceTags;
-
-    /**
-     * Results manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Db\Table\UserList            $userList       UserList table
-     * @param \VuFind\Db\Table\ResourceTags        $resourceTags   ResourceTags table
-     * @param Url                                  $url            URL helper
-     * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param array                                $options        Settings
+     * @param \VuFind\Db\Table\UserList            $userList        UserList table
+     * @param UserListServiceInterface             $userListService UserList database service
+     * @param \VuFind\Db\Table\ResourceTags        $resourceTags    ResourceTags table
+     * @param Url                                  $url             URL helper
+     * @param \VuFind\Search\Results\PluginManager $resultsManager  Results manager
+     * @param array                                $options         Settings
      * (optional)
      */
     public function __construct(
-        \VuFind\Db\Table\UserList $userList,
-        \VuFind\Db\Table\ResourceTags $resourceTags,
-        Url $url,
-        \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \VuFind\Db\Table\UserList $userList,
+        protected UserListServiceInterface $userListService,
+        protected \VuFind\Db\Table\ResourceTags $resourceTags,
+        protected Url $url,
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
         array $options = []
     ) {
-        $this->userList = $userList;
-        $this->resourceTags = $resourceTags;
-        $this->url = $url;
-        $this->resultsManager = $resultsManager;
         $this->setOptions($options);
     }
 
@@ -214,16 +186,16 @@ class ListItems extends AbstractChannelProvider
     /**
      * Get a list of lists, identified by ID; filter to public lists only.
      *
-     * @param array $ids IDs to retrieve
+     * @param int[] $ids IDs to retrieve
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    protected function getListsById($ids)
+    protected function getListsById(array $ids): array
     {
         $lists = [];
         foreach ($ids as $id) {
-            $list = $this->userList->getExisting($id);
-            if ($list->public) {
+            $list = $this->userListService->getUserListById($id);
+            if ($list->isPublic()) {
                 $lists[] = $list;
             }
         }
@@ -233,16 +205,16 @@ class ListItems extends AbstractChannelProvider
     /**
      * Given an array of lists, add public lists if configured to do so.
      *
-     * @param array $lists List to expand.
+     * @param UserListEntityInterface[] $lists List to expand.
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    protected function addPublicLists($lists)
+    protected function addPublicLists(array $lists): array
     {
         if ($this->displayPublicLists) {
             $resultIds = [];
             foreach ($lists as $list) {
-                $resultIds[] = $list->id;
+                $resultIds[] = $list->getId();
             }
             $callback = function ($select) use ($resultIds) {
                 $select->where->equalTo('public', 1);
@@ -260,9 +232,9 @@ class ListItems extends AbstractChannelProvider
     /**
      * Get a list of public lists to display:
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    protected function getLists()
+    protected function getLists(): array
     {
         // Depending on whether tags are configured, we use different methods to
         // fetch the base list of lists...
@@ -277,9 +249,9 @@ class ListItems extends AbstractChannelProvider
     /**
      * Get a list of public lists, identified by ID and tag.
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    protected function getListsByTagAndId()
+    protected function getListsByTagAndId(): array
     {
         // Get public lists by search criteria
         $lists = $this->resourceTags->getListsForTag(
@@ -308,10 +280,10 @@ class ListItems extends AbstractChannelProvider
         // Sort lists by ID list, if necessary:
         if (!empty($result) && $this->ids) {
             $orderIds = (array)$this->ids;
-            $sortFn = function ($left, $right) use ($orderIds) {
+            $sortFn = function (UserListEntityInterface $left, UserListEntityInterface $right) use ($orderIds) {
                 return
-                    array_search($left->id, $orderIds)
-                    <=> array_search($right->id, $orderIds);
+                    array_search($left->getId(), $orderIds)
+                    <=> array_search($right->getId(), $orderIds);
             };
             usort($result, $sortFn);
         }
@@ -322,29 +294,29 @@ class ListItems extends AbstractChannelProvider
     /**
      * Given a list object, return a channel array.
      *
-     * @param \VuFind\Db\Row\UserList $list      User list
+     * @param UserListEntityInterface $list      User list
      * @param bool                    $tokenOnly Return only token information?
      *
      * @return array
      */
-    protected function getChannelFromList($list, $tokenOnly)
+    protected function getChannelFromList(UserListEntityInterface $list, bool $tokenOnly): array
     {
         $retVal = [
-            'title' => $list->title,
+            'title' => $list->getTitle(),
             'providerId' => $this->providerId,
-            'token' => $list->id,
+            'token' => $list->getId(),
             'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
         }
         $results = $this->resultsManager->get('Favorites');
-        $results->getParams()->initFromRequest(new Parameters(['id' => $list->id]));
+        $results->getParams()->initFromRequest(new Parameters(['id' => $list->getId()]));
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',
-            'url' => $this->url->fromRoute('userList', ['id' => $list->id]),
+            'url' => $this->url->fromRoute('userList', ['id' => $list->getId()]),
         ];
         return $retVal;
     }

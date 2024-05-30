@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service interface for resource.
+ * Database service interface for UserList.
  *
  * PHP version 8
  *
@@ -22,59 +22,43 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
- * Database service interface for resource.
+ * Database service interface for UserList.
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface ResourceServiceInterface extends DbServiceInterface
+interface UserListServiceInterface extends DbServiceInterface
 {
     /**
-     * Lookup and return a resource.
+     * Create a UserList entity object.
      *
-     * @param int $id Identifier value
-     *
-     * @return ?ResourceEntityInterface
+     * @return UserListEntityInterface
      */
-    public function getResourceById(int $id): ?ResourceEntityInterface;
+    public function createEntity(): UserListEntityInterface;
 
     /**
-     * Create a resource entity object.
+     * Retrieve a list object.
      *
-     * @return ResourceEntityInterface
+     * @param int $id Numeric ID for existing list.
+     *
+     * @return UserListEntityInterface
+     * @throws RecordMissingException
      */
-    public function createEntity(): ResourceEntityInterface;
-
-    /**
-     * Get a set of records that do not have metadata stored in the resource
-     * table.
-     *
-     * @return ResourceEntityInterface[]
-     */
-    public function findMissingMetadata(): array;
-
-    /**
-     * Retrieve resource entities matching a set of specified records.
-     *
-     * @param string[] $ids    Array of IDs
-     * @param string   $source Source of records to look up
-     *
-     * @return ResourceEntityInterface[]
-     */
-    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array;
+    public function getUserListById(int $id): UserListEntityInterface;
 }

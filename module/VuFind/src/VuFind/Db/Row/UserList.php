@@ -35,6 +35,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
@@ -261,12 +262,11 @@ class UserList extends RowGateway implements
         }
 
         // Retrieve a list of resource IDs:
-        $resourceTable = $this->getDbTable('Resource');
-        $resources = $resourceTable->findResources($ids, $source);
+        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
 
         $resourceIDs = [];
         foreach ($resources as $current) {
-            $resourceIDs[] = $current->id;
+            $resourceIDs[] = $current->getId();
         }
 
         // Remove Resource (related tags are also removed implicitly)
