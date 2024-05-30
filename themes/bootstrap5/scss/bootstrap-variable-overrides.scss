@@ -32,9 +32,6 @@ $navbar-light-brand-hover-color:    $primary !default;
 $navbar-padding-x:                  15px !default;
 $navbar-padding-y:                  0 !default;
 
-// Disable transitions to allow the bs3-compat.js to do its work without visual distractions:
-$enable-transitions:                false !default;
-
 // Disable !important utilities by default:
 $enable-important-utilities:        false !default;
 

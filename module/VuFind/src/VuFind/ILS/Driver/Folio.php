@@ -521,7 +521,8 @@ class Folio extends AbstractAPI implements
             ) {
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
-                $locationMap[$location->id] = compact('name', 'code');
+                $isActive = $location->isActive ?? true;
+                $locationMap[$location->id] = compact('name', 'code', 'isActive');
             }
             $this->putCachedData($cacheKey, $locationMap);
         }
@@ -540,6 +541,7 @@ class Folio extends AbstractAPI implements
         $locationMap = $this->getLocations();
         $name = '';
         $code = '';
+        $isActive = true;
         if (array_key_exists($locationId, $locationMap)) {
             return $locationMap[$locationId];
         } else {
@@ -553,10 +555,11 @@ class Folio extends AbstractAPI implements
                 $location = json_decode($locationResponse->getBody());
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
+                $isActive = $location->isActive ?? $isActive;
             }
         }
 
-        return compact('name', 'code');
+        return compact('name', 'code', 'isActive');
     }
 
     /**
@@ -671,6 +674,7 @@ class Folio extends AbstractAPI implements
         $locationData = $this->getLocationData($locationId);
         $locationName = $locationData['name'];
         $locationCode = $locationData['code'];
+        $locationIsActive = $locationData['isActive'];
         // concatenate enumeration fields if present
         $enum = implode(
             ' ',
@@ -710,6 +714,7 @@ class Folio extends AbstractAPI implements
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,
             'location_code' => $locationCode,
+            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,

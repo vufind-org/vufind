@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for external_session table
  *
@@ -40,4 +42,58 @@ namespace VuFind\Db\Entity;
  */
 interface ExternalSessionEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get PHP session id string.
+     *
+     * @return string
+     */
+    public function getSessionId(): string;
+
+    /**
+     * Set PHP session id string.
+     *
+     * @param string $sessionId PHP session id string
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function setSessionId(string $sessionId): ExternalSessionEntityInterface;
+
+    /**
+     * Get external session id string.
+     *
+     * @return string
+     */
+    public function getExternalSessionId(): string;
+
+    /**
+     * Set external session id string.
+     *
+     * @param string $externalSessionId External session id string
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): ExternalSessionEntityInterface;
 }
