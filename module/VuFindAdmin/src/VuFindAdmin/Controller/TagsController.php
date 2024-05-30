@@ -329,7 +329,7 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique resources based on the url params
      *
-     * @return array
+     * @return array[]
      */
     protected function getUniqueResources(): array
     {
@@ -343,7 +343,7 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique tags based on the url params
      *
-     * @return array
+     * @return array[]
      */
     protected function getUniqueTags(): array
     {
@@ -357,7 +357,7 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique users based on the url params
      *
-     * @return array
+     * @return array[]
      */
     protected function getUniqueUsers(): array
     {

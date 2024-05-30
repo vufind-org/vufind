@@ -79,7 +79,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @param ?int $resourceId ID of the resource (null for any)
      * @param ?int $tagId      ID of the tag (null for any)
      *
-     * @return array
+     * @return array[]
      */
     public function getUniqueResources(
         ?int $userId = null,
@@ -94,7 +94,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @param ?int $resourceId ID of the resource (null for any)
      * @param ?int $tagId      ID of the tag (null for any)
      *
-     * @return array
+     * @return array[]
      */
     public function getUniqueTags(
         ?int $userId = null,
@@ -109,7 +109,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @param ?int $resourceId ID of the resource (null for any)
      * @param ?int $tagId      ID of the tag (null for any)
      *
-     * @return array
+     * @return array[]
      */
     public function getUniqueUsers(
         ?int $userId = null,
