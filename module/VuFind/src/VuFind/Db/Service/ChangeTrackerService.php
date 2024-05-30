@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -49,6 +50,74 @@ class ChangeTrackerService extends AbstractDbService implements
     DbTableAwareInterface
 {
     use DbTableAwareTrait;
+
+    /**
+     * Format to use when sending dates to legacy code.
+     *
+     * @var string
+     */
+    protected string $dateFormat = 'Y-m-d H:i:s';
+
+    /**
+     * Retrieve a row from the database based on primary key; return null if it
+     * is not found.
+     *
+     * @param string $indexName The name of the Solr index holding the record.
+     * @param string $id        The ID of the record being indexed.
+     *
+     * @return ?ChangeTrackerEntityInterface
+     */
+    public function getChangeTrackerEntity(string $indexName, string $id): ?ChangeTrackerEntityInterface
+    {
+        return $this->getDbTable('ChangeTracker')->retrieve($indexName, $id);
+    }
+
+    /**
+     * Retrieve a count of deleted rows from the database.
+     *
+     * @param string   $indexName The name of the Solr index holding the record.
+     * @param DateTime $from      The beginning date of the range to search.
+     * @param DateTime $until     The end date of the range to search.
+     *
+     * @return int
+     */
+    public function getDeletedCount(string $indexName, DateTime $from, DateTime $until): int
+    {
+        return $this->getDbTable('ChangeTracker')->retrieveDeletedCount(
+            $indexName,
+            $from->format($this->dateFormat),
+            $until->format($this->dateFormat)
+        );
+    }
+
+    /**
+     * Retrieve a set of deleted rows from the database.
+     *
+     * @param string   $indexName The name of the Solr index holding the record.
+     * @param DateTime $from      The beginning date of the range to search.
+     * @param DateTime $until     The end date of the range to search.
+     * @param int      $offset    Record number to retrieve first.
+     * @param ?int     $limit     Retrieval limit (null for no limit)
+     *
+     * @return ChangeTrackerEntityInterface[]
+     */
+    public function getDeletedEntities(
+        string $indexName,
+        DateTime $from,
+        DateTime $until,
+        int $offset = 0,
+        ?int $limit = null
+    ): array {
+        return iterator_to_array(
+            $this->getDbTable('ChangeTracker')->retrieveDeleted(
+                $indexName,
+                $from->format($this->dateFormat),
+                $until->format($this->dateFormat),
+                $offset,
+                $limit
+            )
+        );
+    }
 
     /**
      * Update the change_tracker table to reflect that a record has been indexed.

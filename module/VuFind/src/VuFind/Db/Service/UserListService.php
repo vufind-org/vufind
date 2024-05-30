@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database service interface for resource.
+ * Database service for UserList.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,59 +22,57 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
- * Database service interface for resource.
+ * Database service for UserList.
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface ResourceServiceInterface extends DbServiceInterface
+class UserListService extends AbstractDbService implements DbTableAwareInterface, UserListServiceInterface
 {
-    /**
-     * Lookup and return a resource.
-     *
-     * @param int $id Identifier value
-     *
-     * @return ?ResourceEntityInterface
-     */
-    public function getResourceById(int $id): ?ResourceEntityInterface;
+    use DbTableAwareTrait;
 
     /**
-     * Create a resource entity object.
+     * Create a UserList entity object.
      *
-     * @return ResourceEntityInterface
+     * @return UserListEntityInterface
      */
-    public function createEntity(): ResourceEntityInterface;
+    public function createEntity(): UserListEntityInterface
+    {
+        return $this->getDbTable('UserList')->createRow();
+    }
 
     /**
-     * Get a set of records that do not have metadata stored in the resource
-     * table.
+     * Retrieve a list object.
      *
-     * @return ResourceEntityInterface[]
+     * @param int $id Numeric ID for existing list.
+     *
+     * @return UserListEntityInterface
+     * @throws RecordMissingException
      */
-    public function findMissingMetadata(): array;
-
-    /**
-     * Retrieve resource entities matching a set of specified records.
-     *
-     * @param string[] $ids    Array of IDs
-     * @param string   $source Source of records to look up
-     *
-     * @return ResourceEntityInterface[]
-     */
-    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array;
+    public function getUserListById(int $id): UserListEntityInterface
+    {
+        $result = $this->getDbTable('UserList')->select(['id' => $id])->current();
+        if (empty($result)) {
+            throw new RecordMissingException('Cannot load list ' . $id);
+        }
+        return $result;
+    }
 }
