@@ -33,7 +33,6 @@ use Laminas\Config\Config;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Stdlib\Parameters;
 use VuFind\Auth\Database;
-use VuFind\Db\Service\UserService;
 use VuFind\Db\Service\UserServiceInterface;
 
 /**
