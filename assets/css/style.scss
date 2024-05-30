@@ -121,8 +121,6 @@ iframe {
   a:not(.logo) {
     display: inline-block;
     padding: 29px 10px;
-    font-size: 17px;
-    font-family: "Questrial";
     color: black;
     text-decoration: none;
     vertical-align: top;
@@ -134,6 +132,9 @@ iframe {
 
     @media (max-width: $screen-sm-max) {
       padding: 10px;
+    }
+    @media (min-width: $screen-md-min) {
+      font-family: "Questrial";
     }
   }
 
@@ -239,6 +240,11 @@ iframe {
 .content {
   padding: 1rem;
   color: white;
+}
+
+iframe {
+  font: inherit;
+  background-color: white;
 }
 
 .footer {
