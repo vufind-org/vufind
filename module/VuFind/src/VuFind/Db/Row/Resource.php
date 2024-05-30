@@ -220,6 +220,8 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * @param \VuFind\Date\Converter            $converter Date converter
      *
      * @return \VuFind\Db\Row\Resource
+     *
+     * @deprecated Use \VuFind\Record\ResourcePopulator::assignMetadata()
      */
     public function assignMetadata($driver, \VuFind\Date\Converter $converter)
     {
