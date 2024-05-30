@@ -124,27 +124,6 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Create a new list object.
-     *
-     * @param User|bool $user User object representing owner of
-     * new list (or false if not logged in)
-     *
-     * @return UserList|bool
-     * @throws LoginRequiredException
-     */
-    public function getNew($user)
-    {
-        if (!$user) {
-            throw new LoginRequiredException('Log in to create lists.');
-        }
-        $user = $this->getDoctrineReference(User::class, $user);
-        $row = $this->createEntity()
-            ->setCreated(new \DateTime())
-            ->setUser($user);
-        return $row;
-    }
-
-    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.
