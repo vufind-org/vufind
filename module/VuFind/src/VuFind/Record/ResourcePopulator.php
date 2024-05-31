@@ -75,10 +75,9 @@ class ResourcePopulator
      */
     public function createResourceForDriver(RecordDriver $driver): ResourceEntityInterface
     {
-        $resource = $this->assignMetadata($this->resourceService->createEntity(), $driver)
+        return $this->assignMetadata($this->resourceService->createEntity(), $driver)
             ->setRecordId($driver->getUniqueId())
             ->setSource($driver->getSourceIdentifier());
-        return $resource;
     }
 
     /**
@@ -164,7 +163,7 @@ class ResourcePopulator
         if (isset($dates[0]) && strlen($dates[0]) > 4) {
             try {
                 $year = $this->dateConverter->convertFromDisplayDate('Y', $dates[0]);
-            } catch (DateException $e) {
+            } catch (DateException) {
                 // If conversion fails, don't store a date:
                 $year = '';
             }

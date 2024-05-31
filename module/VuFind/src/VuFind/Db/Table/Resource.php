@@ -66,7 +66,7 @@ class Resource extends Gateway implements DbServiceAwareInterface
      * @param Adapter       $adapter                 Database adapter
      * @param PluginManager $tm                      Table manager
      * @param array         $cfg                     Laminas configuration
-     * @param RowGateway    $rowObj                  Row prototype object (null for default)
+     * @param ?RowGateway   $rowObj                  Row prototype object (null for default)
      * @param DateConverter $dateConverter           Date converter
      * @param callable      $resourcePopulatorLoader Resource populator loader
      * @param string        $table                   Name of database table to interface with
@@ -74,11 +74,11 @@ class Resource extends Gateway implements DbServiceAwareInterface
     public function __construct(
         Adapter $adapter,
         PluginManager $tm,
-        $cfg,
+        array $cfg,
         ?RowGateway $rowObj,
         protected DateConverter $dateConverter,
         callable $resourcePopulatorLoader,
-        $table = 'resource'
+        string $table = 'resource'
     ) {
         $this->resourcePopulatorLoader = $resourcePopulatorLoader;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
