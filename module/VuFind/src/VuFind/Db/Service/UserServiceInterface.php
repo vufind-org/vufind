@@ -80,6 +80,15 @@ interface UserServiceInterface extends DbServiceInterface
     ): void;
 
     /**
+     * Update the verification hash for the provided user.
+     *
+     * @param UserEntityInterface $user User to update
+     *
+     * @return void
+     */
+    public function updateUserHash(UserEntityInterface $user): void;
+
+    /**
      * Create a new user entity.
      *
      * @return UserEntityInterface

@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use DateTime;
+use Exception;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
@@ -637,14 +638,17 @@ class User extends RowGateway implements
      * Update the verification hash for this user
      *
      * @return bool save success
+     *
+     * @deprecated Use \VuFind\Db\Service\UserServiceInterface::updateUserHash()
      */
     public function updateHash()
     {
-        $hash = md5($this->username . $this->password . $this->pass_hash . rand());
-        // Make totally sure the timestamp is exactly 10 characters:
-        $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
-        $this->verify_hash = $hash . $time;
-        return $this->save();
+        try {
+            $this->getDbService(UserServiceInterface::class)->updateUserHash($this);
+            return true;
+        } catch (Exception) {
+            return false;
+        }
     }
 
     /**
@@ -722,6 +726,52 @@ class User extends RowGateway implements
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string
+    {
+        return $this->password ?? '';
+    }
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface
+    {
+        $this->pass_hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string
+    {
+        return $this->pass_hash ?? null;
     }
 
     /**
@@ -929,6 +979,19 @@ class User extends RowGateway implements
     public function getCatPassEnc(): ?string
     {
         return $this->cat_pass_enc;
+    }
+
+    /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface
+    {
+        $this->verify_hash = $hash;
+        return $this;
     }
 
     /**
