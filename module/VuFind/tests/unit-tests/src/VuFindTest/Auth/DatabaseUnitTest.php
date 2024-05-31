@@ -32,8 +32,11 @@ namespace VuFindTest\Auth;
 use Laminas\Config\Config;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
+use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Http\PhpEnvironment\Request;
 
 /**
  * Database authentication test class.
@@ -51,7 +54,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyCreateRequest()
+    public function testEmptyCreateRequest(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Username cannot be blank');
@@ -65,7 +68,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyPasswordCreateRequest()
+    public function testEmptyPasswordCreateRequest(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Password cannot be blank');
@@ -81,7 +84,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMismatchedPasswordCreateRequest()
+    public function testMismatchedPasswordCreateRequest(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Passwords do not match');
@@ -439,7 +442,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateWithMissingTableManager()
+    public function testCreateWithMissingTableManager(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('DB table manager missing.');
@@ -453,7 +456,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateDuplicateEmail()
+    public function testCreateDuplicateEmail(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('That email address is already used');
@@ -462,10 +465,10 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockTable(['getByEmail', 'getByUsername']);
         $table->expects($this->once())->method('getByEmail')
             ->with($this->equalTo('me@mysite.com'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $table->expects($this->any())->method('getByUsername')
             ->with($this->equalTo('good'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $db = $this->getDatabase($table);
         $this->assertEquals(
             false,
@@ -478,7 +481,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateDuplicateUsername()
+    public function testCreateDuplicateUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('That username is already taken');
@@ -487,7 +490,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockTable(['getByUsername']);
         $table->expects($this->any())->method('getByUsername')
             ->with($this->equalTo('good'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $db = $this->getDatabase($table);
         $this->assertEquals(
             false,
@@ -500,16 +503,16 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulCreation()
+    public function testSuccessfulCreation(): void
     {
         // Fake services:
         $table = $this->getMockTable(['insert', 'getByEmail', 'getByUsername']);
         $table->expects($this->once())->method('getByEmail')
             ->with($this->equalTo('me@mysite.com'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $table->expects($this->any())->method('getByUsername')
             ->with($this->equalTo('good'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $db = $this->getDatabase($table);
         $prototype = $table->getResultSetPrototype()->getArrayObjectPrototype();
         $prototype->expects($this->once())->method('save');
@@ -524,7 +527,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getCreateParams()
+    protected function getCreateParams(): array
     {
         return [
             'firstname' => 'Foo',
@@ -539,13 +542,11 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock row object
      *
-     * @return \VuFind\Db\Row\User
+     * @return MockObject&User
      */
-    protected function getMockRow()
+    protected function getMockRow(): MockObject&User
     {
-        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(User::class);
     }
 
     /**
@@ -553,9 +554,9 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return \VuFind\Db\Table\User
+     * @return MockObject&\VuFind\Db\Table\User
      */
-    protected function getMockTable($methods = [])
+    protected function getMockTable($methods = []): MockObject&\VuFind\Db\Table\User
     {
         $methods[] = 'getResultSetPrototype';
         $mock = $this->getMockBuilder(\VuFind\Db\Table\User::class)
@@ -563,12 +564,10 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods($methods)
             ->getMock();
         $mock->expects($this->any())->method('getResultSetPrototype')
-            ->will(
-                $this->returnValue(
-                    new ResultSet(
-                        ResultSet::TYPE_ARRAYOBJECT,
-                        $this->getMockRow()
-                    )
+            ->willReturn(
+                new ResultSet(
+                    ResultSet::TYPE_ARRAYOBJECT,
+                    $this->getMockRow()
                 )
             );
         return $mock;
@@ -579,27 +578,26 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $post POST parameters
      *
-     * @return \Laminas\Http\PhpEnvironment\Request
+     * @return MockObject&Request
      */
-    protected function getRequest($post = [])
+    protected function getRequest($post = []): MockObject&Request
     {
         $post = new Parameters($post);
-        $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
+        $request = $this->getMockBuilder(Request::class)
             ->onlyMethods(['getPost'])->getMock();
-        $request->expects($this->any())->method('getPost')
-            ->will($this->returnValue($post));
+        $request->expects($this->any())->method('getPost')->willReturn($post);
         return $request;
     }
 
     /**
      * Get a handler w/ fake table manager.
      *
-     * @param object                $table   Mock table
+     * @param MockObject            $table   Mock table
      * @param ?UserServiceInterface $service Mock user database service (null = default)
      *
      * @return Database
      */
-    protected function getDatabase($table, ?UserServiceInterface $service = null)
+    protected function getDatabase(MockObject $table, ?UserServiceInterface $service = null): Database
     {
         $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
