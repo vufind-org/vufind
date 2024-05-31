@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Resource table gateway factory.
+ * Resource populator factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
+ * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Db\Table;
+namespace VuFind\Record;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
- * Resource table gateway factory.
+ * Resource populator factory.
  *
  * @category VuFind
- * @package  Db_Table
+ * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ResourceFactory extends GatewayFactory
+class ResourcePopulatorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,13 +67,12 @@ class ResourceFactory extends GatewayFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory!');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $converter = $container->get(\VuFind\Date\Converter::class);
-        // Wrapper needed to avoid circular dependency:
-        $populatorLoader = function () use ($container) {
-            return $container->get(\VuFind\Record\ResourcePopulator::class);
-        };
-        return parent::__invoke($container, $requestedName, [$converter, $populatorLoader]);
+        return new $requestedName(
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Date\Converter::class)
+        );
     }
 }

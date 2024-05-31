@@ -37,7 +37,6 @@ use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
-use VuFind\Record\Loader;
 
 use function in_array;
 
@@ -55,41 +54,33 @@ class Resource extends Gateway implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Date converter
+     * Loader for record populator
      *
-     * @var DateConverter
+     * @var callable
      */
-    protected $dateConverter;
-
-    /**
-     * Record loader
-     *
-     * @var Loader
-     */
-    protected $recordLoader;
+    protected $resourcePopulatorLoader;
 
     /**
      * Constructor
      *
-     * @param Adapter       $adapter   Database adapter
-     * @param PluginManager $tm        Table manager
-     * @param array         $cfg       Laminas configuration
-     * @param RowGateway    $rowObj    Row prototype object (null for default)
-     * @param DateConverter $converter Date converter
-     * @param Loader        $loader    Record loader
-     * @param string        $table     Name of database table to interface with
+     * @param Adapter       $adapter                 Database adapter
+     * @param PluginManager $tm                      Table manager
+     * @param array         $cfg                     Laminas configuration
+     * @param ?RowGateway   $rowObj                  Row prototype object (null for default)
+     * @param DateConverter $dateConverter           Date converter
+     * @param callable      $resourcePopulatorLoader Resource populator loader
+     * @param string        $table                   Name of database table to interface with
      */
     public function __construct(
         Adapter $adapter,
         PluginManager $tm,
-        $cfg,
+        array $cfg,
         ?RowGateway $rowObj,
-        DateConverter $converter,
-        Loader $loader,
-        $table = 'resource'
+        protected DateConverter $dateConverter,
+        callable $resourcePopulatorLoader,
+        string $table = 'resource'
     ) {
-        $this->dateConverter = $converter;
-        $this->recordLoader = $loader;
+        $this->resourcePopulatorLoader = $resourcePopulatorLoader;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
@@ -121,20 +112,10 @@ class Resource extends Gateway implements DbServiceAwareInterface
 
         // Create row if it does not already exist and creation is enabled:
         if (empty($result) && $create) {
-            $result = $this->createRow();
-            $result->record_id = $id;
-            $result->source = $source;
-
-            // Load record if it was not provided:
-            if (null === $driver) {
-                $driver = $this->recordLoader->load($id, $source);
-            }
-
-            // Load metadata into the database for sorting/failback purposes:
-            $result->assignMetadata($driver, $this->dateConverter);
-
-            // Save the new row.
-            $result->save();
+            $resourcePopulator = ($this->resourcePopulatorLoader)();
+            $result = $driver
+                ? $resourcePopulator->createAndPersistResourceForDriver($driver)
+                : $resourcePopulator->createAndPersistResourceForRecordId($id, $source);
         }
         return $result;
     }
