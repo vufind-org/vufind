@@ -30,7 +30,6 @@
 namespace VuFind\Db\Row;
 
 use DateTime;
-use Exception;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
@@ -639,16 +638,15 @@ class User extends RowGateway implements
      *
      * @return bool save success
      *
-     * @deprecated Use \VuFind\Db\Service\UserServiceInterface::updateUserHash()
+     * @deprecated Use \VuFind\Auth\Manager::updateUserVerifyHash()
      */
     public function updateHash()
     {
-        try {
-            $this->getDbService(UserServiceInterface::class)->updateUserHash($this);
-            return true;
-        } catch (Exception) {
-            return false;
-        }
+        $hash = md5($this->username . $this->password . $this->pass_hash . rand());
+        // Make totally sure the timestamp is exactly 10 characters:
+        $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
+        $this->verify_hash = $hash . $time;
+        return $this->save();
     }
 
     /**

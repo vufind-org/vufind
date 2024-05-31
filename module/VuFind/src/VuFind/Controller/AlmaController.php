@@ -367,7 +367,7 @@ class AlmaController extends AbstractBase
             // Attempt to send the email
             try {
                 // Create a fresh hash
-                $this->getDbService(UserServiceInterface::class)->updateUserHash($user);
+                $this->getAuthManager()->updateUserVerifyHash($user);
                 $config = $this->getConfig();
                 $renderer = $this->getViewRenderer();
                 $method = $this->getAuthManager()->getAuthMethod();
