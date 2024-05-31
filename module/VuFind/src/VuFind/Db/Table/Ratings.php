@@ -33,6 +33,8 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
@@ -44,8 +46,10 @@ use VuFind\Db\Service\ResourceServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Ratings extends Gateway
+class Ratings extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *

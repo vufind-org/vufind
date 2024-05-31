@@ -34,6 +34,8 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 
 use function count;
@@ -48,8 +50,10 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Comments extends Gateway
+class Comments extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
