@@ -30,16 +30,7 @@
 namespace VuFindTest\RecordDriver;
 
 use Exception;
-use PHPUnit\Event\NoPreviousThrowableException;
-use PHPUnit\Framework\Exception as FrameworkException;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\InvalidArgumentException;
-use PHPUnit\Framework\MockObject\Exception as MockObjectException;
-use PHPUnit\Framework\MockObject\IncompatibleReturnValueException;
-use PHPUnit\Framework\MockObject\MethodCannotBeConfiguredException;
-use PHPUnit\Framework\MockObject\MethodNameAlreadyConfiguredException;
-use PHPUnit\Framework\MockObject\MethodNameNotConfiguredException;
-use PHPUnit\Framework\MockObject\MethodParametersAlreadyConfiguredException;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\PluginManager;
 use VuFind\Db\Service\ResourceServiceInterface;
@@ -91,17 +82,6 @@ class MissingTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedTitle Expected title returned by driver
      *
      * @return void
-     * @throws InvalidArgumentException
-     * @throws MockObjectException
-     * @throws NoPreviousThrowableException
-     * @throws MethodCannotBeConfiguredException
-     * @throws MethodNameAlreadyConfiguredException
-     * @throws FrameworkException
-     * @throws MethodNameNotConfiguredException
-     * @throws MethodParametersAlreadyConfiguredException
-     * @throws IncompatibleReturnValueException
-     * @throws Exception
-     * @throws ExpectationFailedException
      *
      * @dataProvider titleProvider
      */
