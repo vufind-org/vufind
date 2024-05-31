@@ -29,16 +29,14 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\Resource;
-use VuFind\Db\Service\CommentsService;
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\DefaultRecord;
 
 /**
@@ -65,8 +63,6 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
         $this->container
-            ->set(\VuFind\Db\Table\PluginManager::class, $this->container);
-        $this->container
             ->set(\VuFind\Db\Service\PluginManager::class, $this->container);
         $this->container->set('ControllerPluginManager', $this->container);
 
@@ -89,23 +85,6 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Build the handler:
         $factory = new CommentRecordFactory();
         return $factory($this->container, CommentRecord::class);
-    }
-
-    /**
-     * Return a mock resource row that expects a specific user and comment.
-     *
-     * @param string              $comment Comment to expect
-     * @param UserEntityInterface $user    User to expect
-     *
-     * @return MockObject&Resource
-     */
-    protected function getMockResource(string $comment, UserEntityInterface $user): MockObject&Resource
-    {
-        $row = $this->container->createMock(Resource::class, ['addComment']);
-        $row->expects($this->once())->method('addComment')
-            ->with($this->equalTo($comment), $this->equalTo($user))
-            ->will($this->returnValue(1));
-        return $row;
     }
 
     /**
@@ -159,13 +138,16 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         $user = $this->createMock(UserEntityInterface::class);
         $user->method('getId')->willReturn(1);
-        $table = $this->container
-            ->createMock(ResourceTable::class, ['findResource']);
-        $table->expects($this->once())->method('findResource')
-            ->with($this->equalTo('foo'), $this->equalTo('Solr'))
-            ->willReturn($this->getMockResource('bar', $user));
-        $this->container->set(ResourceTable::class, $table);
-        $this->container->set(CommentsServiceInterface::class, new CommentsService());
+        $resource = $this->createMock(ResourceEntityInterface::class);
+        $this->container->get(ResourcePopulator::class)->expects($this->once())
+            ->method('getOrCreateResourceForRecordId')
+            ->with('foo', 'Solr')
+            ->willReturn($resource);
+        $mockCommentsService = $this->createMock(CommentsServiceInterface::class);
+        $mockCommentsService->expects($this->once())->method('addComment')
+            ->with('bar', $user, $resource)
+            ->willReturn(1);
+        $this->container->set(CommentsServiceInterface::class, $mockCommentsService);
 
         $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
         $driver->expects($this->once())
