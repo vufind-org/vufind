@@ -191,7 +191,7 @@ trait LiveDatabaseTrait
      */
     public function getLiveDatabaseContainer(): MockContainer
     {
-        if (!$this->liveTableManager) {
+        if (!$this->liveDatabaseContainer) {
             $container = $this->getMockContainerWithDoctrineDependencies();
             $configManager = $container->get(\VuFind\Config\PluginManager::class);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
