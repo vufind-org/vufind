@@ -678,7 +678,7 @@ class Manager implements
             // email address:
             $user->setPendingEmail($email === $user->getEmail() ? '' : $email);
         } else {
-            $user->updateEmail($email, true);
+            $this->userService->updateUserEmail($user, $email, true);
             $user->setPendingEmail('');
         }
         $this->userService->persistEntity($user);

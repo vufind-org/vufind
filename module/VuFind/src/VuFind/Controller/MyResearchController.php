@@ -37,6 +37,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -1975,7 +1976,8 @@ class MyResearchController extends AbstractBase
                 if ($user = $table->getByVerifyHash($hash)) {
                     // Apply pending email address change, if applicable:
                     if ($pending = $user->getPendingEmail()) {
-                        $user->updateEmail($pending, true);
+                        $this->getDbService(UserServiceInterface::class)
+                            ->updateUserEmail($user, $pending, true);
                         $user->setPendingEmail('');
                     }
                     $user->saveEmailVerified();

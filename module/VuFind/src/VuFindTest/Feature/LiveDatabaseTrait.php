@@ -31,6 +31,11 @@
 
 namespace VuFindTest\Feature;
 
+use VuFind\Db\Service\PluginManager as ServiceManager;
+use VuFind\Db\Table\Gateway;
+use VuFind\Db\Table\PluginManager as TableManager;
+use VuFindTest\Container\MockContainer;
+
 /**
  * Mix-in for accessing a real database during testing.
  *
@@ -50,21 +55,21 @@ trait LiveDatabaseTrait
      *
      * @var bool
      */
-    public $hasLiveDatabaseTrait = true;
+    public bool $hasLiveDatabaseTrait = true;
 
     /**
      * Plugin manager for database services.
      *
-     * @var \VuFind\Db\Service\PluginManager
+     * @var ?ServiceManager
      */
-    protected $liveDatabaseServiceManager = null;
+    protected ?ServiceManager $liveDatabaseServiceManager = null;
 
     /**
-     * Table manager connected to live database.
+     * Container with database-related services configured.
      *
-     * @var \VuFind\Db\Table\PluginManager
+     * @var ?MockContainer
      */
-    protected $liveTableManager = null;
+    protected ?MockContainer $liveDatabaseContainer = null;
 
     /**
      * Get merged module config for database access.
@@ -180,11 +185,11 @@ trait LiveDatabaseTrait
     }
 
     /**
-     * Get a real, working table manager.
+     * Get a container with database-related services configured.
      *
-     * @return \VuFind\Db\Table\PluginManager
+     * @return MockContainer
      */
-    public function getLiveTableManager()
+    public function getLiveDatabaseContainer(): MockContainer
     {
         if (!$this->liveTableManager) {
             $container = $this->getMockContainerWithDoctrineDependencies();
@@ -202,20 +207,33 @@ trait LiveDatabaseTrait
                 \VuFind\Db\Row\PluginManager::class,
                 new \VuFind\Db\Row\PluginManager($container, [])
             );
-            $container->set(
-                \VuFind\Db\Service\PluginManager::class,
-                new \VuFind\Db\Service\PluginManager($container, [])
-            );
-            $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
-                $container,
-                []
-            );
-            $container->set(
-                \VuFind\Db\Table\PluginManager::class,
-                $this->liveTableManager
-            );
+            $liveTableManager = new TableManager($container, []);
+            $container->set(TableManager::class, $liveTableManager);
+            $liveServiceManager = new ServiceManager($container, []);
+            $container->set(ServiceManager::class, $liveServiceManager);
+            $this->liveDatabaseContainer = $container;
         }
-        return $this->liveTableManager;
+        return $this->liveDatabaseContainer;
+    }
+
+    /**
+     * Get a real, working database service manager.
+     *
+     * @return ServiceManager
+     */
+    public function getLiveDbServiceManager(): ServiceManager
+    {
+        return $this->getLiveDatabaseContainer()->get(ServiceManager::class);
+    }
+
+    /**
+     * Get a real, working table manager.
+     *
+     * @return TableManager
+     */
+    public function getLiveTableManager(): TableManager
+    {
+        return $this->getLiveDatabaseContainer()->get(TableManager::class);
     }
 
     /**
@@ -249,9 +267,9 @@ trait LiveDatabaseTrait
      *
      * @param string $table Name of table to load
      *
-     * @return \VuFind\Db\Table\Gateway
+     * @return Gateway
      */
-    public function getTable($table)
+    public function getTable(string $table): Gateway
     {
         return $this->getLiveTableManager()->get($table);
     }
@@ -307,13 +325,13 @@ trait LiveDatabaseTrait
      * Static teardown support function to destroy user accounts. Accounts are
      * expected to exist, and the method will fail if they are missing.
      *
-     * @param array|string $users User(s) to delete
+     * @param string[]|string $users User(s) to delete
      *
      * @return void
      *
      * @throws \Exception
      */
-    protected static function removeUsers($users)
+    protected static function removeUsers(array|string $users): void
     {
         $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.
