@@ -75,7 +75,8 @@ class ResourcePopulator
      */
     public function getOrCreateResourceForDriver(RecordDriver $driver): ResourceEntityInterface
     {
-        $resource = $this->resourceService->getResourceByRecordId($driver->getUniqueID(), $driver->getSourceIdentifier());
+        $resource = $this->resourceService
+            ->getResourceByRecordId($driver->getUniqueID(), $driver->getSourceIdentifier());
         return $resource ? $resource : $this->createAndPersistResourceForDriver($driver);
     }
 
