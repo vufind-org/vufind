@@ -66,6 +66,35 @@ class ResourcePopulator
     }
 
     /**
+     * Retrieve an existing row matching the provided record driver if it exists; create, populate and persist it if
+     * it does not.
+     *
+     * @param RecordDriver $driver Record driver
+     *
+     * @return ResourceEntityInterface
+     */
+    public function getOrCreateResourceForDriver(RecordDriver $driver): ResourceEntityInterface
+    {
+        $resource = $this->resourceService->getResourceById($driver->getUniqueID(), $driver->getSourceIdentifier());
+        return $resource ? $resource : $this->createAndPersistResourceForDriver($driver);
+    }
+
+    /**
+     * Retrieve an existing row matching the provided id/source if it exists; create, populate and persist it if
+     * it does not.
+     *
+     * @param string $id     Record id
+     * @param string $source Record source
+     *
+     * @return ResourceEntityInterface
+     */
+    public function getOrCreateResourceForRecordId(string $id, string $source): ResourceEntityInterface
+    {
+        $resource = $this->resourceService->getResourceById($id, $source);
+        return $resource ? $resource : $this->createAndPersistResourceForRecordId($id, $source);
+    }
+
+    /**
      * Create (but do not persist) a ResourceEntityInterface object populated with data from
      * the provided record driver.
      *

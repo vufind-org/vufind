@@ -34,6 +34,7 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 use function count;
 use function is_object;
@@ -78,9 +79,9 @@ class Comments extends Gateway
      */
     public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $resourceTable = $this->getDbTable('Resource');
-        $resource = $resourceTable->findResource($id, $source, false);
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return [];
         }
 

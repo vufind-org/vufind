@@ -33,6 +33,7 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Table Definition for ratings
@@ -75,9 +76,9 @@ class Ratings extends Gateway
      */
     public function getForResource(string $id, string $source, ?int $userId): array
     {
-        $resourceTable = $this->getDbTable('Resource');
-        $resource = $resourceTable->findResource($id, $source, false);
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return [
                 'count' => 0,
                 'rating' => 0,
@@ -142,9 +143,9 @@ class Ratings extends Gateway
             $result['groups'][$key] = 0;
         }
 
-        $resourceTable = $this->getDbTable('Resource');
-        $resource = $resourceTable->findResource($id, $source, false);
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return $result;
         }
 

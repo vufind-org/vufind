@@ -33,6 +33,7 @@ use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
 
@@ -163,13 +164,8 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $table = $this->getTable('Resource');
-            $resource = $table->findResource(
-                $driver->getUniqueId(),
-                $driver->getSourceIdentifier(),
-                true,
-                $driver
-            );
+            $populator = $this->serviceLocator->get(ResourcePopulator::class);
+            $resource = $populator->getOrCreateResourceForDriver($driver);
             $commentsService = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class
             );

@@ -34,9 +34,9 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
 
 use function intval;
 
@@ -56,7 +56,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource                 $table               Resource database table
+     * @param ResourcePopulator        $resourcePopulator   Resource populator service
      * @param CommentsServiceInterface $commentsService     Comments database service
      * @param Captcha                  $captcha             Captcha controller plugin
      * @param ?UserEntityInterface     $user                Logged in user (or null)
@@ -65,7 +65,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * @param AccountCapabilities      $accountCapabilities Account capabilities helper
      */
     public function __construct(
-        protected Resource $table,
+        protected ResourcePopulator $resourcePopulator,
         protected CommentsServiceInterface $commentsService,
         protected Captcha $captcha,
         protected ?UserEntityInterface $user,
@@ -132,7 +132,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        $resource = $this->table->findResource($id, $source);
+        $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
         $commentId = $this->commentsService->addComment(
             $comment,
             $this->user,
