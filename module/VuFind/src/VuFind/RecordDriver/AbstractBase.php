@@ -211,12 +211,18 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use TagServiceInterface::addTagsToRecord()
+     * @deprecated Use \VuFind\Tags::addTagsToRecord()
      */
     public function addTags($user, $tags)
     {
-        $this->getDbService(TagServiceInterface::class)
-            ->addTagsToRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
+        );
+        foreach ($tags as $tag) {
+            $resource->addTag($tag, $user);
+        }
     }
 
     /**
@@ -227,12 +233,18 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use TagServiceInterface::deleteTagsFromRecord()
+     * @deprecated Use \VuFind\Tags::deleteTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
-        $this->getDbService(TagServiceInterface::class)
-            ->deleteTagsFromRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
+        );
+        foreach ($tags as $tag) {
+            $resource->deleteTag($tag, $user);
+        }
     }
 
     /**

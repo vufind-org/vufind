@@ -29,13 +29,13 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Tags;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -239,12 +239,11 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $this->getDbService(TagServiceInterface::class)->addTagsToRecord(
-                $driver->getUniqueID(),
-                $driver->getSourceIdentifier(),
+            $tagHelper = $this->serviceLocator->get(Tags::class);
+            $tagHelper->addTagsToRecord(
+                $driver,
                 $user,
-                $tagParser->parse($tags)
+                $tagHelper->parse($tags)
             );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
@@ -279,9 +278,8 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->getDbService(TagServiceInterface::class)->deleteTagsFromRecord(
-                $driver->getUniqueID(),
-                $driver->getSourceIdentifier(),
+            $this->serviceLocator->get(Tags::class)->deleteTagsFromRecord(
+                $driver,
                 $user,
                 [$tag]
             );
@@ -418,9 +416,8 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-        $post['mytags']
-            = $tagParser->parse($post['mytags'] ?? '');
+        $tagParser = $this->serviceLocator->get(Tags::class);
+        $post['mytags'] = $tagParser->parse($post['mytags'] ?? '');
         $favorites = $this->serviceLocator
             ->get(\VuFind\Favorites\FavoritesService::class);
         $results = $favorites->save($post, $user, $driver);
