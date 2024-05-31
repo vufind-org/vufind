@@ -75,7 +75,7 @@ class ResourcePopulator
      */
     public function getOrCreateResourceForDriver(RecordDriver $driver): ResourceEntityInterface
     {
-        $resource = $this->resourceService->getResourceById($driver->getUniqueID(), $driver->getSourceIdentifier());
+        $resource = $this->resourceService->getResourceByRecordId($driver->getUniqueID(), $driver->getSourceIdentifier());
         return $resource ? $resource : $this->createAndPersistResourceForDriver($driver);
     }
 
@@ -90,7 +90,7 @@ class ResourcePopulator
      */
     public function getOrCreateResourceForRecordId(string $id, string $source): ResourceEntityInterface
     {
-        $resource = $this->resourceService->getResourceById($id, $source);
+        $resource = $this->resourceService->getResourceByRecordId($id, $source);
         return $resource ? $resource : $this->createAndPersistResourceForRecordId($id, $source);
     }
 

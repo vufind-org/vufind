@@ -32,6 +32,7 @@ namespace VuFind\Favorites;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Record\ResourcePopulator;
 
 /**
  * Favorites service
@@ -49,22 +50,21 @@ class FavoritesServiceFactory implements FactoryInterface
     /**
      * Create service
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container Service container
+     * @param string             $name      Requested service name (unused)
+     * @param array              $options   Extra options (unused)
      *
      * @return FavoritesService
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $container, $name, array $options = null)
     {
-        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
-        $serviceManager = $sm->get(\VuFind\Db\Service\PluginManager::class);
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new FavoritesService(
             $serviceManager->get(UserListServiceInterface::class),
-            $tableManager->get('resource'),
-            $sm->get(\VuFind\Record\Cache::class)
+            $container->get(ResourcePopulator::class),
+            $container->get(\VuFind\Record\Cache::class)
         );
     }
 }
