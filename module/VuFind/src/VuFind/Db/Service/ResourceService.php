@@ -32,19 +32,14 @@ namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Date\Converter as DateConverter;
-use VuFind\Date\DateException;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
-use VuFind\Record\Loader;
 
 use function in_array;
-use function intval;
-use function strlen;
 
 /**
  * Database service for resource.
@@ -64,36 +59,26 @@ class ResourceService extends AbstractDbService implements
     use LoggerAwareTrait;
 
     /**
-     * Record loader
+     * Callback to load the resource populator.
      *
-     * @var Loader
+     * @var callable
      */
-    protected $recordLoader;
-
-    /**
-     * Date converter
-     *
-     * @var DateConverter
-     */
-    protected $dateConverter;
+    protected $resourcePopulatorLoader;
 
     /**
      * Constructor
      *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param Loader              $loader              Record loader
-     * @param DateConverter       $converter           Date converter
+     * @param EntityManager       $entityManager           Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager     VuFind entity plugin manager
+     * @param callable            $resourcePopulatorLoader Resource populator
      */
     public function __construct(
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
-        Loader $loader,
-        DateConverter $converter
+        callable $resourcePopulatorLoader
     ) {
+        $this->resourcePopulatorLoader = $resourcePopulatorLoader;
         parent::__construct($entityManager, $entityPluginManager);
-        $this->recordLoader = $loader;
-        $this->dateConverter = $converter;
     }
 
     /**
@@ -129,19 +114,14 @@ class ResourceService extends AbstractDbService implements
         $result = $query->getResult();
 
         if (empty($result) && $create) {
-            $resource = $this->createEntity()
-                ->setRecordId($id)
-                ->setSource($source);
-
-            // Load record if it was not provided:
-            $driver ??= $this->recordLoader->load($id, $source);
-            // Load metadata into the database for sorting/failback purposes:
-            $this->assignMetadata($driver, $this->dateConverter, $resource);
             try {
-                $this->persistEntity($resource);
+                $resourcePopulator = ($this->resourcePopulatorLoader)();
+                $resource = $driver
+                    ? $resourcePopulator->createAndPersistResourceForDriver($driver)
+                    : $resourcePopulator->createAndPersistResourceForRecordId($id, $source);
             } catch (\Exception $e) {
                 $this->logError('Could not save resource: ' . $e->getMessage());
-                return false;
+                return null;
             }
             return $resource;
         }
@@ -161,62 +141,6 @@ class ResourceService extends AbstractDbService implements
             $this->getEntityClass(\VuFind\Db\Entity\Resource::class),
             $id
         );
-        return $resource;
-    }
-
-    /**
-     * Use a record driver to assign metadata to the current row.
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $driver    The record driver
-     * @param \VuFind\Date\Converter            $converter Date converter
-     * @param \VuFind\Db\Entity\Resource        $resource  Resource entity
-     *
-     * @return \VuFind\Db\Entity\Resource
-     */
-    public function assignMetadata(
-        $driver,
-        \VuFind\Date\Converter $converter,
-        $resource
-    ) {
-        // Grab title -- we have to have something in this field!
-        $sortTitle = $driver->tryMethod('getSortTitle');
-        $title = mb_substr(
-            !empty($sortTitle) ? $sortTitle : $driver->getBreadcrumb(),
-            0,
-            255,
-            'UTF-8'
-        );
-        $resource->setTitle($title);
-        // Try to find an author; if not available, just leave the default null:
-        $author = mb_substr(
-            $driver->tryMethod('getPrimaryAuthor') ?? '',
-            0,
-            255,
-            'UTF-8'
-        );
-        if (!empty($author)) {
-            $resource->setAuthor($author);
-        }
-
-        // Try to find a year; if not available, just leave the default null:
-        $dates = $driver->tryMethod('getPublicationDates');
-        if (strlen($dates[0] ?? '') > 4) {
-            try {
-                $year = $converter->convertFromDisplayDate('Y', $dates[0]);
-            } catch (DateException $e) {
-                // If conversion fails, don't store a date:
-                $year = '';
-            }
-        } else {
-            $year = $dates[0] ?? '';
-        }
-        if (!empty($year)) {
-            $resource->setYear(intval($year));
-        }
-
-        if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {
-            $resource->setExtraMetadata(json_encode($extra));
-        }
         return $resource;
     }
 
