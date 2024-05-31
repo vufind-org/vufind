@@ -98,6 +98,7 @@ class SimulatedSSO extends AbstractBase
         if (!$username) {
             throw new AuthException('Simulated failure');
         }
+        $userService = $this->getUserService();
         $user = $this->getUserTable()->getByUsername($username);
 
         // Get attribute configuration -- use defaults if no value is set, and use an
@@ -111,7 +112,7 @@ class SimulatedSSO extends AbstractBase
         $catPassword = null;
         foreach ($attribs as $attribute => $value) {
             if ($attribute == 'email') {
-                $user->updateEmail($value);
+                $userService->updateUserEmail($user, $value);
             } elseif ($attribute != 'cat_password') {
                 $user->$attribute = $value ?? '';
             } else {
@@ -126,7 +127,7 @@ class SimulatedSSO extends AbstractBase
         }
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 

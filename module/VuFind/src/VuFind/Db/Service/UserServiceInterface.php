@@ -62,6 +62,24 @@ interface UserServiceInterface extends DbServiceInterface
     public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
 
     /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * persist the data.
+     *
+     * @param UserEntityInterface $user         User entity to update
+     * @param string              $email        New email address
+     * @param bool                $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateUserEmail(
+        UserEntityInterface $user,
+        string $email,
+        bool $userProvided = false
+    ): void;
+
+    /**
      * Create a new user entity.
      *
      * @return UserEntityInterface

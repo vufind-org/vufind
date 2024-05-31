@@ -32,6 +32,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function get_class;
@@ -403,6 +404,16 @@ abstract class AbstractBase implements
     public function getPasswordPolicy()
     {
         return $this->getPolicyConfig('password');
+    }
+
+    /**
+     * Get access to the user table.
+     *
+     * @return UserServiceInterface
+     */
+    public function getUserService(): UserServiceInterface
+    {
+        return $this->getDbService(UserServiceInterface::class);
     }
 
     /**

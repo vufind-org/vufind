@@ -312,6 +312,7 @@ class ILS extends AbstractBase
         }
 
         // Check to see if we already have an account for this user:
+        $userService = $this->getUserService();
         $userTable = $this->getUserTable();
         if (!empty($info['id'])) {
             $user = $userTable->getByCatalogId($info['id']);
@@ -331,7 +332,7 @@ class ILS extends AbstractBase
         foreach ($fields as $field) {
             $user->$field = $info[$field] ?? ' ';
         }
-        $user->updateEmail($info['email'] ?? '');
+        $userService->updateUserEmail($user, $info['email'] ?? '');
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(

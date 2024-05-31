@@ -100,6 +100,32 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * persist the data.
+     *
+     * @param UserEntityInterface $user         User entity to update
+     * @param string              $email        New email address
+     * @param bool                $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateUserEmail(
+        UserEntityInterface $user,
+        string $email,
+        bool $userProvided = false
+    ): void {
+        // Only change the email if it is a non-empty value and was user provided
+        // (the user is always right) or the previous email was NOT user provided
+        // (a value may have changed in an upstream system).
+        if (!empty($email) && ($userProvided || !$user->hasUserProvidedEmail())) {
+            $user->setEmail($email);
+            $user->setHasUserProvidedEmail($userProvided);
+        }
+    }
+
+    /**
      * Update session container to store data representing a user (used by privacy mode).
      *
      * @param UserEntityInterface $user User to store in session.
