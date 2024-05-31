@@ -94,7 +94,7 @@ class Mailer implements
      * @param TransportInterface $transport  Mail transport
      * @param ?string            $messageLog File to log messages into (null for no logging)
      */
-    public function __construct(TransportInterface $transport, protected ?string $messageLog)
+    public function __construct(TransportInterface $transport, protected ?string $messageLog = null)
     {
         $this->setTransport($transport);
     }
