@@ -72,8 +72,7 @@ class Missing extends DefaultRecord
         }
 
         // If available, load title from database:
-        $id = $this->getUniqueId();
-        if ($id) {
+        if ($id = $this->getUniqueID()) {
             $resourceService = $this->getDbService(ResourceServiceInterface::class);
             $resource = $resourceService->getResourceByRecordId($id, $this->getSourceIdentifier());
             if ($title = $resource?->getTitle()) {
