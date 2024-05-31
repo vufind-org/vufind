@@ -1760,7 +1760,7 @@ class MyResearchController extends AbstractBase
                 // Attempt to send the email
                 try {
                     // Create a fresh hash
-                    $user->updateHash();
+                    $this->getDbService(UserServiceInterface::class)->updateUserHash($user);
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     $method = $this->getAuthManager()->getAuthMethod();
@@ -1870,7 +1870,7 @@ class MyResearchController extends AbstractBase
                 // Attempt to send the email
                 try {
                     // Create a fresh hash
-                    $user->updateHash();
+                    $this->getDbService(UserServiceInterface::class)->updateUserHash($user);
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     // Custom template for emails (text-only)
@@ -2003,7 +2003,7 @@ class MyResearchController extends AbstractBase
     protected function resetNewPasswordForm($userFromHash, ViewModel $view)
     {
         if ($userFromHash) {
-            $userFromHash->updateHash();
+            $this->getDbService(UserServiceInterface::class)->updateUserHash($userFromHash);
             $view->username = $userFromHash->username;
             $view->hash = $userFromHash->verify_hash;
         }
@@ -2075,7 +2075,7 @@ class MyResearchController extends AbstractBase
             return $view;
         }
         // Update hash to prevent reusing hash
-        $user->updateHash();
+        $this->getDbService(UserServiceInterface::class)->updateUserHash($user);
         // Login
         $this->getAuthManager()->login($this->request);
         // Return to account home
@@ -2166,7 +2166,7 @@ class MyResearchController extends AbstractBase
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy();
         // Identification
-        $user->updateHash();
+        $this->getDbService(UserServiceInterface::class)->updateUserHash($user);
         $view->hash = $user->getVerifyHash();
         $view->setTemplate('myresearch/newpassword');
         $view->useCaptcha = $this->captcha()->active('changePassword');
