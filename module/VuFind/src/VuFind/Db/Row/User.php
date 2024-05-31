@@ -138,6 +138,9 @@ class User extends RowGateway implements
      *
      * @return mixed        The output of the save method.
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use \VuFind\Db\Entity\UserEntityInterface::setCatId() and
+     * \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveCatalogId($catId)
     {
