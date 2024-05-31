@@ -295,4 +295,20 @@ interface UserEntityInterface extends EntityInterface
      * @return Datetime
      */
     public function getCreated(): Datetime;
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime;
 }

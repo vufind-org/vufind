@@ -139,8 +139,7 @@ class User extends RowGateway implements
      * @return mixed        The output of the save method.
      * @throws \VuFind\Exception\PasswordSecurity
      *
-     * @deprecated Use \VuFind\Db\Entity\UserEntityInterface::setCatId() and
-     * \VuFind\Db\Service\DbServiceInterface::persistEntity()
+     * @deprecated Use UserEntityInterface::setCatId() and \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveCatalogId($catId)
     {
@@ -195,6 +194,9 @@ class User extends RowGateway implements
      * @param string $datetime optional date/time to save.
      *
      * @return mixed           The output of the save method.
+     *
+     * @deprecated Use UserEntityInterface::setEmailVerified() and
+     * \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveEmailVerified($datetime = null)
     {
@@ -1032,7 +1034,7 @@ class User extends RowGateway implements
     /**
      * Created setter
      *
-     * @param DateTime $dateTime Last login date
+     * @param DateTime $dateTime Creation date
      *
      * @return UserEntityInterface
      */
@@ -1050,5 +1052,28 @@ class User extends RowGateway implements
     public function getCreated(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
+    {
+        $this->email_verified = $dateTime?->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime
+    {
+        return $this->email_verified ? DateTime::createFromFormat('Y-m-d H:i:s', $this->email_verified) : null;
     }
 }
