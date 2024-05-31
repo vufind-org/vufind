@@ -592,7 +592,7 @@ class User extends RowGateway implements
      *
      * @return UserCardServiceInterface
      */
-    public function getUserCardService()
+    protected function getUserCardService()
     {
         return $this->getDbService(UserCardServiceInterface::class);
     }
