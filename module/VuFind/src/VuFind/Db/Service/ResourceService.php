@@ -131,7 +131,7 @@ class ResourceService extends AbstractDbService implements
     /**
      * Lookup and return a resource.
      *
-     * @param int $id id value
+     * @param int $id Identifier value
      *
      * @return ?ResourceEntityInterface
      */
