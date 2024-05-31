@@ -272,6 +272,8 @@ class User extends RowGateway implements
      * Check whether the email address has been verified yet.
      *
      * @return bool
+     *
+     * @deprecated Use getEmailVerified()
      */
     public function checkEmailVerified()
     {
