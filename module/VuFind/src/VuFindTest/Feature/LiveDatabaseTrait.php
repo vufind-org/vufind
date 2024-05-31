@@ -31,6 +31,11 @@
 
 namespace VuFindTest\Feature;
 
+use VuFind\Db\Service\PluginManager as ServiceManager;
+use VuFind\Db\Table\Gateway;
+use VuFind\Db\Table\PluginManager as TableManager;
+use VuFindTest\Container\MockContainer;
+
 use function count;
 
 /**
@@ -52,27 +57,26 @@ trait LiveDatabaseTrait
      *
      * @var bool
      */
-    public $hasLiveDatabaseTrait = true;
+    public bool $hasLiveDatabaseTrait = true;
 
     /**
      * Container connected to live database.
      *
-     * @var \VuFindTest\Container\MockContainer
+     * @var ?MockContainer
      */
-    protected $liveDatabaseContainer = null;
+    protected ?MockContainer $liveDatabaseContainer = null;
 
     /**
      * Get a real, working table manager.
      *
-     * @return \VuFindTest\Container\MockContainer
+     * @return MockContainer
      */
-    public function getLiveDatabaseContainer()
+    public function getLiveDatabaseContainer(): MockContainer
     {
         if (!$this->liveDatabaseContainer) {
             // Set up the bare minimum services to actually load real configs:
-            $config = include APPLICATION_PATH
-                . '/module/VuFind/config/module.config.php';
-            $container = new \VuFindTest\Container\MockContainer($this);
+            $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+            $container = new MockContainer($this);
             $configManager = new \VuFind\Config\PluginManager(
                 $container,
                 $config['vufind']['config_reader']
@@ -93,26 +97,10 @@ trait LiveDatabaseTrait
                 \VuFind\Db\Row\PluginManager::class,
                 new \VuFind\Db\Row\PluginManager($container, [])
             );
-            $container->set(
-                \VuFind\Db\Service\PluginManager::class,
-                new \VuFind\Db\Service\PluginManager($container, [])
-            );
-            $liveTableManager = new \VuFind\Db\Table\PluginManager(
-                $container,
-                []
-            );
-            $container->set(
-                \VuFind\Db\Table\PluginManager::class,
-                $liveTableManager
-            );
-            $liveServiceManager = new \VuFind\Db\Service\PluginManager(
-                $container,
-                []
-            );
-            $container->set(
-                \VuFind\Db\Service\PluginManager::class,
-                $liveServiceManager
-            );
+            $liveTableManager = new TableManager($container, []);
+            $container->set(TableManager::class, $liveTableManager);
+            $liveServiceManager = new ServiceManager($container, []);
+            $container->set(ServiceManager::class, $liveServiceManager);
             $this->liveDatabaseContainer = $container;
         }
         return $this->liveDatabaseContainer;
@@ -121,23 +109,21 @@ trait LiveDatabaseTrait
     /**
      * Get a real, working database service manager.
      *
-     * @return \VuFind\Db\Service\PluginManager
+     * @return ServiceManager
      */
-    public function getLiveDbServiceManager()
+    public function getLiveDbServiceManager(): ServiceManager
     {
-        return $this->getLiveDatabaseContainer()
-            ->get(\VuFind\Db\Service\PluginManager::class);
+        return $this->getLiveDatabaseContainer()->get(ServiceManager::class);
     }
 
     /**
      * Get a real, working table manager.
      *
-     * @return \VuFind\Db\Table\PluginManager
+     * @return TableManager
      */
-    public function getLiveTableManager()
+    public function getLiveTableManager(): TableManager
     {
-        return $this->getLiveDatabaseContainer()
-            ->get(\VuFind\Db\Table\PluginManager::class);
+        return $this->getLiveDatabaseContainer()->get(TableManager::class);
     }
 
     /**
@@ -145,9 +131,9 @@ trait LiveDatabaseTrait
      *
      * @param string $table Name of table to load
      *
-     * @return \VuFind\Db\Table\Gateway
+     * @return Gateway
      */
-    public function getTable($table)
+    public function getTable(string $table): Gateway
     {
         return $this->getLiveTableManager()->get($table);
     }
@@ -201,13 +187,13 @@ trait LiveDatabaseTrait
      * Static teardown support function to destroy user accounts. Accounts are
      * expected to exist, and the method will fail if they are missing.
      *
-     * @param array|string $users User(s) to delete
+     * @param string[]|string $users User(s) to delete
      *
      * @return void
      *
      * @throws \Exception
      */
-    protected static function removeUsers($users)
+    protected static function removeUsers(array|string $users): void
     {
         $test = new static('');   // create instance of current class
         // Fail if the test does not include the LiveDetectionTrait.

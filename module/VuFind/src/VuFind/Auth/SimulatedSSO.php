@@ -128,7 +128,7 @@ class SimulatedSSO extends AbstractBase
         }
 
         // Save and return the user object:
-        $this->getUserService()->persistEntity($user);
+        $userService->persistEntity($user);
         return $user;
     }
 

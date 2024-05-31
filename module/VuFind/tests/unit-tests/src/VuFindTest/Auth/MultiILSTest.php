@@ -143,7 +143,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $this->getMultiILS($driver)->authenticate($this->getLoginRequest());
     }
 
@@ -293,7 +293,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockAuthenticator = $this->getMockILSAuthenticator($patron);
         $mockUser = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['saveCredentials', 'updateEmail'])
+            ->onlyMethods(['saveCredentials'])
             ->getMock();
         $mockUser->username = 'ils1.testuser';
         $mockUserService = $this->createMock(UserServiceInterface::class);

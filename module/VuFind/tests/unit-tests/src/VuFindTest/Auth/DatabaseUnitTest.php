@@ -31,9 +31,12 @@ namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Http\PhpEnvironment\Request;
 
 /**
  * Database authentication test class.
@@ -53,7 +56,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyCreateRequest()
+    public function testEmptyCreateRequest(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Username cannot be blank');
@@ -67,7 +70,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyPasswordCreateRequest()
+    public function testEmptyPasswordCreateRequest(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Password cannot be blank');
@@ -83,7 +86,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMismatchedPasswordCreateRequest()
+    public function testMismatchedPasswordCreateRequest(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Passwords do not match');
@@ -441,7 +444,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateWithMissingTableManager()
+    public function testCreateWithMissingTableManager(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Service manager missing');
@@ -455,7 +458,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateDuplicateEmail()
+    public function testCreateDuplicateEmail(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('That email address is already used');
@@ -484,7 +487,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateDuplicateUsername()
+    public function testCreateDuplicateUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('That username is already taken');
@@ -506,7 +509,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulCreation()
+    public function testSuccessfulCreation(): void
     {
         // Fake services:
         $service = $this->createMock(UserServiceInterface::class);
@@ -535,7 +538,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getCreateParams()
+    protected function getCreateParams(): array
     {
         return [
             'firstname' => 'Foo',
@@ -550,13 +553,11 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock row object
      *
-     * @return \VuFind\Db\Row\User
+     * @return MockObject&User
      */
-    protected function getMockRow()
+    protected function getMockRow(): MockObject&User
     {
-        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(User::class);
     }
 
     /**
@@ -564,32 +565,31 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $post POST parameters
      *
-     * @return \Laminas\Http\PhpEnvironment\Request
+     * @return MockObject&Request
      */
-    protected function getRequest($post = [])
+    protected function getRequest($post = []): MockObject&Request
     {
         $post = new Parameters($post);
-        $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
+        $request = $this->getMockBuilder(Request::class)
             ->onlyMethods(['getPost'])->getMock();
-        $request->expects($this->any())->method('getPost')
-            ->willReturn($post);
+        $request->expects($this->any())->method('getPost')->willReturn($post);
         return $request;
     }
 
     /**
      * Get a handler w/ fake table manager.
      *
-     * @param object $table Mock table.
+     * @param UserServiceInterface $service Mock user database service
      *
      * @return Database
      */
-    protected function getDatabase($table)
+    protected function getDatabase(UserServiceInterface $service): Database
     {
         $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
         $serviceManager->expects($this->any())->method('get')
             ->with($this->equalTo(UserServiceInterface::class))
-            ->willReturn($table);
+            ->willReturn($service);
 
         $db = new Database();
         $db->setDbServiceManager($serviceManager);

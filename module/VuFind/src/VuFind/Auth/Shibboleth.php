@@ -242,7 +242,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
         $this->storeShibbolethSession($request);
 
         // Save and return the user object:
-        $this->getUserService()->persistEntity($user);
+        $userService->persistEntity($user);
         return $user;
     }
 
