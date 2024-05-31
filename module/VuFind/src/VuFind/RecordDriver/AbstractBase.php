@@ -246,6 +246,8 @@ abstract class AbstractBase implements
      * @param ?int $userId User ID, or null for all users
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\Ratings\RatingsService::getRatingData()
      */
     public function getRatingData(?int $userId = null)
     {
@@ -276,6 +278,8 @@ abstract class AbstractBase implements
      * @param array $groups Group definition (key => [min, max])
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\Ratings\RatingsService::getRatingBreakdown()
      */
     public function getRatingBreakdown(array $groups)
     {
@@ -295,6 +299,8 @@ abstract class AbstractBase implements
      * rating
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Ratings\RatingsService::saveRating()
      */
     public function addOrUpdateRating(int $userId, ?int $rating): void
     {

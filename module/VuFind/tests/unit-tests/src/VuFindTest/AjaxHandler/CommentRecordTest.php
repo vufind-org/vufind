@@ -35,6 +35,7 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\DefaultRecord;
@@ -153,9 +154,10 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $driver->expects($this->once())
             ->method('isRatingAllowed')
             ->willReturn(true);
-        $driver->expects($this->once())
-            ->method('addOrUpdateRating')
-            ->with($user->getId(), 100);
+        $ratingService = $this->container->get(RatingsService::class);
+        $ratingService->expects($this->once())
+            ->method('saveRating')
+            ->with($driver, $user->getId(), 100);
         $recordLoader = $this->container->createMock(RecordLoader::class, ['load']);
         $recordLoader->expects($this->once())
             ->method('load')

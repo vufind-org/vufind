@@ -33,6 +33,7 @@ use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
@@ -176,7 +177,8 @@ class AbstractRecord extends AbstractBase
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $driver->addOrUpdateRating($user->getId(), intval($rating));
+                $ratingsService = $this->serviceLocator->get(RatingsService::class);
+                $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -319,7 +321,9 @@ class AbstractRecord extends AbstractBase
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
             }
-            $driver->addOrUpdateRating(
+            $ratingsService = $this->serviceLocator->get(RatingsService::class);
+            $ratingsService->saveRating(
+                $driver,
                 $user->getId(),
                 '' === $rating ? null : intval($rating)
             );
@@ -331,12 +335,10 @@ class AbstractRecord extends AbstractBase
         }
 
         // Display the "add rating" form:
-        $view = $this->createViewModel(
-            [
-                'currentRating' => $user ? $driver->getRatingData($user->getId()) : null,
-            ]
-        );
-        return $view;
+        $currentRating = $user
+            ? $this->serviceLocator->get(RatingsService::class)->getRatingData($driver, $user->getId())
+            : null;
+        return $this->createViewModel(compact('currentRating'));
     }
 
     /**

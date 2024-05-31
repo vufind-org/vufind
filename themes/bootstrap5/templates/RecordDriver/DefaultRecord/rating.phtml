@@ -1,5 +1,5 @@
 <?php
-  $ratingData = $this->driver->getRatingData();
+  $ratingData = $this->ratings()->getRatingData($this->driver);
   $translationParams = [
     '%%rating%%' => $this->localizedNumber($ratingData['rating']),
     '%%count%%' => $this->localizedNumber($ratingData['count']),

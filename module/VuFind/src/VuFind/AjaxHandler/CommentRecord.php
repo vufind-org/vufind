@@ -35,6 +35,7 @@ use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 
@@ -63,6 +64,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * @param bool                     $enabled             Are comments enabled?
      * @param RecordLoader             $recordLoader        Record loader
      * @param AccountCapabilities      $accountCapabilities Account capabilities helper
+     * @param RatingsService           $ratingsService      Ratings service
      */
     public function __construct(
         protected ResourcePopulator $resourcePopulator,
@@ -71,7 +73,8 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         protected ?UserEntityInterface $user,
         protected bool $enabled,
         protected RecordLoader $recordLoader,
-        protected AccountCapabilities $accountCapabilities
+        protected AccountCapabilities $accountCapabilities,
+        protected RatingsService $ratingsService
     ) {
     }
 
@@ -145,7 +148,8 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             && ('' !== $rating
             || $this->accountCapabilities->isRatingRemovalAllowed())
         ) {
-            $driver->addOrUpdateRating(
+            $this->ratingsService->saveRating(
+                $driver,
                 $this->user->getId(),
                 '' === $rating ? null : intval($rating)
             );

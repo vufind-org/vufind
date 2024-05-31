@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 
 /**
@@ -80,7 +81,8 @@ class CommentRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $capabilities->getCommentSetting() !== 'disabled',
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Config\AccountCapabilities::class)
+            $container->get(\VuFind\Config\AccountCapabilities::class),
+            $container->get(RatingsService::class)
         );
     }
 }

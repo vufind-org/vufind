@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\View\Helper\Root\Record as RecordHelper;
 
@@ -45,31 +46,17 @@ use VuFind\View\Helper\Root\Record as RecordHelper;
 class GetRecordRating extends AbstractBase
 {
     /**
-     * Record loader
-     *
-     * @var RecordLoader
-     */
-    protected $recordLoader;
-
-    /**
-     * Record helper
-     *
-     * @var RecordHelper
-     */
-    protected $recordHelper;
-
-    /**
      * Constructor
      *
-     * @param RecordLoader $loader Record loader
-     * @param RecordHelper $helper Record helper
+     * @param RecordLoader   $recordLoader   Record loader
+     * @param RecordHelper   $recordHelper   Record helper
+     * @param RatingsService $ratingsService Ratings service
      */
     public function __construct(
-        RecordLoader $loader,
-        RecordHelper $helper
+        protected RecordLoader $recordLoader,
+        protected RecordHelper $recordHelper,
+        protected RatingsService $ratingsService
     ) {
-        $this->recordLoader = $loader;
-        $this->recordHelper = $helper;
     }
 
     /**
@@ -90,7 +77,7 @@ class GetRecordRating extends AbstractBase
         $html = ($this->recordHelper)($driver)->renderTemplate('rating.phtml');
         return $this->formatResponse(
             [
-                'ratingData' => $driver->getRatingData(),
+                'ratingData' => $this->ratingsService->getRatingData($driver),
                 'html' => $html,
             ]
         );

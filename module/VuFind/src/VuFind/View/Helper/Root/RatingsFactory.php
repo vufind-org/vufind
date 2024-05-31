@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for GetRecordRating AJAX handler.
+ * Ratings helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Ratings\RatingsService;
 
 /**
- * Factory for GetRecordRating AJAX handler.
+ * Ratings helper factory.
  *
  * @category VuFind
- * @package  AJAX
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetRecordRatingFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class RatingsFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -59,8 +60,6 @@ class GetRecordRatingFactory implements \Laminas\ServiceManager\Factory\FactoryI
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -68,12 +67,8 @@ class GetRecordRatingFactory implements \Laminas\ServiceManager\Factory\FactoryI
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get('ViewRenderer')->plugin('record'),
-            $container->get(RatingsService::class)
-        );
+        return new $requestedName($container->get(RatingsService::class));
     }
 }
