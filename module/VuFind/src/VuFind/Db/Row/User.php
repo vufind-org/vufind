@@ -121,6 +121,8 @@ class User extends RowGateway implements
      * Reset ILS login credentials.
      *
      * @return void
+     *
+     * @deprecated Use setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null)
      */
     public function clearCredentials()
     {
