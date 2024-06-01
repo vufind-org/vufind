@@ -229,7 +229,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $user = $this->createMock(UserEntityInterface::class);
         $listService = $this->createMock(UserListServiceInterface::class);
         $listService->expects($this->once())->method('getListsContainingRecord')
-            ->with($this->equalTo('foo', 'bar', $user))
+            ->with('foo', 'bar', $user)
             ->willReturn([1, 2, 3]);
         $serviceManager = $this->createMock(PluginManager::class);
         $serviceManager->expects($this->once())->method('get')->with(UserListServiceInterface::class)
