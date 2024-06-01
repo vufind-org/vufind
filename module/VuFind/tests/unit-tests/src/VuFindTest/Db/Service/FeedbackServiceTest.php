@@ -116,7 +116,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $mocks = $this->getConfiguredFeedbackService();
         $entityManager = $mocks['entityManager'];
         $feedbackService = $mocks['feedbackService'];
-        $queryStmt = "SELECT f, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
+        $queryStmt = "SELECT f AS feedback_entity, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
             . "CONCAT(m.firstname, ' ', m.lastname) AS manager_name FROM "
             . "VuFind\Db\Entity\Feedback f LEFT JOIN f.user u LEFT JOIN f.updatedBy m "
             . 'WHERE f.formName = :formName AND f.siteUrl = :siteUrl AND '
