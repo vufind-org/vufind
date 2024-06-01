@@ -32,6 +32,10 @@ namespace VuFindTest\View\Helper\Root;
 use Laminas\Config\Config;
 use Laminas\View\Exception\RuntimeException;
 use VuFind\Cover\Loader;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\PluginManager;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\View\Helper\Root\Record;
 use VuFindTheme\ThemeInfo;
 
@@ -211,24 +215,30 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetListEntry()
+    public function testGetListEntry(): void
     {
-        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->once())->method('getContainingLists')
-            ->with($this->equalTo(42))
-            ->will($this->returnValue([1, 2, 3]));
-        $user = new \StdClass();
-        $user->id = 42;
+        $driver = $this->createMock(RecordDriver::class);
+        $driver->method('getUniqueID')->willReturn('foo');
+        $driver->method('getSourceIdentifier')->willReturn('bar');
+        $user = $this->createMock(UserEntityInterface::class);
+        $listService = $this->createMock(UserListServiceInterface::class);
+        $listService->expects($this->once())->method('getListsContainingRecord')
+            ->with($this->equalTo('foo', 'bar', $user))
+            ->willReturn([1, 2, 3]);
+        $serviceManager = $this->createMock(PluginManager::class);
+        $serviceManager->expects($this->once())->method('get')->with(UserListServiceInterface::class)
+            ->willReturn($listService);
         $expected = [
             'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3],
         ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo($expected))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord($driver, [], $context);
+        $record->setDbServiceManager($serviceManager);
         // Because we are using a mock object, the first round of testing will
         // include an arbitrary class name in the template path; we need to make
         // that one fail so we can load the parent class' template instead:
@@ -241,7 +251,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
-            ->will($this->returnValue('success'));
+            ->willReturn('success');
         $this->assertEquals('success', $record->getListEntry(null, $user));
     }
 
