@@ -103,7 +103,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
         ?int $page = null,
         int $limit = 20
     ): Paginator {
-        $dql = "SELECT f, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
+        $dql = "SELECT f AS feedback_entity, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
             . "CONCAT(m.firstname, ' ', m.lastname) AS manager_name "
             . 'FROM ' . $this->getEntityClass(Feedback::class) . ' f '
             . 'LEFT JOIN f.user u '
