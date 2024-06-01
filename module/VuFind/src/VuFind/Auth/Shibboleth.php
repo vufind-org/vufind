@@ -37,6 +37,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
@@ -401,8 +402,8 @@ class Shibboleth extends AbstractBase
             return;
         }
         $localSessionId = $this->sessionManager->getId();
-        $externalSession = $this->getDbTableManager()->get('ExternalSession');
-        $externalSession->addSessionMapping($localSessionId, $shibSessionId);
+        $this->getDbService(ExternalSessionServiceInterface::class)
+            ->addSessionMapping($localSessionId, $shibSessionId);
         $this->debug(
             "Cached Shibboleth session id '$shibSessionId' for local session"
             . " '$localSessionId'"
