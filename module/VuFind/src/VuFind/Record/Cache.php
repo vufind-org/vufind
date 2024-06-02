@@ -65,7 +65,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
      * Constructor
      *
      * @param RecordFactory          $recordFactoryManager Record loader
-     * @param Config                 $cacheConfig          VuFind main config
+     * @param Config                 $cacheConfig          RecordCache.ini contents
      * @param RecordServiceInterface $recordService        Record database service
      */
     public function __construct(
