@@ -30,6 +30,7 @@
 namespace VuFind\Db\Row;
 
 use DateTime;
+use Exception;
 use VuFind\Db\Entity\RecordEntityInterface;
 
 /**
@@ -45,7 +46,6 @@ use VuFind\Db\Entity\RecordEntityInterface;
  * @property string $record_id
  * @property string $source
  * @property string $version
- * @property string $data
  * @property string $updated
  */
 class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterface
@@ -146,7 +146,11 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      */
     public function getData(): ?string
     {
-        return $this->data ?? null;
+        try {
+            return $this->__get('data');
+        } catch (Exception) {
+            return null;
+        }
     }
 
     /**
@@ -158,7 +162,7 @@ class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterfa
      */
     public function setData(?string $recordData): RecordEntityInterface
     {
-        $this->data = $recordData;
+        $this->__set('data', $recordData);
         return $this;
     }
 
