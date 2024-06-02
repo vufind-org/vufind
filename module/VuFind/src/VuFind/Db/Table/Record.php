@@ -82,7 +82,7 @@ class Record extends Gateway implements DbServiceAwareInterface
      * @param string $source Record source
      *
      * @throws \Exception
-     * @return ?Record row object
+     * @return ?\VuFind\Db\Row\Record
      */
     public function findRecord($id, $source)
     {
