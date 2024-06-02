@@ -112,7 +112,7 @@ class Record extends Gateway implements DbServiceAwareInterface
             );
         }
 
-        return $this->select($where)->toArray();
+        return iterator_to_array($this->select($where));
     }
 
     /**
