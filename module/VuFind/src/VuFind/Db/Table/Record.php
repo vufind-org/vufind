@@ -122,7 +122,9 @@ class Record extends Gateway implements DbServiceAwareInterface
      * @param string $source  Data source
      * @param string $rawData Raw data from source
      *
-     * @return Updated or newly added record
+     * @return \VuFind\Db\Row\Record Updated or newly added record
+     *
+     * @deprecated Use RecordServiceInterface::updateRecord()
      */
     public function updateRecord($id, $source, $rawData)
     {
