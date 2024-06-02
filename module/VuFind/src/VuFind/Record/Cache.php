@@ -32,8 +32,8 @@
 namespace VuFind\Record;
 
 use Laminas\Config\Config as Config;
+use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
-use VuFind\Db\Table\Record as Record;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 
 /**
@@ -245,11 +245,11 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     /**
      * Helper function to get records from cached source-specific record data
      *
-     * @param Record $cachedRecord Record data
+     * @param RecordEntityInterface $cachedRecord Record data
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getVuFindRecord($cachedRecord)
+    protected function getVuFindRecord(RecordEntityInterface $cachedRecord)
     {
         $source = $cachedRecord->getSource();
         $doc = unserialize($cachedRecord->getData());
