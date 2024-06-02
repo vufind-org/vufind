@@ -64,7 +64,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param RecordFactory          $recordFactoryManager Record loader
+     * @param RecordFactory          $recordFactoryManager Record driver plugin manager
      * @param Config                 $cacheConfig          RecordCache.ini contents
      * @param RecordServiceInterface $recordService        Record database service
      */
