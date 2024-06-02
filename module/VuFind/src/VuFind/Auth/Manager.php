@@ -874,7 +874,7 @@ class Manager implements
     /**
      * Update common user attributes on login
      *
-     * @param \VuFind\Db\Row\User $user       User object
+     * @param UserEntityInterface $user       User object
      * @param ?string             $authMethod Authentication method to user
      *
      * @return void
