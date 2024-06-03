@@ -1,14 +1,13 @@
 #similar-items-carousel {
-  margin-inline: 2.5rem;
-
   .hover-overlay {
     position: relative;
     display: block;
-    min-width: 150px;
     height: 100%;
     min-height: 200px;
     margin: auto;
+    font-size: 14px;
     text-align: center;
+    text-wrap: balance;
 
     .recordcover {
       max-width: 100%;
@@ -30,6 +29,14 @@
 
     &:hover .content {
       display: grid;
+    }
+  }
+
+  @media (min-width: 768px) {
+    margin-inline: 2.5rem;
+
+    .hover-overlay {
+      min-width: 150px;
     }
   }
 }

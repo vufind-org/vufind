@@ -1,4 +1,9 @@
 .splide { // specificity boost
+	.splide__slide {
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+
 	.splide__arrow {
 		width: 2.5rem;
 		height: auto;
@@ -15,6 +20,29 @@
 	}
 	.splide__arrow:hover {
 		border-color: @btn-default-color;
+	}
+}
+
+@media (max-width: 767px) {
+	#similar-items-carousel.splide {
+		margin-inline: 0;
+	}
+
+	/* line up arrows with pagination */
+
+	.splide {
+		.splide__arrow {
+			top: calc(100% + 1.5rem);
+		}
+		.splide__arrow--prev {
+			left: 0;
+		}
+		.splide__arrow--next {
+			right: 0;
+		}
+		.carousel-pagination {
+			bottom: -2em;
+		}
 	}
 }
 
