@@ -86,7 +86,7 @@ interface ResourceTagsEntityInterface extends EntityInterface
      *
      * @return ?UserListEntityInterface
      */
-    public function getUserList(): UserListEntityInterface;
+    public function getUserList(): ?UserListEntityInterface;
 
     /**
      * Set user list.
