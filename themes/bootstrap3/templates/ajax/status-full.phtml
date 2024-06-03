@@ -38,8 +38,9 @@
             } else {
               $statusDescription = $availabilityStatus->getStatusDescription();
             }
+            $extraStatusInformation = $availabilityStatus->getExtraStatusInformation();
           ?>
-          <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription)?></span>
+          <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription, $extraStatusInformation)?></span>
       </td>
     </tr>
   <?php endforeach; ?>

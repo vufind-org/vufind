@@ -101,6 +101,13 @@ interface AvailabilityStatusInterface
     public function getStatusDescription(): string;
 
     /**
+     * Get extra status information.
+     *
+     * @return array
+     */
+    public function getExtraStatusInformation(): array;
+
+    /**
      * Get schema.org availability URI.
      *
      * @return ?string
