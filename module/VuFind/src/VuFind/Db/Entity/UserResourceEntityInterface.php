@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for user_resource table
  *
@@ -40,4 +42,90 @@ namespace VuFind\Db\Entity;
  */
 interface UserResourceEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get user.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface;
+
+    /**
+     * Set user.
+     *
+     * @param UserEntityInterface $user User
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setUser(UserEntityInterface $user): UserResourceEntityInterface;
+
+    /**
+     * Get resource.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function getResource(): ResourceEntityInterface;
+
+    /**
+     * Set resource.
+     *
+     * @param ResourceEntityInterface $resource Resource
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setResource(ResourceEntityInterface $resource): UserResourceEntityInterface;
+
+    /**
+     * Get user list.
+     *
+     * @return UserListEntityInterface
+     */
+    public function getUserList(): UserListEntityInterface;
+
+    /**
+     * Set user list.
+     *
+     * @param UserListEntityInterface $list User list
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setUserList(UserListEntityInterface $list): UserResourceEntityInterface;
+
+    /**
+     * Get notes.
+     *
+     * @return ?string
+     */
+    public function getNotes(): ?string;
+
+    /**
+     * Set notes.
+     *
+     * @param ?string $notes Notes associated with the resource
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setNotes(?string $notes): UserResourceEntityInterface;
+
+    /**
+     * Get saved date.
+     *
+     * @return DateTime
+     */
+    public function getSaved(): DateTime;
+
+    /**
+     * Set saved date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setSaved(DateTime $dateTime): UserResourceEntityInterface;
 }
