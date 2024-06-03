@@ -233,6 +233,15 @@ interface UserEntityInterface extends EntityInterface
     public function getAuthMethod(): ?string;
 
     /**
+     * Set last language.
+     *
+     * @param string $lang Last language
+     *
+     * @return UserEntityInterface
+     */
+    public function setLastLanguage(string $lang): UserEntityInterface;
+
+    /**
      * Get last language.
      *
      * @return string
@@ -258,7 +267,7 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Last login setter.
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -267,7 +276,23 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Last login getter
      *
+     * @return DateTime
+     */
+    public function getLastLogin(): DateTime;
+
+    /**
+     * Created setter
+     *
+     * @param Datetime $dateTime Last login date
+     *
+     * @return UserEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Created getter
+     *
      * @return Datetime
      */
-    public function getLastLogin(): Datetime;
+    public function getCreated(): Datetime;
 }

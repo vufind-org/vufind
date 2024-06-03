@@ -1,0 +1,62 @@
+/* https://github.com/vufind-org/autocomplete.js (v2.1.3) */
+
+/* #LESS>
+$autocomplete-item-bg     : #fff;
+$autocomplete-active-bg   : $brand-primary;
+$autocomplete-hover-bg    : lighten($brand-primary, 40%);
+$autocomplete-disabled-bg : lightgray;
+$autocomplete-border      : lightgray;
+$autocomplete-secondary   : darkgray; // item description
+<#LESS */
+/* #SCSS> */
+$autocomplete-item-bg     : #fff !default;
+$autocomplete-active-bg   : $brand-primary !default;
+$autocomplete-hover-bg    : lighten($brand-primary, 40%) !default;
+$autocomplete-disabled-bg : lightgray !default;
+$autocomplete-border      : lightgray !default;
+$autocomplete-secondary   : darkgray !default; // item description
+/* <#SCSS */
+
+.autocomplete-results {
+  position: absolute;
+  display: none;
+  max-width: 500px; /* CUSTOMIZED */
+  margin: 0;
+  margin-top: 2px;
+  padding: 0;
+  border: 1px solid $autocomplete-border;
+  background-color: $autocomplete-item-bg;
+  overflow: hidden;
+  z-index: 50;
+
+  &.open {
+    display: table;
+  }
+
+  .ac-item {
+    display: block;
+    margin: 0;
+    padding: .5rem;
+    border-bottom: 1px solid $autocomplete-border;
+    cursor: pointer;
+
+    &:last-child { border: 0; }
+    &:hover { background-color: $autocomplete-hover-bg; }
+    &.is-selected {
+      background-color: $autocomplete-active-bg;
+      color: contrast($autocomplete-active-bg);
+    }
+  }
+
+  .ac-disabled,
+  [disabled] {
+    color: $autocomplete-secondary;
+  }
+
+  .ac-header {
+    white-space: nowrap;
+    color: contrast($autocomplete-disabled-bg);
+    background-color: $autocomplete-disabled-bg;
+    cursor: default;
+  }
+}

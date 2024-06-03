@@ -394,7 +394,7 @@ function recordDocReady() {
   });
 
   VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
-  VuFind.truncate.initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
+  VuFind.truncate.initTruncate('table.truncate-field', 'tr.holding-row', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
 
   registerTabEvents();
   applyRecordTabHash(false);

@@ -1,0 +1,31 @@
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+  $heading = $this->recommend->getHeading();
+?>
+<?php if (!empty($results)): ?>
+  <h2><?=$this->transEsc($heading)?></h2>
+  <ul class="list-group">
+    <?php foreach ($results as $driver): ?>
+      <li class="list-group-item">
+        <span>
+          <?php
+            $formats = $driver->getFormats();
+            $format = $formats[0] ?? '';
+          ?>
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+            <?=$this->record($driver)->getTitleHtml()?>
+          </a>
+          <?php $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
+          <?php if (!empty($summAuthors)): ?>
+          <span class="small">
+            <?=$this->transEsc('by')?>
+            <a href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+          </span>
+          <?php endif; ?>
+        </span>
+      </li>
+    <?php endforeach; ?>
+    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More EDS results')?></a>
+  </ul>
+<?php endif ?>

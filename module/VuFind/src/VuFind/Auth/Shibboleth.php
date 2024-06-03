@@ -37,6 +37,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -192,6 +193,7 @@ class Shibboleth extends AbstractBase
         }
 
         // If we made it this far, we should log in the user!
+        $userService = $this->getUserService();
         $user = $this->getUserTable()->getByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
@@ -203,7 +205,7 @@ class Shibboleth extends AbstractBase
             if (isset($shib[$attribute])) {
                 $value = $this->getAttribute($request, $shib[$attribute]);
                 if ($attribute == 'email') {
-                    $user->updateEmail($value);
+                    $userService->updateUserEmail($user, $value);
                 } elseif (
                     $attribute == 'cat_username' && isset($shib['prefix'])
                     && !empty($value)
@@ -235,7 +237,7 @@ class Shibboleth extends AbstractBase
         $this->storeShibbolethSession($request);
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 
@@ -332,7 +334,8 @@ class Shibboleth extends AbstractBase
             $username = $shib['prefix'] . '.' . $username;
         }
         $password = $shib['cat_password'] ?? null;
-        $connectingUser->saveLibraryCard(
+        $this->getDbService(UserCardServiceInterface::class)->persistLibraryCardData(
+            $connectingUser,
             null,
             $shib['prefix'],
             $username,

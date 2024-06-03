@@ -19,8 +19,12 @@
 
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
-    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF', options: ['excludeSearchId' => true]), 'application/rdf+xml', 'RDF Representation');
   }
+
+  // Add canonical header link for SEO:
+  $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
+  $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ') .

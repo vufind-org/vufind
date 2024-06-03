@@ -35,6 +35,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -44,6 +47,7 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Exception\MissingField as MissingFieldException;
+use VuFind\Favorites\FavoritesService;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
@@ -148,9 +152,9 @@ class MyResearchController extends AbstractBase
             return;
         }
         if ($e instanceof AuthEmailNotVerifiedException) {
-            $this->sendFirstVerificationEmail($e->user);
+            $this->sendFirstVerificationEmail($e->getUser());
             if ($msg == 'authentication_error_email_not_verified_html') {
-                $this->getUserVerificationContainer()->user = $e->user->username;
+                $this->getUserVerificationContainer()->user = $e->getUser()->getUsername();
                 $url = $this->url()->fromRoute('myresearch-emailnotverified')
                     . '?reverify=true';
                 $msg = [
@@ -290,7 +294,7 @@ class MyResearchController extends AbstractBase
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
             } catch (AuthEmailNotVerifiedException $e) {
-                $this->sendFirstVerificationEmail($e->user);
+                $this->sendFirstVerificationEmail($e->getUser());
                 return $this->redirect()->toRoute('myresearch-emailnotverified');
             } catch (AuthException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -483,13 +487,13 @@ class MyResearchController extends AbstractBase
     /**
      * Support method for savesearchAction() -- schedule a search.
      *
-     * @param \VuFind\Db\Row\User $user     Logged-in user object
+     * @param UserEntityInterface $user     Logged-in user object
      * @param int                 $schedule Requested schedule setting
      * @param int                 $sid      Search ID to schedule
      *
      * @return mixed
      */
-    protected function scheduleSearch($user, $schedule, $sid)
+    protected function scheduleSearch(UserEntityInterface $user, $schedule, $sid)
     {
         // Fail if scheduled searches are disabled.
         $scheduleOptions = $this->serviceLocator
@@ -500,7 +504,8 @@ class MyResearchController extends AbstractBase
         }
         $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
-        $savedRow = $this->getSearchRowSecurely($sid, $user->id);
+        $userId = $user->getId();
+        $savedRow = $this->getSearchRowSecurely($sid, $userId);
 
         // In case the user has just logged in, let's deduplicate...
         $sessId = $this->serviceLocator
@@ -509,18 +514,18 @@ class MyResearchController extends AbstractBase
             $search,
             $savedRow,
             $sessId,
-            $user->id
+            $userId
         );
         if ($duplicateId) {
             $savedRow->delete();
             $sid = $duplicateId;
-            $savedRow = $this->getSearchRowSecurely($sid, $user->id);
+            $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
 
         // If we didn't find an already-saved row, let's save and retry:
         if (!($savedRow->saved ?? false)) {
-            $this->setSavedFlagSecurely($sid, true, $user->id);
-            $savedRow = $this->getSearchRowSecurely($sid, $user->id);
+            $this->setSavedFlagSecurely($sid, true, $userId);
+            $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
         if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
             // By default, a first scheduled email will be sent because the database
@@ -561,7 +566,7 @@ class MyResearchController extends AbstractBase
             return $this->forceLogin();
         }
         // Get the row, and fail if the current user doesn't own it.
-        $search = $this->getSearchRowSecurely($searchId, $user->id);
+        $search = $this->getSearchRowSecurely($searchId, $user->getId());
 
         // If the user has just logged in, the search might be a duplicate; if
         // so, let's switch to the pre-existing version instead.
@@ -572,7 +577,7 @@ class MyResearchController extends AbstractBase
             $searchTable,
             $search,
             $sessId,
-            $user->id
+            $user->getId()
         );
         if ($duplicateId) {
             $search->delete();
@@ -666,22 +671,22 @@ class MyResearchController extends AbstractBase
             $searchTable = $this->getTable('search');
             $sessId = $this->serviceLocator
                 ->get(\Laminas\Session\SessionManager::class)->getId();
-            $rowToCheck = $searchTable->getOwnedRowById($id, $sessId, $user->id);
+            $rowToCheck = $searchTable->getOwnedRowById($id, $sessId, $user->getId());
             $duplicateId = $this->isDuplicateOfSavedSearch(
                 $searchTable,
                 $rowToCheck,
                 $sessId,
-                $user->id
+                $user->getId()
             );
             if ($duplicateId) {
                 $rowToCheck->delete();
                 $id = $duplicateId;
             } else {
-                $this->setSavedFlagSecurely($id, true, $user->id);
+                $this->setSavedFlagSecurely($id, true, $user->getId());
             }
             $this->flashMessenger()->addMessage('search_save_success', 'success');
         } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
-            $this->setSavedFlagSecurely($id, false, $user->id);
+            $this->setSavedFlagSecurely($id, false, $user->getId());
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
             throw new \Exception('Missing save and delete parameters.');
@@ -877,12 +882,9 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, the operation has not been confirmed yet; show
         // the necessary dialog box:
-        if (empty($listID)) {
-            $list = false;
-        } else {
-            $table = $this->getTable('UserList');
-            $list = $table->getExisting($listID);
-        }
+        $list = empty($listID)
+            ? false
+            : $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
         return $this->createViewModel(
             [
                 'list' => $list, 'deleteIDS' => $ids,
@@ -917,8 +919,7 @@ class MyResearchController extends AbstractBase
         // Perform delete and send appropriate flash message:
         if (null !== $listID) {
             // ...Specific List
-            $table = $this->getTable('UserList');
-            $list = $table->getExisting($listID);
+            $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
             $list->removeResourcesById($user, [$id], $source);
             $this->flashMessenger()->addMessage('Item removed from list', 'success');
         } else {
@@ -935,14 +936,14 @@ class MyResearchController extends AbstractBase
     /**
      * Process the submission of the edit favorite form.
      *
-     * @param \VuFind\Db\Row\User               $user   Logged-in user
+     * @param UserEntityInterface               $user   Logged-in user
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver for favorite
      * @param int                               $listID List being edited (null
      * if editing all favorites)
      *
      * @return object
      */
-    protected function processEditSubmit($user, $driver, $listID)
+    protected function processEditSubmit(UserEntityInterface $user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists', []);
         $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
@@ -1158,13 +1159,13 @@ class MyResearchController extends AbstractBase
     /**
      * Process the "edit list" submission.
      *
-     * @param \VuFind\Db\Row\User     $user Logged in user
+     * @param UserEntityInterface     $user Logged in user
      * @param \VuFind\Db\Row\UserList $list List being created/edited
      *
      * @return object|bool                  Response object if redirect is
      * needed, false if form needs to be redisplayed.
      */
-    protected function processEditList($user, $list)
+    protected function processEditList(UserEntityInterface $user, $list)
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
@@ -1235,9 +1236,12 @@ class MyResearchController extends AbstractBase
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $table = $this->getTable('UserList');
         $newList = ($id == 'NEW');
-        $list = $newList ? $table->getNew($user) : $table->getExisting($id);
+        // If this is a new list, use the FavoritesService to pre-populate some values in
+        // a fresh object; if it's an existing list, we can just fetch from the database.
+        $list = $newList
+            ? $this->serviceLocator->get(FavoritesService::class)->createListForUser($user)
+            : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
         if (!$newList && !$list->editAllowed($user)) {
@@ -1282,7 +1286,7 @@ class MyResearchController extends AbstractBase
             // Case 2: pending email change:
             if (!$user) {
                 $user = $this->getUser();
-                if (!empty($user->pending_email)) {
+                if ($user && $user->getPendingEmail()) {
                     $change = true;
                 }
             }
@@ -1316,8 +1320,7 @@ class MyResearchController extends AbstractBase
         );
         if ($confirm) {
             try {
-                $table = $this->getTable('UserList');
-                $list = $table->getExisting($listID);
+                $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
                 $list->delete($this->getUser());
 
                 // Success Message
@@ -1736,19 +1739,19 @@ class MyResearchController extends AbstractBase
     /**
      * Helper function for recoverAction
      *
-     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param UserEntityInterface $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config)
+    protected function sendRecoveryEmail(UserEntityInterface $user, $config)
     {
         // If we can't find a user
-        if (null == $user) {
+        if (!$user) {
             $this->flashMessenger()->addMessage('recovery_user_not_found', 'error');
         } else {
             // Make sure we've waited long enough
-            $hashtime = $this->getHashAge($user->verify_hash);
+            $hashtime = $this->getHashAge($user->getVerifyHash());
             $recoveryInterval = $config->Authentication->recover_interval ?? 60;
             if (time() - $hashtime < $recoveryInterval) {
                 $this->flashMessenger()->addMessage('recovery_too_soon', 'error');
@@ -1767,11 +1770,11 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->verify_hash . '&auth_method=' . $method,
+                                . $user->getVerifyHash() . '&auth_method=' . $method,
                         ]
                     );
                     $this->serviceLocator->get(Mailer::class)->send(
-                        $user->email,
+                        $user->getEmail(),
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),
                         $message
@@ -1789,13 +1792,13 @@ class MyResearchController extends AbstractBase
      * Send a verify email message for the first time (only if the user does not
      * already have a hash).
      *
-     * @param \VuFind\Db\Row\User $user User object we're recovering
+     * @param UserEntityInterface $user User object we're recovering
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendFirstVerificationEmail($user)
+    protected function sendFirstVerificationEmail(UserEntityInterface $user)
     {
-        if (empty($user->verify_hash)) {
+        if (!$user->getVerifyHash()) {
             $this->sendVerificationEmail($user);
         }
     }
@@ -1932,7 +1935,7 @@ class MyResearchController extends AbstractBase
                     $view = $this->createViewModel();
                     $view->auth_method = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
-                    $view->username = $user->username;
+                    $view->username = $user->getUsername();
                     $view->useCaptcha = $this->captcha()->active('changePassword');
                     $view->passwordPolicy = $this->getAuthManager()
                         ->getPasswordPolicy();
@@ -1968,9 +1971,10 @@ class MyResearchController extends AbstractBase
                 // If the hash is valid, store validation in DB and forward to login
                 if ($user = $table->getByVerifyHash($hash)) {
                     // Apply pending email address change, if applicable:
-                    if (!empty($user->pending_email)) {
-                        $user->updateEmail($user->pending_email, true);
-                        $user->pending_email = '';
+                    if ($pending = $user->getPendingEmail()) {
+                        $this->getDbService(UserServiceInterface::class)
+                            ->updateUserEmail($user, $pending, true);
+                        $user->setPendingEmail('');
                     }
                     $user->saveEmailVerified();
 
@@ -2093,7 +2097,7 @@ class MyResearchController extends AbstractBase
         }
         $view = $this->createViewModel($this->params()->fromPost());
         // Display email
-        $view->email = $user->email;
+        $view->email = $user->getEmail();
         // Identification
         $view->useCaptcha = $this->captcha()->active('changeEmail');
         // Special case: form was submitted:
@@ -2114,7 +2118,7 @@ class MyResearchController extends AbstractBase
                 }
                 $this->getAuthManager()->updateEmail($user, $email);
                 // If we have a pending change, we need to send a verification email:
-                if (!empty($user->pending_email)) {
+                if ($user->getPendingEmail()) {
                     $this->sendVerificationEmail($user, true);
                 } else {
                     $this->flashMessenger()
@@ -2154,13 +2158,13 @@ class MyResearchController extends AbstractBase
         $view->verifyold = true;
         // Display username
         $user = $this->getUser();
-        $view->username = $user->username;
+        $view->username = $user->getUsername();
         // Password policy
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy();
         // Identification
         $user->updateHash();
-        $view->hash = $user->verify_hash;
+        $view->hash = $user->getVerifyHash();
         $view->setTemplate('myresearch/newpassword');
         $view->useCaptcha = $this->captcha()->active('changePassword');
         return $view;
@@ -2183,7 +2187,7 @@ class MyResearchController extends AbstractBase
             );
         }
         $series = $this->params()->fromPost('series', '');
-        $this->getAuthManager()->deleteToken($series, $this->getUser()->id);
+        $this->getAuthManager()->deleteToken($series);
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
@@ -2346,23 +2350,19 @@ class MyResearchController extends AbstractBase
     /**
      * Add a message about any pending email change to the flash messenger
      *
-     * @param \VuFind\Db\Row\User $user User
+     * @param UserEntityInterface $user User
      *
      * @return void
      */
-    protected function addPendingEmailChangeMessage($user)
+    protected function addPendingEmailChangeMessage(UserEntityInterface $user)
     {
-        if (!empty($user->pending_email)) {
+        if ($pending = $user->getPendingEmail()) {
             $url = $this->url()->fromRoute(
                 'myresearch-emailnotverified',
                 [],
                 ['query' => ['reverify' => 'true']]
             );
-            $pendingEmailEsc = htmlspecialchars(
-                $user->pending_email,
-                ENT_COMPAT,
-                'UTF-8'
-            );
+            $pendingEmailEsc = htmlspecialchars($pending, ENT_COMPAT, 'UTF-8');
             $this->flashMessenger()->addInfoMessage(
                 [
                     'html' => true,

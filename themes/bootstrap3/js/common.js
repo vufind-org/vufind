@@ -1,4 +1,4 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
+/*global bootstrap, grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -444,6 +444,43 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks();
   };
 
+  function getBootstrapMajorVersion() {
+    // Bootstrap 5 defines bootstrap global, while 3 doesn't, so we can use that as
+    // an easy way to determine the version:
+    return typeof bootstrap === 'undefined' ? 3 : 5;
+  }
+
+  /**
+   * Disable transition effects and return the previous state
+   *
+   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   */
+  function disableTransitions(elem) {
+    if (getBootstrapMajorVersion() === 3) {
+      const oldState = $.support.transition;
+      $.support.transition = false;
+      return oldState;
+    }
+    const oldState = elem.style.transitionDuration;
+    elem.style.transitionDuration = '0s';
+    return oldState;
+  }
+
+  /**
+   * Restore transition effects to the given state
+   *
+   * @param {Element} elem Element to handle (not used with Bootstrap 3)
+   * @param {(string|boolean)} state State from previous call to disableTransitions
+   */
+  function restoreTransitions(elem, state) {
+    if (getBootstrapMajorVersion() === 3) {
+      $.support.transition = state;
+      return;
+    }
+
+    elem.style.transitionDuration = state;
+  }
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -473,7 +510,10 @@ var VuFind = (function VuFind() {
     setupQRCodeLinks: setupQRCodeLinks,
     setInnerHtml: setInnerHtml,
     setOuterHtml: setOuterHtml,
-    setElementContents: setElementContents
+    setElementContents: setElementContents,
+    getBootstrapMajorVersion: getBootstrapMajorVersion,
+    disableTransitions: disableTransitions,
+    restoreTransitions: restoreTransitions
   };
 })();
 
@@ -665,8 +705,13 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (event.originalEvent !== undefined) {
-    let limit = event.originalEvent.submitter.dataset.itemLimit;
+  // originalEvent check can be removed and event.submitter can directly used once jQuery is no longer used in the lightbox
+  const submitter = event.originalEvent.submitter !== undefined && event.originalEvent.submitter !== null
+    ? event.originalEvent.submitter
+    : (event.submitter !== undefined && event.submitter !== null ? event.submitter : null);
+
+  if (submitter !== null) {
+    let limit = submitter.dataset.itemLimit;
     if (numberOfSelected > limit) {
       VuFind.lightbox.alert(
         VuFind.translate('bulk_limit_exceeded', {'%%count%%': numberOfSelected, '%%limit%%': limit}),
@@ -685,62 +730,31 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0 && $(document.body).hasClass("vufind-offcanvas")) {
-    $('[data-toggle="vufind-offcanvas"]').on("click", function offcanvasClick(e) {
-      e.preventDefault();
-      $('body.vufind-offcanvas').toggleClass('active');
-    });
-  }
-}
+  const sidebar = document.querySelector('.sidebar');
+  const body = document.body;
 
-/**
- * Handle arrow keys to jump to next record
- */
-function keyboardShortcuts() {
-  var $searchform = $('#searchForm_lookfor');
-  if ($('.pager').length > 0) {
-    $(window).on("keydown", function shortcutKeyDown(e) {
-      if (!$searchform.is(':focus')) {
-        var $target = null;
-        switch (e.keyCode) {
-        case 37: // left arrow key
-          $target = $('.pager').find('a.previous');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
-          }
-          break;
-        case 38: // up arrow key
-          if (e.ctrlKey) {
-            $target = $('.pager').find('a.backtosearch');
-            if ($target.length > 0) {
-              $target[0].click();
-              return;
-            }
-          }
-          break;
-        case 39: //right arrow key
-          $target = $('.pager').find('a.next');
-          if ($target.length > 0) {
-            $target[0].click();
-            return;
-          }
-          break;
-        case 40: // down arrow key
-          break;
-        }
-      }
+  if (sidebar && body.classList.contains("vufind-offcanvas")) {
+    const offcanvasToggle = document.querySelectorAll('[data-toggle="vufind-offcanvas"]');
+
+    offcanvasToggle.forEach((element) => {
+      element.addEventListener("click", function offcanvasClick(e) {
+        e.preventDefault();
+        body.classList.toggle('active');
+      });
     });
   }
 }
 
 function setupJumpMenus(_container) {
-  var container = _container || $('body');
-  container.find('select.jumpMenu').on("change", function jumpMenu() {
-    // Check if jumpMenu is still enabled (search.js may have disabled it):
-    if ($(this).hasClass('jumpMenu')) {
-      $(this).parent('form').trigger("submit");
-    }
+  var container = unwrapJQuery(_container || document.body);
+  var selects = container.querySelectorAll('select.jumpMenu');
+  selects.forEach((select) => {
+    select.addEventListener('change', function jumpMenu() {
+      // Check if jumpMenu is still enabled (search.js may have disabled it):
+      if (select.classList.contains('jumpMenu')) {
+        select.parentElement.submit();
+      }
+    });
   });
 }
 
@@ -776,8 +790,6 @@ document.addEventListener('DOMContentLoaded', () => {
   VuFind.init();
   // Off canvas
   setupOffcanvas();
-  // Keyboard shortcuts in detail view
-  keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();

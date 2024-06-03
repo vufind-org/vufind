@@ -1,0 +1,28 @@
+<?php if ($visFacets = $this->recommend->getVisFacets()): ?>
+  <?php
+    // load jQuery flot:
+    $this->headScript()->appendFile('vendor/flot/excanvas.min.js', null, ['conditional' => 'IE']);
+    $this->headScript()->appendFile('vendor/flot/jquery.flot.min.js');
+    $this->headScript()->appendFile('vendor/flot/jquery.flot.resize.min.js');
+    $this->headScript()->appendFile('vendor/flot/jquery.flot.selection.min.js');
+    $this->headScript()->appendFile('pubdate_vis.js');
+  ?>
+  <?php foreach ($visFacets as $facetField => $facetRange): ?>
+    <div class="authorbox">
+      <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper" class="hidden">
+        <strong><?=$this->transEsc($facetRange['label']) ?></strong>
+        <?php /* space the flot visualisation */ ?>
+        <div id="datevis<?=$facetField ?>x" style="margin:0 10px;width:auto;height:80px;cursor:crosshair;"></div>
+        <div id="clearButtonText" style="display: none"><?=$this->transEsc('Clear') ?></div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+  <div id="dateVisColorSettings"><!-- do not delete! used for passing CSS to Javascript --></div>
+  <?php
+    $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
+        . $this->recommend->getSearchParams() . "', VuFind.path, "
+        . $this->recommend->getZooming() . ');';
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
+  ?>
+
+<?php endif; ?>

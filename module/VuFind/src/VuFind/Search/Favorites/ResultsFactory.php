@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 /**
  * Factory for Favorites search results objects.
@@ -67,12 +68,9 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $tm = $container->get(\VuFind\Db\Table\PluginManager::class);
-        $obj = parent::__invoke(
-            $container,
-            $requestedName,
-            [$tm->get('Resource'), $tm->get('UserList')]
-        );
+        $resourceTable = $container->get(\VuFind\Db\Table\PluginManager::class)->get('Resource');
+        $listService = $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class);
+        $obj = parent::__invoke($container, $requestedName, [$resourceTable, $listService]);
         $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
         $init($container, $obj);
         return $obj;

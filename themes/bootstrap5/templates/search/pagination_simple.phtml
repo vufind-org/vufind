@@ -1,0 +1,37 @@
+<?php if ($this->pageCount): ?>
+  <?php
+    $ulAttrs = $this->htmlAttributes(['class' => 'pager pagination-simple']);
+    if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+      $ulAttrs->add('class', 'js-pagination-simple');
+    }
+  ?>
+  <ul<?=$ulAttrs?>>
+    <?php if (isset($this->previous)): ?>
+      <li class="page-item page-prev">
+        <a class="page-link" href="<?=$this->results->getUrlQuery()->setPage($this->previous)?>">
+          <span class="sr-only"><?=$this->transEsc('page_prev')?></span>
+          <?=$this->icon('page-prev') ?>
+        </a>
+      </li>
+    <?php endif; ?>
+    <li class="pager-text">
+      <?php
+        $params = [
+          'results' => $this->results,
+          'params' => $this->results->getParams(),
+          'recordTotal' => $this->results->getResultTotal(),
+          'lookfor' => '',
+        ];
+        echo $this->render('search/controls/showing.phtml', $params);
+      ?>
+    </li>
+    <?php if (isset($this->next)): ?>
+      <li class="page-item page-next">
+        <a class="page-link" href="<?=$this->results->getUrlQuery()->setPage($this->next)?>">
+          <span class="sr-only"><?=$this->transEsc('page_next')?></span>
+          <?=$this->icon('page-next') ?>
+        </a>
+      </li>
+    <?php endif; ?>
+  </ul>
+<?php endif; ?>

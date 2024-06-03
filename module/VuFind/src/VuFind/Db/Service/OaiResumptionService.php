@@ -76,16 +76,15 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Create a new resumption token
+     * Create and persist a new resumption token.
      *
      * @param array $params Parameters associated with the token.
      * @param int   $expire Expiration time for token (Unix timestamp).
      *
-     * @return int          ID of new token
-     *
+     * @return OaiResumptionEntityInterface
      * @throws \Exception
      */
-    public function saveToken(array $params, int $expire): int
+    public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface
     {
         $row = $this->createEntity()
             ->setResumptionParameters($this->encodeParams($params))
@@ -96,7 +95,7 @@ class OaiResumptionService extends AbstractDbService implements
             $this->logError('Could not save token: ' . $e->getMessage());
             throw $e;
         }
-        return $row->getId();
+        return $row;
     }
 
     /**

@@ -70,7 +70,12 @@ class AccountCapabilitiesFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Auth\Manager::class)
+            // Pass a callback to return the auth manager to prevent circular dependencies
+            // (we need the auth manager to determine some capabilities, but some of its
+            // dependencies may need to make capability checks as well).
+            function () use ($container) {
+                return $container->get(\VuFind\Auth\Manager::class);
+            }
         );
     }
 }

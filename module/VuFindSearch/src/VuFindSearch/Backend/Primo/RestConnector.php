@@ -557,13 +557,11 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
 
         // Process received facets
         foreach ($response->facets as $facet) {
-            $facets[$facet->name] = [
-                ...($facets[$facet->name] ?? []),
-                ...array_combine(
-                    array_column($facet->values, 'value'),
-                    array_column($facet->values, 'count')
-                ),
-            ];
+            // Handle facet values as strings to ensure that numeric values stay
+            // intact (no array_combine etc.):
+            foreach ($facet->values as $value) {
+                $facets[$facet->name][(string)$value->value] = $value->count;
+            }
             uasort(
                 $facets[$facet->name],
                 function ($a, $b) {

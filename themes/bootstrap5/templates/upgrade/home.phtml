@@ -1,0 +1,27 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Upgrade VuFind'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+?>
+<h2><?=$this->transEsc('Upgrade VuFind')?></h2>
+<?=$this->flashmessages()?>
+<p>Upgrade complete.  You may still have some work to do:</p>
+
+<ol>
+  <?php if ($oldVersion < 2): ?>
+    <li>If you have customized your SolrMarc import settings, your marc_local.properties file has been migrated, but you will need to move custom translation maps, index scripts, etc. by hand.  Custom import files belong under <?=$this->escapeHtml($this->importDir)?> -- this will make future upgrades easier.</li>
+    <li>You should look over the configuration files in <?=$this->escapeHtml($this->configDir)?> and make sure settings look correct.  The automatic update process sometimes re-enables disabled settings and removes comments.</li>
+    <li>If you have customized any of the YAML searchspecs files without using the *_local.yaml override mechanism, you will need to reapply those changes.</li>
+    <li>If you have customized code or templates in your previous version, you will need to adapt those changes to the new architecture.</li>
+  <?php else: ?>
+    <li>You should look over the configuration files in <?=$this->escapeHtml($this->configDir)?> and make sure settings look correct.  The automatic update process sometimes re-enables disabled settings and removes comments.  Backups of your old configurations have been created for comparison purposes.</li>
+    <li>If you have customized code or templates in your previous version, you should test them to be sure they still work correctly; see the <a href="https://vufind.org/wiki/changelog">changelog</a> for notes on possible breaks in backward compatibility.</li>
+  <?php endif; ?>
+  <li>You should reindex all of your content.</li>
+  <li>You may want to check for problems on the <a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title')?></a> page.</li>
+</ol>
+
+<p>For the latest notes on upgrading, see the <a href="https://vufind.org/wiki/installation:migration_notes">online documentation</a>.</p>
+<p>For help, feel free to use the mailing lists on the <a href="https://vufind.org/support.php">support page</a>.</p>
