@@ -121,13 +121,13 @@ class Ratings extends RowGateway implements
     /**
      * Set resource.
      *
-     * @param ResourceEntityInterface $resource_id Resource
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return RatingsEntityInterface
      */
-    public function setResource(ResourceEntityInterface $resource_id): RatingsEntityInterface
+    public function setResource(ResourceEntityInterface $resource): RatingsEntityInterface
     {
-        $this->resource_id = $resource_id?->getId();
+        $this->resource_id = $resource->getId();
         return $this;
     }
 
@@ -148,7 +148,7 @@ class Ratings extends RowGateway implements
      *
      * @return RatingsEntityInterface
      */
-    public function setRating(string $rating): RatingsEntityInterface
+    public function setRating(int $rating): RatingsEntityInterface
     {
         $this->rating = $rating;
         return $this;

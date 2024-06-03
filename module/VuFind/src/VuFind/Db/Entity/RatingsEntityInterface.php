@@ -75,11 +75,11 @@ interface RatingsEntityInterface extends EntityInterface
     /**
      * Set resource.
      *
-     * @param ResourceEntityInterface $resource_id Resource
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return RatingsEntityInterface
      */
-    public function setResource(ResourceEntityInterface $resource_id): RatingsEntityInterface;
+    public function setResource(ResourceEntityInterface $resource): RatingsEntityInterface;
 
     /**
      * Get rating.
@@ -95,7 +95,7 @@ interface RatingsEntityInterface extends EntityInterface
      *
      * @return RatingsEntityInterface
      */
-    public function setRating(string $rating): RatingsEntityInterface;
+    public function setRating(int $rating): RatingsEntityInterface;
 
     /**
      * Get created date.
