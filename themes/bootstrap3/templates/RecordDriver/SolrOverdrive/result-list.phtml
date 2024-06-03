@@ -12,7 +12,7 @@
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif; ?>
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getOverdriveID())?>" class="hiddenId">
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
 <input type="hidden" value="overdrive" class="handler-name">
 <div class="media">

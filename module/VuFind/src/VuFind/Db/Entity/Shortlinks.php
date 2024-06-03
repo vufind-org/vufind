@@ -64,7 +64,7 @@ class Shortlinks implements ShortlinksEntityInterface
     protected $id;
 
     /**
-     * Shortened URL.
+     * Path (minus hostname) from shortened URL.
      *
      * @var string
      *
@@ -95,53 +95,17 @@ class Shortlinks implements ShortlinksEntityInterface
     protected $created = 'CURRENT_TIMESTAMP';
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * Shortlinks hash setter
-     *
-     * @param ?string $hash Shortlinks hash.
-     *
-     * @return Shortlinks
-     */
-    public function setHash(?string $hash): Shortlinks
-    {
-        $this->hash = $hash;
-        return $this;
-    }
-
-    /**
-     * Hash getter
-     *
-     * @return ?string
-     */
-    public function getHash(): ?string
-    {
-        return $this->hash;
-    }
-
-    /**
-     * Shortened URL setter
-     *
-     * @param string $path Shortened URL.
-     *
-     * @return Shortlinks
-     */
-    public function setPath(string $path): Shortlinks
-    {
-        $this->path = $path;
-        return $this;
-    }
-
-    /**
-     * Path getter
+     * Get the path of the URL.
      *
      * @return string
      */
@@ -151,25 +115,62 @@ class Shortlinks implements ShortlinksEntityInterface
     }
 
     /**
-     * Created setter.
+     * Set the path (e.g. /Search/Results?lookfor=foo) of the URL being shortened;
+     * shortened URLs are always assumed to be within the hostname where VuFind is running.
      *
-     * @param DateTime $dateTime Created date
+     * @param string $path Path
      *
-     * @return Shortlinks
+     * @return ShortlinksEntityInterface
      */
-    public function setCreated(DateTime $dateTime): Shortlinks
+    public function setPath(string $path): ShortlinksEntityInterface
     {
-        $this->created = $dateTime;
+        $this->path = $path;
         return $this;
     }
 
     /**
-     * Created getter
+     * Get shortlinks hash.
+     *
+     * @return ?string
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * Set shortlinks hash.
+     *
+     * @param ?string $hash Shortlinks hash
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setHash(?string $hash): ShortlinksEntityInterface
+    {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get creation timestamp.
      *
      * @return DateTime
      */
     public function getCreated(): DateTime
     {
         return $this->created;
+    }
+
+    /**
+     * Set creation timestamp.
+     *
+     * @param DateTime $dateTime Creation timestamp
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): ShortlinksEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
     }
 }
