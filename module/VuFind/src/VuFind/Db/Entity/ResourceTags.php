@@ -180,7 +180,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     /**
      * Set tag.
      *
-     * @param TagsEntityInterface  $tag Tag
+     * @param TagsEntityInterface $tag Tag
      *
      * @return ResourceTagsEntityInterface
      */
