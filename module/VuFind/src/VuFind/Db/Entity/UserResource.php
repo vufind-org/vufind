@@ -185,7 +185,7 @@ class UserResource implements UserResourceEntityInterface
      *
      * @return UserResource
      */
-    public function setList(UserList $list): UserResource
+    public function setUserList(UserList $list): UserResource
     {
         $this->list = $list;
         return $this;
@@ -196,7 +196,7 @@ class UserResource implements UserResourceEntityInterface
      *
      * @return UserList
      */
-    public function getList(): UserList
+    public function getUserList(): UserList
     {
         return $this->list;
     }

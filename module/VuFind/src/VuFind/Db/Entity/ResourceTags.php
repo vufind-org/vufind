@@ -135,127 +135,127 @@ class ResourceTags implements ResourceTagsEntityInterface
     }
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * Resource setter.
+     * Get resource.
      *
-     * @param ?Resource $resource Resource
-     *
-     * @return ResourceTags
+     * @return ResourceEntityInterface
      */
-    public function setResource(?Resource $resource): ResourceTags
+    public function getResource(): ResourceEntityInterface
+    {
+        return $this->resource;
+    }
+
+    /**
+     * Set resource.
+     *
+     * @param ?ResourceEntityInterface $resource Resource
+     *
+     * @return ResourceTagsEntityInterface
+     */
+    public function setResource(?ResourceEntityInterface $resource): ResourceTagsEntityInterface
     {
         $this->resource = $resource;
         return $this;
     }
 
     /**
-     * Resource getter
+     * Get tag.
      *
-     * @return Resource
+     * @return TagsEntityInterface
      */
-    public function getResource(): Resource
+    public function getTag(): TagsEntityInterface
     {
-        return $this->resource;
+        return $this->tag;
     }
 
     /**
-     * Tags setter.
+     * Set tag.
      *
-     * @param ?Tags $tag Tag object
+     * @param TagsEntityInterface  $tag Tag
      *
-     * @return ResourceTags
+     * @return ResourceTagsEntityInterface
      */
-    public function setTag(?Tags $tag): ResourceTags
+    public function setTag(TagsEntityInterface $tag): ResourceTagsEntityInterface
     {
         $this->tag = $tag;
         return $this;
     }
 
     /**
-     * Tag getter
+     * Get user list.
      *
-     * @return Tags
+     * @return ?UserListEntityInterface
      */
-    public function getTag(): Tags
+    public function getUserList(): ?UserListEntityInterface
     {
-        return $this->tag;
+        return $this->list;
     }
 
     /**
-     * List setter.
+     * Set user list.
      *
-     * @param ?UserList $list UserList object
+     * @param ?UserListEntityInterface $list User list
      *
-     * @return ResourceTags
+     * @return ResourceTagsEntityInterface
      */
-    public function setList(?UserList $list): ResourceTags
+    public function setUserList(?UserListEntityInterface $list): ResourceTagsEntityInterface
     {
         $this->list = $list;
         return $this;
     }
 
     /**
-     * List getter
+     * Get user.
      *
-     * @return ?UserList
+     * @return ?UserEntityInterface
      */
-    public function getList(): ?UserList
+    public function getUser(): ?UserEntityInterface
     {
-        return $this->list;
+        return $this->user;
     }
 
     /**
-     * User setter.
+     * Set user.
      *
-     * @param ?User $user User object
+     * @param ?UserEntityInterface $user User object
      *
-     * @return ResourceTags
+     * @return ResourceTagsEntityInterface
      */
-    public function setUser(?User $user): ResourceTags
+    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface
     {
         $this->user = $user;
         return $this;
     }
 
     /**
-     * User getter
-     *
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    /**
-     * Posted setter.
-     *
-     * @param ?DateTime $dateTime Posted date
-     *
-     * @return ResourceTags
-     */
-    public function setPosted(?DateTime $dateTime): ResourceTags
-    {
-        $this->posted = $dateTime;
-        return $this;
-    }
-
-    /**
-     * Posted getter
+     * Get created date.
      *
      * @return DateTime
      */
-    public function getPosted(): ?DateTime
+    public function getPosted(): DateTime
     {
         return $this->posted;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return ResourceTagsEntityInterface
+     */
+    public function setPosted(DateTime $dateTime): ResourceTagsEntityInterface
+    {
+        $this->posted = $dateTime;
+        return $this;
     }
 }

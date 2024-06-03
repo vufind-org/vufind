@@ -209,7 +209,7 @@ class UserResourceService extends AbstractDbService implements
             $result = $this->createUserResource()
                 ->setResource($resource)
                 ->setUser($user)
-                ->setList($list);
+                ->setUserList($list);
         }
         // Update the notes:
         $result->setNotes($notes);

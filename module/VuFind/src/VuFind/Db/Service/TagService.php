@@ -152,7 +152,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
                 ->setResource($resource)
                 ->setTag($tag);
             if (null !== $list) {
-                $row->setList($list);
+                $row->setUserList($list);
             }
             if (null !== $user) {
                 $row->setUser($user);
@@ -1134,7 +1134,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
                 $target,
                 $current->getResource(),
                 $current->getUser(),
-                $current->getList(),
+                $current->getUserList(),
                 $current->getPosted()
             );
 
