@@ -29,6 +29,19 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
+use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+
 /**
  * Row Definition for resource_tags
  *
@@ -37,7 +50,7 @@ namespace VuFind\Db\Row;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
- * 
+ *
  * @property int    $id
  * @property int    $resource_id
  * @property int    $tag_id
@@ -45,8 +58,14 @@ namespace VuFind\Db\Row;
  * @property int    $user_id
  * @property string $posted
  */
-class ResourceTags extends RowGateway implements \VuFind\Db\Entity\ResourceTagsEntityInterface
+class ResourceTags extends RowGateway implements
+    \VuFind\Db\Entity\ResourceTagsEntityInterface,
+    \VuFind\Db\Table\DbTableAwareInterface,
+    DbServiceAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -82,36 +101,36 @@ class ResourceTags extends RowGateway implements \VuFind\Db\Entity\ResourceTagsE
     /**
      * Set resource.
      *
-     * @param ResourceEntityInterface $resource_id Resource
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return ResourceTagsEntityInterface
      */
     public function setResource(ResourceEntityInterface $resource): ResourceTagsEntityInterface
     {
-        $this->resource_id = $resource?->getId();
+        $this->resource_id = $resource->getId();
         return $this;
     }
-    
+
     /**
      * Get tag.
      *
-     * @return ?TagsEntityInterface
+     * @return TagsEntityInterface
      */
-    public function getTag(): ?TagsEntityInterface
+    public function getTag(): TagsEntityInterface
     {
         return $this->tag_id
-        ? $this->getDbServiceManager()->get(TagServiceInterface::class)->getTagById($this->tag_id)
+        ? $this->getDbServiceManager()->get(TagServiceInterface::class)->getForResource($this->tag_id)
         : null;
     }
 
     /**
      * Set tag.
      *
-     * @param ?TagsEntityInterface $tag User
+     * @param TagsEntityInterface $tag Tag
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setTag(?TagsEntityInterface $tag): ResourceTagsEntityInterface
+    public function setTag(TagsEntityInterface $tag): ResourceTagsEntityInterface
     {
         $this->tag_id = $tag->getId();
         return $this;
@@ -132,7 +151,7 @@ class ResourceTags extends RowGateway implements \VuFind\Db\Entity\ResourceTagsE
     /**
      * Set user list.
      *
-     * @param UserListEntityInterface $list_id User list
+     * @param UserListEntityInterface $list User list
      *
      * @return ResourceTagsEntityInterface
      */
@@ -145,23 +164,23 @@ class ResourceTags extends RowGateway implements \VuFind\Db\Entity\ResourceTagsE
     /**
      * Get user.
      *
-     * @return ?UserEntityInterface
+     * @return UserEntityInterface
      */
-    public function getUser(): ?UserEntityInterface
+    public function getUser(): UserEntityInterface
     {
         return $this->user_id
-            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-            : null;
+        ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
+        : null;
     }
 
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User
+     * @param UserEntityInterface $user User
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface
+    public function setUser(UserEntityInterface $user): ResourceTagsEntityInterface
     {
         $this->user_id = $user?->getId();
         return $this;

@@ -59,27 +59,27 @@ interface ResourceTagsEntityInterface extends EntityInterface
     /**
      * Set resource.
      *
-     * @param ResourceEntityInterface $resource_id Resource
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setResource(ResourceEntityInterface $resource_id): ResourceTagsEntityInterface;
-    
+    public function setResource(ResourceEntityInterface $resource): ResourceTagsEntityInterface;
+
     /**
      * Get tag.
      *
-     * @return ?TagsEntityInterface
+     * @return TagsEntityInterface
      */
-    public function getTag(): ?TagsEntityInterface;
+    public function getTag(): TagsEntityInterface;
 
     /**
      * Set tag.
      *
-     * @param ?TagsEntityInterface $user User
+     * @param TagsEntityInterface $tag Tag
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setTag(?TagsEntityInterface $tag_id): ResourceTagsEntityInterface;
+    public function setTag(TagsEntityInterface $tag): ResourceTagsEntityInterface;
 
     /**
      * Get user list.
@@ -91,27 +91,27 @@ interface ResourceTagsEntityInterface extends EntityInterface
     /**
      * Set user list.
      *
-     * @param UserListEntityInterface $list_id User list
+     * @param UserListEntityInterface $list User list
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUserList(UserListEntityInterface $list_id): ResourceTagsEntityInterface;
+    public function setUserList(UserListEntityInterface $list): ResourceTagsEntityInterface;
 
     /**
      * Get user.
      *
-     * @return ?UserEntityInterface
+     * @return UserEntityInterface
      */
-    public function getUser(): ?UserEntityInterface;
+    public function getUser(): UserEntityInterface;
 
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User
+     * @param UserEntityInterface $user User
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface;
+    public function setUser(UserEntityInterface $user): ResourceTagsEntityInterface;
 
     /**
      * Get created date.
