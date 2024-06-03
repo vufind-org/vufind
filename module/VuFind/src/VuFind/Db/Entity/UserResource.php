@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -133,94 +134,127 @@ class UserResource implements UserResourceEntityInterface
     }
 
     /**
-     * Notes setter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @param string $notes Notes
-     *
-     * @return UserResource
+     * @return ?int
      */
-    public function setNotes(string $notes): UserResource
+    public function getId(): ?int
     {
-        $this->notes = $notes;
-        return $this;
+        return $this->id;
     }
 
     /**
-     * Notes getter
+     * Get user.
      *
-     * @return string
+     * @return UserEntityInterface
      */
-    public function getNotes(): string
+    public function getUser(): UserEntityInterface
     {
-        return $this->notes;
+        return $this->user;
     }
 
     /**
-     * User setter
+     * Set user.
      *
-     * @param User $user User
+     * @param UserEntityInterface $user User
      *
-     * @return UserResource
+     * @return UserResourceEntityInterface
      */
-    public function setUser(User $user): UserResource
+    public function setUser(UserEntityInterface $user): UserResourceEntityInterface
     {
         $this->user = $user;
         return $this;
     }
 
     /**
-     * User getter
+     * Get resource.
      *
-     * @return User
+     * @return ResourceEntityInterface
      */
-    public function getUser(): User
+    public function getResource(): ResourceEntityInterface
     {
-        return $this->user;
+        return $this->resource;
     }
 
     /**
-     * User List setter
+     * Set resource.
      *
-     * @param UserList $list User List
+     * @param ResourceEntityInterface $resource Resource
      *
-     * @return UserResource
+     * @return UserResourceEntityInterface
      */
-    public function setUserList(UserList $list): UserResource
-    {
-        $this->list = $list;
-        return $this;
-    }
-
-    /**
-     * User List getter
-     *
-     * @return UserList
-     */
-    public function getUserList(): UserList
-    {
-        return $this->list;
-    }
-
-    /**
-     * Resource setter
-     *
-     * @param Resource $resource Resource
-     *
-     * @return UserResource
-     */
-    public function setResource(Resource $resource): UserResource
+    public function setResource(ResourceEntityInterface $resource): UserResourceEntityInterface
     {
         $this->resource = $resource;
         return $this;
     }
 
     /**
-     * Resource getter
+     * Get user list.
      *
-     * @return Resource
+     * @return UserListEntityInterface
      */
-    public function getResource(): Resource
+    public function getUserList(): UserListEntityInterface
     {
-        return $this->resource;
+        return $this->list;
+    }
+
+    /**
+     * Set user list.
+     *
+     * @param ?UserListEntityInterface $list User List
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setUserList(?UserListEntityInterface $list): UserResourceEntityInterface
+    {
+        $this->list = $list;
+        return $this;
+    }
+
+    /**
+     * Get notes.
+     *
+     * @return ?string
+     */
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    /**
+     * Set notes.
+     *
+     * @param ?string $notes Notes associated with the resource
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setNotes(?string $notes): UserResourceEntityInterface
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    /**
+     * Get saved date.
+     *
+     * @return DateTime
+     */
+    public function getSaved(): DateTime
+    {
+        return $this->saved;
+    }
+
+    /**
+     * Set saved date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function setSaved(DateTime $dateTime): UserResourceEntityInterface
+    {
+        $this->saved = $dateTime;
+        return $this;
     }
 }
