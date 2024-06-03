@@ -69,7 +69,7 @@ class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntit
     }
 
     /**
-     * Get shortened URL.
+     * Get the path of the URL.
      *
      * @return string
      */
@@ -79,9 +79,9 @@ class Shortlinks extends RowGateway implements \VuFind\Db\Entity\ShortlinksEntit
     }
 
     /**
-     * Set shortened URL.
+     * Set the path (e.g. /Search/Results?lookfor=foo) of the URL being shortened; shortened URLs are always assumed to be within the hostname where VuFind is running.
      *
-     * @param string $path Shortened URL
+     * @param string $path Path
      *
      * @return ShortlinksEntityInterface
      */
