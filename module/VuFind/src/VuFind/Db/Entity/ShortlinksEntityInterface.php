@@ -57,7 +57,8 @@ interface ShortlinksEntityInterface extends EntityInterface
     public function getPath(): string;
 
     /**
-     * Set the path (e.g. /Search/Results?lookfor=foo) of the URL being shortened; shortened URLs are always assumed to be within the hostname where VuFind is running.
+     * Set the path (e.g. /Search/Results?lookfor=foo) of the URL being shortened;
+     * shortened URLs are always assumed to be within the hostname where VuFind is running.
      *
      * @param string $path Path
      *
