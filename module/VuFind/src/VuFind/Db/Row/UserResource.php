@@ -105,7 +105,7 @@ class UserResource extends RowGateway implements
      */
     public function setUser(UserEntityInterface $user): UserResourceEntityInterface
     {
-        $this->user_id = $user?->getId();
+        $this->user_id = $user->getId();
         return $this;
     }
 
