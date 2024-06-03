@@ -109,7 +109,7 @@ class Ratings implements RatingsEntityInterface
     protected $created = '2000-01-01 00:00:00';
 
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
@@ -121,64 +121,28 @@ class Ratings implements RatingsEntityInterface
     /**
      * Get user.
      *
-     * @return \VuFind\Db\Entity\User
+     * @return ?UserEntityInterface;
      */
-    public function getUser()
+    public function getUser(): ?UserEntityInterface
     {
         return $this->user;
     }
 
     /**
-     * User setter
+     * Set user.
      *
-     * @param User $user User
+     * @param ?UserEntityInterface $user User
      *
-     * @return Ratings
+     * @return RatingsEntityInterface
      */
-    public function setUser(User $user): Ratings
+    public function setUser(?UserEntityInterface $user): RatingsEntityInterface
     {
         $this->user = $user;
         return $this;
     }
 
     /**
-     * Rating setter
-     *
-     * @param int $rating Rating
-     *
-     * @return Ratings
-     */
-    public function setRating(int $rating): Ratings
-    {
-        $this->rating = $rating;
-        return $this;
-    }
-
-    /**
-     * Rating getter
-     *
-     * @return int
-     */
-    public function getRating(): int
-    {
-        return $this->rating;
-    }
-
-    /**
-     * Resource setter
-     *
-     * @param Resource $resource Resource
-     *
-     * @return Ratings
-     */
-    public function setResource(Resource $resource): Ratings
-    {
-        $this->resource = $resource;
-        return $this;
-    }
-
-    /**
-     * Resource getter
+     * Get resource.
      *
      * @return Resource
      */
@@ -188,25 +152,61 @@ class Ratings implements RatingsEntityInterface
     }
 
     /**
-     * Created setter.
+     * Set resource.
      *
-     * @param DateTime $dateTime Created date
+     * @param ResourceEntityInterface $resource Resource
      *
-     * @return UserList
+     * @return RatingsEntityInterface
      */
-    public function setCreated(DateTime $dateTime): Ratings
+    public function setResource(ResourceEntityInterface $resource): RatingsEntityInterface
     {
-        $this->created = $dateTime;
+        $this->resource = $resource;
         return $this;
     }
 
     /**
-     * Created getter
+     * Get rating.
+     *
+     * @return int
+     */
+    public function getRating(): int
+    {
+        return $this->rating;
+    }
+
+    /**
+     * Set rating.
+     *
+     * @param int $rating Rating
+     *
+     * @return RatingsEntityInterface
+     */
+    public function setRating(int $rating): RatingsEntityInterface
+    {
+        $this->rating = $rating;
+        return $this;
+    }
+
+    /**
+     * Get created date.
      *
      * @return DateTime
      */
     public function getCreated(): DateTime
     {
         return $this->created;
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return RatingsEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): RatingsEntityInterface
+    {
+        $this->created = $dateTime;
+        return $this;
     }
 }
