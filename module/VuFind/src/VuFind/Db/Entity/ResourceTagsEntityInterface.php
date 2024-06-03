@@ -52,18 +52,18 @@ interface ResourceTagsEntityInterface extends EntityInterface
     /**
      * Get resource.
      *
-     * @return ResourceEntityInterface
+     * @return ?ResourceEntityInterface
      */
-    public function getResource(): ResourceEntityInterface;
+    public function getResource(): ?ResourceEntityInterface;
 
     /**
      * Set resource.
      *
-     * @param ResourceEntityInterface $resource Resource
+     * @param ?ResourceEntityInterface $resource Resource
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setResource(ResourceEntityInterface $resource): ResourceTagsEntityInterface;
+    public function setResource(?ResourceEntityInterface $resource): ResourceTagsEntityInterface;
 
     /**
      * Get tag.
@@ -84,34 +84,34 @@ interface ResourceTagsEntityInterface extends EntityInterface
     /**
      * Get user list.
      *
-     * @return UserListEntityInterface
+     * @return ?UserListEntityInterface
      */
     public function getUserList(): UserListEntityInterface;
 
     /**
      * Set user list.
      *
-     * @param UserListEntityInterface $list User list
+     * @param ?UserListEntityInterface $list User list
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUserList(UserListEntityInterface $list): ResourceTagsEntityInterface;
+    public function setUserList(?UserListEntityInterface $list): ResourceTagsEntityInterface;
 
     /**
      * Get user.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
-    public function getUser(): UserEntityInterface;
+    public function getUser(): ?UserEntityInterface;
 
     /**
      * Set user.
      *
-     * @param UserEntityInterface $user User
+     * @param ?UserEntityInterface $user User
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUser(UserEntityInterface $user): ResourceTagsEntityInterface;
+    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface;
 
     /**
      * Get created date.

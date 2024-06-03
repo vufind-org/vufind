@@ -89,9 +89,9 @@ class ResourceTags extends RowGateway implements
     /**
      * Get resource.
      *
-     * @return ResourceEntityInterface
+     * @return ?ResourceEntityInterface
      */
-    public function getResource(): ResourceEntityInterface
+    public function getResource(): ?ResourceEntityInterface
     {
         return $this->resource_id
         ? $this->getDbServiceManager()->get(ResourceServiceInterface::class)->getResourceById($this->resource_id)
@@ -101,13 +101,13 @@ class ResourceTags extends RowGateway implements
     /**
      * Set resource.
      *
-     * @param ResourceEntityInterface $resource Resource
+     * @param ?ResourceEntityInterface $resource Resource
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setResource(ResourceEntityInterface $resource): ResourceTagsEntityInterface
+    public function setResource(?ResourceEntityInterface $resource): ResourceTagsEntityInterface
     {
-        $this->resource_id = $resource->getId();
+        $this->resource_id = $resource?->getId();
         return $this;
     }
 
@@ -139,9 +139,9 @@ class ResourceTags extends RowGateway implements
     /**
      * Get user list.
      *
-     * @return UserListEntityInterface
+     * @return ?UserListEntityInterface
      */
-    public function getUserList(): UserListEntityInterface
+    public function getUserList(): ?UserListEntityInterface
     {
         return $this->list_id
         ? $this->getDbServiceManager()->get(UserListServiceInterface::class)->getUserListById($this->list_id)
@@ -151,22 +151,22 @@ class ResourceTags extends RowGateway implements
     /**
      * Set user list.
      *
-     * @param UserListEntityInterface $list User list
+     * @param ?UserListEntityInterface $list User list
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUserList(UserListEntityInterface $list): ResourceTagsEntityInterface
+    public function setUserList(?UserListEntityInterface $list): ResourceTagsEntityInterface
     {
-        $this->list_id = $list->getId();
+        $this->list_id = $list?->getId();
         return $this;
     }
 
     /**
      * Get user.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
-    public function getUser(): UserEntityInterface
+    public function getUser(): ?UserEntityInterface
     {
         return $this->user_id
         ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
@@ -176,11 +176,11 @@ class ResourceTags extends RowGateway implements
     /**
      * Set user.
      *
-     * @param UserEntityInterface $user User
+     * @param ?UserEntityInterface $user User
      *
      * @return ResourceTagsEntityInterface
      */
-    public function setUser(UserEntityInterface $user): ResourceTagsEntityInterface
+    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface
     {
         $this->user_id = $user?->getId();
         return $this;
