@@ -137,9 +137,9 @@ class UserResource extends RowGateway implements
     /**
      * Get user list.
      *
-     * @return UserListEntityInterface
+     * @return ?UserListEntityInterface
      */
-    public function getUserList(): UserListEntityInterface
+    public function getUserList(): ?UserListEntityInterface
     {
         return $this->list_id
         ? $this->getDbServiceManager()->get(UserListServiceInterface::class)->getUserListById($this->list_id)
@@ -149,13 +149,13 @@ class UserResource extends RowGateway implements
     /**
      * Set user list.
      *
-     * @param UserListEntityInterface $list User list
+     * @param ?UserListEntityInterface $list User list
      *
      * @return UserResourceEntityInterface
      */
-    public function setUserList(UserListEntityInterface $list): UserResourceEntityInterface
+    public function setUserList(?UserListEntityInterface $list): UserResourceEntityInterface
     {
-        $this->list_id = $list->getId();
+        $this->list_id = $list?->getId();
         return $this;
     }
 

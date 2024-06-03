@@ -84,18 +84,18 @@ interface UserResourceEntityInterface extends EntityInterface
     /**
      * Get user list.
      *
-     * @return UserListEntityInterface
+     * @return ?UserListEntityInterface
      */
-    public function getUserList(): UserListEntityInterface;
+    public function getUserList(): ?UserListEntityInterface;
 
     /**
      * Set user list.
      *
-     * @param UserListEntityInterface $list User list
+     * @param ?UserListEntityInterface $list User list
      *
      * @return UserResourceEntityInterface
      */
-    public function setUserList(UserListEntityInterface $list): UserResourceEntityInterface;
+    public function setUserList(?UserListEntityInterface $list): UserResourceEntityInterface;
 
     /**
      * Get notes.
