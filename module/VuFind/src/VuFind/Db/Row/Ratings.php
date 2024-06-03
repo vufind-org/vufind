@@ -47,10 +47,10 @@ use VuFind\Db\Service\UserServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  *
- * @property int $id
- * @property string $user_id
- * @property string $resource_id
- * @property string $rating
+ * @property int    $id
+ * @property int    $user_id
+ * @property int    $resource_id
+ * @property int    $rating
  * @property string $created
  */
 class Ratings extends RowGateway implements
