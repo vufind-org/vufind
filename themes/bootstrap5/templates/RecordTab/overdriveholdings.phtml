@@ -52,7 +52,7 @@
         <?php endif; ?>
       </p>
 
-      <?php if ((!$checkedOut || $checkedOutResult->isMagazine) && ($supportsPatronActions || count($urls))): ?>
+      <?php if ((!$checkedOut || $checkedOutResult->isMagazine) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
         <?php if (($avail->data->copiesAvailable ?? 0) > 0): ?>
           <p>
             <a class="btn btn-primary checkout" data-lightbox title="<?=$this->transEsc('request_place_text')?>"
@@ -65,7 +65,7 @@
           <p>
         <?php endif; ?>
       <?php endif; ?>
-      <?php if ((!$checkedOut && !$hold) && ($supportsPatronActions || count($urls))): ?>
+      <?php if ((!$checkedOut && !$hold) && ($supportsPatronActions || isset($urls[0]['url']))): ?>
         <?php if (($avail->data->copiesAvailable ?? 0) == 0): ?>
           <p>
             <a class="btn btn-primary placehold" data-lightbox title="<?=$this->transEsc('request_place_texts')?>"
