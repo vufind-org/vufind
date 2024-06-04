@@ -95,7 +95,7 @@ class Search extends RowGateway implements
     }
 
     /**
-     * Get the search object from the row
+     * Get the search object from the row.
      *
      * @return \VuFind\Search\Minified
      */

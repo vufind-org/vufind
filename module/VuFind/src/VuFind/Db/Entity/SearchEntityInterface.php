@@ -130,7 +130,7 @@ interface SearchEntityInterface extends EntityInterface
     public function setSaved(int $saved): SearchEntityInterface;
 
     /**
-     * Get search object.
+     * Get the search object from the row.
      *
      * @return \VuFind\Search\Minified
      */
