@@ -50,13 +50,14 @@ class DatabaseTest extends TestCase
     /**
      * Get the object to test.
      *
-     * @param ShortlinksServiceInterface $service Database service object/mock
+     * @param ShortlinksServiceInterface $service   Database service object/mock
+     * @param string                     $algorithm Hashing algorithm
      *
      * @return Database
      */
-    public function getShortener(ShortlinksServiceInterface $service): Database
+    public function getShortener(ShortlinksServiceInterface $service, string $algorithm = 'md5'): Database
     {
-        return new Database('http://foo', $service, 'RAnD0mVuFindSa!t');
+        return new Database('http://foo', $service, 'RAnD0mVuFindSa!t', $algorithm);
     }
 
     /**
@@ -86,13 +87,35 @@ class DatabaseTest extends TestCase
     }
 
     /**
+     * Test that the shortener works correctly with legacy hashing.
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    public function testShortenerLegacy(): void
+    {
+        $hash = '1'; // expected hash
+        $entity = $this->createMock(ShortlinksEntityInterface::class);
+        $entity->method('getId')->willReturn(1);
+        $entity->method('getPath')->willReturn('/bar');
+        $entity->expects($this->once())->method('setHash')->with($hash)->willReturn($entity);
+        $entity->method('getHash')->willReturn($hash);
+        $service = $this->createMock(ShortlinksServiceInterface::class);
+        $service->expects($this->once())->method('createAndPersistEntityForPath')->with('/bar')->willReturn($entity);
+        $service->expects($this->once())->method('persistEntity')->with($entity);
+        $db = $this->getShortener($service, 'base62');
+        $this->assertEquals('http://foo/short/1', $db->shorten('http://foo/bar'));
+    }
+
+    /**
      * Test that resolve is supported.
      *
      * @return void
      *
      * @throws Exception
      */
-    public function testResolution()
+    public function testResolution(): void
     {
         $hash = '8ef580184';
         $entity = $this->createMock(ShortlinksEntityInterface::class);
@@ -110,7 +133,7 @@ class DatabaseTest extends TestCase
      *
      * @throws Exception
      */
-    public function testResolutionOfBadInput()
+    public function testResolutionOfBadInput(): void
     {
         $this->expectExceptionMessage('Shortlink could not be resolved: abcd12?');
 
