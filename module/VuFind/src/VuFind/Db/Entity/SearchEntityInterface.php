@@ -30,7 +30,6 @@
 namespace VuFind\Db\Entity;
 
 use DateTime;
-use \VuFind\Search\Minified;
 
 /**
  * Entity model interface for search table
@@ -52,39 +51,39 @@ interface SearchEntityInterface extends EntityInterface
 
     /**
      * Get user.
-     * 
+     *
      * @return int
      */
     public function getUserId(): int;
 
     /**
      * Set user.
-     * 
+     *
      * @param int $user User
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setUserId(int $user): SearchEntityInterface;
 
     /**
      * Get session.
-     * 
+     *
      * @return ?string
      */
     public function getSessionId(): ?string;
 
     /**
      * Set session.
-     * 
+     *
      * @param ?string $session_id Session id
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setSessionId(?string $session_id): SearchEntityInterface;
 
     /**
      * Get created.
-     * 
+     *
      * @return DateTime
      */
     public function getCreated(): DateTime;
@@ -116,80 +115,80 @@ interface SearchEntityInterface extends EntityInterface
 
     /**
      * Get saved.
-     * 
+     *
      * @return int
      */
     public function getSaved(): int;
 
     /**
      * Set saved.
-     * 
+     *
      * @param int $saved Saved
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setSaved(int $saved): SearchEntityInterface;
 
     /**
      * Get search object.
-     * 
+     *
      * @return \VuFind\Search\Minified
      */
     public function getSearchObject(): \VuFind\Search\Minified;
 
     /**
      * Set search object.
-     * 
+     *
      * @param \VuFind\Search\Minified $search_object Search object
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setSearchObject(\VuFind\Search\Minified $search_object): SearchEntityInterface;
 
     /**
      * Get checksum.
-     * 
+     *
      * @return ?int
      */
     public function getChecksum(): ?int;
 
     /**
      * Set checksum.
-     * 
+     *
      * @param ?int $checksum Checksum
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setChecksum(?int $checksum): SearchEntityInterface;
 
     /**
      * Get notification frequency.
-     * 
+     *
      * @return int
      */
     public function getNotificationFrequency(): int;
 
     /**
      * Set notification frequency.
-     * 
+     *
      * @param int $notification_frequency Notification frequency
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setNotificationFrequency(int $notification_frequency): SearchEntityInterface;
 
     /**
      * When was the last notification sent?
-     * 
+     *
      * @return DateTime
      */
     public function getLastNotificationSent(): DateTime;
 
     /**
      * Set when last notification was sent.
-     * 
+     *
      * @param DateTime $last_notification_sent Time when last notification was sent
-     * 
+     *
      * @return SearchEntityInterface
      */
     public function setLastNotificationSent(Datetime $last_notification_sent): SearchEntityInterface;
