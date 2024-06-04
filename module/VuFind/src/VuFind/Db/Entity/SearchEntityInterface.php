@@ -60,11 +60,11 @@ interface SearchEntityInterface extends EntityInterface
     /**
      * Set user.
      * 
-     * @param int $user_id User id
+     * @param int $user User
      * 
      * @return SearchEntityInterface
      */
-    public function setUserId(int $user_id): SearchEntityInterface;
+    public function setUserId(int $user): SearchEntityInterface;
 
     /**
      * Get session.
