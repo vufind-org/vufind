@@ -59,11 +59,11 @@ class RecordDataFormatterFactory implements FactoryInterface
 
     /**
      * The order in which groups of authors are displayed.
-     * 
+     *
      * The dictionary keys here correspond to the dictionary keys in the $labels
      * array in getAuthorFunction()
      *
-     * @var string[]
+     * @var array<string, int>
      */
     protected $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
 
