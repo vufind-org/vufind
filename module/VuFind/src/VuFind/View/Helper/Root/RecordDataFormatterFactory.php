@@ -214,7 +214,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             null,
             [
                 'itemPrefix' => '<span property="bookEdition">',
-                'itemSuffix' => '</span>'
+                'itemSuffix' => '</span>',
             ]
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
@@ -330,7 +330,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             null,
             [
                 'itemPrefix' => '<span property="bookEdition">',
-                'itemSuffix' => '</span>'
+                'itemSuffix' => '</span>',
             ]
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
@@ -397,7 +397,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             null,
             [
                 'itemPrefix' => '<span property="identifier">',
-                'itemSuffix' => '</span>'
+                'itemSuffix' => '</span>',
             ]
         );
         $spec->setLine('Related Items', 'getRelationshipNotes');
