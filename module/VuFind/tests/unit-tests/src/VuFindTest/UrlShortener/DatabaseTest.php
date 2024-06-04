@@ -30,12 +30,9 @@
 namespace VuFindTest\UrlShortener;
 
 use Exception;
-use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\Driver\ConnectionInterface;
-use Laminas\Db\Adapter\Driver\DriverInterface;
-use Laminas\Db\ResultSet\ResultSet;
 use PHPUnit\Framework\TestCase;
-use VuFind\Db\Table\Shortlinks;
+use VuFind\Db\Entity\ShortlinksEntityInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\UrlShortener\Database;
 
 /**
@@ -53,28 +50,13 @@ class DatabaseTest extends TestCase
     /**
      * Get the object to test.
      *
-     * @param object $table Database table object/mock
+     * @param ShortlinksServiceInterface $service Database service object/mock
      *
      * @return Database
      */
-    public function getShortener($table)
+    public function getShortener(ShortlinksServiceInterface $service): Database
     {
-        return new Database('http://foo', $table, 'RAnD0mVuFindSa!t');
-    }
-
-    /**
-     * Get the mock table object.
-     *
-     * @param array $methods Methods to mock.
-     *
-     * @return object
-     */
-    public function getMockTable($methods)
-    {
-        return $this->getMockBuilder(Shortlinks::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
-            ->getMock();
+        return new Database('http://foo', $service, 'RAnD0mVuFindSa!t');
     }
 
     /**
@@ -84,51 +66,22 @@ class DatabaseTest extends TestCase
      *
      * @throws Exception
      */
-    public function testShortener()
+    public function testShortener(): void
     {
-        $connection = $this->getMockBuilder(ConnectionInterface::class)
-            ->onlyMethods(
-                [
-                    'beginTransaction', 'commit', 'connect', 'getResource',
-                    'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
-                    'execute', 'getLastGeneratedValue',
-                ]
-            )->disableOriginalConstructor()
-            ->getMock();
-        $connection->expects($this->once())->method('beginTransaction');
-        $connection->expects($this->once())->method('commit');
-        $driver = $this->getMockBuilder(DriverInterface::class)
-            ->onlyMethods(
-                [
-                    'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
-                    'createStatement', 'createResult', 'getPrepareType',
-                    'formatParameterName', 'getLastGeneratedValue',
-                ]
-            )->disableOriginalConstructor()
-            ->getMock();
-        $driver->expects($this->once())->method('getConnection')
-            ->will($this->returnValue($connection));
-        $adapter = $this->getMockBuilder(Adapter::class)
-            ->onlyMethods(['getDriver'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $adapter->expects($this->once())->method('getDriver')
-            ->will($this->returnValue($driver));
-        $table = $this->getMockTable(['insert', 'select', 'getAdapter']);
-        $table->expects($this->once())->method('insert')
-            ->with($this->equalTo(['path' => '/bar', 'hash' => 'a1e7812e2']));
-        $table->expects($this->once())->method('getAdapter')
-            ->will($this->returnValue($adapter));
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count', 'current'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(0));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => 'a1e7812e2']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
+        $hash = 'a1e7812e2'; // expected hash
+        $entity = $this->createMock(ShortlinksEntityInterface::class);
+        $entity->method('getId')->willReturn(1);
+        $entity->expects($this->once())->method('setPath')->with('/bar')->willReturn($entity);
+        $entity->method('getPath')->willReturn('/bar');
+        $entity->expects($this->once())->method('setHash')->with($hash)->willReturn($entity);
+        $entity->method('getHash')->willReturn($hash);
+        $service = $this->createMock(ShortlinksServiceInterface::class);
+        $service->expects($this->once())->method('beginTransaction');
+        $service->expects($this->once())->method('getShortLinkByHash')->with($hash)->willReturn(null);
+        $service->expects($this->once())->method('createEntity')->willReturn($entity);
+        $service->expects($this->once())->method('persistEntity')->with($entity);
+        $service->expects($this->once())->method('commitTransaction');
+        $db = $this->getShortener($service);
         $this->assertEquals('http://foo/short/a1e7812e2', $db->shorten('http://foo/bar'));
     }
 
@@ -141,20 +94,13 @@ class DatabaseTest extends TestCase
      */
     public function testResolution()
     {
-        $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count', 'current'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(1));
-        $mockResults->expects($this->once())->method('current')
-            ->will($this->returnValue(['path' => '/bar', 'hash' => '8ef580184']));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => '8ef580184']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
-        $this->assertEquals('http://foo/bar', $db->resolve('8ef580184'));
+        $hash = '8ef580184';
+        $entity = $this->createMock(ShortlinksEntityInterface::class);
+        $entity->method('getPath')->willReturn('/bar');
+        $service = $this->createMock(ShortlinksServiceInterface::class);
+        $service->expects($this->once())->method('getShortLinkByHash')->with($hash)->willReturn($entity);
+        $db = $this->getShortener($service);
+        $this->assertEquals('http://foo/bar', $db->resolve($hash));
     }
 
     /**
@@ -168,42 +114,9 @@ class DatabaseTest extends TestCase
     {
         $this->expectExceptionMessage('Shortlink could not be resolved: abcd12?');
 
-        $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(0));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => 'abcd12?']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
+        $service = $this->createMock(ShortlinksServiceInterface::class);
+        $service->expects($this->once())->method('getShortLinkByHash')->with('abcd12?')->willReturn(null);
+        $db = $this->getShortener($service);
         $db->resolve('abcd12?');
-    }
-
-    /**
-     * Test that resolve errors correctly when given bad input
-     *
-     * @return void
-     *
-     * @throws Exception
-     */
-    public function testResolutionOfOldIds()
-    {
-        $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count', 'current'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(1));
-        $mockResults->expects($this->once())->method('current')
-            ->will($this->returnValue(['path' => '/bar', 'hash' => 'A']));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => 'A']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
-        $this->assertEquals('http://foo/bar', $db->resolve('A'));
     }
 }
