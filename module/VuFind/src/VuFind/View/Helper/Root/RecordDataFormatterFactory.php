@@ -58,6 +58,16 @@ class RecordDataFormatterFactory implements FactoryInterface
     protected $schemaOrgHelper = null;
 
     /**
+     * The order in which groups of authors are displayed.
+     * 
+     * The dictionary keys here correspond to the dictionary keys in the $labels
+     * array in getAuthorFunction()
+     *
+     * @var string[]
+     */
+    protected $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -120,8 +130,6 @@ class RecordDataFormatterFactory implements FactoryInterface
                 'corporate' => 'creator',
                 'secondary' => 'contributor',
             ];
-            // Lookup array of sort orders.
-            $order = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
 
             // Sort the data:
             $final = [];
@@ -130,7 +138,7 @@ class RecordDataFormatterFactory implements FactoryInterface
                     'label' => $labels[$type][count($values) == 1 ? 0 : 1],
                     'values' => [$type => $values],
                     'options' => [
-                        'pos' => $options['pos'] + $order[$type],
+                        'pos' => $options['pos'] + $this->order[$type],
                         'renderType' => 'RecordDriverTemplate',
                         'template' => 'data-authors.phtml',
                         'context' => [
@@ -204,8 +212,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Edition',
             'getEdition',
             null,
-            ['itemPrefix' => '<span property="bookEdition">',
-             'itemSuffix' => '</span>']
+            [
+                'itemPrefix' => '<span property="bookEdition">',
+                'itemSuffix' => '</span>'
+            ]
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -318,8 +328,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Edition',
             'getEdition',
             null,
-            ['itemPrefix' => '<span property="bookEdition">',
-             'itemSuffix' => '</span>']
+            [
+                'itemPrefix' => '<span property="bookEdition">',
+                'itemSuffix' => '</span>'
+            ]
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -383,8 +395,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'DOI',
             'getCleanDOI',
             null,
-            ['itemPrefix' => '<span property="identifier">',
-             'itemSuffix' => '</span>']
+            [
+                'itemPrefix' => '<span property="identifier">',
+                'itemSuffix' => '</span>'
+            ]
         );
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');
