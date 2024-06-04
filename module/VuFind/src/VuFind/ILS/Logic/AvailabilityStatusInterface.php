@@ -103,11 +103,16 @@ interface AvailabilityStatusInterface
     /**
      * Get extra status information.
      *
-     * This array is used as tokens when the status description is being translated.
-     *
      * @return array
      */
     public function getExtraStatusInformation(): array;
+
+    /**
+     * Get status description tokens. Used when status description is being translated.
+     *
+     * @return array
+     */
+    public function getStatusDescriptionTokens(): array;
 
     /**
      * Get schema.org availability URI.

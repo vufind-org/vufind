@@ -349,7 +349,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         }
         if (str_starts_with($statusMsg, 'transit_to')) {
             $item['use_status_class'] = true;
-            $item['extraStatusInformation'] = ['%%location%%' => 'pick up location 1', '%%date%%' => '01.01.2001'];
+            $item['extraStatusInformation'] = ['location' => 'pick up location 1', 'date' => '01.01.2001'];
         }
         $item['status'] = $statusMsg;
         $item['location'] = 'main';
