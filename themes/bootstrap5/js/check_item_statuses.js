@@ -154,31 +154,44 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     });
   }
 
-  function makeItemStatusQueue({
-    url = "/AJAX/JSON?method=getItemStatuses",
+  function getStatusUrl(handlerName) {
+    if (handlerName === "overdrive") {
+      return "/Overdrive/getStatus";
+    }
+    return "/AJAX/JSON?method=getItemStatuses";
+  }
+
+  function getItemStatusPromise({
+    handlerName = "ils",
     acceptType = "application/json",
     method = "POST",
+  } = {}) {
+    return function runFetchItem(items) {
+      let body = new URLSearchParams();
+      items.forEach((item) => {
+        body.append("id[]", item.id);
+      });
+      body.append("sid", VuFind.getCurrentSearchId());
+      return fetch(
+        VuFind.path + getStatusUrl(handlerName),
+        {
+          method: method,
+          headers: {
+            'Accept': acceptType,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          body: body
+        }
+      );
+    };
+  }
+
+  function makeItemStatusQueue({
+    handlerName = "ils",
     delay = 200,
   } = {}) {
     return new AjaxRequestQueue({
-      run: function runFetchItem(items) {
-        let body = new URLSearchParams();
-        items.forEach((item) => {
-          body.append("id[]", item.id);
-        });
-        body.append("sid", VuFind.getCurrentSearchId());
-        return fetch(
-          VuFind.path + url,
-          {
-            method: method,
-            headers: {
-              'Accept': acceptType,
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            body: body
-          }
-        );
-      },
+      run: getItemStatusPromise({handlerName: handlerName}),
       success: itemStatusAjaxSuccess,
       failure: itemStatusAjaxFailure,
       delay,
@@ -188,7 +201,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   //store the handlers in a "hash" obj
   var checkItemHandlers = {
     ils: makeItemStatusQueue(),
-    overdrive: makeItemStatusQueue({ url: "/Overdrive/getStatus" }),
+    overdrive: makeItemStatusQueue({handlerName: "overdrive"}),
   };
 
   function checkItemStatus(el) {
@@ -231,7 +244,18 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
 
     // queue the element into the queue
-    checkItemHandlers[handlerName].add({ el, id: hiddenIdEl.value });
+    let payload = { el, id: hiddenIdEl.value };
+    if (VuFind.config.get('item-status:load-batch-wise', true)) {
+      checkItemHandlers[handlerName].add(payload);
+    } else {
+      let runFunc = getItemStatusPromise({handlerName: handlerName});
+      runFunc([payload])
+        .then((...res) => itemStatusAjaxSuccess([payload], ...res))
+        .catch((...error) => {
+          console.error(...error);
+          itemStatusAjaxFailure([payload], ...error);
+        });
+    }
   }
 
   function checkAllItemStatuses(container = document) {
@@ -247,7 +271,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   function updateContainer(params) {
     let container = params.container;
-    if (VuFind.isPrinting()) {
+    if (VuFind.isPrinting() || !(VuFind.config.get('item-status:load-observable-only', true))) {
       checkAllItemStatuses(container);
     } else {
       VuFind.observerManager.createIntersectionObserver(
