@@ -733,7 +733,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 if ($status['use_status_class'] ?? false) {
                     $availability = $status['availability'] ?? false;
                     if ($status['use_unknown_message'] ?? false) {
-                        $availability = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
+                        $availability = AvailabilityStatusInterface::STATUS_UNKNOWN;
                     }
                     $status['availability'] = new AvailabilityStatus(
                         $availability,

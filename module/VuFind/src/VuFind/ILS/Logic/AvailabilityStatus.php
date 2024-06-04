@@ -122,15 +122,13 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     /**
      * Get extra status information.
      *
+     * This array is used as tokens when the status description is being translated.
+     *
      * @return array
      */
     public function getExtraStatusInformation(): array
     {
-        $res = [];
-        foreach ($this->extraStatusInformation as $key => $value) {
-            $res['%%' . $key . '%%'] = $value;
-        }
-        return $res;
+        return $this->extraStatusInformation;
     }
 
     /**
