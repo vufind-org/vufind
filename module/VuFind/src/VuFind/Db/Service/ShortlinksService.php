@@ -118,4 +118,14 @@ class ShortlinksService extends AbstractDbService implements DbTableAwareInterfa
     {
         return $this->getDbTable('shortlinks')->select(['hash' => $hash])->current();
     }
+
+    /**
+     * Get rows with missing hashes (for legacy upgrading).
+     *
+     * @return ShortlinksEntityInterface[]
+     */
+    public function getShortLinksWithMissingHashes(): array
+    {
+        return iterator_to_array($this->getDbTable('shortlinks')->select(['hash' => null]));
+    }
 }

@@ -92,4 +92,11 @@ interface ShortlinksServiceInterface extends DbServiceInterface
      * @return ?ShortlinksEntityInterface
      */
     public function getShortLinkByHash(string $hash): ?ShortlinksEntityInterface;
+
+    /**
+     * Get rows with missing hashes (for legacy upgrading).
+     *
+     * @return ShortlinksEntityInterface[]
+     */
+    public function getShortLinksWithMissingHashes(): array;
 }
