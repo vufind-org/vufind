@@ -138,7 +138,7 @@ class RecordDataFormatterFactory implements FactoryInterface
                     'label' => $labels[$type][count($values) == 1 ? 0 : 1],
                     'values' => [$type => $values],
                     'options' => [
-                        'pos' => $options['pos'] + $this->order[$type],
+                        'pos' => $options['pos'] + $this->authorOrder[$type],
                         'renderType' => 'RecordDriverTemplate',
                         'template' => 'data-authors.phtml',
                         'context' => [
