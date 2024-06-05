@@ -509,6 +509,7 @@
 
     <phingcall target="import_biblios" />
     <phingcall target="import_authorities" />
+    <phingcall target="delete_fake_records" />
     <phingcall target="build_alphabrowse" />
   </target>
 
@@ -709,6 +710,11 @@ return [
     </foreach>
   </target>
 
+  <!-- Delete some fake record IDs so we have deleted records to test with -->
+  <target name="delete_fake_records" description="delete fake records">
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} php ${srcdir}/public/index.php util/deletes ${srcdir}/tests/data/fake-deleted-ids.txt flat" checkreturn="true" passthru="true" />
+  </target>
+
   <!-- Build alphabrowse index -->
   <target name="build_alphabrowse" description="build the alphabrowse index">
     <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/index-alphabetic-browse.sh" passthru="true" />
@@ -871,6 +877,7 @@ ${git_status}
 
     <phingcall target="configure_install" />
     <phingcall target="setup_database" />
+    <phingcall target="delete_fake_records" />
   </target>
 
   <!-- Prepare VuFind for distribution -->

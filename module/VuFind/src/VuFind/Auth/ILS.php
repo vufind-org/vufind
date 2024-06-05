@@ -32,6 +32,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -318,7 +319,8 @@ class ILS extends AbstractBase
             $user = $userService->getUserByField('cat_id', $info['id']);
             if (empty($user)) {
                 $user = $this->getOrCreateUserByUsername($info[$usernameField]);
-                $user->saveCatalogId($info['id']);
+                $user->setCatId($info['id']);
+                $this->getDbService(UserServiceInterface::class)->persistEntity($user);
             }
         } else {
             $user = $this->getOrCreateUserByUsername($info[$usernameField]);

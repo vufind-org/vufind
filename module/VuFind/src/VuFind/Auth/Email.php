@@ -30,6 +30,7 @@
 namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -149,7 +150,8 @@ class Email extends AbstractBase
             $user = $this->getUserService()->getUserByField('cat_id', $info['id']);
             if (empty($user)) {
                 $user = $this->getOrCreateUserByUsername($info['email']);
-                $user->saveCatalogId($info['id']);
+                $user->setCatId($info['id']);
+                $this->getDbService(UserServiceInterface::class)->persistEntity($user);
             }
         } else {
             $user = $this->getOrCreateUserByUsername($info['email']);

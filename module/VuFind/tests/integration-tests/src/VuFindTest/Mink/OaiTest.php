@@ -55,7 +55,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         'OAI' => [
             'identifier' => 'vufind.org',
             'repository_name' => 'test repo',
-            'page_size' => 10,
+            'page_size' => 15,
         ],
     ];
 
@@ -138,14 +138,15 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
 
-        // Get the first page of results. We expect 20 total results because we only turned on change
-        // tracking in the demo setup for one 20-record file; if more change tracking is added in
-        // future, this test will need to be adjusted.
+        // Get the first page of results. We expect 22 total results because we only turned on change
+        // tracking in the demo setup for one 20-record file, plus we've created 2 fake deleted records
+        // as part of our standard setup procedure; if more change tracking is added in future, this
+        // test will need to be adjusted.
         $rawXml = $this
             ->httpGet($this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&metadataPrefix=oai_dc')
             ->getBody();
         $xml = simplexml_load_string($rawXml);
-        $resultSetSize = 20;
+        $resultSetSize = 22;
         $pageSize = $this->defaultOaiConfig['OAI']['page_size'];
         $resumptionAttributes = $xml->ListRecords->resumptionToken->attributes();
         $this->assertCount($pageSize, $xml->ListRecords->record);
@@ -154,6 +155,11 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         $resumptionToken = (string)$xml->ListRecords->resumptionToken;
         $firstPageFirstId = (string)$xml->ListRecords->record[0]->header->identifier;
         $this->assertStringStartsWith('oai:vufind.org:', $firstPageFirstId);
+
+        // Assert that only the first two records are marked deleted:
+        $this->assertEquals('deleted', (string)$xml->ListRecords->record[0]->header->attributes());
+        $this->assertEquals('deleted', (string)$xml->ListRecords->record[1]->header->attributes());
+        $this->assertEquals('', (string)$xml->ListRecords->record[2]->header->attributes());
 
         // Now get the second page of results, using the resumption token from the first. Make sure
         // the results are different than before by comparing first record IDs.
