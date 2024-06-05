@@ -116,6 +116,8 @@ VuFind.register("sticky_elements", function StickyElements() {
       return;
     }
 
+    let resizeObserver = new ResizeObserver(calculateStyles);
+
     _stickyElements.forEach(
       (stickyElement) => {
         let placeholder = document.createElement('div');
@@ -135,6 +137,8 @@ VuFind.register("sticky_elements", function StickyElements() {
         setPlaceholderStyle(stickyElement);
         stickyElement.parentNode.style.backgroundColor = getInheritedBackgroundColor(stickyElement.parentNode);
         stickyElement.previousSibling.style.backgroundColor = getInheritedBackgroundColor(stickyElement);
+
+        resizeObserver.observe(stickyElement);
       }
     );
     handleStickyElements(true);
