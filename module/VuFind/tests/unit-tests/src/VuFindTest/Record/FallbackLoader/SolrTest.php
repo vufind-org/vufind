@@ -30,6 +30,7 @@
 
 namespace VuFindTest\Record\FallbackLoader;
 
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Solr;
 
 /**
@@ -54,8 +55,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $record->expects($this->once())->method('setPreviousUniqueId')
             ->with($this->equalTo('oldId'));
-        $record->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue('newId'));
+        $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
             ['recordCount' => 1]
         );
@@ -76,8 +76,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $search->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->will($this->returnValue($commandObj));
-        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
-            ->disableOriginalConstructor()->getMock();
+        $resourceService = $this->createMock(\VuFind\Db\Service\ResourceService::class);
         $resourceService->expects($this->once())->method('updateRecordId')
             ->with(
                 $this->equalTo('oldId'),
@@ -97,9 +96,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
-            ->disableOriginalConstructor()->getMock();
-        $loader = new Solr($resourceService, $search, null);
+        $loader = new Solr($this->createMock(ResourceServiceInterface::class), $search, null);
         $this->assertCount(0, $loader->load(['oldId']));
     }
 }

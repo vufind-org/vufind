@@ -62,7 +62,7 @@ class Summon extends AbstractFallbackLoader
      */
     protected function fetchSingleRecord($id)
     {
-        $resource = $this->resourceService->findResource($id, 'Summon');
+        $resource = $this->resourceService->getResourceByRecordId($id, 'Summon');
         if ($resource && ($extra = json_decode($resource->getExtraMetadata(), true))) {
             $bookmark = $extra['bookmark'] ?? '';
             if (strlen($bookmark) > 0) {

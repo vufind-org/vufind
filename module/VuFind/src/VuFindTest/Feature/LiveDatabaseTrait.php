@@ -34,6 +34,7 @@ namespace VuFindTest\Feature;
 use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Table\Gateway;
 use VuFind\Db\Table\PluginManager as TableManager;
+use VuFind\Record\ResourcePopulator;
 use VuFindTest\Container\MockContainer;
 
 /**
@@ -201,7 +202,7 @@ trait LiveDatabaseTrait
                 \Laminas\Db\Adapter\Adapter::class,
                 $adapterFactory->getAdapter()
             );
-            $container->set(\VuFind\Tags::class, new \VuFind\Tags());
+            $container->set(\VuFind\Tags::class, new \VuFind\Tags($container->get(ResourcePopulator::class)));
             $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
             $container->set(
                 \VuFind\Db\Row\PluginManager::class,

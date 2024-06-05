@@ -48,7 +48,10 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RatingsService extends AbstractDbService implements DbServiceAwareInterface, LoggerAwareInterface
+class RatingsService extends AbstractDbService implements
+    DbServiceAwareInterface,
+    LoggerAwareInterface,
+    RatingsServiceInterface
 {
     use DbServiceAwareTrait;
     use LoggerAwareTrait;
@@ -64,10 +67,9 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
      */
     public function getForResource(string $id, string $source, ?int $userId): array
     {
-        $resource = $this->getDbService(ResourceService::class)
-            ->findResource($id, $source, false);
-
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return [
                 'count' => 0,
                 'rating' => 0,
@@ -116,10 +118,9 @@ class RatingsService extends AbstractDbService implements DbServiceAwareInterfac
             $result['groups'][$key] = 0;
         }
 
-        $resource = $this->getDbService(ResourceService::class)
-            ->findResource($id, $source, false);
-
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return $result;
         }
         $dql = 'SELECT COUNT(r.id) AS count, r.rating AS rating '

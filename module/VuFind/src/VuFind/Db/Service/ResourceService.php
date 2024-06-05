@@ -82,53 +82,6 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Look up a row for the specified resource.
-     *
-     * @param string                            $id     Record ID to look up
-     * @param string                            $source Source of record to look up
-     * @param bool                              $create If true, create the row if
-     * it does not yet exist.
-     * @param \VuFind\RecordDriver\AbstractBase $driver A record driver for the
-     * resource being created (optional -- improves efficiency if provided, but will
-     * be auto-loaded as needed if left null).
-     *
-     * @return Resource|null Matching row if found or created, null
-     * otherwise.
-     */
-    public function findResource(
-        $id,
-        $source = DEFAULT_SEARCH_BACKEND,
-        $create = true,
-        $driver = null
-    ) {
-        if (empty($id)) {
-            throw new \Exception('Resource ID cannot be empty');
-        }
-        $dql = 'SELECT r '
-            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
-            . 'WHERE r.recordId = :id AND r.source = :source';
-        $parameters['id'] = $id;
-        $parameters['source'] = $source;
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result = $query->getResult();
-
-        if (empty($result) && $create) {
-            try {
-                $resourcePopulator = ($this->resourcePopulatorLoader)();
-                $resource = $driver
-                    ? $resourcePopulator->createAndPersistResourceForDriver($driver)
-                    : $resourcePopulator->createAndPersistResourceForRecordId($id, $source);
-            } catch (\Exception $e) {
-                $this->logError('Could not save resource: ' . $e->getMessage());
-                return null;
-            }
-            return $resource;
-        }
-        return current($result);
-    }
-
-    /**
      * Lookup and return a resource.
      *
      * @param int $id Identifier value
@@ -235,6 +188,19 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
+     * Retrieve a single resource row by record ID/source. Return null if it does not exist.
+     *
+     * @param string $id     Record ID
+     * @param string $source Record source
+     *
+     * @return ?ResourceEntityInterface
+     */
+    public function getResourceByRecordId(string $id, string $source = DEFAULT_SEARCH_BACKEND): ?ResourceEntityInterface
+    {
+        return current($this->getResourcesByRecordIds([$id], $source)) ?: null;
+    }
+
+    /**
      * Retrieve resource entities matching a set of specified records.
      *
      * @param string[] $ids    Array of IDs
@@ -265,13 +231,13 @@ class ResourceService extends AbstractDbService implements
     {
         if (
             $oldId !== $newId
-            && $resource = $this->findResource($oldId, $source, false)
+            && $resource = $this->getResourceByRecordId($oldId, $source)
         ) {
             // Do this as a transaction to prevent odd behavior:
             $this->entityManager->getConnection()->beginTransaction();
             // Does the new ID already exist?
             $deduplicate = false;
-            if ($newResource = $this->findResource($newId, $source, false)) {
+            if ($newResource = $this->getResourceByRecordId($newId, $source)) {
                 // Special case: merge new ID and old ID:
                 $entitiesToUpdate = [
                     \VuFind\Db\Entity\Comments::class,

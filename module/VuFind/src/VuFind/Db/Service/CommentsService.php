@@ -108,10 +108,9 @@ class CommentsService extends AbstractDbService implements
      */
     public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $resource = $this->getDbService(ResourceService::class)
-            ->findResource($id, $source, false);
-
-        if (empty($resource)) {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
             return [];
         }
         $dql = 'SELECT c '

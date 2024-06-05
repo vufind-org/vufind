@@ -29,7 +29,7 @@
 
 namespace VuFind\Record\FallbackLoader;
 
-use VuFind\Db\Service\ResourceService as ResourceService;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\Feature\PreviousUniqueIdInterface;
 use VuFindSearch\Service;
@@ -53,29 +53,15 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
     protected $source = DEFAULT_SEARCH_BACKEND;
 
     /**
-     * Resource database service
-     *
-     * @var ResourceService
-     */
-    protected $resourceService;
-
-    /**
-     * Search service
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
      * Constructor
      *
-     * @param ResourceService $resourceService Resource database service
-     * @param Service         $searchService   Search service
+     * @param ResourceServiceInterface $resourceService Resource database service
+     * @param Service                  $searchService   Search service
      */
-    public function __construct(ResourceService $resourceService, Service $searchService)
-    {
-        $this->resourceService = $resourceService;
-        $this->searchService = $searchService;
+    public function __construct(
+        protected ResourceServiceInterface $resourceService,
+        protected Service $searchService
+    ) {
     }
 
     /**

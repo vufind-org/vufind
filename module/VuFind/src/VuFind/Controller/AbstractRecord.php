@@ -29,11 +29,13 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Ratings\RatingsService;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Tags;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -163,15 +165,8 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $resourceService = $this->getDbService(
-                \VuFind\Db\Service\ResourceService::class
-            );
-            $resource = $resourceService->findResource(
-                $driver->getUniqueId(),
-                $driver->getSourceIdentifier(),
-                true,
-                $driver
-            );
+            $populator = $this->serviceLocator->get(ResourcePopulator::class);
+            $resource = $populator->getOrCreateResourceForDriver($driver);
             $commentsService = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class
             );
@@ -182,7 +177,8 @@ class AbstractRecord extends AbstractBase
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $driver->addOrUpdateRating($user->getId(), intval($rating));
+                $ratingsService = $this->serviceLocator->get(RatingsService::class);
+                $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -243,12 +239,11 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-            $this->getDbService(TagServiceInterface::class)->addTagsToRecord(
-                $driver->getUniqueID(),
-                $driver->getSourceIdentifier(),
+            $tagHelper = $this->serviceLocator->get(Tags::class);
+            $tagHelper->addTagsToRecord(
+                $driver,
                 $user,
-                $tagParser->parse($tags)
+                $tagHelper->parse($tags)
             );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
@@ -283,9 +278,8 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->getDbService(TagServiceInterface::class)->deleteTagsFromRecord(
-                $driver->getUniqueID(),
-                $driver->getSourceIdentifier(),
+            $this->serviceLocator->get(Tags::class)->deleteTagsFromRecord(
+                $driver,
                 $user,
                 [$tag]
             );
@@ -325,7 +319,9 @@ class AbstractRecord extends AbstractBase
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
             }
-            $driver->addOrUpdateRating(
+            $ratingsService = $this->serviceLocator->get(RatingsService::class);
+            $ratingsService->saveRating(
+                $driver,
                 $user->getId(),
                 '' === $rating ? null : intval($rating)
             );
@@ -337,12 +333,10 @@ class AbstractRecord extends AbstractBase
         }
 
         // Display the "add rating" form:
-        $view = $this->createViewModel(
-            [
-                'currentRating' => $user ? $driver->getRatingData($user->getId()) : null,
-            ]
-        );
-        return $view;
+        $currentRating = $user
+            ? $this->serviceLocator->get(RatingsService::class)->getRatingData($driver, $user->getId())
+            : null;
+        return $this->createViewModel(compact('currentRating'));
     }
 
     /**
@@ -422,9 +416,8 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
-        $post['mytags']
-            = $tagParser->parse($post['mytags'] ?? '');
+        $tagParser = $this->serviceLocator->get(Tags::class);
+        $post['mytags'] = $tagParser->parse($post['mytags'] ?? '');
         $favorites = $this->serviceLocator
             ->get(\VuFind\Favorites\FavoritesService::class);
         $results = $favorites->save($post, $user, $driver);

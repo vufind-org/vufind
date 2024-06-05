@@ -36,6 +36,7 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\UserListService;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Favorites\FavoritesService;
+use VuFind\Record\ResourcePopulator;
 
 /**
  * FavoritesService Test Class
@@ -58,7 +59,8 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
     protected function getFavoritesService(?UserListServiceInterface $listService = null): FavoritesService
     {
         return new FavoritesService(
-            $listService ?? $this->createMock(UserListServiceInterface::class)
+            $listService ?? $this->createMock(UserListServiceInterface::class),
+            $this->createMock(ResourcePopulator::class)
         );
     }
 

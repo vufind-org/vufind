@@ -38,7 +38,6 @@ use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceTags;
 use VuFind\Db\Entity\Tags;
 use VuFind\Db\Entity\User;
-use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
@@ -1237,44 +1236,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
                 $user,
                 $list
             );
-        }
-    }
-
-    /**
-     * Add tags to the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
-     *
-     * @return void
-     */
-    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
-    {
-        $resourceService = $this->getDbService(ResourceService::class);
-        $resource = $resourceService->findResource($id, $source);
-        foreach ($tags as $tag) {
-            $this->addTag($resource, $tag, $user);
-        }
-    }
-
-    /**
-     * Remove tags from the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user deleting the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
-     *
-     * @return void
-     */
-    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
-    {
-        $resourceService = $this->getDbService(ResourceService::class);
-        $resource = $resourceService->findResource($id, $source);
-        foreach ($tags as $tag) {
-            $this->deleteTag($resource, $tag, $user);
         }
     }
 }

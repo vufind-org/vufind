@@ -32,11 +32,12 @@ namespace VuFindTest\AjaxHandler;
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Service\ResourceService;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\DefaultRecord;
 
 /**
@@ -62,8 +63,6 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
-        $this->container
-            ->set(\VuFind\Db\Table\PluginManager::class, $this->container);
         $this->container
             ->set(\VuFind\Db\Service\PluginManager::class, $this->container);
         $this->container->set('ControllerPluginManager', $this->container);
@@ -140,29 +139,25 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         $user = $this->createMock(UserEntityInterface::class);
         $user->method('getId')->willReturn(1);
-        $resource = $this->container->createMock(Resource::class);
-        $resourceService = $this->container->createMock(ResourceService::class);
-        $this->container->set(ResourceService::class, $resourceService);
-        $resourceService->expects($this->once())->method('findResource')
-            ->with($this->equalTo('foo'), $this->equalTo('Solr'))
-            ->will($this->returnValue($resource));
-        $commentsService = $this->container->createMock(CommentsServiceInterface::class);
-        $this->container->set(CommentsServiceInterface::class, $commentsService);
-        $commentsService->expects($this->once())->method('addComment')
-            ->with(
-                $this->equalTo('bar'),
-                $this->equalTo($user),
-                $this->anything()
-            )
-            ->will($this->returnValue(1));
+        $resource = $this->createMock(ResourceEntityInterface::class);
+        $this->container->get(ResourcePopulator::class)->expects($this->once())
+            ->method('getOrCreateResourceForRecordId')
+            ->with('foo', 'Solr')
+            ->willReturn($resource);
+        $mockCommentsService = $this->createMock(CommentsServiceInterface::class);
+        $mockCommentsService->expects($this->once())->method('addComment')
+            ->with('bar', $user, $resource)
+            ->willReturn(1);
+        $this->container->set(CommentsServiceInterface::class, $mockCommentsService);
 
         $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
         $driver->expects($this->once())
             ->method('isRatingAllowed')
             ->willReturn(true);
-        $driver->expects($this->once())
-            ->method('addOrUpdateRating')
-            ->with($user->getId(), 100);
+        $ratingService = $this->container->get(RatingsService::class);
+        $ratingService->expects($this->once())
+            ->method('saveRating')
+            ->with($driver, $user->getId(), 100);
         $recordLoader = $this->container->createMock(RecordLoader::class, ['load']);
         $recordLoader->expects($this->once())
             ->method('load')

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,6 +33,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Ratings\RatingsService;
+use VuFind\Record\ResourcePopulator;
 
 /**
  * Factory for CommentRecord AJAX handler.
@@ -69,20 +71,18 @@ class CommentRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
+        $servicePluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $controllerPluginManager = $container->get('ControllerPluginManager');
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $servicePluginManager->get(\VuFind\Db\Service\ResourceService::class),
+            $container->get(ResourcePopulator::class),
             $servicePluginManager->get(\VuFind\Db\Service\CommentsServiceInterface::class),
-            $controllerPluginManager
-                ->get(\VuFind\Controller\Plugin\Captcha::class),
+            $controllerPluginManager->get(\VuFind\Controller\Plugin\Captcha::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $capabilities->getCommentSetting() !== 'disabled',
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Config\AccountCapabilities::class)
+            $container->get(\VuFind\Config\AccountCapabilities::class),
+            $container->get(RatingsService::class)
         );
     }
 }

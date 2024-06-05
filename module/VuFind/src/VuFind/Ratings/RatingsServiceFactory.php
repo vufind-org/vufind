@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Favorites service factory
+ * Ratings service factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2016-2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,31 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Favorites
+ * @package  Ratings
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Favorites;
+namespace VuFind\Ratings;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Record\ResourcePopulator;
 
 /**
- * Favorites service
+ * Ratings service
  *
  * @category VuFind
- * @package  Favorites
+ * @package  Ratings
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  *
  * @codeCoverageIgnore
  */
-class FavoritesServiceFactory implements FactoryInterface
+class RatingsServiceFactory implements FactoryInterface
 {
     /**
      * Create service
@@ -61,10 +61,9 @@ class FavoritesServiceFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $name, array $options = null)
     {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        return new FavoritesService(
-            $serviceManager->get(UserListServiceInterface::class),
-            $container->get(ResourcePopulator::class),
-            $container->get(\VuFind\Record\Cache::class)
+        return new RatingsService(
+            $serviceManager->get(RatingsServiceInterface::class),
+            $container->get(ResourcePopulator::class)
         );
     }
 }
