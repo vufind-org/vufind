@@ -12,22 +12,13 @@ VuFind.register("sticky_elements", function StickyElements() {
     return posA - posB;
   }
 
-  function setPlaceholderStyle (stickyElement, sideOnly = false) {
+  function setPlaceholderStyle (stickyElement) {
     let style = window.getComputedStyle(stickyElement, null);
     let placeholder = stickyElement.parentNode.previousSibling;
-    if (sideOnly) {
-      placeholder.style.paddingLeft = style.paddingLeft;
-      placeholder.style.paddingRight = style.paddingRight;
-      placeholder.style.borderLeft = style.borderLeft;
-      placeholder.style.borderRight = style.borderRight;
-      placeholder.style.marginLeft = style.marginLeft;
-      placeholder.style.marginRight = style.marginRight;
-    } else {
-      placeholder.style.height = style.height;
-      placeholder.style.padding = style.padding;
-      placeholder.style.border = style.border;
-      placeholder.style.margin = style.margin;
-    }
+    placeholder.style.height = style.height;
+    placeholder.style.padding = style.padding;
+    placeholder.style.border = style.border;
+    placeholder.style.margin = style.margin;
   }
 
   function getDefaultBackground() {
@@ -104,7 +95,7 @@ VuFind.register("sticky_elements", function StickyElements() {
   function calculateStyles () {
     _stickyElements.forEach(
       (stickyElement) => {
-        setPlaceholderStyle(stickyElement, true);
+        setPlaceholderStyle(stickyElement);
       }
     );
     handleStickyElements(true);
