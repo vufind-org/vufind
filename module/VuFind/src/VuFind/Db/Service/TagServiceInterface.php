@@ -30,7 +30,6 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\TagsEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Database service interface for tags.
