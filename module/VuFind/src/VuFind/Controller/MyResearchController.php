@@ -209,11 +209,10 @@ class MyResearchController extends AbstractBase
                     // called from login lightbox and don't have a followup action or
                     // followup is set to referrer.
                     if (
-                        $this->inLightbox()
-                        && (
-                            $this->hasFollowupUrl() === false
-                            || $this->followup()->retrieve('isReferrer') === true
-                        )
+                        $this->params()->fromPost('processLogin')
+                        && $this->inLightbox()
+                        && (!$this->hasFollowupUrl()
+                        || $this->followup()->retrieve('isReferrer') === true)
                     ) {
                         $this->clearFollowupUrl();
                         return $this->getRefreshResponse();
