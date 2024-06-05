@@ -97,6 +97,10 @@ class Resource extends Gateway implements DbServiceAwareInterface
      *
      * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
+     *
+     * @deprecated Use ResourceServiceInterface::getResourceByRecordId() or
+     * \VuFind\Record\ResourcePopulator::getOrCreateResourceForDriver() or
+     * \VuFind\Record\ResourcePopulator::getOrCreateResourceForRecordId() as appropriate.
      */
     public function findResource(
         $id,
@@ -231,16 +235,17 @@ class Resource extends Gateway implements DbServiceAwareInterface
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
         if (
             $oldId !== $newId
-            && $resource = $this->findResource($oldId, $source, false)
+            && $resource = $resourceService->getResourceByRecordId($oldId, $source)
         ) {
             $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
-            if ($newResource = $this->findResource($newId, $source, false)) {
+            if ($newResource = $resourceService->getResourceByRecordId($newId, $source)) {
                 // Special case: merge new ID and old ID:
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
                     $tableObjects[$table] = $this->getDbTable($table);

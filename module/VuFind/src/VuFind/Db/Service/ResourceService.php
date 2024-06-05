@@ -93,6 +93,19 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
     }
 
     /**
+     * Retrieve a single resource row by record ID/source. Return null if it does not exist.
+     *
+     * @param string $id     Record ID
+     * @param string $source Record source
+     *
+     * @return ?ResourceEntityInterface
+     */
+    public function getResourceByRecordId(string $id, string $source = DEFAULT_SEARCH_BACKEND): ?ResourceEntityInterface
+    {
+        return $this->resourceTable->select(['record_id' => $id, 'source' => $source])->current();
+    }
+
+    /**
      * Retrieve resource entities matching a set of specified records.
      *
      * @param string[] $ids    Array of IDs

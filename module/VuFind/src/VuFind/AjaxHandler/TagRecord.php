@@ -31,7 +31,6 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\TagService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Tags;
@@ -54,15 +53,13 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Loader               $loader     Record loader
-     * @param TagService           $tagService Tag database service
-     * @param Tags                 $tagParser  Tag parser
-     * @param ?UserEntityInterface $user       Logged in user (or null)
+     * @param Loader               $loader    Record loader
+     * @param Tags                 $tagHelper Tag helper
+     * @param ?UserEntityInterface $user      Logged in user (or null)
      */
     public function __construct(
         protected Loader $loader,
-        protected TagService $tagService,
-        protected Tags $tagParser,
+        protected Tags $tagHelper,
         protected ?UserEntityInterface $user
     ) {
     }
@@ -92,11 +89,10 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
             $serviceMethod = ('false' === $params->fromPost('remove', 'false'))
                 ? 'addTagsToRecord'
                 : 'deleteTagsFromRecord';
-            $this->tagService->$serviceMethod(
-                $driver->getUniqueID(),
-                $driver->getSourceIdentifier(),
+            $this->tagHelper->$serviceMethod(
+                $driver,
                 $this->user,
-                $this->tagParser->parse($tag)
+                $this->tagHelper->parse($tag)
             );
         }
 

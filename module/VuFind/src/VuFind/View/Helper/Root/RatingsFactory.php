@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Abstract record fallback loader factory
+ * Ratings helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,31 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Record
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Record\FallbackLoader;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Ratings\RatingsService;
 
 /**
- * Abstract record fallback loader factory
+ * Ratings helper factory.
  *
  * @category VuFind
- * @package  Record
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractFallbackLoaderFactory implements FactoryInterface
+class RatingsFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -66,11 +66,9 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
-            $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
-            $container->get(\VuFindSearch\Service::class),
-            ...$options ?? []
-        );
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        return new $requestedName($container->get(RatingsService::class));
     }
 }
