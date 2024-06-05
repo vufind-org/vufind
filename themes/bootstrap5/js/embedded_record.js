@@ -165,7 +165,6 @@ VuFind.register('embedded', function embedded() {
               ajaxLoadTab(el.id, false);
             });
             // Add events to record toolbar
-            VuFind.lightbox.bind(longNode);
             if (typeof VuFind.saveStatuses.init === 'function') {
               VuFind.saveStatuses.init(longNode);
             }

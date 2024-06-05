@@ -180,7 +180,6 @@ VuFind.register('sideFacets', function SideFacets() {
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
-        VuFind.lightbox.bind($('.sidebar'));
         VuFind.emit('VuFind.sidefacets.loaded');
       })
       .fail(function onGetSideFacetsFail() {
