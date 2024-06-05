@@ -159,4 +159,3 @@ class ResourceTagsService extends AbstractDbService implements
             $deleted += $this->deleteLinksByResourceTagsIdArray($ids);
         }
     }
-}
