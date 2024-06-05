@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\RequestInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Alma controller, mainly for webhooks.
@@ -245,7 +246,7 @@ class AlmaController extends AbstractBase
                 $user->username = $username;
                 $user->firstname = $firstname;
                 $user->lastname = $lastname;
-                $user->updateEmail($email);
+                $this->getDbService(UserServiceInterface::class)->updateUserEmail($user, $email);
                 $user->cat_id = $primaryId;
                 $user->cat_username = $username;
 
@@ -366,7 +367,7 @@ class AlmaController extends AbstractBase
             // Attempt to send the email
             try {
                 // Create a fresh hash
-                $user->updateHash();
+                $this->getAuthManager()->updateUserVerifyHash($user);
                 $config = $this->getConfig();
                 $renderer = $this->getViewRenderer();
                 $method = $this->getAuthManager()->getAuthMethod();

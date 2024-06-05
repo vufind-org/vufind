@@ -21,6 +21,9 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  .facet__list__item .facet {
+    display: flex;
+  }
 }
 
 .facet,

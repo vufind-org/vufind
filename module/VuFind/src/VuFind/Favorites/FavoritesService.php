@@ -33,9 +33,9 @@ use DateTime;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
+use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 use function intval;
@@ -56,13 +56,13 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param UserListServiceInterface $userListService UserList database service
-     * @param ResourceTable            $resourceTable   Resource table object
-     * @param ?RecordCache             $recordCache     Record cache (optional)
+     * @param UserListServiceInterface $userListService   UserList database service
+     * @param ResourcePopulator        $resourcePopulator Resource populator service
+     * @param ?RecordCache             $recordCache       Record cache (optional)
      */
     public function __construct(
         protected UserListServiceInterface $userListService,
-        protected ResourceTable $resourceTable,
+        protected ResourcePopulator $resourcePopulator,
         protected ?RecordCache $recordCache = null
     ) {
     }
@@ -178,12 +178,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $list = $this->getAndRememberListObject($this->getListIdFromParams($params), $user);
 
         // Get or create a resource object as needed:
-        $resource = $this->resourceTable->findResource(
-            $driver->getUniqueId(),
-            $driver->getSourceIdentifier(),
-            true,
-            $driver
-        );
+        $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
 
         // Persist record in the database for "offline" use
         $this->persistToCache($driver, $resource);
