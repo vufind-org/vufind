@@ -29,14 +29,20 @@
   overflow: hidden;
 }
 
-.channel .carousel-item {
-  display: inline-block;
-  text-align: center;
+.channel-record {
+  padding-inline: 0.5rem;
+  padding-block-start: 0.5rem;
+
+  &:hover, &:focus-within {
+    background-color: white;
+    box-shadow: inset 0 0 0 1px $brand-primary;
+  }
 }
 .channel-record-title {
   display: block;
   max-height: 3.45em;
   margin: 0;
+  padding-block-end: 0.5rem;
   line-height: 1.15;
   overflow: hidden;
 }

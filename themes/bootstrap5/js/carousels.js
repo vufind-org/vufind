@@ -10,6 +10,11 @@ VuFind.register("carousels", function VuFindCarousels() {
       gap: "0.5em",
       perPage: 4,
       breakpoints: { 640: { perPage: 3 }},
+      classes: {
+        // Add classes for pagination.
+        pagination: "splide__pagination carousel-pagination", // container
+        page: "splide__pagination__page carousel-indicator", // each button
+      }
     };
 
     unwrapJQuery(scope)

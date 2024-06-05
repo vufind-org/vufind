@@ -2,19 +2,6 @@
   margin-top: 1rem;
   margin-bottom: 2rem;
 }
-@media (max-width: 767px) {
-  .channel-wrapper {
-    margin-left: 1rem;
-  }
-}
-.channel {
-  position: relative;
-  width: 100%;
-  max-height: 300px;
-  padding: 1rem;
-  background-color: #eee;
-  border-radius: $border-radius-base;
-}
 
 .channel-add-menu {
   position: relative;
@@ -42,25 +29,28 @@
   overflow: hidden;
 }
 
-.channel .channel-record.slide {
-  display: inline-block;
-  min-width: 100px;
-  max-height: 16em;
-  padding: 0 .5rem;
-  text-align: center;
+.channel-record {
+  padding-inline: 0.5rem;
+  padding-block-start: 0.5rem;
+
+  &:hover, &:focus-within {
+    background-color: white;
+    box-shadow: inset 0 0 0 1px $brand-primary;
+  }
 }
 .channel-record-title {
   display: block;
-  height: 3em;
+  max-height: 3.45em;
   margin: 0;
-  line-height: 1.5;
+  padding-block-end: 0.5rem;
+  line-height: 1.15;
   overflow: hidden;
 }
 .channel .channel-record .thumb {
   display: flex;
-  height: 200px;
   align-items: center;
   justify-content: center;
+  margin-block: 0.5rem;
 }
 .channel .channel-record .thumb img {
   max-width: 100%;
@@ -69,38 +59,47 @@
 
 .channel .popover {
   width: 500px;
-  max-width: none;
+  max-width: 100%;
 }
 .channel .popover-title {
   font-size: 1.4rem;
   font-weight: bold;
+}
+@media (max-width: 767px) {
+  .popover-content .btn-group {
+    display: block;
+  }
+
+  .popover-content .btn-group > .btn {
+    display: block;
+    width: 100%;
+    margin-block-end: 2px;
+    border-radius: $border-radius-base !important;
+
+    & + .btn {
+      margin-inline: 0;
+    }
+  }
 }
 
 .channel-title h2 {
   display: inline-block;
   margin: 0;
 }
+.channel-title a:hover {
+  text-decoration: none;
+}
 .channel-title .dropdown {
   display: inline-block;
 }
-.channel-title a:hover { text-decoration: none; }
-.channel-title i.fa-fw {
-  width: 1.4em;
-  padding-top: 0.5em;
-  font-size: 0.6em;
-  text-align: center;
-  vertical-align: top;
+.channel-title .placeholder {
+  width: 25px;
 }
-.channel-title .placeholder { width: 25px; }
 
 .channel-title .dropdown button {
   font-size: 18px;
   color: #777;
   vertical-align: baseline;
-}
-.channel .slick-prev::before,
-.channel .slick-next::before {
-  color: #555;
 }
 
 .channel-search {

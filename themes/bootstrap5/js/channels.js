@@ -1,4 +1,4 @@
-/*global bootstrap, getUrlRoot, VuFind */
+/*global VuFind, getUrlRoot */
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links;
@@ -44,7 +44,7 @@ VuFind.register('channels', function Channels() {
   function switchPopover(record) {
     // Hide the old popover:
     if (currentPopoverRecord) {
-      bootstrap.Popover.getInstance(currentPopoverRecord).hide();
+      currentPopoverRecord.popover('hide');
     }
     // Special case: if the new popover is the same as the old one, reset the
     // current popover status so that the next click will open it again (toggle)
@@ -56,43 +56,23 @@ VuFind.register('channels', function Channels() {
     }
     // currentPopover has now been updated; show it if appropriate:
     if (currentPopoverRecord) {
-      bootstrap.Popover.getInstance(currentPopoverRecord).show();
+      currentPopoverRecord.popover('show');
     }
   }
 
   // Truncate lines to height with ellipses
   function clampLines(el) {
     var words = el.innerHTML.split(" ");
-    while (el.scrollHeight > el.offsetHeight) {
+    while (words.length > 1 && el.scrollHeight > el.offsetHeight) {
+      console.log(el.scrollHeight, el.offsetHeight);
       words.pop();
       el.innerHTML = words.join(" ") + VuFind.translate("eol_ellipsis");
     }
   }
 
   function setupChannelSlider(i, op) {
-    $(op).find(".slide").removeClass("hidden");
-    $(op).slick({
-      slidesToShow: 6,
-      slidesToScroll: 6,
-      infinite: false,
-      rtl: $(document.body).hasClass("rtl"),
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 3,
-            slidesToScroll: 3
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 1,
-            slidesToScroll: 1
-          }
-        }
-      ]
-    });
+    $(op).find(".channel-record").removeClass("hidden");
+
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
@@ -102,17 +82,15 @@ VuFind.register('channels', function Channels() {
       if (!record.data('popover-loaded')) {
         record.data('popover-loaded', true);
         switchPopover(false);
-        let loadingPopover = new bootstrap.Popover(
-          record,
-          {
-            content: VuFind.translate('loading_ellipsis'),
-            html: true,
-            placement: 'bottom',
-            trigger: 'manual',
-            container: '#' + record.closest('.channel').attr('id')
-          }
-        );
-        loadingPopover.show();
+        record.popover({
+          content: VuFind.loading(),
+          html: true,
+          placement: 'bottom',
+          trigger: 'manual',
+          container: '#' + record.closest('.channel').attr('id'),
+          sanitize: false
+        });
+        record.popover('show');
         $.ajax({
           url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
           type: 'POST',
@@ -127,18 +105,10 @@ VuFind.register('channels', function Channels() {
               + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
               + '</div>'
               + data;
-            loadingPopover.dispose();
-            new bootstrap.Popover(
-              record,
-              {
-                content: newContent,
-                html: true,
-                placement: 'bottom',
-                trigger: 'manual',
-                sanitize: false,
-                container: '#' + record.closest('.channel').attr('id')
-              }
-            );
+
+            record.data('bs.popover').tip().find('.popover-content').html(newContent);
+            record.data('bs.popover').options.content = newContent;
+
             switchPopover(record);
           });
       } else {
@@ -183,6 +153,7 @@ VuFind.register('channels', function Channels() {
           $dest.after($testEl);
           $testEl.find('.channel').each(setupChannelSlider);
           $testEl.find('.channel').each(bindChannelAddMenu);
+          VuFind.carousels.setup($testEl);
         }
 
         if (list.children().length === 0) {
@@ -207,7 +178,7 @@ VuFind.register('channels', function Channels() {
   function init () {
     $('.channel').each(setupChannelSlider);
     $('.channel').each(bindChannelAddMenu);
-    document.addEventListener('hidden.bs.popover', (e) => {
+    $(document).on("hidden.bs.popover", function deselectPopover(e) {
       if (isCurrentPopoverRecord($(e.target))) {
         switchPopover(false);
       }

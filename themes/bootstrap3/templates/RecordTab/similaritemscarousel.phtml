@@ -8,12 +8,12 @@
 <h2><?=$this->transEsc('Similar Items')?></h2>
 <?php $similarRecords = $this->tab->getResults(); ?>
 <?php if (!empty($similarRecords)): ?>
-  <div id="similar-items-carousel" class="carousel splide" role="group" data-carousel aria-label="<?=$this->transEsc('Similar Items')?>">
+  <div id="similar-items-carousel" class="vf-carousel splide" role="group" data-vf-carousel aria-label="<?=$this->transEsc('Similar Items')?>">
     <div class="splide__track">
       <ul class="splide__list">
         <?php foreach ($similarRecords as $index => $data): ?>
           <li class="splide__slide">
-            <a class="record-cover-link hover-overlay carousel-item" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+            <a class="record-cover-link hover-overlay vf-carousel-item" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
               <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
 
               <p class="unhover-title"><b><?=$this->escapeHtml($data->getTitle())?></b></p>
