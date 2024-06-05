@@ -19,6 +19,7 @@ await copyFile('node_modules/simple-keyboard-layouts/build/index.js', 'js/vendor
 // splide
 await copyFile('node_modules/@splidejs/splide/dist/js/splide.min.js', 'js/vendor/splide.min.js');
 await copyFile('node_modules/@splidejs/splide/dist/css/splide.min.css', 'css/vendor/splide.min.css');
+await copyFile('node_modules/@splidejs/splide/dist/js/splide.min.js.map', 'js/vendor/splide.min.js.map');
 
 // vanilla-cookieconsent
 await copyFile('node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js', 'js/vendor/cookieconsent.umd.js');

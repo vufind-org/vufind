@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, escapeHtmlAttr */
+/*global deparam, escapeHtmlAttr, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -176,7 +176,7 @@ function handleAjaxTabLinks(_context) {
   });
 }
 
-function registerTabEvents() {
+function registerTabEvents($newTab) {
   // Logged in AJAX
   registerAjaxCommentRecord();
   // Render recaptcha
@@ -185,6 +185,10 @@ function registerTabEvents() {
   setUpCheckRequest();
 
   handleAjaxTabLinks();
+
+  if (VuFind.carousels && $newTab) {
+    VuFind.carousels.setup($newTab[0]);
+  }
 
   VuFind.lightbox.bind('.tab-pane.active');
 
@@ -225,7 +229,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
       } else {
         $newTab.html(VuFind.updateCspNonce(data));
       }
-      registerTabEvents();
+      registerTabEvents($newTab);
       if (typeof syn_get_widget === "function") {
         syn_get_widget();
       }
@@ -391,6 +395,7 @@ function recordDocReady() {
 
   VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
   VuFind.truncate.initTruncate('table.truncate-field', 'tr.holding-row', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
+
   registerTabEvents();
   applyRecordTabHash(false);
 }

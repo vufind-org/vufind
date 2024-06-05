@@ -1093,7 +1093,6 @@ ${git_status}
         <exclude name="/" />
         <exclude name="account_ajax.js" />
         <exclude name="cart.js" />
-        <exclude name="channels.js" />
         <exclude name="lightbox.js" />
         <exclude name="vendor" />
         <exclude name="vendor/bootstrap-accessibility.min.js" />

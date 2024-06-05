@@ -63,8 +63,7 @@ VuFind.register('channels', function Channels() {
   // Truncate lines to height with ellipses
   function clampLines(el) {
     var words = el.innerHTML.split(" ");
-    while (words.length > 1 && el.scrollHeight > el.offsetHeight) {
-      console.log(el.scrollHeight, el.offsetHeight);
+    while (el.scrollHeight > el.offsetHeight) {
       words.pop();
       el.innerHTML = words.join(" ") + VuFind.translate("eol_ellipsis");
     }
