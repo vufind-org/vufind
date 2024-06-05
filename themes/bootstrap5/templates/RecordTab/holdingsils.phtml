@@ -52,6 +52,18 @@
           echo str_replace('<a ', '<a data-lightbox ', $this->translate('hold_profile_html', $tokens));
         ?>
       </div>
+
+      <?php
+        $script = <<<JS
+          VuFind.listen("lightbox.form", ({ form, cancel }) => {
+            if (form.matches(".form-catalog-login")) {
+              form.action = form.action.replace("&layout=lightbox", "");
+              cancel();
+            }
+          });
+        JS;
+      ?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
