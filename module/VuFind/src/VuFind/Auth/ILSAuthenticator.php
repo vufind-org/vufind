@@ -266,7 +266,7 @@ class ILSAuthenticator
                 // Problem logging in -- clear user credentials so they can be
                 // prompted again; perhaps their password has changed in the
                 // system!
-                $user->clearCredentials();
+                $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
             } else {
                 // cache for future use
                 $this->ilsAccount[$username] = $patron;

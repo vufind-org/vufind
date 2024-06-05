@@ -710,6 +710,34 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that a public list can be displayed as a channel.
+     *
+     * @return void
+     *
+     * @depends testEmailPublicList
+     */
+    public function testPublicListChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['listitems'],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Channels');
+        $page = $session->getPage();
+        $this->assertEquals('Test List', $this->findCss($page, '.channel-title')->getText());
+        $this->assertEquals('Dewey browse test', $this->findCss($page, '.channel-record-title')->getText());
+    }
+
+    /**
      * Data provider for testListTaggingToDisplayChannel
      *
      * @return array

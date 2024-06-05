@@ -31,6 +31,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -312,12 +313,14 @@ class ILS extends AbstractBase
         }
 
         // Check to see if we already have an account for this user:
+        $userService = $this->getUserService();
         $userTable = $this->getUserTable();
         if (!empty($info['id'])) {
             $user = $userTable->getByCatalogId($info['id']);
             if (empty($user)) {
                 $user = $userTable->getByUsername($info[$usernameField]);
-                $user->saveCatalogId($info['id']);
+                $user->setCatId($info['id']);
+                $this->getDbService(UserServiceInterface::class)->persistEntity($user);
             }
         } else {
             $user = $userTable->getByUsername($info[$usernameField]);
@@ -331,7 +334,7 @@ class ILS extends AbstractBase
         foreach ($fields as $field) {
             $user->$field = $info[$field] ?? ' ';
         }
-        $user->updateEmail($info['email'] ?? '');
+        $userService->updateUserEmail($user, $info['email'] ?? '');
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(

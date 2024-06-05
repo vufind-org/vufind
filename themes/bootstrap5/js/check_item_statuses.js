@@ -22,30 +22,40 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   }
 
   function displayItemStatus(result, el) {
-    const $item = $(el); // todo: remove jQuery
+    el.querySelectorAll('.status').forEach((status) => {
+      status.innerHTML = result.availability_message;
+    });
+    el.querySelectorAll('.ajax-availability').forEach((ajaxAvailability) => {
+      ajaxAvailability.classList.remove('ajax-availability');
+      ajaxAvailability.classList.remove('hidden');
+    });
 
-    $item.find('.status').empty().append(result.availability_message);
-    $item.find('.ajax-availability').removeClass('ajax-availability hidden');
+    let callnumAndLocations = el.querySelectorAll('.callnumAndLocation');
     if (typeof(result.error) != 'undefined'
-          && result.error.length > 0
+      && result.error.length > 0
     ) {
-      $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
-      $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
+      callnumAndLocations.forEach((callnumAndLocation) => {
+        callnumAndLocation.innerHTML = result.error;
+        callnumAndLocation.classList.add('text-danger');
+      });
+      el.querySelectorAll('.callnumber,.hideIfDetailed,.location').forEach((e) => { e.classList.add('hidden'); });
     } else if (typeof(result.full_status) != 'undefined'
-          && result.full_status.length > 0
-          && $item.find('.callnumAndLocation').length > 0
+      && result.full_status.length > 0
+      && callnumAndLocations.length > 0
     ) {
       // Full status mode is on -- display the HTML and hide extraneous junk:
-      $item.find('.callnumAndLocation').empty().append(VuFind.updateCspNonce(result.full_status));
-      $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
+      callnumAndLocations.forEach((callnumAndLocation) => {
+        callnumAndLocation.innerHTML = VuFind.updateCspNonce(result.full_status);
+      });
+      el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
     } else if (typeof(result.missing_data) !== 'undefined'
-          && result.missing_data
+      && result.missing_data
     ) {
       // No data is available -- hide the entire status area:
-      $item.find('.callnumAndLocation,.status').addClass('hidden');
+      el.querySelectorAll('.callnumAndLocation,.status').forEach((e) => e.classList.add('hidden'));
     } else if (result.locationList) {
       // We have multiple locations -- build appropriate HTML and hide unwanted labels:
-      $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
+      el.querySelectorAll('.callnumber,.hideIfDetailed,.location').forEach((e) => e.classList.add('hidden'));
       var locationListHTML = "";
       for (var x = 0; x < result.locationList.length; x++) {
         locationListHTML += '<div class="groupLocation">';
@@ -55,7 +65,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
             + result.locationList[x].location
             + '</span> ';
         } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
-                  && result.locationList[x].status_unknown
+          && result.locationList[x].status_unknown
         ) {
           if (result.locationList[x].location) {
             locationListHTML += '<span class="text-warning">'
@@ -75,18 +85,23 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           ? formatCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
         locationListHTML += '</div>';
       }
-      $item.find('.locationDetails').removeClass('hidden');
-      $item.find('.locationDetails').html(locationListHTML);
+      el.querySelectorAll('.locationDetails').forEach((locationDetails) => {
+        locationDetails.classList.remove('hidden');
+        locationDetails.innerHTML = locationListHTML;
+      });
     } else {
       // Default case -- load call number and location into appropriate containers:
-      $item.find('.callnumber').empty().append(formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
-      $item.find('.location').empty().append(
-        result.reserve === 'true'
+      el.querySelectorAll('.callnumber').forEach((callnumber) => {
+        callnumber.innerHTML = formatCallnumbers(result.callnumber, result.callnumber_handler) + '<br>';
+      });
+      el.querySelectorAll('.location').forEach((location) => {
+        location.innerHTML = result.reserve === 'true'
           ? result.reserve_message
-          : result.location
-      );
+          : result.location;
+      });
     }
-    $item.addClass('js-item-done').removeClass('js-item-pending');
+    el.classList.add('js-item-done');
+    el.classList.remove('js-item-pending');
   }
 
   function itemStatusAjaxSuccess(items, response) {
@@ -102,66 +117,67 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     });
 
     // display data
-    response.data.statuses.forEach(function displayItemStatusResponse(status) {
-      if (typeof idMap[status.id] === "undefined") {
-        return;
-      }
-
-      idMap[status.id].forEach((el) => displayItemStatus(status, el));
+    response.json().then((body) => {
+      body.data.statuses.forEach(function displayItemStatusResponse(status) {
+        if (typeof idMap[status.id] === "undefined") {
+          return;
+        }
+        idMap[status.id].forEach((el) => displayItemStatus(status, el));
+      });
+      VuFind.emit("item-status-done");
     });
-
-    VuFind.emit("item-status-done");
   }
 
   function itemStatusAjaxFailure(items, response, textStatus) {
     if (
       textStatus === "error" ||
-      textStatus === "abort" ||
-      typeof response.responseJSON === "undefined"
+      textStatus === "abort"
     ) {
       VuFind.emit("item-status-done");
-
       return;
     }
 
-    // display the error message on each of the ajax status place holder
-    items.forEach(function displayItemStatusFailure(item) {
-      $(item.el)
-        .find(".callnumAndLocation")
-        .addClass("text-danger")
-        .empty()
-        .removeClass("hidden")
-        .append(
-          typeof response.responseJSON.data === "string"
-            ? response.responseJSON.data
-            : VuFind.translate("error_occurred")
-        );
+    response.json().then((body) => {
+      // display the error message on each of the ajax status place holder
+      items.forEach(function displayItemStatusFailure(item) {
+        item.el.querySelectorAll(".callnumAndLocation").forEach((callNumAndLocation) => {
+          callNumAndLocation.classList.add("text-danger");
+          callNumAndLocation.innerHTML = "";
+          callNumAndLocation.classList.remove("hidden");
+          callNumAndLocation.innerHTML = typeof body.data === "string"
+            ? body.data
+            : VuFind.translate("error_occurred");
+        });
+      });
+    }).finally(() => {
+      VuFind.emit("item-status-done");
     });
-
-    VuFind.emit("item-status-done");
   }
 
   function makeItemStatusQueue({
     url = "/AJAX/JSON?method=getItemStatuses",
-    dataType = "json",
+    acceptType = "application/json",
     method = "POST",
     delay = 200,
   } = {}) {
     return new AjaxRequestQueue({
-      run: function runItemAjaxQueue(items) {
-        return new Promise(function runItemAjaxPromise(done, error) {
-          const sid = VuFind.getCurrentSearchId();
-
-          $.ajax({
-            // todo: replace with fetch
-            url: VuFind.path + url,
-            data: { id: items.map((item) => item.id), sid },
-            dataType,
-            method,
-          })
-            .done(done)
-            .catch(error);
+      run: function runFetchItem(items) {
+        let body = new URLSearchParams();
+        items.forEach((item) => {
+          body.append("id[]", item.id);
         });
+        body.append("sid", VuFind.getCurrentSearchId());
+        return fetch(
+          VuFind.path + url,
+          {
+            method: method,
+            headers: {
+              'Accept': acceptType,
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: body
+          }
+        );
       },
       success: itemStatusAjaxSuccess,
       failure: itemStatusAjaxFailure,
