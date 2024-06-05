@@ -38,6 +38,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -1010,14 +1011,16 @@ class MyResearchController extends AbstractBase
         }
 
         // Get saved favorites for selected list (or all lists if $listID is null)
-        $userResources = $user->getSavedData($id, $listID, $source);
+        $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
+        $userResources = $userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
         foreach ($userResources as $current) {
+            $currentList = $current->getUserList();
             $savedData[] = [
-                'listId' => $current->list_id,
-                'listTitle' => $current->list_title,
-                'notes' => $current->notes,
-                'tags' => $user->getTagString($id, $current->list_id, $source),
+                'listId' => $currentList->getId(),
+                'listTitle' => $currentList->getTitle(),
+                'notes' => $current->getNotes(),
+                'tags' => $user->getTagString($id, $currentList->getId(), $source),
             ];
         }
 
@@ -1026,10 +1029,10 @@ class MyResearchController extends AbstractBase
         // to a particular list ID:
         $containingLists = [];
         if (!empty($listID)) {
-            $userResources = $user->getSavedData($id, null, $source);
+            $userResources = $userResourceService->getFavoritesForRecord($id, $source, null, $user);
         }
         foreach ($userResources as $current) {
-            $containingLists[] = $current->list_id;
+            $containingLists[] = $current->getUserList()->getId();
         }
 
         // Send non-containing lists to the view for user selection:

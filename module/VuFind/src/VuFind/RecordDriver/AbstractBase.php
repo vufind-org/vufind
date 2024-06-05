@@ -335,6 +335,8 @@ abstract class AbstractBase implements
      * @param int $user_id ID of user to load tags from (null for all users)
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\View\Helper\Root\Record::getListNotes()
      */
     public function getListNotes($list_id = null, $user_id = null)
     {

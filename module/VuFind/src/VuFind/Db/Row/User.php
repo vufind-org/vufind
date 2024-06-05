@@ -401,6 +401,8 @@ class User extends RowGateway implements
      * @param string $source     Source of record to look up
      *
      * @return array
+     *
+     * @deprecated Use UserResourceServiceInterface::getFavoritesForRecord()
      */
     public function getSavedData(
         $resourceId,

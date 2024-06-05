@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
@@ -492,13 +493,14 @@ class AbstractRecord extends AbstractBase
 
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
-        $resources = $user->getSavedData(
+        $resources = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
             $driver->getUniqueId(),
+            $driver->getSourceIdentifier(),
             null,
-            $driver->getSourceIdentifier()
+            $user
         );
         foreach ($resources as $userResource) {
-            $listIds[] = $userResource->list_id;
+            $listIds[] = $userResource->getUserList()->getId();
         }
 
         // Loop through all user lists and sort out containing/non-containing lists
