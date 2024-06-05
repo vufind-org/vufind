@@ -134,7 +134,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet], .checkbox-filter[data-facet]');
+    var $facets = $container.find('div.collapse.in[data-facet], div.collapse.show[data-facet], .checkbox-filter[data-facet]');
     $facets.each(function addFacet() {
       if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
@@ -143,12 +143,19 @@ VuFind.register('sideFacets', function SideFacets() {
     if (facetList.length === 0) {
       return;
     }
+    // Update existing query from the current URL since it may have changed
+    // parameters (we can't use it as is, because it doesn't contain any suppressed query):
+    const query = new URLSearchParams($container.data('query'));
+    const windowQuery = new URLSearchParams(window.location.search.substring(1));
+    for (const [key, value] of windowQuery) {
+      query.set(key, value);
+    }
     var request = {
       method: 'getSideFacets',
       searchClassId: $container.data('searchClassId'),
       location: $container.data('location'),
       configIndex: $container.data('configIndex'),
-      query: $container.data('query'),
+      query: query.toString(),
       querySuppressed: $container.data('querySuppressed'),
       extraFields: $container.data('extraFields'),
       enabledFacets: facetList
@@ -185,48 +192,48 @@ VuFind.register('sideFacets', function SideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
   }
 
-  function facetSessionStorage(e) {
+  function facetSessionStorage(e, data) {
     var source = $('#result0 .hiddenSource').val();
     var id = e.target.id;
     var key = 'sidefacet-' + source + id;
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, document.getElementById(id).className);
-    } else {
-      sessionStorage.removeItem(key);
-    }
+    sessionStorage.setItem(key, data);
   }
 
   function init() {
     // Display "loading" message after user clicks facet:
     activateFacetBlocking();
 
-    // Side facet status saving
     $('.facet-group .collapse').each(function openStoredFacets(index, item) {
       var source = $('#result0 .hiddenSource').val();
       var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
       if (storedItem) {
-        var saveTransition = $.support.transition;
+        const oldTransitionState = VuFind.disableTransitions(item);
         try {
-          $.support.transition = false;
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
           } else if (!$(item).data('forceIn')) {
             $(item).collapse('hide');
           }
         } finally {
-          $.support.transition = saveTransition;
+          VuFind.restoreTransitions(item, oldTransitionState);
         }
       }
     });
-    $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
-    $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
+
+    // Save state on collapse/expand:
+    $('.facet-group').on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
+    $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
-    $('.side-facets-container-ajax')
-      .find('div.collapse[data-facet]:not(.in)')
-      .on('shown.bs.collapse', function expandFacet() {
-        loadAjaxSideFacets();
+    if (VuFind.getBootstrapMajorVersion() === 3) {
+      $('.side-facets-container-ajax')
+        .find('div.collapse[data-facet]:not(.in)')
+        .on('shown.bs.collapse', loadAjaxSideFacets);
+    } else {
+      document.querySelectorAll('.side-facets-container-ajax div[data-facet]').forEach((collapseEl) => {
+        collapseEl.addEventListener('shown.bs.collapse', loadAjaxSideFacets);
       });
+    }
     loadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
@@ -289,13 +296,13 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       });
       return false;
     });
-    const margin = 230;
-    $('#modal').on('show.bs.modal', function facetListHeight() {
+    const updateFacetListHeightFunc = function () {
+      const margin = 230;
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
-    });
-    $(window).on("resize", function facetListResize() {
-      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
-    });
+    };
+    $(window).on('resize', updateFacetListHeightFunc);
+    // Initial resize:
+    updateFacetListHeightFunc();
   }
 
   return { setup: setup };

@@ -10,7 +10,10 @@ VuFind.register('config', function Config() {
     }
   }
 
-  function get(key) {
+  function get(key, defaultValue = null) {
+    if (_config[key] === undefined) {
+      return defaultValue;
+    }
     return _config[key];
   }
 

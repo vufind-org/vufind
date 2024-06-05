@@ -61,8 +61,64 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      *
      * @return ?ResourceEntityInterface
      */
-    public function getResourceById($id): ?ResourceEntityInterface
+    public function getResourceById(int $id): ?ResourceEntityInterface
     {
         return $this->resourceTable->select(['id' => $id])->current();
+    }
+
+    /**
+     * Create a resource entity object.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function createEntity(): ResourceEntityInterface
+    {
+        return $this->resourceTable->createRow();
+    }
+
+    /**
+     * Get a set of records that do not have metadata stored in the resource
+     * table.
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function findMissingMetadata(): array
+    {
+        $callback = function ($select) {
+            $select->where->equalTo('title', '')
+                ->OR->isNull('author')
+                ->OR->isNull('year');
+        };
+        return iterator_to_array($this->resourceTable->select($callback));
+    }
+
+    /**
+     * Retrieve a single resource row by record ID/source. Return null if it does not exist.
+     *
+     * @param string $id     Record ID
+     * @param string $source Record source
+     *
+     * @return ?ResourceEntityInterface
+     */
+    public function getResourceByRecordId(string $id, string $source = DEFAULT_SEARCH_BACKEND): ?ResourceEntityInterface
+    {
+        return $this->resourceTable->select(['record_id' => $id, 'source' => $source])->current();
+    }
+
+    /**
+     * Retrieve resource entities matching a set of specified records.
+     *
+     * @param string[] $ids    Array of IDs
+     * @param string   $source Source of records to look up
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
+    {
+        $callback = function ($select) use ($ids, $source) {
+            $select->where->in('record_id', $ids);
+            $select->where->equalTo('source', $source);
+        };
+        return iterator_to_array($this->resourceTable->select($callback));
     }
 }

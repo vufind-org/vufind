@@ -115,6 +115,7 @@ class Facebook extends AbstractBase implements
         }
 
         // If we made it this far, we should log in the user!
+        $userService = $this->getUserService();
         $user = $this->getUserTable()->getByUsername($details->id);
         if (isset($details->first_name)) {
             $user->firstname = $details->first_name;
@@ -123,11 +124,11 @@ class Facebook extends AbstractBase implements
             $user->lastname = $details->last_name;
         }
         if (isset($details->email)) {
-            $user->updateEmail($details->email);
+            $userService->updateUserEmail($user, $details->email);
         }
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 

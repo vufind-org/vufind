@@ -34,7 +34,6 @@ use Laminas\Session\SessionManager;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
@@ -604,7 +603,7 @@ class Manager implements
     /**
      * Updates the user information in the session.
      *
-     * @param UserRow $user User object to store in the session
+     * @param UserEntityInterface $user User object to store in the session
      *
      * @return void
      */
@@ -655,15 +654,15 @@ class Manager implements
     /**
      * Update a user's email from the request.
      *
-     * @param UserRow $user  Object representing user being updated.
-     * @param string  $email New email address to set (must be pre-validated!).
+     * @param UserEntityInterface $user  Object representing user being updated.
+     * @param string              $email New email address to set (must be pre-validated!).
      *
      * @throws AuthException
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function updateEmail(UserRow $user, $email)
+    public function updateEmail(UserEntityInterface $user, $email)
     {
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
@@ -672,7 +671,7 @@ class Manager implements
             // email address:
             $user->setPendingEmail($email === $user->getEmail() ? '' : $email);
         } else {
-            $user->updateEmail($email, true);
+            $this->userService->updateUserEmail($user, $email, true);
             $user->setPendingEmail('');
         }
         $this->userService->persistEntity($user);
@@ -875,7 +874,7 @@ class Manager implements
     /**
      * Update common user attributes on login
      *
-     * @param \VuFind\Db\Row\User $user       User object
+     * @param UserEntityInterface $user       User object
      * @param ?string             $authMethod Authentication method to user
      *
      * @return void

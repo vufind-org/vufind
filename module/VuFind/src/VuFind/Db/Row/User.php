@@ -35,7 +35,10 @@ use Laminas\Db\Sql\Select;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
 
@@ -448,12 +451,11 @@ class User extends RowGateway implements
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         // Retrieve a list of resource IDs:
-        $resourceTable = $this->getDbTable('Resource');
-        $resources = $resourceTable->findResources($ids, $source);
+        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
 
         $resourceIDs = [];
         foreach ($resources as $current) {
-            $resourceIDs[] = $current->id;
+            $resourceIDs[] = $current->getId();
         }
 
         // Remove Resource (related tags are also removed implicitly)
@@ -598,11 +600,11 @@ class User extends RowGateway implements
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
-        $table = $this->getDbTable('UserList');
+        $listService = $this->getDbService(UserListServiceInterface::class);
         foreach ($lists as $current) {
             // The rows returned by getLists() are read-only, so we need to retrieve
             // a new object for each row in order to perform a delete operation:
-            $list = $table->getExisting($current->id);
+            $list = $listService->getUserListById($current->getId());
             $list->delete($this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');
@@ -655,23 +657,19 @@ class User extends RowGateway implements
     /**
      * Update the user's email address, if appropriate. Note that this does NOT
      * automatically save the row; it assumes a subsequent call will be made to
-     * the save() method.
+     * persist the data.
      *
      * @param string $email        New email address
      * @param bool   $userProvided Was this email provided by the user (true) or
      * an automated lookup (false)?
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Service\UserServiceInterface::updateUserEmail()
      */
     public function updateEmail($email, $userProvided = false)
     {
-        // Only change the email if it is a non-empty value and was user provided
-        // (the user is always right) or the previous email was NOT user provided
-        // (a value may have changed in an upstream system).
-        if (!empty($email) && ($userProvided || !$this->user_provided_email)) {
-            $this->email = $email;
-            $this->user_provided_email = $userProvided ? 1 : 0;
-        }
+        $this->getDbService(UserServiceInterface::class)->updateUserEmail($this, $email, $userProvided);
     }
 
     /**

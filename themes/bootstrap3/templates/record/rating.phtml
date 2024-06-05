@@ -7,7 +7,7 @@
     . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('rating_add_or_update') . '</li>';
 
-  $ratingData = $this->driver->getRatingBreakdown([1 => [10, 29], 2 => [30, 49], 3 => [50, 69], 4 => [70, 89], 5 => [90, 100]]);
+  $ratingData = $this->ratings()->getRatingBreakdown($this->driver, [1 => [10, 29], 2 => [30, 49], 3 => [50, 69], 4 => [70, 89], 5 => [90, 100]]);
   krsort($ratingData['groups']);
   $groupTitleTransEscAttr = [];
   $ranges = [1 => ['10', '20'], 2 => ['30', '40'], 3 => ['50', '60'], 4 => ['70', '80'], 5 => ['90', '100']];

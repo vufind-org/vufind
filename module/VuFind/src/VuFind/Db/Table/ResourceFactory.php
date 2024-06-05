@@ -68,7 +68,10 @@ class ResourceFactory extends GatewayFactory
             throw new \Exception('Unexpected options sent to factory!');
         }
         $converter = $container->get(\VuFind\Date\Converter::class);
-        $loader = $container->get(\VuFind\Record\Loader::class);
-        return parent::__invoke($container, $requestedName, [$converter, $loader]);
+        // Wrapper needed to avoid circular dependency:
+        $populatorLoader = function () use ($container) {
+            return $container->get(\VuFind\Record\ResourcePopulator::class);
+        };
+        return parent::__invoke($container, $requestedName, [$converter, $populatorLoader]);
     }
 }

@@ -216,17 +216,21 @@ class Bootstrapper
      */
     protected function initUserLanguage(): void
     {
-        // Store last selected language in user account, if applicable:
-        $settings = $this->container->get(LocaleSettings::class);
-        $language = $settings->getUserLocale();
-        $authManager = $this->container->get(\VuFind\Auth\Manager::class);
-        if (
-            ($user = $authManager->getUserObject())
-            && $user->getLastLanguage() != $language
-        ) {
-            $user->setLastLanguage($language);
-            $this->getDbService(\VuFind\Db\Service\UserService::class)->persistEntity($user);
-        }
+        $callback = function ($event) {
+            // Store last selected language in user account, if applicable:
+            $settings = $this->container->get(LocaleSettings::class);
+            $language = $settings->getUserLocale();
+            $authManager = $this->container->get(\VuFind\Auth\Manager::class);
+            if (
+                ($user = $authManager->getUserObject())
+                && $user->getLastLanguage() != $language
+            ) {
+                $user->setLastLanguage($language);
+                $this->getDbService(\VuFind\Db\Service\UserService::class)->persistEntity($user);
+            }
+        };
+        $this->events->attach('dispatch.error', $callback);
+        $this->events->attach('dispatch', $callback);
     }
 
     /**
@@ -381,11 +385,12 @@ class Bootstrapper
         if (PHP_SAPI === 'cli') {
             return;
         }
-        $rateLimiterManager = $this->container->get(\VuFind\RateLimiter\RateLimiterManager::class);
-        if (!$rateLimiterManager->isEnabled()) {
-            return;
-        }
-        $callback = function ($event) use ($rateLimiterManager) {
+        $callback = function ($event) {
+            // Create rate limiter manager here so that we don't e.g. initialize the session too early:
+            $rateLimiterManager = $this->container->get(\VuFind\RateLimiter\RateLimiterManager::class);
+            if (!$rateLimiterManager->isEnabled()) {
+                return;
+            }
             $result = $rateLimiterManager->check($event);
             if (!$result['allow']) {
                 $response = $event->getResponse();
