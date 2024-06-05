@@ -269,7 +269,7 @@ class LibraryCardsController extends AbstractBase
     /**
      * Process the "edit library card" submission.
      *
-     * @param \VuFind\Db\Row\User $user Logged in user
+     * @param UserEntityInterface $user Logged in user
      *
      * @return object|bool        Response object if redirect is
      * needed, false if form needs to be redisplayed.
