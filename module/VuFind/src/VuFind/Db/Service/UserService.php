@@ -29,9 +29,13 @@
 
 namespace VuFind\Db\Service;
 
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\Session\Container as SessionContainer;
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -43,139 +47,162 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserService extends AbstractDbService implements LoggerAwareInterface, DbServiceAwareInterface
+class UserService extends AbstractDbService implements
+    DbTableAwareInterface,
+    LoggerAwareInterface,
+    UserServiceInterface,
+    UserSessionPersistenceInterface
 {
+    use DbTableAwareTrait;
     use LoggerAwareTrait;
-    use DbServiceAwareTrait;
 
     /**
-     * Is encryption enabled?
+     * Constructor
      *
-     * @var bool
+     * @param SessionContainer $userSessionContainer Session container for user data
      */
-    protected $encryptionEnabled = null;
+    public function __construct(protected SessionContainer $userSessionContainer)
+    {
+    }
 
     /**
-     * Encryption key used for catalog passwords (null if encryption disabled):
+     * Retrieve a user object from the database based on ID.
      *
-     * @var string
+     * @param int $id ID.
+     *
+     * @return ?UserEntityInterface
      */
-    protected $encryptionKey = null;
+    public function getUserById(int $id): ?UserEntityInterface
+    {
+        return $this->getDbTable('User')->getById($id);
+    }
 
     /**
-     * VuFind configuration
+     * Retrieve a user object from the database based on the given field.
+     * Field name must be id, username or cat_id.
      *
-     * @var \Laminas\Config\Config
+     * @param string          $fieldName  Field name
+     * @param int|null|string $fieldValue Field value
+     *
+     * @return ?UserEntityInterface
      */
-    protected $config = null;
+    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
+    {
+        switch ($fieldName) {
+            case 'id':
+                return $this->getDbTable('User')->getById($fieldValue);
+            case 'username':
+                return $this->getDbTable('User')->getByUsername($fieldValue, false);
+            case 'cat_id':
+                return $this->getDbTable('User')->getByCatalogId($fieldValue);
+        }
+        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+    }
 
     /**
-     * Configuration setter
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * persist the data.
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param UserEntityInterface $user         User entity to update
+     * @param string              $email        New email address
+     * @param bool                $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
      *
      * @return void
      */
-    public function setConfig(\Laminas\Config\Config $config)
-    {
-        $this->config = $config;
+    public function updateUserEmail(
+        UserEntityInterface $user,
+        string $email,
+        bool $userProvided = false
+    ): void {
+        // Only change the email if it is a non-empty value and was user provided
+        // (the user is always right) or the previous email was NOT user provided
+        // (a value may have changed in an upstream system).
+        if (!empty($email) && ($userProvided || !$user->hasUserProvidedEmail())) {
+            $user->setEmail($email);
+            $user->setHasUserProvidedEmail($userProvided);
+        }
     }
 
     /**
-     * Is ILS password encryption enabled?
+     * Update session container to store data representing a user (used by privacy mode).
+     *
+     * @param UserEntityInterface $user User to store in session.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function addUserDataToSession(UserEntityInterface $user): void
+    {
+        if ($user instanceof UserRow) {
+            $this->userSessionContainer->userDetails = $user->toArray();
+        } else {
+            throw new \Exception($user::class . ' not supported by addUserDataToSession()');
+        }
+    }
+
+    /**
+     * Update session container to store user ID (used outside of privacy mode).
+     *
+     * @param int $id User ID
+     *
+     * @return void
+     */
+    public function addUserIdToSession(int $id): void
+    {
+        $this->userSessionContainer->userId = $id;
+    }
+
+    /**
+     * Clear the user data from the session.
+     *
+     * @return void
+     */
+    public function clearUserFromSession(): void
+    {
+        unset($this->userSessionContainer->userId);
+        unset($this->userSessionContainer->userDetails);
+    }
+
+    /**
+     * Build a user entity using data from a session container. Return null if user
+     * data cannot be found.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserFromSession(): ?UserEntityInterface
+    {
+        // If a user ID was persisted, that takes precedence:
+        if (isset($this->userSessionContainer->userId)) {
+            return $this->getUserById($this->userSessionContainer->userId);
+        }
+        if (isset($this->userSessionContainer->userDetails)) {
+            $user = $this->createEntity();
+            $user->exchangeArray($this->userSessionContainer->userDetails);
+            return $user;
+        }
+        return null;
+    }
+
+    /**
+     * Is there user data currently stored in the session container?
      *
      * @return bool
      */
-    public function passwordEncryptionEnabled()
+    public function hasUserSessionData(): bool
     {
-        if (null === $this->encryptionEnabled) {
-            $this->encryptionEnabled
-                = $this->config->Authentication->encrypt_ils_password ?? false;
-        }
-        return $this->encryptionEnabled;
+        return isset($this->userSessionContainer->userId)
+            || isset($this->userSessionContainer->userDetails);
     }
 
     /**
-     * Decrypt text.
+     * Create a new user entity.
      *
-     * @param string $text The text to decrypt
-     *
-     * @return string|bool The decrypted string (or false if invalid)
-     * @throws \VuFind\Exception\PasswordSecurity
+     * @return UserEntityInterface
      */
-    public function decrypt(string $text)
+    public function createEntity(): UserEntityInterface
     {
-        return $this->encryptOrDecrypt($text, false);
-    }
-
-    /**
-     * Encrypt text.
-     *
-     * @param string $text The text to encrypt
-     *
-     * @return string|bool The encrypted string (or false if invalid)
-     * @throws \VuFind\Exception\PasswordSecurity
-     */
-    public function encrypt(string $text)
-    {
-        return $this->encryptOrDecrypt($text, true);
-    }
-
-    /**
-     * This is a central function for encrypting and decrypting so that
-     * logic is all in one location
-     *
-     * @param string $text    The text to be encrypted or decrypted
-     * @param bool   $encrypt True if we wish to encrypt text, False if we wish to
-     * decrypt text.
-     *
-     * @return string|bool    The encrypted/decrypted string
-     * @throws \VuFind\Exception\PasswordSecurity
-     */
-    protected function encryptOrDecrypt($text, $encrypt = true)
-    {
-        // Ignore empty text:
-        if (empty($text)) {
-            return $text;
-        }
-
-        $configAuth = $this->config->Authentication ?? new \Laminas\Config\Config([]);
-
-        // Load encryption key from configuration if not already present:
-        if ($this->encryptionKey === null) {
-            if (empty($configAuth->ils_encryption_key)) {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'ILS password encryption on, but no key set.'
-                );
-            }
-
-            $this->encryptionKey = $configAuth->ils_encryption_key;
-        }
-
-        // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
-
-        // Check if OpenSSL error is caused by blowfish support
-        try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
-            if ($algo == 'blowfish') {
-                trigger_error(
-                    'Deprecated encryption algorithm (blowfish) detected',
-                    E_USER_DEPRECATED
-                );
-            }
-        } catch (\InvalidArgumentException $e) {
-            if ($algo == 'blowfish') {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'The blowfish encryption algorithm ' .
-                    'is not supported by your version of OpenSSL. ' .
-                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
-                );
-            } else {
-                throw $e;
-            }
-        }
-        $cipher->setKey($this->encryptionKey);
-        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
+        return $this->getDbTable('User')->createRow();
     }
 }

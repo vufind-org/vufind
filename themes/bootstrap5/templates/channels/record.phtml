@@ -1,0 +1,11 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Channels') . ' - ' . $this->driver->getBreadcrumb());
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('channels-home') . '">' . $this->transEsc('Channels') . '</a></li> <li class="active">' . $this->escapeHtml($this->driver->getBreadcrumb()) . '</li>';
+
+    // Set up query parameters for channel list:
+    $this->queryParams = 'id=' . urlencode($driver->getUniqueId()) . '&source=' . urlencode($driver->getSourceIdentifier());
+?>
+<?=$this->render('channels/channelList.phtml')?>

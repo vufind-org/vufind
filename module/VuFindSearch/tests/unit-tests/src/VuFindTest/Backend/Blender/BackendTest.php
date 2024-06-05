@@ -909,12 +909,12 @@ class BackendTest extends TestCase
         };
 
         $this->sharedEventManager->attach(
-            'VuFind\Search',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_PRE,
             $onSearchPre
         );
         $this->sharedEventManager->attach(
-            'VuFind\Search',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_POST,
             $onSearchPost
         );
@@ -930,12 +930,12 @@ class BackendTest extends TestCase
             ]
         );
         $this->sharedEventManager->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_PRE,
             [$backend, 'onSearchPre']
         );
         $this->sharedEventManager->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_POST,
             [$backend, 'onSearchPost']
         );
@@ -954,7 +954,7 @@ class BackendTest extends TestCase
             'params' => $params,
         ];
         $eventManager = new EventManager($this->sharedEventManager);
-        $eventManager->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
+        $eventManager->setIdentifiers([\VuFindSearch\Service::class]);
         $eventManager->trigger(
             \VuFindSearch\Service::EVENT_PRE,
             $backend,

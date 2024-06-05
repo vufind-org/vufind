@@ -40,7 +40,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\ILS\Logic\ItemStatus;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -476,14 +476,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
         switch ($status) {
             case 'Uncertain':
-                $availability = ItemStatus::STATUS_UNCERTAIN;
+                $availability = AvailabilityStatusInterface::STATUS_UNCERTAIN;
                 break;
             case 'Available':
                 if (rand(1, 2) === 1) {
                     // Legacy boolean value
                     $availability = true;
                 } else {
-                    $availability = ItemStatus::STATUS_AVAILABLE;
+                    $availability = AvailabilityStatusInterface::STATUS_AVAILABLE;
                     $status = 'Item in Library';
                 }
                 break;
@@ -492,7 +492,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     // Legacy boolean value
                     $availability = false;
                 } else {
-                    $availability = ItemStatus::STATUS_UNAVAILABLE;
+                    $availability = AvailabilityStatusInterface::STATUS_UNAVAILABLE;
                 }
                 break;
         }
@@ -751,18 +751,17 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     /**
      * Set Status
      *
-     * @param array $id      id for record
-     * @param array $holding associative array with options to specify
+     * @param string $id      id for record
+     * @param array  $holding associative array with options to specify
      *      number, barcode, availability, status, location,
      *      reserve, callnumber, duedate, is_holdable, and addLink
-     * @param bool  $append  add another record or replace current record
-     * @param array $patron  Patron data
+     * @param bool   $append  add another record or replace current record
+     * @param array  $patron  Patron data
      *
      * @return array
      */
-    protected function setStatus($id, $holding = [], $append = true, $patron = null)
+    protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
     {
-        $id = (string)$id;
         $session = $this->getSession($patron['id'] ?? null);
         $i = isset($session->statuses[$id])
             ? count($session->statuses[$id]) + 1 : 1;

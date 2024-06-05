@@ -498,16 +498,12 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUserObject()
     {
-        $data = [
-            'id' => 2,
-            'username' => 'foo',
-            'email' => 'fake@myuniversity.edu',
-            'created' => '2000-01-01 00:00:00',
-            'last_language' => 'en',
-        ];
-        $adapter = $this->container->createMock(\Laminas\Db\Adapter\Adapter::class);
-        $user = new \VuFind\Db\Row\User($adapter);
-        $user->populate($data, true);
+        $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+        $user->method('getId')->willReturn(2);
+        $user->method('getUsername')->willReturn('foo');
+        $user->method('getEmail')->willReturn('fake@myuniversity.edu');
+        $user->method('getCreated')->willReturn(\DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00'));
+        $user->method('getLastLanguage')->willReturn('en');
         return $user;
     }
 

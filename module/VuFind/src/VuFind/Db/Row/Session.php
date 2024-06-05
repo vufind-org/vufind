@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
+use VuFind\Db\Entity\SessionEntityInterface;
+
 /**
  * Row Definition for session
  *
@@ -37,8 +40,14 @@ namespace VuFind\Db\Row;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property ?string $session_id
+ * @property string  $data
+ * @property int     $last_used
+ * @property string  $created
  */
-class Session extends RowGateway
+class Session extends RowGateway implements SessionEntityInterface
 {
     /**
      * Constructor
@@ -48,5 +57,87 @@ class Session extends RowGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'session', $adapter);
+    }
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Session Id setter
+     *
+     * @param ?string $sid Session Id.
+     *
+     * @return SessionEntityInterface
+     */
+    public function setSessionId(?string $sid): SessionEntityInterface
+    {
+        $this->session_id = $sid;
+        return $this;
+    }
+
+    /**
+     * Created setter.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return SessionEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): SessionEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Set time the session is last used.
+     *
+     * @param int $lastUsed Time last used
+     *
+     * @return SessionEntityInterface
+     */
+    public function setLastUsed(int $lastUsed): SessionEntityInterface
+    {
+        $this->last_used = $lastUsed;
+        return $this;
+    }
+
+    /**
+     * Get time when the session was last used.
+     *
+     * @return int
+     */
+    public function getLastUsed(): int
+    {
+        return $this->last_used;
+    }
+
+    /**
+     * Session data setter.
+     *
+     * @param ?string $data Session data.
+     *
+     * @return SessionEntityInterface
+     */
+    public function setData(?string $data): SessionEntityInterface
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Get session data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
     }
 }

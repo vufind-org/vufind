@@ -73,10 +73,11 @@ class SimulatedSSO extends AbstractBase
     /**
      * Constructor
      *
-     * @param callable $url    Session initiator URL callback
-     * @param array    $config Configuration settings
+     * @param callable         $url              Session initiator URL callback
+     * @param array            $config           Configuration settings
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
-    public function __construct($url, array $config = [])
+    public function __construct($url, array $config, protected ILSAuthenticator $ilsAuthenticator)
     {
         $this->getSessionInitiatorCallback = $url;
         $this->simulatedSSOConfig = $config;
@@ -97,6 +98,7 @@ class SimulatedSSO extends AbstractBase
         if (!$username) {
             throw new AuthException('Simulated failure');
         }
+        $userService = $this->getUserService();
         $user = $this->getUserTable()->getByUsername($username);
 
         // Get attribute configuration -- use defaults if no value is set, and use an
@@ -110,7 +112,7 @@ class SimulatedSSO extends AbstractBase
         $catPassword = null;
         foreach ($attribs as $attribute => $value) {
             if ($attribute == 'email') {
-                $user->updateEmail($value);
+                $userService->updateUserEmail($user, $value);
             } elseif ($attribute != 'cat_password') {
                 $user->$attribute = $value ?? '';
             } else {
@@ -120,12 +122,12 @@ class SimulatedSSO extends AbstractBase
         if (!empty($user->cat_username)) {
             $user->saveCredentials(
                 $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 

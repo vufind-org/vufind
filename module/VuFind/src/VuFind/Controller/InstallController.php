@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
-use VuFind\Db\Service\UserService;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -395,7 +395,7 @@ class InstallController extends AbstractBase
         } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } elseif ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted()) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
@@ -570,7 +570,11 @@ class InstallController extends AbstractBase
         if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
-            $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+            try {
+                $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
+            } catch (\Exception $e) {
+                $status = false;
+            }
         }
         return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }
@@ -770,7 +774,7 @@ class InstallController extends AbstractBase
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
         $userRows = $this->getTable('user')->getInsecureRows();
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
@@ -807,7 +811,6 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
-        $userService = $this->getDbService(UserService::class);
         $userRows = $this->getTable('user')->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
@@ -825,12 +828,14 @@ class InstallController extends AbstractBase
             $msg = count($userRows) . ' user row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
-        $cardRows = $this->getTable('usercard')->getInsecureRows();
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $cardRows = $cardService->getInsecureRows();
+        $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
         if (count($cardRows) > 0) {
             foreach ($cardRows as $row) {
-                $row->cat_pass_enc = $userService->encrypt($row->cat_password);
-                $row->cat_password = null;
-                $row->save();
+                $row->setCatPassEnc($ilsAuthenticator->encrypt($row->getRawCatPassword()));
+                $row->setRawCatPassword(null);
+                $cardService->persistEntity($row);
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');

@@ -1,0 +1,9 @@
+<?php $this->headTitle($this->translate('Help')); ?>
+<?php if ($help = $this->helpText()->render($topic)): ?>
+  <?php foreach ($this->helpText()->getWarnings() as $warning): ?>
+    <p class="alert alert-warning"><?=$this->transEsc($warning)?></p>
+  <?php endforeach; ?>
+  <?=$help?>
+<?php else: ?>
+  <p class="alert alert-danger"><?=$this->transEsc('help_page_missing')?></p>
+<?php endif; ?>

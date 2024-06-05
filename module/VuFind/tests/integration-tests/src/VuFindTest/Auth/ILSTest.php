@@ -29,10 +29,6 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Stdlib\Parameters;
-use VuFind\Auth\ILS;
-use VuFind\Db\Table\User;
-
 /**
  * ILS authentication test class.
  *
@@ -118,6 +114,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ),
             $authenticator
         );
+        $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->setDbTableManager($this->getLiveTableManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
@@ -324,7 +321,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $patron = ['cat_username' => 'testuser'];
         $user = $this->getAuth($driver, $patron)->updatePassword($request);
         $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('newpass', $user->getCatPassword());
+        $this->assertEquals('newpass', $user->getRawCatPassword());
     }
 
     /**
@@ -350,7 +347,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $auth->setConfig(new \Laminas\Config\Config($config));
         $user = $auth->updatePassword($request);
         $this->assertEquals('1234', $user->username);
-        $this->assertEquals('newpass', $user->getCatPassword());
+        $this->assertEquals('newpass', $user->getRawCatPassword());
     }
 
     /**

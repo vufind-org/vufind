@@ -99,12 +99,12 @@ class RecommendListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search\SearchRunner',
+            \VuFind\Search\SearchRunner::class,
             SearchRunner::EVENT_CONFIGURED,
             [$this, 'onSearchConfigured']
         );
         $manager->attach(
-            'VuFind\Search\SearchRunner',
+            \VuFind\Search\SearchRunner::class,
             SearchRunner::EVENT_COMPLETE,
             [$this, 'onSearchComplete']
         );

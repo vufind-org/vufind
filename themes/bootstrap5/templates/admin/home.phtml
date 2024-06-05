@@ -1,0 +1,66 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Home'));
+
+  // Set up map of core name => label
+  $coreLabels = [
+    'biblio' => $this->translate('Bibliographic Index'),
+    'authority' => $this->translate('Authority Index'),
+  ];
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('VuFind Administration')?></h2>
+  <?php $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
+  <?php foreach ($cores as $core): ?>
+    <?php $coreName = (string)$core['name']; ?>
+    <?php $coreLabel = $coreLabels[$coreName] ?? ucwords($coreName) . ' Index'; ?>
+    <h3><?=$this->transEsc($coreLabel)?></h3>
+    <?php
+      // If a core is offline or hasn't been initialized yet, it won't have valid
+      // uptime data; use this knowledge to display an appropriate message.
+      $uptimeData = $core->xpath('//lst[@name="' . $coreName . '"]/long[@name="uptime"]');
+      $uptime = (string)array_pop($uptimeData);
+    ?>
+    <?php if (!is_numeric($uptime)): ?>
+      <p><i><?=$this->transEsc('System Unavailable')?></i></p>
+    <?php else: ?>
+      <table class="table table-striped">
+        <tr>
+          <th><?=$this->transEsc('Record Count')?>: </th>
+          <?php $recordCount = $core->xpath('//lst[@name="' . $coreName . '"]/lst/int[@name="numDocs"]') ?>
+          <td><?=$this->escapeHtml((string)array_pop($recordCount))?></td>
+        </tr>
+        <tr>
+          <th><?=$this->transEsc('Start Time')?>: </th>
+          <?php $startTime = $core->xpath('//lst[@name="' . $coreName . '"]/date[@name="startTime"]') ?>
+          <td>
+            <?php $startTime = (string)array_pop($startTime); ?>
+            <?=!empty($startTime)
+              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))
+              : '-'
+            ?>
+          </td>
+        </tr>
+        <tr>
+          <th><?=$this->transEsc('Last Modified')?>: </th>
+          <?php $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
+          <td>
+            <?php $lastModified = (string)array_pop($lastModified); ?>
+            <?=!empty($lastModified)
+              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))
+              : '-'
+            ?>
+            </td>
+        </tr>
+        <tr>
+          <th><?=$this->transEsc('Uptime')?>: </th>
+          <td><?=$this->printms($uptime)?></td>
+        </tr>
+      </table>
+    <?php endif; ?>
+  <?php endforeach; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render('admin/menu.phtml')?>
+</div>

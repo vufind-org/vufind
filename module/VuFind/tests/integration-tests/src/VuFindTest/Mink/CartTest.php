@@ -109,7 +109,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     'No items were selected. '
@@ -139,7 +139,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     '0 item(s) added to your Book Bag 2 item(s) are either '
@@ -612,7 +612,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
-        $this->clickCss($page, '.modal-body input[name=submit]');
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
@@ -651,7 +651,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
@@ -698,7 +698,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $windowNames = $session->getWindowNames();
         $windowCount = count($session->getWindowNames());
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->assertEqualsWithTimeout(
             $windowCount + 1,

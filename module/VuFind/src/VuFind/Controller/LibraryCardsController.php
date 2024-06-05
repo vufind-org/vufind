@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -58,10 +60,11 @@ class LibraryCardsController extends AbstractBase
 
         // Connect to the ILS for login drivers:
         $catalog = $this->getILS();
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
 
         return $this->createViewModel(
             [
-                'libraryCards' => $user->getLibraryCards(),
+                'libraryCards' => $cardService->getLibraryCards($user),
                 'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
                 'allowConnectingCards' => $this->getAuthManager()
                     ->supportsConnectingLibraryCard(),
@@ -90,17 +93,18 @@ class LibraryCardsController extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             if ($redirect = $this->processEditLibraryCard($user)) {
                 return $redirect;
             }
         }
 
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $card = $cardService->getOrCreateLibraryCard($user, $id == 'NEW' ? null : $id);
 
         $target = null;
-        $username = $card->cat_username;
+        $username = $card->getCatUsername();
 
         $loginSettings = $this->getILSLoginSettings();
         // Split target and username if multiple login targets are available:
@@ -108,7 +112,7 @@ class LibraryCardsController extends AbstractBase
             [$target, $username] = explode('.', $username, 2);
         }
 
-        $cardName = $this->params()->fromPost('card_name', $card->card_name);
+        $cardName = $this->params()->fromPost('card_name', $card->getCardName());
         $username = $this->params()->fromPost('username', $username);
         $target = $this->params()->fromPost('target', $target);
 
@@ -149,7 +153,7 @@ class LibraryCardsController extends AbstractBase
             $this->params()->fromQuery('confirm')
         );
         if ($confirm) {
-            $user->deleteLibraryCard($cardID);
+            $this->getDbService(UserCardServiceInterface::class)->deleteLibraryCard($user, $cardID);
 
             // Success Message
             $this->flashMessenger()->addMessage('Library Card Deleted', 'success');
@@ -197,14 +201,15 @@ class LibraryCardsController extends AbstractBase
         if (null === $cardID) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        $user->activateLibraryCard($cardID);
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $cardService->activateLibraryCard($user, $cardID);
 
         // Connect to the ILS and check that the credentials are correct:
         try {
             $catalog = $this->getILS();
             $patron = $catalog->patronLogin(
-                $user->cat_username,
-                $user->getCatPassword()
+                $user->getCatUsername(),
+                $this->getILSAuthenticator()->getCatPasswordForUser($user)
             );
             if (!$patron) {
                 $this->flashMessenger()
@@ -289,8 +294,9 @@ class LibraryCardsController extends AbstractBase
 
         // Check the credentials if the username is changed or a new password is
         // entered:
-        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
-        if ($card->cat_username !== $username || trim($password)) {
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $card = $cardService->getOrCreateLibraryCard($user, $id == 'NEW' ? null : $id);
+        if ($card->getCatUsername() !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
             if (
@@ -335,7 +341,8 @@ class LibraryCardsController extends AbstractBase
         }
 
         try {
-            $user->saveLibraryCard(
+            $cardService->persistLibraryCardData(
+                $user,
                 $id == 'NEW' ? null : $id,
                 $cardName,
                 $username,
@@ -352,8 +359,8 @@ class LibraryCardsController extends AbstractBase
     /**
      * Process library card addition via an email link
      *
-     * @param User   $user User object
-     * @param string $hash Hash
+     * @param UserEntityInterface $user User object
+     * @param string              $hash Hash
      *
      * @return \Laminas\Http\Response Response object
      */
@@ -363,7 +370,9 @@ class LibraryCardsController extends AbstractBase
             ->get(\VuFind\Auth\EmailAuthenticator::class);
         try {
             $info = $emailAuthenticator->authenticate($hash);
-            $user->saveLibraryCard(
+            $cardService = $this->getDbService(UserCardServiceInterface::class);
+            $cardService->persistLibraryCardData(
+                $user,
                 'NEW' === $info['cardID'] ? null : $info['cardID'],
                 $info['cardName'],
                 $info['cat_username'],

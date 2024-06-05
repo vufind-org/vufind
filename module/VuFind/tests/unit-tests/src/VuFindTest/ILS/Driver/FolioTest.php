@@ -924,6 +924,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
+                    'folio_location_is_active' => true,
                 ],
             ],
             'electronic_holdings' => [],
@@ -1003,6 +1004,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
+                    'folio_location_is_active' => true,
                 ],
             ],
             'electronic_holdings' => [],
@@ -1048,6 +1050,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
+                    'folio_location_is_active' => true,
                 ],
             ],
             'electronic_holdings' => [],
@@ -1091,6 +1094,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
+                    'folio_location_is_active' => true,
                 ],
             ],
             'electronic_holdings' => [],
@@ -1136,6 +1140,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
+                    'folio_location_is_active' => true,
                 ],
                 1 => [
                     'callnumber_prefix' => '',
@@ -1160,6 +1165,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
+                    'folio_location_is_active' => true,
                 ],
             ],
             'electronic_holdings' => [],
@@ -1285,5 +1291,57 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $result = iterator_to_array($result, false);
 
         $this->assertCount(2, $result);
+    }
+
+    /**
+     * Test getBoundWithRecords with an item with six boundWithTitles.
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testGetBoundWithRecords(): void
+    {
+        $this->createConnector('get-bound-with-records');
+        $item = [
+            'id' => 'bc3fd525-4254-4075-845b-1428986d811b',
+        ];
+        $result = $this->callMethod($this->driver, 'getBoundWithRecords', [(object)$item]);
+        $expected = [
+            [
+                'title' => 'Slavery as it once prevailed in Massachusetts : A lecture for the Massachusetts ' .
+                    'Historical Society ...',
+                'bibId' => '12cb5553-c1bb-48c8-b439-aebc5202970f',
+            ],
+            [
+                'title' => 'Ueber sclaverei, sclaven-emancipation und die einwanderung "freier neger" nach ' .
+                    'den colonieen; aufzeichnungen eines weitgereisten.',
+                'bibId' => 'f56d3ce3-b31f-4320-8e08-dfc2f9a96c4a',
+            ],
+            [
+                'title' => 'Concerning a full understanding of the southern attitude toward slavery, by ' .
+                    'John Douglass Van Horne.',
+                'bibId' => '6abe72a5-f518-408a-8a67-fe1ec15627b8',
+            ],
+            [
+                'title' => 'American slavery : echoes and glimpses of prophecy / by Daniel S. Whitney.',
+                'bibId' => '1c4cda9b-3506-45e7-b444-0e901cc661e3',
+            ],
+            [
+                'title' => 'The Tract society and slavery. Speeches of Chief Justice Williams, Judge Parsons, ' .
+                    'and ex-Governor Ellsworth: delivered in the Center Church, Hartford, Conn., at the ' .
+                    'anniversary of the Hartford branch of the American Tract Society, January 9th, 1859.',
+                'bibId' => '03684060-3bc0-4a66-874c-854e50ed84fe',
+            ],
+            [
+                'title' => 'Case of Passmore Williamson : report of the proceedings on the writ of habeas corpus, ' .
+                    'issued by the Hon. John K. Kane, judge of the District Court of the United States for the ' .
+                    'Eastern District of Pennsylvania, in the case of the United States of America ex rel. John H. ' .
+                    'Wheeler vs. Passmore Williamson, including the several opinions delivered, and the arguments of ' .
+                    'counsel / reported by Arthur Cannon.',
+                'bibId' => '080e5167-7a50-4513-b0f3-0f5bf835df7b',
+            ],
+        ];
+        $this->assertEquals($expected, $result);
     }
 }

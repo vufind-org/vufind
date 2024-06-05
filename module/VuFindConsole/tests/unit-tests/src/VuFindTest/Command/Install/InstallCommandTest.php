@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Import;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -48,18 +49,44 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
+     * Data provider for testing with or without the skip-backups flag.
+     *
+     * @return array[]
+     */
+    public static function skipBackupsProvider(): array
+    {
+        return [
+            'skip backups' => [true],
+            'with backups' => [false],
+        ];
+    }
+
+    /**
      * Test the interactive installation process.
      *
+     * @param bool $skipBackups Should we test with backups disabled?
+     *
      * @return void
+     *
+     * @dataProvider skipBackupsProvider
      */
-    public function testInteractiveInstallation()
+    public function testInteractiveInstallation(bool $skipBackups): void
     {
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
-        $command = $this->getMockCommand(
-            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
-        );
-        $command->expects($this->exactly(3))->method('backUpFile')->will($this->returnValue(true));
+        $methodsToMock = ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk'];
+        // If we test without the --skip-backups flag, we need to mock the backUpFile method,
+        // because we don't want the test to cause files to get written to disk. If we test
+        // with the flag, we can skip this mocking because the actual method will bypass
+        // file writing. We will know the flag worked, because if something goes wrong, the
+        // backup process will add messages to the output which will cause an assertion to fail.
+        if (!$skipBackups) {
+            $methodsToMock[] = 'backUpFile';
+        }
+        $command = $this->getMockCommand($methodsToMock);
+        if (!$skipBackups) {
+            $command->expects($this->exactly(5))->method('backUpFile')->willReturn(true);
+        }
         $this->expectConsecutiveCalls(
             $command,
             'getInput',
@@ -117,7 +144,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->once())->method('getApacheLocation')
             ->with($this->isInstanceOf(OutputInterface::class));
         $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
+        $commandTester->execute($skipBackups ? ['--skip-backups' => true] : []);
         $expectedOutput = <<<TEXT
             VuFind has been found in $expectedBaseDir.
 
@@ -148,7 +175,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonInteractiveInstallation()
+    public function testNonInteractiveInstallation(): void
     {
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
@@ -162,7 +189,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             $localFixtures . '/harvest',
             $localFixtures . '/import',
         ];
-        $command->expects($this->exactly(3))->method('backUpFile')->will($this->returnValue(true));
+        $command->expects($this->exactly(5))->method('backUpFile')->willReturn(true);
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
@@ -213,7 +240,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testInvalidSolrPort()
+    public function testInvalidSolrPort(): void
     {
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $command = $this->getMockCommand(
@@ -239,11 +266,11 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $methods Methods to mock
      *
-     * @return InstallCommand
+     * @return InstallCommand&MockObject
      */
     protected function getMockCommand(
         array $methods = ['buildDirs', 'getInput', 'writeFileToDisk']
-    ) {
+    ): InstallCommand&MockObject {
         return $this->getMockBuilder(InstallCommand::class)
             ->onlyMethods($methods)
             ->getMock();

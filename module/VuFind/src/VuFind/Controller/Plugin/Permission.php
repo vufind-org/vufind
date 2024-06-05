@@ -164,7 +164,7 @@ class Permission extends AbstractPlugin implements
                 case 'exception':
                     $exceptionClass
                         = (isset($dl['value']) && class_exists($dl['value']))
-                        ? $dl['value'] : 'VuFind\Exception\Forbidden';
+                        ? $dl['value'] : \VuFind\Exception\Forbidden::class;
                     $exception = new $exceptionClass($exceptionDescription);
                     if ($exception instanceof \Exception) {
                         throw $exception;

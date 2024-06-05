@@ -1,0 +1,49 @@
+<?php
+  $classes = '';
+  if ($this->openUrlEmbed) {
+    $classes = 'fulltext';
+  } elseif ($this->openUrlWindow) {
+    $classes = 'fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow);
+  }
+  if (!empty($classes)) {
+    $class = ' class="' . $classes . '"';
+    $class_ib = ' class="imagebased ' . $classes . '"';
+  } else {
+    $class = $class_ib = '';
+  }
+?>
+
+<span class="openUrlControls<?php if ($this->openUrlEmbed): ?> openUrlEmbed<?php if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<?php endif; ?><?php endif; ?>">
+  <?php if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
+  <a href="<?=$this->escapeHtmlAttr($this->resolverUrl)?>"<?=$class?> data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
+    <?php /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>
+    <span title="<?=$this->escapeHtmlAttr($this->openUrl)?>" class="openUrl"></span>
+    <?php if ($this->openUrlGraphic): ?>
+      <?php
+        $style = '';
+        if ($this->openUrlGraphicWidth) {
+          $style .= 'width:' . $this->escapeHtmlAttr($this->openUrlGraphicWidth) . 'px;';
+        }
+        if ($this->openUrlGraphicHeight) {
+          $style .= 'height:' . $this->escapeHtmlAttr($this->openUrlGraphicHeight) . 'px;';
+        }
+      ?>
+      <img src="<?=$this->escapeHtmlAttr($this->openUrlGraphic)?>" alt="<?=$this->transEscAttr('Get full text')?>" style="<?=$style?>">
+    <?php else: ?>
+      <?=$this->transEsc('Get full text')?>
+    <?php endif; ?>
+  </a>
+  <?php endif; ?>
+
+  <?php if ($this->openUrlImageBasedSrc): ?>
+    <?php $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
+    <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $ibOpenUrl)?>"<?=$class_ib?>>
+      <span title="<?=$this->escapeHtmlAttr($ibOpenUrl)?>" class="openUrl"></span>
+      <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEscAttr('Get full text')?>">
+    </a>
+  <?php endif; ?>
+</span>
+
+<?php if ($this->openUrlEmbed): ?>
+  <div class="resolver hidden"><?=$this->transEsc('loading_ellipsis')?></div>
+<?php endif; ?>

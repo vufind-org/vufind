@@ -47,9 +47,10 @@ use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
-use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
@@ -247,7 +248,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->configOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         } catch (Exception $e) {
-            $extra = is_a($e, 'VuFind\Exception\FileAccess')
+            $extra = is_a($e, \VuFind\Exception\FileAccess::class)
                 ? '  Check file permissions.' : '';
             $this->flashMessenger()->addMessage(
                 'Config upgrade failed: ' . $e->getMessage() . $extra,
@@ -660,7 +661,7 @@ class UpgradeController extends AbstractBase
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
             // Process form submission:
-            if ($this->formWasSubmitted('submit')) {
+            if ($this->formWasSubmitted()) {
                 $pass = $this->params()->fromPost('dbrootpass');
 
                 // Test the connection:
@@ -699,7 +700,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             $user = $this->params()->fromPost('username');
             if (empty($user)) {
                 $this->flashMessenger()
@@ -742,7 +743,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted()) {
             $this->getTable('Tags')->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -768,8 +769,7 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $table = $this->getTable('Resource');
-        $problems = $table->findMissingMetadata();
+        $problems = $this->getDbService(ResourceServiceInterface::class)->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
@@ -778,17 +778,19 @@ class UpgradeController extends AbstractBase
         }
 
         // Process submit button:
-        if ($this->formWasSubmitted('submit')) {
-            $converter = $this->serviceLocator->get(Converter::class);
+        if ($this->formWasSubmitted()) {
+            $resourceService = $this->getDbService(ResourceServiceInterface::class);
+            $resourcePopulator = $this->serviceLocator->get(ResourcePopulator::class);
             foreach ($problems as $problem) {
                 try {
-                    $driver = $this->getRecordLoader()
-                        ->load($problem->record_id, $problem->source);
-                    $problem->assignMetadata($driver, $converter)->save();
+                    $driver = $this->getRecordLoader()->load($problem->getRecordId(), $problem->getSource());
+                    $resourceService->persistEntity(
+                        $resourcePopulator->assignMetadata($problem, $driver)
+                    );
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
                         'Unable to load metadata for record '
-                        . "{$problem->source}:{$problem->record_id}"
+                        . "{$problem->getSource()}:{$problem->getRecordId()}"
                     );
                 }
             }

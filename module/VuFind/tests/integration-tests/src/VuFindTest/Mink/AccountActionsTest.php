@@ -270,7 +270,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the email:
         $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
-        $this->clickCss($page, '[name="submit"]');
+        $this->clickCss($page, '[name="submitButton"]');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your email address has been changed successfully',
@@ -329,7 +329,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check the default library and possible values:
         $userTable = $this->getTable(User::class);
-        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
         $this->assertEquals(
             '',
             $this->findCssAndGetValue($page, '#home_library')
@@ -356,7 +356,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
         $this->assertEquals(
             'B',
-            $userTable->getByUsername('username2')->home_library
+            $userTable->getByUsername('username2')->getHomeLibrary()
         );
 
         // Change to "Always ask me":
@@ -367,7 +367,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertNull($userTable->getByUsername('username2')->home_library);
+        $this->assertNull($userTable->getByUsername('username2')->getHomeLibrary());
 
         // Back to default:
         $this->findCssAndSetValue($page, '#home_library', '');
@@ -377,7 +377,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
     }
 
     /**

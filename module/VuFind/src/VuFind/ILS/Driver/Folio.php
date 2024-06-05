@@ -199,8 +199,8 @@ class Folio extends AbstractAPI implements
         $this->debug(
             $method . ' request.' .
             ' URL: ' . $path . '.' .
-            ' Params: ' . print_r($logParams, true) . '.' .
-            ' Headers: ' . print_r($logHeaders, true)
+            ' Params: ' . $this->varDump($logParams) . '.' .
+            ' Headers: ' . $this->varDump($logHeaders)
         );
     }
 
@@ -521,7 +521,8 @@ class Folio extends AbstractAPI implements
             ) {
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
-                $locationMap[$location->id] = compact('name', 'code');
+                $isActive = $location->isActive ?? true;
+                $locationMap[$location->id] = compact('name', 'code', 'isActive');
             }
             $this->putCachedData($cacheKey, $locationMap);
         }
@@ -540,6 +541,7 @@ class Folio extends AbstractAPI implements
         $locationMap = $this->getLocations();
         $name = '';
         $code = '';
+        $isActive = true;
         if (array_key_exists($locationId, $locationMap)) {
             return $locationMap[$locationId];
         } else {
@@ -553,10 +555,11 @@ class Folio extends AbstractAPI implements
                 $location = json_decode($locationResponse->getBody());
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
+                $isActive = $location->isActive ?? $isActive;
             }
         }
 
-        return compact('name', 'code');
+        return compact('name', 'code', 'isActive');
     }
 
     /**
@@ -671,6 +674,7 @@ class Folio extends AbstractAPI implements
         $locationData = $this->getLocationData($locationId);
         $locationName = $locationData['name'];
         $locationCode = $locationData['code'];
+        $locationIsActive = $locationData['isActive'];
         // concatenate enumeration fields if present
         $enum = implode(
             ' ',
@@ -710,6 +714,7 @@ class Folio extends AbstractAPI implements
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,
             'location_code' => $locationCode,
+            'folio_location_is_active' => $locationIsActive,
             'reserve' => 'TODO',
             'addLink' => true,
             'bound_with_records' => $boundWithRecords,
@@ -746,30 +751,21 @@ class Folio extends AbstractAPI implements
      *
      * @param object $item The item record
      *
-     * @return array An array of key metadtaa for each bib record
+     * @return array An array of key metadata for each bib record
      */
     protected function getBoundWithRecords($item)
     {
         $boundWithRecords = [];
-        // Get the bound-with holdings for the item.
-        foreach (
-            $this->getPagedResults(
-                'boundWithParts',
-                '/inventory-storage/bound-with-parts',
-                ['query' => '(itemId=="' . $item->id . '")']
-            ) as $boundWithPart
-        ) {
-            $boundWithHoldingId = $boundWithPart->holdingsRecordId;
-            $response = $this->makeRequest(
-                'GET',
-                '/holdings-storage/holdings/' . $boundWithHoldingId
-            );
-            $holding = json_decode($response->getBody());
-            // Get the bound-with holding's instance record.
-            $instance = $this->getInstanceById($holding->instanceId);
+        // Get the full item record, which includes the boundWithTitles data
+        $response = $this->makeRequest(
+            'GET',
+            '/inventory/items/' . $item->id
+        );
+        $item = json_decode($response->getBody());
+        foreach ($item->boundWithTitles ?? [] as $boundWithTitle) {
             $boundWithRecords[] = [
-                'title' => $instance->title,
-                'bibId' => $this->getBibId($instance),
+                'title' => $boundWithTitle->briefInstance?->title,
+                'bibId' => $this->getBibId($boundWithTitle->briefInstance->id),
             ];
         }
         return $boundWithRecords;
