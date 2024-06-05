@@ -36,6 +36,7 @@ use Laminas\Session\Container;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
@@ -242,27 +243,28 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Get lists containing a specific user_resource
+     * Get lists containing a specific record.
      *
-     * @param string $resourceId ID of record being checked.
-     * @param string $source     Source of record to look up
-     * @param ?int   $userId     Optional user ID (to limit results to a particular
-     * user).
+     * @param string                       $recordId ID of record being checked.
+     * @param string                       $source   Source of record to look up
+     * @param int|UserEntityInterface|null $user     Optional user ID or entity object (to limit results
+     * to a particular user).
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    public function getListsContainingResource(
-        string $resourceId,
+    public function getListsContainingRecord(
+        string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        ?int $userId = null
+        int|UserEntityInterface|null $user = null
     ): array {
-        $dql = 'SELECT DISTINCT(ul.id), ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
+        $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
             . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH ur.list = ul.id '
             . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = ur.resource '
-            . 'WHERE r.recordId = :resourceId AND r.source = :source ';
+            . 'WHERE r.recordId = :recordId AND r.source = :source ';
 
-        $parameters = compact('resourceId', 'source');
-        if (null !== $userId) {
+        $parameters = compact('recordId', 'source');
+        if (null !== $user) {
+            $userId = $user instanceof UserEntityInterface ? $user->getId() : $user;
             $dql .= 'AND ur.user = :userId ';
             $parameters['userId'] = $userId;
         }

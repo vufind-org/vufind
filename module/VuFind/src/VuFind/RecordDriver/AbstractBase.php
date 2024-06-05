@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 use function is_callable;
@@ -291,11 +292,12 @@ abstract class AbstractBase implements
      * @param int $user_id ID of user to load tags from (null for all users)
      *
      * @return array
+     *
+     * @deprecated Use UserListServiceInterface::getListsContainingRecord()
      */
     public function getContainingLists($user_id = null)
     {
-        $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
-        return $listService->getListsContainingResource(
+        return $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             $user_id

@@ -129,7 +129,7 @@
               <strong><?=$this->transEsc('Saved in')?>:</strong>
               <?php $i = 0; ?>
               <?php foreach ($this->lists as $current): ?>
-                <a href="<?=$this->url('userList', ['id' => $current[0]->getId()])?>"><?=$this->escapeHtml($current[0]->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+                <a href="<?=$this->url('userList', ['id' => $current->getId()])?>"><?=$this->escapeHtml($current->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
               <?php endforeach; ?>
               <br>
           <?php endif; ?>

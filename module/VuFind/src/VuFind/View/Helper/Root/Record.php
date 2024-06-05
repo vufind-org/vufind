@@ -30,6 +30,11 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 
 use function get_class;
 use function in_array;
@@ -44,9 +49,10 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends \Laminas\View\Helper\AbstractHelper
+class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Context view helper
@@ -224,9 +230,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     /**
      * Render an entry in a favorite list.
      *
-     * @param ?\VuFind\Db\Entity\UserList $list Currently selected list (null for
+     * @param ?UserListEntityInterface $list Currently selected list (null for
      * combined favorites)
-     * @param ?\VuFind\Db\Row\User        $user Current logged in user (null if none)
+     * @param ?UserEntityInterface     $user Current logged in user (null if none)
      *
      * @return string
      */
@@ -235,7 +241,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         // Get list of lists containing this entry
         $lists = null;
         if ($user) {
-            $lists = $this->driver->getContainingLists($user->id);
+            $lists = $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
+                $this->driver->getUniqueID(),
+                $this->driver->getSourceIdentifier(),
+                $user
+            );
         }
         return $this->renderTemplate(
             'list-entry.phtml',
