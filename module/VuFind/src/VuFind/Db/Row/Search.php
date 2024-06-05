@@ -187,11 +187,9 @@ class Search extends RowGateway implements
      *
      * @return UserEntityInterface
      */
-    public function getUser(): int
+    public function getUser(): UserEntityInterface
     {
-        return $this->user_id
-            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-            : null;
+        return $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id);
     }
 
     /**

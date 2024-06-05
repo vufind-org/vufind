@@ -54,7 +54,7 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @return UserEntityInterface
      */
-    public function getUser(): int;
+    public function getUser(): UserEntityInterface;
 
     /**
      * Set user.
@@ -66,14 +66,14 @@ interface SearchEntityInterface extends EntityInterface
     public function setUser(UserEntityInterface $user): SearchEntityInterface;
 
     /**
-     * Get session id.
+     * Get session identifier.
      *
      * @return ?string
      */
     public function getSessionId(): ?string;
 
     /**
-     * Set session id.
+     * Set session identifier.
      *
      * @param ?string $session_id Session id
      *
