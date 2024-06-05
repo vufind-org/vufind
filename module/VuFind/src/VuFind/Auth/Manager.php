@@ -685,6 +685,22 @@ class Manager implements
     }
 
     /**
+     * Update the verification hash for the provided user.
+     *
+     * @param UserEntityInterface $user User to update
+     *
+     * @return void
+     */
+    public function updateUserVerifyHash(UserEntityInterface $user): void
+    {
+        $hash = md5($user->getUsername() . $user->getRawCatPassword() . $user->getPasswordHash() . rand());
+        // Make totally sure the timestamp is exactly 10 characters:
+        $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
+        $user->setVerifyHash($hash . $time);
+        $this->userService->persistEntity($user);
+    }
+
+    /**
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *

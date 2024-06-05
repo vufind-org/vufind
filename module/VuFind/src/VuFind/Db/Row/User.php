@@ -121,6 +121,8 @@ class User extends RowGateway implements
      * Reset ILS login credentials.
      *
      * @return void
+     *
+     * @deprecated Use setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null)
      */
     public function clearCredentials()
     {
@@ -136,6 +138,8 @@ class User extends RowGateway implements
      *
      * @return mixed        The output of the save method.
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use UserEntityInterface::setCatId() and \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveCatalogId($catId)
     {
@@ -190,6 +194,9 @@ class User extends RowGateway implements
      * @param string $datetime optional date/time to save.
      *
      * @return mixed           The output of the save method.
+     *
+     * @deprecated Use UserEntityInterface::setEmailVerified() and
+     * \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveEmailVerified($datetime = null)
     {
@@ -265,6 +272,8 @@ class User extends RowGateway implements
      * Check whether the email address has been verified yet.
      *
      * @return bool
+     *
+     * @deprecated Use getEmailVerified()
      */
     public function checkEmailVerified()
     {
@@ -501,7 +510,7 @@ class User extends RowGateway implements
      *
      * @return UserCardServiceInterface
      */
-    public function getUserCardService()
+    protected function getUserCardService()
     {
         return $this->getDbService(UserCardServiceInterface::class);
     }
@@ -543,6 +552,8 @@ class User extends RowGateway implements
      * Update the verification hash for this user
      *
      * @return bool save success
+     *
+     * @deprecated Use \VuFind\Auth\Manager::updateUserVerifyHash()
      */
     public function updateHash()
     {
@@ -628,6 +639,52 @@ class User extends RowGateway implements
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string
+    {
+        return $this->password ?? '';
+    }
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface
+    {
+        $this->pass_hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string
+    {
+        return $this->pass_hash ?? null;
     }
 
     /**
@@ -838,6 +895,19 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface
+    {
+        $this->verify_hash = $hash;
+        return $this;
+    }
+
+    /**
      * Get verification hash for recovery.
      *
      * @return string
@@ -942,7 +1012,7 @@ class User extends RowGateway implements
     /**
      * Created setter
      *
-     * @param DateTime $dateTime Last login date
+     * @param DateTime $dateTime Creation date
      *
      * @return UserEntityInterface
      */
@@ -960,5 +1030,28 @@ class User extends RowGateway implements
     public function getCreated(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
+    {
+        $this->email_verified = $dateTime?->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime
+    {
+        return $this->email_verified ? DateTime::createFromFormat('Y-m-d H:i:s', $this->email_verified) : null;
     }
 }

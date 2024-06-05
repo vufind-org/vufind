@@ -31,6 +31,7 @@
 
 namespace VuFind\Controller;
 
+use DateTime;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
@@ -1763,7 +1764,7 @@ class MyResearchController extends AbstractBase
                 // Attempt to send the email
                 try {
                     // Create a fresh hash
-                    $user->updateHash();
+                    $this->getAuthManager()->updateUserVerifyHash($user);
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     $method = $this->getAuthManager()->getAuthMethod();
@@ -1873,7 +1874,7 @@ class MyResearchController extends AbstractBase
                 // Attempt to send the email
                 try {
                     // Create a fresh hash
-                    $user->updateHash();
+                    $this->getAuthManager()->updateUserVerifyHash($user);
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     // Custom template for emails (text-only)
@@ -1934,7 +1935,8 @@ class MyResearchController extends AbstractBase
                 // If the hash is valid, forward user to create new password
                 // Also treat email address as verified
                 if ($user = $table->getByVerifyHash($hash)) {
-                    $user->saveEmailVerified();
+                    $user->setEmailVerified(new DateTime());
+                    $this->getDbService(UserServiceInterface::class)->persistEntity($user);
                     $this->setUpAuthenticationFromRequest();
                     $view = $this->createViewModel();
                     $view->auth_method = $this->getAuthManager()->getAuthMethod();
@@ -1980,7 +1982,8 @@ class MyResearchController extends AbstractBase
                             ->updateUserEmail($user, $pending, true);
                         $user->setPendingEmail('');
                     }
-                    $user->saveEmailVerified();
+                    $user->setEmailVerified(new DateTime());
+                    $this->getDbService(UserServiceInterface::class)->persistEntity($user);
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
                     return $this->redirect()->toRoute('myresearch-profile');
@@ -2004,7 +2007,7 @@ class MyResearchController extends AbstractBase
     protected function resetNewPasswordForm($userFromHash, ViewModel $view)
     {
         if ($userFromHash) {
-            $userFromHash->updateHash();
+            $this->getAuthManager()->updateUserVerifyHash($userFromHash);
             $view->username = $userFromHash->username;
             $view->hash = $userFromHash->verify_hash;
         }
@@ -2076,7 +2079,7 @@ class MyResearchController extends AbstractBase
             return $view;
         }
         // Update hash to prevent reusing hash
-        $user->updateHash();
+        $this->getAuthManager()->updateUserVerifyHash($user);
         // Login
         $this->getAuthManager()->login($this->request);
         // Return to account home
@@ -2167,7 +2170,7 @@ class MyResearchController extends AbstractBase
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy();
         // Identification
-        $user->updateHash();
+        $this->getAuthManager()->updateUserVerifyHash($user);
         $view->hash = $user->getVerifyHash();
         $view->setTemplate('myresearch/newpassword');
         $view->useCaptcha = $this->captcha()->active('changePassword');

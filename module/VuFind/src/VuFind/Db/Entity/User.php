@@ -303,6 +303,52 @@ class User implements UserEntityInterface
     }
 
     /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string
+    {
+        return $this->password ?? '';
+    }
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface
+    {
+        $this->passHash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string
+    {
+        return $this->passHash;
+    }
+
+    /**
      * Set firstname.
      *
      * @param string $firstName New first name
@@ -395,6 +441,29 @@ class User implements UserEntityInterface
     }
 
     /**
+     * Catalog id setter
+     *
+     * @param ?string $catId Catalog id
+     *
+     * @return UserEntityInterface
+     */
+    public function setCatId(?string $catId): UserEntityInterface
+    {
+        $this->catId = $catId;
+        return $this;
+    }
+
+    /**
+     * Get catalog id.
+     *
+     * @return ?string
+     */
+    public function getCatId(): ?string
+    {
+        return $this->catId;
+    }
+
+    /**
      * Catalog username setter
      *
      * @param ?string $catUsername Catalog username
@@ -484,6 +553,19 @@ class User implements UserEntityInterface
     public function getCatPassEnc(): ?string
     {
         return $this->catPassEnc;
+    }
+
+    /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface
+    {
+        $this->verifyHash = $hash;
+        return $this;
     }
 
     /**
@@ -612,25 +694,25 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Catalog id setter
+     * Set email verification date (or null for unverified).
      *
-     * @param ?string $catId Catalog id
+     * @param ?DateTime $dateTime Verification date (or null)
      *
      * @return UserEntityInterface
      */
-    public function setCatId(?string $catId): UserEntityInterface
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
     {
-        $this->catId = $catId;
+        $this->emailVerified = $dateTime;
         return $this;
     }
 
     /**
-     * Get catalog id.
+     * Get email verification date (or null for unverified).
      *
-     * @return ?string
+     * @return ?DateTime
      */
-    public function getCatId(): ?string
+    public function getEmailVerified(): ?DateTime
     {
-        return $this->catId;
+        return $this->emailVerified;
     }
 }

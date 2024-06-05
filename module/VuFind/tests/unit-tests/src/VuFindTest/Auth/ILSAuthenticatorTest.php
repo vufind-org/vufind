@@ -148,15 +148,19 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulStoredLoginAttempt(): void
     {
-        $user = $this->getMockUser(['clearCredentials', 'getCatUsername', 'getRawCatPassword']);
+        $user = $this->getMockUser(
+            ['setCatUsername', 'setRawCatPassword', 'setCatPassEnc', 'getCatUsername', 'getRawCatPassword']
+        );
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
         $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
-        $user->expects($this->once())->method('clearCredentials');
+        $user->expects($this->once())->method('setCatUsername')->with(null)->willReturn($user);
+        $user->expects($this->once())->method('setRawCatPassword')->with(null)->willReturn($user);
+        $user->expects($this->once())->method('setCatPassEnc')->with(null)->willReturn($user);
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue(false));
+            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn(false);
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals(false, $auth->storedCatalogLogin());
     }
@@ -171,7 +175,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('kaboom');
 
-        $user = $this->getMockUser(['clearCredentials', 'getCatUsername', 'getRawCatPassword']);
+        $user = $this->getMockUser(['getCatUsername', 'getRawCatPassword']);
         $user->expects($this->any())->method('getCatUsername')->willReturn('user');
         $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
