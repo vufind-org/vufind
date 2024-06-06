@@ -337,15 +337,12 @@ class GetItemStatuses extends AbstractBase implements
                     $locations[$info['location']]['available'] = $availabilityStatus->getStatusDescription();
                 }
             }
-            // Check for a use_unknown_message flag
-            if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNKNOWN)) {
-                $locations[$info['location']]['status_unknown'] = true;
-            }
             // Store call number/location info:
             $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
                 $info['callnumber_prefix'] ?? '',
                 $info['callnumber']
             );
+            $locations[$info['location']]['items'][] = $info;
         }
 
         // Build list split out by location:
@@ -362,8 +359,14 @@ class GetItemStatuses extends AbstractBase implements
                 $callnumberSetting,
                 'Multiple Call Numbers'
             );
+
+            // Get combined availability for location
+            $locationStatus = $this->availabilityStatusManager->combine($details['items']);
+            $locationAvailability = $locationStatus['availability'];
+
             $locationInfo = [
-                'availability' => $details['available'] ?? false,
+                'availability' =>
+                    $locationAvailability->is(AvailabilityStatusInterface::STATUS_AVAILABLE),
                 'location' => htmlentities(
                     $this->translateWithPrefix('location_', $location),
                     ENT_COMPAT,
@@ -371,7 +374,8 @@ class GetItemStatuses extends AbstractBase implements
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'status_unknown' => $details['status_unknown'] ?? false,
+                'status_unknown' =>
+                    $locationAvailability->is(AvailabilityStatusInterface::STATUS_UNKNOWN),
                 'callnumber_handler' => $callnumberHandler,
             ];
             $locationList[] = $locationInfo;
