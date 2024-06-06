@@ -153,7 +153,7 @@ class Email extends AbstractBase
         }
 
         // No need to store a password in VuFind's main password field:
-        $user->password = '';
+        $user->setRawPassword('');
 
         // Update user information based on received data:
         $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
