@@ -29,7 +29,7 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\TagsEntityInterface;
 
 /**
  * Database service interface for tags.
@@ -87,26 +87,18 @@ interface TagServiceInterface extends DbServiceInterface
     ): array;
 
     /**
-     * Add tags to the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
+     * Delete orphaned tags (those not present in resource_tags) from the tags table.
      *
      * @return void
      */
-    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
+    public function deleteOrphanedTags(): void;
 
     /**
-     * Remove tags from the record.
+     * Retrieve a tag by ID.
      *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user deleting the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
+     * @param int $id Tag ID
      *
-     * @return void
+     * @return ?TagsEntityInterface
      */
-    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
+    public function getTagById(int $id): ?TagsEntityInterface;
 }

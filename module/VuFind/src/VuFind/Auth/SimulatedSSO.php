@@ -119,9 +119,10 @@ class SimulatedSSO extends AbstractBase
                 $catPassword = $value;
             }
         }
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $this->ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
                 empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }

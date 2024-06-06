@@ -116,6 +116,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         );
         $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->setDbTableManager($this->getLiveTableManager());
+        $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }
@@ -373,8 +374,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')
-            ->will($this->returnValue($patron));
+        $mock->expects($this->any())->method('storedCatalogLogin')->willReturn($patron);
+        $mock->setDbServiceManager($this->getLiveDbServiceManager());
         return $mock;
     }
 }

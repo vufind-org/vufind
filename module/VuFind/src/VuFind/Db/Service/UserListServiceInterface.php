@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 
@@ -61,4 +62,20 @@ interface UserListServiceInterface extends DbServiceInterface
      * @throws RecordMissingException
      */
     public function getUserListById(int $id): UserListEntityInterface;
+
+    /**
+     * Get lists containing a specific record.
+     *
+     * @param string                       $recordId ID of record being checked.
+     * @param string                       $source   Source of record to look up
+     * @param int|UserEntityInterface|null $user     Optional user ID or entity object (to limit results
+     * to a particular user).
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getListsContainingRecord(
+        string $recordId,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int|UserEntityInterface|null $user = null
+    ): array;
 }

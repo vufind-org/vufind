@@ -29,8 +29,13 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
 use VuFind\Crypt\HMAC;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function is_resource;
 
@@ -55,8 +60,14 @@ use function is_resource;
  * @property string  $last_notification_sent
  * @property string  $notification_base_url
  */
-class Search extends RowGateway implements \VuFind\Db\Entity\SearchEntityInterface
+class Search extends RowGateway implements
+    \VuFind\Db\Entity\SearchEntityInterface,
+    \VuFind\Db\Table\DbTableAwareInterface,
+    DbServiceAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -84,11 +95,11 @@ class Search extends RowGateway implements \VuFind\Db\Entity\SearchEntityInterfa
     }
 
     /**
-     * Get the search object from the row
+     * Get the search object from the row.
      *
      * @return \VuFind\Search\Minified
      */
-    public function getSearchObject()
+    public function getSearchObject(): \VuFind\Search\Minified
     {
         // We need to make sure the search object is a string before unserializing:
         $this->normalizeSearchObject();
@@ -159,5 +170,235 @@ class Search extends RowGateway implements \VuFind\Db\Entity\SearchEntityInterfa
             'created' => $user->getCreated()->format('Y-m-d H:i:s'),
         ];
         return $hmac->generate(array_keys($data), $data);
+    }
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface
+    {
+        return $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id);
+    }
+
+    /**
+     * Set user.
+     *
+     * @param UserEntityInterface $user User
+     *
+     * @return SearchEntityInterface
+     */
+    public function setUser(UserEntityInterface $user): SearchEntityInterface
+    {
+        $this->user_id = $user->getId();
+        return $this;
+    }
+
+    /**
+     * Get session identifier.
+     *
+     * @return ?string
+     */
+    public function getSessionId(): ?string
+    {
+        return $this->session_id ?? null;
+    }
+
+    /**
+     * Set session identifier.
+     *
+     * @param ?string $session_id Session id
+     *
+     * @return SearchEntityInterface
+     */
+    public function setSessionId(?string $session_id): SearchEntityInterface
+    {
+        $this->session_id = $session_id;
+        return $this;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return SearchEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): SearchEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return ?string
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title ?? null;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param ?string $title Title
+     *
+     * @return SearchEntityInterface
+     */
+    public function setTitle(?string $title): SearchEntityInterface
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Get saved.
+     *
+     * @return bool
+     */
+    public function getSaved(): bool
+    {
+        return (bool)($this->saved ?? 0);
+    }
+
+    /**
+     * Set saved.
+     *
+     * @param bool $saved Saved
+     *
+     * @return SearchEntityInterface
+     */
+    public function setSaved(bool $saved): SearchEntityInterface
+    {
+        $this->saved = $saved ? 1 : 0;
+        return $this;
+    }
+
+    /**
+     * Set search object.
+     *
+     * @param \VuFind\Search\Minified $searchObject Search object
+     *
+     * @return SearchEntityInterface
+     */
+    public function setSearchObject(\VuFind\Search\Minified $searchObject): SearchEntityInterface
+    {
+        $this->search_object = serialize($searchObject);
+        return $this;
+    }
+
+    /**
+     * Get checksum.
+     *
+     * @return ?int
+     */
+    public function getChecksum(): ?int
+    {
+        return $this->checksum ?? null;
+    }
+
+    /**
+     * Set checksum.
+     *
+     * @param ?int $checksum Checksum
+     *
+     * @return SearchEntityInterface
+     */
+    public function setChecksum(?int $checksum): SearchEntityInterface
+    {
+        $this->checksum = $checksum;
+        return $this;
+    }
+
+    /**
+     * Get notification frequency.
+     *
+     * @return int
+     */
+    public function getNotificationFrequency(): int
+    {
+        return $this->notification_frequency ?? 0;
+    }
+
+    /**
+     * Set notification frequency.
+     *
+     * @param int $notificationFrequency Notification frequency
+     *
+     * @return SearchEntityInterface
+     */
+    public function setNotificationFrequency(int $notificationFrequency): SearchEntityInterface
+    {
+        $this->notification_frequency = $notificationFrequency;
+        return $this;
+    }
+
+    /**
+     * When was the last notification sent?
+     *
+     * @return DateTime
+     */
+    public function getLastNotificationSent(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->last_notification_sent);
+    }
+
+    /**
+     * Set when last notification was sent.
+     *
+     * @param DateTime $lastNotificationSent Time when last notification was sent
+     *
+     * @return SearchEntityInterface
+     */
+    public function setLastNotificationSent(Datetime $lastNotificationSent): SearchEntityInterface
+    {
+        $this->last_notification_sent = $lastNotificationSent->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get notification base URL.
+     *
+     * @return string
+     */
+    public function getNotificationBaseUrl(): string
+    {
+        return $this->notification_base_url ?? '';
+    }
+
+    /**
+     * Set notification base URL.
+     *
+     * @param string $notificationBaseUrl Notification base URL
+     *
+     * @return SearchEntityInterface
+     */
+    public function setNotificationBaseUrl(string $notificationBaseUrl): SearchEntityInterface
+    {
+        $this->notification_base_url = $notificationBaseUrl;
+        return $this;
     }
 }

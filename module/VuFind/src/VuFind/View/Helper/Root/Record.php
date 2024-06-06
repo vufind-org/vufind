@@ -30,6 +30,12 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 use function get_class;
 use function in_array;
@@ -44,9 +50,10 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends \Laminas\View\Helper\AbstractHelper
+class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Context view helper
@@ -224,9 +231,9 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     /**
      * Render an entry in a favorite list.
      *
-     * @param ?\VuFind\Db\Row\UserList $list Currently selected list (null for
+     * @param ?UserListEntityInterface $list Currently selected list (null for
      * combined favorites)
-     * @param ?\VuFind\Db\Row\User     $user Current logged in user (null if none)
+     * @param ?UserEntityInterface     $user Current logged in user (null if none)
      *
      * @return string
      */
@@ -235,7 +242,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         // Get list of lists containing this entry
         $lists = null;
         if ($user) {
-            $lists = $this->driver->getContainingLists($user->id);
+            $lists = $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
+                $this->driver->getUniqueID(),
+                $this->driver->getSourceIdentifier(),
+                $user
+            );
         }
         return $this->renderTemplate(
             'list-entry.phtml',
@@ -246,6 +257,31 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'lists' => $lists,
             ]
         );
+    }
+
+    /**
+     * Get notes associated with this record in user lists.
+     *
+     * @param int $list_id ID of list to load tags from (null for all lists)
+     * @param int $user_id ID of user to load tags from (null for all users)
+     *
+     * @return string[]
+     */
+    public function getListNotes($list_id = null, $user_id = null)
+    {
+        $data = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            $list_id,
+            $user_id
+        );
+        $notes = [];
+        foreach ($data as $current) {
+            if (!empty($note = $current->getNotes())) {
+                $notes[] = $note;
+            }
+        }
+        return $notes;
     }
 
     /**
