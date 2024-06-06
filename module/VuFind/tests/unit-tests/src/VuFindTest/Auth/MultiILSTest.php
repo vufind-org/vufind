@@ -288,7 +288,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUser(): MockObject&UserEntityInterface
     {
-        return $this->createMock(\VuFind\Db\Row\User::class);
+        return $this->createMock(UserEntityInterface::class);
     }
 
     /**
