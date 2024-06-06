@@ -91,9 +91,8 @@ class UserResource extends RowGateway implements
      */
     public function getUser(): UserEntityInterface
     {
-        return $this->user_id
-        ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
-        : null;
+        return $this->getDbServiceManager()->get(UserServiceInterface::class)
+            ->getUserById($this->user_id);
     }
 
     /**
@@ -116,9 +115,8 @@ class UserResource extends RowGateway implements
      */
     public function getResource(): ResourceEntityInterface
     {
-        return $this->resource_id
-        ? $this->getDbServiceManager()->get(ResourceServiceInterface::class)->getResourceById($this->resource_id)
-        : null;
+        return $this->getDbServiceManager()->get(ResourceServiceInterface::class)
+            ->getResourceById($this->resource_id);
     }
 
     /**

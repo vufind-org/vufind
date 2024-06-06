@@ -84,7 +84,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         MultiILS::class => ILSFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
         SimulatedSSO::class => SimulatedSSOFactory::class,
-        SIP2::class => InvokableFactory::class,
+        SIP2::class => SIP2Factory::class,
     ];
 
     /**
