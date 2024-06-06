@@ -330,13 +330,6 @@ class GetItemStatuses extends AbstractBase implements
         // Summarize call number, location and availability info across all items:
         $locations = [];
         foreach ($record as $info) {
-            $availabilityStatus = $info['availability'];
-            // Find an available copy
-            if ($availabilityStatus->isAvailable()) {
-                if ('true' !== ($locations[$info['location']]['available'] ?? null)) {
-                    $locations[$info['location']]['available'] = $availabilityStatus->getStatusDescription();
-                }
-            }
             // Store call number/location info:
             $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
                 $info['callnumber_prefix'] ?? '',
