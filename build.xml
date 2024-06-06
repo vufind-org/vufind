@@ -529,7 +529,7 @@
     <phingcall target="check_local_config" />
 
     <!-- Generate basic configuration -->
-    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
+    <php expression="substr(parse_url('${vufindurl}', PHP_URL_PATH), 1)" returnProperty="basepath" />
     <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive --solr-port=${solr_port}" passthru="true" checkreturn="true" />
 
     <!-- Update config.ini to activate DB connection, exception logging and test mode -->
