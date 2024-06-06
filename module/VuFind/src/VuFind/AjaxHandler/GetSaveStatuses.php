@@ -78,10 +78,10 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function formatListData(UserResourceEntityInterface $data)
+    protected function formatListData(UserResourceEntityInterface $data): array
     {
         $list = $data->getUserList();
-        return [
+        return !$list ? [] : [
             'list_url' =>
                 $this->urlHelper->fromRoute('userList', ['id' => $list->getId()]),
             'list_title' => $list->getTitle(),
@@ -109,7 +109,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
                 $checked[$selector] = true;
 
                 $data = $this->userResourceService->getFavoritesForRecord($id, $source, null, $this->user);
-                $result[$selector] = array_map([$this, 'formatListData'], $data);
+                $result[$selector] = array_filter(array_map([$this, 'formatListData'], $data));
             }
         }
         return $result;

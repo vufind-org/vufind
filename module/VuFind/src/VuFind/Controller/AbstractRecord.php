@@ -500,7 +500,9 @@ class AbstractRecord extends AbstractBase
             $user
         );
         foreach ($resources as $userResource) {
-            $listIds[] = $userResource->getUserList()->getId();
+            if ($currentList = $userResource->getUserList()) {
+                $listIds[] = $currentList->getId();
+            }
         }
 
         // Loop through all user lists and sort out containing/non-containing lists

@@ -1015,13 +1015,16 @@ class MyResearchController extends AbstractBase
         $userResources = $userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
         foreach ($userResources as $current) {
-            $currentList = $current->getUserList();
-            $savedData[] = [
-                'listId' => $currentList->getId(),
-                'listTitle' => $currentList->getTitle(),
-                'notes' => $current->getNotes(),
-                'tags' => $user->getTagString($id, $currentList->getId(), $source),
-            ];
+            // There should always be list data based on the way we retrieve this result, but
+            // check just to be on the safe side.
+            if ($currentList = $current->getUserList()) {
+                $savedData[] = [
+                    'listId' => $currentList->getId(),
+                    'listTitle' => $currentList->getTitle(),
+                    'notes' => $current->getNotes(),
+                    'tags' => $user->getTagString($id, $currentList->getId(), $source),
+                ];
+            }
         }
 
         // In order to determine which lists contain the requested item, we may
@@ -1032,7 +1035,9 @@ class MyResearchController extends AbstractBase
             $userResources = $userResourceService->getFavoritesForRecord($id, $source, null, $user);
         }
         foreach ($userResources as $current) {
-            $containingLists[] = $current->getUserList()->getId();
+            if ($currentList = $current->getUserList()) {
+                $containingLists[] = $currentList->getId();
+            }
         }
 
         // Send non-containing lists to the view for user selection:
