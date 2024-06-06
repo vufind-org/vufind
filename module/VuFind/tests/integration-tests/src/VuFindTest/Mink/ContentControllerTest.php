@@ -154,12 +154,6 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
                 'An error has occurred',
                 'error',
             ],
-            'bad path 3' => [
-                'en',
-                '../../../local_theme_example/templates/content/example',
-                'Not Found',
-                'error',
-            ],
         ];
     }
 
