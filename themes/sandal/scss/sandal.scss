@@ -92,13 +92,16 @@ header {
     padding-right: 1rem;
     font-size: $reduced-font-size;
   }
+  .navbar-nav .open .dropdown-menu {
+    background-color: $white;
+    a { color: $black; }
+    .active a { background-color: $header-bg; }
+  }
   @media (min-width: 768px) {
-    .dropdown-menu a { color: $black; }
     .dropdown-menu a:hover {
       background-color: $header-light;
       color: $black;
     }
-    .dropdown-menu .active a,
     .dropdown-menu .active a:hover { background-color: $header-bg; }
   }
 
