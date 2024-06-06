@@ -285,7 +285,7 @@ class LDAP extends AbstractBase
         $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
-        // attributes since we need to use saveCredentials method to store it):
+        // attributes since we need to use setUserCatalogCredentials method to store it):
         $catPassword = null;
 
         // Loop through LDAP response and map fields to database object based
@@ -326,9 +326,10 @@ class LDAP extends AbstractBase
         // see https://github.com/vufind-org/vufind/pull/612). Note that in the
         // (unlikely) scenario that a password can actually change from non-blank
         // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $this->ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
                 empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }

@@ -31,6 +31,7 @@ namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
 use Laminas\Http\Request;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\SIP2;
 
 /**
@@ -56,7 +57,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new SIP2();
+        $obj = new SIP2($this->createMock(ILSAuthenticator::class));
         $obj->setConfig($config);
         return $obj;
     }

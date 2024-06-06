@@ -372,8 +372,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')
-            ->will($this->returnValue($patron));
+        $mock->expects($this->any())->method('storedCatalogLogin')->willReturn($patron);
+        $mock->setDbServiceManager($this->getLiveDbServiceManager());
         return $mock;
     }
 }

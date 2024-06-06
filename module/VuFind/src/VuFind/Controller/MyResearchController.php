@@ -1808,7 +1808,7 @@ class MyResearchController extends AbstractBase
      * When a request to change a user's email address has been received, we should
      * send a notification to the old email address for the user's information.
      *
-     * @param \VuFind\Db\Row\User $user     User whose email address is being changed
+     * @param UserEntityInterface $user     User whose email address is being changed
      * @param string              $newEmail New email address
      *
      * @return void (sends email or adds error message)
@@ -1817,7 +1817,7 @@ class MyResearchController extends AbstractBase
     {
         // Don't send the notification if the existing email is not valid:
         $validator = new \Laminas\Validator\EmailAddress();
-        if (!$validator->isValid($user->email)) {
+        if (!$validator->isValid($user->getEmail())) {
             return;
         }
 
@@ -1836,7 +1836,7 @@ class MyResearchController extends AbstractBase
         // If the user is setting up a new account, use the main email
         // address; if they have a pending address change, use that.
         $this->serviceLocator->get(Mailer::class)->send(
-            $user->email,
+            $user->getEmail(),
             $config->Site->email,
             $this->translate('change_notification_email_subject'),
             $message
@@ -1846,8 +1846,8 @@ class MyResearchController extends AbstractBase
     /**
      * Send a verify email message.
      *
-     * @param \VuFind\Db\Row\User $user   User object we're recovering
-     * @param bool                $change Is the user changing their email (true)
+     * @param ?UserEntityInterface $user   User object we're recovering
+     * @param bool                 $change Is the user changing their email (true)
      * or setting up a new account (false).
      *
      * @return void (sends email or adds error message)
@@ -1860,7 +1860,7 @@ class MyResearchController extends AbstractBase
                 ->addMessage('verification_user_not_found', 'error');
         } else {
             // Make sure we've waited long enough
-            $hashtime = $this->getHashAge($user->verify_hash);
+            $hashtime = $this->getHashAge($user->getVerifyHash());
             $recoveryInterval = $this->getConfig()->Authentication->recover_interval
                 ?? 60;
             if (time() - $hashtime < $recoveryInterval && !$change) {
@@ -1879,13 +1879,12 @@ class MyResearchController extends AbstractBase
                         [
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verifyemail')
-                                . '?hash=' . urlencode($user->verify_hash),
+                                . '?hash=' . urlencode($user->getVerifyHash()),
                         ]
                     );
                     // If the user is setting up a new account, use the main email
                     // address; if they have a pending address change, use that.
-                    $to = empty($user->pending_email)
-                        ? $user->email : $user->pending_email;
+                    $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
                     $this->serviceLocator->get(Mailer::class)->send(
                         $to,
                         $config->Site->email,

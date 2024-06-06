@@ -46,6 +46,15 @@ use VuFind\Exception\Auth as AuthException;
 class SIP2 extends AbstractBase
 {
     /**
+     * Constructor
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     */
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
+    {
+    }
+
+    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
@@ -142,7 +151,7 @@ class SIP2 extends AbstractBase
         $user->lastname = trim(substr($ae, 0, strripos($ae, ',')));
         // I'm inserting the sip username and password since the ILS is the source.
         // Should revisit this.
-        $user->saveCredentials($username, $password);
+        $this->ilsAuthenticator->saveUserCatalogCredentials($user, $username, $password);
         return $user;
     }
 }

@@ -51,13 +51,6 @@ use function get_class;
 class ILS extends AbstractBase
 {
     /**
-     * ILS Authenticator
-     *
-     * @var object
-     */
-    protected $authenticator;
-
-    /**
      * Catalog connection
      *
      * @var \VuFind\ILS\Connection
@@ -65,27 +58,18 @@ class ILS extends AbstractBase
     protected $catalog = null;
 
     /**
-     * Email Authenticator
-     *
-     * @var EmailAuthenticator
-     */
-    protected $emailAuthenticator;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection        $connection    ILS connection to set
-     * @param \VuFind\Auth\ILSAuthenticator $authenticator ILS authenticator
-     * @param EmailAuthenticator            $emailAuth     Email authenticator
+     * @param \VuFind\ILS\Connection        $connection         ILS connection to set
+     * @param \VuFind\Auth\ILSAuthenticator $authenticator      ILS authenticator
+     * @param ?EmailAuthenticator           $emailAuthenticator Email authenticator
      */
     public function __construct(
         \VuFind\ILS\Connection $connection,
-        \VuFind\Auth\ILSAuthenticator $authenticator,
-        EmailAuthenticator $emailAuth = null
+        protected \VuFind\Auth\ILSAuthenticator $authenticator,
+        protected ?EmailAuthenticator $emailAuthenticator = null
     ) {
         $this->setCatalog($connection);
-        $this->authenticator = $authenticator;
-        $this->emailAuthenticator = $emailAuth;
     }
 
     /**
@@ -205,7 +189,7 @@ class ILS extends AbstractBase
         // Update the user and send it back to the caller:
         $username = $patron[$this->getUsernameField()];
         $user = $this->getOrCreateUserByUsername($username);
-        $user->saveCredentials($patron['cat_username'], $params['password']);
+        $this->authenticator->saveUserCatalogCredentials($user, $patron['cat_username'], $params['password']);
         return $user;
     }
 
@@ -337,7 +321,8 @@ class ILS extends AbstractBase
         $userService->updateUserEmail($user, $info['email'] ?? '');
 
         // Update the user in the database, then return it to the caller:
-        $user->saveCredentials(
+        $this->authenticator->saveUserCatalogCredentials(
+            $user,
             $info['cat_username'] ?? ' ',
             $info['cat_password'] ?? ' '
         );

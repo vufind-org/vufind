@@ -45,20 +45,15 @@ use VuFind\Exception\Auth as AuthException;
 class Email extends AbstractBase
 {
     /**
-     * Email Authenticator
-     *
-     * @var EmailAuthenticator
-     */
-    protected $emailAuthenticator;
-
-    /**
      * Constructor
      *
-     * @param EmailAuthenticator $emailAuth Email authenticator
+     * @param EmailAuthenticator $emailAuthenticator Email authenticator
+     * @param ILSAuthenticator   $ilsAuthenticator   ILS authenticator
      */
-    public function __construct(EmailAuthenticator $emailAuth)
-    {
-        $this->emailAuthenticator = $emailAuth;
+    public function __construct(
+        protected EmailAuthenticator $emailAuthenticator,
+        protected ILSAuthenticator $ilsAuthenticator
+    ) {
     }
 
     /**
@@ -167,7 +162,8 @@ class Email extends AbstractBase
         }
 
         // Update the user in the database, then return it to the caller:
-        $user->saveCredentials(
+        $this->ilsAuthenticator->saveUserCatalogCredentials(
+            $user,
             $info['cat_username'] ?? ' ',
             $info['cat_password'] ?? ' '
         );
