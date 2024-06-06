@@ -887,6 +887,52 @@ class User extends RowGateway implements
     }
 
     /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface
+    {
+        $this->college = $college;
+        return $this;
+    }
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string
+    {
+        return $this->college ?? '';
+    }
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface
+    {
+        $this->major = $major;
+        return $this;
+    }
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string
+    {
+        return $this->major ?? '';
+    }
+
+    /**
      * Set verification hash for recovery.
      *
      * @param string $hash Hash value to save
