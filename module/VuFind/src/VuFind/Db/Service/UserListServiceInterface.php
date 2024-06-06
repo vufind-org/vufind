@@ -64,6 +64,26 @@ interface UserListServiceInterface extends DbServiceInterface
     public function getUserListById(int $id): UserListEntityInterface;
 
     /**
+     * Get lists belonging to the user and their count. Returns an array of arrays with
+     * list_entity and count keys.
+     *
+     * @param int|UserEntityInterface $userOrId User entity object or ID
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getUserListsAndCountsByUser(int|UserEntityInterface $userOrId): array;
+
+    /**
+     * Get list objects belonging to the specified user.
+     *
+     * @param int|UserEntityInterface $userOrId User entity object or ID
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByUser(int|UserEntityInterface $userOrId): array;
+
+    /**
      * Get lists containing a specific record.
      *
      * @param string                       $recordId ID of record being checked.

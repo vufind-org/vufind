@@ -30,6 +30,9 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
@@ -77,6 +80,69 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
             throw new RecordMissingException('Cannot load list ' . $id);
         }
         return $result;
+    }
+
+    /**
+     * Get lists belonging to the user and their count. Returns an array of arrays with
+     * list_entity and count keys.
+     *
+     * @param int|UserEntityInterface $userOrId User entity object or ID
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getUserListsAndCountsByUser(int|UserEntityInterface $userOrId): array
+    {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($userId) {
+            $select->columns(
+                [
+                    Select::SQL_STAR,
+                    'cnt' => new Expression(
+                        'COUNT(DISTINCT(?))',
+                        ['ur.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                ]
+            );
+            $select->join(
+                ['ur' => 'user_resource'],
+                'user_list.id = ur.list_id',
+                [],
+                $select::JOIN_LEFT
+            );
+            $select->where->equalTo('user_list.user_id', $userId);
+            $select->group(
+                [
+                    'user_list.id', 'user_list.user_id', 'title', 'description',
+                    'created', 'public',
+                ]
+            );
+            $select->order(['title']);
+        };
+
+        $result = [];
+        foreach ($this->getDbTable('UserList')->select($callback) as $row) {
+            $result[] = ['list_entity' => $row, 'count' => $row->cnt];
+        }
+        return $result;
+    }
+
+    /**
+     * Get list objects belonging to the specified user.
+     *
+     * @param int|UserEntityInterface $userOrId User entity object or ID
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByUser(int|UserEntityInterface $userOrId): array
+    {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($userId) {
+            $select->where->equalTo('user_id', $userId);
+            $select->order(['title']);
+        };
+        return iterator_to_array($this->getDbTable('UserList')->select($callback));
     }
 
     /**

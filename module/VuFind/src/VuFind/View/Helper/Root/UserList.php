@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\Session\Container;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 /**
  * List view helper
@@ -44,30 +46,30 @@ use Laminas\View\Helper\AbstractHelper;
 class UserList extends AbstractHelper
 {
     /**
-     * List mode (enabled or disabled)
-     *
-     * @var string
-     */
-    protected $mode;
-
-    /**
-     * Session container for last list information.
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
      * Constructor
      *
-     * @param Container $session Session container (must use same namespace as
+     * @param Container                $session         Session container (must use same namespace as
      * container provided to \VuFind\Db\Table\UserList)
-     * @param string    $mode    List mode (enabled or disabled)
+     * @param UserListServiceInterface $userListService List database service
+     * @param string                   $mode            List mode (enabled or disabled)
      */
-    public function __construct(Container $session, $mode = 'enabled')
+    public function __construct(
+        protected Container $session,
+        protected UserListServiceInterface $userListService,
+        protected string $mode = 'enabled'
+    ) {
+    }
+
+    /**
+     * Get lists with counts for the provided user.
+     *
+     * @param UserEntityInterface $user User owning lists
+     *
+     * @return array
+     */
+    public function getUserListsAndCountsByUser(UserEntityInterface $user): array
     {
-        $this->mode = $mode;
-        $this->session = $session;
+        return $this->userListService->getUserListsAndCountsByUser($user);
     }
 
     /**
