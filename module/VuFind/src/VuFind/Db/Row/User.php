@@ -154,17 +154,12 @@ class User extends RowGateway implements
      * @param ?string $password Password to save (null for none)
      *
      * @return void
+     *
+     * @deprecated Use ILSAuthenticator::setUserCatalogCredentials()
      */
     public function setCredentials($username, $password)
     {
-        $this->cat_username = $username;
-        if ($this->passwordEncryptionEnabled()) {
-            $this->cat_password = null;
-            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
-        } else {
-            $this->cat_password = $password;
-            $this->cat_pass_enc = null;
-        }
+        $this->ilsAuthenticator->setUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -173,19 +168,14 @@ class User extends RowGateway implements
      * @param string $username Username to save
      * @param string $password Password to save
      *
-     * @return mixed           The output of the save method.
+     * @return void
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::saveUserCatalogCredentials()
      */
     public function saveCredentials($username, $password)
     {
-        $this->setCredentials($username, $password);
-        $result = $this->save();
-
-        // Update library card entry after saving the user so that we always have a
-        // user id:
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-
-        return $result;
+        $this->ilsAuthenticator->saveUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -907,7 +897,7 @@ class User extends RowGateway implements
      */
     public function getCatUsername(): ?string
     {
-        return $this->cat_username;
+        return $this->cat_username ?? '';
     }
 
     /**

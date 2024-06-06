@@ -132,7 +132,7 @@ class AlmaDatabase extends Database
 
             // Save the credentials to cat_username and cat_password to bypass
             // the ILS login screen from VuFind
-            $user->saveCredentials($params['username'], $params['password']);
+            $this->authenticator->saveUserCatalogCredentials($user, $params['username'], $params['password']);
         } else {
             throw new AuthException($this->translate('ils_account_create_error'));
         }
