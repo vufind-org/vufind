@@ -52,7 +52,6 @@ VuFind.register("sticky_elements", function StickyElements() {
       (stickyElement) => {
         let stickyContainer = stickyElement.parentNode;
         let placeholder = stickyContainer.previousSibling;
-        let gapFiller = stickyElement.previousSibling;
         let isSticky = stickyContainer.classList.contains("sticky");
 
         // only hide elements if placeholder already passed the sticky element even if shrunk
@@ -69,7 +68,6 @@ VuFind.register("sticky_elements", function StickyElements() {
           if (forceStyleCalculation || !isSticky) {
             stickyContainer.classList.add("sticky");
             placeholder.classList.remove("hidden");
-            gapFiller.classList.remove("hidden");
             let parentStyle = window.getComputedStyle(stickyContainer.parentNode, null);
             let parentBoundingClientRect = stickyContainer.parentNode.getBoundingClientRect();
             stickyContainer.style.marginLeft = parentBoundingClientRect.left + "px";
@@ -79,18 +77,12 @@ VuFind.register("sticky_elements", function StickyElements() {
             stickyContainer.style.paddingLeft = parentStyle.paddingLeft;
             stickyContainer.style.paddingRight = parentStyle.paddingRight;
             stickyContainer.style.width = parentBoundingClientRect.width + "px";
-            gapFiller.style.width = stickyElementStyle.width;
-            gapFiller.style.marginLeft = stickyElementStyle.marginLeft;
-            gapFiller.style.borderLeft = stickyElementStyle.borderLeft;
-            gapFiller.style.paddingLeft = stickyElementStyle.paddingLeft;
           }
           stickyContainer.style.zIndex = 10 + count - num;
-          stickyContainer.style.top = (currentOffset - 1) + "px";
-          currentOffset -= 1;
+          stickyContainer.style.top = currentOffset + "px";
         } else if (forceStyleCalculation || isSticky) {
           stickyContainer.classList.remove("sticky");
           placeholder.classList.add("hidden");
-          gapFiller.classList.add("hidden");
           stickyContainer.style.top = "";
           stickyContainer.style.marginLeft = "0";
           stickyContainer.style.marginRight = "0";
@@ -101,7 +93,7 @@ VuFind.register("sticky_elements", function StickyElements() {
           stickyContainer.style.width = "";
           stickyContainer.style.zIndex = "";
         }
-        currentOffset += stickyContainer.offsetHeight;
+        currentOffset += stickyContainer.getBoundingClientRect().height;
         num += 1;
       });
   }
@@ -135,16 +127,10 @@ VuFind.register("sticky_elements", function StickyElements() {
         let container = document.createElement('div');
         container.classList.add('sticky-container');
         stickyElement.parentNode.insertBefore(container, stickyElement);
-
         stickyElement.previousSibling.insertAdjacentElement('beforeEnd', stickyElement);
-
-        let gapFiller = document.createElement('div');
-        gapFiller.classList.add('sticky-gap-filler', 'hidden');
-        stickyElement.parentNode.insertBefore(gapFiller, stickyElement);
 
         setPlaceholderStyle(stickyElement);
         stickyElement.parentNode.style.backgroundColor = getInheritedBackgroundColor(stickyElement.parentNode);
-        stickyElement.previousSibling.style.backgroundColor = getInheritedBackgroundColor(stickyElement);
 
         resizeObserver.observe(stickyElement);
       }
