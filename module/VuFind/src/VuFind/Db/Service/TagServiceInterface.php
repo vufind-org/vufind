@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\TagsEntityInterface;
+
 /**
  * Database service interface for tags.
  *
@@ -83,4 +85,20 @@ interface TagServiceInterface extends DbServiceInterface
         string $sort = 'count',
         ?int $userToCheck = null
     ): array;
+
+    /**
+     * Delete orphaned tags (those not present in resource_tags) from the tags table.
+     *
+     * @return void
+     */
+    public function deleteOrphanedTags(): void;
+
+    /**
+     * Retrieve a tag by ID.
+     *
+     * @param int $id Tag ID
+     *
+     * @return ?TagsEntityInterface
+     */
+    public function getTagById(int $id): ?TagsEntityInterface;
 }
