@@ -39,8 +39,6 @@ use VuFind\Db\Entity\UserResource;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 
-use function is_int;
-
 /**
  * Database service for UserResource.
  *
