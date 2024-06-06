@@ -288,6 +288,7 @@ class Search implements SearchEntityInterface
     public function setSaved(bool $saved): SearchEntityInterface
     {
         $this->saved = $saved ? '1' : '0';
+        return $this;
     }
 
     /**
