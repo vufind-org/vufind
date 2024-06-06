@@ -11,5 +11,9 @@ $this->jsConfigs()->add(
     'sticky-elements',
     $this->config()->get('config')?->Site?->stickyElements?->toArray() ?? []
 );
+$this->jsConfigs()->add(
+    'hidden-sticky-elements',
+    $this->config()->get('config')?->Site?->hiddenStickyElements?->toArray() ?? []
+);
 
 echo $this->jsConfigs()->getJSON();

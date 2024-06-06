@@ -2,8 +2,24 @@
 
 VuFind.register("sticky_elements", function StickyElements() {
   var _stickyElements;
+  var _hiddenStickyElementsSelectors;
+
+  function setChildElementsHidden(e, hidden = true) {
+    _hiddenStickyElementsSelectors.forEach(
+      (selector) => e
+        .querySelectorAll(selector)
+        .forEach((c) => {
+          if (hidden) {
+            c.classList.add("sticky-hidden");
+          } else {
+            c.classList.remove("sticky-hidden");
+          }
+        })
+    );
+  }
 
   function setPlaceholderStyle (stickyElement) {
+    setChildElementsHidden(stickyElement, false);
     let style = window.getComputedStyle(stickyElement, null);
     let placeholder = stickyElement.parentNode.previousSibling;
     placeholder.style.height = style.height;
@@ -38,6 +54,13 @@ VuFind.register("sticky_elements", function StickyElements() {
         let placeholder = stickyContainer.previousSibling;
         let gapFiller = stickyElement.previousSibling;
         let isSticky = stickyContainer.classList.contains("sticky");
+
+        // only hide elements if placeholder already passed the sticky element even if shrunk
+        setChildElementsHidden(stickyElement);
+        if (placeholder.getBoundingClientRect().bottom >  stickyContainer.getBoundingClientRect().bottom) {
+          setChildElementsHidden(stickyElement, false);
+        }
+
         let stickyElementStyle = window.getComputedStyle(stickyElement, null);
         if (
           (!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
@@ -98,6 +121,8 @@ VuFind.register("sticky_elements", function StickyElements() {
     if (!_stickyElements.length) {
       return;
     }
+
+    _hiddenStickyElementsSelectors = VuFind.config.get('hidden-sticky-elements', []);
 
     let resizeObserver = new ResizeObserver(calculateStyles);
 
