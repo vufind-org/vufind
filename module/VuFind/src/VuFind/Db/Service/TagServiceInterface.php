@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\UserEntityInterface;
-
 /**
  * Database service interface for tags.
  *
@@ -85,28 +83,4 @@ interface TagServiceInterface extends DbServiceInterface
         string $sort = 'count',
         ?int $userToCheck = null
     ): array;
-
-    /**
-     * Add tags to the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
-     *
-     * @return void
-     */
-    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
-
-    /**
-     * Remove tags from the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user deleting the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
-     *
-     * @return void
-     */
-    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void;
 }

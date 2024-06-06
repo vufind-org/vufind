@@ -90,7 +90,7 @@ VuFind.register('lightbox', function Lightbox() {
     if (alerts.length > 0) {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
         return el.innerHTML;
-      }).join('<br/>');
+      }).join('<br>');
       var href = alerts.find('.download').attr('href');
       if (typeof href !== 'undefined') {
         location.href = href;
@@ -187,7 +187,7 @@ VuFind.register('lightbox', function Lightbox() {
             if (errorMsgs.length && testDiv.find('.record').length) {
               var msgs = errorMsgs.toArray().map(function getAlertHtml(el) {
                 return el.innerHTML;
-              }).join('<br/>');
+              }).join('<br>');
               showAlert(msgs, 'danger');
               return false;
             }
@@ -233,7 +233,7 @@ VuFind.register('lightbox', function Lightbox() {
         render(content);
       })
       .fail(function lbAjaxFail(deferred, errorType, msg) {
-        showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
+        showAlert(VuFind.translate('error_occurred') + '<br>' + msg, 'danger');
       });
     return _xhr;
   }

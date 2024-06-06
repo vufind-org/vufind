@@ -35,6 +35,7 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
+use VuFind\Record\ResourcePopulator;
 use VuFind\Tags;
 
 /**
@@ -49,47 +50,21 @@ use VuFind\Tags;
 class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
 {
     /**
-     * Record cache
-     *
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * Record loader
-     *
-     * @var Loader
-     */
-    protected $loader;
-
-    /**
-     * Tag parser
-     *
-     * @var Tags
-     */
-    protected $tags;
-
-    /**
-     * Favorites service
-     *
-     * @var FavoritesService
-     */
-    protected $favoritesService;
-
-    /**
      * Constructor
      *
-     * @param Loader           $loader    Record loader
-     * @param Cache            $cache     Record cache
-     * @param Tags             $tags      Tag parser
-     * @param FavoritesService $favorites Favorites service
+     * @param Loader            $loader            Record loader
+     * @param Cache             $cache             Record cache
+     * @param Tags              $tags              Tag parser
+     * @param FavoritesService  $favoritesService  Favorites service
+     * @param ResourcePopulator $resourcePopulator Resource populator
      */
-    public function __construct(Loader $loader, Cache $cache, Tags $tags, FavoritesService $favorites)
-    {
-        $this->loader = $loader;
-        $this->cache = $cache;
-        $this->tags = $tags;
-        $this->favoritesService = $favorites;
+    public function __construct(
+        protected Loader $loader,
+        protected Cache $cache,
+        protected Tags $tags,
+        protected FavoritesService $favoritesService,
+        protected ResourcePopulator $resourcePopulator
+    ) {
     }
 
     /**
@@ -150,8 +125,7 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
             [$source, $id] = explode('|', $current, 2);
 
             // Get or create a resource object as needed:
-            $resourceTable = $this->getController()->getTable('Resource');
-            $resource = $resourceTable->findResource($id, $source);
+            $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
 
             // Add the information to the user's account:
             $tags = isset($params['mytags'])

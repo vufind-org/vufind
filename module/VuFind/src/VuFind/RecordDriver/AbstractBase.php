@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 use function is_callable;
@@ -211,12 +212,18 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use TagServiceInterface::addTagsToRecord()
+     * @deprecated Use \VuFind\Tags::addTagsToRecord()
      */
     public function addTags($user, $tags)
     {
-        $this->getDbService(TagServiceInterface::class)
-            ->addTagsToRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
+        );
+        foreach ($tags as $tag) {
+            $resource->addTag($tag, $user);
+        }
     }
 
     /**
@@ -227,12 +234,18 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use TagServiceInterface::deleteTagsFromRecord()
+     * @deprecated Use \VuFind\Tags::deleteTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
-        $this->getDbService(TagServiceInterface::class)
-            ->deleteTagsFromRecord($this->getUniqueID(), $this->getSourceIdentifier(), $user, $tags);
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(),
+            $this->getSourceIdentifier()
+        );
+        foreach ($tags as $tag) {
+            $resource->deleteTag($tag, $user);
+        }
     }
 
     /**
@@ -246,6 +259,8 @@ abstract class AbstractBase implements
      * @param ?int $userId User ID, or null for all users
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\Ratings\RatingsService::getRatingData()
      */
     public function getRatingData(?int $userId = null)
     {
@@ -276,6 +291,8 @@ abstract class AbstractBase implements
      * @param array $groups Group definition (key => [min, max])
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\Ratings\RatingsService::getRatingBreakdown()
      */
     public function getRatingBreakdown(array $groups)
     {
@@ -295,6 +312,8 @@ abstract class AbstractBase implements
      * rating
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Ratings\RatingsService::saveRating()
      */
     public function addOrUpdateRating(int $userId, ?int $rating): void
     {
@@ -341,11 +360,12 @@ abstract class AbstractBase implements
      * @param int $user_id ID of user to load tags from (null for all users)
      *
      * @return array
+     *
+     * @deprecated Use UserListServiceInterface::getListsContainingRecord()
      */
     public function getContainingLists($user_id = null)
     {
-        $table = $this->getDbTable('UserList');
-        return $table->getListsContainingResource(
+        return $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             $user_id

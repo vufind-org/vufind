@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\UserEntityInterface;
-
 /**
  * Database service for tags.
  *
@@ -96,43 +94,5 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         return $this->getDbTable('Tags')
             ->getForResource($id, $source, $limit, $list, $user, $sort, $userToCheck)
             ->toArray();
-    }
-
-    /**
-     * Add tags to the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
-     *
-     * @return void
-     */
-    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
-    {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource($id, $source);
-        foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
-        }
-    }
-
-    /**
-     * Remove tags from the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user deleting the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
-     *
-     * @return void
-     */
-    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
-    {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource($id, $source);
-        foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
-        }
     }
 }

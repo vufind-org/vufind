@@ -18,7 +18,7 @@
       </div>
       <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
-          <?php $ratingData = $this->driver->getRatingData($comment->getUser()->getId()); ?>
+          <?php $ratingData = $this->ratings()->getRatingData($this->driver, $comment->getUser()->getId()); ?>
           <?php if ($ratingData['count']): ?>
             <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData]);?>
           <?php endif; ?>

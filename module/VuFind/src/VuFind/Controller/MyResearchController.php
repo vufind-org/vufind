@@ -31,6 +31,7 @@
 
 namespace VuFind\Controller;
 
+use DateTime;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
@@ -1759,7 +1760,7 @@ class MyResearchController extends AbstractBase
                 // Attempt to send the email
                 try {
                     // Create a fresh hash
-                    $user->updateHash();
+                    $this->getAuthManager()->updateUserVerifyHash($user);
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     $method = $this->getAuthManager()->getAuthMethod();
@@ -1807,7 +1808,7 @@ class MyResearchController extends AbstractBase
      * When a request to change a user's email address has been received, we should
      * send a notification to the old email address for the user's information.
      *
-     * @param \VuFind\Db\Row\User $user     User whose email address is being changed
+     * @param UserEntityInterface $user     User whose email address is being changed
      * @param string              $newEmail New email address
      *
      * @return void (sends email or adds error message)
@@ -1816,7 +1817,7 @@ class MyResearchController extends AbstractBase
     {
         // Don't send the notification if the existing email is not valid:
         $validator = new \Laminas\Validator\EmailAddress();
-        if (!$validator->isValid($user->email)) {
+        if (!$validator->isValid($user->getEmail())) {
             return;
         }
 
@@ -1835,7 +1836,7 @@ class MyResearchController extends AbstractBase
         // If the user is setting up a new account, use the main email
         // address; if they have a pending address change, use that.
         $this->serviceLocator->get(Mailer::class)->send(
-            $user->email,
+            $user->getEmail(),
             $config->Site->email,
             $this->translate('change_notification_email_subject'),
             $message
@@ -1845,8 +1846,8 @@ class MyResearchController extends AbstractBase
     /**
      * Send a verify email message.
      *
-     * @param \VuFind\Db\Row\User $user   User object we're recovering
-     * @param bool                $change Is the user changing their email (true)
+     * @param ?UserEntityInterface $user   User object we're recovering
+     * @param bool                 $change Is the user changing their email (true)
      * or setting up a new account (false).
      *
      * @return void (sends email or adds error message)
@@ -1859,7 +1860,7 @@ class MyResearchController extends AbstractBase
                 ->addMessage('verification_user_not_found', 'error');
         } else {
             // Make sure we've waited long enough
-            $hashtime = $this->getHashAge($user->verify_hash);
+            $hashtime = $this->getHashAge($user->getVerifyHash());
             $recoveryInterval = $this->getConfig()->Authentication->recover_interval
                 ?? 60;
             if (time() - $hashtime < $recoveryInterval && !$change) {
@@ -1869,7 +1870,7 @@ class MyResearchController extends AbstractBase
                 // Attempt to send the email
                 try {
                     // Create a fresh hash
-                    $user->updateHash();
+                    $this->getAuthManager()->updateUserVerifyHash($user);
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     // Custom template for emails (text-only)
@@ -1878,13 +1879,12 @@ class MyResearchController extends AbstractBase
                         [
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verifyemail')
-                                . '?hash=' . urlencode($user->verify_hash),
+                                . '?hash=' . urlencode($user->getVerifyHash()),
                         ]
                     );
                     // If the user is setting up a new account, use the main email
                     // address; if they have a pending address change, use that.
-                    $to = empty($user->pending_email)
-                        ? $user->email : $user->pending_email;
+                    $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
                     $this->serviceLocator->get(Mailer::class)->send(
                         $to,
                         $config->Site->email,
@@ -1930,7 +1930,8 @@ class MyResearchController extends AbstractBase
                 // If the hash is valid, forward user to create new password
                 // Also treat email address as verified
                 if ($user = $table->getByVerifyHash($hash)) {
-                    $user->saveEmailVerified();
+                    $user->setEmailVerified(new DateTime());
+                    $this->getDbService(UserServiceInterface::class)->persistEntity($user);
                     $this->setUpAuthenticationFromRequest();
                     $view = $this->createViewModel();
                     $view->auth_method = $this->getAuthManager()->getAuthMethod();
@@ -1976,7 +1977,8 @@ class MyResearchController extends AbstractBase
                             ->updateUserEmail($user, $pending, true);
                         $user->setPendingEmail('');
                     }
-                    $user->saveEmailVerified();
+                    $user->setEmailVerified(new DateTime());
+                    $this->getDbService(UserServiceInterface::class)->persistEntity($user);
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
                     return $this->redirect()->toRoute('myresearch-profile');
@@ -2000,7 +2002,7 @@ class MyResearchController extends AbstractBase
     protected function resetNewPasswordForm($userFromHash, ViewModel $view)
     {
         if ($userFromHash) {
-            $userFromHash->updateHash();
+            $this->getAuthManager()->updateUserVerifyHash($userFromHash);
             $view->username = $userFromHash->username;
             $view->hash = $userFromHash->verify_hash;
         }
@@ -2072,7 +2074,7 @@ class MyResearchController extends AbstractBase
             return $view;
         }
         // Update hash to prevent reusing hash
-        $user->updateHash();
+        $this->getAuthManager()->updateUserVerifyHash($user);
         // Login
         $this->getAuthManager()->login($this->request);
         // Return to account home
@@ -2163,7 +2165,7 @@ class MyResearchController extends AbstractBase
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy();
         // Identification
-        $user->updateHash();
+        $this->getAuthManager()->updateUserVerifyHash($user);
         $view->hash = $user->getVerifyHash();
         $view->setTemplate('myresearch/newpassword');
         $view->useCaptcha = $this->captcha()->active('changePassword');
