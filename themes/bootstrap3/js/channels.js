@@ -1,4 +1,4 @@
-/*global getUrlRoot, VuFind */
+/*global VuFind, getUrlRoot */
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links;
@@ -70,29 +70,8 @@ VuFind.register('channels', function Channels() {
   }
 
   function setupChannelSlider(i, op) {
-    $(op).find(".slide").removeClass("hidden");
-    $(op).slick({
-      slidesToShow: 6,
-      slidesToScroll: 6,
-      infinite: false,
-      rtl: $(document.body).hasClass("rtl"),
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 3,
-            slidesToScroll: 3
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 1,
-            slidesToScroll: 1
-          }
-        }
-      ]
-    });
+    $(op).find(".channel-record").removeClass("hidden");
+
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
@@ -173,6 +152,7 @@ VuFind.register('channels', function Channels() {
           $dest.after($testEl);
           $testEl.find('.channel').each(setupChannelSlider);
           $testEl.find('.channel').each(bindChannelAddMenu);
+          VuFind.carousels.setup($testEl);
         }
 
         if (list.children().length === 0) {

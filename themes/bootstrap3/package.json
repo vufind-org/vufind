@@ -5,6 +5,7 @@
     "updateDeps": "npm update && node tools/copyDependencies.mjs"
   },
   "dependencies": {
+    "@splidejs/splide": "^4.1.4",
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.9",
     "chart.js": "^4.4.0",
     "jquery": "^3.7.1",

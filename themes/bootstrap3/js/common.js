@@ -527,6 +527,10 @@ function htmlEncode(value) {
     .replace(/'/g, "&#39;");
 }
 
+function unwrapJQuery(node) {
+  return node instanceof Node ? node : node[0];
+}
+
 /**
  * Keyboard and focus controllers
  * Adapted from Micromodal
@@ -739,10 +743,6 @@ function setupOffcanvas() {
       });
     });
   }
-}
-
-function unwrapJQuery(node) {
-  return node instanceof Node ? node : node[0];
 }
 
 function setupJumpMenus(_container) {

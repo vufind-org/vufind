@@ -1,0 +1,80 @@
+.vf-carousel-item {
+  display: block;
+  text-align: center;
+}
+
+.vf-carousel {
+  margin-block: 1rem;
+  padding: 0.25rem;
+  background-color: @gray-lighter;
+
+  @media (min-width: 768px) {
+    margin-inline: 2.5rem;
+  }
+
+  .splide__slide {
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .splide__arrow {
+    width: 2.5rem;
+    height: auto;
+    aspect-ratio: 1;
+    color: @btn-default-color;
+    background-color: @btn-default-bg;
+    border: 2px solid @btn-default-border;
+    opacity: 1;
+    transition: opacity 150ms;
+    will-change: opacity;
+  }
+  .splide__arrow:disabled {
+    opacity: 0;
+  }
+  .splide__arrow:hover {
+    border-color: @btn-default-color;
+  }
+  .splide__arrow--prev {
+    left: -3em;
+  }
+  .splide__arrow--next {
+    right: -3em;
+  }
+
+  .splide__pagination {
+    bottom: -1.5rem;
+  }
+  .splide__pagination__page {
+    aspect-ratio: 1;
+    box-sizing: content-box;
+    border: 1px solid @gray;
+  }
+  .splide__pagination__page.is-active {
+    background-color: @brand-primary;
+    border-color: white;
+    box-shadow: 0 0 0 2px @brand-primary;
+    transform: none;
+  }
+
+  /* line up arrows with pagination */
+
+  @media (max-width: 767px) {
+    .splide__arrow {
+      top: calc(100% + 1.5rem);
+    }
+    .splide__arrow--prev {
+      left: 0;
+    }
+    .splide__arrow--next {
+      right: 0;
+    }
+    .carousel-pagination {
+      bottom: -2em;
+    }
+  }
+}
+
+.splide.splide.is-focus-in .splide__arrow:focus {
+  border-color: @brand-primary;
+  outline-color: @brand-primary;
+}

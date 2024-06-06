@@ -17,7 +17,7 @@ html {
 }
 body {
   font-size: 1rem;
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // native font stack
+  font-family: system-ui, sans-serif;
   color: $near-black;
 }
 
@@ -164,6 +164,10 @@ a:hover .login-dropdown-caret {
 .channel-title { margin-top: 1rem; }
 .channel,
 .channel-title.no-results { margin-bottom: 2rem; }
+.channel-record-title {
+  padding-bottom: 0.25rem;
+  font-size: 14px;
+}
 
 /* --- MyResearch --- */
 .myresearch-menu a:hover { background-color: $white; }
