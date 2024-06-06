@@ -897,7 +897,7 @@ class User extends RowGateway implements
      */
     public function getCatUsername(): ?string
     {
-        return $this->cat_username;
+        return $this->cat_username ?? '';
     }
 
     /**
