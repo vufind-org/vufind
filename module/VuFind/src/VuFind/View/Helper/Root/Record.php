@@ -35,6 +35,7 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 use function get_class;
 use function in_array;
@@ -256,6 +257,31 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
                 'lists' => $lists,
             ]
         );
+    }
+
+    /**
+     * Get notes associated with this record in user lists.
+     *
+     * @param int $list_id ID of list to load tags from (null for all lists)
+     * @param int $user_id ID of user to load tags from (null for all users)
+     *
+     * @return string[]
+     */
+    public function getListNotes($list_id = null, $user_id = null)
+    {
+        $data = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            $list_id,
+            $user_id
+        );
+        $notes = [];
+        foreach ($data as $current) {
+            if (!empty($note = $current->getNotes())) {
+                $notes[] = $note;
+            }
+        }
+        return $notes;
     }
 
     /**
