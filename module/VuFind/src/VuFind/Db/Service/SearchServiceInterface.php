@@ -40,4 +40,10 @@ namespace VuFind\Db\Service;
  */
 interface SearchServiceInterface extends DbServiceInterface
 {
+    /**
+     * Set invalid user_id values in the table to null; return count of affected rows.
+     *
+     * @return int
+     */
+    public function cleanUpInvalidUserIds(): int;
 }
