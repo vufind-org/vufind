@@ -311,7 +311,7 @@ class ILS extends AbstractBase
         }
 
         // No need to store the ILS password in VuFind's main password field:
-        $user->password = '';
+        $user->setRawPassword('');
 
         // Update user information based on ILS data:
         $fields = ['firstname', 'lastname', 'major', 'college'];
