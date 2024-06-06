@@ -52,18 +52,18 @@ interface SearchEntityInterface extends EntityInterface
     /**
      * Get user.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
-    public function getUser(): UserEntityInterface;
+    public function getUser(): ?UserEntityInterface;
 
     /**
      * Set user.
      *
-     * @param int $user User
+     * @param ?UserEntityInterface $user User
      *
      * @return SearchEntityInterface
      */
-    public function setUser(UserEntityInterface $user): SearchEntityInterface;
+    public function setUser(?UserEntityInterface $user): SearchEntityInterface;
 
     /**
      * Get session identifier.
@@ -75,11 +75,11 @@ interface SearchEntityInterface extends EntityInterface
     /**
      * Set session identifier.
      *
-     * @param ?string $session_id Session id
+     * @param ?string $sessionId Session id
      *
      * @return SearchEntityInterface
      */
-    public function setSessionId(?string $session_id): SearchEntityInterface;
+    public function setSessionId(?string $sessionId): SearchEntityInterface;
 
     /**
      * Get created date.
@@ -132,18 +132,18 @@ interface SearchEntityInterface extends EntityInterface
     /**
      * Get the search object from the row.
      *
-     * @return \VuFind\Search\Minified
+     * @return ?\VuFind\Search\Minified
      */
-    public function getSearchObject(): \VuFind\Search\Minified;
+    public function getSearchObject(): ?\VuFind\Search\Minified;
 
     /**
      * Set search object.
      *
-     * @param \VuFind\Search\Minified $searchObject Search object
+     * @param ?\VuFind\Search\Minified $searchObject Search object
      *
      * @return SearchEntityInterface
      */
-    public function setSearchObject(\VuFind\Search\Minified $searchObject): SearchEntityInterface;
+    public function setSearchObject(?\VuFind\Search\Minified $searchObject): SearchEntityInterface;
 
     /**
      * Get checksum.

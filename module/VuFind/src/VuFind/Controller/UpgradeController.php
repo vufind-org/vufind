@@ -48,6 +48,7 @@ use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -327,6 +328,20 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Support method for fixdatabaseAction() -- clean up invalid user ID
+     * values in the search table.
+     *
+     * @return void
+     */
+    protected function fixInvalidUserIdsInSearchTable(): void
+    {
+        $count = $this->getDbService(SearchServiceInterface::class)->cleanUpInvalidUserIds();
+        if ($count) {
+            $this->session->warnings->append("Converted $count invalid user_id values in search table");
+        }
+    }
+
+    /**
      * Support method for fixdatabaseAction() -- add checksums to search table rows.
      *
      * @return void
@@ -339,7 +354,7 @@ class UpgradeController extends AbstractBase
         $searchRows = $search->select($searchWhere);
         if (count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
-                $searchObj = $searchRow->getSearchObject()->deminify($manager);
+                $searchObj = $searchRow->getSearchObjectOrThrowException()->deminify($manager);
                 $url = $searchObj->getUrlQuery()->getParams();
                 $checksum = crc32($url) & 0xFFFFFFF;
                 $searchRow->checksum = $checksum;
@@ -585,6 +600,9 @@ class UpgradeController extends AbstractBase
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
+
+            // Fix invalid user IDs in search table, if necessary.
+            $this->fixInvalidUserIdsInSearchTable();
         } catch (Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(),

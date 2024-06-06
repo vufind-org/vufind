@@ -68,11 +68,15 @@ class Search implements SearchEntityInterface
     /**
      * User ID.
      *
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id")
+     * })
      */
-    protected $userId = 0;
+    protected $user;
 
     /**
      * Session ID.
@@ -179,23 +183,23 @@ class Search implements SearchEntityInterface
     /**
      * Get user.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
-    public function getUser(): UserEntityInterface
+    public function getUser(): ?UserEntityInterface
     {
-        throw new \Exception('TODO: not implemented yet');
+        return $this->user;
     }
 
     /**
      * Set user.
      *
-     * @param UserEntityInterface $user User
+     * @param ?UserEntityInterface $user User
      *
      * @return SearchEntityInterface
      */
-    public function setUser(UserEntityInterface $user): SearchEntityInterface
+    public function setUser(?UserEntityInterface $user): SearchEntityInterface
     {
-        $this->userId = $user->getId();
+        $this->user = $user;
         return $this;
     }
 
@@ -294,23 +298,23 @@ class Search implements SearchEntityInterface
     /**
      * Get the search object from the row.
      *
-     * @return \VuFind\Search\Minified
+     * @return ?\VuFind\Search\Minified
      */
-    public function getSearchObject(): \VuFind\Search\Minified
+    public function getSearchObject(): ?\VuFind\Search\Minified
     {
-        return unserialize($this->searchObject);
+        return $this->searchObject ? unserialize($this->searchObject) : null;
     }
 
     /**
      * Set search object.
      *
-     * @param \VuFind\Search\Minified $searchObject Search object
+     * @param ?\VuFind\Search\Minified $searchObject Search object
      *
      * @return SearchEntityInterface
      */
-    public function setSearchObject(\VuFind\Search\Minified $searchObject): SearchEntityInterface
+    public function setSearchObject(?\VuFind\Search\Minified $searchObject): SearchEntityInterface
     {
-        $this->searchObject = serialize($searchObject);
+        $this->searchObject = $searchObject ? serialize($searchObject) : null;
         return $this;
     }
 
