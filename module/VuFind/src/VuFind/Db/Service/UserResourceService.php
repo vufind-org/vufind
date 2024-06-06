@@ -32,9 +32,14 @@ namespace VuFind\Db\Service;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
+
+use function is_int;
 
 /**
  * Database service for UserResource.
@@ -120,6 +125,43 @@ class UserResourceService extends AbstractDbService implements
                 throw $e;
             }
         }
+    }
+
+    /**
+     * Get information saved in a user's favorites for a particular record.
+     *
+     * @param string                           $recordId ID of record being checked.
+     * @param string                           $source   Source of record to look up
+     * @param int|UserListEntityInterface|null $list     Optional list ID or entity
+     * (to limit results to a particular list).
+     * @param int|UserEntityInterface|null     $user     Optional user ID or entity
+     * (to limit results to a particular user).
+     *
+     * @return UserResourceEntityInterface[]
+     */
+    public function getFavoritesForRecord(
+        string $recordId,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int|UserListEntityInterface|null $list = null,
+        int|UserEntityInterface|null $user = null
+    ): array {
+        $dql = 'SELECT DISTINCT ur FROM ' . $this->getEntityClass(UserResource::class) . ' ur '
+            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = ur.resource '
+            . 'WHERE r.source = :source AND r.recordId = :recordId ';
+
+        $parameters = compact('source', 'recordId');
+        if (null !== $user) {
+            $dql .= 'AND ur.user = :user ';
+            $parameters['user'] = $this->getDoctrineReference(User::class, $user);
+        }
+        if (null !== $list) {
+            $dql .= 'AND ur.list = :list';
+            $parameters['list'] = $this->getDoctrineReference(UserList::class, $list);
+        }
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 
     /**
