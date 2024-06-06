@@ -29,7 +29,8 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\UserEntityInterface;
+use Laminas\Db\Sql\Select;
+use VuFind\Db\Entity\TagsEntityInterface;
 
 /**
  * Database service for tags.
@@ -99,40 +100,32 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     }
 
     /**
-     * Add tags to the record.
-     *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
+     * Delete orphaned tags (those not present in resource_tags) from the tags table.
      *
      * @return void
      */
-    public function addTagsToRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
+    public function deleteOrphanedTags(): void
     {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource($id, $source);
-        foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
-        }
+        $callback = function ($select) {
+            $subQuery = $this->getDbTable('ResourceTags')
+                ->getSql()
+                ->select()
+                ->quantifier(Select::QUANTIFIER_DISTINCT)
+                ->columns(['tag_id']);
+            $select->where->notIn('id', $subQuery);
+        };
+        $this->getDbTable('Tags')->delete($callback);
     }
 
     /**
-     * Remove tags from the record.
+     * Retrieve a tag by ID.
      *
-     * @param string              $id     Unique record ID
-     * @param string              $source Record source
-     * @param UserEntityInterface $user   The user deleting the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
+     * @param int $id Tag ID
      *
-     * @return void
+     * @return ?TagsEntityInterface
      */
-    public function deleteTagsFromRecord(string $id, string $source, UserEntityInterface $user, array $tags): void
+    public function getTagById(int $id): ?TagsEntityInterface
     {
-        $resources = $this->getDbTable('Resource');
-        $resource = $resources->findResource($id, $source);
-        foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
-        }
+        return $this->getDbTable('Tags')->select(['id' => $id])->current();
     }
 }

@@ -29,8 +29,13 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
+
+use function is_int;
 
 /**
  * Database service for UserResource.
@@ -46,6 +51,31 @@ class UserResourceService extends AbstractDbService implements
     UserResourceServiceInterface
 {
     use DbTableAwareTrait;
+
+    /**
+     * Get information saved in a user's favorites for a particular record.
+     *
+     * @param string                           $recordId ID of record being checked.
+     * @param string                           $source   Source of record to look up
+     * @param int|UserListEntityInterface|null $list     Optional list ID or entity
+     * (to limit results to a particular list).
+     * @param int|UserEntityInterface|null     $user     Optional user ID or entity
+     * (to limit results to a particular user).
+     *
+     * @return UserResourceEntityInterface[]
+     */
+    public function getFavoritesForRecord(
+        string $recordId,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int|UserListEntityInterface|null $list = null,
+        int|UserEntityInterface|null $user = null
+    ): array {
+        $listId = is_int($list) ? $list : $list?->getId();
+        $userId = is_int($user) ? $user : $user?->getId();
+        return iterator_to_array(
+            $this->getDbTable('UserResource')->getSavedData($recordId, $source, $listId, $userId)
+        );
+    }
 
     /**
      * Get statistics on use of UserResource.

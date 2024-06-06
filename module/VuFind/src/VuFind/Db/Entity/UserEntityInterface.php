@@ -66,6 +66,38 @@ interface UserEntityInterface extends EntityInterface
     public function getUsername(): string;
 
     /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface;
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string;
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface;
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string;
+
+    /**
      * Set firstname.
      *
      * @param string $firstName New first name
@@ -210,6 +242,47 @@ interface UserEntityInterface extends EntityInterface
     public function getCatPassEnc(): ?string;
 
     /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface;
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string;
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface;
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string;
+
+    /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface;
+
+    /**
      * Get verification hash for recovery.
      *
      * @return string
@@ -283,7 +356,7 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Created setter
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -292,7 +365,23 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
     public function getCreated(): Datetime;
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface;
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime;
 }
