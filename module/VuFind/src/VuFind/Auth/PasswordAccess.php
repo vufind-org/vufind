@@ -78,12 +78,12 @@ class PasswordAccess extends AbstractBase
     {
         $config = $this->getConfig()->toArray();
         $req_password = trim($request->getPost()->get('password', ''));
-
-        if (!in_array($req_password, $config['PasswordAccess']['access_user'])) {
+        $accessConfig = $config['PasswordAccess']['access_user'] ?? [];
+        if (!in_array($req_password, $accessConfig)) {
             throw new AuthException('authentication_error_invalid');
         }
 
-        $userMap = array_flip($config['PasswordAccess']['access_user']);
+        $userMap = array_flip($accessConfig);
         return $this->getOrCreateUserByUsername($userMap[$req_password]);
     }
 }
