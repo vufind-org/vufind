@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS "search";
 
 CREATE TABLE search (
 id BIGSERIAL,
-user_id int NOT NULL DEFAULT '0',
+user_id int DEFAULT NULL,
 session_id varchar(128),
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 title varchar(20) DEFAULT NULL,
