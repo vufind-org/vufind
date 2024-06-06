@@ -29,6 +29,10 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
+
 /**
  * Database service interface for UserResource.
  *
@@ -40,6 +44,25 @@ namespace VuFind\Db\Service;
  */
 interface UserResourceServiceInterface extends DbServiceInterface
 {
+    /**
+     * Get information saved in a user's favorites for a particular record.
+     *
+     * @param string                           $recordId ID of record being checked.
+     * @param string                           $source   Source of record to look up
+     * @param int|UserListEntityInterface|null $list     Optional list ID or entity
+     * (to limit results to a particular list).
+     * @param int|UserEntityInterface|null     $user     Optional user ID or entity
+     * (to limit results to a particular user).
+     *
+     * @return UserResourceEntityInterface[]
+     */
+    public function getFavoritesForRecord(
+        string $recordId,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int|UserListEntityInterface|null $list = null,
+        int|UserEntityInterface|null $user = null
+    ): array;
+
     /**
      * Get statistics on use of UserResource.
      *
