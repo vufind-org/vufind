@@ -229,11 +229,11 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @param UserEntityInterface $user     User to update
      * @param string              $username Username to save
-     * @param string              $password Password to save (null for none)
+     * @param ?string             $password Password to save (null for none)
      *
      * @return void
      */
-    public function setUserCatalogCredentials(UserEntityInterface $user, string $username, string $password): void
+    public function setUserCatalogCredentials(UserEntityInterface $user, string $username, ?string $password): void
     {
         $user->setCatUsername($username);
         if ($this->passwordEncryptionEnabled()) {
@@ -250,12 +250,12 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @param UserEntityInterface $user     User to update
      * @param string              $username Username to save
-     * @param string              $password Password to save
+     * @param ?string             $password Password to save
      *
      * @return void
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function saveUserCatalogCredentials(UserEntityInterface $user, string $username, string $password): void
+    public function saveUserCatalogCredentials(UserEntityInterface $user, string $username, ?string $password): void
     {
         $this->setUserCatalogCredentials($user, $username, $password);
         $this->getDbService(UserServiceInterface::class)->persistEntity($user);
