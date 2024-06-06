@@ -7,4 +7,9 @@
 //$this->jsConfigs()->add('myConfig', true);
 //$this->jsConfigs()->add('siteTitle', $this->config()->get('config')->Site->title);
 
+$this->jsConfigs()->add(
+    'sticky-elements',
+    $this->config()->get('config')?->Site?->stickyElements?->toArray() ?? []
+);
+
 echo $this->jsConfigs()->getJSON();

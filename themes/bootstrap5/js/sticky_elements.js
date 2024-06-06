@@ -3,15 +3,6 @@
 VuFind.register("sticky_elements", function StickyElements() {
   var _stickyElements;
 
-  function sortStickyElements(a, b) {
-    let posA = a.dataset.stickyPos;
-    let posB = b.dataset.stickyPos;
-    if (posA === undefined && posB === undefined) return 0;
-    if (posA === undefined) return 1;
-    if (posB === undefined) return -1;
-    return posA - posB;
-  }
-
   function setPlaceholderStyle (stickyElement) {
     let style = window.getComputedStyle(stickyElement, null);
     let placeholder = stickyElement.parentNode.previousSibling;
@@ -102,7 +93,8 @@ VuFind.register("sticky_elements", function StickyElements() {
   }
 
   function init() {
-    _stickyElements = Array.from(document.getElementsByClassName('sticky-element')).sort(sortStickyElements);
+    let stickyElementsConfig = VuFind.config.get('sticky-elements', []);
+    _stickyElements = stickyElementsConfig.flatMap((selector) => Array.from(document.querySelectorAll(selector)));
     if (!_stickyElements.length) {
       return;
     }
