@@ -118,9 +118,6 @@ class SIP2 extends AbstractBase
         ) {
             // Success!!!
             $user = $this->processSIP2User($result, $username, $password);
-
-            // Set login cookie for 1 hour
-            $user->password = $password; // Need this for Metalib
         } else {
             throw new AuthException('authentication_error_invalid');
         }
@@ -147,8 +144,8 @@ class SIP2 extends AbstractBase
         // This could potentially be different depending on the ILS. Name could be
         // Bob Wicksall or Wicksall, Bob. This is currently assuming Wicksall, Bob
         $ae = $info['variable']['AE'][0];
-        $user->firstname = trim(substr($ae, 1 + strripos($ae, ',')));
-        $user->lastname = trim(substr($ae, 0, strripos($ae, ',')));
+        $user->setFirstname(trim(substr($ae, 1 + strripos($ae, ','))));
+        $user->setLastname(trim(substr($ae, 0, strripos($ae, ','))));
         // I'm inserting the sip username and password since the ILS is the source.
         // Should revisit this.
         $this->ilsAuthenticator->saveUserCatalogCredentials($user, $username, $password);

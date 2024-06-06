@@ -158,7 +158,7 @@ class Email extends AbstractBase
         // Update user information based on received data:
         $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
         foreach ($fields as $field) {
-            $user->$field = $info[$field] ?? ' ';
+            $this->setUserValueByField($user, $field, $info[$field] ?? ' ');
         }
 
         // Update the user in the database, then return it to the caller:

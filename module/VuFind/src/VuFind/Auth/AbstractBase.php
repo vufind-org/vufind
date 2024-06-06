@@ -38,6 +38,7 @@ use VuFind\Exception\Auth as AuthException;
 
 use function get_class;
 use function in_array;
+use function is_callable;
 
 /**
  * Abstract authentication base class
@@ -71,6 +72,21 @@ abstract class AbstractBase implements
      * @var \Laminas\Config\Config
      */
     protected $config = null;
+
+    /**
+     * Map of database column name to setter method for UserEntityInterface objects.
+     *
+     * @return array
+     */
+    protected $userSetterMap = [
+        'cat_username' => 'setCatUsername',
+        'college' => 'setCollege',
+        'email' => 'setEmail',
+        'firstname' => 'setFirstname',
+        'lastname' => 'setLastname',
+        'home_library' => 'setHomeLibrary',
+        'major' => 'setMajor',
+    ];
 
     /**
      * Get configuration (load automatically if not previously set). Throw an
@@ -536,5 +552,24 @@ abstract class AbstractBase implements
         $userService = $this->getUserService();
         $user = $userService->getUserByField('username', $username);
         return $user ? $user : $userService->createEntity()->setUsername($username);
+    }
+
+    /**
+     * Set a value in a UserEntityObject using a field name.
+     *
+     * @param UserEntityInterface $user  User to update
+     * @param string              $field Field name being updated
+     * @param mixed               $value New value to set
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function setUserValueByField(UserEntityInterface $user, string $field, $value): void
+    {
+        $setter = $this->userSetterMap[$field] ?? null;
+        if (!$setter || !is_callable([$user, $setter])) {
+            throw new Exception("Unsupported field: $field");
+        }
+        $user->$setter($value);
     }
 }

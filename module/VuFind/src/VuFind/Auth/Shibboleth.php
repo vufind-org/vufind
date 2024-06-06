@@ -215,11 +215,11 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
                     $attribute == 'cat_username' && isset($shib['prefix'])
                     && !empty($value)
                 ) {
-                    $user->cat_username = $shib['prefix'] . '.' . $value;
+                    $user->setCatUsername($shib['prefix'] . '.' . $value);
                 } elseif ($attribute == 'cat_password') {
                     $catPassword = $value;
                 } else {
-                    $user->$attribute = $value ?? '';
+                    $this->setUserValueByField($user, $attribute, $value ?? '');
                 }
             }
         }

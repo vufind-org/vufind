@@ -34,7 +34,6 @@ namespace VuFind\Auth;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -109,6 +108,24 @@ class Database extends AbstractBase
     {
         $config = $this->getConfig();
         return $config->Authentication->hash_passwords ?? false;
+    }
+
+    /**
+     * Set the password in a UserEntityInterface object.
+     *
+     * @param UserEntityInterface $user User to update
+     * @param string              $pass Password to store
+     *
+     * @return void
+     */
+    protected function setUserPassword(UserEntityInterface $user, string $pass): void
+    {
+        if ($this->passwordHashingEnabled()) {
+            $bcrypt = new Bcrypt();
+            $user->setPasswordHash($bcrypt->create($pass));
+        } else {
+            $user->setRawPassword($pass);
+        }
     }
 
     /**
@@ -195,12 +212,7 @@ class Database extends AbstractBase
 
         // Create the row and send it back to the caller:
         $user = $this->getUserService()->getUserByField('username', $params['username']);
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->pass_hash = $bcrypt->create($params['password']);
-        } else {
-            $user->password = $params['password'];
-        }
+        $this->setUserPassword($user, $params['password']);
         $this->getUserService()->persistEntity($user);
         return $user;
     }
@@ -251,7 +263,7 @@ class Database extends AbstractBase
      * Check if the user's email address has been verified (if necessary) and
      * throws exception if not.
      *
-     * @param User $user User to check
+     * @param UserEntityInterface $user User to check
      *
      * @return void
      * @throws AuthEmailNotVerifiedException
@@ -271,8 +283,8 @@ class Database extends AbstractBase
     /**
      * Check that the user's password matches the provided value.
      *
-     * @param string $password Password to check.
-     * @param object $userRow  The user row. We pass this instead of the password
+     * @param string              $password Password to check.
+     * @param UserEntityInterface $userRow  The user row. We pass this instead of the password
      * because we may need to check different values depending on the password
      * hashing configuration.
      *
@@ -282,18 +294,18 @@ class Database extends AbstractBase
     {
         // Special case: hashing enabled:
         if ($this->passwordHashingEnabled()) {
-            if ($userRow->password) {
+            if ($userRow->getRawPassword()) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'Unexpected unencrypted password found in database'
                 );
             }
 
             $bcrypt = new Bcrypt();
-            return $bcrypt->verify($password, $userRow->pass_hash ?? '');
+            return $bcrypt->verify($password, $userRow->getPasswordHash() ?? '');
         }
 
         // Default case: unencrypted passwords:
-        return $password == $userRow->password;
+        return $password == $userRow->getRawPassword();
     }
 
     /**
@@ -460,13 +472,7 @@ class Database extends AbstractBase
         $user->setFirstname($params['firstname']);
         $user->setLastname($params['lastname']);
         $this->getUserService()->updateUserEmail($user, $params['email'], true);
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->pass_hash = $bcrypt->create($params['password']);
-        } else {
-            $user->password = $params['password'];
-        }
-
+        $this->setUserPassword($user, $params['password']);
         return $user;
     }
 }

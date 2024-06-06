@@ -316,7 +316,7 @@ class ILS extends AbstractBase
         // Update user information based on ILS data:
         $fields = ['firstname', 'lastname', 'major', 'college'];
         foreach ($fields as $field) {
-            $user->$field = $info[$field] ?? ' ';
+            $this->setUserValueByField($user, $field, $info[$field] ?? ' ');
         }
         $userService->updateUserEmail($user, $info['email'] ?? '');
 

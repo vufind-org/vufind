@@ -115,7 +115,7 @@ class SimulatedSSO extends AbstractBase
             if ($attribute == 'email') {
                 $userService->updateUserEmail($user, $value);
             } elseif ($attribute != 'cat_password') {
-                $user->$attribute = $value ?? '';
+                $this->setUserValueByField($user, $attribute, $value ?? '');
             } else {
                 $catPassword = $value;
             }
