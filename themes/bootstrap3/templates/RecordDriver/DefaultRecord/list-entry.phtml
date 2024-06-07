@@ -103,7 +103,7 @@
             } ?>
 
           <?php
-            $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+            $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->record($this->driver)->getTags(
                 null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
                 $user_id,
                 'tag'

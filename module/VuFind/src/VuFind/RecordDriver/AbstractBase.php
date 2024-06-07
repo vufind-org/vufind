@@ -185,6 +185,8 @@ abstract class AbstractBase implements
      * @param int    $ownerId ID of user to check for ownership
      *
      * @return array
+     *
+     * @deprecated Use TagServiceInterface::getForResource()
      */
     public function getTags(
         $list_id = null,
