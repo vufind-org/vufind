@@ -128,7 +128,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $linker = $this->getDbTable('resourcetags');
         $linker->destroyListLinks($list->getId(), $user?->getId());
 
-        $list->delete();
+        $this->userListService->deleteUserList($list);
     }
 
     /**
