@@ -29,12 +29,22 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTags;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
+use VuFind\Db\Entity\Tags;
+use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserList;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 use function count;
 use function in_array;
@@ -152,6 +162,88 @@ class ResourceTagsService extends AbstractDbService implements ResourceTagsServi
             $paginator->setItemCountPerPage($limit);
         }
         return $paginator;
+    }
+
+    /**
+     * Create a ResourceTagsEntityInterface object.
+     *
+     * @return ResourceTagsEntityInterface
+     */
+    public function createEntity(): ResourceTagsEntityInterface
+    {
+        $class = $this->getEntityClass(ResourceTags::class);
+        return new $class();
+    }
+
+    /**
+     * Create a resource_tags row linking the specified resources
+     *
+     * @param ResourceEntityInterface|int|null $resourceOrId Resource entity or ID to link up (optional)
+     * @param TagsEntityInterface|int          $tagOrId      Tag entity or ID to link up
+     * @param UserEntityInterface|int|null     $userOrId     User entity or ID creating link (optional but recommended)
+     * @param UserListEntityInterface|int|null $listOrId     List entity or ID to link up (optional)
+     * @param ?DateTime                        $posted       Posted date (optional -- omit for current)
+     *
+     * @return void
+     */
+    public function createLink(
+        ResourceEntityInterface|int|null $resourceOrId,
+        TagsEntityInterface|int $tagOrId,
+        UserEntityInterface|int|null $userOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
+        ?DateTime $posted = null
+    ) {
+        $tag = $this->getDoctrineReference(Tags::class, $tagOrId);
+        $dql = ' SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+        $dqlWhere = ['rt.tag = :tag '];
+        $parameters = compact('tag');
+
+        if (null !== $resourceOrId) {
+            $resource = $this->getDoctrineReference(Resource::class, $resourceOrId);
+            $dqlWhere[] = 'rt.resource = :resource ';
+            $parameters['resource'] = $resource;
+        } else {
+            $resource = null;
+            $dqlWhere[] = 'rt.resource IS NULL ';
+        }
+
+        if (null !== $listOrId) {
+            $list = $this->getDoctrineReference(UserList::class, $listOrId);
+            $dqlWhere[] = 'rt.list = :list ';
+            $parameters['list'] = $list;
+        } else {
+            $list = null;
+            $dqlWhere[] = 'rt.list IS NULL ';
+        }
+
+        if (null !== $userOrId) {
+            $user = $this->getDoctrineReference(User::class, $userOrId);
+            $dqlWhere[] = 'rt.user = :user';
+            $parameters['user'] = $user;
+        } else {
+            $user = null;
+            $dqlWhere[] = 'rt.user IS NULL ';
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = current($query->getResult());
+
+        // Only create row if it does not already exist:
+        if (empty($result)) {
+            $row = $this->createEntity()
+                ->setResource($resource)
+                ->setTag($tag);
+            if (null !== $list) {
+                $row->setUserList($list);
+            }
+            if (null !== $user) {
+                $row->setUser($user);
+            }
+            $row->setPosted($posted ?? new DateTime());
+            $this->persistEntity($row);
+        }
     }
 
     /**

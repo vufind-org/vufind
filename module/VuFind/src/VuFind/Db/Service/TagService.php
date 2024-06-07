@@ -75,92 +75,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Create a resourceTags entity object.
-     *
-     * @return ResourceTags
-     */
-    public function createResourceTags(): ResourceTags
-    {
-        $class = $this->getEntityClass(ResourceTags::class);
-        return new $class();
-    }
-
-    /**
-     * Look up a row for the specified resource.
-     *
-     * @param int|Tags     $tag      ID of tag to link up
-     * @param int|Resource $resource ID of resource to link up
-     * @param int|User     $user     ID of user creating link (optional but recommended)
-     * @param int|UserList $list     ID of list to link up (optional)
-     * @param \DateTime    $posted   Posted date (optional -- omit for current)
-     *
-     * @return void
-     */
-    public function createLink(
-        $tag,
-        $resource = null,
-        $user = null,
-        $list = null,
-        $posted = null
-    ) {
-        $tag = $this->getDoctrineReference(Tags::class, $tag);
-        $dql = ' SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
-        $dqlWhere = ['rt.tag = :tag '];
-        $parameters = compact('tag');
-
-        if (null !== $resource) {
-            $resource = $this->getDoctrineReference(Resource::class, $resource);
-            $dqlWhere[] = 'rt.resource = :resource ';
-            $parameters['resource'] = $resource;
-        } else {
-            $dqlWhere[] = 'rt.resource IS NULL ';
-        }
-
-        if (null !== $list) {
-            $list = $this->getDoctrineReference(UserList::class, $list);
-            $dqlWhere[] = 'rt.list = :list ';
-            $parameters['list'] = $list;
-        } else {
-            $dqlWhere[] = 'rt.list IS NULL ';
-        }
-
-        if (null !== $user) {
-            $user = $this->getDoctrineReference(User::class, $user);
-            $dqlWhere[] = 'rt.user = :user';
-            $parameters['user'] = $user;
-        } else {
-            $dqlWhere[] = 'rt.user IS NULL ';
-        }
-        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
-
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result = current($query->getResult());
-
-        // Only create row if it does not already exist:
-        if (empty($result)) {
-            $row = $this->createResourceTags()
-                ->setResource($resource)
-                ->setTag($tag);
-            if (null !== $list) {
-                $row->setUserList($list);
-            }
-            if (null !== $user) {
-                $row->setUser($user);
-            }
-            if (null !== $posted) {
-                $row->setPosted($posted);
-            }
-            try {
-                $this->persistEntity($row);
-            } catch (\Exception $e) {
-                $this->logError('Could not save resource tag: ' . $e->getMessage());
-                return false;
-            }
-        }
-    }
-
-    /**
      * Check whether or not the specified tags are present in the table.
      *
      * @param array $ids IDs to check.
@@ -839,8 +753,8 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Support method for fixDuplicateTag() -- merge $source into $target.
      *
-     * @param Tag $target Target ID
-     * @param Tag $source Source ID
+     * @param TagsEntityInterface $target Target ID
+     * @param TagsEntityInterface $source Source ID
      *
      * @return void
      */
@@ -856,9 +770,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
 
         foreach ($result as $current) {
             // Move the link to the target ID:
-            $this->createLink(
-                $target,
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
                 $current->getResource(),
+                $target,
                 $current->getUser(),
                 $current->getUserList(),
                 $current->getPosted()
@@ -943,11 +857,10 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Add a tag to the resource.
      *
-     * @param Resource|int $resource Resource associated.
-     * @param string       $tagText  The tag to save.
-     * @param User|int     $user     The user posting the tag.
-     * @param ?UserList    $list     The list associated with the tag
-     *                               (optional).
+     * @param ResourceEntityInterface|int $resource Resource associated.
+     * @param string                      $tagText  The tag to save.
+     * @param UserEntityInterface|int     $user     The user posting the tag.
+     * @param ?UserListEntityInterface    $list     The list associated with the tag (optional).
      *
      * @return void
      */
@@ -957,9 +870,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         if (!empty($tagText)) {
             $tag = $this->getByText($tagText);
 
-            $this->createLink(
-                $tag,
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
                 $resource,
+                $tag,
                 $user,
                 $list
             );

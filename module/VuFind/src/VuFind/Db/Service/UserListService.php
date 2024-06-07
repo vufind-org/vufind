@@ -207,21 +207,21 @@ class UserListService extends AbstractDbService implements
     /**
      * Add a tag to the list.
      *
-     * @param string   $tagText The tag to save.
-     * @param User|int $user    The user posting the tag.
-     * @param UserList $list    The userlist to tag.
+     * @param string                  $tagText The tag to save.
+     * @param UserEntityInterface|int $user    The user posting the tag.
+     * @param UserListEntityInterface $list    The userlist to tag.
      *
      * @return void
      */
-    public function addListTag($tagText, $user, $list)
+    public function addListTag(string $tagText, UserEntityInterface|int $user, UserListEntityInterface $list): void
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
             $tagService = $this->getDbService(TagService::class);
             $tag = $tagService->getByText($tagText);
-            $tagService->createLink(
-                $tag,
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
                 null,
+                $tag,
                 $user,
                 $list
             );
