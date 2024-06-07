@@ -30,11 +30,8 @@
 
 namespace VuFind\Db\Service;
 
-use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Log\LoggerAwareInterface;
-use Laminas\Session\Container;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -62,39 +59,6 @@ class UserListService extends AbstractDbService implements
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
-
-    /**
-     * Tag parser.
-     *
-     * @var Tags
-     */
-    protected $tagParser;
-
-    /**
-     * Session container for last list information.
-     *
-     * @var Container
-     */
-    protected $session = null;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param Tags                $tagParser           Tag parser
-     * @param Container           $session             Session container
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        Tags $tagParser,
-        Container $session = null
-    ) {
-        parent::__construct($entityManager, $entityPluginManager);
-        $this->tagParser = $tagParser;
-        $this->session = $session;
-    }
 
     /**
      * Get an array of resource tags associated with the list.
@@ -172,21 +136,6 @@ class UserListService extends AbstractDbService implements
                 $user,
                 $list
             );
-        }
-    }
-
-    /**
-     * Remember that this list was used so that it can become the default in
-     * dialog boxes.
-     *
-     * @param UserList $list User list to be set as default
-     *
-     * @return void
-     */
-    public function rememberLastUsed($list)
-    {
-        if (null !== $this->session) {
-            $this->session->lastUsed = $list->getId();
         }
     }
 

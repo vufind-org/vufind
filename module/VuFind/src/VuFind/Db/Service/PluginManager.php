@@ -86,7 +86,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         TagService::class => TagServiceFactory::class,
         UserService::class => UserServiceFactory::class,
         UserCardService::class => UserCardServiceFactory::class,
-        UserListService::class => UserListServiceFactory::class,
+        UserListService::class => AbstractDbServiceFactory::class,
         UserResourceService::class => AbstractDbServiceFactory::class,
     ];
 
