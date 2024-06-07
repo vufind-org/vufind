@@ -29,7 +29,13 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Laminas\Paginator\Paginator;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
+use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 /**
  * Database service interface for resource_tags.
@@ -62,6 +68,32 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
         ?int $page = null,
         int $limit = 20
     ): Paginator;
+
+    /**
+     * Create a ResourceTagsEntityInterface object.
+     *
+     * @return ResourceTagsEntityInterface
+     */
+    public function createEntity(): ResourceTagsEntityInterface;
+
+    /**
+     * Create a resource_tags row linking the specified resources
+     *
+     * @param ResourceEntityInterface|int|null $resourceOrId Resource entity or ID to link up (optional)
+     * @param TagsEntityInterface|int          $tagOrId      Tag entity or ID to link up
+     * @param UserEntityInterface|int|null     $userOrId     User entity or ID creating link (optional but recommended)
+     * @param UserListEntityInterface|int|null $listOrId     List entity or ID to link up (optional)
+     * @param ?DateTime                        $posted       Posted date (optional -- omit for current)
+     *
+     * @return void
+     */
+    public function createLink(
+        ResourceEntityInterface|int|null $resourceOrId,
+        TagsEntityInterface|int $tagOrId,
+        UserEntityInterface|int|null $userOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
+        ?DateTime $posted = null
+    );
 
     /**
      * Remove links from the resource_tags table based on an array of IDs.

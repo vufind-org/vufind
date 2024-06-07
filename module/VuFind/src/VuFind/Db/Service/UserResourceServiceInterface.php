@@ -49,9 +49,9 @@ interface UserResourceServiceInterface extends DbServiceInterface
      *
      * @param string                           $recordId ID of record being checked.
      * @param string                           $source   Source of record to look up
-     * @param int|UserListEntityInterface|null $list     Optional list ID or entity
+     * @param UserListEntityInterface|int|null $listOrId Optional list entity or ID
      * (to limit results to a particular list).
-     * @param int|UserEntityInterface|null     $user     Optional user ID or entity
+     * @param UserEntityInterface|int|null     $userOrId Optional user entity or ID
      * (to limit results to a particular user).
      *
      * @return UserResourceEntityInterface[]
@@ -59,8 +59,8 @@ interface UserResourceServiceInterface extends DbServiceInterface
     public function getFavoritesForRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        int|UserListEntityInterface|null $list = null,
-        int|UserEntityInterface|null $user = null
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null
     ): array;
 
     /**

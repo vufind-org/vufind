@@ -97,14 +97,24 @@ class Search extends RowGateway implements
     /**
      * Get the search object from the row.
      *
-     * @return \VuFind\Search\Minified
+     * @return ?\VuFind\Search\Minified
      */
-    public function getSearchObject(): \VuFind\Search\Minified
+    public function getSearchObject(): ?\VuFind\Search\Minified
     {
         // We need to make sure the search object is a string before unserializing:
         $this->normalizeSearchObject();
-        $result = unserialize($this->search_object);
-        if (!($result instanceof \VuFind\Search\Minified)) {
+        return $this->search_object ? unserialize($this->search_object) : null;
+    }
+
+    /**
+     * Get the search object from the row, and throw an exception if it is missing.
+     *
+     * @return \VuFind\Search\Minified
+     * @throws \Exception
+     */
+    public function getSearchObjectOrThrowException(): \VuFind\Search\Minified
+    {
+        if (!($result = $this->getSearchObject())) {
             throw new \Exception('Problem decoding saved search');
         }
         return $result;
@@ -185,23 +195,25 @@ class Search extends RowGateway implements
     /**
      * Get user.
      *
-     * @return UserEntityInterface
+     * @return ?UserEntityInterface
      */
-    public function getUser(): UserEntityInterface
+    public function getUser(): ?UserEntityInterface
     {
-        return $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id);
+        return $this->user_id
+            ? $this->getDbServiceManager()->get(UserServiceInterface::class)->getUserById($this->user_id)
+            : null;
     }
 
     /**
      * Set user.
      *
-     * @param UserEntityInterface $user User
+     * @param ?UserEntityInterface $user User
      *
      * @return SearchEntityInterface
      */
-    public function setUser(UserEntityInterface $user): SearchEntityInterface
+    public function setUser(?UserEntityInterface $user): SearchEntityInterface
     {
-        $this->user_id = $user->getId();
+        $this->user_id = $user?->getId();
         return $this;
     }
 
@@ -218,13 +230,13 @@ class Search extends RowGateway implements
     /**
      * Set session identifier.
      *
-     * @param ?string $session_id Session id
+     * @param ?string $sessionId Session id
      *
      * @return SearchEntityInterface
      */
-    public function setSessionId(?string $session_id): SearchEntityInterface
+    public function setSessionId(?string $sessionId): SearchEntityInterface
     {
-        $this->session_id = $session_id;
+        $this->session_id = $sessionId;
         return $this;
     }
 
@@ -300,13 +312,13 @@ class Search extends RowGateway implements
     /**
      * Set search object.
      *
-     * @param \VuFind\Search\Minified $searchObject Search object
+     * @param ?\VuFind\Search\Minified $searchObject Search object
      *
      * @return SearchEntityInterface
      */
-    public function setSearchObject(\VuFind\Search\Minified $searchObject): SearchEntityInterface
+    public function setSearchObject(?\VuFind\Search\Minified $searchObject): SearchEntityInterface
     {
-        $this->search_object = serialize($searchObject);
+        $this->search_object = $searchObject ? serialize($searchObject) : null;
         return $this;
     }
 

@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
@@ -507,7 +508,7 @@ class AbstractRecord extends AbstractBase
 
         // Loop through all user lists and sort out containing/non-containing lists
         $containingLists = $nonContainingLists = [];
-        foreach ($user->getLists() as $list) {
+        foreach ($this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user) as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->getId(), $listIds)) {

@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 /**
  * UserList helper factory.
@@ -71,6 +72,10 @@ class UserListFactory implements FactoryInterface
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('List', $sessionManager);
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        return new $requestedName($session, $capabilities->getListSetting());
+        return new $requestedName(
+            $session,
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
+            $capabilities->getListSetting()
+        );
     }
 }

@@ -347,6 +347,8 @@ class User extends RowGateway implements
      * Get all of the lists associated with this user.
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
+     *
+     * @deprecated Use UserListServiceInterface::getUserListsAndCountsByUser()
      */
     public function getLists()
     {
@@ -600,13 +602,9 @@ class User extends RowGateway implements
     public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
-        $lists = $this->getLists();
         $listService = $this->getDbService(UserListServiceInterface::class);
-        foreach ($lists as $current) {
-            // The rows returned by getLists() are read-only, so we need to retrieve
-            // a new object for each row in order to perform a delete operation:
-            $list = $listService->getUserListById($current->getId());
-            $list->delete($this, true);
+        foreach ($listService->getUserListsByUser($this) as $current) {
+            $current->delete($this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);

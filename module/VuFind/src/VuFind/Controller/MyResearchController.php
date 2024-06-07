@@ -593,7 +593,7 @@ class MyResearchController extends AbstractBase
         // Now fetch all the results:
         $resultsManager = $this->serviceLocator
             ->get(\VuFind\Search\Results\PluginManager::class);
-        $results = $search->getSearchObject()->deminify($resultsManager);
+        $results = $search->getSearchObjectOrThrowException()->deminify($resultsManager);
 
         // Build the form.
         return $this->createViewModel(
@@ -623,7 +623,7 @@ class MyResearchController extends AbstractBase
         $normalizer = $this->serviceLocator
             ->get(\VuFind\Search\SearchNormalizer::class);
         $normalized = $normalizer
-            ->normalizeMinifiedSearch($rowToCheck->getSearchObject());
+            ->normalizeMinifiedSearch($rowToCheck->getSearchObjectOrThrowException());
         $matches = $searchTable->getSearchRowsMatchingNormalizedSearch(
             $normalized,
             $sessId,
@@ -1041,11 +1041,11 @@ class MyResearchController extends AbstractBase
         }
 
         // Send non-containing lists to the view for user selection:
-        $userLists = $user->getLists();
+        $userLists = $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user);
         $lists = [];
         foreach ($userLists as $userList) {
-            if (!in_array($userList->id, $containingLists)) {
-                $lists[$userList->id] = $userList->title;
+            if (!in_array($userList->getId(), $containingLists)) {
+                $lists[$userList->getId()] = $userList->getTitle();
             }
         }
 
