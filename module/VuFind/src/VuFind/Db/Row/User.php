@@ -36,6 +36,7 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -298,12 +299,13 @@ class User extends RowGateway implements
      *
      * @param int $listId List id
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getForList()
      */
     public function getListTags($listId)
     {
-        return $this->getDbTable('Tags')
-            ->getForList($listId, $this->id);
+        return $this->getDbService(TagServiceInterface::class)->getForList($listId, $this);
     }
 
     /**

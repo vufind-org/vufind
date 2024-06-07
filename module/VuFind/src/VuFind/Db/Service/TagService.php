@@ -31,6 +31,8 @@ namespace VuFind\Db\Service;
 
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 /**
  * Database service for tags.
@@ -97,6 +99,23 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         return $this->getDbTable('Tags')
             ->getForResource($id, $source, $limit, $list, $user, $sort, $userToCheck)
             ->toArray();
+    }
+
+    /**
+     * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
+     *
+     * @param UserListEntityInterface|int  $listOrId List ID or entity
+     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     *
+     * @return array[]
+     */
+    public function getForList(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int|null $userOrId = null
+    ): array {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        return $this->getDbTable('Tags')->getForList($listId, $userId)->toArray();
     }
 
     /**

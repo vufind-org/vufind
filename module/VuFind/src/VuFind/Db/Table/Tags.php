@@ -385,8 +385,8 @@ class Tags extends Gateway implements DbServiceAwareInterface
     /**
      * Get tags assigned to a user list.
      *
-     * @param int    $listId List ID
-     * @param string $userId User ID to look up (null for no filter).
+     * @param int  $listId List ID
+     * @param ?int $userId User ID to look up (null for no filter).
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */

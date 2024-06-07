@@ -37,6 +37,7 @@ use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -1147,8 +1148,9 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    foreach ($list->getListTags() as $tag) {
-                        $listTags[$tag->id] = $tag->tag;
+                    $tagService = $this->getDbService(TagServiceInterface::class);
+                    foreach ($tagService->getForList($list, $list->getUser()) as $tag) {
+                        $listTags[$tag['id']] = $tag['tag'];
                     }
                 }
             }
@@ -1268,7 +1270,8 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $listTags = $user->formatTagString($list->getListTags());
+            $tagService = $this->getDbService(TagServiceInterface::class);
+            $listTags = $user->formatTagString($tagService->getForList($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(

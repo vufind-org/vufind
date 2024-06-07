@@ -30,6 +30,8 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 /**
  * Database service interface for tags.
@@ -84,6 +86,19 @@ interface TagServiceInterface extends DbServiceInterface
         ?int $user = null,
         string $sort = 'count',
         ?int $userToCheck = null
+    ): array;
+
+    /**
+     * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
+     *
+     * @param UserListEntityInterface|int  $listOrId List ID or entity
+     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     *
+     * @return array[]
+     */
+    public function getForList(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int|null $userOrId = null
     ): array;
 
     /**
