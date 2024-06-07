@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Tags;
 
@@ -70,6 +71,7 @@ class FavoritesServiceFactory implements FactoryInterface
             $serviceManager->get(UserListServiceInterface::class),
             $container->get(ResourcePopulator::class),
             $container->get(Tags::class),
+            $container->get(Loader::class),
             $container->get(\VuFind\Record\Cache::class),
             $session
         );

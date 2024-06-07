@@ -877,7 +877,8 @@ class MyResearchController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $this->favorites()->delete($ids, $listID, $user);
+            $this->serviceLocator->get(FavoritesService::class)
+                ->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
             $this->flashMessenger()->addMessage('fav_delete_success', 'success');
             return $this->redirect()->toUrl($newUrl);
         }

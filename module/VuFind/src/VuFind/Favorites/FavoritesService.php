@@ -42,6 +42,7 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Record\Cache as RecordCache;
+use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Tags;
@@ -69,6 +70,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param UserListServiceInterface $userListService   UserList database service
      * @param ResourcePopulator        $resourcePopulator Resource populator service
      * @param Tags                     $tagHelper         Tag helper service
+     * @param RecordLoader             $recordLoader      Record loader
      * @param ?RecordCache             $recordCache       Record cache (optional)
      * @param ?Container               $session           Session container for remembering state (optional)
      */
@@ -77,6 +79,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected Tags $tagHelper,
+        protected RecordLoader $recordLoader,
         protected ?RecordCache $recordCache = null,
         protected ?Container $session = null
     ) {
@@ -396,5 +399,112 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     public function userCanEditList(?UserEntityInterface $user, UserListEntityInterface $list): bool
     {
         return $user && $user->getId() === $list->getUser()?->getId();
+    }
+
+    /**
+     * Support method for saveBulk() -- save a batch of records to the cache.
+     *
+     * @param array $cacheRecordIds Array of IDs in source|id format
+     *
+     * @return void
+     */
+    protected function cacheBatch(array $cacheRecordIds)
+    {
+        if ($cacheRecordIds && $this->recordCache) {
+            // Disable the cache so that we fetch latest versions, not cached ones:
+            $this->recordLoader->setCacheContext(RecordCache::CONTEXT_DISABLED);
+            $records = $this->recordLoader->loadBatch($cacheRecordIds);
+            // Re-enable the cache so that we actually save the records:
+            $this->recordLoader->setCacheContext(RecordCache::CONTEXT_FAVORITE);
+            foreach ($records as $record) {
+                $this->recordCache->createOrUpdate(
+                    $record->getUniqueID(),
+                    $record->getSourceIdentifier(),
+                    $record->getRawData()
+                );
+            }
+        }
+    }
+
+    /**
+     * Save a group of records to the user's favorites.
+     *
+     * @param array               $params Array with some or all of these keys:
+     *                                    <ul> <li>ids - Array of IDs in
+     *                                    source|id format</li> <li>mytags -
+     *                                    Unparsed tag string to associate with
+     *                                    record (optional)</li> <li>list - ID
+     *                                    of list to save record into (omit to
+     *                                    create new list)</li> </ul>
+     * @param UserEntityInterface $user   The user saving the record
+     *
+     * @return array list information
+     */
+    public function saveRecordsToFavorites(array $params, UserEntityInterface $user): array
+    {
+        // Validate incoming parameters:
+        if (!$user) {
+            throw new LoginRequiredException('You must be logged in first');
+        }
+
+        // Load helper objects needed for the saving process:
+        $list = $this->getAndRememberListObject($this->getListIdFromParams($params), $user);
+        $this->recordCache?->setContext(RecordCache::CONTEXT_FAVORITE);
+
+        $cacheRecordIds = [];   // list of record IDs to save to cache
+        foreach ($params['ids'] as $current) {
+            // Break apart components of ID:
+            [$source, $id] = explode('|', $current, 2);
+
+            // Get or create a resource object as needed:
+            $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
+
+            // Add the information to the user's account:
+            $tags = isset($params['mytags']) ? $this->tagHelper->parse($params['mytags']) : [];
+            $user->saveResource($resource, $list, $tags, '', false);
+
+            // Collect record IDs for caching
+            if ($this->recordCache?->isCachable($resource->source)) {
+                $cacheRecordIds[] = $current;
+            }
+        }
+
+        $this->cacheBatch($cacheRecordIds);
+        return ['listId' => $list->getId()];
+    }
+
+    /**
+     * Delete a group of favorites.
+     *
+     * @param string[]            $ids    Array of IDs in source|id format.
+     * @param ?int                $listID ID of list to delete from (null for all lists)
+     * @param UserEntityInterface $user   Logged in user
+     *
+     * @return void
+     */
+    public function deleteFavorites(array $ids, ?int $listID, UserEntityInterface $user): void
+    {
+        // Sort $ids into useful array:
+        $sorted = [];
+        foreach ($ids as $current) {
+            [$source, $id] = explode('|', $current, 2);
+            if (!isset($sorted[$source])) {
+                $sorted[$source] = [];
+            }
+            $sorted[$source][] = $id;
+        }
+
+        // Delete favorites one source at a time, using a different object depending
+        // on whether we are working with a list or user favorites.
+        if (empty($listID)) {
+            foreach ($sorted as $source => $ids) {
+                $this->removeUserResourcesById($user, $ids, $source);
+            }
+        } else {
+            $list = $this->userListService->getUserListById($listID);
+            foreach ($sorted as $source => $ids) {
+                $this->removeListResourcesById($list, $user, $ids, $source);
+            }
+        }
     }
 }
