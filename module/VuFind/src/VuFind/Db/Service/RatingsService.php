@@ -86,14 +86,14 @@ class RatingsService extends AbstractDbService implements
     /**
      * Deletes all ratings by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void
+    public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
         $this->getDbTable('ratings')->deleteByUser(
-            is_int($user) ? $this->getDbTable('user')->getById($user) : $user
+            is_int($userOrId) ? $this->getDbTable('user')->getById($userOrId) : $userOrId
         );
     }
 
@@ -110,21 +110,20 @@ class RatingsService extends AbstractDbService implements
     /**
      * Add or update user's rating for a resource.
      *
-     * @param int|ResourceEntityInterface $resource Resource to add or update rating.
-     * @param int|UserEntityInterface     $user     User
-     * @param ?int                        $rating   Rating (null to delete)
+     * @param ResourceEntityInterface|int $resourceOrId Resource to add or update rating.
+     * @param UserEntityInterface|int     $userOrId     User
+     * @param ?int                        $rating       Rating (null to delete)
      *
      * @throws \Exception
      * @return int ID of rating added, deleted or updated
      */
     public function addOrUpdateRating(
-        int|ResourceEntityInterface $resource,
-        int|UserEntityInterface $user,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
         ?int $rating
     ): int {
-        if (is_int($resource)) {
-            $resource = $this->getDbTable('resource')->select(['id' => $resource])->current();
-        }
-        return $resource->addOrUpdateRating(is_int($user) ? $user : $user->getId(), $rating);
+        $resource = is_int($resourceOrId)
+            ? $this->getDbTable('resource')->select(['id' => $resourceOrId])->current() : $resourceOrId;
+        return $resource->addOrUpdateRating(is_int($userOrId) ? $userOrId : $userOrId->getId(), $rating);
     }
 }
