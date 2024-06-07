@@ -33,8 +33,10 @@
     </li>
   <?php endforeach; ?>
   <?php if ($this->anotherPage): ?>
-    <a<?=$this->htmlAttributes($nextParams)?>>
-      <span class="text"><?=$this->transEsc('more_ellipsis') ?></span>
-    </a>
+    <li>
+      <a<?=$this->htmlAttributes($nextParams)?>>
+        <span class="text"><?=$this->transEsc('more_ellipsis') ?></span>
+      </a>
+    </li>
   <?php endif; ?>
 </ul>
