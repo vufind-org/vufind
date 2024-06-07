@@ -65,22 +65,14 @@ class AuthHashService extends AbstractDbService implements
     /**
      * Delete an auth_hash entity object.
      *
-     * @param int|AuthHashEntityInterface $objOrId Object or ID value representing auth_hash to delete
+     * @param AuthHashEntityInterface|int $authHashOrId Object or ID value representing auth_hash to delete
      *
      * @return void
      */
-    public function deleteAuthHash(int|AuthHashEntityInterface $objOrId)
+    public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId)
     {
-        if ($objOrId instanceof \VuFind\Db\Row\AuthHash) {
-            $authHash = $objOrId;
-        } else {
-            $authHashId = is_int($objOrId) ? $objOrId : $objOrId->getId();
-            $authHash = $this->getDbTable('AuthHash')->select(['id' => $authHashId])->current();
-        }
-        // If we couldn't find the ID, $authHash may be null; can't delete what doesn't exist!
-        if ($authHash) {
-            $authHash->delete();
-        }
+        $authHashId = $authHashOrId instanceof AuthHashEntityInterface ? $authHashOrId->getId() : $authHashOrId;
+        $this->getDbTable('AuthHash')->delete(['id' => $authHashId]);
     }
 
     /**
