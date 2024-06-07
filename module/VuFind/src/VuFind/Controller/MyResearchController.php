@@ -1169,7 +1169,7 @@ class MyResearchController extends AbstractBase
      * Process the "edit list" submission.
      *
      * @param UserEntityInterface     $user Logged in user
-     * @param \VuFind\Db\Row\UserList $list List being created/edited
+     * @param UserListEntityInterface $list List being created/edited
      *
      * @return object|bool                  Response object if redirect is
      * needed, false if form needs to be redisplayed.
@@ -1178,8 +1178,8 @@ class MyResearchController extends AbstractBase
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
-            $finalId
-                = $list->updateFromRequest($user, $this->getRequest()->getPost());
+            $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+            $finalId = $favoritesService->updateListFromRequest($list, $user, $this->getRequest()->getPost());
 
             // If the user is in the process of saving a record, send them back
             // to the save screen; otherwise, send them back to the list they

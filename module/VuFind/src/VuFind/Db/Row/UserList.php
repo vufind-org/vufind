@@ -149,6 +149,8 @@ class UserList extends RowGateway implements
      * @return int ID of newly created row
      * @throws ListPermissionException
      * @throws MissingFieldException
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::updateListFromRequest()
      */
     public function updateFromRequest($user, $request)
     {

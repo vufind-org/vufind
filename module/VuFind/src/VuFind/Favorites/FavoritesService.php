@@ -30,6 +30,7 @@
 namespace VuFind\Favorites;
 
 use DateTime;
+use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
@@ -41,6 +42,7 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Tags;
 
 use function intval;
 
@@ -64,12 +66,14 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param ResourceServiceInterface $resourceService   Resource database service
      * @param UserListServiceInterface $userListService   UserList database service
      * @param ResourcePopulator        $resourcePopulator Resource populator service
+     * @param Tags                     $tagHelper         Tag helper service
      * @param ?RecordCache             $recordCache       Record cache (optional)
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
+        protected Tags $tagHelper,
         protected ?RecordCache $recordCache = null
     ) {
     }
@@ -263,5 +267,38 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $params['notes'] ?? ''
         );
         return ['listId' => $list->id];
+    }
+
+    /**
+     * Update and save the list object using a request object -- useful for
+     * sharing form processing between multiple actions.
+     *
+     * @param UserListEntityInterface $list    List to update
+     * @param ?UserEntityInterface    $user    Logged-in user (false if none)
+     * @param Parameters              $request Request to process
+     *
+     * @return int ID of newly created row
+     * @throws ListPermissionException
+     * @throws MissingFieldException
+     */
+    public function updateListFromRequest(
+        UserListEntityInterface $list,
+        ?UserEntityInterface $user,
+        Parameters $request
+    ): int {
+        $list->setTitle($request->get('title'));
+        $list->setDescription($request->get('desc'));
+        $list->setPublic((bool)$request->get('public'));
+        $list->save($user);
+
+        if (null !== ($tags = $request->get('tags'))) {
+            $linker = $this->getDbTable('resourcetags');
+            $linker->destroyListLinks($this->id, $user->id);
+            foreach ($this->tagHelper->parse($tags) as $tag) {
+                $list->addListTag($tag, $user);
+            }
+        }
+
+        return $list->getId();
     }
 }
