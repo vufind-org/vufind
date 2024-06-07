@@ -1016,6 +1016,7 @@ class MyResearchController extends AbstractBase
         $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
         $userResources = $userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         foreach ($userResources as $current) {
             // There should always be list data based on the way we retrieve this result, but
             // check just to be on the safe side.
@@ -1024,7 +1025,7 @@ class MyResearchController extends AbstractBase
                     'listId' => $currentList->getId(),
                     'listTitle' => $currentList->getTitle(),
                     'notes' => $current->getNotes(),
-                    'tags' => $user->getTagString($id, $currentList->getId(), $source),
+                    'tags' => $favoritesService->getTagStringForEditing($user, $currentList, $id, $source),
                 ];
             }
         }
@@ -1271,7 +1272,8 @@ class MyResearchController extends AbstractBase
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
             $tagService = $this->getDbService(TagServiceInterface::class);
-            $listTags = $user->formatTagString($tagService->getListTags($list, $list->getUser()));
+            $listTags = $favoritesService
+                ->formatTagStringForEditing($tagService->getListTags($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(

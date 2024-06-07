@@ -279,19 +279,18 @@ class User extends RowGateway implements
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
-     * (null for no filter).
+     * @param string $resourceId Filter for tags tied to a specific resource (null for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no filter).
+     * @param string $source     Filter for tags tied to a specific record source. (null for no filter).
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getUserTagsFromFavorites()
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbTable('Tags')
-            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+        return $this->getDbService(TagServiceInterface::class)
+            ->getUserTagsFromFavorites($this, $resourceId, $listId, $source);
     }
 
     /**
@@ -320,6 +319,8 @@ class User extends RowGateway implements
      * (null for no filter).
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::getTagStringForEditing()
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
@@ -332,16 +333,18 @@ class User extends RowGateway implements
      * @param array $tags Tags
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::formatTagStringForEditing()
      */
     public function formatTagString($tags)
     {
         $tagStr = '';
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                if (strstr($tag->tag, ' ')) {
-                    $tagStr .= "\"$tag->tag\" ";
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
                 } else {
-                    $tagStr .= "$tag->tag ";
+                    $tagStr .= "{$tag['tag']} ";
                 }
             }
         }

@@ -36,6 +36,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -48,6 +49,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Tags;
 
+use function count;
 use function func_get_args;
 use function intval;
 
@@ -70,6 +72,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @param ResourceServiceInterface     $resourceService     Resource database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
+     * @param TagServiceInterface          $tagService          Tag database service
      * @param UserListServiceInterface     $userListService     UserList database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
      * @param Tags                         $tagHelper           Tag helper service
@@ -80,6 +83,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected ResourceTagsServiceInterface $resourceTagsService,
+        protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected Tags $tagHelper,
@@ -535,5 +539,51 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 $this->removeListResourcesById($list, $user, $ids, $source);
             }
         }
+    }
+
+    /**
+     * Call TagServiceInterface::getUserTagsFromFavorites() and format the results for editing.
+     *
+     * @param UserEntityInterface|int          $userOrId User ID to look up.
+     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
+     * filter).
+     * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
+     * filter).
+     * @param ?string                          $source   Filter for tags tied to a specific record source (null for
+     * no filter).
+     *
+     * @return string
+     */
+    public function getTagStringForEditing(
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        string $recordId,
+        ?string $source = null
+    ) {
+        return $this->formatTagStringForEditing(
+            $this->tagService->getUserTagsFromFavorites($userOrId, $listOrId, $recordId, $source)
+        );
+    }
+
+    /**
+     * Convert an array representing tags into a string for an edit form
+     *
+     * @param array $tags Tags
+     *
+     * @return string
+     */
+    public function formatTagStringForEditing($tags)
+    {
+        $tagStr = '';
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
+                } else {
+                    $tagStr .= "{$tag['tag']} ";
+                }
+            }
+        }
+        return trim($tagStr);
     }
 }
