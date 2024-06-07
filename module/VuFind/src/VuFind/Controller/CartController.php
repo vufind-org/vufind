@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
@@ -551,7 +552,7 @@ class CartController extends AbstractBase
         return $this->createViewModel(
             [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists(),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
             ]
         );
     }
