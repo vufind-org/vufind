@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 
 use Exception;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\ExpressionInterface;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -86,22 +87,22 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      * Get lists belonging to the user and their count. Returns an array of arrays with
      * list_entity and count keys.
      *
-     * @param int|UserEntityInterface $userOrId User entity object or ID
+     * @param UserEntityInterface|int $userOrId User entity object or ID
      *
      * @return array
      * @throws Exception
      */
-    public function getUserListsAndCountsByUser(int|UserEntityInterface $userOrId): array
+    public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array
     {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function ($select) use ($userId) {
+        $callback = function (Select $select) use ($userId) {
             $select->columns(
                 [
                     Select::SQL_STAR,
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))',
                         ['ur.resource_id'],
-                        [Expression::TYPE_IDENTIFIER]
+                        [ExpressionInterface::TYPE_IDENTIFIER]
                     ),
                 ]
             );
@@ -131,11 +132,11 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
     /**
      * Get list objects belonging to the specified user.
      *
-     * @param int|UserEntityInterface $userOrId User entity object or ID
+     * @param UserEntityInterface|int $userOrId User entity object or ID
      *
      * @return UserListEntityInterface[]
      */
-    public function getUserListsByUser(int|UserEntityInterface $userOrId): array
+    public function getUserListsByUser(UserEntityInterface|int $userOrId): array
     {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $callback = function ($select) use ($userId) {
@@ -150,7 +151,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      *
      * @param string                       $recordId ID of record being checked.
      * @param string                       $source   Source of record to look up
-     * @param int|UserEntityInterface|null $user     Optional user ID or entity object (to limit results
+     * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
      *
      * @return UserListEntityInterface[]
@@ -158,13 +159,13 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
     public function getListsContainingRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        int|UserEntityInterface|null $user = null
+        UserEntityInterface|int|null $userOrId = null
     ): array {
         return iterator_to_array(
             $this->getDbTable('UserList')->getListsContainingResource(
                 $recordId,
                 $source,
-                is_int($user) ? $user : $user->getId()
+                is_int($userOrId) ? $userOrId : $userOrId->getId()
             )
         );
     }
