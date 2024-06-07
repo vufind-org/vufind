@@ -164,7 +164,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Given an array of item ids, remove them from the specified list.
      *
-     * @param UserListEntityInterface $list
+     * @param UserListEntityInterface $list   List being updated
      * @param ?UserEntityInterface    $user   Logged-in user (null if none)
      * @param string[]                $ids    IDs to remove from the list
      * @param string                  $source Type of resource identified by IDs
