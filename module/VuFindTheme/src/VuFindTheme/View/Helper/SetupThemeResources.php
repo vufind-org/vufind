@@ -70,6 +70,8 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke(bool $partial = false)
     {
+        // meta tags are illegal outside of <head>, so we don't want to render them
+        // in partial mode:
         if (!$partial) {
             $this->addMetaTags();
         }
@@ -131,6 +133,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // If `favicon` is a string then treat it as a single file path to an .ico icon.
         // If `favicon` is an array then treat each item as an assoc array of html attributes and render
         // a link element for each.
+        // Skip favicons in partial mode because they are illegal outside of <head>.
         if (!$partial && ($favicon = $this->container->getFavicon())) {
             $imageLink = $this->getView()->plugin('imageLink');
             if (is_array($favicon)) {
