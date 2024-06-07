@@ -116,7 +116,7 @@
             <?php endforeach; ?>
             <br>
           <?php endif; ?>
-          <?php $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
+          <?php $listNotes = $this->record($this->driver)->getListNotes($list_id, $user_id); ?>
           <?php if (count($listNotes) > 0): ?>
             <strong><?=$this->transEsc('Notes')?>:</strong>
             <?php if (count($listNotes) > 1): ?><br><?php endif; ?>
@@ -129,7 +129,7 @@
               <strong><?=$this->transEsc('Saved in')?>:</strong>
               <?php $i = 0; ?>
               <?php foreach ($this->lists as $current): ?>
-                <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+                <a href="<?=$this->url('userList', ['id' => $current->getId()])?>"><?=$this->escapeHtml($current->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
               <?php endforeach; ?>
               <br>
           <?php endif; ?>

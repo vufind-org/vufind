@@ -33,6 +33,10 @@ use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
@@ -45,8 +49,10 @@ use VuFind\ILS\Connection as ILSConnection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSAuthenticator
+class ILSAuthenticator implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Callback for retrieving the authentication manager
      *
@@ -219,6 +225,47 @@ class ILSAuthenticator
     }
 
     /**
+     * Set ILS login credentials for a user without saving them.
+     *
+     * @param UserEntityInterface $user     User to update
+     * @param string              $username Username to save
+     * @param ?string             $password Password to save (null for none)
+     *
+     * @return void
+     */
+    public function setUserCatalogCredentials(UserEntityInterface $user, string $username, ?string $password): void
+    {
+        $user->setCatUsername($username);
+        if ($this->passwordEncryptionEnabled()) {
+            $user->setRawCatPassword(null);
+            $user->setCatPassEnc($this->encrypt($password));
+        } else {
+            $user->setRawCatPassword($password);
+            $user->setCatPassEnc(null);
+        }
+    }
+
+    /**
+     * Save ILS login credentials.
+     *
+     * @param UserEntityInterface $user     User to update
+     * @param string              $username Username to save
+     * @param ?string             $password Password to save
+     *
+     * @return void
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function saveUserCatalogCredentials(UserEntityInterface $user, string $username, ?string $password): void
+    {
+        $this->setUserCatalogCredentials($user, $username, $password);
+        $this->getDbService(UserServiceInterface::class)->persistEntity($user);
+
+        // Update library card entry after saving the user so that we always have a
+        // user id:
+        $this->getDbService(UserCardServiceInterface::class)->synchronizeUserLibraryCardData($user);
+    }
+
+    /**
      * Get stored catalog credentials for the current user.
      *
      * Returns associative array of cat_username and cat_password if they are
@@ -364,7 +411,7 @@ class ILSAuthenticator
     {
         $user = $this->getAuthManager()->getUserObject();
         if ($user) {
-            $user->saveCredentials($catUsername, $catPassword);
+            $this->saveUserCatalogCredentials($user, $catUsername, $catPassword);
             $this->getAuthManager()->updateSession($user);
             // cache for future use
             $this->ilsAccount[$catUsername] = $patron;

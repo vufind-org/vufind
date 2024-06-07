@@ -124,27 +124,27 @@ class LoginTokenService extends AbstractDbService implements LoginTokenServiceIn
     /**
      * Delete all tokens for a user.
      *
-     * @param UserEntityInterface|int $user User entity object or identifier
+     * @param UserEntityInterface|int $userOrId User entity object or identifier
      *
      * @return void
      */
-    public function deleteByUser(UserEntityInterface|int $user): void
+    public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
-        $userId = is_int($user) ? $user : $user->getId();
+        $userId = is_int($userOrId) ? $userOrId : $userOrId->getId();
         $this->getDbTable('LoginToken')->deleteByUserId($userId);
     }
 
     /**
      * Get tokens for a given user.
      *
-     * @param UserEntityInterface|int $user    User entity object or identifier
-     * @param bool                    $grouped Whether to return results grouped by series
+     * @param UserEntityInterface|int $userOrId User entity object or identifier
+     * @param bool                    $grouped  Whether to return results grouped by series
      *
      * @return LoginTokenEntityInterface[]
      */
-    public function getByUser(UserEntityInterface|int $user, bool $grouped = true): array
+    public function getByUser(UserEntityInterface|int $userOrId, bool $grouped = true): array
     {
-        $userId = is_int($user) ? $user : $user->getId();
+        $userId = is_int($userOrId) ? $userOrId : $userOrId->getId();
         return $this->getDbTable('LoginToken')->getByUserId($userId, $grouped);
     }
 

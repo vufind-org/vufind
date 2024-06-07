@@ -31,10 +31,15 @@ namespace VuFind\Db\Row;
 
 use VuFind\Date\DateException;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 use function intval;
-use function is_object;
 use function strlen;
 
 /**
@@ -54,9 +59,10 @@ use function strlen;
  * @property string  $source
  * @property ?string $extra_metadata
  */
-class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface, ResourceEntityInterface
+class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwareInterface, ResourceEntityInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+    use DbTableAwareTrait;
 
     /**
      * Constructor
@@ -87,7 +93,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Add a tag to the current resource.
      *
      * @param string              $tagText The tag to save.
-     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     * @param UserEntityInterface $user    The user posting the tag.
      * @param string              $list_id The list associated with the tag
      * (optional).
      *
@@ -100,11 +106,10 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $tags = $this->getDbTable('Tags');
             $tag = $tags->getByText($tagText);
 
-            $linker = $this->getDbTable('ResourceTags');
-            $linker->createLink(
-                $this->id,
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+                $this,
                 $tag->id,
-                is_object($user) ? $user->id : null,
+                $user,
                 $list_id
             );
         }

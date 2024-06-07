@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service interface for UserResource.
+ * Database service for search.
  *
  * PHP version 8
  *
@@ -29,12 +29,13 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Entity\UserResourceEntityInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
+
+use function count;
 
 /**
- * Database service interface for UserResource.
+ * Database service for search.
  *
  * @category VuFind
  * @package  Database
@@ -42,31 +43,28 @@ use VuFind\Db\Entity\UserResourceEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface UserResourceServiceInterface extends DbServiceInterface
+class SearchService extends AbstractDbService implements SearchServiceInterface, DbTableAwareInterface
 {
-    /**
-     * Get information saved in a user's favorites for a particular record.
-     *
-     * @param string                           $recordId ID of record being checked.
-     * @param string                           $source   Source of record to look up
-     * @param UserListEntityInterface|int|null $listOrId Optional list entity or ID
-     * (to limit results to a particular list).
-     * @param UserEntityInterface|int|null     $userOrId Optional user entity or ID
-     * (to limit results to a particular user).
-     *
-     * @return UserResourceEntityInterface[]
-     */
-    public function getFavoritesForRecord(
-        string $recordId,
-        string $source = DEFAULT_SEARCH_BACKEND,
-        UserListEntityInterface|int|null $listOrId = null,
-        UserEntityInterface|int|null $userOrId = null
-    ): array;
+    use DbTableAwareTrait;
 
     /**
-     * Get statistics on use of UserResource.
+     * Set invalid user_id values in the table to null; return count of affected rows.
      *
-     * @return array
+     * @return int
      */
-    public function getStatistics(): array;
+    public function cleanUpInvalidUserIds(): int
+    {
+        $searchTable = $this->getDbTable('search');
+        $allIds = $this->getDbTable('user')->getSql()->select()->columns(['id']);
+        $searchCallback = function ($select) use ($allIds) {
+            $select->where->equalTo('user_id', '0')
+                ->OR->notIn('user_id', $allIds);
+        };
+        $badRows = $searchTable->select($searchCallback);
+        $count = count($badRows);
+        if ($count > 0) {
+            $searchTable->update(['user_id' => null], $searchCallback);
+        }
+        return $count;
+    }
 }

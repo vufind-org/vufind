@@ -154,17 +154,12 @@ class User extends RowGateway implements
      * @param ?string $password Password to save (null for none)
      *
      * @return void
+     *
+     * @deprecated Use ILSAuthenticator::setUserCatalogCredentials()
      */
     public function setCredentials($username, $password)
     {
-        $this->cat_username = $username;
-        if ($this->passwordEncryptionEnabled()) {
-            $this->cat_password = null;
-            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
-        } else {
-            $this->cat_password = $password;
-            $this->cat_pass_enc = null;
-        }
+        $this->ilsAuthenticator->setUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -173,19 +168,14 @@ class User extends RowGateway implements
      * @param string $username Username to save
      * @param string $password Password to save
      *
-     * @return mixed           The output of the save method.
+     * @return void
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::saveUserCatalogCredentials()
      */
     public function saveCredentials($username, $password)
     {
-        $this->setCredentials($username, $password);
-        $result = $this->save();
-
-        // Update library card entry after saving the user so that we always have a
-        // user id:
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-
-        return $result;
+        $this->ilsAuthenticator->saveUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -357,6 +347,8 @@ class User extends RowGateway implements
      * Get all of the lists associated with this user.
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
+     *
+     * @deprecated Use UserListServiceInterface::getUserListsAndCountsByUser()
      */
     public function getLists()
     {
@@ -401,6 +393,8 @@ class User extends RowGateway implements
      * @param string $source     Source of record to look up
      *
      * @return array
+     *
+     * @deprecated Use UserResourceServiceInterface::getFavoritesForRecord()
      */
     public function getSavedData(
         $resourceId,
@@ -608,13 +602,9 @@ class User extends RowGateway implements
     public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
-        $lists = $this->getLists();
         $listService = $this->getDbService(UserListServiceInterface::class);
-        foreach ($lists as $current) {
-            // The rows returned by getLists() are read-only, so we need to retrieve
-            // a new object for each row in order to perform a delete operation:
-            $list = $listService->getUserListById($current->getId());
-            $list->delete($this, true);
+        foreach ($listService->getUserListsByUser($this) as $current) {
+            $current->delete($this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
@@ -907,7 +897,7 @@ class User extends RowGateway implements
      */
     public function getCatUsername(): ?string
     {
-        return $this->cat_username;
+        return $this->cat_username ?? '';
     }
 
     /**
@@ -977,6 +967,52 @@ class User extends RowGateway implements
     public function getCatPassEnc(): ?string
     {
         return $this->cat_pass_enc;
+    }
+
+    /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface
+    {
+        $this->college = $college;
+        return $this;
+    }
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string
+    {
+        return $this->college ?? '';
+    }
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface
+    {
+        $this->major = $major;
+        return $this;
+    }
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string
+    {
+        return $this->major ?? '';
     }
 
     /**

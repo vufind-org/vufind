@@ -141,7 +141,7 @@ class AbstractSearch extends AbstractBase
 
         // If we got this far, the user is allowed to view the search, so we can
         // deminify it to a new object.
-        $minSO = $search->getSearchObject();
+        $minSO = $search->getSearchObjectOrThrowException();
         $savedSearch = $minSO->deminify($this->getResultsManager());
 
         // Now redirect to the URL associated with the saved search; this
@@ -559,7 +559,7 @@ class AbstractSearch extends AbstractBase
         }
 
         // Restore the full search object:
-        $minSO = $search->getSearchObject();
+        $minSO = $search->getSearchObjectOrThrowException();
         $savedSearch = $minSO->deminify($this->getResultsManager());
 
         // Fail if this is not the right type of search:

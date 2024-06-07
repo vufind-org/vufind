@@ -62,35 +62,39 @@ interface UserCardServiceInterface extends DbServiceInterface
     /**
      * Get all library cards associated with the user.
      *
-     * @param int|UserEntityInterface $user        User object or identifier
+     * @param UserEntityInterface|int $userOrId    User object or identifier
      * @param ?int                    $id          Optional card ID filter
      * @param ?string                 $catUsername Optional catalog username filter
      *
      * @return UserCardEntityInterface[]
      */
-    public function getLibraryCards(int|UserEntityInterface $user, ?int $id = null, ?string $catUsername = null): array;
+    public function getLibraryCards(
+        UserEntityInterface|int $userOrId,
+        ?int $id = null,
+        ?string $catUsername = null
+    ): array;
 
     /**
      * Get or create library card data.
      *
-     * @param int|UserEntityInterface $user User object or identifier
-     * @param ?int                    $id   Card ID to fetch (or null to create a new card)
+     * @param UserEntityInterface|int $userOrId User object or identifier
+     * @param ?int                    $id       Card ID to fetch (or null to create a new card)
      *
      * @return UserCardEntityInterface Card data if found; throws exception otherwise
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function getOrCreateLibraryCard(int|UserEntityInterface $user, ?int $id = null): UserCardEntityInterface;
+    public function getOrCreateLibraryCard(UserEntityInterface|int $userOrId, ?int $id = null): UserCardEntityInterface;
 
     /**
      * Delete library card.
      *
      * @param UserEntityInterface         $user     User owning card to delete
-     * @param int|UserCardEntityInterface $userCard UserCard id or object to be deleted
+     * @param UserCardEntityInterface|int $userCard UserCard id or object to be deleted
      *
      * @return bool
      * @throws \Exception
      */
-    public function deleteLibraryCard(UserEntityInterface $user, int|UserCardEntityInterface $userCard): bool;
+    public function deleteLibraryCard(UserEntityInterface $user, UserCardEntityInterface|int $userCard): bool;
 
     /**
      * Persist the provided library card data, either by updating a specified card
@@ -100,8 +104,8 @@ interface UserCardServiceInterface extends DbServiceInterface
      *
      * Returns the row that was added or updated.
      *
-     * @param int|UserEntityInterface          $user     User object or identifier
-     * @param int|UserCardEntityInterface|null $card     Card ID (null = create new)
+     * @param UserEntityInterface|int          $userOrId User object or identifier
+     * @param UserCardEntityInterface|int|null $cardOrId Card ID (null = create new)
      * @param string                           $cardName Card name
      * @param string                           $username Username
      * @param string                           $password Password
@@ -111,8 +115,8 @@ interface UserCardServiceInterface extends DbServiceInterface
      * @throws \VuFind\Exception\LibraryCard
      */
     public function persistLibraryCardData(
-        int|UserEntityInterface $user,
-        int|UserCardEntityInterface|null $card,
+        UserEntityInterface|int $userOrId,
+        UserCardEntityInterface|int|null $cardOrId,
         string $cardName,
         string $username,
         string $password,
@@ -124,23 +128,23 @@ interface UserCardServiceInterface extends DbServiceInterface
      * (if enabled) and are up to date. Designed to be called after updating the
      * user row; will create or modify library card rows as needed.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return bool
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function synchronizeUserLibraryCardData(int|UserEntityInterface $user): bool;
+    public function synchronizeUserLibraryCardData(UserEntityInterface|int $userOrId): bool;
 
     /**
      * Activate a library card for the given username.
      *
-     * @param int|UserEntityInterface $user User owning card
-     * @param int                     $id   Library card ID to activate
+     * @param UserEntityInterface|int $userOrId User owning card
+     * @param int                     $id       Library card ID to activate
      *
      * @return void
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function activateLibraryCard(int|UserEntityInterface $user, int $id): void;
+    public function activateLibraryCard(UserEntityInterface|int $userOrId, int $id): void;
 
     /**
      * Create a UserCard entity object.

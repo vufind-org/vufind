@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.9) (2024-02-26) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.10) (2024-06-06) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -75,6 +75,9 @@ function Autocomplete(_settings) {
 
     clearTimeout(debounceTimeout);
     _currentIndex = -1;
+    if (lastInput) {
+      lastInput.setAttribute('aria-expanded', 'false');
+    }
     lastInput = false;
     lastCB = null;
   }
@@ -197,6 +200,8 @@ function Autocomplete(_settings) {
       _searchCallback(items, input);
       _show(input);
       _align(input);
+      // Set aria-expanded here so that the load indicator isn't marked expanded
+      input.setAttribute('aria-expanded', 'true');
     });
   }
 
@@ -295,12 +300,15 @@ function Autocomplete(_settings) {
     list.setAttribute("role", "listbox");
     input.setAttribute("role", "combobox");
     input.setAttribute("aria-autocomplete", "both");
+    input.setAttribute('aria-expanded', 'false');
     input.setAttribute("aria-controls", list.getAttribute("id"));
     input.setAttribute("enterkeyhint", "search"); // phone keyboard hint
     input.setAttribute("autocapitalize", "off");  // disable browser tinkering
     input.setAttribute("autocomplete", "off");    // ^
-    input.setAttribute("autocorrect", "off");     // ^
     input.setAttribute("spellcheck", "false");    // ^
+    if (typeof input.autocorrect !== 'undefined') {
+      input.setAttribute("autocorrect", "off");     // ^ only with Safari
+    }
 
     // Activation / De-activation
     if (input.getAttribute("autofocus") !== null) {

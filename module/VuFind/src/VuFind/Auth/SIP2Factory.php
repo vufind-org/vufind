@@ -1,11 +1,11 @@
 <?php
 
 /**
- * UserList helper factory.
+ * Factory for SIP2 authentication module.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,31 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\Service\UserListServiceInterface;
 
 /**
- * UserList helper factory.
+ * Factory for SIP2 authentication module.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class UserListFactory implements FactoryInterface
+class SIP2Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -69,13 +67,8 @@ class UserListFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
-        $session = new \Laminas\Session\Container('List', $sessionManager);
-        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $session,
-            $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
-            $capabilities->getListSetting()
+            $container->get(ILSAuthenticator::class)
         );
     }
 }

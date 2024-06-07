@@ -242,6 +242,38 @@ interface UserEntityInterface extends EntityInterface
     public function getCatPassEnc(): ?string;
 
     /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface;
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string;
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface;
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string;
+
+    /**
      * Set verification hash for recovery.
      *
      * @param string $hash Hash value to save
@@ -324,7 +356,7 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Created setter
      *
-     * @param Datetime $dateTime Last login date
+     * @param DateTime $dateTime Last login date
      *
      * @return UserEntityInterface
      */
@@ -333,7 +365,7 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Created getter
      *
-     * @return Datetime
+     * @return DateTime
      */
     public function getCreated(): Datetime;
 
