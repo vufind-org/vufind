@@ -39,6 +39,7 @@ use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -114,7 +115,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         if (empty($listId)) {
             $list = $this->createListForUser($user)
                 ->setTitle($this->translate('default_list_title'));
-            $list->save($user);
+            $this->saveListForUser($list, $user);
         } else {
             $list = $this->userListService->getUserListById($listId);
             // Validate incoming list ID:
@@ -270,6 +271,32 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
+     * Saves the properties to the database.
+     *
+     * This performs an intelligent insert/update, and reloads the
+     * properties with fresh data from the table on success.
+     *
+     * @param UserListEntityInterface $list List to save
+     * @param ?UserEntityInterface    $user Logged-in user (null if none)
+     *
+     * @return void
+     * @throws ListPermissionException
+     * @throws MissingFieldException
+     */
+    public function saveListForUser(UserListEntityInterface $list, ?UserEntityInterface $user): void
+    {
+        if (!$list->editAllowed($user ?: null)) {
+            throw new ListPermissionException('list_access_denied');
+        }
+        if (!$list->getTitle()) {
+            throw new MissingFieldException('list_edit_name_required');
+        }
+
+        $this->userListService->persistEntity($list);
+        $list->rememberLastUsed();
+    }
+
+    /**
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
@@ -289,11 +316,11 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $list->setTitle($request->get('title'));
         $list->setDescription($request->get('desc'));
         $list->setPublic((bool)$request->get('public'));
-        $list->save($user);
+        $this->saveListForUser($list, $user);
 
         if (null !== ($tags = $request->get('tags'))) {
             $linker = $this->getDbTable('resourcetags');
-            $linker->destroyListLinks($this->id, $user->id);
+            $linker->destroyListLinks($list->getId(), $user->getId());
             foreach ($this->tagHelper->parse($tags) as $tag) {
                 $list->addListTag($tag, $user);
             }

@@ -39,7 +39,6 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
-use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Tags;
 
 /**
@@ -140,37 +139,6 @@ class UserList extends RowGateway implements
     }
 
     /**
-     * Update and save the list object using a request object -- useful for
-     * sharing form processing between multiple actions.
-     *
-     * @param \VuFind\Db\Row\User|bool   $user    Logged-in user (false if none)
-     * @param \Laminas\Stdlib\Parameters $request Request to process
-     *
-     * @return int ID of newly created row
-     * @throws ListPermissionException
-     * @throws MissingFieldException
-     *
-     * @deprecated Use \VuFind\Favorites\FavoritesService::updateListFromRequest()
-     */
-    public function updateFromRequest($user, $request)
-    {
-        $this->title = $request->get('title');
-        $this->description = $request->get('desc');
-        $this->public = $request->get('public');
-        $this->save($user);
-
-        if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbTable('resourcetags');
-            $linker->destroyListLinks($this->id, $user->id);
-            foreach ($this->tagParser->parse($tags) as $tag) {
-                $this->addListTag($tag, $user);
-            }
-        }
-
-        return $this->id;
-    }
-
-    /**
      * Add a tag to the list.
      *
      * @param string              $tagText The tag to save.
@@ -191,33 +159,6 @@ class UserList extends RowGateway implements
                 $this
             );
         }
-    }
-
-    /**
-     * Saves the properties to the database.
-     *
-     * This performs an intelligent insert/update, and reloads the
-     * properties with fresh data from the table on success.
-     *
-     * @param \VuFind\Db\Row\User|bool $user Logged-in user (false if none)
-     *
-     * @return mixed The primary key value(s), as an associative array if the
-     *     key is compound, or a scalar if the key is single-column.
-     * @throws ListPermissionException
-     * @throws MissingFieldException
-     */
-    public function save($user = false)
-    {
-        if (!$this->editAllowed($user ?: null)) {
-            throw new ListPermissionException('list_access_denied');
-        }
-        if (empty($this->title)) {
-            throw new MissingFieldException('list_edit_name_required');
-        }
-
-        parent::save();
-        $this->rememberLastUsed();
-        return $this->id;
     }
 
     /**
