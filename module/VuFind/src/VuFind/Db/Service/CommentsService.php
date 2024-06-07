@@ -71,22 +71,22 @@ class CommentsService extends AbstractDbService implements
     /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
-     * @param string                      $comment  The comment to save.
-     * @param int|UserEntityInterface     $user     User object or identifier
-     * @param int|ResourceEntityInterface $resource Resource object or identifier
+     * @param string                      $comment      The comment to save.
+     * @param UserEntityInterface|int     $userOrId     User object or identifier
+     * @param ResourceEntityInterface|int $resourceOrId Resource object or identifier
      *
      * @return ?int
      */
     public function addComment(
         string $comment,
-        int|UserEntityInterface $user,
-        int|ResourceEntityInterface $resource
+        UserEntityInterface|int $userOrId,
+        ResourceEntityInterface|int $resourceOrId
     ): ?int {
         $data = $this->createEntity()
-            ->setUser($this->getDoctrineReference(User::class, $user))
+            ->setUser($this->getDoctrineReference(User::class, $userOrId))
             ->setComment($comment)
             ->setCreated(new \DateTime())
-            ->setResource($this->getDoctrineReference(Resource::class, $resource));
+            ->setResource($this->getDoctrineReference(Resource::class, $resourceOrId));
 
         try {
             $this->persistEntity($data);
@@ -129,18 +129,18 @@ class CommentsService extends AbstractDbService implements
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                     $id   ID of row to delete
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param int                     $id       ID of row to delete
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return bool
      */
-    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool
+    public function deleteIfOwnedByUser(int $id, UserEntityInterface|int $userOrId): bool
     {
-        if (null === $user) {
+        if (null === $userOrId) {
             return false;
         }
 
-        $userId = is_int($user) ? $user : $user->getId();
+        $userId = is_int($userOrId) ? $userOrId : $userOrId->getId();
         $comment = $this->getCommentById($id);
         if ($userId !== $comment->getUser()->getId()) {
             return false;
@@ -157,16 +157,16 @@ class CommentsService extends AbstractDbService implements
     /**
      * Deletes all comments by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void
+    public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
         . 'WHERE c.user = :user';
         $query = $this->entityManager->createQuery($dql);
-        $query->setParameters(['user' => is_int($user) ? $user : $user->getId()]);
+        $query->setParameters(['user' => is_int($userOrId) ? $userOrId : $userOrId->getId()]);
         $query->execute();
     }
 

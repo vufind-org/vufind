@@ -130,9 +130,9 @@ class UserResourceService extends AbstractDbService implements
      *
      * @param string                           $recordId ID of record being checked.
      * @param string                           $source   Source of record to look up
-     * @param int|UserListEntityInterface|null $list     Optional list ID or entity
+     * @param UserListEntityInterface|int|null $listOrId Optional list entity or ID
      * (to limit results to a particular list).
-     * @param int|UserEntityInterface|null     $user     Optional user ID or entity
+     * @param UserEntityInterface|int|null     $userOrId Optional user entity or ID
      * (to limit results to a particular user).
      *
      * @return UserResourceEntityInterface[]
@@ -140,21 +140,21 @@ class UserResourceService extends AbstractDbService implements
     public function getFavoritesForRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        int|UserListEntityInterface|null $list = null,
-        int|UserEntityInterface|null $user = null
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null
     ): array {
         $dql = 'SELECT DISTINCT ur FROM ' . $this->getEntityClass(UserResource::class) . ' ur '
             . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = ur.resource '
             . 'WHERE r.source = :source AND r.recordId = :recordId ';
 
         $parameters = compact('source', 'recordId');
-        if (null !== $user) {
+        if (null !== $userOrId) {
             $dql .= 'AND ur.user = :user ';
-            $parameters['user'] = $this->getDoctrineReference(User::class, $user);
+            $parameters['user'] = $this->getDoctrineReference(User::class, $userOrId);
         }
-        if (null !== $list) {
+        if (null !== $listOrId) {
             $dql .= 'AND ur.list = :list';
-            $parameters['list'] = $this->getDoctrineReference(UserList::class, $list);
+            $parameters['list'] = $this->getDoctrineReference(UserList::class, $listOrId);
         }
 
         $query = $this->entityManager->createQuery($dql);
