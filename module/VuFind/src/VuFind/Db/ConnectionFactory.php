@@ -65,6 +65,20 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected $container;
 
     /**
+     * Configuration file name when used as a factory.
+     *
+     * @var string
+     */
+    protected string $configName = 'config';
+
+    /**
+     * Connection wrapper class.
+     *
+     * @var string
+     */
+    protected string $wrapperClass = \VuFind\Db\Connection::class;
+
+    /**
      * Constructor
      *
      * @param Config             $config    VuFind configuration (provided when used
@@ -102,7 +116,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $this->config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $this->config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }
@@ -197,7 +212,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
             break;
         }
          */
-        $options['wrapperClass'] = \VuFind\Db\Connection::class;
+        $options['wrapperClass'] = $this->wrapperClass;
 
         // Set up database connection:
         if (empty($this->container)) {
