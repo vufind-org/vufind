@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
@@ -89,5 +90,18 @@ class UserList extends AbstractHelper
     public function lastUsed()
     {
         return $this->favoritesService->getLastUsedList();
+    }
+
+    /**
+     * Is the provided user allowed to edit the provided list?
+     *
+     * @param ?UserEntityInterface    $user Logged-in user (null if none)
+     * @param UserListEntityInterface $list List to check
+     *
+     * @return bool
+     */
+    public function userCanEditList(?UserEntityInterface $user, UserListEntityInterface $list): bool
+    {
+        return $this->favoritesService->userCanEditList($user, $list);
     }
 }

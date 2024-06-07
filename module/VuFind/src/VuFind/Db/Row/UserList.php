@@ -96,9 +96,11 @@ class UserList extends RowGateway implements
     /**
      * Is the current user allowed to edit this list?
      *
-     * @param ?\VuFind\Db\Row\User $user Logged-in user (null if none)
+     * @param ?UserEntityInterface $user Logged-in user (null if none)
      *
      * @return bool
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::userCanEditList()
      */
     public function editAllowed($user)
     {

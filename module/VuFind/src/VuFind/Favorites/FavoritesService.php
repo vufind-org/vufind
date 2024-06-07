@@ -104,9 +104,9 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Destroy a list.
      *
-     * @param UserListEntityInterface  $list  List to destroy
-     * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
-     * @param bool                     $force Should we force the delete without checking permissions?
+     * @param UserListEntityInterface $list  List to destroy
+     * @param ?UserEntityInterface    $user  Logged-in user (false if none)
+     * @param bool                    $force Should we force the delete without checking permissions?
      *
      * @return void
      * @throws ListPermissionException
@@ -116,7 +116,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         ?UserEntityInterface $user = null,
         bool $force = false
     ): void {
-        if (!$force && !$list->editAllowed($user)) {
+        if (!$force && !$this->userCanEditList($user, $list)) {
             throw new ListPermissionException('list_access_denied');
         }
 
@@ -167,7 +167,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         } else {
             $list = $this->userListService->getUserListById($listId);
             // Validate incoming list ID:
-            if (!$list->editAllowed($user)) {
+            if (!$this->userCanEditList($user, $list)) {
                 throw new \VuFind\Exception\ListPermission('Access denied.');
             }
             $this->rememberLastUsedList($list); // handled by saveListForUser() in other case
@@ -236,7 +236,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         array $ids,
         string $source = DEFAULT_SEARCH_BACKEND
     ): void {
-        if (!$list->editAllowed($user)) {
+        if (!$this->userCanEditList($user, $list)) {
             throw new ListPermissionException('list_access_denied');
         }
 
@@ -341,7 +341,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      */
     public function saveListForUser(UserListEntityInterface $list, ?UserEntityInterface $user): void
     {
-        if (!$list->editAllowed($user ?: null)) {
+        if (!$this->userCanEditList($user, $list)) {
             throw new ListPermissionException('list_access_denied');
         }
         if (!$list->getTitle()) {
@@ -383,5 +383,18 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
 
         return $list->getId();
+    }
+
+    /**
+     * Is the provided user allowed to edit the provided list?
+     *
+     * @param ?UserEntityInterface    $user Logged-in user (null if none)
+     * @param UserListEntityInterface $list List to check
+     *
+     * @return bool
+     */
+    public function userCanEditList(?UserEntityInterface $user, UserListEntityInterface $list): bool
+    {
+        return $user && $user->getId() === $list->getUser()?->getId();
     }
 }

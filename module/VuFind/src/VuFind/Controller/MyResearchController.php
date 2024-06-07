@@ -1248,12 +1248,13 @@ class MyResearchController extends AbstractBase
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         $list = $newList
-            ? $this->serviceLocator->get(FavoritesService::class)->createListForUser($user)
+            ? $favoritesService->createListForUser($user)
             : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
-        if (!$newList && !$list->editAllowed($user)) {
+        if (!$newList && !$favoritesService->userCanEditList($user, $list)) {
             throw new ListPermissionException('Access denied.');
         }
 
