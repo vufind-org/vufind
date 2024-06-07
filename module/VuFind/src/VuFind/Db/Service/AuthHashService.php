@@ -34,8 +34,6 @@ use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
-use function is_int;
-
 /**
  * Database service for auth_hash table.
  *
