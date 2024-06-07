@@ -54,16 +54,16 @@ interface CommentsServiceInterface extends DbServiceInterface
     /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
-     * @param string                      $comment  The comment to save.
-     * @param int|UserEntityInterface     $user     User object or identifier
-     * @param int|ResourceEntityInterface $resource Resource object or identifier
+     * @param string                      $comment      The comment to save.
+     * @param UserEntityInterface|int     $userOrId     User object or identifier
+     * @param ResourceEntityInterface|int $resourceOrId Resource object or identifier
      *
      * @return ?int
      */
     public function addComment(
         string $comment,
-        int|UserEntityInterface $user,
-        int|ResourceEntityInterface $resource
+        UserEntityInterface|int $userOrId,
+        ResourceEntityInterface|int $resourceOrId
     ): ?int;
 
     /**
@@ -79,21 +79,21 @@ interface CommentsServiceInterface extends DbServiceInterface
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                     $id   ID of row to delete
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param int                     $id       ID of row to delete
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return bool
      */
-    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool;
+    public function deleteIfOwnedByUser(int $id, UserEntityInterface|int $userOrId): bool;
 
     /**
      * Deletes all comments by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void;
+    public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
      * Get statistics on use of comments.
