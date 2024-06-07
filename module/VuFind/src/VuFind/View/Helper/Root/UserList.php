@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010-2023.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\Session\Container;
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\Db\Service\UserListService as ListService;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 /**
  * List view helper
@@ -47,16 +48,28 @@ class UserList extends AbstractHelper
     /**
      * Constructor
      *
-     * @param Container   $session     Session container for last list information (must use
-     * same namespace as container provided to \VuFind\Db\Table\UserList)
-     * @param ListService $listService UserList database service
-     * @param string      $mode        List mode (enabled or disabled)
+     * @param Container                $session         Session container (must use same namespace as
+     * container provided to \VuFind\Db\Table\UserList)
+     * @param UserListServiceInterface $userListService List database service
+     * @param string                   $mode            List mode (enabled or disabled)
      */
     public function __construct(
         protected Container $session,
-        protected ListService $listService,
+        protected UserListServiceInterface $userListService,
         protected string $mode = 'enabled'
     ) {
+    }
+
+    /**
+     * Get lists with counts for the provided user.
+     *
+     * @param UserEntityInterface $user User owning lists
+     *
+     * @return array
+     */
+    public function getUserListsAndCountsByUser(UserEntityInterface $user): array
+    {
+        return $this->userListService->getUserListsAndCountsByUser($user);
     }
 
     /**
@@ -77,17 +90,5 @@ class UserList extends AbstractHelper
     public function lastUsed()
     {
         return $this->session->lastUsed ?? null;
-    }
-
-    /**
-     * Proxy to the userList method of UserListService
-     *
-     * @param User|int $user Id of the user owning the list.
-     *
-     * @return array
-     */
-    public function getListsForUser($user)
-    {
-        return $this->listService->getListsForUser($user);
     }
 }

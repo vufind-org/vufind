@@ -1041,12 +1041,11 @@ class MyResearchController extends AbstractBase
             }
         }
         // Send non-containing lists to the view for user selection:
-        $userLists = $this->getDbService(UserListServiceInterface::class)->getListsForUser($user->id);
+        $userLists = $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user);
         $lists = [];
         foreach ($userLists as $userList) {
-            $list = $userList[0];
-            if (!in_array($list->getId(), $containingLists)) {
-                $lists[$list->getId()] = $list->getTitle();
+            if (!in_array($userList->getId(), $containingLists)) {
+                $lists[$userList->getId()] = $userList->getTitle();
             }
         }
 

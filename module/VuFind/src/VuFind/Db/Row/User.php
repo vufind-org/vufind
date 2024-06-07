@@ -519,9 +519,8 @@ class User extends RowGateway implements
     {
         // Remove all lists owned by the user:
         $listService = $this->getDbService(UserListServiceInterface::class);
-        $lists = $listService->getListsForUser($this->id);
-        foreach ($lists as $current) {
-            $listService->delete($current[0], $this->id, true);
+        foreach ($listService->getUserListsByUser($this) as $current) {
+            $listService->delete($current, $this->id, true);
         }
         $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $tagService->destroyResourceLinks(null, $this->id);

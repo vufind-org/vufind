@@ -26,16 +26,14 @@
         $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
       ?>
 
-      <?php $lists = $this->userlist()->getListsForUser($user->id)?>
-      <?php foreach ($lists as $current): ?>
-        <?php $list = $current[0]; ?>
-        <?php $cnt = $current['cnt']; ?>
+      <?php foreach ($this->userlist()->getUserListsAndCountsByUser($user) as $current): ?>
+        <?php $list = $current['list_entity']; ?>
         <li>
           <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
             <?=$this->icon('user-list', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->escapeHtml($list->getTitle())?></span>
             <?=$list->isPublic() ? $publicInd : ''?>
-            <span class="badge"><?=$cnt ?></span>
+            <span class="badge"><?=$current['count'] ?></span>
           </a>
         </li>
       <?php endforeach; ?>

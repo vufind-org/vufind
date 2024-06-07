@@ -31,6 +31,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
@@ -247,7 +248,7 @@ class UserListService extends AbstractDbService implements
      *
      * @param string                       $recordId ID of record being checked.
      * @param string                       $source   Source of record to look up
-     * @param int|UserEntityInterface|null $user     Optional user ID or entity object (to limit results
+     * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
      *
      * @return UserListEntityInterface[]
@@ -255,7 +256,7 @@ class UserListService extends AbstractDbService implements
     public function getListsContainingRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        int|UserEntityInterface|null $user = null
+        UserEntityInterface|int|null $userOrId = null
     ): array {
         $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
             . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH ur.list = ul.id '
@@ -263,8 +264,8 @@ class UserListService extends AbstractDbService implements
             . 'WHERE r.recordId = :recordId AND r.source = :source ';
 
         $parameters = compact('recordId', 'source');
-        if (null !== $user) {
-            $userId = $user instanceof UserEntityInterface ? $user->getId() : $user;
+        if (null !== $userOrId) {
+            $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
             $dql .= 'AND ur.user = :userId ';
             $parameters['userId'] = $userId;
         }
@@ -307,22 +308,45 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Get all of the lists associated with this user.
+     * Get lists belonging to the user and their count. Returns an array of arrays with
+     * list_entity and count keys.
      *
-     * @param User|int $user User object or ID representing the user owning the list.
+     * @param UserEntityInterface|int $userOrId User entity object or ID
      *
      * @return array
+     * @throws Exception
      */
-    public function getListsForUser($user)
+    public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array
     {
-        $dql = 'SELECT ul, COUNT(DISTINCT(ur.resource)) AS cnt '
+        $dql = 'SELECT ul AS list_entity, COUNT(DISTINCT(ur.resource)) AS count '
             . 'FROM ' . $this->getEntityClass(UserList::class) . ' ul '
             . 'LEFT JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH ur.list = ul.id '
             . 'WHERE ul.user = :user '
             . 'GROUP BY ul '
             . 'ORDER BY ul.title';
 
-        $parameters = compact('user');
+        $parameters = ['user' => $this->getDoctrineReference(User::class, $userOrId)];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
+    }
+
+    /**
+     * Get list objects belonging to the specified user.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByUser(UserEntityInterface|int $userOrId): array
+    {
+        $dql = 'SELECT ul '
+            . 'FROM ' . $this->getEntityClass(UserList::class) . ' ul '
+            . 'WHERE ul.user = :user '
+            . 'ORDER BY ul.title';
+
+        $parameters = ['user' => $this->getDoctrineReference(User::class, $userOrId)];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $results = $query->getResult();
