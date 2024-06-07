@@ -29,7 +29,15 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Laminas\Paginator\Paginator;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
+use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+
+use function is_int;
 
 /**
  * Database service for resource_tags.
@@ -67,6 +75,74 @@ class ResourceTagsService extends AbstractDbService implements
         int $limit = 20
     ): Paginator {
         return $this->getDbTable('ResourceTags')->getResourceTags($userId, $resourceId, $tagId, $order, $page, $limit);
+    }
+
+    /**
+     * Create a ResourceTagsEntityInterface object.
+     *
+     * @return ResourceTagsEntityInterface
+     */
+    public function createEntity(): ResourceTagsEntityInterface
+    {
+        return $this->getDbTable('ResourceTags')->createRow();
+    }
+
+    /**
+     * Create a resource_tags row linking the specified resources
+     *
+     * @param int|ResourceEntityInterface      $resource ID of resource to link up
+     * @param int|TagEntityInterface           $tag      ID of tag to link up
+     * @param int|UserEntityInterface|null     $user     ID of user creating link (optional but recommended)
+     * @param int|UserListEntityInterface|null $list     ID of list to link up (optional)
+     * @param ?DateTime                        $posted   Posted date (optional -- omit for current)
+     *
+     * @return void
+     */
+    public function createLink(
+        int|ResourceEntityInterface $resource,
+        int|TagsEntityInterface $tag,
+        int|UserEntityInterface|null $user = null,
+        int|UserListEntityInterface|null $list = null,
+        ?DateTime $posted = null
+    ) {
+        $table = $this->getDbTable('ResourceTags');
+        $resourceId = is_int($resource) ? $resource : $resource->getId();
+        $tagId = is_int($tag) ? $tag : $tag->getId();
+        $userId = is_int($user) ? $user : $user?->getId();
+        $listId = is_int($list) ? $list : $list?->getId();
+
+        $callback = function ($select) use ($resourceId, $tagId, $userId, $listId) {
+            $select->where->equalTo('resource_id', $resourceId)
+                ->equalTo('tag_id', $tagId);
+            if (null !== $listId) {
+                $select->where->equalTo('list_id', $listId);
+            } else {
+                $select->where->isNull('list_id');
+            }
+            if (null !== $userId) {
+                $select->where->equalTo('user_id', $userId);
+            } else {
+                $select->where->isNull('user_id');
+            }
+        };
+        $result = $table->select($callback)->current();
+
+        // Only create row if it does not already exist:
+        if (empty($result)) {
+            $result = $this->createEntity();
+            $result->resource_id = $resourceId;
+            $result->tag_id = $tagId;
+            if (null !== $listId) {
+                $result->list_id = $listId;
+            }
+            if (null !== $userId) {
+                $result->user_id = $userId;
+            }
+            if (null !== $posted) {
+                $result->posted = $posted;
+            }
+            $result->save();
+        }
     }
 
     /**

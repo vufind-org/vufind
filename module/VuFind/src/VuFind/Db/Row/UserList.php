@@ -36,6 +36,7 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
@@ -171,7 +172,7 @@ class UserList extends RowGateway implements
      * Add a tag to the list.
      *
      * @param string              $tagText The tag to save.
-     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     * @param UserEntityInterface $user    The user posting the tag.
      *
      * @return void
      */
@@ -181,12 +182,11 @@ class UserList extends RowGateway implements
         if (!empty($tagText)) {
             $tags = $this->getDbTable('tags');
             $tag = $tags->getByText($tagText);
-            $linker = $this->getDbTable('resourcetags');
-            $linker->createLink(
+            $this->getDbTable(ResourceTagsServiceInterface::class)->createLink(
                 null,
                 $tag->id,
-                $user->id,
-                $this->id
+                $user,
+                $this
             );
         }
     }
