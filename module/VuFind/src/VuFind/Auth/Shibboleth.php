@@ -323,7 +323,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
      * Connect user authenticated by Shibboleth to library card.
      *
      * @param Request             $request        Request object containing account credentials.
-     * @param \VuFind\Db\Row\User $connectingUser Connect newly created library card to this user.
+     * @param UserEntityInterface $connectingUser Connect newly created library card to this user.
      *
      * @return void
      */
