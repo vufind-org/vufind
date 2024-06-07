@@ -557,7 +557,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     public function getTagStringForEditing(
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null,
-        string $recordId,
+        ?string $recordId,
         ?string $source = null
     ) {
         return $this->formatTagStringForEditing(
