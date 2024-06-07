@@ -34,6 +34,9 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Predicate\Predicate;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 
 use function count;
 use function is_callable;
@@ -47,8 +50,10 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Tags extends Gateway
+class Tags extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Are tags case sensitive?
      *
@@ -586,16 +591,17 @@ class Tags extends Gateway
             return;
         }
         $table = $this->getDbTable('ResourceTags');
+        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
         $result = $table->select(['tag_id' => $source]);
 
         foreach ($result as $current) {
             // Move the link to the target ID:
-            $table->createLink(
+            $resourceTagsService->createLink(
                 $current->resource_id,
                 $target,
                 $current->user_id,
                 $current->list_id,
-                $current->posted
+                $current->getPosted()
             );
 
             // Remove the duplicate link:
