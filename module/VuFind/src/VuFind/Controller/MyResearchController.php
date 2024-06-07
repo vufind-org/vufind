@@ -1330,7 +1330,7 @@ class MyResearchController extends AbstractBase
         if ($confirm) {
             try {
                 $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
-                $list->delete($this->getUser());
+                $this->serviceLocator->get(FavoritesService::class)->destroyList($list, $this->getUser() ?: null);
 
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');

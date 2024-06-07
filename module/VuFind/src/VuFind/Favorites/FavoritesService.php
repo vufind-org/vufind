@@ -102,6 +102,36 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
+     * Destroy a list.
+     *
+     * @param UserListEntityInterface  $list  List to destroy
+     * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
+     * @param bool                     $force Should we force the delete without checking permissions?
+     *
+     * @return void
+     * @throws ListPermissionException
+     */
+    public function destroyList(
+        UserListEntityInterface $list,
+        ?UserEntityInterface $user = null,
+        bool $force = false
+    ): void {
+        if (!$force && !$list->editAllowed($user)) {
+            throw new ListPermissionException('list_access_denied');
+        }
+
+        // Remove user_resource and resource_tags rows:
+        $userResource = $this->getDbTable('UserResource');
+        $userResource->destroyLinks(null, $list->getUser()?->getId(), $list->getId());
+
+        // Remove resource_tags rows for list tags:
+        $linker = $this->getDbTable('resourcetags');
+        $linker->destroyListLinks($list->getId(), $user?->getId());
+
+        $list->delete();
+    }
+
+    /**
      * Remember that this list was used so that it can become the default in
      * dialog boxes.
      *
