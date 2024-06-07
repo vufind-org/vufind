@@ -145,6 +145,8 @@ class UserList extends RowGateway implements
      * @param UserEntityInterface $user    The user posting the tag.
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::addListTag()
      */
     public function addListTag($tagText, $user)
     {

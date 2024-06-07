@@ -32,6 +32,7 @@ namespace VuFind\Favorites;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
@@ -68,6 +69,7 @@ class FavoritesServiceFactory implements FactoryInterface
         $session = new \Laminas\Session\Container('List', $sessionManager);
         return new FavoritesService(
             $serviceManager->get(ResourceServiceInterface::class),
+            $serviceManager->get(ResourceTagsServiceInterface::class),
             $serviceManager->get(UserListServiceInterface::class),
             $container->get(ResourcePopulator::class),
             $container->get(Tags::class),

@@ -35,6 +35,7 @@ use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -67,16 +68,18 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param ResourceServiceInterface $resourceService   Resource database service
-     * @param UserListServiceInterface $userListService   UserList database service
-     * @param ResourcePopulator        $resourcePopulator Resource populator service
-     * @param Tags                     $tagHelper         Tag helper service
-     * @param RecordLoader             $recordLoader      Record loader
-     * @param ?RecordCache             $recordCache       Record cache (optional)
-     * @param ?Container               $session           Session container for remembering state (optional)
+     * @param ResourceServiceInterface     $resourceService     Resource database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
+     * @param UserListServiceInterface     $userListService     UserList database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param Tags                         $tagHelper           Tag helper service
+     * @param RecordLoader                 $recordLoader        Record loader
+     * @param ?RecordCache                 $recordCache         Record cache (optional)
+     * @param ?Container                   $session             Session container for remembering state (optional)
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected Tags $tagHelper,
@@ -369,6 +372,24 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
+     * Add a tag to a list.
+     *
+     * @param string                  $tagText The tag to save.
+     * @param UserListEntityInterface $list    The list being tagged.
+     * @param UserEntityInterface     $user    The user posting the tag.
+     *
+     * @return void
+     */
+    public function addListTag(string $tagText, UserListEntityInterface $list, UserEntityInterface $user): void
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tag = $this->getDbTable('tags')->getByText($tagText);
+            $this->resourceTagsService->createLink(null, $tag, $user, $list);
+        }
+    }
+
+    /**
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
@@ -394,7 +415,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $linker = $this->getDbTable('resourcetags');
             $linker->destroyListLinks($list->getId(), $user->getId());
             foreach ($this->tagHelper->parse($tags) as $tag) {
-                $list->addListTag($tag, $user);
+                $this->addListTag($tag, $list, $user);
             }
         }
 
