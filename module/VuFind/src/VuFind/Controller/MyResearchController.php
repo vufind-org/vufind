@@ -37,8 +37,10 @@ use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardService;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -733,7 +735,10 @@ class MyResearchController extends AbstractBase
                 if (' ** ' === $homeLibrary) {
                     $homeLibrary = null;
                 }
-                $user->changeHomeLibrary($homeLibrary);
+                // Update the home library and make sure library cards are kept in sync:
+                $user->setHomeLibrary($homeLibrary);
+                $this->getDbService(UserCardService::class)->synchronizeUserLibraryCardData($user);
+                $this->getDbService(UserService::class)->persistEntity($user);
                 $this->getAuthManager()->updateSession($user);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
             }

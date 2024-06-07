@@ -114,6 +114,8 @@ class User extends RowGateway implements
      * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setConfig(\Laminas\Config\Config $config)
     {
@@ -219,6 +221,8 @@ class User extends RowGateway implements
      * Is ILS password encryption enabled?
      *
      * @return bool
+     *
+     * @deprecated
      */
     protected function passwordEncryptionEnabled()
     {
@@ -253,6 +257,8 @@ class User extends RowGateway implements
      * to be used
      *
      * @return mixed               The output of the save method.
+     *
+     * @deprecated
      */
     public function changeHomeLibrary($homeLibrary)
     {
