@@ -450,6 +450,8 @@ class User extends RowGateway implements
      * @param string $source Type of resource identified by IDs
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::removeUserResourcesById()
      */
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {

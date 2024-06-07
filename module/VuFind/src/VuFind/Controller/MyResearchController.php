@@ -919,16 +919,16 @@ class MyResearchController extends AbstractBase
         }
 
         // Perform delete and send appropriate flash message:
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         if (null !== $listID) {
             // ...Specific List
             $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
-            $list->removeResourcesById($user, [$id], $source);
+            $favoritesService->removeListResourcesById($list, $user, [$id], $source);
             $this->flashMessenger()->addMessage('Item removed from list', 'success');
         } else {
             // ...All Saved Items
-            $user->removeResourcesById([$id], $source);
-            $this->flashMessenger()
-                ->addMessage('Item removed from favorites', 'success');
+            $favoritesService->removeUserResourcesById($user, [$id], $source);
+            $this->flashMessenger()->addMessage('Item removed from favorites', 'success');
         }
 
         // All done -- return true to indicate success.

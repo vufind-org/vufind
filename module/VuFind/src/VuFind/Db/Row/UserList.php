@@ -246,11 +246,13 @@ class UserList extends RowGateway implements
     /**
      * Given an array of item ids, remove them from all lists.
      *
-     * @param \VuFind\Db\Row\User|bool $user   Logged-in user (false if none)
+     * @param UserEntityInterface|bool $user   Logged-in user (false if none)
      * @param array                    $ids    IDs to remove from the list
      * @param string                   $source Type of resource identified by IDs
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::removeListResourcesById()
      */
     public function removeResourcesById(
         $user,

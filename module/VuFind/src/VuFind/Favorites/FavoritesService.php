@@ -32,7 +32,11 @@ namespace VuFind\Favorites;
 use DateTime;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\ResourcePopulator;
@@ -49,18 +53,21 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface, DbTableAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use DbTableAwareTrait;
 
     /**
      * Constructor
      *
+     * @param ResourceServiceInterface $resourceService   Resource database service
      * @param UserListServiceInterface $userListService   UserList database service
      * @param ResourcePopulator        $resourcePopulator Resource populator service
      * @param ?RecordCache             $recordCache       Record cache (optional)
      */
     public function __construct(
+        protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected ?RecordCache $recordCache = null
@@ -148,6 +155,71 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 $driver->getRawData()
             );
         }
+    }
+
+    /**
+     * Given an array of item ids, remove them from the specified list.
+     *
+     * @param UserListEntityInterface $list
+     * @param ?UserEntityInterface    $user   Logged-in user (null if none)
+     * @param string[]                $ids    IDs to remove from the list
+     * @param string                  $source Type of resource identified by IDs
+     *
+     * @return void
+     */
+    public function removeListResourcesById(
+        UserListEntityInterface $list,
+        ?UserEntityInterface $user,
+        array $ids,
+        string $source = DEFAULT_SEARCH_BACKEND
+    ): void {
+        if (!$list->editAllowed($user)) {
+            throw new ListPermissionException('list_access_denied');
+        }
+
+        // Retrieve a list of resource IDs:
+        $resources = $this->resourceService->getResourcesByRecordIds($ids, $source);
+
+        $resourceIDs = [];
+        foreach ($resources as $current) {
+            $resourceIDs[] = $current->getId();
+        }
+
+        // Remove Resource (related tags are also removed implicitly)
+        $userResourceTable = $this->getDbTable('UserResource');
+        $userResourceTable->destroyLinks(
+            $resourceIDs,
+            $list->getUser()->getId(),
+            $list->getId()
+        );
+    }
+
+    /**
+     * Given an array of item ids, remove them from all of the specified user's lists
+     *
+     * @param UserEntityInterface $user   User owning lists
+     * @param string[]            $ids    IDs to remove from the list
+     * @param string              $source Type of resource identified by IDs
+     *
+     * @return void
+     */
+    public function removeUserResourcesById(
+        UserEntityInterface $user,
+        array $ids,
+        $source = DEFAULT_SEARCH_BACKEND
+    ): void {
+        // Retrieve a list of resource IDs:
+        $resources = $this->resourceService->getResourcesByRecordIds($ids, $source);
+
+        $resourceIDs = [];
+        foreach ($resources as $current) {
+            $resourceIDs[] = $current->getId();
+        }
+
+        // Remove Resource (related tags are also removed implicitly)
+        $userResourceTable = $this->getDbTable('UserResource');
+        // true here makes sure that only tags in lists are deleted
+        $userResourceTable->destroyLinks($resourceIDs, $user->getId(), true);
     }
 
     /**

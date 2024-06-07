@@ -168,13 +168,13 @@ class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         // on whether we are working with a list or user favorites.
         if (empty($listID)) {
             foreach ($sorted as $source => $ids) {
-                $user->removeResourcesById($ids, $source);
+                $this->favoritesService->removeUserResourcesById($user, $ids, $source);
             }
         } else {
             $service = $this->getController()->getDbService(UserListServiceInterface::class);
             $list = $service->getUserListById($listID);
             foreach ($sorted as $source => $ids) {
-                $list->removeResourcesById($user, $ids, $source);
+                $this->favoritesService->removeListResourcesById($list, $user, $ids, $source);
             }
         }
     }
