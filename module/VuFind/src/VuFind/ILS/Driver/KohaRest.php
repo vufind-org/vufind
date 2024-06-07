@@ -939,7 +939,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ];
             }
         }
-
+        $callback = ($a, $b) {
+    	    return $a['create'] === $b['create']
+                ? $a['item_id'] <=> $b['item_id']
+                : $a['create'] <=> $b['create'];
+	};
+        usort($holds, $callback);
         return $holds;
     }
 
