@@ -238,6 +238,34 @@ class UserList extends RowGateway implements
     }
 
     /**
+     * Destroy the list.
+     *
+     * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
+     * @param bool                     $force Should we force the delete without checking permissions?
+     *
+     * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::destroyList()
+     */
+    public function delete($user = false, $force = false)
+    {
+        if (!$force && !$this->editAllowed($user ?: null)) {
+            throw new ListPermissionException('list_access_denied');
+        }
+
+        // Remove user_resource and resource_tags rows:
+        $userResource = $this->getDbTable('UserResource');
+        $userResource->destroyLinks(null, $this->user_id, $this->id);
+
+        // Remove resource_tags rows for list tags:
+        $linker = $this->getDbTable('resourcetags');
+        $linker->destroyListLinks($this->id, $user->id);
+
+        // Remove the list itself:
+        return parent::delete();
+    }
+
+    /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
