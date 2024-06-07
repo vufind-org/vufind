@@ -47,10 +47,11 @@ use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
-use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
@@ -328,6 +329,20 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Support method for fixdatabaseAction() -- clean up invalid user ID
+     * values in the search table.
+     *
+     * @return void
+     */
+    protected function fixInvalidUserIdsInSearchTable(): void
+    {
+        $count = $this->getDbService(SearchServiceInterface::class)->cleanUpInvalidUserIds();
+        if ($count) {
+            $this->session->warnings->append("Converted $count invalid user_id values in search table");
+        }
+    }
+
+    /**
      * Support method for fixdatabaseAction() -- add checksums to search table rows.
      *
      * @return void
@@ -340,7 +355,7 @@ class UpgradeController extends AbstractBase
         $searchRows = $search->select($searchWhere);
         if (count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
-                $searchObj = $searchRow->getSearchObject()->deminify($manager);
+                $searchObj = $searchRow->getSearchObjectOrThrowException()->deminify($manager);
                 $url = $searchObj->getUrlQuery()->getParams();
                 $checksum = crc32($url) & 0xFFFFFFF;
                 $searchRow->checksum = $checksum;
@@ -586,6 +601,9 @@ class UpgradeController extends AbstractBase
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
+
+            // Fix invalid user IDs in search table, if necessary.
+            $this->fixInvalidUserIdsInSearchTable();
         } catch (Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(),
@@ -779,11 +797,14 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted()) {
-            $converter = $this->serviceLocator->get(Converter::class);
+            $resourceService = $this->getDbService(ResourceServiceInterface::class);
+            $resourcePopulator = $this->serviceLocator->get(ResourcePopulator::class);
             foreach ($problems as $problem) {
                 try {
                     $driver = $this->getRecordLoader()->load($problem->getRecordId(), $problem->getSource());
-                    $problem->assignMetadata($driver, $converter)->save();
+                    $resourceService->persistEntity(
+                        $resourcePopulator->assignMetadata($problem, $driver)
+                    );
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
                         'Unable to load metadata for record '

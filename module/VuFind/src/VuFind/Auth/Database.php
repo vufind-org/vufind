@@ -259,7 +259,7 @@ class Database extends AbstractBase
     {
         $config = $this->getConfig();
         $verify_email = $config->Authentication->verify_email ?? false;
-        if ($verify_email && !$user->checkEmailVerified()) {
+        if ($verify_email && !$user->getEmailVerified()) {
             throw new AuthEmailNotVerifiedException(
                 $user,
                 'authentication_error_email_not_verified_html'
@@ -458,7 +458,7 @@ class Database extends AbstractBase
         $user = $table->createRowForUsername($params['username']);
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
-        $user->updateEmail($params['email'], true);
+        $this->getUserService()->updateUserEmail($user, $params['email'], true);
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
             $user->pass_hash = $bcrypt->create($params['password']);

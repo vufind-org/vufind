@@ -29,10 +29,6 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Stdlib\Parameters;
-use VuFind\Auth\ILS;
-use VuFind\Db\Table\User;
-
 /**
  * ILS authentication test class.
  *
@@ -118,7 +114,9 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ),
             $authenticator
         );
+        $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->setDbTableManager($this->getLiveTableManager());
+        $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }
@@ -376,8 +374,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')
-            ->will($this->returnValue($patron));
+        $mock->expects($this->any())->method('storedCatalogLogin')->willReturn($patron);
+        $mock->setDbServiceManager($this->getLiveDbServiceManager());
         return $mock;
     }
 }

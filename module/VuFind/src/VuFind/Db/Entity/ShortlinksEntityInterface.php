@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for shortlinks table
  *
@@ -40,4 +42,59 @@ namespace VuFind\Db\Entity;
  */
 interface ShortlinksEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get the path of the URL.
+     *
+     * @return string
+     */
+    public function getPath(): string;
+
+    /**
+     * Set the path (e.g. /Search/Results?lookfor=foo) of the URL being shortened;
+     * shortened URLs are always assumed to be within the hostname where VuFind is running.
+     *
+     * @param string $path Path
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setPath(string $path): ShortlinksEntityInterface;
+
+    /**
+     * Get shortlinks hash.
+     *
+     * @return ?string
+     */
+    public function getHash(): ?string;
+
+    /**
+     * Set shortlinks hash.
+     *
+     * @param ?string $hash Shortlinks hash
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setHash(?string $hash): ShortlinksEntityInterface;
+
+    /**
+     * Get creation timestamp.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set creation timestamp.
+     *
+     * @param DateTime $dateTime Creation timestamp
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): ShortlinksEntityInterface;
 }

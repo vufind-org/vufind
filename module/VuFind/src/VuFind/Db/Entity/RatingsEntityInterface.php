@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for ratings table
  *
@@ -40,4 +42,74 @@ namespace VuFind\Db\Entity;
  */
 interface RatingsEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get user.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
+
+    /**
+     * Set user.
+     *
+     * @param ?UserEntityInterface $user User
+     *
+     * @return RatingsEntityInterface
+     */
+    public function setUser(?UserEntityInterface $user): RatingsEntityInterface;
+
+    /**
+     * Get resource.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function getResource(): ResourceEntityInterface;
+
+    /**
+     * Set resource.
+     *
+     * @param ResourceEntityInterface $resource Resource
+     *
+     * @return RatingsEntityInterface
+     */
+    public function setResource(ResourceEntityInterface $resource): RatingsEntityInterface;
+
+    /**
+     * Get rating.
+     *
+     * @return int
+     */
+    public function getRating(): int;
+
+    /**
+     * Set rating.
+     *
+     * @param int $rating Rating
+     *
+     * @return RatingsEntityInterface
+     */
+    public function setRating(int $rating): RatingsEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return RatingsEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): RatingsEntityInterface;
 }

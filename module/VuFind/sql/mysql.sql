@@ -133,7 +133,7 @@ CREATE TABLE `resource_tags` (
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `search` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
   `session_id` varchar(128) DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `title` varchar(20) DEFAULT NULL,
