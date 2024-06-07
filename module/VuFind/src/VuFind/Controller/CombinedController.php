@@ -125,7 +125,7 @@ class CombinedController extends AbstractSearch
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
             // Initialize theme resources:
-            ($this->getViewRenderer()->plugin('headThemeResources'))(true);
+            ($this->getViewRenderer()->plugin('setupThemeResources'))(true);
             // Render content:
             $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
