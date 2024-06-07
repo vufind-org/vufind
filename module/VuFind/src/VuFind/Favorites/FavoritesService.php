@@ -30,6 +30,7 @@
 namespace VuFind\Favorites;
 
 use DateTime;
+use Laminas\Session\Container;
 use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -69,13 +70,15 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param ResourcePopulator        $resourcePopulator Resource populator service
      * @param Tags                     $tagHelper         Tag helper service
      * @param ?RecordCache             $recordCache       Record cache (optional)
+     * @param ?Container               $session           Session container for remembering state (optional)
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected Tags $tagHelper,
-        protected ?RecordCache $recordCache = null
+        protected ?RecordCache $recordCache = null,
+        protected ?Container $session = null
     ) {
     }
 
@@ -96,6 +99,21 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         return $this->userListService->createEntity()
             ->setCreated(new DateTime())
             ->setUser($user);
+    }
+
+    /**
+     * Remember that this list was used so that it can become the default in
+     * dialog boxes.
+     *
+     * @param UserListEntityInterface $list List to remember
+     *
+     * @return void
+     */
+    public function rememberLastUsedList(UserListEntityInterface $list): void
+    {
+        if (null !== $this->session) {
+            $this->session->lastUsed = $list->getId();
+        }
     }
 
     /**
@@ -122,7 +140,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             if (!$list->editAllowed($user)) {
                 throw new \VuFind\Exception\ListPermission('Access denied.');
             }
-            $list->rememberLastUsed(); // handled by save() in other case
+            $this->rememberLastUsedList($list); // handled by saveListForUser() in other case
         }
         return $list;
     }
@@ -138,6 +156,16 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     public function getListIdFromParams(array $params): ?int
     {
         return intval($params['list'] ?? 'NEW') ?: null;
+    }
+
+    /**
+     * Retrieve the ID of the last list that was accessed, if any.
+     *
+     * @return ?int User_list ID (if set) or null (if not available).
+     */
+    public function getLastUsedList(): ?int
+    {
+        return $this->session->lastUsed ?? null;
     }
 
     /**
@@ -271,10 +299,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
-     * Saves the properties to the database.
-     *
-     * This performs an intelligent insert/update, and reloads the
-     * properties with fresh data from the table on success.
+     * Saves the provided list to the database and remembers it in the session if it is valid;
+     * throws an exception otherwise.
      *
      * @param UserListEntityInterface $list List to save
      * @param ?UserEntityInterface    $user Logged-in user (null if none)
@@ -293,7 +319,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
 
         $this->userListService->persistEntity($list);
-        $list->rememberLastUsed();
+        $this->rememberLastUsedList($list);
     }
 
     /**

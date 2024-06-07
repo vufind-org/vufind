@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Session\Container;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Favorites\FavoritesService;
 
 /**
  * List view helper
@@ -48,13 +48,12 @@ class UserList extends AbstractHelper
     /**
      * Constructor
      *
-     * @param Container                $session         Session container (must use same namespace as
-     * container provided to \VuFind\Db\Table\UserList)
-     * @param UserListServiceInterface $userListService List database service
-     * @param string                   $mode            List mode (enabled or disabled)
+     * @param FavoritesService         $favoritesService Favorites service
+     * @param UserListServiceInterface $userListService  List database service
+     * @param string                   $mode             List mode (enabled or disabled)
      */
     public function __construct(
-        protected Container $session,
+        protected FavoritesService $favoritesService,
         protected UserListServiceInterface $userListService,
         protected string $mode = 'enabled'
     ) {
@@ -89,6 +88,6 @@ class UserList extends AbstractHelper
      */
     public function lastUsed()
     {
-        return $this->session->lastUsed ?? null;
+        return $this->favoritesService->getLastUsedList();
     }
 }

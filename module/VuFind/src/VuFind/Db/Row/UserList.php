@@ -178,6 +178,8 @@ class UserList extends RowGateway implements
      * dialog boxes.
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::rememberLastUsedList()
      */
     public function rememberLastUsed()
     {
