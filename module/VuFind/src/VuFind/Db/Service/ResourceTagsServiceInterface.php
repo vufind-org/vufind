@@ -79,19 +79,19 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Create a resource_tags row linking the specified resources
      *
-     * @param int|ResourceEntityInterface|null $resource ID of resource to link up (optional)
-     * @param int|TagEntityInterface           $tag      ID of tag to link up
-     * @param int|UserEntityInterface|null     $user     ID of user creating link (optional but recommended)
-     * @param int|UserListEntityInterface|null $list     ID of list to link up (optional)
-     * @param ?DateTime                        $posted   Posted date (optional -- omit for current)
+     * @param ResourceEntityInterface|int|null $resourceOrId Resource entity or ID to link up (optional)
+     * @param TagsEntityInterface|int          $tagOrId      Tag entity or ID to link up
+     * @param UserEntityInterface|int|null     $userOrId     User entity or ID creating link (optional but recommended)
+     * @param UserListEntityInterface|int|null $listOrId     List entity or ID to link up (optional)
+     * @param ?DateTime                        $posted       Posted date (optional -- omit for current)
      *
      * @return void
      */
     public function createLink(
-        int|ResourceEntityInterface|null $resource,
-        int|TagsEntityInterface $tag,
-        int|UserEntityInterface|null $user = null,
-        int|UserListEntityInterface|null $list = null,
+        ResourceEntityInterface|int|null $resourceOrId,
+        TagsEntityInterface|int $tagOrId,
+        UserEntityInterface|int|null $userOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         ?DateTime $posted = null
     );
 

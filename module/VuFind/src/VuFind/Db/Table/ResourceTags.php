@@ -96,7 +96,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $list = null,
         $posted = null
     ) {
-        return $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+        $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
             $resource,
             $tag,
             $user,
