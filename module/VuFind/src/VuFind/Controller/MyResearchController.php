@@ -1149,7 +1149,7 @@ class MyResearchController extends AbstractBase
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
                     $tagService = $this->getDbService(TagServiceInterface::class);
-                    foreach ($tagService->getForList($list, $list->getUser()) as $tag) {
+                    foreach ($tagService->getListTags($list, $list->getUser()) as $tag) {
                         $listTags[$tag['id']] = $tag['tag'];
                     }
                 }
@@ -1271,7 +1271,7 @@ class MyResearchController extends AbstractBase
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
             $tagService = $this->getDbService(TagServiceInterface::class);
-            $listTags = $user->formatTagString($tagService->getForList($list, $list->getUser()));
+            $listTags = $user->formatTagString($tagService->getListTags($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(

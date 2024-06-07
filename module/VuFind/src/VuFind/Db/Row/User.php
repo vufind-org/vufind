@@ -301,11 +301,11 @@ class User extends RowGateway implements
      *
      * @return array
      *
-     * @deprecated Use TagServiceInterface::getForList()
+     * @deprecated Use TagServiceInterface::getListTags()
      */
-    public function getListTags($listId)
+    public function getForList($listId)
     {
-        return $this->getDbService(TagServiceInterface::class)->getForList($listId, $this);
+        return $this->getDbService(TagServiceInterface::class)->getListTags($listId, $this);
     }
 
     /**

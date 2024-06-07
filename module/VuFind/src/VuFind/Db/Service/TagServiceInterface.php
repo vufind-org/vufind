@@ -96,7 +96,7 @@ interface TagServiceInterface extends DbServiceInterface
      *
      * @return array[]
      */
-    public function getForList(
+    public function getListTags(
         UserListEntityInterface|int $listOrId,
         UserEntityInterface|int|null $userOrId = null
     ): array;

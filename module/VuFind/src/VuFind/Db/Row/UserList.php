@@ -131,11 +131,11 @@ class UserList extends RowGateway implements
      *
      * @return array
      *
-     * @deprecated Use TagServiceInterface::getForList()
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags()
     {
-        return $this->getDbService(TagServiceInterface::class)->getForList($this, $this->getUser());
+        return $this->getDbService(TagServiceInterface::class)->getListTags($this, $this->getUser());
     }
 
     /**

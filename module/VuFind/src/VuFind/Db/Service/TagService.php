@@ -109,7 +109,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      *
      * @return array[]
      */
-    public function getForList(
+    public function getListTags(
         UserListEntityInterface|int $listOrId,
         UserEntityInterface|int|null $userOrId = null
     ): array {
