@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global multiFacetsSelection, VuFind */
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
@@ -118,17 +118,213 @@ VuFind.register('facetList', function FacetList() {
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
+  let globalAddedParams = [];
+  let globalRemovedParams = [];
+  let initialRawParams = window.location.search.substring(1).split('&');
+  let initialFilteredParams = initialRawParams.filter(function isFilter(obj) {
+    return obj.startsWith(encodeURI('filter[]='));
+  });
+  let dateSelectorId;
+
+  function stickApplyFiltersButtonAtTopWhenScrolling() {
+    let applyFilters = document.getElementById('apply-filters');
+    let blankBrick = document.getElementById('blank-brick');
+    window.onscroll = function fixButton() {
+      // To handle delayed loading elements changing the elements offset in the page
+      // We update the offset, depending if we past the button or not
+      if (blankBrick.getBoundingClientRect().top < 0) {
+        applyFilters.classList.add('fixed');
+      } else {
+        applyFilters.classList.remove('fixed');
+      }
+    };
+  }
+
   function showLoadingOverlay() {
-    var overlay = '<div class="facet-loading-overlay">'
+    let elem;
+    if (this === undefined || this.nodeName === undefined) {
+      elem = $('#search-sidebar .collapse');
+    } else {
+      elem = $(this).closest(".collapse");
+    }
+    elem.append(
+      '<div class="facet-loading-overlay">'
       + '<span class="facet-loading-overlay-label">'
       + VuFind.loading()
-      + "</span></div>";
-    $(this).closest(".collapse").append(overlay);
+      + '</span></div>'
+    );
+  }
+
+  function handleDateSelector() {
+    if (dateSelectorId === undefined) {
+      return;
+    }
+
+    let dateParams = [];
+    let allEmptyDateParams = true;
+    let form = document.querySelector('form#' + dateSelectorId);
+    let inputs = form.querySelectorAll('.date-fields input');
+    inputs.forEach(function checkDateParams(input) {
+      if (window.location.search.match(input.name)) {
+        // If the parameter is already present we update it
+        let count = initialRawParams.length;
+        for (let i = 0; i < count; i++) {
+          if (initialRawParams[i].startsWith(input.name + '=')) {
+            initialRawParams[i] = encodeURI(input.name + '=' + input.value); // Update
+            // If not empty we add it to date params
+            if (this.value !== '') {
+              allEmptyDateParams = false;
+            }
+            break;
+          }
+        }
+      } else {
+        dateParams.push(encodeURI(input.name + '=' + input.value));
+        if (this.value !== '') {
+          allEmptyDateParams = false;
+        }
+      }
+    });
+    // If at least one parameter is not null we continue the routine for the final URL
+    if (allEmptyDateParams === false) {
+      globalAddedParams = globalAddedParams.concat(dateParams);
+      let fieldName = form.querySelector('input[name="daterange[]"]').value;
+      let dateRangeParam = encodeURI('daterange[]=' + fieldName);
+      if (!window.location.search.match(dateRangeParam)) {
+        globalAddedParams.push(dateRangeParam);
+      }
+    }
+  }
+
+  function getHrefWithNewParams() {
+    handleDateSelector();
+    // Unique parameters
+    initialRawParams = initialRawParams.filter(function onlyUnique(value, index, array) {
+      return array.indexOf(value) === index;
+    });
+    // Removing parameters
+    initialRawParams = initialRawParams.filter(function tmp(obj) { return !globalRemovedParams.includes(obj); });
+    // Adding parameters
+    initialRawParams = initialRawParams.concat(globalAddedParams);
+    return window.location.pathname + '?' + initialRawParams.join('&');
+  }
+
+  function applyMultiFacetsSelection() {
+    document.getElementById('applyMultiFacetsSelection')
+      .removeEventListener('click', applyMultiFacetsSelection);
+    showLoadingOverlay();
+    window.location.assign(getHrefWithNewParams());
+  }
+
+  function dateSelectorInit() {
+    let parentElement = document.querySelector('div.facet form .date-fields').parentElement;
+    if (parentElement) {
+      dateSelectorId = parentElement.id;
+      let form = document.querySelector('form#' + dateSelectorId);
+      form.querySelector('input[type="submit"]').remove();
+    }
+  }
+
+  function multiFacetsSelectionHandling(e) {
+    e.preventDefault();
+    let elem = e.currentTarget;
+
+    if (elem.classList.contains('facet')) {
+      elem.classList.toggle('active');
+    }
+
+    let icon = elem.querySelector('.icon');
+    if (icon.classList.contains('fa-check-square-o')) {
+      icon.classList.remove('fa-check-square-o');
+      icon.classList.add('fa-square-o');
+    } else if (icon.classList.contains('fa-square-o')) {
+      icon.classList.remove('fa-square-o');
+      icon.classList.add('fa-check-square-o');
+    }
+
+    // Get href attribute value
+    let href = elem.getAttribute('href');
+    if (href[0] === '?') {
+      href = href.substring(1);
+    } else {
+      href = href.substring(window.location.pathname.length + 1);
+    }
+    let clickedParams = href.split('&').filter(function isAdded(obj) {
+      if (!obj.startsWith(encodeURI('filter[]='))) {
+        return false;
+      }
+      // If the element was previously added (in JS)
+      // we remove it from the corresponding array (coming back to initial state)
+      let indexAdd = globalAddedParams.indexOf(obj);
+      if (indexAdd !== -1) {
+        globalAddedParams.splice(indexAdd, 1);
+        return false;
+      } else {
+        return true;
+      }
+    });
+    let addedParams = clickedParams.filter(function isAdded(obj) {
+      // We want to keep only if they are not already in current params
+      return !initialFilteredParams.includes(obj);
+    });
+    let removedParams = initialFilteredParams.filter(function isRemoved(obj) {
+      // If param present in clicked but not initial
+      if (clickedParams.includes(obj) === false) {
+        // If the element was previously removed (in JS)
+        // we remove it from the corresponding array (coming back to initial state)
+        let indexRemoved = globalRemovedParams.indexOf(obj);
+        if (indexRemoved !== -1) {
+          globalRemovedParams.splice(indexRemoved, 1);
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        // If param in both clicked and initial we don't want it
+        return false;
+      }
+    });
+    if (addedParams.length !== 1 || addedParams[0] !== "") {
+      // We don't concat if there is only one empty element
+      globalAddedParams = globalAddedParams.concat(addedParams);
+    }
+    if (removedParams.length !== 1 || removedParams[0] !== "") {
+      // We don't concat if there is only one empty element
+      globalRemovedParams = globalRemovedParams.concat(removedParams);
+    }
+  }
+
+  function multiFacetsSelectionInit() {
+    document.querySelectorAll('a.facet, .facet a').forEach(function addListeners(link) {
+      link.addEventListener('click', multiFacetsSelectionHandling);
+    });
+    dateSelectorInit();
+    // Adding the button
+    let button =
+      '<div id="blank-brick"></div>' +
+      '<div id="apply-filters">' +
+      '<button id="applyMultiFacetsSelection" type="submit" class="btn btn-primary">Apply filters</button>' +
+      '</div>';
+    document.querySelector('#search-sidebar h2').insertAdjacentHTML('afterend', button);
+
+    document.getElementById('applyMultiFacetsSelection')
+      .addEventListener('click', applyMultiFacetsSelection);
+    stickApplyFiltersButtonAtTopWhenScrolling();
   }
 
   function activateFacetBlocking(context) {
-    var finalContext = (typeof context === "undefined") ? $(document.body) : context;
+    let finalContext = (typeof context === "undefined") ? $(document.body) : context;
     finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(showLoadingOverlay);
+  }
+
+  function facetClickHandling(context) {
+    if (multiFacetsSelection === true) {
+      document.querySelectorAll('a.facet, .facet a').forEach(function addListeners(link) {
+        link.addEventListener('click', multiFacetsSelectionHandling);
+      });
+    } else {
+      activateFacetBlocking(context);
+    }
   }
 
   function activateSingleAjaxFacetContainer() {
@@ -176,7 +372,7 @@ VuFind.register('sideFacets', function SideFacets() {
             }
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(VuFind.updateCspNonce(facetData.html));
-            activateFacetBlocking($facetContainer);
+            facetClickHandling($facetContainer);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
@@ -201,8 +397,12 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function init() {
-    // Display "loading" message after user clicks facet:
-    activateFacetBlocking();
+    if (multiFacetsSelection === true) {
+      multiFacetsSelectionInit();
+    } else {
+      // Display "loading" message after user clicks facet:
+      activateFacetBlocking();
+    }
 
     $('.facet-group .collapse').each(function openStoredFacets(index, item) {
       var source = $('#result0 .hiddenSource').val();
@@ -222,8 +422,9 @@ VuFind.register('sideFacets', function SideFacets() {
     });
 
     // Save state on collapse/expand:
-    $('.facet-group').on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
-    $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
+    let facetGroup = $('.facet-group');
+    facetGroup.on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
+    facetGroup.on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
     if (VuFind.getBootstrapMajorVersion() === 3) {
