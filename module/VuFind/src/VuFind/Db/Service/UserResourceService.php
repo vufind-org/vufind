@@ -57,9 +57,9 @@ class UserResourceService extends AbstractDbService implements
      *
      * @param string                           $recordId ID of record being checked.
      * @param string                           $source   Source of record to look up
-     * @param int|UserListEntityInterface|null $list     Optional list ID or entity
+     * @param UserListEntityInterface|int|null $listOrId Optional list entity or ID
      * (to limit results to a particular list).
-     * @param int|UserEntityInterface|null     $user     Optional user ID or entity
+     * @param UserEntityInterface|int|null     $userOrId Optional user entity or ID
      * (to limit results to a particular user).
      *
      * @return UserResourceEntityInterface[]
@@ -67,11 +67,11 @@ class UserResourceService extends AbstractDbService implements
     public function getFavoritesForRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        int|UserListEntityInterface|null $list = null,
-        int|UserEntityInterface|null $user = null
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null
     ): array {
-        $listId = is_int($list) ? $list : $list?->getId();
-        $userId = is_int($user) ? $user : $user?->getId();
+        $listId = is_int($listOrId) ? $listOrId : $listOrId?->getId();
+        $userId = is_int($userOrId) ? $userOrId : $userOrId?->getId();
         return iterator_to_array(
             $this->getDbTable('UserResource')->getSavedData($recordId, $source, $listId, $userId)
         );
