@@ -109,7 +109,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * Destroy a list.
      *
      * @param UserListEntityInterface $list  List to destroy
-     * @param ?UserEntityInterface    $user  Logged-in user (false if none)
+     * @param ?UserEntityInterface    $user  Logged-in user (null if none)
      * @param bool                    $force Should we force the delete without checking permissions?
      *
      * @return void
@@ -195,7 +195,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Retrieve the ID of the last list that was accessed, if any.
      *
-     * @return ?int User_list ID (if set) or null (if not available).
+     * @return ?int Identifier value of a UserListEntityInterface object (if set) or null (if not available).
      */
     public function getLastUsedList(): ?int
     {
@@ -455,11 +455,6 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      */
     public function saveRecordsToFavorites(array $params, UserEntityInterface $user): array
     {
-        // Validate incoming parameters:
-        if (!$user) {
-            throw new LoginRequiredException('You must be logged in first');
-        }
-
         // Load helper objects needed for the saving process:
         $list = $this->getAndRememberListObject($this->getListIdFromParams($params), $user);
         $this->recordCache?->setContext(RecordCache::CONTEXT_FAVORITE);
