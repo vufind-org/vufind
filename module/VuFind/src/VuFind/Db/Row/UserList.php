@@ -182,7 +182,7 @@ class UserList extends RowGateway implements
         if (!empty($tagText)) {
             $tags = $this->getDbTable('tags');
             $tag = $tags->getByText($tagText);
-            $this->getDbTable(ResourceTagsServiceInterface::class)->createLink(
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
                 null,
                 $tag->id,
                 $user,

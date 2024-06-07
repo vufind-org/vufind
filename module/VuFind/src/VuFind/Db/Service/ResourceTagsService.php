@@ -90,7 +90,7 @@ class ResourceTagsService extends AbstractDbService implements
     /**
      * Create a resource_tags row linking the specified resources
      *
-     * @param int|ResourceEntityInterface      $resource ID of resource to link up
+     * @param int|ResourceEntityInterface|null $resource ID of resource to link up (optional)
      * @param int|TagEntityInterface           $tag      ID of tag to link up
      * @param int|UserEntityInterface|null     $user     ID of user creating link (optional but recommended)
      * @param int|UserListEntityInterface|null $list     ID of list to link up (optional)
@@ -99,14 +99,14 @@ class ResourceTagsService extends AbstractDbService implements
      * @return void
      */
     public function createLink(
-        int|ResourceEntityInterface $resource,
+        int|ResourceEntityInterface|null $resource,
         int|TagsEntityInterface $tag,
         int|UserEntityInterface|null $user = null,
         int|UserListEntityInterface|null $list = null,
         ?DateTime $posted = null
     ) {
         $table = $this->getDbTable('ResourceTags');
-        $resourceId = is_int($resource) ? $resource : $resource->getId();
+        $resourceId = is_int($resource) ? $resource : $resource?->getId();
         $tagId = is_int($tag) ? $tag : $tag->getId();
         $userId = is_int($user) ? $user : $user?->getId();
         $listId = is_int($list) ? $list : $list?->getId();
@@ -128,7 +128,7 @@ class ResourceTagsService extends AbstractDbService implements
         $result = $table->select($callback)->current();
 
         // Only create row if it does not already exist:
-        if (empty($result)) {
+        if (!$result) {
             $result = $this->createEntity();
             $result->resource_id = $resourceId;
             $result->tag_id = $tagId;
@@ -138,10 +138,8 @@ class ResourceTagsService extends AbstractDbService implements
             if (null !== $userId) {
                 $result->user_id = $userId;
             }
-            if (null !== $posted) {
-                $result->posted = $posted;
-            }
-            $result->save();
+            $result->setPosted($posted ?? new DateTime());
+            $this->persistEntity($result);
         }
     }
 

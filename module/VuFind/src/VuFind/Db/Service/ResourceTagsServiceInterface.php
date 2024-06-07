@@ -79,7 +79,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Create a resource_tags row linking the specified resources
      *
-     * @param int|ResourceEntityInterface      $resource ID of resource to link up
+     * @param int|ResourceEntityInterface|null $resource ID of resource to link up (optional)
      * @param int|TagEntityInterface           $tag      ID of tag to link up
      * @param int|UserEntityInterface|null     $user     ID of user creating link (optional but recommended)
      * @param int|UserListEntityInterface|null $list     ID of list to link up (optional)
@@ -88,7 +88,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @return void
      */
     public function createLink(
-        int|ResourceEntityInterface $resource,
+        int|ResourceEntityInterface|null $resource,
         int|TagsEntityInterface $tag,
         int|UserEntityInterface|null $user = null,
         int|UserListEntityInterface|null $list = null,
