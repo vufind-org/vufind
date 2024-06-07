@@ -360,10 +360,11 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
      * Render account menu
      *
      * @param string $activeItem The name of current active item
+     * @param string $idPrefix   Element ID prefix
      *
      * @return string
      */
-    public function render(string $activeItem): string
+    public function render(string $activeItem, string $idPrefix = ''): string
     {
         $contextHelper = $this->getView()->plugin('context');
         return $contextHelper->renderInContext(
@@ -371,6 +372,7 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
             [
                 'items' => $this->getItems(),
                 'active' => $activeItem,
+                'idPrefix' => $idPrefix,
             ]
         );
     }
