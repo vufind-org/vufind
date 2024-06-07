@@ -47,6 +47,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Tags;
 
+use function func_get_args;
 use function intval;
 
 /**
@@ -289,6 +290,18 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
+     * Legacy name for saveRecordToFavorites()
+     *
+     * @return array
+     *
+     * @deprecated Use saveRecordToFavorites()
+     */
+    public function save()
+    {
+        return $this->saveRecordToFavorites(...func_get_args());
+    }
+
+    /**
      * Save this record to the user's favorites.
      *
      * @param array               $params Array with some or all of these keys:
@@ -297,16 +310,16 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *    <li>notes - Notes to associate with record (optional)</li>
      *    <li>list - ID of list to save record into (omit to create new list)</li>
      *  </ul>
-     * @param \VuFind\Db\Row\User $user   The user saving the record
+     * @param UserEntityInterface $user   The user saving the record
      * @param RecordDriver        $driver Record driver for record being saved
      *
      * @return array list information
      */
-    public function save(
+    public function saveRecordToFavorites(
         array $params,
-        \VuFind\Db\Row\User $user,
+        UserEntityInterface $user,
         RecordDriver $driver
-    ) {
+    ): array {
         // Validate incoming parameters:
         if (!$user) {
             throw new LoginRequiredException('You must be logged in first');
@@ -328,7 +341,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $params['mytags'] ?? [],
             $params['notes'] ?? ''
         );
-        return ['listId' => $list->id];
+        return ['listId' => $list->getId()];
     }
 
     /**
