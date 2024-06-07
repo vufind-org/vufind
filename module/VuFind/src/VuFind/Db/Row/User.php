@@ -302,7 +302,7 @@ class User extends RowGateway implements
      *
      * @deprecated Use TagServiceInterface::getListTags()
      */
-    public function getForList($listId)
+    public function getListTags($listId)
     {
         return $this->getDbService(TagServiceInterface::class)->getListTags($listId, $this);
     }
