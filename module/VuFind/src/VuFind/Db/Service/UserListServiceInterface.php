@@ -54,6 +54,15 @@ interface UserListServiceInterface extends DbServiceInterface
     public function createEntity(): UserListEntityInterface;
 
     /**
+     * Delete a user list entity.
+     *
+     * @param UserListEntityInterface|int $listOrId List entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUserList(UserListEntityInterface|int $listOrId): void;
+
+    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.

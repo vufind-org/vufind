@@ -67,6 +67,19 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
     }
 
     /**
+     * Delete a user list entity.
+     *
+     * @param UserListEntityInterface|int $listOrId List entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUserList(UserListEntityInterface|int $listOrId): void
+    {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $this->getDbTable('UserList')->delete(['id' => $listId]);
+    }
+
+    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.

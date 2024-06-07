@@ -59,7 +59,6 @@ use function is_object;
  *
  * @method Plugin\Captcha captcha() Captcha plugin
  * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
- * @method Plugin\Favorites favorites() Favorites plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
