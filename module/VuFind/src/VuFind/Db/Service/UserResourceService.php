@@ -183,7 +183,7 @@ class UserResourceService extends AbstractDbService implements
      * Unlink rows for the specified resource. This will also automatically remove
      * any tags associated with the relationship.
      *
-     * @param User|int          $user        ID of user removing links
+     * @param User|int          $userOrId    ID of user removing links
      * @param string|array|null $resource_id ID (or array of IDs) of resource(s) to unlink
      * (null for ALL matching resources)
      * @param UserList|null     $list        list to unlink (null for ALL matching lists, with the destruction
@@ -192,8 +192,10 @@ class UserResourceService extends AbstractDbService implements
      *
      * @return void
      */
-    public function destroyLinks($user, $resource_id = null, $list = null)
+    public function destroyLinks($userOrId, $resource_id = null, $list = null)
     {
+        $user = $this->getDoctrineReference(User::class, $userOrId);
+
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!

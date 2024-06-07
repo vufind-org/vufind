@@ -245,15 +245,16 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Unlink rows for the specified user list.
      *
-     * @param int|UserList $list ID of list to unlink
-     * @param int|User     $user ID of user removing links
-     * @param string|array $tag  ID or array of IDs of tag(s) to unlink (null
-     *                           for ALL matching tags)
+     * @param int|UserList $listOrId ID of list to unlink
+     * @param int|User     $userOrId ID of user removing links
+     * @param string|array $tag      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
      *
      * @return void
      */
-    public function destroyListLinks($list, $user, $tag = null)
+    public function destroyListLinks($listOrId, $userOrId, $tag = null)
     {
+        $list = $this->getDoctrineReference(UserList::class, $listOrId);
+        $user = $this->getDoctrineReference(User::class, $userOrId);
         $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
         $parameters = compact('user', 'list');

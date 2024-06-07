@@ -877,7 +877,8 @@ class MyResearchController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $this->favorites()->delete($ids, $listID, $user);
+            $this->serviceLocator->get(FavoritesService::class)
+                ->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
             $this->flashMessenger()->addMessage('fav_delete_success', 'success');
             return $this->redirect()->toUrl($newUrl);
         }
@@ -919,17 +920,16 @@ class MyResearchController extends AbstractBase
         }
 
         // Perform delete and send appropriate flash message:
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         if (null !== $listID) {
             // ...Specific List
-            $listService = $this->getDbService(UserListServiceInterface::class);
-            $list = $listService->getUserListById($listID);
-            $listService->removeResourcesById($user->id, $list, [$id], $source);
+            $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
+            $favoritesService->removeListResourcesById($list, $user, [$id], $source);
             $this->flashMessenger()->addMessage('Item removed from list', 'success');
         } else {
             // ...All Saved Items
-            $user->removeResourcesById([$id], $source);
-            $this->flashMessenger()
-                ->addMessage('Item removed from favorites', 'success');
+            $favoritesService->removeUserResourcesById($user, [$id], $source);
+            $this->flashMessenger()->addMessage('Item removed from favorites', 'success');
         }
 
         // All done -- return true to indicate success.
@@ -1169,8 +1169,8 @@ class MyResearchController extends AbstractBase
     /**
      * Process the "edit list" submission.
      *
-     * @param UserEntityInterface        $user Logged in user
-     * @param \VuFind\Db\Entity\UserList $list List being created/edited
+     * @param UserEntityInterface     $user Logged in user
+     * @param UserListEntityInterface $list List being created/edited
      *
      * @return object|bool                  Response object if redirect is
      * needed, false if form needs to be redisplayed.
@@ -1179,8 +1179,8 @@ class MyResearchController extends AbstractBase
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
-            $finalId = $this->getDbService(UserListServiceInterface::class)
-                ->updateFromRequest($user->getId(), $list, $this->getRequest()->getPost());
+            $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+            $finalId = $favoritesService->updateListFromRequest($list, $user, $this->getRequest()->getPost());
 
             // If the user is in the process of saving a record, send them back
             // to the save screen; otherwise, send them back to the list they
@@ -1249,12 +1249,13 @@ class MyResearchController extends AbstractBase
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         $list = $newList
-            ? $this->serviceLocator->get(FavoritesService::class)->createListForUser($user)
+            ? $favoritesService->createListForUser($user)
             : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
-        if (!$newList && !$list->editAllowed($user->id)) {
+        if (!$newList && !$favoritesService->userCanEditList($user, $list)) {
             throw new ListPermissionException('Access denied.');
         }
 
@@ -1331,9 +1332,8 @@ class MyResearchController extends AbstractBase
         );
         if ($confirm) {
             try {
-                $listService = $this->getDbService(UserListServiceInterface::class);
-                $list = $listService->getUserListById($listID);
-                $listService->delete($list, $this->getUser());
+                $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
+                $this->serviceLocator->get(FavoritesService::class)->destroyList($list, $this->getUser() ?: null);
 
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');

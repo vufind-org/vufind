@@ -32,8 +32,6 @@ namespace VuFind\Db\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
-use function is_int;
-
 /**
  * UserList
  *
@@ -240,23 +238,5 @@ class UserList implements UserListEntityInterface
     public function getUser(): ?UserEntityInterface
     {
         return $this->user;
-    }
-
-    /**
-     * Is the current user allowed to edit this list?
-     *
-     * @param User|int|null $user Logged-in user (null if none)
-     *
-     * @return bool
-     */
-    public function editAllowed($user): bool
-    {
-        if ($user instanceof UserEntityInterface && $user->getId() == $this->getUser()->getId()) {
-            return true;
-        }
-        if (is_int($user) && $user == $this->getUser()->getId()) {
-            return true;
-        }
-        return false;
     }
 }

@@ -41,8 +41,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
-use VuFind\Exception\ListPermission as ListPermissionException;
-use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Tags;
@@ -125,6 +123,18 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
+     * Delete a user list entity.
+     *
+     * @param UserListEntityInterface|int $listOrId List entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUserList(UserListEntityInterface|int $listOrId): void
+    {
+        $this->deleteEntity($this->getDoctrineReference(UserList::class, $listOrId));
+    }
+
+    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.
@@ -139,69 +149,6 @@ class UserListService extends AbstractDbService implements
             throw new RecordMissingException('Cannot load list ' . $id);
         }
         return $result;
-    }
-
-    /**
-     * Update and save the list object using a request object -- useful for
-     * sharing form processing between multiple actions.
-     *
-     * @param User|int|bool              $user    Logged-in user (false if none)
-     * @param UserList                   $list    User list that is being modified
-     * @param \Laminas\Stdlib\Parameters $request Request to process
-     *
-     * @return int ID of newly created list
-     * @throws ListPermissionException
-     * @throws MissingFieldException
-     */
-    public function updateFromRequest($user, $list, $request)
-    {
-        $list->setTitle($request->get('title'))
-            ->setDescription($request->get('desc'))
-            ->setPublic((bool)$request->get('public'));
-
-        $this->save($list, $user);
-
-        if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbService(TagService::class);
-            $linker->destroyListLinks($list, $user);
-            foreach ($this->tagParser->parse($tags) as $tag) {
-                $this->addListTag($tag, $user, $list);
-            }
-        }
-
-        return $list->getId();
-    }
-
-    /**
-     * Saves the properties to the database.
-     *
-     * This performs an intelligent insert/update, and reloads the
-     * properties with fresh data from the table on success.
-     *
-     * @param UserList  $list UserList to be saved
-     * @param User|bool $user Logged-in user (false if none)
-     *
-     * @return mixed The primary key value(s), as an associative array if the
-     *     key is compound, or a scalar if the key is single-column.
-     * @throws ListPermissionException
-     * @throws MissingFieldException
-     */
-    public function save(UserList $list, $user = false)
-    {
-        if (!$list->editAllowed($user ?: null)) {
-            throw new ListPermissionException('list_access_denied');
-        }
-        if (empty($list->getTitle())) {
-            throw new MissingFieldException('list_edit_name_required');
-        }
-        try {
-            $this->persistEntity($list);
-        } catch (\Exception $e) {
-            $this->logError('Could not save list: ' . $e->getMessage());
-            return false;
-        }
-        $this->rememberLastUsed($list);
-        return $list->getId();
     }
 
     /**
@@ -351,86 +298,6 @@ class UserListService extends AbstractDbService implements
         $query->setParameters($parameters);
         $results = $query->getResult();
         return $results;
-    }
-
-    /**
-     * Given an array of item ids, remove them from all lists
-     *
-     * @param User|int|bool $user   Logged-in user (false if none)
-     * @param UserList      $list   Userlist to remove records
-     * @param array         $ids    IDs to remove from the list
-     * @param string        $source Type of resource identified by IDs
-     *
-     * @return void
-     */
-    public function removeResourcesById(
-        $user,
-        UserList $list,
-        array $ids,
-        string $source = DEFAULT_SEARCH_BACKEND
-    ): void {
-        if ($user) {
-            $user = $this->getDoctrineReference(User::class, $user);
-        }
-        if (!$list->editAllowed($user ?: null)) {
-            throw new ListPermissionException('list_access_denied');
-        }
-
-        // Retrieve a list of resource IDs:
-        $resources = $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
-
-        $resourceIDs = [];
-        foreach ($resources as $current) {
-            $resourceIDs[] = $current->getId();
-        }
-
-        // Remove Resource (related tags are also removed implicitly)
-        $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
-        $userResourceService->destroyLinks(
-            $user,
-            $resourceIDs,
-            $list
-        );
-    }
-
-    /**
-     * Destroy the list.
-     *
-     * @param UserList      $list  Userlist to destroy
-     * @param User|int|bool $user  Logged-in user (false if none)
-     * @param bool          $force Should we force the delete without checking permissions?
-     *
-     * @return int The number of rows deleted.
-     */
-    public function delete($list, $user = false, $force = false)
-    {
-        if ($user) {
-            $user = $this->getDoctrineReference(User::class, $user);
-        }
-        if (!$force && !$list->editAllowed($user ?: null)) {
-            throw new ListPermissionException('list_access_denied');
-        }
-
-        // Remove user_resource and resource_tags rows:
-        $userResourceService = $this->getDbService(UserResourceService::class);
-        $userResourceService->destroyLinks(
-            $user,
-            null,
-            $list
-        );
-
-        // Remove resource_tags rows for list tags:
-        $linker = $this->getDbService(TagService::class);
-        $linker->destroyListLinks($list, $user);
-
-        // Remove the list itself:
-        try {
-            $this->deleteEntity($list);
-        } catch (\Exception $e) {
-            $this->logError('Could not delete UserCard: ' . $e->getMessage());
-            return 0;
-        }
-        return 1;
     }
 
     /**
