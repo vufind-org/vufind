@@ -57,13 +57,13 @@ trait PurgeUserFeature
      * @param bool                $removeComments Whether to remove user's comments
      * @param bool                $removeRatings  Whether to remove user's ratings
      *
-     * @return int The number of rows deleted.
+     * @return void
      */
     protected function purgeUserData(
         UserEntityInterface $user,
         bool $removeComments = true,
         bool $removeRatings = true
-    ) {
+    ): void {
         if (!is_callable([$this, 'getDbService'])) {
             throw new \Exception('purgeUserData requires getDbService method!');
         }
