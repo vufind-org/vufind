@@ -347,7 +347,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     protected function getHandler($config = null, $client = null)
     {
         $handler = new Memcache($config, $client);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }
