@@ -426,6 +426,8 @@ class User extends RowGateway implements
      * existing tags (true) or append to the existing list (false).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::saveResourceToFavorites()
      */
     public function saveResource(
         $resource,
