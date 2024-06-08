@@ -36,6 +36,9 @@ use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
 use minSO;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\NormalizedSearch;
 use VuFind\Search\SearchNormalizer;
 
@@ -52,8 +55,9 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Search extends Gateway
+class Search extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
     use ExpirationTrait;
 
     /**
@@ -128,17 +132,12 @@ class Search extends Gateway
      * @param int    $uid User ID of current user (optional).
      *
      * @return void
+     *
+     * @deprecated Use SessionServiceInterface::destroySession()
      */
     public function destroySession($sid, $uid = null)
     {
-        $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
-            if ($uid !== null) {
-                $select->where->OR
-                    ->equalTo('user_id', $uid)->and->equalTo('saved', 0);
-            }
-        };
-        return $this->delete($callback);
+        $this->getDbService(SearchServiceInterface::class)->destroySession($sid, $uid);
     }
 
     /**
@@ -148,17 +147,12 @@ class Search extends Gateway
      * @param int    $uid User ID of current user (optional).
      *
      * @return array      Matching SearchEntry objects.
+     *
+     * @deprecated Use SessionServiceInterface::getSearches()
      */
     public function getSearches($sid, $uid = null)
     {
-        $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
-            if ($uid !== null) {
-                $select->where->OR->equalTo('user_id', $uid);
-            }
-            $select->order('created');
-        };
-        return $this->select($callback);
+        return $this->getDbService(SearchServiceInterface::class)->getSearches($sid, $uid);
     }
 
     /**

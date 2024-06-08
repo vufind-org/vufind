@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\SearchEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
@@ -46,6 +48,48 @@ use function count;
 class SearchService extends AbstractDbService implements SearchServiceInterface, DbTableAwareInterface
 {
     use DbTableAwareTrait;
+
+    /**
+     * Destroy unsaved searches belonging to the specified session/user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return void
+     */
+    public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void
+    {
+        $uid = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($sessionId, $uid) {
+            $select->where->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if ($uid !== null) {
+                $select->where->OR
+                    ->equalTo('user_id', $uid)->and->equalTo('saved', 0);
+            }
+        };
+        $this->getDbTable('search')->delete($callback);
+    }
+
+    /**
+     * Get an array of rows for the specified user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSearches(string $sessionId, UserEntityInterface|int|null $userOrId = null): array
+    {
+        $uid = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($sessionId, $uid) {
+            $select->where->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if ($uid !== null) {
+                $select->where->OR->equalTo('user_id', $uid);
+            }
+            $select->order('created');
+        };
+        return iterator_to_array($this->getDbTable('search')->select($callback));
+    }
 
     /**
      * Set invalid user_id values in the table to null; return count of affected rows.

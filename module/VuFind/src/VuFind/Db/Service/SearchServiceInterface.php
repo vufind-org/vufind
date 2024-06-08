@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\UserEntityInterface;
+
 /**
  * Database service interface for search.
  *
@@ -40,6 +42,26 @@ namespace VuFind\Db\Service;
  */
 interface SearchServiceInterface extends DbServiceInterface
 {
+    /**
+     * Destroy unsaved searches belonging to the specified session/user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return void
+     */
+    public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void;
+
+    /**
+     * Get an array of rows for the specified user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSearches(string $sessionId, UserEntityInterface|int|null $userOrId = null): array;
+
     /**
      * Set invalid user_id values in the table to null; return count of affected rows.
      *
