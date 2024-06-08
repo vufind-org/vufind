@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -51,6 +52,30 @@ interface SearchServiceInterface extends DbServiceInterface
      * @return void
      */
     public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void;
+
+    /**
+     * Get a SearchEntityInterface object by ID.
+     *
+     * @param int $id Search identifier
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchById(int $id): ?SearchEntityInterface;
+
+    /**
+     * Get a SearchEntityInterface object by ID and owner.
+     *
+     * @param int                          $id        Search identifier
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchByIdAndOwner(
+        int $id,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId
+    ): ?SearchEntityInterface;
 
     /**
      * Get an array of rows for the specified user.

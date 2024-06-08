@@ -71,6 +71,46 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
     }
 
     /**
+     * Get a SearchEntityInterface object by ID.
+     *
+     * @param int $id Search identifier
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchById(int $id): ?SearchEntityInterface
+    {
+        return $this->getDbTable('search')->select(['id' => $id])->current();
+    }
+
+    /**
+     * Get a SearchEntityInterface object by ID and owner.
+     *
+     * @param int                          $id        Search identifier
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchByIdAndOwner(
+        int $id,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId
+    ): ?SearchEntityInterface {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($id, $sessionId, $userId) {
+            $nest = $select->where
+                ->equalTo('id', $id)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessionId);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        return $this->getDbTable('search')->select($callback)->current();
+    }
+
+    /**
      * Get an array of rows for the specified user.
      *
      * @param string                       $sessionId Session ID of current user.

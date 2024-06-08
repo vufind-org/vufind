@@ -33,6 +33,7 @@ namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
@@ -659,8 +660,8 @@ class ResultScroller extends AbstractPlugin
      */
     protected function restoreSearch(int $searchId): ?Results
     {
-        $searchTable = $this->getController()->getTable('Search');
-        $row = $searchTable->getOwnedRowById(
+        $searchService = $this->getController()->getDbService(SearchServiceInterface::class);
+        $row = $searchService->getSearchByIdAndOwner(
             $searchId,
             $this->session->getManager()->getId(),
             null

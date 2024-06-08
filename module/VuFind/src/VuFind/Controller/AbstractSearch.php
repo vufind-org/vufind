@@ -34,6 +34,7 @@ use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -517,11 +518,9 @@ class AbstractSearch extends AbstractBase
      */
     protected function retrieveSearchSecurely($searchId)
     {
-        $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $user = $this->getUser();
-        $userId = $user ? $user->id : null;
-        return $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        $user = $this->getUser() ?: null;
+        return $this->getDbService(SearchServiceInterface::class)->getSearchByIdAndOwner($searchId, $sessId, $user);
     }
 
     /**

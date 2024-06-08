@@ -164,6 +164,8 @@ class Search extends Gateway implements DbServiceAwareInterface
      *
      * @throws \Exception
      * @return ?\VuFind\Db\Row\Search
+     *
+     * @deprecated
      */
     public function getRowById($id, $exceptionIfMissing = true)
     {
@@ -183,20 +185,12 @@ class Search extends Gateway implements DbServiceAwareInterface
      * @param int    $userId Current logged-in user ID (or null if none)
      *
      * @return ?\VuFind\Db\Row\Search
+     *
+     * @deprecated Use SessionServiceInterface::getSearchByIdAndOwner()
      */
     public function getOwnedRowById($id, $sessId, $userId)
     {
-        $callback = function ($select) use ($id, $sessId, $userId) {
-            $nest = $select->where
-                ->equalTo('id', $id)
-                ->and
-                ->nest
-                ->equalTo('session_id', $sessId);
-            if (!empty($userId)) {
-                $nest->or->equalTo('user_id', $userId);
-            }
-        };
-        return $this->select($callback)->current();
+        return $this->getDbService(SearchServiceInterface::class)->getSearchByIdAndOwner($id, $sessId, $userId);
     }
 
     /**
@@ -306,7 +300,12 @@ class Search extends Gateway implements DbServiceAwareInterface
                 'checksum' => $normalized->getChecksum(),
             ]
         );
-        $row = $this->getRowById($this->getLastInsertValue());
+        $lastInsert = $this->getLastInsertValue();
+        $searchService = $this->getDbService(SearchServiceInterface::class);
+        $row = $searchService->getSearchById($lastInsert);
+        if (!$row) {
+            throw new \Exception('Cannot find id ' . $lastInsert);
+        }
 
         // Chicken and egg... We didn't know the id before insert
         $results->updateSaveStatus($row);
@@ -316,7 +315,7 @@ class Search extends Gateway implements DbServiceAwareInterface
         // search object data attached to it; this could cause problems!
         $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($results));
-        $row->save();
+        $searchService->persistEntity($row);
         return $row;
     }
 

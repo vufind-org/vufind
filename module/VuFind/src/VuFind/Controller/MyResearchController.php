@@ -37,6 +37,7 @@ use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -441,10 +442,10 @@ class MyResearchController extends AbstractBase
      */
     protected function getSearchRowSecurely($searchId, $userId)
     {
-        $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator
             ->get(\Laminas\Session\SessionManager::class)->getId();
-        $search = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        $search = $this->getDbService(SearchServiceInterface::class)
+            ->getSearchByIdAndOwner($searchId, $sessId, $userId);
         if (empty($search)) {
             throw new ForbiddenException('Access denied.');
         }
@@ -671,9 +672,10 @@ class MyResearchController extends AbstractBase
             // the user clicks "save" before logging in, then logs in during the
             // save process, but has the same search already saved in their account).
             $searchTable = $this->getTable('search');
+            $searchService = $this->getDbService(SearchServiceInterface::class);
             $sessId = $this->serviceLocator
                 ->get(\Laminas\Session\SessionManager::class)->getId();
-            $rowToCheck = $searchTable->getOwnedRowById($id, $sessId, $user->getId());
+            $rowToCheck = $searchService->getSearchByIdAndOwner($id, $sessId, $user);
             $duplicateId = $this->isDuplicateOfSavedSearch(
                 $searchTable,
                 $rowToCheck,
