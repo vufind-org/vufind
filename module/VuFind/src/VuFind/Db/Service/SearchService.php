@@ -132,6 +132,21 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
     }
 
     /**
+     * Get scheduled searches.
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getScheduledSearches(): array
+    {
+        $callback = function ($select) {
+            $select->where->equalTo('saved', 1);
+            $select->where->greaterThan('notification_frequency', 0);
+            $select->order('user_id');
+        };
+        return iterator_to_array($this->getDbTable('search')->select($callback));
+    }
+
+    /**
      * Set invalid user_id values in the table to null; return count of affected rows.
      *
      * @return int

@@ -197,15 +197,12 @@ class Search extends Gateway implements DbServiceAwareInterface
      * Get scheduled searches.
      *
      * @return array Array of VuFind\Db\Row\Search objects.
+     *
+     * @deprecated Use SessionServiceInterface::getScheduledSearches()
      */
     public function getScheduledSearches()
     {
-        $callback = function ($select) {
-            $select->where->equalTo('saved', 1);
-            $select->where->greaterThan('notification_frequency', 0);
-            $select->order('user_id');
-        };
-        return $this->select($callback);
+        return $this->getDbService(SearchServiceInterface::class)->getScheduledSearches();
     }
 
     /**

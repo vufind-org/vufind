@@ -37,7 +37,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\Search as SearchTable;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -80,46 +80,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * HMAC generator
-     *
-     * @var HMAC
-     */
-    protected $hmac;
-
-    /**
-     * View renderer
-     *
-     * @var PhpRenderer
-     */
-    protected $renderer;
-
-    /**
      * URL helper
      *
      * @var \Laminas\View\Helper\Url
      */
     protected $urlHelper;
-
-    /**
-     * Search results plugin manager
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Configured schedule options
-     *
-     * @var array
-     */
-    protected $scheduleOptions;
-
-    /**
-     * Top-level VuFind configuration
-     *
-     * @var Config
-     */
-    protected $mainConfig;
 
     /**
      * Number of results to retrieve when performing searches
@@ -129,70 +94,33 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected $limit = 50;
 
     /**
-     * Mail service
-     *
-     * @var Mailer
-     */
-    protected $mailer;
-
-    /**
-     * Search table
-     *
-     * @var SearchTable
-     */
-    protected $searchTable;
-
-    /**
-     * User table
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * Locale settings object
-     *
-     * @var LocaleSettings
-     */
-    protected $localeSettings;
-
-    /**
      * Constructor
      *
-     * @param HMAC           $hmac            HMAC generator
-     * @param PhpRenderer    $renderer        View renderer
-     * @param ResultsManager $resultsManager  Search results plugin manager
-     * @param array          $scheduleOptions Configured schedule options
-     * @param Config         $mainConfig      Top-level VuFind configuration
-     * @param Mailer         $mailer          Mail service
-     * @param SearchTable    $searchTable     Search table
-     * @param UserTable      $userTable       User table
-     * @param LocaleSettings $localeSettings  Locale settings object
-     * @param string|null    $name            The name of the command; passing
+     * @param HMAC                   $hmac            HMAC generator
+     * @param PhpRenderer            $renderer        View renderer
+     * @param ResultsManager         $resultsManager  Search results plugin manager
+     * @param array                  $scheduleOptions Configured schedule options
+     * @param Config                 $mainConfig      Top-level VuFind configuration
+     * @param Mailer                 $mailer          Mail service
+     * @param SearchServiceInterface $searchService   Search table
+     * @param UserTable              $userTable       User table
+     * @param LocaleSettings         $localeSettings  Locale settings object
+     * @param string|null            $name            The name of the command; passing
      * null means it must be set in configure()
      */
     public function __construct(
-        HMAC $hmac,
-        PhpRenderer $renderer,
-        ResultsManager $resultsManager,
-        array $scheduleOptions,
-        Config $mainConfig,
-        Mailer $mailer,
-        SearchTable $searchTable,
-        UserTable $userTable,
-        LocaleSettings $localeSettings,
+        protected HMAC $hmac,
+        protected PhpRenderer $renderer,
+        protected ResultsManager $resultsManager,
+        protected array $scheduleOptions,
+        protected Config $mainConfig,
+        protected Mailer $mailer,
+        protected SearchServiceInterface $searchService,
+        protected UserTable $userTable,
+        protected LocaleSettings $localeSettings,
         $name = null
     ) {
-        $this->hmac = $hmac;
-        $this->renderer = $renderer;
         $this->urlHelper = $renderer->plugin('url');
-        $this->resultsManager = $resultsManager;
-        $this->scheduleOptions = $scheduleOptions;
-        $this->mainConfig = $mainConfig;
-        $this->mailer = $mailer;
-        $this->searchTable = $searchTable;
-        $this->userTable = $userTable;
-        $this->localeSettings = $localeSettings;
         parent::__construct($name);
     }
 
@@ -522,7 +450,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function processViewAlerts()
     {
         $todayTime = new \DateTime();
-        $scheduled = $this->searchTable->getScheduledSearches();
+        $scheduled = $this->searchService->getScheduledSearches();
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);

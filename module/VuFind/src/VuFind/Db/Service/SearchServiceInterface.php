@@ -88,6 +88,13 @@ interface SearchServiceInterface extends DbServiceInterface
     public function getSearches(string $sessionId, UserEntityInterface|int|null $userOrId = null): array;
 
     /**
+     * Get scheduled searches.
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getScheduledSearches(): array;
+
+    /**
      * Set invalid user_id values in the table to null; return count of affected rows.
      *
      * @return int
