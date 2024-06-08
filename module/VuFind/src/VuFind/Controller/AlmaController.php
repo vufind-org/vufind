@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\RequestInterface;
+use Throwable;
 use VuFind\Db\Service\UserServiceInterface;
 
 /**
@@ -283,19 +284,17 @@ class AlmaController extends AbstractBase
         } elseif ($method == 'DELETE') {
             $user = $this->userTable->getByCatalogId($primaryId);
             if ($user) {
-                $rowsAffected = $this->purgeUserData($user);
-                if ($rowsAffected == 1) {
+                try {
+                    $this->purgeUserData($user);
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully deleted user with primary ID \'' . $primaryId .
                         '\' in VuFind.',
                         200
                     );
-                } else {
+                } catch (Throwable) {
                     $jsonResponse = $this->createJsonResponse(
                         'Problem when deleting user with \'' . $primaryId .
-                        '\' in VuFind. It is expected that only 1 row of the ' .
-                        'VuFind user table is affected by the deletion. But ' .
-                        $rowsAffected . ' were affected. Please check the status ' .
+                        '\' in VuFind. Please check the status ' .
                         'of the user in the VuFind database.',
                         400
                     );
