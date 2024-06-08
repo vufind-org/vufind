@@ -43,6 +43,15 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserServiceInterface extends DbServiceInterface
 {
     /**
+     * Delete a user entity.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUser(UserEntityInterface|int $userOrId): void;
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.

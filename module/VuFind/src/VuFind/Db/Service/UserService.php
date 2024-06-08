@@ -66,6 +66,19 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Delete a user entity.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUser(UserEntityInterface|int $userOrId): void
+    {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $this->getDbTable('User')->delete(['id' => $userId]);
+    }
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.

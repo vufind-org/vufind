@@ -75,6 +75,7 @@ class MyResearchController extends AbstractBase
 {
     use Feature\BulkActionControllerTrait;
     use Feature\CatchIlsExceptionsTrait;
+    use Feature\PurgeUserFeature;
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
 
@@ -2281,7 +2282,8 @@ class MyResearchController extends AbstractBase
                 // After successful token verification, clear list to shrink session:
                 $csrf->trimTokenList(0);
             }
-            $user->delete(
+            $this->purgeUserData(
+                $user,
                 $config->Authentication->delete_comments_with_user ?? true,
                 $config->Authentication->delete_ratings_with_user ?? true
             );

@@ -44,6 +44,8 @@ use VuFind\Db\Service\UserServiceInterface;
  */
 class AlmaController extends AbstractBase
 {
+    use Feature\PurgeUserFeature;
+
     /**
      * Http service
      *
@@ -281,10 +283,10 @@ class AlmaController extends AbstractBase
         } elseif ($method == 'DELETE') {
             $user = $this->userTable->getByCatalogId($primaryId);
             if ($user) {
-                $rowsAffected = $user->delete();
+                $rowsAffected = $this->purgeUserData($user);
                 if ($rowsAffected == 1) {
                     $jsonResponse = $this->createJsonResponse(
-                        'Successfully deleted use with primary ID \'' . $primaryId .
+                        'Successfully deleted user with primary ID \'' . $primaryId .
                         '\' in VuFind.',
                         200
                     );

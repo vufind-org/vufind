@@ -85,8 +85,7 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      */
     public function deleteTags($user, $list_id = null)
     {
-        $unlinker = $this->getDbTable('ResourceTags');
-        $unlinker->destroyResourceLinks($this->id, $user->id, $list_id);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceLinks($this->getId(), $user, $list_id);
     }
 
     /**
@@ -132,13 +131,12 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
             $tags = $this->getDbTable('Tags');
             $tagIds = [];
             foreach ($tags->getByText($tagText, false, false) as $tag) {
-                $tagIds[] = $tag->id;
+                $tagIds[] = $tag->getId();
             }
             if (!empty($tagIds)) {
-                $linker = $this->getDbTable('ResourceTags');
-                $linker->destroyResourceLinks(
-                    $this->id,
-                    $user->id,
+                $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceLinks(
+                    $this->getId(),
+                    $user,
                     $list_id,
                     $tagIds
                 );
