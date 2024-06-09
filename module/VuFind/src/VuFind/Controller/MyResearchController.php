@@ -32,6 +32,7 @@
 namespace VuFind\Controller;
 
 use DateTime;
+use Exception;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
@@ -505,7 +506,6 @@ class MyResearchController extends AbstractBase
         if (!isset($scheduleOptions[$schedule])) {
             throw new ForbiddenException('Illegal schedule option: ' . $schedule);
         }
-        $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
         $userId = $user->getId();
         $savedRow = $this->getSearchRowSecurely($sid, $userId);
@@ -514,7 +514,6 @@ class MyResearchController extends AbstractBase
         $sessId = $this->serviceLocator
             ->get(\Laminas\Session\SessionManager::class)->getId();
         $duplicateId = $this->isDuplicateOfSavedSearch(
-            $search,
             $savedRow,
             $sessId,
             $userId
@@ -573,11 +572,8 @@ class MyResearchController extends AbstractBase
 
         // If the user has just logged in, the search might be a duplicate; if
         // so, let's switch to the pre-existing version instead.
-        $searchTable = $this->getTable('search');
-        $sessId = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $sessId = $this->serviceLocator->get(\Laminas\Session\SessionManager::class)->getId();
         $duplicateId = $this->isDuplicateOfSavedSearch(
-            $searchTable,
             $search,
             $sessId,
             $user->getId()
@@ -592,9 +588,11 @@ class MyResearchController extends AbstractBase
         }
 
         // Now fetch all the results:
-        $resultsManager = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class);
-        $results = $search->getSearchObjectOrThrowException()->deminify($resultsManager);
+        $resultsManager = $this->serviceLocator->get(\VuFind\Search\Results\PluginManager::class);
+        $results = $search->getSearchObject()?->deminify($resultsManager);
+        if (!$results) {
+            throw new Exception("Problem getting search object from search {$search->getId()}.");
+        }
 
         // Build the form.
         return $this->createViewModel(
@@ -605,15 +603,13 @@ class MyResearchController extends AbstractBase
     /**
      * Is the provided search row a duplicate of a search that is already saved?
      *
-     * @param \VuFind\Db\Table\Search $searchTable Search table
-     * @param ?\VuFind\Db\Row\Search  $rowToCheck  Search row to check (if any)
-     * @param string                  $sessId      Current session ID
-     * @param int                     $userId      Current user ID
+     * @param ?\VuFind\Db\Row\Search $rowToCheck Search row to check (if any)
+     * @param string                 $sessId     Current session ID
+     * @param int                    $userId     Current user ID
      *
      * @return ?int
      */
     protected function isDuplicateOfSavedSearch(
-        \VuFind\Db\Table\Search $searchTable,
         ?\VuFind\Db\Row\Search $rowToCheck,
         string $sessId,
         int $userId
@@ -621,20 +617,20 @@ class MyResearchController extends AbstractBase
         if (!$rowToCheck) {
             return null;
         }
-        $normalizer = $this->serviceLocator
-            ->get(\VuFind\Search\SearchNormalizer::class);
-        $normalized = $normalizer
-            ->normalizeMinifiedSearch($rowToCheck->getSearchObjectOrThrowException());
-        $matches = $searchTable->getSearchRowsMatchingNormalizedSearch(
+        $normalizer = $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class);
+        $searchObject = $rowToCheck->getSearchObject();
+        if (!$searchObject) {
+            throw new Exception("Problem getting search object from search {$rowToCheck->getId()}.");
+        }
+        $normalized = $normalizer->normalizeMinifiedSearch($searchObject);
+        $matches = $normalizer->getSearchesMatchingNormalizedSearch(
             $normalized,
             $sessId,
             $userId
         );
         foreach ($matches as $current) {
-            // $current->saved may be 1 (MySQL) or true (PostgreSQL), so we should
-            // avoid a strict === comparison here:
-            if ($current->saved == 1 && $current->id !== $rowToCheck->id) {
-                return $current->id;
+            if ($current->getSaved() && $current->getId() !== $rowToCheck->getId()) {
+                return $current->getId();
             }
         }
         return null;
@@ -671,13 +667,11 @@ class MyResearchController extends AbstractBase
             // saved row, we should just delete the duplicate. (This can happen if
             // the user clicks "save" before logging in, then logs in during the
             // save process, but has the same search already saved in their account).
-            $searchTable = $this->getTable('search');
             $searchService = $this->getDbService(SearchServiceInterface::class);
             $sessId = $this->serviceLocator
                 ->get(\Laminas\Session\SessionManager::class)->getId();
             $rowToCheck = $searchService->getSearchByIdAndOwner($id, $sessId, $user);
             $duplicateId = $this->isDuplicateOfSavedSearch(
-                $searchTable,
                 $rowToCheck,
                 $sessId,
                 $user->getId()

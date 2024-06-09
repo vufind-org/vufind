@@ -290,7 +290,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      */
     protected function getObjectForSearch($s)
     {
-        $minSO = $s->getSearchObjectOrThrowException();
+        $minSO = $s->getSearchObject();
+        if (!$minSO) {
+            $this->err("Problem getting search object from search {$s->getId()}.");
+            return false;
+        }
         $searchObject = $minSO->deminify($this->resultsManager);
         if (!$searchObject->getOptions()->supportsScheduledSearch()) {
             $this->err(

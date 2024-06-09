@@ -30,6 +30,7 @@
 
 namespace VuFind\Controller;
 
+use Exception;
 use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
@@ -142,8 +143,10 @@ class AbstractSearch extends AbstractBase
 
         // If we got this far, the user is allowed to view the search, so we can
         // deminify it to a new object.
-        $minSO = $search->getSearchObjectOrThrowException();
-        $savedSearch = $minSO->deminify($this->getResultsManager());
+        $savedSearch = $search->getSearchObject()?->deminify($this->getResultsManager());
+        if (!$savedSearch) {
+            throw new Exception("Problem getting search object from search {$search->getId()}.");
+        }
 
         // Now redirect to the URL associated with the saved search; this
         // simplifies problems caused by mixing different classes of search
@@ -561,8 +564,10 @@ class AbstractSearch extends AbstractBase
         }
 
         // Restore the full search object:
-        $minSO = $search->getSearchObjectOrThrowException();
-        $savedSearch = $minSO->deminify($this->getResultsManager());
+        $savedSearch = $search->getSearchObject()?->deminify($this->getResultsManager());
+        if (!$savedSearch) {
+            throw new Exception("Problem getting search object from search {$search->getId()}.");
+        }
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {

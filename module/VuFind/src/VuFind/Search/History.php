@@ -30,6 +30,7 @@
 
 namespace VuFind\Search;
 
+use Exception;
 use Laminas\Config\Config;
 use VuFind\Db\Service\SearchServiceInterface;
 
@@ -88,16 +89,17 @@ class History
         // Loop through and sort the history
         $saved = $schedule = $unsaved = [];
         foreach ($searchHistory as $current) {
-            $search = $current->getSearchObjectOrThrowException()->deminify($this->resultsManager);
-            // $current->saved may be 1 (MySQL) or true (PostgreSQL), so we should
-            // avoid a strict === comparison here:
-            if ($current->saved == 1) {
+            $search = $current->getSearchObject()?->deminify($this->resultsManager);
+            if (!$search) {
+                throw new Exception("Problem getting search object from search {$current->getId()}.");
+            }
+            if ($current->getSaved()) {
                 $saved[] = $search;
             } else {
                 $unsaved[] = $search;
             }
             if ($search->getOptions()->supportsScheduledSearch()) {
-                $schedule[$search->getSearchId()] = $current->notification_frequency;
+                $schedule[$search->getSearchId()] = $current->getNotificationFrequency();
             }
         }
 

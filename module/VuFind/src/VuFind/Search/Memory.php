@@ -263,12 +263,7 @@ class Memory
     {
         if (!array_key_exists($id, $this->searchCache)) {
             $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, null);
-            if ($search) {
-                $minSO = $search->getSearchObjectOrThrowException();
-                $this->searchCache[$id] = $minSO->deminify($this->resultsManager);
-            } else {
-                $this->searchCache[$id] = null;
-            }
+            $this->searchCache[$id] = $search?->getSearchObject()?->deminify($this->resultsManager);
         }
         return $this->searchCache[$id];
     }

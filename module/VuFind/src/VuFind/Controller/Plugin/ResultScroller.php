@@ -31,6 +31,7 @@
 
 namespace VuFind\Controller\Plugin;
 
+use Exception;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -667,8 +668,10 @@ class ResultScroller extends AbstractPlugin
             null
         );
         if (!empty($row)) {
-            $minSO = $row->getSearchObjectOrThrowException();
-            $search = $minSO->deminify($this->resultsManager);
+            $search = $row->getSearchObject()?->deminify($this->resultsManager);
+            if (!$search) {
+                throw new Exception("Problem getting search object from search {$row->getId()}.");
+            }
             // The saved search does not remember its original limit or sort;
             // we should reapply them from the session data:
             $search->getParams()->setLimit(

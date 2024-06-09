@@ -111,6 +111,8 @@ class Search extends RowGateway implements
      *
      * @return \VuFind\Search\Minified
      * @throws \Exception
+     *
+     * @deprecated
      */
     public function getSearchObjectOrThrowException(): \VuFind\Search\Minified
     {
