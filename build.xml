@@ -467,6 +467,8 @@
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${localdir}/cache" />
+    <exec command="touch ${srcdir}/vufind-mail.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-mail.log" />
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
