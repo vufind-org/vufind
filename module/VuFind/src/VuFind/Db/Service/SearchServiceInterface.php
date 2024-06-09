@@ -136,4 +136,11 @@ interface SearchServiceInterface extends DbServiceInterface
      * @return int
      */
     public function cleanUpInvalidUserIds(): int;
+
+    /**
+     * Get saved searches with missing checksums (used for cleaning up legacy data).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSavedSearchesWithMissingChecksums(): array;
 }

@@ -233,4 +233,15 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
         }
         return $count;
     }
+
+    /**
+     * Get saved searches with missing checksums (used for cleaning up legacy data).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSavedSearchesWithMissingChecksums(): array
+    {
+        $searchWhere = ['checksum' => null, 'saved' => 1];
+        return iterator_to_array($this->getDbTable('search')->select($searchWhere));
+    }
 }
