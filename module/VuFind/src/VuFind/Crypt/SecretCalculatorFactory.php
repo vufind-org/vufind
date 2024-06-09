@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for ScheduledSearch/Notify command.
+ * Secret calculator factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,31 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Crypt
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindConsole\Command\ScheduledSearch;
+namespace VuFind\Crypt;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\Service\SearchServiceInterface;
 
 /**
- * Factory for ScheduledSearch/Notify command.
+ * Secret calculator factory
  *
  * @category VuFind
- * @package  Console
+ * @package  Crypt
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class NotifyCommandFactory implements FactoryInterface
+class SecretCalculatorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -66,27 +65,9 @@ class NotifyCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $scheduleOptions = $container
-            ->get(\VuFind\Search\History::class)
-            ->getScheduleOptions();
-        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-
-        // We need to initialize the theme so that the view renderer works:
-        $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
-        $theme->init();
-
-        // Now build the object:
-        return new $requestedName(
-            $container->get(\VuFind\Crypt\SecretCalculator::class),
-            $container->get('ViewRenderer'),
-            $container->get(\VuFind\Search\Results\PluginManager::class),
-            $scheduleOptions,
-            $mainConfig,
-            $container->get(\VuFind\Mailer\Mailer::class),
-            $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
-            $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
-            ...($options ?? [])
-        );
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        return new $requestedName($container->get(HMAC::class));
     }
 }

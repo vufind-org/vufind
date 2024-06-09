@@ -29,8 +29,10 @@
 
 namespace VuFindTest\Command\ScheduledSearch;
 
+use DateTime;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
@@ -142,32 +144,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test behavior when notifications are waiting to be sent but user does not
-     * exist.
-     *
-     * @return void
-     */
-    public function testNotificationsWithMissingUser(): void
-    {
-        $command = $this->getCommand(
-            [
-                'searchTable' => $this->getMockSearchService(
-                    [
-                        'search_object' => null,
-                    ]
-                ),
-            ]
-        );
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
-        $expected = "Processing 1 searches\n"
-            . "WARNING: Search 1: user 2 does not exist \n"
-            . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
-    }
-
-    /**
      * Test behavior when notifications are waiting to be sent but an illegal backend
      * is involved.
      *
@@ -187,7 +163,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                     null,
                     $resultsCallback
                 ),
-                'userTable' => $this->getMockUserTable(),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -221,7 +196,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                     null,
                     $resultsCallback
                 ),
-                'userTable' => $this->getMockUserTable(),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -256,7 +230,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                     null,
                     $resultsCallback
                 ),
-                'userTable' => $this->getMockUserTable(),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -340,7 +313,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                     $paramsCallback,
                     $resultsCallback
                 ),
-                'userTable' => $this->getMockUserTable(),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -398,20 +370,27 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         // we actually need to. We use array_key_exists() instead of isset()
         // because the key may be explicitly set to a value of null.
         if (!array_key_exists('search_object', $overrides)) {
-            $defaults['search_object'] = serialize(
-                $this->getMockSearch(
-                    $optionsCallback,
-                    $paramsCallback,
-                    $resultsCallback
-                )
+            $defaults['search_object'] = $this->getMockSearch(
+                $optionsCallback,
+                $paramsCallback,
+                $resultsCallback
             );
         }
-        $adapter = $this->container->createMock(\Laminas\Db\Adapter\Adapter::class);
-        $row1 = $this->getMockBuilder(\VuFind\Db\Row\Search::class)
-            ->setConstructorArgs([$adapter])
-            ->onlyMethods(['save'])
-            ->getMock();
-        $row1->populate($overrides + $defaults, true);
+        $data = $overrides + $defaults;
+        $row1 = $this->createMock(SearchEntityInterface::class);
+        $row1->method('getId')->willReturn($data['id']);
+        $mockUser = $this->getMockUserObject($data['user_id']);
+        $row1->method('getUser')->willReturn($mockUser);
+        $row1->method('getSessionId')->willReturn($data['session_id']);
+        $row1->method('getCreated')->willReturn(DateTime::createFromFormat('Y-m-d H:i:s', $data['created']));
+        $row1->method('getTitle')->willReturn($data['title']);
+        $row1->method('getSaved')->willReturn((bool)$data['saved']);
+        $row1->method('getChecksum')->willReturn($data['checksum']);
+        $row1->method('getNotificationFrequency')->willReturn($data['notification_frequency']);
+        $row1->method('getLastNotificationSent')
+            ->willReturn(DateTime::createFromFormat('Y-m-d H:i:s', $data['last_notification_sent']));
+        $row1->method('getNotificationBaseUrl')->willReturn($data['notification_base_url']);
+        $row1->method('getSearchObject')->willReturn($data['search_object'] ?? null);
         return [$row1];
     }
 
@@ -478,12 +457,14 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock row representing a user.
      *
+     * @param string $userId User ID to be returned by mock.
+     *
      * @return MockObject&UserEntityInterface
      */
-    protected function getMockUserObject(): MockObject&UserEntityInterface
+    protected function getMockUserObject($userId = 2): MockObject&UserEntityInterface
     {
         $user = $this->createMock(UserEntityInterface::class);
-        $user->method('getId')->willReturn(2);
+        $user->method('getId')->willReturn($userId);
         $user->method('getUsername')->willReturn('foo');
         $user->method('getEmail')->willReturn('fake@myuniversity.edu');
         $user->method('getCreated')->willReturn(\DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00'));
@@ -506,7 +487,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $container->set('url', $this->container->createMock(\Laminas\View\Helper\Url::class));
         $renderer->setHelperPluginManager($container);
         $command = new NotifyCommand(
-            $this->container->createMock(\VuFind\Crypt\HMAC::class),
+            $this->container->createMock(\VuFind\Crypt\SecretCalculator::class),
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
@@ -521,7 +502,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ),
             $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),
             $options['searchTable'] ?? $this->container->createMock(\VuFind\Db\Table\Search::class),
-            $options['userTable'] ?? $this->container->createMock(\VuFind\Db\Table\User::class),
             $options['localeSettings'] ?? $this->container->createMock(\VuFind\I18n\Locale\LocaleSettings::class)
         );
         $command->setTranslator(
@@ -574,19 +554,5 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 )
             );
         return $searchTable;
-    }
-
-    /**
-     * Create a mock user table that returns a fake user object.
-     *
-     * @return MockObject&\VuFind\Db\Table\User
-     */
-    protected function getMockUserTable(): MockObject&\VuFind\Db\Table\User
-    {
-        $user = $this->getMockUserObject();
-        $userTable = $this->container->createMock(\VuFind\Db\Table\User::class);
-        $userTable->expects($this->any())->method('getById')
-            ->with($this->equalTo(2))->willReturn($user);
-        return $userTable;
     }
 }

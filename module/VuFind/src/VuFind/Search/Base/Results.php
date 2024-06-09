@@ -508,16 +508,15 @@ abstract class Results
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
-     * @param \VuFind\Db\Row\Search $row Relevant database row.
+     * @param SearchEntityInterface $row Relevant database row.
      *
      * @return void
      */
     public function updateSaveStatus($row)
     {
-        $this->searchId = $row->id;
-        $this->savedSearch = ($row->saved == true);
-        $this->notificationFrequency = $this->savedSearch
-            ? $row->notification_frequency : 0;
+        $this->searchId = $row->getId();
+        $this->savedSearch = $row->getSaved();
+        $this->notificationFrequency = $this->savedSearch ? $row->getNotificationFrequency() : 0;
     }
 
     /**

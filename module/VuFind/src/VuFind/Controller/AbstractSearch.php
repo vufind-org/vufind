@@ -35,6 +35,7 @@ use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
@@ -517,7 +518,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return ?\VuFind\Db\Row\Search
+     * @return ?SearchEntityInterface
      */
     protected function retrieveSearchSecurely($searchId)
     {

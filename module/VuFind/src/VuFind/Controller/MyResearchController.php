@@ -37,6 +37,8 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Crypt\SecretCalculator;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -439,7 +441,7 @@ class MyResearchController extends AbstractBase
      * @param int $userId   ID of active user
      *
      * @throws ForbiddenException
-     * @return \VuFind\Db\Row\Search
+     * @return SearchEntityInterface
      */
     protected function getSearchRowSecurely($searchId, $userId)
     {
@@ -533,9 +535,11 @@ class MyResearchController extends AbstractBase
             // By default, a first scheduled email will be sent because the database
             // last notification date will be initialized to a past date. If we don't
             // want that to happen, we need to set it to a more appropriate date:
-            $savedRow->last_notification_sent = date('Y-m-d H:i:s');
+            $savedRow->setLastNotificationSent(new DateTime());
         }
-        $savedRow->setSchedule($schedule, $baseurl);
+        $savedRow->setNotificationFrequency($schedule);
+        $savedRow->setNotificationBaseUrl($baseurl);
+        $this->getDbService(SearchServiceInterface::class)->persistEntity($savedRow);
         return $this->redirect()->toRoute('search-history');
     }
 
@@ -603,14 +607,14 @@ class MyResearchController extends AbstractBase
     /**
      * Is the provided search row a duplicate of a search that is already saved?
      *
-     * @param ?\VuFind\Db\Row\Search $rowToCheck Search row to check (if any)
+     * @param ?SearchEntityInterface $rowToCheck Search row to check (if any)
      * @param string                 $sessId     Current session ID
      * @param int                    $userId     Current user ID
      *
      * @return ?int
      */
     protected function isDuplicateOfSavedSearch(
-        ?\VuFind\Db\Row\Search $rowToCheck,
+        ?SearchEntityInterface $rowToCheck,
         string $sessId,
         int $userId
     ): ?int {
@@ -2307,25 +2311,21 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         if ($this->params()->fromQuery('confirm', false) == 1) {
             if ($type == 'alert') {
-                $search
-                    = $this->getTable('Search')->select(['id' => $id])->current();
+                $searchService = $this->getDbService(SearchServiceInterface::class);
+                $search = $searchService->getSearchById($id);
                 if (!$search) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $user = $this->getTable('User')->getById($search->user_id);
-                $secret = $search->getUnsubscribeSecret(
-                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class),
-                    $user
-                );
+                $secret = $this->serviceLocator->get(SecretCalculator::class)->getSearchUnsubscribeSecret($search);
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $search->setSchedule(0);
+                $search->setNotificationFrequency(0);
+                $searchService->persistEntity($search);
                 $view->success = true;
             }
         } else {
-            $view->unsubscribeUrl
-                = $this->getRequest()->getRequestUri() . '&confirm=1';
+            $view->unsubscribeUrl = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
     }
