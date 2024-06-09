@@ -32,7 +32,6 @@ namespace VuFind\Search;
 use Laminas\Http\Request;
 use Laminas\Session\Container;
 use VuFind\Db\Service\SearchServiceInterface;
-use VuFind\Db\Table\Search;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function array_key_exists;

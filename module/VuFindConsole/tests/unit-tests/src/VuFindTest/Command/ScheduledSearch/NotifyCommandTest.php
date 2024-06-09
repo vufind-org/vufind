@@ -79,7 +79,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $searchService->expects($this->once())->method('getScheduledSearches')->willReturn([]);
         $command = $this->getCommand(
             [
-                'searchTable' => $searchService,
+                'searchService' => $searchService,
                 'scheduleOptions' => [],
             ]
         );
@@ -100,7 +100,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchService(
+                'searchService' => $this->getMockSearchService(
                     [
                         'search_object' => null,
                     ]
@@ -131,7 +131,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $lastDate = str_replace(' ', 'T', $lastDate) . 'Z';
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchService($overrides),
+                'searchService' => $this->getMockSearchService($overrides),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -157,7 +157,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         };
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchService(
+                'searchService' => $this->getMockSearchService(
                     [],
                     null,
                     null,
@@ -190,7 +190,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         };
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchService(
+                'searchService' => $this->getMockSearchService(
                     [],
                     $optionsCallback,
                     null,
@@ -224,7 +224,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         };
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchService(
+                'searchService' => $this->getMockSearchService(
                     [],
                     $optionsCallback,
                     null,
@@ -307,7 +307,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'mailer' => $mailer,
                 'renderer' => $renderer,
                 'translator' => $translator,
-                'searchTable' => $this->getMockSearchService(
+                'searchService' => $this->getMockSearchService(
                     [],
                     $optionsCallback,
                     $paramsCallback,
@@ -501,7 +501,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 ]
             ),
             $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),
-            $options['searchTable'] ?? $this->container->createMock(\VuFind\Db\Table\Search::class),
+            $options['searchService'] ?? $this->container->createMock(SearchServiceInterface::class),
             $options['localeSettings'] ?? $this->container->createMock(\VuFind\I18n\Locale\LocaleSettings::class)
         );
         $command->setTranslator(
@@ -543,8 +543,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         ?callable $paramsCallback = null,
         ?callable $resultsCallback = null
     ): MockObject&SearchServiceInterface {
-        $searchTable = $this->container->createMock(SearchServiceInterface::class);
-        $searchTable->expects($this->once())->method('getScheduledSearches')
+        $searchService = $this->container->createMock(SearchServiceInterface::class);
+        $searchService->expects($this->once())->method('getScheduledSearches')
             ->willReturn(
                 $this->getMockNotifications(
                     $overrides,
@@ -553,6 +553,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                     $resultsCallback
                 )
             );
-        return $searchTable;
+        return $searchService;
     }
 }
