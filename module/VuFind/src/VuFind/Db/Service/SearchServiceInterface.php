@@ -44,6 +44,25 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface SearchServiceInterface extends DbServiceInterface
 {
     /**
+     * Create a search entity.
+     *
+     * @return SearchEntityInterface
+     */
+    public function createEntity(): SearchEntityInterface;
+
+    /**
+     * Create a search entity containing the specified checksum, persist it to the database,
+     * and return a fully populated object. Throw an exception if something goes wrong during
+     * the process.
+     *
+     * @param int $checksum Checksum
+     *
+     * @return SearchEntityInterface
+     * @throws Exception
+     */
+    public function createAndPersistEntityWithChecksum(int $checksum): SearchEntityInterface;
+
+    /**
      * Destroy unsaved searches belonging to the specified session/user.
      *
      * @param string                       $sessionId Session ID of current user.
@@ -93,6 +112,23 @@ interface SearchServiceInterface extends DbServiceInterface
      * @return SearchEntityInterface[]
      */
     public function getScheduledSearches(): array;
+
+    /**
+     * Retrieve all searches matching the specified checksum and belonging to the user specified by session or user
+     * entity/ID.
+     *
+     * @param int                          $checksum  Checksum to match
+     * @param string                       $sessionId Current session ID
+     * @param null|UserEntityInterface|int $userOrId  Entity or ID representing current user.
+     *
+     * @return SearchEntityInterface[]
+     * @throws Exception
+     */
+    public function getSearchesByChecksumAndOwner(
+        int $checksum,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId = null
+    ): array;
 
     /**
      * Set invalid user_id values in the table to null; return count of affected rows.

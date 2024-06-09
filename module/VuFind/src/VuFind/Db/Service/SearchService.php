@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
@@ -48,6 +49,42 @@ use function count;
 class SearchService extends AbstractDbService implements SearchServiceInterface, DbTableAwareInterface
 {
     use DbTableAwareTrait;
+
+    /**
+     * Create a search entity.
+     *
+     * @return SearchEntityInterface
+     */
+    public function createEntity(): SearchEntityInterface
+    {
+        return $this->getDbTable('search')->createRow();
+    }
+
+    /**
+     * Create a search entity containing the specified checksum, persist it to the database,
+     * and return a fully populated object. Throw an exception if something goes wrong during
+     * the process.
+     *
+     * @param int $checksum Checksum
+     *
+     * @return SearchEntityInterface
+     * @throws Exception
+     */
+    public function createAndPersistEntityWithChecksum(int $checksum): SearchEntityInterface
+    {
+        $table = $this->getDbTable('search');
+        $table->insert(
+            [
+                'created' => date('Y-m-d H:i:s'),
+                'checksum' => $checksum,
+            ]
+        );
+        $lastInsert = $table->getLastInsertValue();
+        if (!($row = $this->getSearchById($lastInsert))) {
+            throw new Exception('Cannot find id ' . $lastInsert);
+        }
+        return $row;
+    }
 
     /**
      * Destroy unsaved searches belonging to the specified session/user.
@@ -142,6 +179,36 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
             $select->where->equalTo('saved', 1);
             $select->where->greaterThan('notification_frequency', 0);
             $select->order('user_id');
+        };
+        return iterator_to_array($this->getDbTable('search')->select($callback));
+    }
+
+    /**
+     * Retrieve all searches matching the specified checksum and belonging to the user specified by session or user
+     * entity/ID.
+     *
+     * @param int                          $checksum  Checksum to match
+     * @param string                       $sessionId Current session ID
+     * @param null|UserEntityInterface|int $userOrId  Entity or ID representing current user.
+     *
+     * @return SearchEntityInterface[]
+     * @throws Exception
+     */
+    public function getSearchesByChecksumAndOwner(
+        int $checksum,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId = null
+    ): array {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($checksum, $sessionId, $userId) {
+            $nest = $select->where
+                ->equalTo('checksum', $checksum)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
         };
         return iterator_to_array($this->getDbTable('search')->select($callback));
     }

@@ -34,7 +34,6 @@ namespace VuFind\Db\Table;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
-use minSO;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
@@ -215,6 +214,8 @@ class Search extends Gateway implements DbServiceAwareInterface
      * (default = no limit)
      *
      * @return \VuFind\Db\Row\Search[]
+     *
+     * @deprecated Use SearchNormalizer::getSearchesMatchingNormalizedSearch()
      */
     public function getSearchRowsMatchingNormalizedSearch(
         NormalizedSearch $normalized,
@@ -256,6 +257,8 @@ class Search extends Gateway implements DbServiceAwareInterface
      * @param int|null                    $userId     Current user ID
      *
      * @return \VuFind\Db\Row\Search
+     *
+     * @deprecated Use SearchNormalizer::saveNormalizedSearch()
      */
     public function saveSearch(
         SearchNormalizer $normalizer,
@@ -263,57 +266,7 @@ class Search extends Gateway implements DbServiceAwareInterface
         $sessionId,
         $userId
     ) {
-        $normalized = $normalizer->normalizeSearch($results);
-        $duplicates = $this->getSearchRowsMatchingNormalizedSearch(
-            $normalized,
-            $sessionId,
-            $userId,
-            1 // we only need to identify at most one duplicate match
-        );
-        if ($existingRow = array_shift($duplicates)) {
-            // Update the existing search only if it wasn't already saved
-            // (to make it the most recent history entry and make sure it's
-            // using the most up-to-date serialization):
-            if (!$existingRow->saved) {
-                $existingRow->created = date('Y-m-d H:i:s');
-                // Keep the ID of the old search:
-                $minified = $normalized->getMinified();
-                $minified->id = $existingRow->getSearchObjectOrThrowException()->id;
-                $existingRow->search_object = serialize($minified);
-                $existingRow->session_id = $sessionId;
-                $existingRow->save();
-            }
-            // Register the appropriate search history database row with the current
-            // search results object.
-            $results->updateSaveStatus($existingRow);
-            return $existingRow;
-        }
-
-        // If we got this far, we didn't find a saved duplicate, so we should
-        // save the new search:
-        $this->insert(
-            [
-                'created' => date('Y-m-d H:i:s'),
-                'checksum' => $normalized->getChecksum(),
-            ]
-        );
-        $lastInsert = $this->getLastInsertValue();
-        $searchService = $this->getDbService(SearchServiceInterface::class);
-        $row = $searchService->getSearchById($lastInsert);
-        if (!$row) {
-            throw new \Exception('Cannot find id ' . $lastInsert);
-        }
-
-        // Chicken and egg... We didn't know the id before insert
-        $results->updateSaveStatus($row);
-
-        // Don't set session ID until this stage, because we don't want to risk
-        // ever having a row that's associated with a session but which has no
-        // search object data attached to it; this could cause problems!
-        $row->session_id = $sessionId;
-        $row->search_object = serialize(new minSO($results));
-        $searchService->persistEntity($row);
-        return $row;
+        return $normalizer->saveNormalizedSearch($results, $sessionId, $userId);
     }
 
     /**
