@@ -536,14 +536,12 @@ class AbstractSearch extends AbstractBase
      */
     protected function saveSearchToHistory($results)
     {
-        $user = $this->getUser();
+        $user = $this->getUser() ?: null;
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $history = $this->getTable('Search');
-        $history->saveSearch(
-            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
+        $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class)->saveNormalizedSearch(
             $results,
             $sessId,
-            $user->id ?? null
+            $user?->getId()
         );
     }
 
