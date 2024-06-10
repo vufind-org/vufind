@@ -35,6 +35,7 @@ use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 use function is_array;
@@ -532,8 +533,8 @@ class CartController extends AbstractBase
 
         // Process submission if necessary:
         if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
-            $results = $this->favorites()
-                ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
+            $results = $this->serviceLocator->get(FavoritesService::class)
+                ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
                 'userList',
                 ['id' => $results['listId']]

@@ -64,12 +64,18 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Set up items based on contents of theme resource container.
      *
+     * @param bool $partial Whether rendering an HTML snippet instead of a full page
+     *
      * @return void
      */
-    public function __invoke()
+    public function __invoke(bool $partial = false)
     {
-        $this->addMetaTags();
-        $this->addLinks();
+        // meta tags are illegal outside of <head>, so we don't want to render them
+        // in partial mode:
+        if (!$partial) {
+            $this->addMetaTags();
+        }
+        $this->addLinks($partial);
         $this->addScripts();
     }
 
@@ -97,9 +103,11 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Add links to header.
      *
+     * @param bool $partial Whether rendering an HTML snippet instead of a full page
+     *
      * @return void
      */
-    protected function addLinks()
+    protected function addLinks(bool $partial = false)
     {
         // Convenient shortcut to view helper:
         $headLink = $this->getView()->plugin('headLink');
@@ -125,8 +133,8 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // If `favicon` is a string then treat it as a single file path to an .ico icon.
         // If `favicon` is an array then treat each item as an assoc array of html attributes and render
         // a link element for each.
-        $favicon = $this->container->getFavicon();
-        if (!empty($favicon)) {
+        // Skip favicons in partial mode because they are illegal outside of <head>.
+        if (!$partial && ($favicon = $this->container->getFavicon())) {
             $imageLink = $this->getView()->plugin('imageLink');
             if (is_array($favicon)) {
                 foreach ($favicon as $attrs) {
