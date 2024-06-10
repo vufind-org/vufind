@@ -186,7 +186,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     public function getComments(): array
     {
-        return $this->getDbService(CommentsServiceInterface::class)->getForResource(
+        return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier()
         );
