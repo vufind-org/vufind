@@ -115,6 +115,8 @@ class User extends RowGateway implements
      * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setConfig(\Laminas\Config\Config $config)
     {
@@ -220,6 +222,8 @@ class User extends RowGateway implements
      * Is ILS password encryption enabled?
      *
      * @return bool
+     *
+     * @deprecated
      */
     protected function passwordEncryptionEnabled()
     {
@@ -254,12 +258,12 @@ class User extends RowGateway implements
      * to be used
      *
      * @return mixed               The output of the save method.
+     *
+     * @deprecated Use ILSAuthenticator::updateUserHomeLibrary()
      */
     public function changeHomeLibrary($homeLibrary)
     {
-        $this->home_library = $homeLibrary;
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-        return $this->save();
+        return $this->ilsAuthenticator->updateUserHomeLibrary($this, $homeLibrary);
     }
 
     /**

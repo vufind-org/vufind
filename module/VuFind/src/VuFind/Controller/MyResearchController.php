@@ -35,6 +35,7 @@ use DateTime;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\TagServiceInterface;
@@ -734,8 +735,7 @@ class MyResearchController extends AbstractBase
                 if (' ** ' === $homeLibrary) {
                     $homeLibrary = null;
                 }
-                $user->changeHomeLibrary($homeLibrary);
-                $this->getAuthManager()->updateSession($user);
+                $this->serviceLocator->get(ILSAuthenticator::class)->updateUserHomeLibrary($user, $homeLibrary);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
             }
 
