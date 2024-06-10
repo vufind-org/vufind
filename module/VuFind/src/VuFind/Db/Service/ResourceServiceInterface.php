@@ -31,6 +31,8 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 /**
  * Database service interface for resource.
@@ -90,4 +92,26 @@ interface ResourceServiceInterface extends DbServiceInterface
      * @return ResourceEntityInterface[]
      */
     public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array;
+
+    /**
+     * Get a set of resources from the requested favorite list.
+     *
+     * @param UserEntityInterface|int          $userOrId ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags     Tags to use for limiting results
+     * @param ?string                          $sort     Resource table field to use for sorting (null for no
+     * particular sort).
+     * @param int                              $offset   Offset for results
+     * @param ?int                             $limit    Limit for results (null for none)
+     *
+     * @return ResourceEntityInterface[]
+     */
+    public function getFavorites(
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        array $tags = [],
+        ?string $sort = null,
+        int $offset = 0,
+        ?int $limit = null
+    ): array;
 }

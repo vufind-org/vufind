@@ -33,14 +33,15 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
 
+use function array_slice;
 use function count;
 
 /**
@@ -90,14 +91,14 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
      * @param SearchService              $searchService   Search service
      * @param Loader                     $recordLoader    Record loader
-     * @param ResourceTable              $resourceTable   Resource table
+     * @param ResourceServiceInterface   $resourceService Resource database service
      * @param UserListServiceInterface   $userListService UserList database service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        protected ResourceTable $resourceTable,
+        protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
@@ -189,13 +190,11 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         $userId = $list ? $list->getUser()->getId() : $this->user->getId();
         $listId = $list?->getId();
         // Get results as an array so that we can rewind it:
-        $rawResults = iterator_to_array(
-            $this->resourceTable->getFavorites(
-                $userId,
-                $listId,
-                $this->getTagFilters(),
-                $this->getParams()->getSort()
-            )
+        $rawResults = $this->resourceService->getFavorites(
+            $userId,
+            $listId,
+            $this->getTagFilters(),
+            $this->getParams()->getSort()
         );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
