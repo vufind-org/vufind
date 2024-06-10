@@ -54,8 +54,8 @@ class Writer
     /**
      * Constructor
      *
-     * @param Service       $searchService Search service
-     * @param ChangeTracker $changeTracker Change tracker database service
+     * @param Service                       $searchService Search service
+     * @param ChangeTrackerServiceInterface $changeTracker Change tracker database service
      */
     public function __construct(
         protected Service $searchService,
