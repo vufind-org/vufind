@@ -35,6 +35,7 @@ use DateTime;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -733,8 +734,7 @@ class MyResearchController extends AbstractBase
                 if (' ** ' === $homeLibrary) {
                     $homeLibrary = null;
                 }
-                $user->changeHomeLibrary($homeLibrary);
-                $this->getAuthManager()->updateSession($user);
+                $this->serviceLocator->get(ILSAuthenticator::class)->updateUserHomeLibrary($user, $homeLibrary);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
             }
 
@@ -877,7 +877,8 @@ class MyResearchController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $this->favorites()->delete($ids, $listID, $user);
+            $this->serviceLocator->get(FavoritesService::class)
+                ->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
             $this->flashMessenger()->addMessage('fav_delete_success', 'success');
             return $this->redirect()->toUrl($newUrl);
         }
@@ -919,16 +920,16 @@ class MyResearchController extends AbstractBase
         }
 
         // Perform delete and send appropriate flash message:
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         if (null !== $listID) {
             // ...Specific List
             $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
-            $list->removeResourcesById($user, [$id], $source);
+            $favoritesService->removeListResourcesById($list, $user, [$id], $source);
             $this->flashMessenger()->addMessage('Item removed from list', 'success');
         } else {
             // ...All Saved Items
-            $user->removeResourcesById([$id], $source);
-            $this->flashMessenger()
-                ->addMessage('Item removed from favorites', 'success');
+            $favoritesService->removeUserResourcesById($user, [$id], $source);
+            $this->flashMessenger()->addMessage('Item removed from favorites', 'success');
         }
 
         // All done -- return true to indicate success.
@@ -1169,7 +1170,7 @@ class MyResearchController extends AbstractBase
      * Process the "edit list" submission.
      *
      * @param UserEntityInterface     $user Logged in user
-     * @param \VuFind\Db\Row\UserList $list List being created/edited
+     * @param UserListEntityInterface $list List being created/edited
      *
      * @return object|bool                  Response object if redirect is
      * needed, false if form needs to be redisplayed.
@@ -1178,8 +1179,8 @@ class MyResearchController extends AbstractBase
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
-            $finalId
-                = $list->updateFromRequest($user, $this->getRequest()->getPost());
+            $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+            $finalId = $favoritesService->updateListFromRequest($list, $user, $this->getRequest()->getPost());
 
             // If the user is in the process of saving a record, send them back
             // to the save screen; otherwise, send them back to the list they
@@ -1248,12 +1249,13 @@ class MyResearchController extends AbstractBase
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         $list = $newList
-            ? $this->serviceLocator->get(FavoritesService::class)->createListForUser($user)
+            ? $favoritesService->createListForUser($user)
             : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
 
         // Make sure the user isn't fishing for other people's lists:
-        if (!$newList && !$list->editAllowed($user)) {
+        if (!$newList && !$favoritesService->userCanEditList($user, $list)) {
             throw new ListPermissionException('Access denied.');
         }
 
@@ -1330,7 +1332,7 @@ class MyResearchController extends AbstractBase
         if ($confirm) {
             try {
                 $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
-                $list->delete($this->getUser());
+                $this->serviceLocator->get(FavoritesService::class)->destroyList($list, $this->getUser() ?: null);
 
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');

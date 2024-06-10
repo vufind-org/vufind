@@ -408,9 +408,11 @@ var VuFind = (function VuFind() {
       link.addEventListener('click', function toggleQRCode() {
         var holder = this.nextElementSibling;
         if (holder.querySelectorAll('img').length === 0) {
-          // We need to insert the QRCode image
-          var template = holder.querySelector('.qrCodeImgTag').innerHTML;
-          holder.innerHTML = template;
+          // Replace the QRCode template with the image:
+          const templateEl = holder.querySelector('.qrCodeImgTag');
+          if (templateEl) {
+            templateEl.parentNode.innerHTML = templateEl.innerHTML;
+          }
         }
       });
     });

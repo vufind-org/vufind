@@ -39,6 +39,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 
@@ -96,11 +97,13 @@ class User extends RowGateway implements
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
      * @param AccountCapabilities         $capabilities     Account capabilities configuration (null for defaults)
+     * @param FavoritesService            $favoritesService Favorites service
      */
     public function __construct(
         $adapter,
         protected ILSAuthenticator $ilsAuthenticator,
-        protected AccountCapabilities $capabilities
+        protected AccountCapabilities $capabilities,
+        protected FavoritesService $favoritesService,
     ) {
         parent::__construct('id', 'user', $adapter);
     }
@@ -111,6 +114,8 @@ class User extends RowGateway implements
      * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setConfig(\Laminas\Config\Config $config)
     {
@@ -216,6 +221,8 @@ class User extends RowGateway implements
      * Is ILS password encryption enabled?
      *
      * @return bool
+     *
+     * @deprecated
      */
     protected function passwordEncryptionEnabled()
     {
@@ -250,12 +257,12 @@ class User extends RowGateway implements
      * to be used
      *
      * @return mixed               The output of the save method.
+     *
+     * @deprecated Use ILSAuthenticator::updateUserHomeLibrary()
      */
     public function changeHomeLibrary($homeLibrary)
     {
-        $this->home_library = $homeLibrary;
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-        return $this->save();
+        return $this->ilsAuthenticator->updateUserHomeLibrary($this, $homeLibrary);
     }
 
     /**
@@ -450,6 +457,8 @@ class User extends RowGateway implements
      * @param string $source Type of resource identified by IDs
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::removeUserResourcesById()
      */
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
@@ -604,7 +613,7 @@ class User extends RowGateway implements
         // Remove all lists owned by the user:
         $listService = $this->getDbService(UserListServiceInterface::class);
         foreach ($listService->getUserListsByUser($this) as $current) {
-            $current->delete($this, true);
+            $this->favoritesService->destroyList($current, $this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyResourceLinks(null, $this->id);
