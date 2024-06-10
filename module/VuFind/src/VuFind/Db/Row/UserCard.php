@@ -258,6 +258,6 @@ class UserCard extends RowGateway implements DbServiceAwareInterface, UserCardEn
      */
     public function getUser(): UserEntityInterface
     {
-        return $this->getDbService(\VuFind\Db\Service\UserService::class)->getUserById($this->user_id);
+        return $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->getUserById($this->user_id);
     }
 }

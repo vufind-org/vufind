@@ -226,7 +226,7 @@ class Bootstrapper
                 && $user->getLastLanguage() != $language
             ) {
                 $user->setLastLanguage($language);
-                $this->getDbService(\VuFind\Db\Service\UserService::class)->persistEntity($user);
+                $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->persistEntity($user);
             }
         };
         $this->events->attach('dispatch.error', $callback);
