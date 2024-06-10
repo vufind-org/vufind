@@ -187,6 +187,9 @@ abstract class AbstractBase implements
      * @param int    $ownerId ID of user to check for ownership
      *
      * @return array
+     *
+     * @deprecated Use TagServiceInterface::getRecordTags() or TagServiceInterface::getRecordTagsFromFavorites()
+     * or TagServiceInterface::getRecordTagsNotInFavorites()
      */
     public function getTags(
         $list_id = null,
@@ -194,8 +197,7 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        $tags = $this->getDbService(TagServiceInterface::class);
-        return $tags->getForResource(
+        return $this->getDbTable('Tags')->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             0,

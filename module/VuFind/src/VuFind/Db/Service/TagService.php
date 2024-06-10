@@ -591,55 +591,50 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Get tags associated with the specified resource.
+     * Support method for other getRecordTags*() methods to consolidate shared logic.
      *
-     * @param string $id          Record ID to look up
-     * @param string $source      Source of record to look up
-     * @param int    $limit       Max. number of tags to return (0 = no limit)
-     * @param ?int   $list        ID of list to load tags from (null for no
-     * restriction,  true for on ANY list, false for on NO list)
-     * @param ?int   $user        ID of user to load tags from (null for all users)
-     * @param string $sort        Sort type ('count' or 'tag')
-     * @param ?int   $userToCheck ID of user to check for ownership (this will
-     * not filter the result list, but rows owned by this user will have an is_me
-     * column set to 1)
+     * @param string                       $id                Record ID to look up
+     * @param string                       $source            Source of record to look up
+     * @param int                          $limit             Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId          ID of user to load tags from (null for all users)
+     * @param string                       $sort              Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId         ID of user to check for ownership
+     * @param array                        $extraWhereClauses Extra where clauses to apply to query
+     * @param array                        $extraParameters   Extra parameters to provide with query
      *
      * @return array
      */
-    public function getForResource(
+    protected function getRecordTagsWithDoctrine(
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
-        ?int $list = null,
-        ?int $user = null,
+        UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        ?int $userToCheck = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        array $extraWhereClauses = [],
+        array $extraParameters = []
     ): array {
-        $parameters = compact('id', 'source');
+        $parameters = compact('id', 'source') + $extraParameters;
         $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
         $fieldList = 't.id AS id, COUNT(DISTINCT(rt.user)) AS cnt, ' . $tag . ' AS tag';
         // If we're looking for ownership, adjust query to include an "is_me" flag value indicating
         // if the selected resource is tagged by the specified user.
-        if (!empty($userToCheck)) {
+        if (!empty($ownerOrId)) {
             $fieldList .= ', MAX(CASE WHEN rt.user = :userToCheck THEN 1 ELSE 0 END) AS is_me';
-            $parameters['userToCheck'] = $userToCheck;
+            $parameters['userToCheck'] = $this->getDoctrineReference(User::class, $ownerOrId);
         }
         $dql = 'SELECT ' . $fieldList . ' FROM ' . $this->getEntityClass(Tags::class) . ' t '
             . 'JOIN ' . $this->getEntityClass(ResourceTags::class) . ' rt WITH t.id = rt.tag '
             . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = rt.resource '
             . 'WHERE r.recordId = :id AND r.source = :source ';
 
-        if ($list === true) {
-            $dql .= 'AND rt.list IS NOT NULL ';
-        } elseif ($list === false) {
-            $dql .= 'AND rt.list IS NULL ';
-        } elseif (null !== $list) {
-            $dql .= 'AND rt.list = :list ';
-            $parameters['list'] = $list;
+        foreach ($extraWhereClauses as $clause) {
+            $dql .= "AND $clause ";
         }
-        if (null !== $user) {
+
+        if (null !== $userOrId) {
             $dql .= 'AND rt.user = :user ';
-            $parameters['user'] = $user;
+            $parameters['user'] = $this->getDoctrineReference(User::class, $userOrId);
         }
 
         $dql .= 'GROUP BY t.id, t.tag ';
@@ -655,6 +650,120 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         }
         $results = $query->getResult();
         return $results;
+    }
+
+    /**
+     * Get all tags associated with the specified record (and matching provided filters).
+     *
+     * @param string                           $id        Record ID to look up
+     * @param string                           $source    Source of record to look up
+     * @param int                              $limit     Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getRecordTags(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        $extraClauses = $extraParams = [];
+        if ($listOrId) {
+            $extraClauses[] = 'rt.list = :list';
+            $extraParams['list'] = $this->getDoctrineReference(UserList::class, $listOrId);
+        }
+        return $this->getRecordTagsWithDoctrine(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            $extraClauses,
+            $extraParams
+        );
+    }
+
+    /**
+     * Get all tags from favorite lists associated with the specified record (and matching provided filters).
+     *
+     * @param string                           $id        Record ID to look up
+     * @param string                           $source    Source of record to look up
+     * @param int                              $limit     Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * are associated with ANY list, but excluding non-list tags)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     *
+     * @return array
+     */
+    public function getRecordTagsFromFavorites(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        $extraClauses = $extraParams = [];
+        if ($listOrId) {
+            $extraClauses[] = 'rt.list = :list';
+            $extraParams['list'] = $this->getDoctrineReference(UserList::class, $listOrId);
+        } else {
+            $extraClauses[] = 'rt.list IS NOT NULL';
+        }
+        return $this->getRecordTagsWithDoctrine(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            $extraClauses,
+            $extraParams
+        );
+    }
+
+    /**
+     * Get all tags outside of favorite lists associated with the specified record (and matching provided filters).
+     *
+     * @param string                       $id        Record ID to look up
+     * @param string                       $source    Source of record to look up
+     * @param int                          $limit     Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
+     * @param string                       $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
+     * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     *
+     * @return array
+     */
+    public function getRecordTagsNotInFavorites(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->getRecordTagsWithDoctrine(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            ['rt.list IS NULL'],
+        );
     }
 
     /**
