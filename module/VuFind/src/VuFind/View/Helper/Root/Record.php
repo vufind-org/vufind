@@ -370,7 +370,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
-        return $this->getDbService(TagServiceInterface::class)->getTagsForRecord(
+        return $this->getDbService(TagServiceInterface::class)->getRecordTags(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier(),
             0,
@@ -398,7 +398,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
-        return $this->getDbService(TagServiceInterface::class)->getListTagsForRecord(
+        return $this->getDbService(TagServiceInterface::class)->getRecordTagsFromFavorites(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier(),
             0,

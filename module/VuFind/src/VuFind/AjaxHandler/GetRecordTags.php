@@ -71,7 +71,7 @@ class GetRecordTags extends AbstractBase
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $tags = $this->tagService->getTagsForRecord(
+        $tags = $this->tagService->getRecordTags(
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0,

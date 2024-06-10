@@ -186,8 +186,8 @@ abstract class AbstractBase implements
      *
      * @return array
      *
-     * @deprecated Use TagServiceInterface::getTagsForRecord() or TagServiceInterface::getListTagsForRecord()
-     * or TagServiceInterface::getNonListTagsForRecord()
+     * @deprecated Use TagServiceInterface::getRecordTags() or TagServiceInterface::getRecordTagsFromFavorites()
+     * or TagServiceInterface::getRecordTagsNotInFavorites()
      */
     public function getTags(
         $list_id = null,

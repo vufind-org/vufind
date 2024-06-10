@@ -84,7 +84,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      *
      * @return array
      */
-    public function getTagsForRecord(
+    public function getRecordTags(
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
@@ -116,7 +116,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      *
      * @return array
      */
-    public function getListTagsForRecord(
+    public function getRecordTagsFromFavorites(
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
@@ -146,7 +146,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      *
      * @return array
      */
-    public function getNonListTagsForRecord(
+    public function getRecordTagsNotInFavorites(
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
