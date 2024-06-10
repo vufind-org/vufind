@@ -203,7 +203,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         try {
             return stristr($this->sources, 'wikipedia') ? $this->wikipedia->get($this->getAuthor()) : null;
         } catch (Exception $e) {
-            error_log("Unexpected error while loading author info: " . $e->getMessage());
+            error_log("Unexpected error while loading author info: {$e->getMessage()}");
             return null;
         }
     }
