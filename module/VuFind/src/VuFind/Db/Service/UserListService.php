@@ -70,8 +70,7 @@ class UserListService extends AbstractDbService implements
     public function getResourceTags($list)
     {
         $user = $list->getUser();
-        $tags = $this->getDbService(TagService::class)
-            ->getUserTagsFromFavorites($user, null, $list);
+        $tags = $this->getDbService(TagService::class)->getUserTagsFromFavorites($user, $list);
         return $tags;
     }
 
@@ -113,30 +112,6 @@ class UserListService extends AbstractDbService implements
             throw new RecordMissingException('Cannot load list ' . $id);
         }
         return $result;
-    }
-
-    /**
-     * Add a tag to the list.
-     *
-     * @param string                  $tagText The tag to save.
-     * @param UserEntityInterface|int $user    The user posting the tag.
-     * @param UserListEntityInterface $list    The userlist to tag.
-     *
-     * @return void
-     */
-    public function addListTag(string $tagText, UserEntityInterface|int $user, UserListEntityInterface $list): void
-    {
-        $tagText = trim($tagText);
-        if (!empty($tagText)) {
-            $tagService = $this->getDbService(TagService::class);
-            $tag = $tagService->getByText($tagText);
-            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
-                null,
-                $tag,
-                $user,
-                $list
-            );
-        }
     }
 
     /**
