@@ -189,38 +189,32 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         $userId = $list ? $list->getUser()->getId() : $this->user->getId();
         $listId = $list?->getId();
         // Get results as an array so that we can rewind it:
-        $rawResults = $this->resourceTable->getFavorites(
-            $userId,
-            $listId,
-            $this->getTagFilters(),
-            $this->getParams()->getSort()
-        )->toArray();
+        $rawResults = iterator_to_array(
+            $this->resourceTable->getFavorites(
+                $userId,
+                $listId,
+                $this->getTagFilters(),
+                $this->getParams()->getSort()
+            )
+        );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
-            return $result['source'] . '|' . $result['record_id'];
+            return $result->getSource() . '|' . $result->getRecordId();
         }, $rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            // Get results as an array so that we can rewind it:
-            $rawResults = $this->resourceTable->getFavorites(
-                $userId,
-                $listId,
-                $this->getTagFilters(),
-                $this->getParams()->getSort(),
-                $this->getStartRecord() - 1,
-                $limit
-            )->toArray();
+            $rawResults = array_slice($rawResults, $this->getStartRecord() - 1, $limit);
         }
 
         // Retrieve record drivers for the selected items.
         $recordsToRequest = [];
         foreach ($rawResults as $row) {
             $recordsToRequest[] = [
-                'id' => $row['record_id'], 'source' => $row['source'],
+                'id' => $row->getRecordId(), 'source' => $row->getSource(),
                 'extra_fields' => [
-                    'title' => $row['title'],
+                    'title' => $row->getTitle(),
                 ],
             ];
         }
