@@ -379,7 +379,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      * @return array
      */
     public function getTags(
-        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
@@ -407,7 +407,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      * @return array
      */
     public function getTagsFromFavorites(
-        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
