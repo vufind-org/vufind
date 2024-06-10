@@ -163,43 +163,28 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return ChangeTracker|false
-     */
-    public function markDeleted(string $core, string $id): ChangeTracker|false
-    {
-        // Get a row matching the specified details:
-        $row = $this->retrieveOrCreate($core, $id);
-
-        // If the record is already deleted, we don't need to do anything!
-        if (!empty($row->getDeleted())) {
-            return $row;
-        }
-
-        // Save new value to the object:
-        $row->setDeleted(new \DateTime('now', new \DateTimeZone('UTC')));
-        try {
-            $this->persistEntity($row);
-        } catch (\Exception $e) {
-            $this->logError('Could not update the deleted time: ' . $e->getMessage());
-            return false;
-        }
-        return $row;
-    }
-
-    /**
-     * Update the change tracker table to indicate that a record has been deleted.
-     *
-     * The method returns the updated/created row when complete.
-     *
-     * @param string $core The Solr core holding the record.
-     * @param string $id   The ID of the record being indexed.
-     *
      * @return ChangeTrackerEntityInterface
      */
     public function markDeleted(string $core, string $id): ChangeTrackerEntityInterface
     {
-        return $this->getDbTable('ChangeTracker')->markDeleted($core, $id);
-    }
+        // Get a row matching the specified details:
+            $row = $this->retrieveOrCreate($core, $id);
+
+            // If the record is already deleted, we don't need to do anything!
+            if (!empty($row->getDeleted())) {
+                return $row;
+            }
+
+            // Save new value to the object:
+            $row->setDeleted(new \DateTime('now', new \DateTimeZone('UTC')));
+            try {
+                $this->persistEntity($row);
+            } catch (\Exception $e) {
+                $this->logError('Could not update the deleted time: ' . $e->getMessage());
+                return false;
+            }
+            return $row;
+        }
 
     /**
      * Update the change_tracker table to reflect that a record has been indexed.
