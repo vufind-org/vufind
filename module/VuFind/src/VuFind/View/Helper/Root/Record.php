@@ -371,7 +371,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
     ) {
-        return $this->getDbService(TagServiceInterface::class)->getForResource(
+        return $this->getDbService(TagServiceInterface::class)->getTagsForRecord(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier(),
             0,

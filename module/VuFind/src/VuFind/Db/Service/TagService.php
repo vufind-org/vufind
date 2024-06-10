@@ -86,7 +86,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      *
      * @return array
      */
-    public function getForResource(
+    public function getTagsForRecord(
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
