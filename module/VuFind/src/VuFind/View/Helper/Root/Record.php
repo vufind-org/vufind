@@ -32,6 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\TagServiceInterface;
@@ -177,6 +178,19 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     public function getCollectionMetadata()
     {
         return $this->renderTemplate('collection-info.phtml');
+    }
+
+    /**
+     * Get comments associated with the current record.
+     *
+     * @return CommentsEntityInterface[]
+     */
+    public function getComments(): array
+    {
+        return $this->getDbService(CommentsServiceInterface::class)->getForResource(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier()
+        );
     }
 
     /**
