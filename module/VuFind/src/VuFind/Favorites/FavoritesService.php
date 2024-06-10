@@ -76,7 +76,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
      * @param TagServiceInterface          $tagService          Tag database service
      * @param UserListServiceInterface     $userListService     UserList database service
-     * @param UserService                  $userService         User database service
+     * @param UserServiceInterface         $userService         User database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
      * @param Tags                         $tagHelper           Tag helper service
      * @param RecordLoader                 $recordLoader        Record loader
@@ -610,9 +610,9 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     public function getTagStringForEditing(
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null,
-        ?string $recordId,
+        ?string $recordId = null,
         ?string $source = null
-    ) {
+    ): string {
         return $this->formatTagStringForEditing(
             $this->tagService->getUserTagsFromFavorites($userOrId, $listOrId, $recordId, $source)
         );
@@ -625,7 +625,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @return string
      */
-    public function formatTagStringForEditing($tags)
+    public function formatTagStringForEditing($tags): string
     {
         $tagStr = '';
         if (count($tags) > 0) {

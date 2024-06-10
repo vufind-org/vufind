@@ -105,9 +105,9 @@ interface TagServiceInterface extends DbServiceInterface
     public function getUserTagsFromFavorites(
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null,
-        ?string $recordId,
+        ?string $recordId = null,
         ?string $source = null
-    );
+    ): array;
 
     /**
      * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.

@@ -118,9 +118,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     public function getUserTagsFromFavorites(
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null,
-        ?string $recordId,
+        ?string $recordId = null,
         ?string $source = null
-    ) {
+    ): array {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         return $this->getDbTable('Tags')->getListTagsForUser($userId, $recordId, $listId, $source)->toArray();
