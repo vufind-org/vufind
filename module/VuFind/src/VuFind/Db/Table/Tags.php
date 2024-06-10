@@ -216,7 +216,7 @@ class Tags extends Gateway implements DbServiceAwareInterface
      *
      * @return array
      */
-    public function getTagsForRecord(
+    public function getForResource(
         $id,
         $source = DEFAULT_SEARCH_BACKEND,
         $limit = 0,
