@@ -168,23 +168,23 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
     public function markDeleted(string $core, string $id): ChangeTrackerEntityInterface
     {
         // Get a row matching the specified details:
-            $row = $this->retrieveOrCreate($core, $id);
+        $row = $this->retrieveOrCreate($core, $id);
 
-            // If the record is already deleted, we don't need to do anything!
-            if (!empty($row->getDeleted())) {
-                return $row;
-            }
-
-            // Save new value to the object:
-            $row->setDeleted(new \DateTime('now', new \DateTimeZone('UTC')));
-            try {
-                $this->persistEntity($row);
-            } catch (\Exception $e) {
-                $this->logError('Could not update the deleted time: ' . $e->getMessage());
-                return false;
-            }
+        // If the record is already deleted, we don't need to do anything!
+        if (!empty($row->getDeleted())) {
             return $row;
         }
+
+        // Save new value to the object:
+        $row->setDeleted(new \DateTime('now', new \DateTimeZone('UTC')));
+        try {
+            $this->persistEntity($row);
+        } catch (\Exception $e) {
+            $this->logError('Could not update the deleted time: ' . $e->getMessage());
+            return false;
+        }
+        return $row;
+    }
 
     /**
      * Update the change_tracker table to reflect that a record has been indexed.
