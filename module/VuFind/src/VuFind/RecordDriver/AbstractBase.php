@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
@@ -152,11 +153,12 @@ abstract class AbstractBase implements
      * Get comments associated with this record.
      *
      * @return array
+     *
+     * @deprecated Use CommentsServiceInterface::getForResource()
      */
     public function getComments()
     {
-        $comments = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-        return $comments->getForResource(
+        return $this->getDbService(CommentsServiceInterface::class)->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
