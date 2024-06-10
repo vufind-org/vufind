@@ -83,7 +83,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      *
      * @return array     Associative array with two keys: present and missing
      */
-    public function checkForTags($ids)
+    protected function checkForTags($ids)
     {
         // Set up return arrays:
         $retVal = ['present' => [], 'missing' => []];
