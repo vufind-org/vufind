@@ -81,8 +81,6 @@ class UserFactory extends RowGatewayFactory
         $rowClass = $privacy ? $this->privateUserClass : $requestedName;
         $ilsAuthenticator = $container->get(\VuFind\Auth\ILSAuthenticator::class);
         $favoritesService = $container->get(FavoritesService::class);
-        $prototype = parent::__invoke($container, $rowClass, [$ilsAuthenticator, $capabilities, $favoritesService]);
-        $prototype->setConfig($config);
-        return $prototype;
+        return parent::__invoke($container, $rowClass, [$ilsAuthenticator, $capabilities, $favoritesService]);
     }
 }
