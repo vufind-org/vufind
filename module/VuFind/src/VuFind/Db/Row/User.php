@@ -258,13 +258,11 @@ class User extends RowGateway implements
      *
      * @return mixed               The output of the save method.
      *
-     * @deprecated
+     * @deprecated Use ILSAuthenticator::updateUserHomeLibrary()
      */
     public function changeHomeLibrary($homeLibrary)
     {
-        $this->home_library = $homeLibrary;
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-        return $this->save();
+        return $this->ilsAuthenticator->updateUserHomeLibrary($this, $homeLibrary);
     }
 
     /**
