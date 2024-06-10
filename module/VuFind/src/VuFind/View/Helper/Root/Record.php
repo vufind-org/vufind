@@ -392,7 +392,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      *
      * @return array
      */
-    public function getListTags(
+    public function getTagsFromFavorites(
         UserListEntityInterface|int|bool|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',

@@ -103,7 +103,7 @@
             } ?>
 
           <?php
-            $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->record($this->driver)->getListTags(
+            $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->record($this->driver)->getTagsFromFavorites(
                 $list_id,
                 $user_id,
                 'tag'
