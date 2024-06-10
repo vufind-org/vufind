@@ -186,7 +186,8 @@ abstract class AbstractBase implements
      *
      * @return array
      *
-     * @deprecated Use TagServiceInterface::getTagsForRecord()
+     * @deprecated Use TagServiceInterface::getTagsForRecord() or TagServiceInterface::getListTagsForRecord()
+     * or TagServiceInterface::getNonListTagsForRecord()
      */
     public function getTags(
         $list_id = null,
@@ -194,7 +195,7 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        return $this->getDbService(TagServiceInterface::class)->getTagsForRecord(
+        return $this->getDbTable('Tags')->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             0,

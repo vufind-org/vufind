@@ -357,11 +357,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     /**
      * Get tags associated with the currently-loaded record.
      *
-     * @param UserListEntityInterface|int|bool|null $listOrId  ID of list to load tags from (null for no restriction,
-     * true for on ANY list, false for on NO lists)
-     * @param UserEntityInterface|int|null          $userOrId  ID of user to load tags from (null for all users)
-     * @param string                                $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null          $ownerOrId ID of user to check for ownership
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
      *
      * @return array
      */
@@ -372,6 +371,34 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         UserEntityInterface|int|null $ownerOrId = null
     ) {
         return $this->getDbService(TagServiceInterface::class)->getTagsForRecord(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            0,
+            $listOrId,
+            $userOrId,
+            $sort,
+            $ownerOrId
+        );
+    }
+
+    /**
+     * Get tags associated with the currently-loaded record AND with a favorites list.
+     *
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * are associated with ANY list, but excluding non-list tags)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getListTags(
+        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ) {
+        return $this->getDbService(TagServiceInterface::class)->getListTagsForRecord(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier(),
             0,
