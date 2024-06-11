@@ -183,8 +183,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
     /**
      * Get lists associated with a particular tag.
      *
-     * @param string|array      $tag        Tag to match
-     * @param null|string|array $listId     List ID to retrieve (null for all)
+     * @param string|array|null $tag        Tag to match (null for all)
+     * @param string|array|null $listId     List ID to retrieve (null for all)
      * @param bool              $publicOnly Whether to return only public lists
      * @param bool              $andTags    Use AND operator when filtering by tag.
      *
@@ -196,7 +196,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $publicOnly = true,
         $andTags = true
     ) {
-        $tag = (array)$tag;
+        $tag = (array)($tag ?? []);
         $listId = $listId ? (array)$listId : null;
 
         $callback = function ($select) use (
