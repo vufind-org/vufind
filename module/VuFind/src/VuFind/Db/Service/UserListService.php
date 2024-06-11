@@ -102,7 +102,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      * @param array $includeFilter List of list ids or entities to include in result.
      * @param array $excludeFilter List of list ids or entities to exclude from result.
      *
-     * @return UserEntityInterface[]
+     * @return UserListEntityInterface[]
      */
     public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array
     {
