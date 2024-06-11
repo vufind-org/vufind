@@ -2,8 +2,8 @@
   $user = $this->auth()->getUserObject();
 ?>
 <?=$this->component('hide-offcanvas-button')?>
-<h3 id="acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
-<nav class="myresearch-menu" aria-labelledby="acc-menu-acc-header">
+<h3 id="<?=$this->idPrefix ?? ''?>acc-menu-acc-header"><?=$this->transEsc('Your Account')?></h3>
+<nav class="myresearch-menu" aria-labelledby="<?=$this->idPrefix ?? ''?>acc-menu-acc-header">
   <ul class="account-menu">
     <?php foreach ($this->items as $item): ?>
       <?=$this->render('myresearch/menu-item.phtml', ['active' => $this->active, ...$item])?>
@@ -11,8 +11,8 @@
   </ul>
 </nav>
 <?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
-  <h3 id="acc-menu-lists-header"><?=$this->transEsc('Your Lists')?></h3>
-  <nav class="myresearch-menu" aria-labelledby="acc-menu-lists-header">
+  <h3 id="<?=$this->idPrefix ?? ''?>acc-menu-lists-header"><?=$this->transEsc('Your Lists')?></h3>
+  <nav class="myresearch-menu" aria-labelledby="<?=$this->idPrefix ?? ''?>acc-menu-lists-header">
     <ul>
       <?php
         // Use a variable so that we can output this nicely without whitespace that would get underlined:
@@ -26,16 +26,16 @@
         $publicInd .= '<span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
       ?>
 
-      <?php $lists = $user->getLists() ?>
-      <?php foreach ($lists as $list): ?>
-      <li>
-        <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
-          <?=$this->icon('user-list', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->escapeHtml($list->getTitle())?></span>
-          <?=$list->isPublic() ? $publicInd : ''?>
-          <span class="badge"><?=$list->cnt ?></span>
-        </a>
-      </li>
+      <?php foreach ($this->userlist()->getUserListsAndCountsByUser($user) as $current): ?>
+        <?php $list = $current['list_entity']; ?>
+        <li>
+          <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
+            <?=$this->icon('user-list', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->escapeHtml($list->getTitle())?></span>
+            <?=$list->isPublic() ? $publicInd : ''?>
+            <span class="badge"><?=$current['count'] ?></span>
+          </a>
+        </li>
       <?php endforeach; ?>
       <li>
         <a href="<?=$this->url('editList', ['id' => 'NEW'])?>" class="icon-link <?=$this->active == 'editlist/NEW' ? ' active' : ''?>">

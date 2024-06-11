@@ -54,6 +54,15 @@ interface UserListServiceInterface extends DbServiceInterface
     public function createEntity(): UserListEntityInterface;
 
     /**
+     * Delete a user list entity.
+     *
+     * @param UserListEntityInterface|int $listOrId List entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUserList(UserListEntityInterface|int $listOrId): void;
+
+    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.
@@ -64,11 +73,31 @@ interface UserListServiceInterface extends DbServiceInterface
     public function getUserListById(int $id): UserListEntityInterface;
 
     /**
+     * Get lists belonging to the user and their count. Returns an array of arrays with
+     * list_entity and count keys.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array;
+
+    /**
+     * Get list objects belonging to the specified user.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByUser(UserEntityInterface|int $userOrId): array;
+
+    /**
      * Get lists containing a specific record.
      *
      * @param string                       $recordId ID of record being checked.
      * @param string                       $source   Source of record to look up
-     * @param int|UserEntityInterface|null $user     Optional user ID or entity object (to limit results
+     * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
      *
      * @return UserListEntityInterface[]
@@ -76,6 +105,6 @@ interface UserListServiceInterface extends DbServiceInterface
     public function getListsContainingRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        int|UserEntityInterface|null $user = null
+        UserEntityInterface|int|null $userOrId = null
     ): array;
 }

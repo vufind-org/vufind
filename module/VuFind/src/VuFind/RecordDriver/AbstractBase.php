@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
@@ -152,11 +153,12 @@ abstract class AbstractBase implements
      * Get comments associated with this record.
      *
      * @return array
+     *
+     * @deprecated Use CommentsServiceInterface::getForResource()
      */
     public function getComments()
     {
-        $comments = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-        return $comments->getForResource(
+        return $this->getDbService(CommentsServiceInterface::class)->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
@@ -185,6 +187,9 @@ abstract class AbstractBase implements
      * @param int    $ownerId ID of user to check for ownership
      *
      * @return array
+     *
+     * @deprecated Use TagServiceInterface::getRecordTags() or TagServiceInterface::getRecordTagsFromFavorites()
+     * or TagServiceInterface::getRecordTagsNotInFavorites()
      */
     public function getTags(
         $list_id = null,
@@ -192,8 +197,7 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        $tags = $this->getDbService(TagServiceInterface::class);
-        return $tags->getForResource(
+        return $this->getDbTable('Tags')->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             0,
@@ -335,6 +339,8 @@ abstract class AbstractBase implements
      * @param int $user_id ID of user to load tags from (null for all users)
      *
      * @return array
+     *
+     * @deprecated Use \VuFind\View\Helper\Root\Record::getListNotes()
      */
     public function getListNotes($list_id = null, $user_id = null)
     {

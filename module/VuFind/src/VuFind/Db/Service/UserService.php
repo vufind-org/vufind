@@ -82,11 +82,11 @@ class UserService extends AbstractDbService implements
      * Field name must be id, username or cat_id.
      *
      * @param string          $fieldName  Field name
-     * @param int|null|string $fieldValue Field value
+     * @param int|string|null $fieldValue Field value
      *
      * @return ?UserEntityInterface
      */
-    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
+    public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
         switch ($fieldName) {
             case 'id':
