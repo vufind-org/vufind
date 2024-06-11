@@ -30,6 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function is_array;
@@ -89,7 +90,7 @@ class SimulatedSSO extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -99,7 +100,7 @@ class SimulatedSSO extends AbstractBase
             throw new AuthException('Simulated failure');
         }
         $userService = $this->getUserService();
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Get attribute configuration -- use defaults if no value is set, and use an
         // empty array if something invalid was provided.
@@ -114,7 +115,7 @@ class SimulatedSSO extends AbstractBase
             if ($attribute == 'email') {
                 $userService->updateUserEmail($user, $value);
             } elseif ($attribute != 'cat_password') {
-                $user->$attribute = $value ?? '';
+                $this->setUserValueByField($user, $attribute, $value ?? '');
             } else {
                 $catPassword = $value;
             }
