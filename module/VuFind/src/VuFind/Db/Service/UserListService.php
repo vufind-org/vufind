@@ -135,40 +135,6 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Get lists containing a specific record.
-     *
-     * @param string                       $recordId ID of record being checked.
-     * @param string                       $source   Source of record to look up
-     * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
-     * to a particular user).
-     *
-     * @return UserListEntityInterface[]
-     */
-    public function getListsContainingRecord(
-        string $recordId,
-        string $source = DEFAULT_SEARCH_BACKEND,
-        UserEntityInterface|int|null $userOrId = null
-    ): array {
-        $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
-            . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH ur.list = ul.id '
-            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = ur.resource '
-            . 'WHERE r.recordId = :recordId AND r.source = :source ';
-
-        $parameters = compact('recordId', 'source');
-        if (null !== $userOrId) {
-            $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-            $dql .= 'AND ur.user = :userId ';
-            $parameters['userId'] = $userId;
-        }
-
-        $dql .= 'ORDER BY ul.title';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $results = $query->getResult();
-        return $results;
-    }
-
-    /**
      * Get public lists.
      *
      * @param array $includeFilter List of list ids or entities to include in result.
@@ -281,7 +247,7 @@ class UserListService extends AbstractDbService implements
         $dql .= 'ORDER BY rt.list';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        return $this->getListsById($query->getSingleColumnResult());
+        return $this->getUserListsById($query->getSingleColumnResult());
     }
 
     /**
@@ -308,15 +274,49 @@ class UserListService extends AbstractDbService implements
     /**
      * Retrieve a batch of list objects corresponding to the provided IDs
      *
-     * @param array $ids List ids.
+     * @param int[] $ids List ids.
      *
      * @return array
      */
-    public function getListsById($ids)
+    public function getUserListsById(array $ids): array
     {
         $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
             . 'WHERE ul.id IN (:ids)';
         $parameters = compact('ids');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
+    }
+
+    /**
+     * Get lists containing a specific record.
+     *
+     * @param string                       $recordId ID of record being checked.
+     * @param string                       $source   Source of record to look up
+     * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
+     * to a particular user).
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getListsContainingRecord(
+        string $recordId,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        UserEntityInterface|int|null $userOrId = null
+    ): array {
+        $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
+            . 'JOIN ' . $this->getEntityClass(UserResource::class) . ' ur WITH ur.list = ul.id '
+            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' r WITH r.id = ur.resource '
+            . 'WHERE r.recordId = :recordId AND r.source = :source ';
+
+        $parameters = compact('recordId', 'source');
+        if (null !== $userOrId) {
+            $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+            $dql .= 'AND ur.user = :userId ';
+            $parameters['userId'] = $userId;
+        }
+
+        $dql .= 'ORDER BY ul.title';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $results = $query->getResult();
