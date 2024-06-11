@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
@@ -48,8 +49,10 @@ use function is_int;
  */
 class UserResourceService extends AbstractDbService implements
     DbTableAwareInterface,
+    DbServiceAwareInterface,
     UserResourceServiceInterface
 {
+    use DbServiceAwareTrait;
     use DbTableAwareTrait;
 
     /**
@@ -85,5 +88,55 @@ class UserResourceService extends AbstractDbService implements
     public function getStatistics(): array
     {
         return $this->getDbTable('UserResource')->getStatistics();
+    }
+
+    /**
+     * Create user/resource/list link if one does not exist; update notes if one does.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Entity or ID of resource to link up
+     * @param UserEntityInterface|int     $userOrId     Entity or ID of user creating link
+     * @param UserListEntityInterface|int $listOrId     Entity or ID of list to link up
+     * @param string                      $notes        Notes to associate with link
+     *
+     * @return UserResource|false
+     */
+    public function createOrUpdateLink(
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int $listOrId,
+        string $notes = ''
+    ): UserResourceEntityInterface {
+        $resource = $resourceOrId instanceof ResourceEntityInterface
+            ? $resourceOrId : $this->getDbService(ResourceServiceInterface::class)->getResourceById($resourceOrId);
+        $list = $listOrId instanceof UserListEntityInterface
+            ? $listOrId : $this->getDbService(UserListServiceInterface::class)->getUserListById($listOrId);
+        $user = $userOrId instanceof UserEntityInterface
+            ? $userOrId : $this->getDbService(UserServiceInterface::class)->getUserById($userOrId);
+
+        $params = [
+            'resource_id' => $resource->getId(),
+            'list_id' => $list->getId(),
+            'user_id' => $user->getId(),
+        ];
+        if (!($result = $this->getDbTable('UserResource')->select($params)->current())) {
+            $result = $this->createEntity()
+                ->setResource($resource)
+                ->setUser($user)
+                ->setUserList($list);
+        }
+        // Update the notes:
+        $result->setNotes($notes);
+        $this->persistEntity($result);
+        return $result;
+    }
+
+    /**
+     * Create a UserResource entity object.
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function createEntity(): UserResourceEntityInterface
+    {
+        return $this->getDbTable('UserResource')->createRow();
     }
 }
