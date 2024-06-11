@@ -41,8 +41,6 @@ use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
-use function in_array;
-
 /**
  * Database service for user.
  *
