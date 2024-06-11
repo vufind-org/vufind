@@ -87,7 +87,7 @@ class Email extends AbstractBase
                 $this->emailAuthenticator->sendAuthenticationLink(
                     $user['email'],
                     $loginData,
-                    ['auth_method' => 'email']
+                    ['auth_method' => 'Email']
                 );
             }
             // Don't reveal the result
