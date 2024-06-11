@@ -39,6 +39,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -76,6 +77,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
      * @param TagServiceInterface          $tagService          Tag database service
      * @param UserListServiceInterface     $userListService     UserList database service
+     * @param UserResourceServiceInterface $userResourceService UserResource database service
      * @param UserServiceInterface         $userService         User database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
      * @param Tags                         $tagHelper           Tag helper service
@@ -88,6 +90,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         protected ResourceTagsServiceInterface $resourceTagsService,
         protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService,
+        protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
         protected Tags $tagHelper,
@@ -345,8 +348,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->getId(), $user->getId(), $list->getId(), $notes);
+        $this->userResourceService->createOrUpdateLink($resource, $user, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:

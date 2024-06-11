@@ -39,6 +39,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
@@ -440,10 +441,8 @@ class User extends RowGateway implements
         $notes,
         $replaceExisting = true
     ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
+        // Create the resource link if it doesn't exist and update the notes in any case:
+        $this->getDbService(UserResourceServiceInterface::class)->createOrUpdateLink($resource, $this, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
