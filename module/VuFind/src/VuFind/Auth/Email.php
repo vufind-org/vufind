@@ -83,12 +83,12 @@ class Email extends AbstractBase
             $user = $this->getUserService()->getUserByField('email', $email);
             if ($user) {
                 $loginData = [
-                    'vufind_id' => $user['id'],
+                    'vufind_id' => $user->getId(),
                 ];
                 $this->emailAuthenticator->sendAuthenticationLink(
-                    $user['email'],
+                    $user->getEmail(),
                     $loginData,
-                    ['auth_method' => 'email']
+                    ['auth_method' => 'Email']
                 );
             }
             // Don't reveal the result
