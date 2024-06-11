@@ -878,7 +878,7 @@ class Manager implements
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object
      * containing account credentials.
-     * @param \VuFind\Db\Row\User                  $user    Connect newly created
+     * @param UserEntityInterface                  $user    Connect newly created
      * library card to this user.
      *
      * @return void
