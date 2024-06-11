@@ -79,7 +79,7 @@ trait PurgeUserFeature
         foreach ($listService->getUserListsByUser($user) as $current) {
             $favoritesService->destroyList($current, $user, true);
         }
-        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceLinks(null, $user);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $user);
         if ($removeComments) {
             $this->getDbService(CommentsServiceInterface::class)->deleteByUser($user);
         }

@@ -624,7 +624,7 @@ class User extends RowGateway implements
         foreach ($listService->getUserListsByUser($this) as $current) {
             $this->favoritesService->destroyList($current, $this, true);
         }
-        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceLinks(null, $this);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $this);
         if ($removeComments) {
             $comments = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class

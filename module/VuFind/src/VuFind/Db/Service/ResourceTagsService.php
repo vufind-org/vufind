@@ -156,7 +156,7 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
-     * Unlink rows for the specified resource.
+     * Unlink tag rows for the specified resource and user.
      *
      * @param int|int[]|null                               $resourceId ID (or array of IDs) of resource(s) to
      * unlink (null for ALL matching resources)
@@ -168,7 +168,7 @@ class ResourceTagsService extends AbstractDbService implements
      *
      * @return void
      */
-    public function destroyResourceLinks(
+    public function destroyResourceTagsLinksForUser(
         int|array|null $resourceId,
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|bool|string|null $listOrId = null,
