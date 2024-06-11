@@ -113,10 +113,11 @@ class UserService extends AbstractDbService implements
      */
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
-        $legalFields = ['id', 'username', 'email', 'cat_id'];
-        if (in_array($fieldName, $legalFields)) {
+        // Map expected incoming values (actual database columns) to legal values (Doctrine properties)
+        $legalFieldMap = ['id' => 'id', 'username' => 'username', 'email' => 'email', 'cat_id' => 'catId'];
+        if (isset($legalFieldMap[$fieldName])) {
             $dql = 'SELECT U FROM ' . $this->getEntityClass(User::class) . ' U '
-                . 'WHERE U.' . $fieldName . ' = :fieldValue';
+                . 'WHERE U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);
             $query->setParameters($parameters);
