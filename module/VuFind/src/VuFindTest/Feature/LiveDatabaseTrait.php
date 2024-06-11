@@ -32,7 +32,7 @@
 namespace VuFindTest\Feature;
 
 use Throwable;
-use VuFind\Controller\Feature\PurgeUserFeature;
+use VuFind\Account\UserAccountService;
 use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Table\Gateway;
@@ -56,7 +56,6 @@ use function count;
 trait LiveDatabaseTrait
 {
     use PathResolverTrait;
-    use PurgeUserFeature;
 
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
@@ -245,7 +244,9 @@ trait LiveDatabaseTrait
             foreach ((array)$users as $username) {
                 $user = $userTable->getByUsername($username, false);
                 if (!empty($user)) {
-                    $test->purgeUserData($user);
+                    $purgeService = new UserAccountService($test->getFavoritesService());
+                    $purgeService->setDbServiceManager($test->getLiveDbServiceManager());
+                    $purgeService->purgeUserData($user);
                 }
             }
         } catch (Throwable $t) {

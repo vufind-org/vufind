@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait to purge user data from the database.
+ * User account service
  *
  * PHP version 8
  *
@@ -21,35 +21,46 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Account
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Feature;
+namespace VuFind\Account;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
-use function is_callable;
-
 /**
- * Trait to purge user data from the database.
+ * User account service
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Account
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-trait PurgeUserFeature
+class UserAccountService implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
+    /**
+     * Constructor
+     *
+     * @param FavoritesService $favoritesService Favorites service
+     */
+    public function __construct(protected FavoritesService $favoritesService)
+    {
+    }
+
     /**
      * Destroy the user.
      *
@@ -59,25 +70,15 @@ trait PurgeUserFeature
      *
      * @return void
      */
-    protected function purgeUserData(
+    public function purgeUserData(
         UserEntityInterface $user,
         bool $removeComments = true,
         bool $removeRatings = true
     ): void {
-        if (!is_callable([$this, 'getDbService'])) {
-            throw new \Exception('purgeUserData requires getDbService method!');
-        }
-        if (!is_callable([$this, 'getFavoritesService'])) {
-            if (!($favoritesService = $this->serviceLocator?->get(FavoritesService::class))) {
-                throw new \Exception('purgeUserData could not find FavoritesService!');
-            }
-        } else {
-            $favoritesService = $this->getFavoritesService();
-        }
         // Remove all lists owned by the user:
         $listService = $this->getDbService(UserListServiceInterface::class);
         foreach ($listService->getUserListsByUser($user) as $current) {
-            $favoritesService->destroyList($current, $user, true);
+            $this->favoritesService->destroyList($current, $user, true);
         }
         $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $user);
         if ($removeComments) {

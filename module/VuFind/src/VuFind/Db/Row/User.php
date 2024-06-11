@@ -615,7 +615,7 @@ class User extends RowGateway implements
      *
      * @return int The number of rows deleted.
      *
-     * @deprecated Use \VuFind\Controller\Feature\PurgeUserFeature::purgeUserData()
+     * @deprecated Use \VuFind\Account\UserAccountService::purgeUserData()
      */
     public function delete($removeComments = true, $removeRatings = true)
     {

@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\RequestInterface;
 use Throwable;
+use VuFind\Account\UserAccountService;
 use VuFind\Db\Service\UserServiceInterface;
 
 /**
@@ -45,8 +46,6 @@ use VuFind\Db\Service\UserServiceInterface;
  */
 class AlmaController extends AbstractBase
 {
-    use Feature\PurgeUserFeature;
-
     /**
      * Http service
      *
@@ -285,7 +284,7 @@ class AlmaController extends AbstractBase
             $user = $this->userTable->getByCatalogId($primaryId);
             if ($user) {
                 try {
-                    $this->purgeUserData($user);
+                    $this->serviceLocator->get(UserAccountService::class)->purgeUserData($user);
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully deleted user with primary ID \'' . $primaryId .
                         '\' in VuFind.',
