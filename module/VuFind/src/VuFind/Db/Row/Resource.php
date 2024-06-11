@@ -85,7 +85,8 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      */
     public function deleteTags($user, $list_id = null)
     {
-        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser($this->getId(), $user, $list_id);
+        $this->getDbService(ResourceTagsServiceInterface::class)
+            ->destroyResourceTagsLinksForUser($this->getId(), $user, $list_id);
     }
 
     /**
