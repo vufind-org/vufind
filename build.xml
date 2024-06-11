@@ -826,6 +826,12 @@ ${git_status}
         <delete file="${srcdir}/vufind-exception.log" failonerror="true" />
       </then>
     </if>
+    <if>
+      <available file="${srcdir}/vufind-mail.log" />
+      <then>
+        <delete file="${srcdir}/vufind-mail.log" failonerror="true" />
+      </then>
+    </if>
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <if>
       <available file="${localdir}" type="dir" />
