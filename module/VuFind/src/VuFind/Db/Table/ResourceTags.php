@@ -561,7 +561,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['tag_id', 'tag']);
-            $select->order([new Expression('lower(tag)')]);
+            $select->order([new Expression('lower(tag)'), 'tag']);
         };
         return $this->select($callback);
     }
