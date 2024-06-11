@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\RecordEntityInterface;
 
 /**
