@@ -35,8 +35,10 @@ use DateTime;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -733,8 +735,7 @@ class MyResearchController extends AbstractBase
                 if (' ** ' === $homeLibrary) {
                     $homeLibrary = null;
                 }
-                $user->changeHomeLibrary($homeLibrary);
-                $this->getAuthManager()->updateSession($user);
+                $this->serviceLocator->get(ILSAuthenticator::class)->updateUserHomeLibrary($user, $homeLibrary);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
             }
 
@@ -1015,6 +1016,7 @@ class MyResearchController extends AbstractBase
         $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
         $userResources = $userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         foreach ($userResources as $current) {
             // There should always be list data based on the way we retrieve this result, but
             // check just to be on the safe side.
@@ -1023,7 +1025,7 @@ class MyResearchController extends AbstractBase
                     'listId' => $currentList->getId(),
                     'listTitle' => $currentList->getTitle(),
                     'notes' => $current->getNotes(),
-                    'tags' => $user->getTagString($id, $currentList->getId(), $source),
+                    'tags' => $favoritesService->getTagStringForEditing($user, $currentList, $id, $source),
                 ];
             }
         }
@@ -1147,8 +1149,9 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    foreach ($list->getListTags() as $tag) {
-                        $listTags[$tag->id] = $tag->tag;
+                    $tagService = $this->getDbService(TagServiceInterface::class);
+                    foreach ($tagService->getListTags($list, $list->getUser()) as $tag) {
+                        $listTags[$tag['id']] = $tag['tag'];
                     }
                 }
             }
@@ -1268,7 +1271,9 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $listTags = $user->formatTagString($list->getListTags());
+            $tagService = $this->getDbService(TagServiceInterface::class);
+            $listTags = $favoritesService
+                ->formatTagStringForEditing($tagService->getListTags($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(

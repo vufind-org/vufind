@@ -1,4 +1,4 @@
-<?php $comments = $this->driver->getComments(); ?>
+<?php $comments = $this->record($this->driver)->getComments(); ?>
 <?php if (empty($comments)): ?>
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <?php else: ?>

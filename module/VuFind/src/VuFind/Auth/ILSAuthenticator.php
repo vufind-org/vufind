@@ -266,6 +266,23 @@ class ILSAuthenticator implements DbServiceAwareInterface
     }
 
     /**
+     * Change and persist the user's home library.
+     *
+     * @param UserEntityInterface $user        User to update
+     * @param ?string             $homeLibrary New home library value (or null to clear)
+     *
+     * @return void
+     */
+    public function updateUserHomeLibrary(UserEntityInterface $user, ?string $homeLibrary): void
+    {
+        // Update the home library and make sure library cards are kept in sync:
+        $user->setHomeLibrary($homeLibrary);
+        $this->getDbService(UserCardServiceInterface::class)->synchronizeUserLibraryCardData($user);
+        $this->getDbService(UserServiceInterface::class)->persistEntity($user);
+        $this->getAuthManager()->updateSession($user);
+    }
+
+    /**
      * Get stored catalog credentials for the current user.
      *
      * Returns associative array of cat_username and cat_password if they are

@@ -29,6 +29,7 @@
 
 namespace VuFind\Recommend;
 
+use Exception;
 use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -199,8 +200,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function getAuthorInfo()
     {
         // Don't load Wikipedia content if Wikipedia is disabled:
-        return stristr($this->sources, 'wikipedia')
-            ? $this->wikipedia->get($this->getAuthor()) : null;
+        try {
+            return stristr($this->sources, 'wikipedia') ? $this->wikipedia->get($this->getAuthor()) : null;
+        } catch (Exception $e) {
+            error_log("Unexpected error while loading author info: {$e->getMessage()}");
+            return null;
+        }
     }
 
     /**
