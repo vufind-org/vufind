@@ -66,6 +66,18 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntityForUsername(string $username): UserEntityInterface
+    {
+        return $this->getDbTable('User')->createRowForUsername($username);
+    }
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.
@@ -79,16 +91,18 @@ class UserService extends AbstractDbService implements
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username or cat_id.
+     * Field name must be id, username, email or cat_id.
      *
      * @param string          $fieldName  Field name
-     * @param int|null|string $fieldValue Field value
+     * @param int|string|null $fieldValue Field value
      *
      * @return ?UserEntityInterface
      */
-    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
+    public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
         switch ($fieldName) {
+            case 'email':
+                return $this->getDbTable('User')->getByEmail($fieldValue);
             case 'id':
                 return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
@@ -96,7 +110,7 @@ class UserService extends AbstractDbService implements
             case 'cat_id':
                 return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
-        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+        throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
     }
 
     /**

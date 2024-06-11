@@ -97,6 +97,10 @@ class Resource extends Gateway implements DbServiceAwareInterface
      *
      * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
+     *
+     * @deprecated Use ResourceServiceInterface::getResourceByRecordId() or
+     * \VuFind\Record\ResourcePopulator::getOrCreateResourceForDriver() or
+     * \VuFind\Record\ResourcePopulator::getOrCreateResourceForRecordId() as appropriate.
      */
     public function findResource(
         $id,
@@ -159,44 +163,37 @@ class Resource extends Gateway implements DbServiceAwareInterface
         // Set up base query:
         return $this->select(
             function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
-                $columns = [
-                    new Expression(
-                        'DISTINCT(?)',
-                        ['resource.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR,
-                ];
-                $s->columns($columns);
-                $s->join(
-                    ['ur' => 'user_resource'],
-                    'resource.id = ur.resource_id',
-                    []
-                );
-                $s->where->equalTo('ur.user_id', $user);
+                $subQuery = $this->getDbTable('UserResource')
+                    ->getSql()
+                    ->select()
+                    ->quantifier(Select::QUANTIFIER_DISTINCT)
+                    ->columns(['resource_id']);
+                $subQuery->where->equalTo('user_id', $user);
 
                 // Adjust for list if necessary:
                 if (null !== $list) {
-                    $s->where->equalTo('ur.list_id', $list);
+                    $subQuery->where->equalTo('list_id', $list);
+                }
+                // Adjust for tags if necessary:
+                if (!empty($tags)) {
+                    $linkingTable = $this->getDbTable('ResourceTags');
+                    foreach ($tags as $tag) {
+                        $matches = $linkingTable->getResourcesForTag($tag, $user, $list)->toArray();
+                        $getId = function ($i) {
+                            return $i['resource_id'];
+                        };
+                        $subQuery->where->in('resource_id', array_map($getId, $matches));
+                    }
                 }
 
+                $columns = [Select::SQL_STAR];
+                $s->columns($columns);
+                $s->where->in('id', $subQuery);
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
                 if (null !== $limit) {
                     $s->limit($limit);
-                }
-
-                // Adjust for tags if necessary:
-                if (!empty($tags)) {
-                    $linkingTable = $this->getDbTable('ResourceTags');
-                    foreach ($tags as $tag) {
-                        $matches = $linkingTable
-                            ->getResourcesForTag($tag, $user, $list)->toArray();
-                        $getId = function ($i) {
-                            return $i['resource_id'];
-                        };
-                        $s->where->in('resource.id', array_map($getId, $matches));
-                    }
                 }
 
                 // Apply sorting, if necessary:
@@ -231,16 +228,17 @@ class Resource extends Gateway implements DbServiceAwareInterface
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
         if (
             $oldId !== $newId
-            && $resource = $this->findResource($oldId, $source, false)
+            && $resource = $resourceService->getResourceByRecordId($oldId, $source)
         ) {
             $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
-            if ($newResource = $this->findResource($newId, $source, false)) {
+            if ($newResource = $resourceService->getResourceByRecordId($newId, $source)) {
                 // Special case: merge new ID and old ID:
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
                     $tableObjects[$table] = $this->getDbTable($table);

@@ -73,11 +73,11 @@ interface RatingsServiceInterface extends DbServiceInterface
     /**
      * Deletes all ratings by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void;
+    public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
      * Get statistics on use of Ratings.
@@ -89,16 +89,16 @@ interface RatingsServiceInterface extends DbServiceInterface
     /**
      * Add or update user's rating for a resource.
      *
-     * @param int|ResourceEntityInterface $resource Resource to add or update rating.
-     * @param int|UserEntityInterface     $user     User
-     * @param ?int                        $rating   Rating (null to delete)
+     * @param ResourceEntityInterface|int $resourceOrId Resource to add or update rating.
+     * @param UserEntityInterface|int     $userOrId     User
+     * @param ?int                        $rating       Rating (null to delete)
      *
      * @throws \Exception
      * @return int ID of rating added, deleted or updated
      */
     public function addOrUpdateRating(
-        int|ResourceEntityInterface $resource,
-        int|UserEntityInterface $user,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
         ?int $rating
     ): int;
 }

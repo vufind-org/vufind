@@ -119,7 +119,7 @@ class History
         // Loop through and sort the history
         $saved = $schedule = $unsaved = [];
         foreach ($searchHistory as $current) {
-            $search = $current->getSearchObject()->deminify($this->resultsManager);
+            $search = $current->getSearchObjectOrThrowException()->deminify($this->resultsManager);
             // $current->saved may be 1 (MySQL) or true (PostgreSQL), so we should
             // avoid a strict === comparison here:
             if ($current->saved == 1) {

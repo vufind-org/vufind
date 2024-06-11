@@ -17,8 +17,7 @@
   // Function for rendering a tree level. Optimized to avoid extra objects or
   // template calls and defined as array to avoid interfering with the plugin __call
   // magic.
-  $this->renderTreeLevel = [function ($nodes, $context, $hierarchyID, $driver, $selectedID) {
-    $this->parentNodeId ??= '';
+  $this->renderTreeLevel = [function ($nodes, $context, $hierarchyID, $driver, $selectedID, $parentNodeId = '') {
     $nodeId = 0;
     $icons = [
       'hierarchy-collection' => $this->icon('hierarchy-collection'),
@@ -62,10 +61,10 @@
       if ($hasChildren) {
         echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>';
         ++$nodeId;
-        $childUlId = 'hierarchy_' . $context . '_' . $this->parentNodeId . '_' . $nodeId;
+        $childUlIdEsc = $escapeAttr('hierarchy_' . $context . '_' . $parentNodeId . '_' . $nodeId);
         echo '<button class="hierarchy-tree__toggle-expanded js-toggle-expanded"'
           . ' aria-expanded="' . ($node->hasSelectedChild ? 'true' : 'false') . '"'
-          . ' aria-controls="' . $escapeAttr($childUlId) . '"'
+          . ' aria-controls="' . $childUlIdEsc . '"'
           // Use node title as button label so that a screen reader can read it as
           // "Expanded <text>" or "Collapsed <text>":
           . ' aria-label="' . $escapeAttr($node->title) . '"'
@@ -77,8 +76,8 @@
           . '</button>';
 
         echo " $itemHtml ";
-        echo '<ul class="hierarchy-tree__children">';
-        ($this->renderTreeLevel[0])($node->children, $context, $hierarchyID, $driver, $selectedID);
+        echo '<ul id="' . $childUlIdEsc . '" class="hierarchy-tree__children">';
+        ($this->renderTreeLevel[0])($node->children, $context, $hierarchyID, $driver, $selectedID, "{$parentNodeId}_$nodeId");
         echo '</ul></li>';
       } else {
         echo '<li' . ($liClasses ? ' class="' . implode(' ', $liClasses) . '"' : '') . '>'

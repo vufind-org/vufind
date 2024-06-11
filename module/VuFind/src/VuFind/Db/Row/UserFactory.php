@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Favorites\FavoritesService;
 
 /**
  * User row gateway factory.
@@ -79,8 +80,7 @@ class UserFactory extends RowGatewayFactory
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         $rowClass = $privacy ? $this->privateUserClass : $requestedName;
         $ilsAuthenticator = $container->get(\VuFind\Auth\ILSAuthenticator::class);
-        $prototype = parent::__invoke($container, $rowClass, [$ilsAuthenticator, $capabilities]);
-        $prototype->setConfig($config);
-        return $prototype;
+        $favoritesService = $container->get(FavoritesService::class);
+        return parent::__invoke($container, $rowClass, [$ilsAuthenticator, $capabilities, $favoritesService]);
     }
 }

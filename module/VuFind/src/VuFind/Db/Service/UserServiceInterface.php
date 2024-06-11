@@ -43,6 +43,15 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserServiceInterface extends DbServiceInterface
 {
     /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntityForUsername(string $username): UserEntityInterface;
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.
@@ -53,13 +62,14 @@ interface UserServiceInterface extends DbServiceInterface
 
     /**
      * Retrieve a user object from the database based on the given field.
+     * Field name must be id, username, email or cat_id.
      *
      * @param string          $fieldName  Field name
-     * @param int|null|string $fieldValue Field value
+     * @param int|string|null $fieldValue Field value
      *
      * @return ?UserEntityInterface
      */
-    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface;
+    public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface;
 
     /**
      * Update the user's email address, if appropriate. Note that this does NOT
