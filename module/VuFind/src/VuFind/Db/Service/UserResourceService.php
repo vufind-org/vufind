@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -108,11 +109,19 @@ class UserResourceService extends AbstractDbService implements
     ): UserResourceEntityInterface {
         $resource = $resourceOrId instanceof ResourceEntityInterface
             ? $resourceOrId : $this->getDbService(ResourceServiceInterface::class)->getResourceById($resourceOrId);
+        if (!$resource) {
+            throw new Exception("Cannot retrieve resource $resourceOrId");
+        }
         $list = $listOrId instanceof UserListEntityInterface
             ? $listOrId : $this->getDbService(UserListServiceInterface::class)->getUserListById($listOrId);
+        if (!$list) {
+            throw new Exception("Cannot retrieve list $listOrId");
+        }
         $user = $userOrId instanceof UserEntityInterface
             ? $userOrId : $this->getDbService(UserServiceInterface::class)->getUserById($userOrId);
-
+        if (!$user) {
+            throw new Exception("Cannot retrieve user $userOrId");
+        }
         $params = [
             'resource_id' => $resource->getId(),
             'list_id' => $list->getId(),
