@@ -136,67 +136,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Get IDs of lists associated with a particular tag.
-     *
-     * @param string|array      $tag        Tag to match
-     * @param null|string|array $listId     List ID to retrieve (null for all)
-     * @param bool              $publicOnly Whether to return only public lists
-     * @param bool              $andTags    Use AND operator when filtering by tag.
-     *
-     * @return array
-     */
-    public function getListsForTag(
-        $tag,
-        $listId = null,
-        $publicOnly = true,
-        $andTags = true
-    ) {
-        $tag = (array)$tag;
-        $listId = $listId ? (array)$listId : null;
-        $dql = 'SELECT IDENTITY(rt.list) '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
-            . 'JOIN rt.tag t '
-            . 'JOIN rt.list l '
-            // Discard tags assigned to a user resource:
-            . 'WHERE rt.resource IS NULL '
-            // Restrict to tags by list owner:
-            . 'AND rt.user = l.user ';
-        $parameters = [];
-        if (null !== $listId) {
-            $dql .= 'AND rt.list IN (:listId) ';
-            $parameters['listId'] = $listId;
-        }
-        if ($publicOnly) {
-            $dql .= "AND l.public = '1' ";
-        }
-        if ($tag) {
-            if ($this->caseSensitive) {
-                $dql .= 'AND t.tag IN (:tag) ';
-                $parameters['tag'] = $tag;
-            } else {
-                $tagClauses = [];
-                foreach ($tag as $i => $currentTag) {
-                    $tagPlaceholder = 'tag' . $i;
-                    $tagClauses[] = 'LOWER(t.tag) = LOWER(:' . $tagPlaceholder . ')';
-                    $parameters[$tagPlaceholder] = $currentTag;
-                }
-                $dql .= 'AND (' . implode(' OR ', $tagClauses) . ')';
-            }
-        }
-        $dql .= ' GROUP BY rt.list ';
-        if ($tag && $andTags) {
-            // If we are ANDing the tags together, only pick lists that match ALL tags:
-            $dql .= 'HAVING COUNT(DISTINCT(rt.tag)) = :cnt ';
-            $parameters['cnt'] = count(array_unique($tag));
-        }
-        $dql .= 'ORDER BY rt.list';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result = $query->getSingleColumnResult();
-        return $result;
-    }
-
-    /**
      * Unlink rows for the specified resource.
      *
      * @param mixed             $resource ID (or array of IDs) of resource(s) to

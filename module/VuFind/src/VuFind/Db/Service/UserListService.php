@@ -30,9 +30,12 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\ResourceTags;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
@@ -40,7 +43,6 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Log\LoggerAwareTrait;
-use VuFind\Tags;
 
 /**
  * Database service for UserList.
@@ -59,6 +61,22 @@ class UserListService extends AbstractDbService implements
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
+
+    /**
+     * Constructor
+     *
+     * @param EntityManager       $entityManager       Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
+     * @param bool                $caseSensitive       Are tags case sensitive?
+     */
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        protected bool $caseSensitive
+    ) {
+        parent::__construct($entityManager, $entityPluginManager);
+        $this->caseSensitive = $caseSensitive;
+    }
 
     /**
      * Get an array of resource tags associated with the list.
@@ -151,12 +169,12 @@ class UserListService extends AbstractDbService implements
     /**
      * Get public lists.
      *
-     * @param array $includeFilter List of list ids to include in result.
-     * @param array $excludeFilter List of list entities to exclude from result.
+     * @param array $includeFilter List of list ids or entities to include in result.
+     * @param array $excludeFilter List of list ids or entities to exclude from result.
      *
-     * @return array
+     * @return UserListEntityInterface[]
      */
-    public function getPublicLists($includeFilter = [], $excludeFilter = [])
+    public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array
     {
         $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul ';
 
@@ -201,6 +219,67 @@ class UserListService extends AbstractDbService implements
         $query->setParameters($parameters);
         $results = $query->getResult();
         return $results;
+    }
+
+    /**
+     * Get lists associated with a particular tag and/or list of IDs. If IDs and
+     * tags are both provided, only the intersection of matches will be returned.
+     *
+     * @param string|string[]|null $tag        Tag or tags to match (by text, not ID; null for all)
+     * @param int|int[]|null       $listId     List ID or IDs to match (null for all)
+     * @param bool                 $publicOnly Whether to return only public lists
+     * @param bool                 $andTags    Use AND operator when filtering by tag.
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByTagAndId(
+        string|array|null $tag = null,
+        int|array|null $listId = null,
+        bool $publicOnly = true,
+        bool $andTags = true
+    ): array {
+        $tag = $tag ? (array)$tag : null;
+        $listId = $listId ? (array)$listId : null;
+        $dql = 'SELECT IDENTITY(rt.list) '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'JOIN rt.tag t '
+            . 'JOIN rt.list l '
+            // Discard tags assigned to a user resource:
+            . 'WHERE rt.resource IS NULL '
+            // Restrict to tags by list owner:
+            . 'AND rt.user = l.user ';
+        $parameters = [];
+        if (null !== $listId) {
+            $dql .= 'AND rt.list IN (:listId) ';
+            $parameters['listId'] = $listId;
+        }
+        if ($publicOnly) {
+            $dql .= "AND l.public = '1' ";
+        }
+        if ($tag) {
+            if ($this->caseSensitive) {
+                $dql .= 'AND t.tag IN (:tag) ';
+                $parameters['tag'] = $tag;
+            } else {
+                $tagClauses = [];
+                foreach ($tag as $i => $currentTag) {
+                    $tagPlaceholder = 'tag' . $i;
+                    $tagClauses[] = 'LOWER(t.tag) = LOWER(:' . $tagPlaceholder . ')';
+                    $parameters[$tagPlaceholder] = $currentTag;
+                }
+                $dql .= 'AND (' . implode(' OR ', $tagClauses) . ')';
+            }
+        }
+        $dql .= ' GROUP BY rt.list ';
+        if ($tag && $andTags) {
+            // If we are ANDing the tags together, only pick lists that match ALL tags:
+            $dql .= 'HAVING COUNT(DISTINCT(rt.tag)) = :cnt ';
+            $parameters['cnt'] = count(array_unique($tag));
+        }
+        $dql .= 'ORDER BY rt.list';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $this->getListsById($query->getSingleColumnResult());
     }
 
     /**

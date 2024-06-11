@@ -32,7 +32,6 @@ namespace VuFind\ChannelProvider;
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
@@ -92,7 +91,6 @@ class ListItems extends AbstractChannelProvider
      * Constructor
      *
      * @param UserListServiceInterface             $userListService UserList database service
-     * @param TagServiceInterface                  $tagService      Tag database service
      * @param Url                                  $url             URL helper
      * @param \VuFind\Search\Results\PluginManager $resultsManager  Results manager
      * @param array                                $options         Settings
@@ -100,7 +98,6 @@ class ListItems extends AbstractChannelProvider
      */
     public function __construct(
         protected UserListServiceInterface $userListService,
-        protected TagServiceInterface $tagService,
         protected Url $url,
         protected \VuFind\Search\Results\PluginManager $resultsManager,
         array $options = []
@@ -171,7 +168,7 @@ class ListItems extends AbstractChannelProvider
     {
         $channels = [];
         $lists = $channelToken
-            ? $this->userListService->getPublicLists([$channelToken]) : $this->getLists();
+            ? $this->getListsById([$channelToken]) : $this->getLists();
         foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
             $channel = $this->getChannelFromList($list, $tokenOnly);
@@ -180,6 +177,32 @@ class ListItems extends AbstractChannelProvider
             }
         }
         return $channels;
+    }
+
+    /**
+     * Get a list of lists, identified by ID; filter to public lists only.
+     *
+     * @param int[] $ids IDs to retrieve
+     *
+     * @return UserListEntityInterface[]
+     */
+    protected function getListsById(array $ids): array
+    {
+        return $this->userListService->getPublicLists($ids);
+    }
+
+    /**
+     * Given an array of lists, add public lists if configured to do so.
+     *
+     * @param UserListEntityInterface[] $lists List to expand.
+     *
+     * @return UserListEntityInterface[]
+     */
+    protected function addPublicLists(array $lists): array
+    {
+        return $this->displayPublicLists
+            ? array_merge($lists, $this->userListService->getPublicLists([], $lists))
+            : $lists;
     }
 
     /**
@@ -193,14 +216,21 @@ class ListItems extends AbstractChannelProvider
         // fetch the base list of lists...
         $baseLists = $this->tags
             ? $this->getListsByTagAndId()
-            : $this->userListService->getPublicLists($this->ids);
+            : $this->getListsById($this->ids);
+
+        // Sort lists by ID list, if necessary:
+        if (!empty($baseLists) && $this->ids) {
+            $orderIds = (array)$this->ids;
+            $sortFn = function (UserListEntityInterface $left, UserListEntityInterface $right) use ($orderIds) {
+                return
+                    array_search($left->getId(), $orderIds)
+                    <=> array_search($right->getId(), $orderIds);
+            };
+            usort($baseLists, $sortFn);
+        }
 
         // Next, we add other public lists if necessary:
-        $publicLists = [];
-        if ($this->displayPublicLists) {
-            $publicLists = $this->userListService->getPublicLists([], $baseLists);
-        }
-        return array_merge($baseLists, $publicLists);
+        return $this->addPublicLists($baseLists);
     }
 
     /**
@@ -211,27 +241,12 @@ class ListItems extends AbstractChannelProvider
     protected function getListsByTagAndId(): array
     {
         // Get public lists by search criteria
-        $listIds = $this->tagService->getListsForTag(
+        return $this->userListService->getUserListsByTagAndId(
             $this->tags,
             $this->ids,
             true,
             $this->andTags
         );
-
-        $result = $this->userListService->getListsById($listIds);
-
-        // Sort lists by ID list, if necessary:
-        if (!empty($result) && $this->ids) {
-            $orderIds = (array)$this->ids;
-            $sortFn = function (UserListEntityInterface $left, UserListEntityInterface $right) use ($orderIds) {
-                return
-                    array_search($left->getId(), $orderIds)
-                    <=> array_search($right->getId(), $orderIds);
-            };
-            usort($result, $sortFn);
-        }
-
-        return $result;
     }
 
     /**

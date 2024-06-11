@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 
 /**
  * Factory for ListItems channel provider.
@@ -68,10 +69,8 @@ class ListItemsFactory implements FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $sm = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $sm->get(\VuFind\Db\Service\UserListServiceInterface::class),
-            $sm->get(\VuFind\Db\Service\TagServiceInterface::class),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Search\Results\PluginManager::class)
         );
