@@ -551,7 +551,7 @@ abstract class AbstractBase implements
     {
         $userService = $this->getUserService();
         $user = $userService->getUserByField('username', $username);
-        return $user ? $user : $userService->createEntity()->setUsername($username);
+        return $user ? $user : $userService->createEntityForUsername($username);
     }
 
     /**
