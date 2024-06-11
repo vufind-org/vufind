@@ -108,16 +108,23 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
     }
 
     /**
-     * Delete a record by source and id
+     * Delete a record by source and id. Return true if found and deleted, false if not found.
+     * Throws exception if something goes wrong.
      *
      * @param string $id     Record ID
      * @param string $source Record source
      *
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
-    public function deleteRecord(string $id, string $source): void
+    public function deleteRecord(string $id, string $source): bool
     {
-        $this->findRecord($id, $source)?->delete();
+        $record = $this->findRecord($id, $source);
+        if (!$record) {
+            return false;
+        }
+        $record->delete();
+        return true;
     }
 
     /**

@@ -114,4 +114,16 @@ interface ResourceServiceInterface extends DbServiceInterface
         int $offset = 0,
         ?int $limit = null
     ): array;
+
+    /**
+     * Delete a resource by record id and source. Return true if found and deleted, false if not found.
+     * Throws exception if something goes wrong.
+     *
+     * @param string $id     Resource ID
+     * @param string $source Resource source
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteResourceByRecordId(string $id, string $source): bool;
 }
