@@ -33,7 +33,7 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\ResourceService as ResourceService;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
@@ -41,6 +41,7 @@ use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
 
+use function array_slice;
 use function count;
 
 /**
@@ -90,14 +91,14 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
      * @param SearchService              $searchService   Search service
      * @param Loader                     $recordLoader    Record loader
-     * @param ResourceService            $resourceService Resource database service
+     * @param ResourceServiceInterface   $resourceService Resource database service
      * @param UserListServiceInterface   $userListService UserList database service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        protected ResourceService $resourceService,
+        protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
@@ -197,30 +198,22 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
-            return $result[0]->getSource() . '|' . $result[0]->getRecordId();
+            return $result->getSource() . '|' . $result->getRecordId();
         }, $rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->resourceService->getFavorites(
-                $userId,
-                $listId,
-                $this->getTagFilters(),
-                $this->getParams()->getSort(),
-                $this->getStartRecord() - 1,
-                $limit
-            );
+            $rawResults = array_slice($rawResults, $this->getStartRecord() - 1, $limit);
         }
 
         // Retrieve record drivers for the selected items.
         $recordsToRequest = [];
         foreach ($rawResults as $row) {
-            $resource = $row[0];
             $recordsToRequest[] = [
-                'id' => $resource->getRecordId(), 'source' => $resource->getSource(),
+                'id' => $row->getRecordId(), 'source' => $row->getSource(),
                 'extra_fields' => [
-                    'title' => $resource->getTitle(),
+                    'title' => $row->getTitle(),
                 ],
             ];
         }

@@ -36,6 +36,9 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserList;
+use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -175,8 +178,9 @@ class ResourceService extends AbstractDbService implements
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
-                $extraSelect = 'CASE WHEN ' . $alias . '.' . $rawField . ' IS NULL THEN 1 ELSE 0 END';
-                $order[] = $extraSelect;
+                $extraSelect = 'CASE WHEN ' . $alias . '.' . $rawField . ' IS NULL THEN 1 ELSE 0 END AS HIDDEN '
+                    . $rawField . 'sort';
+                $order[] = "{$rawField}sort";
             }
 
             // Apply the user-specified sort:
@@ -273,28 +277,30 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Get a set of records from the requested favorite list.
+     * Get a set of resources from the requested favorite list.
      *
-     * @param int|User     $user   ID of user owning favorite list
-     * @param int|UserList $list   ID of list to retrieve (null for all favorites)
-     * @param array        $tags   Tags to use for limiting results
-     * @param string       $sort   Resource table field to use for sorting (null for
-     *                             no particular sort).
-     * @param int          $offset Offset for results
-     * @param int          $limit  Limit for results (null for none)
+     * @param UserEntityInterface|int          $userOrId ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags     Tags to use for limiting results
+     * @param ?string                          $sort     Resource table field to use for sorting (null for no
+     * particular sort).
+     * @param int                              $offset   Offset for results
+     * @param ?int                             $limit    Limit for results (null for none)
      *
-     * @return mixed
+     * @return ResourceEntityInterface[]
      */
     public function getFavorites(
-        $user,
-        $list = null,
-        $tags = [],
-        $sort = null,
-        $offset = 0,
-        $limit = null
-    ) {
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        array $tags = [],
+        ?string $sort = null,
+        int $offset = 0,
+        ?int $limit = null
+    ): array {
+        $user = $this->getDoctrineReference(User::class, $userOrId);
+        $list = $listOrId ? $this->getDoctrineReference(UserList::class, $listOrId) : null;
         $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
-        $dql = 'SELECT DISTINCT(r.id), r';
+        $dql = 'SELECT DISTINCT r';
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];
         }
@@ -313,8 +319,7 @@ class ResourceService extends AbstractDbService implements
             $linkingTable = $this->getDbService(TagService::class);
             $matches = [];
             foreach ($tags as $tag) {
-                $matches[] = $linkingTable
-                    ->getResourceIDsForTag($tag, $user, $list);
+                $matches[] = $linkingTable->getResourceIDsForTag($tag, $user->getId(), $list?->getId());
             }
             $dqlWhere[] = 'r.id IN (:ids)';
             $parameters['ids'] = $matches;
