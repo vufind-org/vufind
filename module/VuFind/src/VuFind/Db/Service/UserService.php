@@ -66,6 +66,18 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntityForUsername(string $username): UserEntityInterface
+    {
+        return $this->getDbTable('User')->createRowForUsername($username);
+    }
+
+    /**
      * Delete a user entity.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID to delete
@@ -102,6 +114,8 @@ class UserService extends AbstractDbService implements
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
         switch ($fieldName) {
+            case 'email':
+                return $this->getDbTable('User')->getByEmail($fieldValue);
             case 'id':
                 return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
@@ -109,7 +123,7 @@ class UserService extends AbstractDbService implements
             case 'cat_id':
                 return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
-        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+        throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
     }
 
     /**

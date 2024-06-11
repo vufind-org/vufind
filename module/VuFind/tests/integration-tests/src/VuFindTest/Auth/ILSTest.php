@@ -115,8 +115,6 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             $authenticator
         );
         $auth->setDbServiceManager($this->getLiveDbServiceManager());
-        $auth->setDbTableManager($this->getLiveTableManager());
-        $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }

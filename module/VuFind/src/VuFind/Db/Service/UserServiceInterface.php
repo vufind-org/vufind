@@ -43,6 +43,15 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface UserServiceInterface extends DbServiceInterface
 {
     /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntityForUsername(string $username): UserEntityInterface;
+
+    /**
      * Delete a user entity.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID to delete

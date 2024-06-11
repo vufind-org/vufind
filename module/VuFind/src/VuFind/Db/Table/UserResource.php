@@ -36,6 +36,7 @@ use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 use function is_array;
 
@@ -131,6 +132,8 @@ class UserResource extends Gateway implements DbServiceAwareInterface
      * @param string $notes       Notes to associate with link
      *
      * @return \VuFind\Db\Row\UserResource
+     *
+     * @deprecated Use UserResourceServiceInterface::createOrUpdateLink()
      */
     public function createOrUpdateLink(
         $resource_id,
@@ -138,24 +141,8 @@ class UserResource extends Gateway implements DbServiceAwareInterface
         $list_id,
         $notes = ''
     ) {
-        $params = [
-            'resource_id' => $resource_id, 'list_id' => $list_id,
-            'user_id' => $user_id,
-        ];
-        $result = $this->select($params)->current();
-
-        // Only create row if it does not already exist:
-        if (empty($result)) {
-            $result = $this->createRow();
-            $result->resource_id = $resource_id;
-            $result->list_id = $list_id;
-            $result->user_id = $user_id;
-        }
-
-        // Update the notes:
-        $result->notes = $notes;
-        $result->save();
-        return $result;
+        return $this->getDbService(UserResourceServiceInterface::class)
+            ->createOrUpdateLink($resource_id, $user_id, $list_id, $notes);
     }
 
     /**

@@ -491,9 +491,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // We expect specific form name and site URL values:
         $this->assertEquals('All username2', $this->findCss($page, '#user_id')->getText());
+        // We need to do a case-insensitive comparison here because different database engines
+        // may make different decisions about uppercase-first vs. lowercase-first:
         $this->assertEquals(
-            'All five new tag one ONE three 4 THREE 4',
-            $this->findCss($page, '#tag_id')->getText()
+            strtolower('All five new tag ONE one THREE 4 three 4'),
+            strtolower($this->findCss($page, '#tag_id')->getText())
         );
 
         // Apply a filter to see just the "five" tag (we need to extract the ID value
@@ -542,9 +544,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#type')->setValue('tag');
         $this->clickCss($page, 'input[value="Submit"]');
         $this->waitForPageLoad($page);
+        // We need to do a case-insensitive comparison here because different database engines
+        // may make different decisions about uppercase-first vs. lowercase-first:
         $this->assertEquals(
-            'new tag one ONE three 4 THREE 4',
-            $this->findCss($page, '#tag_id')->getText()
+            strtolower('new tag ONE one THREE 4 three 4'),
+            strtolower($this->findCss($page, '#tag_id')->getText())
         );
         $this->clickCss($page, 'input[value="Delete Tags"]');
         $this->waitForPageLoad($page);

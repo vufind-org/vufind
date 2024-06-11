@@ -31,6 +31,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
@@ -100,7 +101,7 @@ class ILS extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -155,7 +156,7 @@ class ILS extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return UserEntityInterface Updated user entity.
      */
     public function updatePassword($request)
     {
@@ -187,7 +188,7 @@ class ILS extends AbstractBase
 
         // Update the user and send it back to the caller:
         $username = $patron[$this->getUsernameField()];
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
         $this->authenticator->saveUserCatalogCredentials($user, $patron['cat_username'], $params['password']);
         return $user;
     }
@@ -231,7 +232,7 @@ class ILS extends AbstractBase
      * @param bool   $rememberMe  Whether to remember the login
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function handleLogin($username, $password, $loginMethod, $rememberMe)
     {
@@ -285,7 +286,7 @@ class ILS extends AbstractBase
      * @param array $info User details returned by ILS driver.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function processILSUser($info)
     {
@@ -298,25 +299,24 @@ class ILS extends AbstractBase
 
         // Check to see if we already have an account for this user:
         $userService = $this->getUserService();
-        $userTable = $this->getUserTable();
         if (!empty($info['id'])) {
-            $user = $userTable->getByCatalogId($info['id']);
+            $user = $userService->getUserByField('cat_id', $info['id']);
             if (empty($user)) {
-                $user = $userTable->getByUsername($info[$usernameField]);
+                $user = $this->getOrCreateUserByUsername($info[$usernameField]);
                 $user->setCatId($info['id']);
                 $this->getDbService(UserServiceInterface::class)->persistEntity($user);
             }
         } else {
-            $user = $userTable->getByUsername($info[$usernameField]);
+            $user = $this->getOrCreateUserByUsername($info[$usernameField]);
         }
 
         // No need to store the ILS password in VuFind's main password field:
-        $user->password = '';
+        $user->setRawPassword('');
 
         // Update user information based on ILS data:
         $fields = ['firstname', 'lastname', 'major', 'college'];
         foreach ($fields as $field) {
-            $user->$field = $info[$field] ?? ' ';
+            $this->setUserValueByField($user, $field, $info[$field] ?? ' ');
         }
         $userService->updateUserEmail($user, $info['email'] ?? '');
 
