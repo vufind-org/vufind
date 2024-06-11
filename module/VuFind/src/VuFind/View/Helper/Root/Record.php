@@ -32,8 +32,10 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 
@@ -176,6 +178,19 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     public function getCollectionMetadata()
     {
         return $this->renderTemplate('collection-info.phtml');
+    }
+
+    /**
+     * Get comments associated with the current record.
+     *
+     * @return CommentsEntityInterface[]
+     */
+    public function getComments(): array
+    {
+        return $this->getDbService(CommentsServiceInterface::class)->getForResource(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier()
+        );
     }
 
     /**
@@ -351,6 +366,61 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             }
         }
         return $idClasses;
+    }
+
+    /**
+     * Get tags associated with the currently-loaded record.
+     *
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getTags(
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->getDbService(TagServiceInterface::class)->getRecordTags(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            0,
+            $listOrId,
+            $userOrId,
+            $sort,
+            $ownerOrId
+        );
+    }
+
+    /**
+     * Get tags associated with the currently-loaded record AND with a favorites list.
+     *
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * are associated with ANY list, but excluding non-list tags)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getTagsFromFavorites(
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->getDbService(TagServiceInterface::class)->getRecordTagsFromFavorites(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            0,
+            $listOrId,
+            $userOrId,
+            $sort,
+            $ownerOrId
+        );
     }
 
     /**

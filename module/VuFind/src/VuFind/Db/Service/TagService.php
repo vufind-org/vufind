@@ -31,6 +31,8 @@ namespace VuFind\Db\Service;
 
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\TagsEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
 
 /**
  * Database service for tags.
@@ -70,33 +72,135 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     }
 
     /**
-     * Get tags associated with the specified resource.
+     * Get all tags associated with the specified record (and matching provided filters).
      *
-     * @param string $id          Record ID to look up
-     * @param string $source      Source of record to look up
-     * @param int    $limit       Max. number of tags to return (0 = no limit)
-     * @param ?int   $list        ID of list to load tags from (null for no
-     * restriction,  true for on ANY list, false for on NO list)
-     * @param ?int   $user        ID of user to load tags from (null for all users)
-     * @param string $sort        Sort type ('count' or 'tag')
-     * @param ?int   $userToCheck ID of user to check for ownership (this will
-     * not filter the result list, but rows owned by this user will have an is_me
-     * column set to 1)
+     * @param string                           $id        Record ID to look up
+     * @param string                           $source    Source of record to look up
+     * @param int                              $limit     Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
      *
      * @return array
      */
-    public function getForResource(
+    public function getRecordTags(
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
-        ?int $list = null,
-        ?int $user = null,
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        ?int $userToCheck = null
+        UserEntityInterface|int|null $ownerOrId = null
     ): array {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $userToCheck = $ownerOrId instanceof UserEntityInterface ? $ownerOrId->getId() : $ownerOrId;
         return $this->getDbTable('Tags')
-            ->getForResource($id, $source, $limit, $list, $user, $sort, $userToCheck)
+            ->getForResource($id, $source, $limit, $listId, $userId, $sort, $userToCheck)
             ->toArray();
+    }
+
+    /**
+     * Get all tags from favorite lists associated with the specified record (and matching provided filters).
+     *
+     * @param string                           $id        Record ID to look up
+     * @param string                           $source    Source of record to look up
+     * @param int                              $limit     Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * are associated with ANY list, but excluding non-list tags)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     *
+     * @return array
+     */
+    public function getRecordTagsFromFavorites(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $userToCheck = $ownerOrId instanceof UserEntityInterface ? $ownerOrId->getId() : $ownerOrId;
+        return $this->getDbTable('Tags')
+            ->getForResource($id, $source, $limit, $listId ?? true, $userId, $sort, $userToCheck)
+            ->toArray();
+    }
+
+    /**
+     * Get all tags outside of favorite lists associated with the specified record (and matching provided filters).
+     *
+     * @param string                       $id        Record ID to look up
+     * @param string                       $source    Source of record to look up
+     * @param int                          $limit     Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
+     * @param string                       $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
+     * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     *
+     * @return array
+     */
+    public function getRecordTagsNotInFavorites(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $userToCheck = $ownerOrId instanceof UserEntityInterface ? $ownerOrId->getId() : $ownerOrId;
+        return $this->getDbTable('Tags')
+            ->getForResource($id, $source, $limit, false, $userId, $sort, $userToCheck)
+            ->toArray();
+    }
+
+    /**
+     * Get a list of all tags generated by the user in favorites lists. Note that the returned list WILL NOT include
+     * tags attached to records that are not saved in favorites lists. Returns an array of arrays with id and tag keys.
+     *
+     * @param UserEntityInterface|int          $userOrId User ID to look up.
+     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
+     * filter).
+     * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
+     * filter).
+     * @param ?string                          $source   Filter for tags tied to a specific record source (null for
+     * no filter).
+     *
+     * @return array
+     */
+    public function getUserTagsFromFavorites(
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        ?string $recordId = null,
+        ?string $source = null
+    ): array {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        return $this->getDbTable('Tags')->getListTagsForUser($userId, $recordId, $listId, $source)->toArray();
+    }
+
+    /**
+     * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
+     *
+     * @param UserListEntityInterface|int  $listOrId List ID or entity
+     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     *
+     * @return array[]
+     */
+    public function getListTags(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int|null $userOrId = null
+    ): array {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        return $this->getDbTable('Tags')->getForList($listId, $userId)->toArray();
     }
 
     /**

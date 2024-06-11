@@ -36,6 +36,7 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -282,19 +283,18 @@ class User extends RowGateway implements
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
-     * (null for no filter).
+     * @param string $resourceId Filter for tags tied to a specific resource (null for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no filter).
+     * @param string $source     Filter for tags tied to a specific record source. (null for no filter).
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getUserTagsFromFavorites()
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbTable('Tags')
-            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+        return $this->getDbService(TagServiceInterface::class)
+            ->getUserTagsFromFavorites($this, $resourceId, $listId, $source);
     }
 
     /**
@@ -302,12 +302,13 @@ class User extends RowGateway implements
      *
      * @param int $listId List id
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags($listId)
     {
-        return $this->getDbTable('Tags')
-            ->getForList($listId, $this->id);
+        return $this->getDbService(TagServiceInterface::class)->getListTags($listId, $this);
     }
 
     /**
@@ -322,6 +323,8 @@ class User extends RowGateway implements
      * (null for no filter).
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::getTagStringForEditing()
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
@@ -334,16 +337,18 @@ class User extends RowGateway implements
      * @param array $tags Tags
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::formatTagStringForEditing()
      */
     public function formatTagString($tags)
     {
         $tagStr = '';
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                if (strstr($tag->tag, ' ')) {
-                    $tagStr .= "\"$tag->tag\" ";
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
                 } else {
-                    $tagStr .= "$tag->tag ";
+                    $tagStr .= "{$tag['tag']} ";
                 }
             }
         }
@@ -425,6 +430,8 @@ class User extends RowGateway implements
      * existing tags (true) or append to the existing list (false).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::saveResourceToFavorites()
      */
     public function saveResource(
         $resource,

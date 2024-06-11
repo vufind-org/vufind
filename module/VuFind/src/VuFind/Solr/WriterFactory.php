@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
 
 /**
  * Solr writer factory.
@@ -68,11 +69,9 @@ class WriterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $changeTracker = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('changetracker');
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $changeTracker
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(ChangeTrackerServiceInterface::class)
         );
     }
 }

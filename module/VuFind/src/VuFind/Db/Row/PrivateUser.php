@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use VuFind\Auth\UserSessionPersistenceInterface;
+
 use function array_key_exists;
 
 /**
@@ -64,7 +66,7 @@ class PrivateUser extends User
     {
         $this->initialize();
         $this->id = -1; // fake ID
-        $this->getDbService(\VuFind\Db\Service\UserService::class)->addUserDataToSession($this);
+        $this->getDbService(UserSessionPersistenceInterface::class)->addUserDataToSession($this);
         return 1;
     }
 
