@@ -31,6 +31,7 @@ namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserList;
@@ -226,29 +227,30 @@ class UserResourceService extends AbstractDbService implements
     }
 
     /**
-     * Create link if one does not exist; update notes if one does.
+     * Create user/resource/list link if one does not exist; update notes if one does.
      *
-     * @param Resource|int $resource ID of resource to link up
-     * @param User|int     $user     ID of user creating link
-     * @param UserList|int $list     ID of list to link up
-     * @param string       $notes    Notes to associate with link
+     * @param ResourceEntityInterface|int $resourceOrId Entity or ID of resource to link up
+     * @param UserEntityInterface|int     $userOrId     Entity or ID of user creating link
+     * @param UserListEntityInterface|int $listOrId     Entity or ID of list to link up
+     * @param string                      $notes        Notes to associate with link
      *
      * @return UserResource|false
      */
     public function createOrUpdateLink(
-        $resource,
-        $user,
-        $list,
-        $notes = ''
-    ) {
-        $resource = $this->getDoctrineReference(Resource::class, $resource);
-        $user = $this->getDoctrineReference(User::class, $user);
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int $listOrId,
+        string $notes = ''
+    ): UserResourceEntityInterface {
+        $resource = $this->getDoctrineReference(Resource::class, $resourceOrId);
+        $user = $this->getDoctrineReference(User::class, $userOrId);
+        $list = $this->getDoctrineReference(UserList::class, $listOrId);
         $params = compact('resource', 'list', 'user');
         $result = current($this->entityManager->getRepository($this->getEntityClass(UserResource::class))
             ->findBy($params));
 
         if (empty($result)) {
-            $result = $this->createUserResource()
+            $result = $this->createEntity()
                 ->setResource($resource)
                 ->setUser($user)
                 ->setUserList($list);
@@ -265,11 +267,11 @@ class UserResourceService extends AbstractDbService implements
     }
 
     /**
-     * Create a userResource entity object.
+     * Create a UserResource entity object.
      *
-     * @return UserResource
+     * @return UserResourceEntityInterface
      */
-    public function createUserResource(): UserResource
+    public function createEntity(): UserResourceEntityInterface
     {
         $class = $this->getEntityClass(UserResource::class);
         return new $class();

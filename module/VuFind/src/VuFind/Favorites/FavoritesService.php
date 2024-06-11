@@ -44,6 +44,7 @@ use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceService;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -83,6 +84,7 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
      * @param TagServiceInterface          $tagService          Tag database service
      * @param UserListServiceInterface     $userListService     UserList database service
+     * @param UserResourceServiceInterface $userResourceService UserResource database service
      * @param UserServiceInterface         $userService         User database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
      * @param Tags                         $tagHelper           Tag helper service
@@ -95,6 +97,7 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
         protected ResourceTagsServiceInterface $resourceTagsService,
         protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService,
+        protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
         protected Tags $tagHelper,
@@ -351,9 +354,9 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
             ? $listOrId
             : $this->userListService->getUserListById($listOrId);
 
-        // Create the resource link if it doesn't exist and update the notes in any case:
-        $linkService = $this->getDbService(UserResourceService::class);
-        $linkService->createOrUpdateLink($resource, $user, $list, $notes);
+        // Create the resource link if it doesn't exist and update the notes in any
+        // case:
+        $this->userResourceService->createOrUpdateLink($resource, $user, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
