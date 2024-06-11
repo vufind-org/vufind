@@ -345,7 +345,7 @@ class ResourceTagsService extends AbstractDbService implements ResourceTagsServi
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
         $dql .= ' GROUP BY tag'
-            . ' ORDER BY LOWER(t.tag)';
+            . ' ORDER BY LOWER(t.tag), t.tag';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
