@@ -34,6 +34,7 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
@@ -92,6 +93,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * @param SearchService              $searchService   Search service
      * @param Loader                     $recordLoader    Record loader
      * @param ResourceServiceInterface   $resourceService Resource database service
+     * @param TagServiceInterface        $tagService      Tag database service
      * @param UserListServiceInterface   $userListService UserList database service
      */
     public function __construct(
@@ -99,6 +101,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         SearchService $searchService,
         Loader $recordLoader,
         protected ResourceServiceInterface $resourceService,
+        protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
@@ -138,7 +141,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 switch ($field) {
                     case 'tags':
                         if ($this->list) {
-                            $tags = $this->userListService->getResourceTags($this->list);
+                            $tags = $this->tagService->getUserTagsFromFavorites($this->list->getUser(), $this->list);
                         } else {
                             $tags = $this->user ? $this->user->getTags() : [];
                         }

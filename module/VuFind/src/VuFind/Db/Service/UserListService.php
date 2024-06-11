@@ -81,20 +81,6 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Get an array of resource tags associated with the list.
-     *
-     * @param UserList $list UserList object.
-     *
-     * @return array
-     */
-    public function getResourceTags($list)
-    {
-        $user = $list->getUser();
-        $tags = $this->getDbService(TagService::class)->getUserTagsFromFavorites($user, $list);
-        return $tags;
-    }
-
-    /**
      * Create a UserList entity object.
      *
      * @return UserListEntityInterface
@@ -278,7 +264,7 @@ class UserListService extends AbstractDbService implements
      *
      * @return array
      */
-    public function getUserListsById(array $ids): array
+    protected function getUserListsById(array $ids): array
     {
         $dql = 'SELECT ul FROM ' . $this->getEntityClass(UserList::class) . ' ul '
             . 'WHERE ul.id IN (:ids)';

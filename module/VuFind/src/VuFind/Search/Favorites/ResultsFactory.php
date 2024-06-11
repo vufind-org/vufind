@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 
 /**
@@ -71,8 +72,9 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         }
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $resourceService = $serviceManager->get(ResourceServiceInterface::class);
+        $tagService = $serviceManager->get(TagServiceInterface::class);
         $listService = $serviceManager->get(UserListServiceInterface::class);
-        $obj = parent::__invoke($container, $requestedName, [$resourceService, $listService]);
+        $obj = parent::__invoke($container, $requestedName, [$resourceService, $tagService, $listService]);
         $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
         $init($container, $obj);
         return $obj;
