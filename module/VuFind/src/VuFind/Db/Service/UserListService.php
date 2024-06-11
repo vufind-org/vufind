@@ -44,6 +44,8 @@ use VuFind\Db\Entity\UserResource;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Log\LoggerAwareTrait;
 
+use function count;
+
 /**
  * Database service for UserList.
  *
