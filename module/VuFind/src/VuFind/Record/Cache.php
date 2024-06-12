@@ -81,7 +81,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string $recordId Record id
      * @param string $source   Source name
-     * @param string $rawData  Raw data from data source
+     * @param mixed  $rawData  Raw data from source (must be serializable)
      *
      * @return void
      */

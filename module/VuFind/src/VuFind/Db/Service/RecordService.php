@@ -79,11 +79,11 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      *
      * @param string $id      Record ID
      * @param string $source  Data source
-     * @param string $rawData Raw data from source
+     * @param mixed  $rawData Raw data from source (must be serializable)
      *
      * @return RecordEntityInterface
      */
-    public function updateRecord(string $id, string $source, string $rawData): RecordEntityInterface
+    public function updateRecord(string $id, string $source, $rawData): RecordEntityInterface
     {
         $record = $this->getRecord($id, $source);
         if (!$record) {

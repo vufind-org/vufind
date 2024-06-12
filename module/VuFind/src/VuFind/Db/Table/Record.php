@@ -120,7 +120,7 @@ class Record extends Gateway implements DbServiceAwareInterface
      *
      * @param string $id      Record ID
      * @param string $source  Data source
-     * @param string $rawData Raw data from source
+     * @param mixed  $rawData Raw data from source (must be serializable)
      *
      * @return \VuFind\Db\Row\Record Updated or newly added record
      *
