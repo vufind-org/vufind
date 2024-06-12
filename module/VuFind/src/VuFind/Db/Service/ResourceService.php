@@ -31,6 +31,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
@@ -344,14 +345,16 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Delete a resource by source and id
+     * Delete a resource by record id and source. Return true if found and deleted, false if not found.
+     * Throws exception if something goes wrong.
      *
      * @param string $id     Resource ID
      * @param string $source Resource source
      *
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
-    public function deleteResource($id, $source)
+    public function deleteResourceByRecordId(string $id, string $source): bool
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Resource::class) . ' r '
             . 'WHERE r.recordId = :id AND r.source = :source';

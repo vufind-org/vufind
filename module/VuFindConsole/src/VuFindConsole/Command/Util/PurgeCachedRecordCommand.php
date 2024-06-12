@@ -35,8 +35,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Service\RecordService;
-use VuFind\Db\Service\ResourceService;
+use VuFind\Db\Service\RecordServiceInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Console command: purge a record from cache
@@ -54,34 +54,18 @@ use VuFind\Db\Service\ResourceService;
 class PurgeCachedRecordCommand extends Command
 {
     /**
-     * Record service object
-     *
-     * @var RecordService
-     */
-    protected $recordService;
-
-    /**
-     * Resource service object
-     *
-     * @var ResourceService
-     */
-    protected $resourceService;
-
-    /**
      * Constructor
      *
-     * @param RecordService   $recordService   Record service object
-     * @param ResourceService $resourceService Resource service object
-     * @param string|null     $name            The name of the command;
-     * passing null means it must be set in configure()
+     * @param RecordServiceInterface   $recordService   Record table object
+     * @param ResourceServiceInterface $resourceService Resource table object
+     * @param string|null              $name            The name of the command; passing null means it
+     * must be set in configure()
      */
     public function __construct(
-        RecordService $recordService,
-        ResourceService $resourceService,
-        $name = null
+        protected RecordServiceInterface $recordService,
+        protected ResourceServiceInterface $resourceService,
+        string $name = null
     ) {
-        $this->recordService = $recordService;
-        $this->resourceService = $resourceService;
         parent::__construct($name);
     }
 
@@ -123,7 +107,7 @@ class PurgeCachedRecordCommand extends Command
             $output->writeln('No cached record found');
         }
         if ($input->getOption('purge-resource')) {
-            if ($this->resourceService->deleteResource($id, $source)) {
+            if ($this->resourceService->deleteResourceByRecordId($id, $source)) {
                 $output->writeln('Resource deleted');
             } else {
                 $output->writeln('No resource found');

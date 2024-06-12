@@ -23,17 +23,18 @@
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
-use Laminas\Log\LoggerAwareInterface;
+use Exception;
 use VuFind\Db\Entity\Record;
+use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\UserResource;
-use VuFind\Log\LoggerAwareTrait;
 
 use function count;
 
@@ -46,19 +47,17 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RecordService extends AbstractDbService implements LoggerAwareInterface
+class RecordService extends AbstractDbService implements RecordServiceInterface
 {
-    use LoggerAwareTrait;
-
     /**
-     * Find a record by id
+     * Retrieve a record by id.
      *
      * @param string $id     Record ID
      * @param string $source Record source
      *
-     * @return Record|bool
+     * @return ?RecordEntityInterface
      */
-    public function findRecord($id, $source)
+    public function getRecord(string $id, string $source): ?RecordEntityInterface
     {
         $dql = 'SELECT r '
             . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
@@ -71,14 +70,14 @@ class RecordService extends AbstractDbService implements LoggerAwareInterface
     }
 
     /**
-     * Find records by ids
+     * Retrieve records by ids.
      *
-     * @param array  $ids    Record IDs
-     * @param string $source Record source
+     * @param string[] $ids    Record IDs
+     * @param string   $source Record source
      *
-     * @return array Array of record objects found
+     * @return RecordEntityInterface[] Array of record objects found
      */
-    public function findRecords($ids, $source)
+    public function getRecords(array $ids, string $source): array
     {
         if (empty($ids)) {
             return [];
@@ -95,17 +94,17 @@ class RecordService extends AbstractDbService implements LoggerAwareInterface
     }
 
     /**
-     * Update an existing entry in the record table or create a new one
+     * Update an existing entry in the record table or create a new one.
      *
      * @param string $id      Record ID
      * @param string $source  Data source
-     * @param string $rawData Raw data from source
+     * @param mixed  $rawData Raw data from source (must be serializable)
      *
-     * @return Record|bool
+     * @return RecordEntityInterface
      */
-    public function updateRecord($id, $source, $rawData)
+    public function updateRecord(string $id, string $source, $rawData): RecordEntityInterface
     {
-        $record = $this->findRecord($id, $source);
+        $record = $this->getRecord($id, $source);
         if (!$record) {
             $record = $this->createEntity();
         }
@@ -114,12 +113,7 @@ class RecordService extends AbstractDbService implements LoggerAwareInterface
             ->setData(serialize($rawData))
             ->setVersion(\VuFind\Config\Version::getBuildVersion())
             ->setUpdated(new \DateTime());
-        try {
-            $this->persistEntity($record);
-        } catch (\Exception $e) {
-            $this->logError('Could not save record: ' . $e->getMessage());
-            return false;
-        }
+        $this->persistEntity($record);
         return $record;
     }
 
@@ -128,7 +122,7 @@ class RecordService extends AbstractDbService implements LoggerAwareInterface
      *
      * @return int Number of records deleted
      */
-    public function cleanup()
+    public function cleanup(): int
     {
         $dql = 'SELECT r.id '
             . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
@@ -153,9 +147,10 @@ class RecordService extends AbstractDbService implements LoggerAwareInterface
      * @param string $id     Record ID
      * @param string $source Record source
      *
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
-    public function deleteRecord($id, $source)
+    public function deleteRecord(string $id, string $source): bool
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Record::class) . ' r '
             . 'WHERE r.recordId = :id AND r.source = :source';
@@ -169,9 +164,9 @@ class RecordService extends AbstractDbService implements LoggerAwareInterface
     /**
      * Create a record entity object.
      *
-     * @return Record
+     * @return RecordEntityInterface
      */
-    public function createEntity(): Record
+    public function createEntity(): RecordEntityInterface
     {
         $class = $this->getEntityClass(Record::class);
         return new $class();

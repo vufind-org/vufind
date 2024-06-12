@@ -33,7 +33,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Service\RecordService;
+use VuFind\Db\Service\RecordServiceInterface;
 
 /**
  * Console command: clean up record cache.
@@ -51,22 +51,14 @@ use VuFind\Db\Service\RecordService;
 class CleanUpRecordCacheCommand extends Command
 {
     /**
-     * Record service object
-     *
-     * @var RecordService
-     */
-    protected $recordService;
-
-    /**
      * Constructor
      *
-     * @param RecordService $service Record service object
-     * @param string|null   $name    The name of the command; passing null means it
-     *                               must be set in configure()
+     * @param RecordServiceInterface $recordService Record database service
+     * @param ?string                $name          The name of the command; passing null means it
+     * must be set in configure()
      */
-    public function __construct(RecordService $service, $name = null)
+    public function __construct(protected RecordServiceInterface $recordService, ?string $name = null)
     {
-        $this->recordService = $service;
         parent::__construct($name);
     }
 

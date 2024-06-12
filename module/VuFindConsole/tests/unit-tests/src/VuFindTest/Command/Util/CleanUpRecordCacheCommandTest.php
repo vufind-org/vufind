@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,6 +30,7 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Service\RecordServiceInterface;
 use VuFindConsole\Command\Util\CleanUpRecordCacheCommand;
 
 /**
@@ -48,13 +49,11 @@ class CleanUpRecordCacheCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicOperation()
+    public function testBasicOperation(): void
     {
-        $recordService = $this->getMockBuilder(\VuFind\Db\Service\RecordService::class)
-            ->disableOriginalConstructor()->getMock();
-        $recordService->expects($this->once())->method('cleanup')
-            ->will($this->returnValue(5));
-        $command = new CleanUpRecordCacheCommand($recordService);
+        $service = $this->createMock(RecordServiceInterface::class);
+        $service->expects($this->once())->method('cleanup')->willReturn(5);
+        $command = new CleanUpRecordCacheCommand($service);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "5 records deleted.\n";

@@ -32,7 +32,8 @@
 namespace VuFind\Record;
 
 use Laminas\Config\Config as Config;
-use VuFind\Db\Service\RecordService;
+use VuFind\Db\Entity\RecordEntityInterface;
+use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 
 /**
@@ -54,27 +55,6 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     public const CONTEXT_FAVORITE = 'Favorite';
 
     /**
-     * RecordCache.ini contents
-     *
-     * @var Config
-     */
-    protected $cacheConfig;
-
-    /**
-     * Database service used by cache
-     *
-     * @var RecordService
-     */
-    protected $recordService;
-
-    /**
-     * Record driver plugin manager
-     *
-     * @var RecordFactory
-     */
-    protected $recordFactoryManager;
-
-    /**
      * Record sources which may be cached.
      *
      * @var array
@@ -84,19 +64,15 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param RecordFactory $recordFactoryManager Record loader
-     * @param Config        $config               VuFind main config
-     * @param RecordService $recordService        Record service
+     * @param RecordFactory          $recordFactoryManager Record driver plugin manager
+     * @param Config                 $cacheConfig          RecordCache.ini contents
+     * @param RecordServiceInterface $recordService        Record database service
      */
     public function __construct(
-        RecordFactory $recordFactoryManager,
-        Config $config,
-        RecordService $recordService
+        protected RecordFactory $recordFactoryManager,
+        protected Config $cacheConfig,
+        protected RecordServiceInterface $recordService
     ) {
-        $this->cacheConfig = $config;
-        $this->recordService = $recordService;
-        $this->recordFactoryManager = $recordFactoryManager;
-
         $this->setContext(Cache::CONTEXT_DEFAULT);
     }
 
@@ -105,7 +81,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
      *
      * @param string $recordId Record id
      * @param string $source   Source name
-     * @param string $rawData  Raw data from data source
+     * @param mixed  $rawData  Raw data from source (must be serializable)
      *
      * @return void
      */
@@ -128,13 +104,13 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     public function lookup($id, $source)
     {
         $this->debug("Checking {$source}|{$id}");
-        $record = $this->recordService->findRecord($id, $source);
+        $record = $this->recordService->getRecord($id, $source);
         $this->debug(
             "Cached record {$source}|{$id} "
-            . ($record !== false ? 'found' : 'not found')
+            . ($record ? 'found' : 'not found')
         );
         try {
-            return $record !== false ? [$this->getVuFindRecord($record)] : [];
+            return $record ? [$this->getVuFindRecord($record)] : [];
         } catch (\Exception $e) {
             $this->logError(
                 'Could not load record {$source}|{$id} from the record cache: '
@@ -161,7 +137,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
 
         $this->debug("Checking $source batch: " . implode(', ', $ids));
         $vufindRecords = [];
-        $cachedRecords = $this->recordService->findRecords($ids, $source);
+        $cachedRecords = $this->recordService->getRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
             try {
                 $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
@@ -269,11 +245,11 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     /**
      * Helper function to get records from cached source-specific record data
      *
-     * @param Record $cachedRecord Record data
+     * @param RecordEntityInterface $cachedRecord Record data
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getVuFindRecord($cachedRecord)
+    protected function getVuFindRecord(RecordEntityInterface $cachedRecord)
     {
         $source = $cachedRecord->getSource();
         $doc = unserialize($cachedRecord->getData());

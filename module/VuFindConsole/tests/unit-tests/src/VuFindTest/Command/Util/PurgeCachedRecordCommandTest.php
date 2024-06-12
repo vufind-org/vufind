@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2020.
  * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,8 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Service\RecordServiceInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFindConsole\Command\Util\PurgeCachedRecordCommand;
 
 /**
@@ -81,18 +83,12 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
         bool $recordRetVal,
         ?bool $resourceRetVal
     ): void {
-        $recordService = $this->getMockBuilder(
-            \VuFind\Db\Service\RecordService::class
-        )
-            ->disableOriginalConstructor()->getMock();
-        $recordService->expects($this->once())->method('deleteRecord')
-            ->with($this->equalTo('123'), $this->equalTo('Solr'))
-            ->willReturn($recordRetVal);
+        $recordService = $this->createMock(RecordServiceInterface::class);
+        $recordService->expects($this->once())->method('deleteRecord')->with('123', 'Solr')->willReturn($recordRetVal);
 
-        $resourceService = $this->getMockBuilder(\VuFind\Db\Service\ResourceService::class)
-            ->disableOriginalConstructor()->getMock();
+        $resourceService = $this->createMock(ResourceServiceInterface::class);
         if (null !== $resourceRetVal) {
-            $resourceService->expects($this->once())->method('deleteResource')
+            $resourceService->expects($this->once())->method('deleteResourceByRecordId')->with('123', 'Solr')
                 ->willReturn($resourceRetVal);
         }
         $params = compact('source', 'id');

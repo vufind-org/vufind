@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\RecordServiceInterface;
 
 /**
  * Record cache factory.
@@ -68,13 +69,10 @@ class CacheFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
         return new $requestedName(
             $container->get(\VuFind\RecordDriver\PluginManager::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('RecordCache'),
-            $servicePluginManager->get(\VuFind\Db\Service\RecordService::class)
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(RecordServiceInterface::class)
         );
     }
 }

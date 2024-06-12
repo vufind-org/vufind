@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\RecordServiceInterface;
 
 /**
  * Factory for Util/CleanUpRecordCache command.
@@ -65,11 +66,8 @@ class CleanUpRecordCacheCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
         return new $requestedName(
-            $servicePluginManager->get(\VuFind\Db\Service\RecordService::class),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(RecordServiceInterface::class),
             ...($options ?? [])
         );
     }
