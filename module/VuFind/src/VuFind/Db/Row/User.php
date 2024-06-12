@@ -296,8 +296,7 @@ class User extends RowGateway implements
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbService(TagServiceInterface::class)
-            ->getUserTagsFromFavorites($this, $resourceId, $listId, $source);
+        return $this->getDbTable('Tags')->getListTagsForUser($this->getId(), $resourceId, $listId, $source);
     }
 
     /**
