@@ -383,6 +383,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
