@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTes\Tags;
+namespace VuFindTest\Tags;
 
 use VuFind\Record\ResourcePopulator;
 use VuFind\Tags\TagsService;

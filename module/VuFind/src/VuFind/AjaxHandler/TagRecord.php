@@ -53,13 +53,13 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Loader               $loader    Record loader
-     * @param TagsService          $tagHelper Tag helper
-     * @param ?UserEntityInterface $user      Logged in user (or null)
+     * @param Loader               $loader      Record loader
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
      */
     public function __construct(
         protected Loader $loader,
-        protected TagsService $tagHelper,
+        protected TagsService $tagsService,
         protected ?UserEntityInterface $user
     ) {
     }
@@ -89,10 +89,10 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
             $serviceMethod = ('false' === $params->fromPost('remove', 'false'))
                 ? 'addTagsToRecord'
                 : 'deleteTagsFromRecord';
-            $this->tagHelper->$serviceMethod(
+            $this->tagsService->$serviceMethod(
                 $driver,
                 $this->user,
-                $this->tagHelper->parse($tag)
+                $this->tagsService->parse($tag)
             );
         }
 
