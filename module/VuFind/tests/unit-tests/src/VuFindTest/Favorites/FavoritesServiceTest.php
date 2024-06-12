@@ -41,7 +41,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 /**
  * FavoritesService Test Class
@@ -71,7 +71,7 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
             $this->createMock(UserResourceServiceInterface::class),
             $this->createMock(UserServiceInterface::class),
             $this->createMock(ResourcePopulator::class),
-            $this->createMock(Tags::class),
+            $this->createMock(TagsService::class),
             $this->createMock(Loader::class)
         );
     }
