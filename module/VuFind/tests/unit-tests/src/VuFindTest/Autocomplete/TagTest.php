@@ -68,7 +68,7 @@ class TagTest extends \PHPUnit\Framework\TestCase
             ['tag' => 'bar1'],
             ['tag' => 'bar2'],
         ];
-        $tagService->expects($this->once())->method('matchText')
+        $tagService->expects($this->once())->method('getNonListTagsFuzzilyMatchingString')
             ->with($this->equalTo('foo'))
             ->willReturn($tags);
         return $tagService;
