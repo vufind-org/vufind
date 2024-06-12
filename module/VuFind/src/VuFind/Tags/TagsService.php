@@ -40,7 +40,7 @@ use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
-use function strlen;
+use function is_array;
 
 /**
  * Service for handling tag processing.
@@ -91,14 +91,16 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
      *
      * @param RecordDriver        $driver Driver representing record being tagged
      * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
+     * @param string|string[]     $tags   The user-provided tag(s), either as a string (to parse) or an
+     * array (already parsed)
      *
      * @return void
      */
-    public function linkTagsToRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function linkTagsToRecord(RecordDriver $driver, UserEntityInterface $user, string|array $tags): void
     {
+        $parsedTags = is_array($tags) ? $tags : $this->parse($tags);
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
-        foreach ($tags as $tag) {
+        foreach ($parsedTags as $tag) {
             $this->linkTagToResource($tag, $resource, $user);
         }
     }
@@ -119,8 +121,7 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null
     ): void {
-        $trimmedTagText = trim($tagText);
-        if (strlen($trimmedTagText) > 0) {
+        if (($trimmedTagText = trim($tagText)) !== '') {
             $tags = $this->getDbTable('Tags');
             $tag = $tags->getByText($trimmedTagText);
 
@@ -150,14 +151,13 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
         UserListEntityInterface|int|null $listOrId = null
     ) {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $tagText = trim($tagText);
-        if (!empty($tagText)) {
+        if (($trimmedTagText = trim($tagText)) !== '') {
             $tags = $this->getDbTable('Tags');
             $tagIds = [];
-            foreach ($tags->getByText($tagText, false, false) as $tag) {
+            foreach ($tags->getByText($trimmedTagText, false, false) as $tag) {
                 $tagIds[] = $tag->getId();
             }
-            if (!empty($tagIds)) {
+            if ($tagIds) {
                 $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(
                     $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId,
                     $userOrId,
