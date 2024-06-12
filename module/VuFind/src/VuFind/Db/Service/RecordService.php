@@ -56,7 +56,7 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      *
      * @return ?RecordEntityInterface
      */
-    public function getRecord($id, $source): ?RecordEntityInterface
+    public function getRecord(string $id, string $source): ?RecordEntityInterface
     {
         return $this->getDbTable('record')->findRecord($id, $source);
     }
@@ -64,12 +64,12 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
     /**
      * Retrieve records by ids.
      *
-     * @param array  $ids    Record IDs
-     * @param string $source Record source
+     * @param string[] $ids    Record IDs
+     * @param string   $source Record source
      *
      * @return RecordEntityInterface[] Array of record objects found
      */
-    public function getRecords($ids, $source): array
+    public function getRecords(array $ids, string $source): array
     {
         return $this->getDbTable('record')->findRecords($ids, $source);
     }
@@ -83,7 +83,7 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      *
      * @return RecordEntityInterface
      */
-    public function updateRecord($id, $source, $rawData): RecordEntityInterface
+    public function updateRecord(string $id, string $source, string $rawData): RecordEntityInterface
     {
         $record = $this->getRecord($id, $source);
         if (!$record) {

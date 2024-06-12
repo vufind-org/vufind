@@ -52,17 +52,17 @@ interface RecordServiceInterface extends DbServiceInterface
      *
      * @return ?RecordEntityInterface
      */
-    public function getRecord($id, $source): ?RecordEntityInterface;
+    public function getRecord(string $id, string $source): ?RecordEntityInterface;
 
     /**
      * Retrieve records by ids.
      *
-     * @param array  $ids    Record IDs
-     * @param string $source Record source
+     * @param string[] $ids    Record IDs
+     * @param string   $source Record source
      *
      * @return RecordEntityInterface[] Array of record objects found
      */
-    public function getRecords($ids, $source): array;
+    public function getRecords(array $ids, string $source): array;
 
     /**
      * Update an existing entry in the record table or create a new one.
@@ -73,7 +73,7 @@ interface RecordServiceInterface extends DbServiceInterface
      *
      * @return RecordEntityInterface
      */
-    public function updateRecord($id, $source, $rawData): RecordEntityInterface;
+    public function updateRecord(string $id, string $source, string $rawData): RecordEntityInterface;
 
     /**
      * Clean up orphaned entries (i.e. entries that are not in favorites anymore)

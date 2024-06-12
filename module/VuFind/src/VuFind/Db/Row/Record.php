@@ -48,7 +48,7 @@ use VuFind\Db\Entity\RecordEntityInterface;
  * @property string $version
  * @property string $updated
  */
-class Record extends RowGateway implements \VuFind\Db\Entity\RecordEntityInterface
+class Record extends RowGateway implements RecordEntityInterface
 {
     /**
      * Constructor
