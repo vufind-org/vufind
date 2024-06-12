@@ -63,6 +63,16 @@ interface TagServiceInterface extends DbServiceInterface
     public function matchText(string $text): array;
 
     /**
+     * Get a list of tags for the browse interface.
+     *
+     * @param string $sort  Sort/search parameter
+     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     *
+     * @return array
+     */
+    public function getTagBrowseList(string $sort, int $limit): array;
+
+    /**
      * Get all tags associated with the specified record (and matching provided filters).
      *
      * @param string                           $id        Record ID to look up

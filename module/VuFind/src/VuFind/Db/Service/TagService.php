@@ -317,7 +317,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     {
         $where = ['LOWER(t.tag) LIKE LOWER(:text)', 'rt.resource is NOT NULL '];
         $parameters = ['text' => $text . '%'];
-        return $this->getTagList(where: $where, parameters: $parameters);
+        return $this->getTagListWithDoctrine(where: $where, parameters: $parameters);
     }
 
     /**
@@ -331,7 +331,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      *
      * @return array Tag details.
      */
-    public function getTagList($sort = 'alphabetical', $limit = 100, $where = [], $parameters = [])
+    protected function getTagListWithDoctrine($sort = 'alphabetical', $limit = 100, $where = [], $parameters = [])
     {
         $tagClause = $this->caseSensitive ? 't.tag' : 'LOWER(t.tag)';
         $dql = 'SELECT t.id as id, COUNT(DISTINCT(rt.resource)) as cnt, MAX(rt.posted) as posted, '
@@ -484,6 +484,20 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         }
         $results = $query->getResult();
         return $results;
+    }
+
+    /**
+     * Get a list of tags for the browse interface.
+     *
+     * @param string $sort  Sort/search parameter
+     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     *
+     * @return array
+     */
+    public function getTagBrowseList(string $sort, int $limit): array
+    {
+        // Extra where clause is to discard user list tags:
+        return $this->getTagListWithDoctrine($sort, $limit, ['rt.resource is NOT NULL']);
     }
 
     /**
