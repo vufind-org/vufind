@@ -70,7 +70,7 @@ class UserList extends RowGateway implements
      * Constructor
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter     Database adapter
-     * @param TagsService                 $tagsService Tag parser
+     * @param TagsService                 $tagsService Tags service
      * @param ?Container                  $session     Session container for last list information
      */
     public function __construct($adapter, protected TagsService $tagsService, protected ?Container $session = null)

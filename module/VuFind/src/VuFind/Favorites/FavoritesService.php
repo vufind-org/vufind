@@ -80,7 +80,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param UserResourceServiceInterface $userResourceService UserResource database service
      * @param UserServiceInterface         $userService         User database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
-     * @param TagsService                  $tagsService         Tag helper service
+     * @param TagsService                  $tagsService         Tags service
      * @param RecordLoader                 $recordLoader        Record loader
      * @param ?RecordCache                 $recordCache         Record cache (optional)
      * @param ?Container                   $session             Session container for remembering state (optional)
