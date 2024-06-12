@@ -67,7 +67,7 @@ class AuthHashService extends AbstractDbService implements
      *
      * @return void
      */
-    public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId)
+    public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId): void
     {
         $authHashId = $authHashOrId instanceof AuthHashEntityInterface ? $authHashOrId->getId() : $authHashOrId;
         $this->getDbTable('AuthHash')->delete(['id' => $authHashId]);

@@ -102,7 +102,6 @@ class AbstractExpireCommand extends Command
             $serviceName = $service::class;
             throw new \Exception("$serviceName does not support deleteExpired()");
         }
-        $this->service = $service;
         parent::__construct($name);
     }
 

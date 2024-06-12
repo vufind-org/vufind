@@ -58,7 +58,7 @@ interface AuthHashServiceInterface extends DbServiceInterface
      *
      * @return void
      */
-    public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId);
+    public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId): void;
 
     /**
      * Retrieve an object from the database based on hash and type; possibly create a new

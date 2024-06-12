@@ -65,7 +65,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @param ?PhpRenderer              $renderer        View renderer
      * @param ?RemoteAddress            $remoteAddress   Remote address details
      * @param array                     $config          Configuration settings
-     * @param ?AuthHashServiceInterface $authHashService AuthHash daabase service
+     * @param ?AuthHashServiceInterface $authHashService AuthHash database service
      *
      * @return EmailAuthenticator
      * @throws InvalidArgumentException
