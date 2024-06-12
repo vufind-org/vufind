@@ -213,7 +213,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function linkTagsToRecord(
+    protected function addTagsToRecord(
         Element $page,
         string $tags,
         ?string $user = null,
@@ -254,7 +254,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.modal #addtag_tag');
         $this->closeLightbox($page);
         $this->clickCss($page, '.logoutOptions a.logout');
-        $this->linkTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
+        $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
@@ -321,9 +321,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('No Results!', $this->findCssAndGetText($page, 'h2'));
         // Now try a tag defined earlier, with a couple more instances added:
         $page = $this->goToRecord('id:"<angle>brackets&ampersands"');
-        $this->linkTagsToRecord($page, 'five', 'username2', 'test');
+        $this->addTagsToRecord($page, 'five', 'username2', 'test');
         $page = $this->goToRecord('id:"017791359-1"');
-        $this->linkTagsToRecord($page, 'five');
+        $this->addTagsToRecord($page, 'five');
         // Now perform the search:
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
