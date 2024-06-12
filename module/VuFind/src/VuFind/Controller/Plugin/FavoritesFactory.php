@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Record\ResourcePopulator;
 
 /**
  * Factory for Favorites controller plugin.
@@ -70,11 +69,7 @@ class FavoritesFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Record\Cache::class),
-            $container->get(\VuFind\Tags::class),
             $container->get(\VuFind\Favorites\FavoritesService::class),
-            $container->get(ResourcePopulator::class)
         );
     }
 }

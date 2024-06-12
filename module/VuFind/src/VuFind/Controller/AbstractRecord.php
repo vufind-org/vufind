@@ -37,7 +37,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -241,11 +241,11 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagHelper = $this->serviceLocator->get(Tags::class);
-            $tagHelper->addTagsToRecord(
+            $tagsService = $this->serviceLocator->get(TagsService::class);
+            $tagsService->addTagsToRecord(
                 $driver,
                 $user,
-                $tagHelper->parse($tags)
+                $tagsService->parse($tags)
             );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
@@ -280,7 +280,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->serviceLocator->get(Tags::class)->deleteTagsFromRecord(
+            $this->serviceLocator->get(TagsService::class)->deleteTagsFromRecord(
                 $driver,
                 $user,
                 [$tag]
@@ -418,11 +418,10 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->serviceLocator->get(Tags::class);
-        $post['mytags'] = $tagParser->parse($post['mytags'] ?? '');
-        $favorites = $this->serviceLocator
-            ->get(\VuFind\Favorites\FavoritesService::class);
-        $results = $favorites->save($post, $user, $driver);
+        $tagsService = $this->serviceLocator->get(TagsService::class);
+        $post['mytags'] = $tagsService->parse($post['mytags'] ?? '');
+        $favorites = $this->serviceLocator->get(\VuFind\Favorites\FavoritesService::class);
+        $results = $favorites->saveRecordToFavorites($post, $user, $driver);
 
         // Display a success status message:
         $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);

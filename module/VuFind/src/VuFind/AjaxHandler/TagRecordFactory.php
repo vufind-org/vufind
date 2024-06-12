@@ -71,7 +71,7 @@ class TagRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         }
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Tags::class),
+            $container->get(\VuFind\Tags\TagsService::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject()
         );
     }

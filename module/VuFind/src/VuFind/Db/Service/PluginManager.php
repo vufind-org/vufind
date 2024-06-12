@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Auth\UserSessionPersistenceInterface;
+
 /**
  * Database service plugin manager
  *
@@ -63,6 +65,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         UserListServiceInterface::class => UserListService::class,
         UserResourceServiceInterface::class => UserResourceService::class,
         UserServiceInterface::class => UserService::class,
+        UserSessionPersistenceInterface::class => UserService::class,
     ];
 
     /**

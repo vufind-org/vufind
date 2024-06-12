@@ -467,6 +467,8 @@
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${localdir}/cache" />
+    <exec command="touch ${srcdir}/vufind-mail.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-mail.log" />
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
@@ -822,6 +824,12 @@ ${git_status}
           </then>
         </if>
         <delete file="${srcdir}/vufind-exception.log" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/vufind-mail.log" />
+      <then>
+        <delete file="${srcdir}/vufind-mail.log" failonerror="true" />
       </then>
     </if>
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />

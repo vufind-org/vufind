@@ -37,10 +37,10 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
-use VuFind\Exception\MissingField as MissingFieldException;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 /**
  * Row Definition for user_list
@@ -67,39 +67,25 @@ class UserList extends RowGateway implements
     use DbServiceAwareTrait;
 
     /**
-     * Session container for last list information.
-     *
-     * @var Container
-     */
-    protected $session = null;
-
-    /**
-     * Tag parser.
-     *
-     * @var Tags
-     */
-    protected $tagParser;
-
-    /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter   Database adapter
-     * @param Tags                        $tagParser Tag parser
-     * @param Container                   $session   Session container
+     * @param \Laminas\Db\Adapter\Adapter $adapter     Database adapter
+     * @param TagsService                 $tagsService Tags service
+     * @param ?Container                  $session     Session container for last list information
      */
-    public function __construct($adapter, Tags $tagParser, Container $session = null)
+    public function __construct($adapter, protected TagsService $tagsService, protected ?Container $session = null)
     {
-        $this->tagParser = $tagParser;
-        $this->session = $session;
         parent::__construct('id', 'user_list', $adapter);
     }
 
     /**
      * Is the current user allowed to edit this list?
      *
-     * @param ?\VuFind\Db\Row\User $user Logged-in user (null if none)
+     * @param ?UserEntityInterface $user Logged-in user (null if none)
      *
      * @return bool
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::userCanEditList()
      */
     public function editAllowed($user)
     {
@@ -128,44 +114,12 @@ class UserList extends RowGateway implements
      * Get an array of tags assigned to this list.
      *
      * @return array
+     *
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags()
     {
-        $table = $this->getDbTable('User');
-        $user = $table->select(['id' => $this->user_id])->current();
-        if (empty($user)) {
-            return [];
-        }
-        return $user->getListTags($this->id, $this->user_id);
-    }
-
-    /**
-     * Update and save the list object using a request object -- useful for
-     * sharing form processing between multiple actions.
-     *
-     * @param \VuFind\Db\Row\User|bool   $user    Logged-in user (false if none)
-     * @param \Laminas\Stdlib\Parameters $request Request to process
-     *
-     * @return int ID of newly created row
-     * @throws ListPermissionException
-     * @throws MissingFieldException
-     */
-    public function updateFromRequest($user, $request)
-    {
-        $this->title = $request->get('title');
-        $this->description = $request->get('desc');
-        $this->public = $request->get('public');
-        $this->save($user);
-
-        if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbTable('resourcetags');
-            $linker->destroyListLinks($this->id, $user->id);
-            foreach ($this->tagParser->parse($tags) as $tag) {
-                $this->addListTag($tag, $user);
-            }
-        }
-
-        return $this->id;
+        return $this->getDbService(TagServiceInterface::class)->getListTags($this, $this->getUser());
     }
 
     /**
@@ -175,6 +129,8 @@ class UserList extends RowGateway implements
      * @param UserEntityInterface $user    The user posting the tag.
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::addListTag()
      */
     public function addListTag($tagText, $user)
     {
@@ -189,33 +145,6 @@ class UserList extends RowGateway implements
                 $this
             );
         }
-    }
-
-    /**
-     * Saves the properties to the database.
-     *
-     * This performs an intelligent insert/update, and reloads the
-     * properties with fresh data from the table on success.
-     *
-     * @param \VuFind\Db\Row\User|bool $user Logged-in user (false if none)
-     *
-     * @return mixed The primary key value(s), as an associative array if the
-     *     key is compound, or a scalar if the key is single-column.
-     * @throws ListPermissionException
-     * @throws MissingFieldException
-     */
-    public function save($user = false)
-    {
-        if (!$this->editAllowed($user ?: null)) {
-            throw new ListPermissionException('list_access_denied');
-        }
-        if (empty($this->title)) {
-            throw new MissingFieldException('list_edit_name_required');
-        }
-
-        parent::save();
-        $this->rememberLastUsed();
-        return $this->id;
     }
 
     /**
@@ -235,6 +164,8 @@ class UserList extends RowGateway implements
      * dialog boxes.
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::rememberLastUsedList()
      */
     public function rememberLastUsed()
     {
@@ -246,11 +177,13 @@ class UserList extends RowGateway implements
     /**
      * Given an array of item ids, remove them from all lists.
      *
-     * @param \VuFind\Db\Row\User|bool $user   Logged-in user (false if none)
+     * @param UserEntityInterface|bool $user   Logged-in user (false if none)
      * @param array                    $ids    IDs to remove from the list
      * @param string                   $source Type of resource identified by IDs
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::removeListResourcesById()
      */
     public function removeResourcesById(
         $user,
@@ -295,6 +228,8 @@ class UserList extends RowGateway implements
      * @param bool                     $force Should we force the delete without checking permissions?
      *
      * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::destroyList()
      */
     public function delete($user = false, $force = false)
     {

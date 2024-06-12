@@ -54,6 +54,15 @@ interface UserListServiceInterface extends DbServiceInterface
     public function createEntity(): UserListEntityInterface;
 
     /**
+     * Delete a user list entity.
+     *
+     * @param UserListEntityInterface|int $listOrId List entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUserList(UserListEntityInterface|int $listOrId): void;
+
+    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.
@@ -62,6 +71,16 @@ interface UserListServiceInterface extends DbServiceInterface
      * @throws RecordMissingException
      */
     public function getUserListById(int $id): UserListEntityInterface;
+
+    /**
+     * Get public lists.
+     *
+     * @param array $includeFilter List of list ids or entities to include in result.
+     * @param array $excludeFilter List of list ids or entities to exclude from result.
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array;
 
     /**
      * Get lists belonging to the user and their count. Returns an array of arrays with
@@ -73,6 +92,24 @@ interface UserListServiceInterface extends DbServiceInterface
      * @throws Exception
      */
     public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array;
+
+    /**
+     * Get lists associated with a particular tag and/or list of IDs. If IDs and
+     * tags are both provided, only the intersection of matches will be returned.
+     *
+     * @param string|string[]|null $tag        Tag or tags to match (by text, not ID; null for all)
+     * @param int|int[]|null       $listId     List ID or IDs to match (null for all)
+     * @param bool                 $publicOnly Whether to return only public lists
+     * @param bool                 $andTags    Use AND operator when filtering by tag.
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByTagAndId(
+        string|array|null $tag = null,
+        int|array|null $listId = null,
+        bool $publicOnly = true,
+        bool $andTags = true
+    ): array;
 
     /**
      * Get list objects belonging to the specified user.

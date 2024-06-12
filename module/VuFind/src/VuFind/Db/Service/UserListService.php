@@ -67,6 +67,19 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
     }
 
     /**
+     * Delete a user list entity.
+     *
+     * @param UserListEntityInterface|int $listOrId List entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUserList(UserListEntityInterface|int $listOrId): void
+    {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $this->getDbTable('UserList')->delete(['id' => $listId]);
+    }
+
+    /**
      * Retrieve a list object.
      *
      * @param int $id Numeric ID for existing list.
@@ -81,6 +94,33 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
             throw new RecordMissingException('Cannot load list ' . $id);
         }
         return $result;
+    }
+
+    /**
+     * Get public lists.
+     *
+     * @param array $includeFilter List of list ids or entities to include in result.
+     * @param array $excludeFilter List of list ids or entities to exclude from result.
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array
+    {
+        $callback = function ($listOrId) {
+            return $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        };
+        $includeIds = array_map($callback, $includeFilter);
+        $excludeIds = array_map($callback, $excludeFilter);
+        $callback = function ($select) use ($includeIds, $excludeIds) {
+            $select->where->equalTo('public', 1);
+            if ($excludeIds) {
+                $select->where->notIn('id', $excludeIds);
+            }
+            if ($includeIds) {
+                $select->where->in('id', $includeIds);
+            }
+        };
+        return iterator_to_array($this->getDbTable('UserList')->select($callback));
     }
 
     /**
@@ -127,6 +167,33 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
             $result[] = ['list_entity' => $row, 'count' => $row->cnt];
         }
         return $result;
+    }
+
+    /**
+     * Get lists associated with a particular tag and/or list of IDs. If IDs and
+     * tags are both provided, only the intersection of matches will be returned.
+     *
+     * @param string|string[]|null $tag        Tag or tags to match (by text, not ID; null for all)
+     * @param int|int[]|null       $listId     List ID or IDs to match (null for all)
+     * @param bool                 $publicOnly Whether to return only public lists
+     * @param bool                 $andTags    Use AND operator when filtering by tag.
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByTagAndId(
+        string|array|null $tag = null,
+        int|array|null $listId = null,
+        bool $publicOnly = true,
+        bool $andTags = true
+    ): array {
+        $listIds = array_column(
+            iterator_to_array($this->getDbTable('ResourceTags')->getListsForTag($tag, $listId, $publicOnly, $andTags)),
+            'list_id'
+        );
+        $callback = function ($select) use ($listIds) {
+            $select->where->in('id', $listIds);
+        };
+        return iterator_to_array($this->getDbTable('UserList')->select($callback));
     }
 
     /**

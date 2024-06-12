@@ -87,6 +87,18 @@ interface ChangeTrackerServiceInterface extends DbServiceInterface
     ): array;
 
     /**
+     * Update the change tracker table to indicate that a record has been deleted.
+     *
+     * The method returns the updated/created row when complete.
+     *
+     * @param string $core The Solr core holding the record.
+     * @param string $id   The ID of the record being indexed.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function markDeleted(string $core, string $id): ChangeTrackerEntityInterface;
+
+    /**
      * Update the change_tracker table to reflect that a record has been indexed.
      * We need to know the date of the last change to the record (independent of
      * its addition to the index) in order to tell the difference between a
