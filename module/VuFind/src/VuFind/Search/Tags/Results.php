@@ -29,9 +29,10 @@
 
 namespace VuFind\Search\Tags;
 
-use VuFind\Db\Table\Tags as TagsTable;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Tags\TagsService;
 use VuFindSearch\Service as SearchService;
 
 use function count;
@@ -48,29 +49,23 @@ use function count;
 class Results extends BaseResults
 {
     /**
-     * Tags table
-     *
-     * @var TagsTable
-     */
-    protected $tagsTable;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
-     * @param TagsTable                  $tagsTable     Resource table
+     * @param TagsService                $tagsService   Tags service
+     * @param TagServiceInterface        $tagsDbService Tags database service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        TagsTable $tagsTable
+        protected TagsService $tagsService,
+        protected TagServiceInterface $tagsDbService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->tagsTable = $tagsTable;
     }
 
     /**
@@ -99,13 +94,14 @@ class Results extends BaseResults
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
-        $rawResults = $this->tagsTable->resourceSearch(
+        $rawResults = $this->tagsDbService->getResourcesMatchingTagQuery(
             $query,
             null,
             $this->getParams()->getSort(),
             0,
             null,
-            $fuzzy
+            $fuzzy,
+            $this->tagsService->hasCaseSensitiveTags()
         );
 
         // How many results were there?
@@ -114,17 +110,18 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->tagsTable->resourceSearch(
+            $rawResults = $this->tagsDbService->getResourcesMatchingTagQuery(
                 $query,
                 null,
                 $this->getParams()->getSort(),
                 $this->getStartRecord() - 1,
                 $limit,
-                $fuzzy
+                $fuzzy,
+                $this->tagsService->hasCaseSensitiveTags()
             );
         }
 
-        return $rawResults->toArray();
+        return $rawResults;
     }
 
     /**
