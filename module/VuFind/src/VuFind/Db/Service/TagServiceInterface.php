@@ -57,11 +57,19 @@ interface TagServiceInterface extends DbServiceInterface
     /**
      * Get the tags that match a string
      *
-     * @param string $text Tag to look up.
+     * @param string $text          Tag to look up.
+     * @param string $sort          Sort type
+     * @param int    $limit         Maximum results to retrieve
+     * @param bool   $caseSensitive Should tags be treated as case-sensitive?
      *
      * @return array
      */
-    public function matchText(string $text): array;
+    public function matchText(
+        string $text,
+        string $sort = 'alphabetical',
+        int $limit = 100,
+        bool $caseSensitive = false
+    ): array;
 
     /**
      * Get a list of tags for the browse interface.

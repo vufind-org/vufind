@@ -47,9 +47,10 @@ class Tag implements AutocompleteInterface
     /**
      * Constructor
      *
-     * @param TagServiceInterface $tagService Tag database service
+     * @param TagServiceInterface $tagService    Tag database service
+     * @param bool                $caseSensitive Treat tags as case-sensitive?
      */
-    public function __construct(protected TagServiceInterface $tagService)
+    public function __construct(protected TagServiceInterface $tagService, protected bool $caseSensitive)
     {
     }
 
@@ -64,7 +65,7 @@ class Tag implements AutocompleteInterface
     public function getSuggestions($query)
     {
         $tagList = [];
-        $tags = $this->tagService->matchText($query);
+        $tags = $this->tagService->matchText($query, $this->caseSensitive);
         if ($tags) {
             foreach ($tags as $tag) {
                 $tagList[] = $tag['tag'];

@@ -33,6 +33,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Factory for tag autocomplete suggester.
@@ -67,8 +69,8 @@ class TagFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Db\Service\PluginManager::class)
-                ->get(\VuFind\Db\Service\TagServiceInterface::class)
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(TagServiceInterface::class),
+            $container->get(TagsService::class)->hasCaseSensitiveTags()
         );
     }
 }
