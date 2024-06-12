@@ -66,7 +66,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $records = $query->getResult();
-        return count($records) > 0 ? current($records) : false;
+        return count($records) > 0 ? current($records) : null;
     }
 
     /**
