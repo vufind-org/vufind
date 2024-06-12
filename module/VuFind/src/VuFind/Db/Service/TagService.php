@@ -190,11 +190,13 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
      * tags have introduced problems).
      *
+     * @param bool $caseSensitive Treat tags as case-sensitive?
+     *
      * @return array
      */
-    public function getDuplicateTags(): array
+    public function getDuplicateTags(bool $caseSensitive = false): array
     {
-        return $this->getDbTable('Tags')->getDuplicates()->toArray();
+        return $this->getDbTable('Tags')->getDuplicates($caseSensitive)->toArray();
     }
 
     /**

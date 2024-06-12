@@ -194,7 +194,7 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
      */
     public function fixDuplicateTags(): void
     {
-        $this->getDbTable('Tags')->fixDuplicateTags();
+        $this->getDbTable('Tags')->fixDuplicateTags($this->hasCaseSensitiveTags());
     }
 
     /**
