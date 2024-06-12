@@ -152,7 +152,7 @@ VuFind.register("sticky_elements", function StickyElements() {
           let container = document.createElement('div');
           container.classList.add('sticky-container');
           stickyElement.parentNode.insertBefore(container, stickyElement);
-          stickyElement.previousSibling.insertAdjacentElement('beforeEnd', stickyElement);
+          stickyElement.previousSibling.insertAdjacentElement('beforeend', stickyElement);
 
           setPlaceholderStyle(stickyElement);
           stickyElement.parentNode.style.backgroundColor = getInheritedBackgroundColor(stickyElement.parentNode);

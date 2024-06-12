@@ -61,7 +61,7 @@
       // Collect small scripts together and append as one block:
       $appendScripts = [];
 
-      if (!empty($this->config()->get('config')?->Site?->stickyElements)) {
+      if (!empty($this->themeConfig()['stickyElements'])) {
         $this->headScript()->appendFile('sticky_elements.js');
       }
 
