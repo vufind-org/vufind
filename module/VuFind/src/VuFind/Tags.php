@@ -30,6 +30,8 @@
 namespace VuFind;
 
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -42,8 +44,10 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class Tags
+class Tags implements DbTableAwareInterface
 {
+    use DbTableAwareTrait;
+
     /**
      * Constructor
      *
@@ -106,5 +110,15 @@ class Tags
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
         }
+    }
+
+    /**
+     * Repair duplicate tags in the database (if any).
+     *
+     * @return void
+     */
+    public function fixDuplicateTags(): void
+    {
+        $this->getDbTable('Tags')->fixDuplicateTags();
     }
 }
