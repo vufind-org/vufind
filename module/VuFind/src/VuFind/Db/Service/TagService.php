@@ -158,23 +158,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Assign anonymous tags to the specified user ID.
-     *
-     * @param int|User $id User ID to own anonymous tags.
-     *
-     * @return void
-     */
-    public function assignAnonymousTags($id)
-    {
-        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTags::class) . ' rt '
-            . 'SET rt.user = :id WHERE rt.user is NULL';
-        $parameters = compact('id');
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $query->execute();
-    }
-
-    /**
      * Get a list of duplicate resource_tags rows (this sometimes happens after merging IDs,
      * for example after a Summon resource ID changes).
      *
@@ -226,21 +209,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Get count of anonymous tags
-     *
-     * @return int count
-     */
-    public function getAnonymousCount(): int
-    {
-        $dql = 'SELECT COUNT(rt.id) AS total '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
-            . 'WHERE rt.user IS NULL';
-        $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        return $stats['total'];
-    }
-
-    /**
      * Get statistics on use of tags.
      *
      * @param bool $extended Include extended (unique/anonymous) stats.
@@ -255,9 +223,10 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
+        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
         if ($extended) {
-            $stats['unique'] = count($this->getDbService(ResourceTagsServiceInterface::class)->getUniqueTags());
-            $stats['anonymous'] = $this->getAnonymousCount();
+            $stats['unique'] = count($resourceTagsService->getUniqueTags());
+            $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
         }
         return $stats;
     }
@@ -615,27 +584,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Get a list of duplicate tags (this should never happen, but past bugs
-     * and the introduction of case-insensitive tags have introduced problems).
-     *
-     * @return array
-     */
-    public function getDuplicates()
-    {
-        $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('tag', 'tag');
-        $rsm->addScalarResult('cnt', 'cnt');
-        $rsm->addScalarResult('id', 'id');
-        $sql = 'SELECT MIN(tag) AS tag, COUNT(tag) AS cnt, MIN(id) AS id '
-            . 'FROM tags t '
-            . 'GROUP BY ' . ($this->caseSensitive ? 't.tag ' : 'LOWER(t.tag) ')
-            . 'HAVING COUNT(tag) > 1';
-        $statement = $this->entityManager->createNativeQuery($sql, $rsm);
-        $results = $statement->getResult();
-        return $results;
-    }
-
-    /**
      * Support method for fixDuplicateTag() -- merge $source into $target.
      *
      * @param TagsEntityInterface $target Target ID
@@ -704,7 +652,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      */
     public function fixDuplicateTags()
     {
-        foreach ($this->getDuplicates() as $dupe) {
+        foreach ($this->getDuplicateTags() as $dupe) {
             $this->fixDuplicateTag($dupe['tag']);
         }
     }
@@ -762,6 +710,27 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
                 $list
             );
         }
+    }
+
+    /**
+     * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
+     * tags have introduced problems).
+     *
+     * @return array
+     */
+    public function getDuplicateTags(): array
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('tag', 'tag');
+        $rsm->addScalarResult('cnt', 'cnt');
+        $rsm->addScalarResult('id', 'id');
+        $sql = 'SELECT MIN(tag) AS tag, COUNT(tag) AS cnt, MIN(id) AS id '
+            . 'FROM tags t '
+            . 'GROUP BY ' . ($this->caseSensitive ? 't.tag ' : 'LOWER(t.tag) ')
+            . 'HAVING COUNT(tag) > 1';
+        $statement = $this->entityManager->createNativeQuery($sql, $rsm);
+        $results = $statement->getResult();
+        return $results;
     }
 
     /**

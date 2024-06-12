@@ -32,6 +32,7 @@ namespace VuFind;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -113,5 +114,15 @@ class Tags implements DbServiceAwareInterface
         foreach ($tags as $tag) {
             $tagService->deleteTag($resource, $tag, $user);
         }
+    }
+
+    /**
+     * Repair duplicate tags in the database (if any).
+     *
+     * @return void
+     */
+    public function fixDuplicateTags(): void
+    {
+        $this->getDbService(TagService::class)->fixDuplicateTags();
     }
 }

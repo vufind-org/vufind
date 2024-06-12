@@ -48,10 +48,13 @@ use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Tags;
 
 use function count;
 use function dirname;
@@ -584,13 +587,12 @@ class UpgradeController extends AbstractBase
             // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-            $anonymousTags = $tagService->getAnonymousCount();
+            $anonymousTags = $this->getDbService(ResourceTagsServiceInterface::class)->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $tagService->getDuplicates();
+            $dupeTags = $this->getDbService(TagServiceInterface::class)->getDuplicateTags();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -729,10 +731,9 @@ class UpgradeController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage("User {$user} not found.", 'error');
                 } else {
-                    $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-                    $tagService->assignAnonymousTags($user->id);
+                    $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
-                        "Assigned all anonymous tags to {$user->username}."
+                        "Assigned all anonymous tags to {$user->getUsername()}."
                     );
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 }
@@ -761,7 +762,7 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $this->getDbService(\VuFind\Db\Service\TagService::class)->fixDuplicateTags();
+            $this->serviceLocator->get(Tags::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 

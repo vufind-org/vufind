@@ -430,7 +430,7 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
         $tagClause = $this->caseSensitive ? 't.tag' : 'LOWER(t.tag)';
         $dql = 'SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, '
             . 'MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, '
-            . $tagClause . ' AS tag '
+            . $tagClause . ' AS tag, MAX(t.tag) AS HIDDEN tagTiebreaker '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'LEFT JOIN rt.resource r '
             . 'LEFT JOIN rt.tag t '
@@ -453,7 +453,7 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
         $dql .= ' GROUP BY tag'
-            . ' ORDER BY LOWER(t.tag), t.tag';
+            . ' ORDER BY tag, tagTiebreaker';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
@@ -527,5 +527,38 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
             }
             $deleted += $this->deleteLinksByResourceTagsIdArray($ids);
         }
+    }
+
+    /**
+     * Get count of anonymous tags
+     *
+     * @return int count
+     */
+    public function getAnonymousCount(): int
+    {
+        $dql = 'SELECT COUNT(rt.id) AS total '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'WHERE rt.user IS NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $stats = current($query->getResult());
+        return $stats['total'];
+    }
+
+    /**
+     * Assign anonymous tags to the specified user.
+     *
+     * @param UserEntityInterface|int $userOrId User entity or ID to own anonymous tags.
+     *
+     * @return void
+     */
+    public function assignAnonymousTags(UserEntityInterface|int $userOrId): void
+    {
+        $id = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'SET rt.user = :id WHERE rt.user is NULL';
+        $parameters = compact('id');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 }
