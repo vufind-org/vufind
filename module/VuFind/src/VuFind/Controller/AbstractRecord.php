@@ -241,11 +241,11 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagHelper = $this->serviceLocator->get(TagsService::class);
-            $tagHelper->addTagsToRecord(
+            $tagsService = $this->serviceLocator->get(TagsService::class);
+            $tagsService->addTagsToRecord(
                 $driver,
                 $user,
-                $tagHelper->parse($tags)
+                $tagsService->parse($tags)
             );
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
