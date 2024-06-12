@@ -27,11 +27,13 @@ VuFind.register("sticky_elements", function StickyElements() {
   function setPlaceholderStyle (stickyElement) {
     setChildElementsHidden(stickyElement, false);
     let style = window.getComputedStyle(stickyElement, null);
+    let boundingRect = stickyElement.getBoundingClientRect();
     let placeholder = stickyElement.parentNode.previousSibling;
     placeholder.style.height = style.height;
     placeholder.style.padding = style.padding;
     placeholder.style.border = style.border;
     placeholder.style.margin = style.margin;
+    placeholder.style.width = boundingRect.width + "px";
   }
 
   function getDefaultBackground() {
@@ -80,14 +82,14 @@ VuFind.register("sticky_elements", function StickyElements() {
 
         if (
           isInScope
-          && ((!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10) + 1)
-          || (isSticky && window.scrollY + currentOffset >= placeholder.offsetTop - parseInt(stickyElementStyle.marginTop, 10) + 1))
+          && ((!isSticky && currentOffset >= stickyContainer.getBoundingClientRect().top - parseInt(stickyElementStyle.marginTop, 10) + 1)
+          || (isSticky && currentOffset >= placeholder.getBoundingClientRect().top - parseInt(stickyElementStyle.marginTop, 10) + 1))
         ) {
           if (forceStyleCalculation || !isSticky) {
-            stickyContainer.classList.add("sticky");
-            placeholder.classList.remove("hidden");
             let parentStyle = window.getComputedStyle(stickyContainer.parentNode, null);
             let parentBoundingClientRect = stickyContainer.parentNode.getBoundingClientRect();
+            stickyContainer.classList.add("sticky");
+            placeholder.classList.remove("hidden");
             stickyContainer.style.marginLeft = parentBoundingClientRect.left + "px";
             stickyContainer.style.marginRight = (window.outerWidth - parentBoundingClientRect.right) + "px";
             stickyContainer.style.borderLeft = parentStyle.borderLeft;
