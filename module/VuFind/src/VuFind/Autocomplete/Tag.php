@@ -50,7 +50,7 @@ class Tag implements AutocompleteInterface
      * @param TagServiceInterface $tagService    Tag database service
      * @param bool                $caseSensitive Treat tags as case-sensitive?
      */
-    public function __construct(protected TagServiceInterface $tagService, protected bool $caseSensitive)
+    public function __construct(protected TagServiceInterface $tagService, protected bool $caseSensitive = false)
     {
     }
 
