@@ -7,13 +7,14 @@
 //$this->jsConfigs()->add('myConfig', true);
 //$this->jsConfigs()->add('siteTitle', $this->config()->get('config')->Site->title);
 
+$themeConfig = $this->themeConfig();
 $this->jsConfigs()->add(
     'sticky-elements',
-    $this->config()->get('config')?->Site?->stickyElements?->toArray() ?? []
+    $themeConfig['stickyElements'] ?? []
 );
 $this->jsConfigs()->add(
     'hidden-sticky-elements',
-    $this->config()->get('config')?->Site?->hiddenStickyElements?->toArray() ?? []
+    $themeConfig['hiddenStickyElements'] ?? []
 );
 
 echo $this->jsConfigs()->getJSON();

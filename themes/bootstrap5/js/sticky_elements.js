@@ -7,8 +7,7 @@ VuFind.register("sticky_elements", function StickyElements() {
 
   function setChildElementsHidden(element, hidden = true) {
     _hiddenStickyElementsConfig.forEach(
-      (c) => {
-        let config = JSON.parse(c);
+      (config) => {
         let isInScope =
           (config["min-width"] === undefined || window.innerWidth >= config["min-width"])
           && (config["max-width"] === undefined || window.innerWidth <= config["max-width"]);
@@ -132,8 +131,7 @@ VuFind.register("sticky_elements", function StickyElements() {
   function updateContainer() {
     let stickyElementsConfig = VuFind.config.get('sticky-elements', []);
     _stickyElements = stickyElementsConfig.flatMap(
-      (c) => {
-        let config = JSON.parse(c);
+      (config) => {
         let elements = document.querySelectorAll(config.selector);
         if (config["min-width"] !== undefined) {
           elements.forEach((e) => e.dataset.stickyMinWidth = config["min-width"]);
