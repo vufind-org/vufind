@@ -72,6 +72,28 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     }
 
     /**
+     * Get a list of tags for the browse interface.
+     *
+     * @param string $sort  Sort/search parameter
+     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     *
+     * @return array
+     */
+    public function getTagBrowseList(string $sort, int $limit): array
+    {
+        $callback = function ($select) {
+            // Discard user list tags
+            $select->where->isNotNull('resource_tags.resource_id');
+        };
+
+        return $this->getDbTable('Tags')->getTagList(
+            $sort,
+            $limit,
+            $callback
+        );
+    }
+
+    /**
      * Get all tags associated with the specified record (and matching provided filters).
      *
      * @param string                           $id        Record ID to look up
