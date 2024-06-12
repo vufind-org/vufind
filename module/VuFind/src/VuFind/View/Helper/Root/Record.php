@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -38,6 +39,7 @@ use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Tags\TagsService;
 
 use function get_class;
 use function in_array;
@@ -79,18 +81,12 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     protected $driver;
 
     /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param TagsService $tagsService Tags service
+     * @param Config      $config      Configuration from config.ini
      */
-    public function __construct($config = null)
+    public function __construct(protected TagsService $tagsService, protected ?Config $config = null)
     {
         $this->config = $config;
     }
@@ -391,7 +387,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             $listOrId,
             $userOrId,
             $sort,
-            $ownerOrId
+            $ownerOrId,
+            $this->tagsService->hasCaseSensitiveTags()
         );
     }
 
@@ -419,7 +416,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             $listOrId,
             $userOrId,
             $sort,
-            $ownerOrId
+            $ownerOrId,
+            $this->tagsService->hasCaseSensitiveTags()
         );
     }
 

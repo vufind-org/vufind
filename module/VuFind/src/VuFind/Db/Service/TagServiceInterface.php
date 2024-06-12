@@ -76,13 +76,14 @@ interface TagServiceInterface extends DbServiceInterface
     /**
      * Get all tags associated with the specified record (and matching provided filters).
      *
-     * @param string                           $id        Record ID to look up
-     * @param string                           $source    Source of record to look up
-     * @param int                              $limit     Max. number of tags to return (0 = no limit)
-     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
-     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
-     * @param string                           $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * @param string                           $id            Record ID to look up
+     * @param string                           $source        Source of record to look up
+     * @param int                              $limit         Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId      ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId      ID of user to load tags from (null for all users)
+     * @param string                           $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId     ID of user to check for ownership
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -93,21 +94,23 @@ interface TagServiceInterface extends DbServiceInterface
         UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
      * Get all tags from favorite lists associated with the specified record (and matching provided filters).
      *
-     * @param string                           $id        Record ID to look up
-     * @param string                           $source    Source of record to look up
-     * @param int                              $limit     Max. number of tags to return (0 = no limit)
-     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * @param string                           $id            Record ID to look up
+     * @param string                           $source        Source of record to look up
+     * @param int                              $limit         Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId      ID of list to load tags from (null for tags that
      * are associated with ANY list, but excluding non-list tags)
-     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
-     * @param string                           $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * @param UserEntityInterface|int|null     $userOrId      ID of user to load tags from (null for all users)
+     * @param string                           $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId     ID of user to check for ownership
      * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -118,19 +121,21 @@ interface TagServiceInterface extends DbServiceInterface
         UserListEntityInterface|int|bool|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
      * Get all tags outside of favorite lists associated with the specified record (and matching provided filters).
      *
-     * @param string                       $id        Record ID to look up
-     * @param string                       $source    Source of record to look up
-     * @param int                          $limit     Max. number of tags to return (0 = no limit)
-     * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
-     * @param string                       $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
+     * @param string                       $id            Record ID to look up
+     * @param string                       $source        Source of record to look up
+     * @param int                          $limit         Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId      User entity/ID to load tags from (null for all users)
+     * @param string                       $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId     Entity/ID representing user to check for ownership
      * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     * @param bool                         $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -140,7 +145,8 @@ interface TagServiceInterface extends DbServiceInterface
         int $limit = 0,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**

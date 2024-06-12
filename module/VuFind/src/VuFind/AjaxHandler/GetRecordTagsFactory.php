@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Factory for GetRecordTags AJAX handler.
@@ -72,6 +73,7 @@ class GetRecordTagsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $dbPluginManager->get(\VuFind\Db\Service\TagServiceInterface::class),
+            $container->get(TagsService::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $container->get('ViewRenderer')
         );
