@@ -32,6 +32,7 @@ namespace VuFind\Tags;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
