@@ -361,14 +361,12 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
 
         // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
-            $unlinker = $this->getDbService(ResourceTagsServiceInterface::class);
-            $unlinker->destroyResourceTagsLinksForUser($resource->getId(), $user, $list);
+            $this->resourceTagsService->destroyResourceTagsLinksForUser($resource->getId(), $user, $list);
         }
 
         // Add the new tags:
         foreach ($tagArray as $tag) {
-            $tagService = $this->getDbService(TagService::class);
-            $tagService->addTag($resource, $tag, $user, $list);
+            $this->tagsService->linkTagToResource($tag, $resource, $user, $list);
         }
     }
 

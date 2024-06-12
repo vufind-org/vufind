@@ -266,23 +266,24 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
     }
 
     /**
-     * Unlink tag rows for the specified resource and user.
+     * Support method for the other destroyResourceTagsLinksForUser methods.
      *
-     * @param int|int[]|null                               $resourceId ID (or array of IDs) of resource(s) to
+     * @param int|int[]|null          $resourceId  ID (or array of IDs) of resource(s) to
      * unlink (null for ALL matching resources)
-     * @param UserEntityInterface|int                      $userOrId   ID or entity representing user
-     * @param UserListEntityInterface|int|bool|string|null $listOrId   ID of list to unlink (null for ALL matching
-     * tags, 'none' for tags not in a list, true for tags only found in a list)
-     * @param int|int[]|null                               $tagId      ID or array of IDs of tag(s) to unlink (null
+     * @param UserEntityInterface|int $userOrId    ID or entity representing user
+     * @param int|int[]|null          $tagId       ID or array of IDs of tag(s) to unlink (null
      * for ALL matching tags)
+     * @param array                   $extraWhere  Extra where clauses for query
+     * @param array                   $extraParams Extra parameters for query
      *
      * @return void
      */
-    public function destroyResourceTagsLinksForUser(
+    protected function destroyResourceTagsLinksForUserWithDoctrine(
         int|array|null $resourceId,
         UserEntityInterface|int $userOrId,
-        UserListEntityInterface|int|bool|string|null $listOrId = null,
-        int|array|null $tagId = null
+        int|array|null $tagId = null,
+        $extraWhere = [],
+        $extraParams = [],
     ) {
         $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
 
@@ -292,30 +293,81 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
             $dqlWhere[] = 'rt.resource IN (:resource) ';
             $parameters['resource'] = (array)$resourceId;
         }
-        if (null !== $listOrId) {
-            if (true === $listOrId) {
-                // special case -- if $list is set to boolean true, we
-                // want to only delete tags that are associated with lists.
-                $dqlWhere[] = 'rt.list IS NOT NULL ';
-            } elseif ('none' === $listOrId) {
-                // special case -- if $list is set to the string "none", we
-                // want to delete tags that are not associated with lists.
-                $dqlWhere[] = 'rt.list IS NULL ';
-            } else {
-                $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-                $dqlWhere[] = 'rt.list = :list';
-                $parameters['list'] = $listId;
-            }
-        }
         if (null !== $tagId) {
             $dqlWhere[] = 'rt.tag IN (:tag) ';
             $parameters['tag'] = (array)$tagId;
         }
-        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        $dql .= ' WHERE ' . implode(' AND ', array_merge($dqlWhere, $extraWhere));
         $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
+        $query->setParameters($parameters + $extraParams);
         $result = $query->getResult();
         $this->processDestroyLinks($result);
+    }
+
+    /**
+     * Unlink tag rows for the specified resource and user.
+     *
+     * @param int|int[]|null                   $resourceId ID (or array of IDs) of resource(s) to
+     * unlink (null for ALL matching resources)
+     * @param UserEntityInterface|int          $userOrId   ID or entity representing user
+     * @param UserListEntityInterface|int|null $listOrId   ID of list to unlink (null for ALL matching tags)
+     * @param int|int[]|null                   $tagId      ID or array of IDs of tag(s) to unlink (null
+     * for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        int|array|null $tagId = null
+    ): void {
+        $dqlWhere = $parameters = [];
+        if (null !== $listOrId) {
+            $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+            $dqlWhere[] = 'rt.list = :list';
+            $parameters['list'] = $listId;
+        }
+        $this->destroyResourceTagsLinksForUserWithDoctrine($resourceId, $userOrId, $tagId, $dqlWhere, $parameters);
+    }
+
+    /**
+     * Unlink tag rows that are not associated with a favorite list for the specified resource and user.
+     *
+     * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
+     * resources)
+     * @param UserEntityInterface|int $userOrId   ID or entity representing user
+     * @param int|int[]|null          $tagId      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyNonListResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
+        $dqlWhere = ['rt.list IS NULL '];
+        $this->destroyResourceTagsLinksForUserWithDoctrine($resourceId, $userOrId, $tagId, $dqlWhere);
+    }
+
+    /**
+     * Unlink all tag rows associated with favorite lists for the specified resource and user. Tags added directly
+     * to records outside of favorites will not be impacted.
+     *
+     * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
+     * resources)
+     * @param UserEntityInterface|int $userOrId   ID or entity representing user
+     * @param int|int[]|null          $tagId      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyAllListResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
+        $dqlWhere = ['rt.list IS NOT NULL '];
+        $this->destroyResourceTagsLinksForUserWithDoctrine($resourceId, $userOrId, $tagId, $dqlWhere);
     }
 
     /**

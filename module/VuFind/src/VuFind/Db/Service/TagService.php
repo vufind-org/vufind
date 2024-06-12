@@ -658,61 +658,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Remove a tag from the resource.
-     *
-     * @param Resource $resource Resource from which tag should be deleted.
-     * @param string   $tagText  The tag to delete.
-     * @param int|User $user     The user deleting the tag.
-     * @param string   $list_id  The list associated with the tag
-     *                           (optional).
-     *
-     * @return void
-     */
-    public function deleteTag(Resource $resource, $tagText, $user, $list_id = null)
-    {
-        $tagText = trim($tagText);
-        if (!empty($tagText)) {
-            $tagIds = [];
-            foreach ($this->getByText($tagText, false, false) as $tag) {
-                $tagIds[] = $tag->getId();
-            }
-            if (!empty($tagIds)) {
-                $this->getDbService(ResourceTagsService::class)->destroyResourceTagsLinksForUser(
-                    $resource->getId(),
-                    $user,
-                    $list_id,
-                    $tagIds
-                );
-            }
-        }
-    }
-
-    /**
-     * Add a tag to the resource.
-     *
-     * @param ResourceEntityInterface|int $resource Resource associated.
-     * @param string                      $tagText  The tag to save.
-     * @param UserEntityInterface|int     $user     The user posting the tag.
-     * @param ?UserListEntityInterface    $list     The list associated with the tag (optional).
-     *
-     * @return void
-     */
-    public function addTag($resource, $tagText, $user, $list = null)
-    {
-        $tagText = trim($tagText);
-        if (!empty($tagText)) {
-            $tag = $this->getByText($tagText);
-
-            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
-                $resource,
-                $tag,
-                $user,
-                $list
-            );
-        }
-    }
-
-    /**
      * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
      * tags have introduced problems).
      *
