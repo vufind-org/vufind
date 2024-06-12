@@ -57,8 +57,7 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
         $searchTable = $this->getDbTable('search');
         $allIds = $this->getDbTable('user')->getSql()->select()->columns(['id']);
         $searchCallback = function ($select) use ($allIds) {
-            $select->where->equalTo('user_id', '0')
-                ->OR->notIn('user_id', $allIds);
+            $select->where->isNotNull('user_id')->AND->notIn('user_id', $allIds);
         };
         $badRows = $searchTable->select($searchCallback);
         $count = count($badRows);
