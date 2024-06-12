@@ -39,6 +39,7 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\TagServiceInterface;
@@ -147,11 +148,11 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
         }
 
         // Remove user_resource and resource_tags rows:
-        $userResource = $this->getDbTable('UserResource');
-        $userResource->destroyLinks(null, $list->getUser()?->getId(), $list->getId());
+        $userResourceService = $this->getDbService(UserResourceService::class);
+        $userResourceService->destroyLinks($list->getUser(), null, $list->getId());
 
         // Remove resource_tags rows for list tags:
-        $linker = $this->getDbTable('resourcetags');
+        $linker = $this->getDbService(ResourceTagsService::class);
         $linker->destroyListLinks($list->getId(), $user?->getId());
 
         $this->userListService->deleteUserList($list);
@@ -306,9 +307,9 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = $this->getDbTable('UserResource');
+        $userResourceService = $this->getDbService(UserResourceService::class);
         // true here makes sure that only tags in lists are deleted
-        $userResourceTable->destroyLinks($resourceIDs, $user->getId(), true);
+        $userResourceService->destroyLinks($user, $resourceIDs, true);
     }
 
     /**
@@ -360,8 +361,8 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
 
         // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
-            $unlinker = $this->getDbService(TagService::class);
-            $unlinker->destroyResourceLinks($resource->getId(), $user, $list);
+            $unlinker = $this->getDbService(ResourceTagsServiceInterface::class);
+            $unlinker->destroyResourceTagsLinksForUser($resource->getId(), $user, $list);
         }
 
         // Add the new tags:
@@ -486,7 +487,7 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
         $this->saveListForUser($list, $user);
 
         if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbService(TagService::class);
+            $linker = $this->getDbService(ResourceTagsService::class);
             $linker->destroyListLinks($list, $user);
             foreach ($this->tagHelper->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);

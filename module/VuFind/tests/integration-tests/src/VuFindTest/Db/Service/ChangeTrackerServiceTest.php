@@ -69,7 +69,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
     public function testChangeTracker()
     {
         $core = 'testCore';
-        $tracker = $this->getDatabaseService(ChangeTrackerService::class);
+        $tracker = $this->getDbService(ChangeTrackerService::class);
 
         // Create a new row:
         $tracker->index($core, 'test1', 1326833170);

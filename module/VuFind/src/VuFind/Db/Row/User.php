@@ -35,6 +35,7 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -528,6 +529,8 @@ class User extends RowGateway implements
      * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Account\UserAccountService::purgeUserData()
      */
     public function delete($removeComments = true, $removeRatings = true)
     {
@@ -536,8 +539,7 @@ class User extends RowGateway implements
         foreach ($listService->getUserListsByUser($this) as $current) {
             $this->favoritesService->destroyList($current, $this, true);
         }
-        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-        $tagService->destroyResourceLinks(null, $this->id);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $this);
         if ($removeComments) {
             $comments = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class

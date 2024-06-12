@@ -200,8 +200,8 @@ class UserResourceService extends AbstractDbService implements
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $tagService = $this->getDbService(TagService::class);
-        $tagService->destroyResourceLinks($resource_id, $user, $list);
+        $this->getDbService(ResourceTagsServiceInterface::class)
+            ->destroyResourceTagsLinksForUser($resource_id, $user, $list);
 
         $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur ';
         $dqlWhere = ['ur.user = :user '];
@@ -212,7 +212,7 @@ class UserResourceService extends AbstractDbService implements
         }
 
         // null or true values of $list have different meanings in the
-        // context of the $tagService->destroyResourceLinks() call above, since
+        // context of the destroyResourceTagsLinksForUser() call above, since
         // some tags have a null $list value. In the case of user_resource
         // rows, however, every row has a non-null $list value, so the
         // two cases are equivalent and may be handled identically.

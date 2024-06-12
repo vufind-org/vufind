@@ -83,7 +83,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      *
      * @return array     Associative array with two keys: present and missing
      */
-    protected function checkForTags($ids)
+    public function checkForTags($ids)
     {
         // Set up return arrays:
         $retVal = ['present' => [], 'missing' => []];
@@ -133,111 +133,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $query->setParameters($parameters);
         $result =  $query->getSingleColumnResult();
         return $result;
-    }
-
-    /**
-     * Unlink rows for the specified resource.
-     *
-     * @param mixed             $resource ID (or array of IDs) of resource(s) to
-     * unlink (null for ALL matching resources)
-     * @param string|User|int   $user     ID or entity representing user
-     * @param mixed             $list     ID of list to unlink (null for ALL matching
-     * tags, 'none' for tags not in a list, true for tags only found in a list)
-     * @param string|array|null $tag      ID or array of IDs of tag(s) to unlink (null
-     * for ALL matching tags)
-     *
-     * @return void
-     */
-    public function destroyResourceLinks($resource, $user, $list = null, $tag = null)
-    {
-        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
-
-        $dqlWhere = ['rt.user = :user '];
-        $parameters = ['user' => $this->getDoctrineReference(User::class, $user)];
-        if (null !== $resource) {
-            $dqlWhere[] = 'rt.resource IN (:resource) ';
-            $parameters['resource'] = (array)$resource;
-        }
-        if (null !== $list) {
-            if (true === $list) {
-                // special case -- if $list is set to boolean true, we
-                // want to only delete tags that are associated with lists.
-                $dqlWhere[] = 'rt.list IS NOT NULL ';
-            } elseif ('none' === $list) {
-                // special case -- if $list is set to the string "none", we
-                // want to delete tags that are not associated with lists.
-                $dqlWhere[] = 'rt.list IS NULL ';
-            } else {
-                $dqlWhere[] = 'rt.list = :list';
-                $parameters['list'] = $list;
-            }
-        }
-        if (null !== $tag) {
-            $dqlWhere[] = 'rt.tag IN (:tag) ';
-            $parameters['tag'] = (array)$tag;
-        }
-        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result = $query->getResult();
-        $this->processDestroyLinks($result);
-    }
-
-    /**
-     * Unlink rows for the specified user list.
-     *
-     * @param int|UserList $listOrId ID of list to unlink
-     * @param int|User     $userOrId ID of user removing links
-     * @param string|array $tag      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
-     *
-     * @return void
-     */
-    public function destroyListLinks($listOrId, $userOrId, $tag = null)
-    {
-        $list = $this->getDoctrineReference(UserList::class, $listOrId);
-        $user = $this->getDoctrineReference(User::class, $userOrId);
-        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
-            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
-        $parameters = compact('user', 'list');
-        if (null !== $tag) {
-            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
-            $parameters['tag'] = (array)$tag;
-        }
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result = $query->getResult();
-        $this->processDestroyLinks($result);
-    }
-
-    /**
-     * Process link rows marked to be destroyed.
-     *
-     * @param array $potentialOrphans List of resource tags being destroyed.
-     *
-     * @return void
-     */
-    protected function processDestroyLinks($potentialOrphans)
-    {
-        if (count($potentialOrphans) > 0) {
-            $ids = [];
-            // Now delete the unwanted rows:
-            foreach ($potentialOrphans as $current) {
-                $ids[] = $current->getTag()->getId();
-                $this->entityManager->remove($current);
-            }
-            try {
-                $this->entityManager->flush();
-            } catch (\Exception $e) {
-                $this->logError('Could not delete resourceTags: ' . $e->getMessage());
-                throw $e;
-            }
-
-            // Check for orphans:
-            $checkResults = $this->checkForTags(array_unique($ids));
-            if (count($checkResults['missing']) > 0) {
-                $this->deleteByIdArray($checkResults['missing']);
-            }
-        }
     }
 
     /**
@@ -820,7 +715,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
                 $tagIds[] = $tag->getId();
             }
             if (!empty($tagIds)) {
-                $this->destroyResourceLinks(
+                $this->getDbService(ResourceTagsService::class)->destroyResourceTagsLinksForUser(
                     $resource->getId(),
                     $user,
                     $list_id,

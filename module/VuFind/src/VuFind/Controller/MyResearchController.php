@@ -35,6 +35,7 @@ use DateTime;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
+use VuFind\Account\UserAccountService;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -2286,7 +2287,8 @@ class MyResearchController extends AbstractBase
                 // After successful token verification, clear list to shrink session:
                 $csrf->trimTokenList(0);
             }
-            $user->delete(
+            $this->serviceLocator->get(UserAccountService::class)->purgeUserData(
+                $user,
                 $config->Authentication->delete_comments_with_user ?? true,
                 $config->Authentication->delete_ratings_with_user ?? true
             );

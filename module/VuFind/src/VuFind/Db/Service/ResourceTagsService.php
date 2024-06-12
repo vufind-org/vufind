@@ -58,8 +58,10 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceTagsService extends AbstractDbService implements ResourceTagsServiceInterface
+class ResourceTagsService extends AbstractDbService implements DbServiceAwareInterface, ResourceTagsServiceInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -261,6 +263,112 @@ class ResourceTagsService extends AbstractDbService implements ResourceTagsServi
         $query->setParameters(compact('ids'));
         $query->execute();
         return count($ids);
+    }
+
+    /**
+     * Unlink tag rows for the specified resource and user.
+     *
+     * @param int|int[]|null                               $resourceId ID (or array of IDs) of resource(s) to
+     * unlink (null for ALL matching resources)
+     * @param UserEntityInterface|int                      $userOrId   ID or entity representing user
+     * @param UserListEntityInterface|int|bool|string|null $listOrId   ID of list to unlink (null for ALL matching
+     * tags, 'none' for tags not in a list, true for tags only found in a list)
+     * @param int|int[]|null                               $tagId      ID or array of IDs of tag(s) to unlink (null
+     * for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|bool|string|null $listOrId = null,
+        int|array|null $tagId = null
+    ) {
+        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+
+        $dqlWhere = ['rt.user = :user '];
+        $parameters = ['user' => $this->getDoctrineReference(User::class, $userOrId)];
+        if (null !== $resourceId) {
+            $dqlWhere[] = 'rt.resource IN (:resource) ';
+            $parameters['resource'] = (array)$resourceId;
+        }
+        if (null !== $listOrId) {
+            if (true === $listOrId) {
+                // special case -- if $list is set to boolean true, we
+                // want to only delete tags that are associated with lists.
+                $dqlWhere[] = 'rt.list IS NOT NULL ';
+            } elseif ('none' === $listOrId) {
+                // special case -- if $list is set to the string "none", we
+                // want to delete tags that are not associated with lists.
+                $dqlWhere[] = 'rt.list IS NULL ';
+            } else {
+                $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+                $dqlWhere[] = 'rt.list = :list';
+                $parameters['list'] = $listId;
+            }
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = 'rt.tag IN (:tag) ';
+            $parameters['tag'] = (array)$tagId;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        $this->processDestroyLinks($result);
+    }
+
+    /**
+     * Unlink rows for the specified user list.
+     *
+     * @param int|UserList $listOrId ID of list to unlink
+     * @param int|User     $userOrId ID of user removing links
+     * @param string|array $tag      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyListLinks($listOrId, $userOrId, $tag = null)
+    {
+        $list = $this->getDoctrineReference(UserList::class, $listOrId);
+        $user = $this->getDoctrineReference(User::class, $userOrId);
+        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
+        $parameters = compact('user', 'list');
+        if (null !== $tag) {
+            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
+            $parameters['tag'] = (array)$tag;
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        $this->processDestroyLinks($result);
+    }
+
+    /**
+     * Process link rows marked to be destroyed.
+     *
+     * @param array $potentialOrphans List of resource tags being destroyed.
+     *
+     * @return void
+     */
+    protected function processDestroyLinks($potentialOrphans)
+    {
+        if (count($potentialOrphans) > 0) {
+            $ids = [];
+            // Now delete the unwanted rows:
+            foreach ($potentialOrphans as $current) {
+                $ids[] = $current->getTag()->getId();
+                $this->entityManager->remove($current);
+            }
+            $this->entityManager->flush();
+
+            // Check for orphans:
+            $tagService = $this->getDbService(TagService::class);
+            $checkResults = $tagService->checkForTags(array_unique($ids));
+            if (count($checkResults['missing']) > 0) {
+                $tagService->deleteByIdArray($checkResults['missing']);
+            }
+        }
     }
 
     /**

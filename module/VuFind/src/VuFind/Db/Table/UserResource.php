@@ -37,8 +37,6 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserResourceServiceInterface;
 
-use function is_array;
-
 /**
  * Table Definition for user_resource
  *
@@ -142,50 +140,5 @@ class UserResource extends Gateway implements DbServiceAwareInterface
     ) {
         return $this->getDbService(UserResourceServiceInterface::class)
             ->createOrUpdateLink($resource_id, $user_id, $list_id, $notes);
-    }
-
-    /**
-     * Unlink rows for the specified resource. This will also automatically remove
-     * any tags associated with the relationship.
-     *
-     * @param string|array $resource_id ID (or array of IDs) of resource(s) to
-     * unlink (null for ALL matching resources)
-     * @param string       $user_id     ID of user removing links
-     * @param string       $list_id     ID of list to unlink
-     * (null for ALL matching lists, with the destruction of all tags associated
-     * with the $resource_id value; true for ALL matching lists, but retaining
-     * any tags associated with the $resource_id independently of lists)
-     *
-     * @return void
-     */
-    public function destroyLinks($resource_id, $user_id, $list_id = null)
-    {
-        // Remove any tags associated with the links we are removing; we don't
-        // want to leave orphaned tags in the resource_tags table after we have
-        // cleared out favorites in user_resource!
-        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-        $tagService->destroyResourceLinks($resource_id, $user_id, $list_id);
-
-        // Now build the where clause to figure out which rows to remove:
-        $callback = function ($select) use ($resource_id, $user_id, $list_id) {
-            $select->where->equalTo('user_id', $user_id);
-            if (null !== $resource_id) {
-                if (!is_array($resource_id)) {
-                    $resource_id = [$resource_id];
-                }
-                $select->where->in('resource_id', $resource_id);
-            }
-            // null or true values of $list_id have different meanings in the
-            // context of the $tagService->destroyResourceLinks() call above, since
-            // some tags have a null $list_id value. In the case of user_resource
-            // rows, however, every row has a non-null $list_id value, so the
-            // two cases are equivalent and may be handled identically.
-            if (null !== $list_id && true !== $list_id) {
-                $select->where->equalTo('list_id', $list_id);
-            }
-        };
-
-        // Delete the rows:
-        $this->delete($callback);
     }
 }
