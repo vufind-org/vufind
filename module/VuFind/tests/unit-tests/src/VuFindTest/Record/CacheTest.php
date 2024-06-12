@@ -276,8 +276,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         };
 
         $recordService = $this->createMock(RecordServiceInterface::class);
-        $recordService->method('findRecords')->willReturnCallback($findRecordsCallback);
-        $recordService->method('findRecord')->willReturnCallback($findRecordCallback);
+        $recordService->method('getRecords')->willReturnCallback($findRecordsCallback);
+        $recordService->method('getRecord')->willReturnCallback($findRecordCallback);
         $recordService->method('updateRecord')->willReturnCallback($updateRecordCallback);
 
         return $recordService;
