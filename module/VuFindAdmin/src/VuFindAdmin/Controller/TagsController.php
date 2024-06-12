@@ -33,6 +33,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Tags\TagsService;
 
 use function count;
 use function intval;
@@ -82,7 +83,8 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
-        $view->statistics = $this->getDbService(TagServiceInterface::class)->getStatistics(true);
+        $view->statistics = $this->getDbService(TagServiceInterface::class)
+            ->getStatistics(true, $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags());
         return $view;
     }
 
@@ -122,7 +124,8 @@ class TagsController extends AbstractAdmin
             $this->convertFilter($this->getParam('resource_id', false)),
             $this->convertFilter($this->getParam('tag_id', false)),
             $this->getParam('order', false),
-            $page
+            $page,
+            $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
         );
         $view->params = $this->params()->fromQuery();
         return $view;
@@ -306,7 +309,8 @@ class TagsController extends AbstractAdmin
         $count = $this->getDbService(ResourceTagsServiceInterface::class)->getResourceTagsPaginator(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
-            $this->convertFilter($this->getParam('tag_id'))
+            $this->convertFilter($this->getParam('tag_id')),
+            caseSensitiveTags: $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
         )->getTotalItemCount();
 
         $data = [
@@ -353,7 +357,8 @@ class TagsController extends AbstractAdmin
         return $this->getDbService(ResourceTagsServiceInterface::class)->getUniqueTags(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
-            $this->convertFilter($this->getParam('tag_id', false))
+            $this->convertFilter($this->getParam('tag_id', false)),
+            $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
         );
     }
 

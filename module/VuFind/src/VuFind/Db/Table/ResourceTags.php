@@ -277,11 +277,12 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
     /**
      * Get statistics on use of tags.
      *
-     * @param bool $extended Include extended (unique/anonymous) stats.
+     * @param bool  $extended          Include extended (unique/anonymous) stats.
+     * @param ?bool $caseSensitiveTags Should we treat tags as case-sensitive? (null for configured behavior)
      *
      * @return array
      */
-    public function getStatistics($extended = false)
+    public function getStatistics($extended = false, $caseSensitiveTags = null)
     {
         $select = $this->sql->select();
         $select->columns(
@@ -303,7 +304,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $result = $statement->execute();
         $stats = (array)$result->current();
         if ($extended) {
-            $stats['unique'] = count($this->getUniqueTags());
+            $stats['unique'] = count($this->getUniqueTags($caseSensitiveTags));
             $stats['anonymous'] = $this->getAnonymousCount();
         }
         return $stats;

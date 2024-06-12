@@ -47,11 +47,12 @@ interface TagServiceInterface extends DbServiceInterface
     /**
      * Get statistics on use of tags.
      *
-     * @param bool $extended Include extended (unique/anonymous) stats.
+     * @param bool $extended          Include extended (unique/anonymous) stats.
+     * @param bool $caseSensitiveTags Should we treat tags case-sensitively?
      *
      * @return array
      */
-    public function getStatistics(bool $extended = false): array;
+    public function getStatistics(bool $extended = false, bool $caseSensitiveTags = false): array;
 
     /**
      * Get the tags that match a string

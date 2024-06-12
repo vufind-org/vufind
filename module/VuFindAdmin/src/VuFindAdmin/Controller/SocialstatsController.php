@@ -33,6 +33,7 @@ use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Class controls VuFind social statistical data.
@@ -57,7 +58,9 @@ class SocialstatsController extends AbstractAdmin
         $view->comments = $this->getDbService(CommentsServiceInterface::class)->getStatistics();
         $view->ratings = $this->getDbService(RatingsServiceInterface::class)->getStatistics();
         $view->favorites = $this->getDbService(UserResourceServiceInterface::class)->getStatistics();
-        $view->tags = $this->getDbService(TagServiceInterface::class)->getStatistics();
+        $view->tags = $this->getDbService(TagServiceInterface::class)->getStatistics(
+            caseSensitiveTags: $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
+        );
         return $view;
     }
 }

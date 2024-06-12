@@ -61,10 +61,12 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
      *
      * @param ResourcePopulator $resourcePopulator Resource populator service
      * @param int               $maxLength         Maximum tag length
+     * @param bool              $caseSensitive     Are tags case sensitive?
      */
     public function __construct(
         protected ResourcePopulator $resourcePopulator,
-        protected int $maxLength = 64
+        protected int $maxLength = 64,
+        protected bool $caseSensitive = false
     ) {
     }
 
@@ -193,5 +195,15 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
     public function fixDuplicateTags(): void
     {
         $this->getDbTable('Tags')->fixDuplicateTags();
+    }
+
+    /**
+     * Are tags case-sensitive?
+     *
+     * @return bool
+     */
+    public function hasCaseSensitiveTags(): bool
+    {
+        return $this->caseSensitive;
     }
 }

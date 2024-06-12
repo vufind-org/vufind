@@ -72,7 +72,8 @@ class TagsServiceFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         return new $requestedName(
             $container->get(ResourcePopulator::class),
-            $config->Social->max_tag_length ?? 64
+            $config->Social->max_tag_length ?? 64,
+            $config->Social->case_sensitive_tags ?? false
         );
     }
 }
