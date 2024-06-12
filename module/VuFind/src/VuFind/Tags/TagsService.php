@@ -30,11 +30,13 @@
 namespace VuFind\Tags;
 
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
@@ -108,6 +110,25 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
     }
 
     /**
+     * Get a tag entity if it exists; create it otherwise.
+     *
+     * @param string $tag Text of tag to fetch/create
+     *
+     * @return TagsEntityInterface
+     */
+    public function getOrCreateTagByText(string $tag): TagsEntityInterface
+    {
+        $tagDbService = $this->getDbService(TagServiceInterface::class);
+        if ($entity = $tagDbService->getTagByText($tag, $this->caseSensitive)) {
+            return $entity;
+        }
+        $newEntity = $tagDbService->createEntity()
+            ->setTag($this->caseSensitive ? $tag : mb_strtolower($tag, 'UTF8'));
+        $tagDbService->persistEntity($newEntity);
+        return $newEntity;
+    }
+
+    /**
      * Unlink a tag from a resource object.
      *
      * @param string                           $tagText      Text of tag to link (empty strings will be ignored)
@@ -124,12 +145,9 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
         UserListEntityInterface|int|null $listOrId = null
     ): void {
         if (($trimmedTagText = trim($tagText)) !== '') {
-            $tags = $this->getDbTable('Tags');
-            $tag = $tags->getByText($trimmedTagText);
-
             $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
                 $resourceOrId,
-                $tag,
+                $this->getOrCreateTagByText($trimmedTagText),
                 $userOrId,
                 $listOrId
             );
@@ -154,9 +172,9 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
     ) {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         if (($trimmedTagText = trim($tagText)) !== '') {
-            $tags = $this->getDbTable('Tags');
+            $tagService = $this->getDbService(TagServiceInterface::class);
             $tagIds = [];
-            foreach ($tags->getByText($trimmedTagText, false, false) as $tag) {
+            foreach ($tagService->getTagsByText($trimmedTagText, $this->caseSensitive) as $tag) {
                 $tagIds[] = $tag->getId();
             }
             if ($tagIds) {
@@ -194,7 +212,7 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
      */
     public function fixDuplicateTags(): void
     {
-        $this->getDbTable('Tags')->fixDuplicateTags($this->hasCaseSensitiveTags());
+        $this->getDbTable('Tags')->fixDuplicateTags($this->caseSensitive);
     }
 
     /**

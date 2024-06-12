@@ -37,6 +37,7 @@ use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 
 use function count;
 use function is_callable;
@@ -89,21 +90,14 @@ class Tags extends Gateway implements DbServiceAwareInterface
     public function getByText($tag, $create = true, $firstOnly = true, $caseSensitive = null)
     {
         $cs = $caseSensitive ?? $this->caseSensitive;
-        $callback = function ($select) use ($tag, $cs) {
-            if ($cs) {
-                $select->where->equalTo('tag', $tag);
-            } else {
-                $select->where->literal('lower(tag) = lower(?)', [$tag]);
-            }
-        };
-        $result = $this->select($callback);
+        $result = $this->getDbService(TagServiceInterface::class)->getTagsByText($tag, $cs);
         if (count($result) == 0 && $create) {
             $row = $this->createRow();
             $row->tag = $cs ? $tag : mb_strtolower($tag, 'UTF8');
             $row->save();
             return $firstOnly ? $row : [$row];
         }
-        return $firstOnly ? $result->current() : $result;
+        return $firstOnly ? $result[0] ?? null : $result;
     }
 
     /**
@@ -616,21 +610,23 @@ class Tags extends Gateway implements DbServiceAwareInterface
     /**
      * Support method for fixDuplicateTags()
      *
-     * @param string $tag Tag to deduplicate.
+     * @param string $tag           Tag to deduplicate.
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return void
      */
-    protected function fixDuplicateTag($tag)
+    protected function fixDuplicateTag($tag, $caseSensitive = null)
     {
         // Make sure this really is a duplicate.
-        $result = $this->getByText($tag, false, false);
+        $result = $this->getDbService(TagServiceInterface::class)
+            ->getTagsByText($tag, $caseSensitive ?? $this->caseSensitive);
         if (count($result) < 2) {
             return;
         }
 
-        $first = $result->current();
+        $first = $result[0];
         foreach ($result as $current) {
-            $this->mergeTags($first->id, $current->id);
+            $this->mergeTags($first->getId(), $current->getId());
         }
     }
 
@@ -644,7 +640,7 @@ class Tags extends Gateway implements DbServiceAwareInterface
     public function fixDuplicateTags($caseSensitive = null)
     {
         foreach ($this->getDuplicates($caseSensitive) as $dupe) {
-            $this->fixDuplicateTag($dupe->tag);
+            $this->fixDuplicateTag($dupe->tag, $caseSensitive);
         }
     }
 }

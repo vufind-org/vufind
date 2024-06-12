@@ -80,6 +80,42 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     }
 
     /**
+     * Get all matching tags by text. Normally, 0 or 1 results will be retrieved, but more
+     * may be retrieved under exceptional circumstances (e.g. if retrieving case-insensitively
+     * after storing data case-sensitively).
+     *
+     * @param string $text          Tag text to match
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagsByText(string $text, bool $caseSensitive = false): array
+    {
+        $callback = function ($select) use ($text, $caseSensitive) {
+            if ($caseSensitive) {
+                $select->where->equalTo('tag', $text);
+            } else {
+                $select->where->literal('lower(tag) = lower(?)', [$text]);
+            }
+        };
+        return iterator_to_array($this->getDbTable('Tags')->select($callback));
+    }
+
+    /**
+     * Get the first available matching tag by text; return null if no match is found.
+     *
+     * @param string $text          Tag text to match
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagByText(string $text, bool $caseSensitive = false): ?TagsEntityInterface
+    {
+        $tags = $this->getTagsByText($text, $caseSensitive);
+        return $tags[0] ?? null;
+    }
+
+    /**
      * Get all resources associated with the provided tag query.
      *
      * @param string $q             Search query
@@ -316,5 +352,15 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     public function getTagById(int $id): ?TagsEntityInterface
     {
         return $this->getDbTable('Tags')->select(['id' => $id])->current();
+    }
+
+    /**
+     * Create a new Tag entity.
+     *
+     * @return TagsEntityInterface
+     */
+    public function createEntity(): TagsEntityInterface
+    {
+        return $this->getDbTable('Tags')->createRow();
     }
 }

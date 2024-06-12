@@ -443,7 +443,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tag = $this->getDbTable('tags')->getByText($tagText);
+            $tag = $this->tagsService->getOrCreateTagByText($tagText);
             $this->resourceTagsService->createLink(null, $tag, $user, $list);
         }
     }
