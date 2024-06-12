@@ -143,15 +143,16 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
     /**
      * Get resources associated with a particular tag.
      *
-     * @param string $tag    Tag to match
-     * @param string $userId ID of user owning favorite list
-     * @param string $listId ID of list to retrieve (null for all favorites)
+     * @param string $tag           Tag to match
+     * @param string $userId        ID of user owning favorite list
+     * @param string $listId        ID of list to retrieve (null for all favorites)
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getResourcesForTag($tag, $userId, $listId = null)
+    public function getResourcesForTag($tag, $userId, $listId = null, $caseSensitive = null)
     {
-        $callback = function ($select) use ($tag, $userId, $listId) {
+        $callback = function ($select) use ($tag, $userId, $listId, $caseSensitive) {
             $select->columns(
                 [
                     'resource_id' => new Expression(
@@ -166,7 +167,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 'resource_tags.tag_id = t.id',
                 []
             );
-            if ($this->caseSensitive) {
+            if ($caseSensitive ?? $this->caseSensitive) {
                 $select->where->equalTo('t.tag', $tag);
             } else {
                 $select->where->literal('lower(t.tag) = lower(?)', [$tag]);
@@ -183,10 +184,11 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
     /**
      * Get lists associated with a particular tag.
      *
-     * @param string|array|null $tag        Tag to match (null for all)
-     * @param string|array|null $listId     List ID to retrieve (null for all)
-     * @param bool              $publicOnly Whether to return only public lists
-     * @param bool              $andTags    Use AND operator when filtering by tag.
+     * @param string|array|null $tag           Tag to match (null for all)
+     * @param string|array|null $listId        List ID to retrieve (null for all)
+     * @param bool              $publicOnly    Whether to return only public lists
+     * @param bool              $andTags       Use AND operator when filtering by tag.
+     * @param ?bool             $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
@@ -194,7 +196,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $tag,
         $listId = null,
         $publicOnly = true,
-        $andTags = true
+        $andTags = true,
+        $caseSensitive = null
     ) {
         $tag = (array)($tag ?? []);
         $listId = $listId ? (array)$listId : null;
@@ -203,7 +206,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
             $tag,
             $listId,
             $publicOnly,
-            $andTags
+            $andTags,
+            $caseSensitive
         ) {
             $select->columns(
                 ['id' => new Expression('min(resource_tags.id)'), 'list_id']
@@ -236,7 +240,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 $select->where->and->equalTo('public', 1);
             }
             if ($tag) {
-                if ($this->caseSensitive) {
+                if ($caseSensitive ?? $this->caseSensitive) {
                     $select->where->and->in('t.tag', $tag);
                 } else {
                     $lowerTags = array_map(
@@ -505,15 +509,16 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
     /**
      * Gets unique tags from the table
      *
-     * @param string $userId     ID of user
-     * @param string $resourceId ID of the resource
-     * @param string $tagId      ID of the tag
+     * @param string $userId        ID of user
+     * @param string $resourceId    ID of the resource
+     * @param string $tagId         ID of the tag
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getUniqueTags($userId = null, $resourceId = null, $tagId = null)
+    public function getUniqueTags($userId = null, $resourceId = null, $tagId = null, $caseSensitive = null)
     {
-        $callback = function ($select) use ($userId, $resourceId, $tagId) {
+        $callback = function ($select) use ($userId, $resourceId, $tagId, $caseSensitive) {
             $select->columns(
                 [
                     'resource_id' => new Expression(
@@ -547,8 +552,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
                 [
-                    'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
+                    'tag' => ($caseSensitive ?? $this->caseSensitive) ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
             if (null !== $userId) {
@@ -651,12 +655,13 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
     /**
      * Get Resource Tags
      *
-     * @param string $userId     ID of user
-     * @param string $resourceId ID of the resource
-     * @param string $tagId      ID of the tag
-     * @param string $order      The order in which to return the data
-     * @param string $page       The page number to select
-     * @param string $limit      The number of items to fetch
+     * @param string $userId        ID of user
+     * @param string $resourceId    ID of the resource
+     * @param string $tagId         ID of the tag
+     * @param string $order         The order in which to return the data
+     * @param string $page          The page number to select
+     * @param string $limit         The number of items to fetch
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return \Laminas\Paginator\Paginator
      */
@@ -666,7 +671,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $tagId = null,
         $order = null,
         $page = null,
-        $limit = 20
+        $limit = 20,
+        $caseSensitive = null
     ) {
         $order = (null !== $order)
             ? [$order]
@@ -678,8 +684,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
             ['t' => 'tags'],
             'resource_tags.tag_id = t.id',
             [
-                'tag' =>
-                    $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
+                'tag' => ($caseSensitive ?? $this->caseSensitive) ? 'tag' : new Expression('lower(tag)'),
             ]
         );
         $select->join(
