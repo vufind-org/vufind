@@ -36,6 +36,8 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Table\Resource;
 
+use function count;
+
 /**
  * Database service for resource.
  *
