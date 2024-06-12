@@ -100,6 +100,8 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      * (optional).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Tags\TagService::linkTagToResource()
      */
     public function addTag($tagText, $user, $list_id = null)
     {

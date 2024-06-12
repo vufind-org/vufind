@@ -40,6 +40,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
+use function strlen;
+
 /**
  * Service for handling tag processing.
  *
@@ -97,7 +99,37 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
     {
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
         foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
+            $this->linkTagToResource($tag, $resource, $user);
+        }
+    }
+
+    /**
+     * Unlink a tag from a resource object.
+     *
+     * @param string                           $tagText      Text of tag to link (empty strings will be ignored)
+     * @param ResourceEntityInterface|int      $resourceOrId Resource entity or ID to link
+     * @param UserEntityInterface|int          $userOrId     Owner of tag link
+     * @param null|UserListEntityInterface|int $listOrId     Optional list (omit to tag at resource level)
+     *
+     * @return void
+     */
+    public function linkTagToResource(
+        string $tagText,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ): void {
+        $trimmedTagText = trim($tagText);
+        if (strlen($trimmedTagText) > 0) {
+            $tags = $this->getDbTable('Tags');
+            $tag = $tags->getByText($trimmedTagText);
+
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+                $resourceOrId,
+                $tag,
+                $userOrId,
+                $listOrId
+            );
         }
     }
 

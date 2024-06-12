@@ -358,7 +358,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         // Add the new tags:
         foreach ($tagArray as $tag) {
-            $resource->addTag($tag, $user, $list->getId());
+            $this->tagsService->linkTagToResource($tag, $resource, $user, $list);
         }
     }
 
