@@ -2,19 +2,24 @@
 
 VuFind.register("sticky_elements", function StickyElements() {
   var _stickyElements;
-  var _hiddenStickyElementsSelectors;
+  var _hiddenStickyElementsConfig;
 
-  function setChildElementsHidden(e, hidden = true) {
-    _hiddenStickyElementsSelectors.forEach(
-      (selector) => e
-        .querySelectorAll(selector)
-        .forEach((c) => {
-          if (hidden) {
-            c.classList.add("sticky-hidden");
-          } else {
-            c.classList.remove("sticky-hidden");
-          }
-        })
+  function setChildElementsHidden(element, hidden = true) {
+    _hiddenStickyElementsConfig.forEach(
+      (c) => {
+        let config = JSON.parse(c);
+        let isInScope =
+          (config["min-width"] === undefined || window.innerWidth >= config["min-width"])
+          && (config["max-width"] === undefined || window.innerWidth <= config["max-width"]);
+        element.querySelectorAll(config.selector)
+          .forEach((e) => {
+            if (isInScope && hidden) {
+              e.classList.add("sticky-hidden");
+            } else {
+              e.classList.remove("sticky-hidden");
+            }
+          });
+      }
     );
   }
 
@@ -56,14 +61,26 @@ VuFind.register("sticky_elements", function StickyElements() {
 
         // only hide elements if placeholder already passed the sticky element even if shrunk
         setChildElementsHidden(stickyElement);
-        if (placeholder.getBoundingClientRect().bottom >  stickyContainer.getBoundingClientRect().bottom) {
+        if (placeholder.getBoundingClientRect().bottom > stickyContainer.getBoundingClientRect().bottom) {
           setChildElementsHidden(stickyElement, false);
         }
 
         let stickyElementStyle = window.getComputedStyle(stickyElement, null);
+
+        let isInScope =
+          (
+            stickyElement.dataset.stickyMaxWidth === undefined
+            || stickyElement.dataset.stickyMaxWidth >= window.innerWidth
+          )
+          && (
+            stickyElement.dataset.stickyMinWidth === undefined
+            || stickyElement.dataset.stickyMinWidth <= window.innerWidth
+          );
+
         if (
-          (!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
-          || (isSticky && window.scrollY + currentOffset >= placeholder.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
+          isInScope
+          && ((!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
+          || (isSticky && window.scrollY + currentOffset >= placeholder.offsetTop - parseInt(stickyElementStyle.marginTop, 10)))
         ) {
           if (forceStyleCalculation || !isSticky) {
             stickyContainer.classList.add("sticky");
@@ -93,8 +110,10 @@ VuFind.register("sticky_elements", function StickyElements() {
           stickyContainer.style.width = "";
           stickyContainer.style.zIndex = "";
         }
-        currentOffset += stickyContainer.getBoundingClientRect().height;
-        num += 1;
+        if (isInScope) {
+          currentOffset += stickyContainer.getBoundingClientRect().height;
+          num += 1;
+        }
       });
   }
 
@@ -107,14 +126,27 @@ VuFind.register("sticky_elements", function StickyElements() {
     handleStickyElements(true);
   }
 
+  // todo load again after result loaded
+
   function init() {
     let stickyElementsConfig = VuFind.config.get('sticky-elements', []);
-    _stickyElements = stickyElementsConfig.flatMap((selector) => Array.from(document.querySelectorAll(selector)));
+    _stickyElements = stickyElementsConfig.flatMap(
+      (c) => {
+        let config = JSON.parse(c);
+        let elements = document.querySelectorAll(config.selector);
+        if (config["min-width"] !== undefined) {
+          elements.forEach((e) => e.dataset.stickyMinWidth = config["min-width"]);
+        }
+        if (config["max-width"] !== undefined) {
+          elements.forEach((e) => e.dataset.stickyMaxWidth = config["max-width"]);
+        }
+        return Array.from(elements);
+      });
     if (!_stickyElements.length) {
       return;
     }
 
-    _hiddenStickyElementsSelectors = VuFind.config.get('hidden-sticky-elements', []);
+    _hiddenStickyElementsConfig = VuFind.config.get('hidden-sticky-elements', []);
 
     let resizeObserver = new ResizeObserver(calculateStyles);
 
