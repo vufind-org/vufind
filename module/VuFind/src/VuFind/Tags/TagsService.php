@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind tag processing logic
+ * Service for handling tag processing.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -36,7 +36,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
- * VuFind tag processing logic
+ * Service for handling tag processing.
  *
  * @category VuFind
  * @package  Tags
