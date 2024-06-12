@@ -353,12 +353,12 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
         if ($replaceExisting) {
-            $resource->deleteTags($user, $list->getId());
+            $this->resourceTagsService->destroyResourceTagsLinksForUser($resource->getId(), $user, $list);
         }
 
         // Add the new tags:
         foreach ($tagArray as $tag) {
-            $resource->addTag($tag, $user, $list->getId());
+            $this->tagsService->linkTagToResource($tag, $resource, $user, $list);
         }
     }
 

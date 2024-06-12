@@ -36,6 +36,7 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
@@ -448,7 +449,8 @@ class User extends RowGateway implements
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
         if ($replaceExisting) {
-            $resource->deleteTags($this, $list->id);
+            $this->getDbService(ResourceTagsService::class)
+                ->destroyResourceTagsLinksForUser($resource->getId(), $this, $list);
         }
 
         // Add the new tags:

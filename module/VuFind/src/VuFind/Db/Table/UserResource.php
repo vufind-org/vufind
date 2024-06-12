@@ -164,8 +164,12 @@ class UserResource extends Gateway implements DbServiceAwareInterface
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $this->getDbService(ResourceTagsServiceInterface::class)
-            ->destroyResourceTagsLinksForUser($resource_id, $user_id, $list_id);
+        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
+        if ($list_id === true) {
+            $resourceTagsService->destroyAllListResourceTagsLinksForUser($resource_id, $user_id);
+        } else {
+            $resourceTagsService->destroyResourceTagsLinksForUser($resource_id, $user_id, $list_id);
+        }
 
         // Now build the where clause to figure out which rows to remove:
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {

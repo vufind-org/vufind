@@ -29,11 +29,18 @@
 
 namespace VuFind\Tags;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
+use function is_array;
 
 /**
  * Service for handling tag processing.
@@ -44,8 +51,9 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class TagsService implements DbTableAwareInterface
+class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
 {
+    use DbServiceAwareTrait;
     use DbTableAwareTrait;
 
     /**
@@ -83,15 +91,80 @@ class TagsService implements DbTableAwareInterface
      *
      * @param RecordDriver        $driver Driver representing record being tagged
      * @param UserEntityInterface $user   The user adding the tag(s)
-     * @param string[]            $tags   The user-provided tag(s)
+     * @param string|string[]     $tags   The user-provided tag(s), either as a string (to parse) or an
+     * array (already parsed)
      *
      * @return void
      */
-    public function addTagsToRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function linkTagsToRecord(RecordDriver $driver, UserEntityInterface $user, string|array $tags): void
     {
+        $parsedTags = is_array($tags) ? $tags : $this->parse($tags);
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
-        foreach ($tags as $tag) {
-            $resource->addTag($tag, $user);
+        foreach ($parsedTags as $tag) {
+            $this->linkTagToResource($tag, $resource, $user);
+        }
+    }
+
+    /**
+     * Unlink a tag from a resource object.
+     *
+     * @param string                           $tagText      Text of tag to link (empty strings will be ignored)
+     * @param ResourceEntityInterface|int      $resourceOrId Resource entity or ID to link
+     * @param UserEntityInterface|int          $userOrId     Owner of tag link
+     * @param null|UserListEntityInterface|int $listOrId     Optional list (omit to tag at resource level)
+     *
+     * @return void
+     */
+    public function linkTagToResource(
+        string $tagText,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ): void {
+        if (($trimmedTagText = trim($tagText)) !== '') {
+            $tags = $this->getDbTable('Tags');
+            $tag = $tags->getByText($trimmedTagText);
+
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+                $resourceOrId,
+                $tag,
+                $userOrId,
+                $listOrId
+            );
+        }
+    }
+
+    /**
+     * Unlink a tag from a resource object.
+     *
+     * @param string                           $tagText      Text of tag to unlink
+     * @param ResourceEntityInterface|int      $resourceOrId Resource entity or ID to unlink
+     * @param UserEntityInterface|int          $userOrId     Owner of tag to unlink
+     * @param null|UserListEntityInterface|int $listOrId     Optional filter (only unlink from this list if provided)
+     *
+     * @return void
+     */
+    public function unlinkTagFromResource(
+        string $tagText,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ) {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        if (($trimmedTagText = trim($tagText)) !== '') {
+            $tags = $this->getDbTable('Tags');
+            $tagIds = [];
+            foreach ($tags->getByText($trimmedTagText, false, false) as $tag) {
+                $tagIds[] = $tag->getId();
+            }
+            if ($tagIds) {
+                $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(
+                    $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId,
+                    $userOrId,
+                    $listId,
+                    $tagIds
+                );
+            }
         }
     }
 
@@ -104,11 +177,11 @@ class TagsService implements DbTableAwareInterface
      *
      * @return void
      */
-    public function deleteTagsFromRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function unlinkTagsFromRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
     {
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
         foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
+            $this->unlinkTagFromResource($tag, $resource, $user);
         }
     }
 

@@ -158,12 +158,11 @@ class ResourceTagsService extends AbstractDbService implements
     /**
      * Unlink tag rows for the specified resource and user.
      *
-     * @param int|int[]|null                               $resourceId ID (or array of IDs) of resource(s) to
+     * @param int|int[]|null                   $resourceId ID (or array of IDs) of resource(s) to
      * unlink (null for ALL matching resources)
-     * @param UserEntityInterface|int                      $userOrId   ID or entity representing user
-     * @param UserListEntityInterface|int|bool|string|null $listOrId   ID of list to unlink (null for ALL matching
-     * tags, 'none' for tags not in a list, true for tags only found in a list)
-     * @param int|int[]|null                               $tagId      ID or array of IDs of tag(s) to unlink (null
+     * @param UserEntityInterface|int          $userOrId   ID or entity representing user
+     * @param UserListEntityInterface|int|null $listOrId   ID of list to unlink (null for ALL matching tags)
+     * @param int|int[]|null                   $tagId      ID or array of IDs of tag(s) to unlink (null
      * for ALL matching tags)
      *
      * @return void
@@ -171,12 +170,51 @@ class ResourceTagsService extends AbstractDbService implements
     public function destroyResourceTagsLinksForUser(
         int|array|null $resourceId,
         UserEntityInterface|int $userOrId,
-        UserListEntityInterface|int|bool|string|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         int|array|null $tagId = null
-    ) {
+    ): void {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         $this->getDbTable('ResourceTags')->destroyResourceLinks($resourceId, $userId, $listId, $tagId);
+    }
+
+    /**
+     * Unlink tag rows that are not associated with a favorite list for the specified resource and user.
+     *
+     * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
+     * resources)
+     * @param UserEntityInterface|int $userOrId   ID or entity representing user
+     * @param int|int[]|null          $tagId      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyNonListResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $this->getDbTable('ResourceTags')->destroyResourceLinks($resourceId, $userId, 'none', $tagId);
+    }
+
+    /**
+     * Unlink all tag rows associated with favorite lists for the specified resource and user. Tags added directly
+     * to records outside of favorites will not be impacted.
+     *
+     * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
+     * resources)
+     * @param UserEntityInterface|int $userOrId   ID or entity representing user
+     * @param int|int[]|null          $tagId      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyAllListResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $this->getDbTable('ResourceTags')->destroyResourceLinks($resourceId, $userId, true, $tagId);
     }
 
     /**

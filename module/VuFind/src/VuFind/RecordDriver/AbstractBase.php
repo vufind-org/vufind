@@ -216,7 +216,7 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Tags\TagsService::addTagsToRecord()
+     * @deprecated Use \VuFind\Tags\TagsService::linkTagsToRecord()
      */
     public function addTags($user, $tags)
     {
@@ -238,7 +238,7 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Tags\TagsService::deleteTagsFromRecord()
+     * @deprecated Use \VuFind\Tags\TagsService::unlinkTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
