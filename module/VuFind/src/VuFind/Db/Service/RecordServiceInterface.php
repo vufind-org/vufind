@@ -45,24 +45,24 @@ use VuFind\Db\Entity\RecordEntityInterface;
 interface RecordServiceInterface extends DbServiceInterface
 {
     /**
-     * Find a record by id.
+     * Retrieve a record by id.
      *
      * @param string $id     Record ID
      * @param string $source Record source
      *
      * @return ?RecordEntityInterface
      */
-    public function findRecord($id, $source): ?RecordEntityInterface;
+    public function getRecord($id, $source): ?RecordEntityInterface;
 
     /**
-     * Find records by ids.
+     * Retrieve records by ids.
      *
      * @param array  $ids    Record IDs
      * @param string $source Record source
      *
      * @return RecordEntityInterface[] Array of record objects found
      */
-    public function findRecords($ids, $source): array;
+    public function getRecords($ids, $source): array;
 
     /**
      * Update an existing entry in the record table or create a new one.

@@ -49,27 +49,27 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
     use DbTableAwareTrait;
 
     /**
-     * Find a record by id.
+     * Retrieve a record by id.
      *
      * @param string $id     Record ID
      * @param string $source Record source
      *
      * @return ?RecordEntityInterface
      */
-    public function findRecord($id, $source): ?RecordEntityInterface
+    public function getRecord($id, $source): ?RecordEntityInterface
     {
         return $this->getDbTable('record')->findRecord($id, $source);
     }
 
     /**
-     * Find records by ids.
+     * Retrieve records by ids.
      *
      * @param array  $ids    Record IDs
      * @param string $source Record source
      *
      * @return RecordEntityInterface[] Array of record objects found
      */
-    public function findRecords($ids, $source): array
+    public function getRecords($ids, $source): array
     {
         return $this->getDbTable('record')->findRecords($ids, $source);
     }

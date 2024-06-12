@@ -104,7 +104,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     public function lookup($id, $source)
     {
         $this->debug("Checking {$source}|{$id}");
-        $record = $this->recordService->findRecord($id, $source);
+        $record = $this->recordService->getRecord($id, $source);
         $this->debug(
             "Cached record {$source}|{$id} "
             . ($record ? 'found' : 'not found')
@@ -137,7 +137,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
 
         $this->debug("Checking $source batch: " . implode(', ', $ids));
         $vufindRecords = [];
-        $cachedRecords = $this->recordService->findRecords($ids, $source);
+        $cachedRecords = $this->recordService->getRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
             try {
                 $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
