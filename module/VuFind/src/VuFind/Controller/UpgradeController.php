@@ -587,7 +587,9 @@ class UpgradeController extends AbstractBase
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->getDbService(TagServiceInterface::class)->getDuplicateTags();
+            $dupeTags = $this->getDbService(TagServiceInterface::class)->getDuplicateTags(
+                $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
+            );
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }

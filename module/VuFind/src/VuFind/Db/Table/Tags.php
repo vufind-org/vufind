@@ -637,11 +637,13 @@ class Tags extends Gateway implements DbServiceAwareInterface
     /**
      * Repair duplicate tags in the database (if any).
      *
+     * @param ?bool $caseSensitive Should tags be case sensitive? (null to use configured default)
+     *
      * @return void
      */
-    public function fixDuplicateTags()
+    public function fixDuplicateTags($caseSensitive = null)
     {
-        foreach ($this->getDuplicates() as $dupe) {
+        foreach ($this->getDuplicates($caseSensitive) as $dupe) {
             $this->fixDuplicateTag($dupe->tag);
         }
     }
