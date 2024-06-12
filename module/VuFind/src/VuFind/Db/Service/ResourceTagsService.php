@@ -427,11 +427,17 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
         ?int $resourceId = null,
         ?int $tagId = null
     ): array {
-        $tagClause = $this->caseSensitive ? 't.tag' : 'LOWER(t.tag)';
+        if ($this->caseSensitive) {
+            $tagClause = 't.tag AS tag';
+            $sort = 'LOWER(t.tag), tag';
+        } else {
+            $tagClause = 'LOWER(t.tag) AS tag, MAX(t.tag) AS HIDDEN tagTiebreaker';
+            $sort = 'tag, tagTiebreaker';
+        }
         $dql = 'SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, '
             . 'MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, '
-            . $tagClause . ' AS tag, MAX(t.tag) AS HIDDEN tagTiebreaker '
-            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . $tagClause
+            . ' FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'LEFT JOIN rt.resource r '
             . 'LEFT JOIN rt.tag t '
             . 'LEFT JOIN rt.list l '
@@ -453,7 +459,7 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
         $dql .= ' GROUP BY tag'
-            . ' ORDER BY tag, tagTiebreaker';
+            . ' ORDER BY ' . $sort;
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
