@@ -79,8 +79,8 @@ VuFind.register("sticky_elements", function StickyElements() {
 
         if (
           isInScope
-          && ((!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10))
-          || (isSticky && window.scrollY + currentOffset >= placeholder.offsetTop - parseInt(stickyElementStyle.marginTop, 10)))
+          && ((!isSticky && window.scrollY + currentOffset >= stickyContainer.offsetTop - parseInt(stickyElementStyle.marginTop, 10) + 1)
+          || (isSticky && window.scrollY + currentOffset >= placeholder.offsetTop - parseInt(stickyElementStyle.marginTop, 10) + 1))
         ) {
           if (forceStyleCalculation || !isSticky) {
             stickyContainer.classList.add("sticky");
