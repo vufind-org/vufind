@@ -82,6 +82,8 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      * (optional -- omitting this will delete ALL of the user's tags).
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyResourceTagsLinksForUser()
      */
     public function deleteTags($user, $list_id = null)
     {
