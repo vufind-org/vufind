@@ -49,6 +49,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
@@ -585,8 +586,7 @@ class UpgradeController extends AbstractBase
             // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
-            $resourceTagsTable = $this->getTable('ResourceTags');
-            $anonymousTags = $resourceTagsTable->getAnonymousCount();
+            $anonymousTags = $this->getDbService(ResourceTagsServiceInterface::class)->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
@@ -730,10 +730,9 @@ class UpgradeController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage("User {$user} not found.", 'error');
                 } else {
-                    $table = $this->getTable('ResourceTags');
-                    $table->assignAnonymousTags($user->id);
+                    $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
-                        "Assigned all anonymous tags to {$user->username}."
+                        "Assigned all anonymous tags to {$user->getUsername()}."
                     );
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 }

@@ -233,4 +233,27 @@ class ResourceTagsService extends AbstractDbService implements
             $deleted += $this->deleteLinksByResourceTagsIdArray($ids);
         }
     }
+
+    /**
+     * Get count of anonymous tags
+     *
+     * @return int count
+     */
+    public function getAnonymousCount(): int
+    {
+        return $this->getDbTable('ResourceTags')->getAnonymousCount();
+    }
+
+    /**
+     * Assign anonymous tags to the specified user.
+     *
+     * @param UserEntityInterface|int $userOrId User entity or ID to own anonymous tags.
+     *
+     * @return void
+     */
+    public function assignAnonymousTags(UserEntityInterface|int $userOrId): void
+    {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $this->getDbTable('ResourceTags')->assignAnonymousTags($userId);
+    }
 }
