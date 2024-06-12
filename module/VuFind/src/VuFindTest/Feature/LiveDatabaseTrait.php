@@ -96,7 +96,10 @@ trait LiveDatabaseTrait
                 \Laminas\Db\Adapter\Adapter::class,
                 $adapterFactory->getAdapter()
             );
-            $container->set(\VuFind\Tags::class, new \VuFind\Tags($container->get(ResourcePopulator::class)));
+            $container->set(
+                \VuFind\Tags\TagsService::class,
+                new \VuFind\Tags\TagsService($container->get(ResourcePopulator::class))
+            );
             $container->set('config', $config);
             $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
             $container->set(

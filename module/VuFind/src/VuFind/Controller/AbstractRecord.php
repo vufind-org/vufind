@@ -37,7 +37,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -241,7 +241,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagHelper = $this->serviceLocator->get(Tags::class);
+            $tagHelper = $this->serviceLocator->get(TagsService::class);
             $tagHelper->addTagsToRecord(
                 $driver,
                 $user,
@@ -280,7 +280,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->serviceLocator->get(Tags::class)->deleteTagsFromRecord(
+            $this->serviceLocator->get(TagsService::class)->deleteTagsFromRecord(
                 $driver,
                 $user,
                 [$tag]
@@ -418,7 +418,7 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->serviceLocator->get(Tags::class);
+        $tagParser = $this->serviceLocator->get(TagsService::class);
         $post['mytags'] = $tagParser->parse($post['mytags'] ?? '');
         $favorites = $this->serviceLocator->get(\VuFind\Favorites\FavoritesService::class);
         $results = $favorites->saveRecordToFavorites($post, $user, $driver);

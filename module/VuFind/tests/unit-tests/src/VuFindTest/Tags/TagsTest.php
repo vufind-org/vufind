@@ -27,10 +27,10 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest;
+namespace VuFindTes\Tags;
 
 use VuFind\Record\ResourcePopulator;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 /**
  * Tags Test Class
@@ -41,7 +41,7 @@ use VuFind\Tags;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TagsTest extends \PHPUnit\Framework\TestCase
+class TagsServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get an object to test
@@ -49,11 +49,11 @@ class TagsTest extends \PHPUnit\Framework\TestCase
      * @param int                $maxLength         Maximum tag length
      * @param ?ResourcePopulator $resourcePopulator Resource populator service (null for default mock)
      *
-     * @return Tags
+     * @return TagsService
      */
-    public function getTags($maxLength = 64, ?ResourcePopulator $resourcePopulator = null): Tags
+    public function getTagsService($maxLength = 64, ?ResourcePopulator $resourcePopulator = null): Tags
     {
-        return new Tags(
+        return new TagsService(
             $resourcePopulator ?? $this->createMock(ResourcePopulator::class),
             $maxLength
         );
@@ -68,7 +68,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals(
             ['this', 'that', 'the other'],
-            $this->getTags()->parse('this that "the other"')
+            $this->getTagsService()->parse('this that "the other"')
         );
     }
 
@@ -79,7 +79,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyTagParsing()
     {
-        $this->assertEquals([], $this->getTags()->parse(''));
+        $this->assertEquals([], $this->getTagsService()->parse(''));
     }
 
     /**
@@ -89,7 +89,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDeduplication()
     {
-        $this->assertEquals(['test'], $this->getTags()->parse('test test test'));
+        $this->assertEquals(['test'], $this->getTagsService()->parse('test test test'));
     }
 
     /**
@@ -100,6 +100,6 @@ class TagsTest extends \PHPUnit\Framework\TestCase
     public function testTruncation()
     {
         // Create custom object w/ small size limit:
-        $this->assertEquals(['0123456789'], $this->getTags(10)->parse('01234567890'));
+        $this->assertEquals(['0123456789'], $this->getTagsService(10)->parse('01234567890'));
     }
 }

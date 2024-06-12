@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 use function strlen;
 
@@ -54,12 +54,12 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
      * Constructor
      *
      * @param Loader               $loader    Record loader
-     * @param Tags                 $tagHelper Tag helper
+     * @param TagsService          $tagHelper Tag helper
      * @param ?UserEntityInterface $user      Logged in user (or null)
      */
     public function __construct(
         protected Loader $loader,
-        protected Tags $tagHelper,
+        protected TagsService $tagHelper,
         protected ?UserEntityInterface $user
     ) {
     }

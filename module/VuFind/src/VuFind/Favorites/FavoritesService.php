@@ -50,7 +50,7 @@ use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 use function count;
 use function func_get_args;
@@ -80,7 +80,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param UserResourceServiceInterface $userResourceService UserResource database service
      * @param UserServiceInterface         $userService         User database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
-     * @param Tags                         $tagHelper           Tag helper service
+     * @param TagsService                  $tagsService         Tag helper service
      * @param RecordLoader                 $recordLoader        Record loader
      * @param ?RecordCache                 $recordCache         Record cache (optional)
      * @param ?Container                   $session             Session container for remembering state (optional)
@@ -93,7 +93,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
-        protected Tags $tagHelper,
+        protected TagsService $tagsService,
         protected RecordLoader $recordLoader,
         protected ?RecordCache $recordCache = null,
         protected ?Container $session = null
@@ -473,7 +473,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         if (null !== ($tags = $request->get('tags'))) {
             $linker = $this->getDbTable('resourcetags');
             $linker->destroyListLinks($list->getId(), $user->getId());
-            foreach ($this->tagHelper->parse($tags) as $tag) {
+            foreach ($this->tagsService->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);
             }
         }
@@ -548,7 +548,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
 
             // Add the information to the user's account:
-            $tags = isset($params['mytags']) ? $this->tagHelper->parse($params['mytags']) : [];
+            $tags = isset($params['mytags']) ? $this->tagsService->parse($params['mytags']) : [];
             $this->saveResourceToFavorites($user, $resource, $list, $tags, '', false);
 
             // Collect record IDs for caching

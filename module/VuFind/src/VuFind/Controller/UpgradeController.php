@@ -55,7 +55,7 @@ use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 use function count;
 use function dirname;
@@ -763,7 +763,7 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $this->serviceLocator->get(Tags::class)->fixDuplicateTags();
+            $this->serviceLocator->get(TagsService::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
