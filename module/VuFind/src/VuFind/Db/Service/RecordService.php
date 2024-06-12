@@ -85,7 +85,7 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function updateRecord($id, $source, $rawData): RecordEntityInterface
     {
-        $record = $this->findRecord($id, $source);
+        $record = $this->getRecord($id, $source);
         if (!$record) {
             $record = $this->createEntity();
         }
@@ -120,7 +120,7 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function deleteRecord(string $id, string $source): bool
     {
-        $record = $this->findRecord($id, $source);
+        $record = $this->getDbTable('record')->findRecord($id, $source);
         if (!$record) {
             return false;
         }
