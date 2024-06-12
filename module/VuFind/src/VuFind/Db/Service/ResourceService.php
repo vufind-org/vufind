@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -155,5 +156,25 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
                 $limit
             )
         );
+    }
+
+    /**
+     * Delete a resource by record id and source. Return true if found and deleted, false if not found.
+     * Throws exception if something goes wrong.
+     *
+     * @param string $id     Resource ID
+     * @param string $source Resource source
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteResourceByRecordId(string $id, string $source): bool
+    {
+        $row = $this->resourceTable->select(['source' => $source, 'record_id' => $id])->current();
+        if (!$row) {
+            return false;
+        }
+        $row->delete();
+        return true;
     }
 }
