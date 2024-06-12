@@ -74,8 +74,8 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
             $container->get('ViewRenderer'),
             $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get(\VuFind\Db\Table\AuthHash::class)
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(\VuFind\Db\Service\AuthHashServiceInterface::class)
         );
     }
 }
