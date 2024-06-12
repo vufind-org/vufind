@@ -125,7 +125,7 @@ class TagsController extends AbstractAdmin
             $this->convertFilter($this->getParam('tag_id', false)),
             $this->getParam('order', false),
             $page,
-            $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
+            caseSensitiveTags: $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
         );
         $view->params = $this->params()->fromQuery();
         return $view;

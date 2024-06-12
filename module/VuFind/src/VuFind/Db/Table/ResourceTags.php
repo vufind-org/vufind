@@ -304,7 +304,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
         $result = $statement->execute();
         $stats = (array)$result->current();
         if ($extended) {
-            $stats['unique'] = count($this->getUniqueTags($caseSensitiveTags));
+            $stats['unique'] = count($this->getUniqueTags(caseSensitive: $caseSensitiveTags));
             $stats['anonymous'] = $this->getAnonymousCount();
         }
         return $stats;
