@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Tags\TagsService;
 
 use function array_slice;
 use function in_array;
@@ -361,7 +362,8 @@ class BrowseController extends AbstractBase implements
                 // Default case: always display tag list for non-alphabetical modes:
                 $tagList = $tagService->getTagBrowseList(
                     $params['findby'],
-                    (int)($this->config->Browse->result_limit ?? 100)
+                    (int)($this->config->Browse->result_limit ?? 100),
+                    $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {

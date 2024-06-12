@@ -75,23 +75,19 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     /**
      * Get a list of tags for the browse interface.
      *
-     * @param string $sort  Sort/search parameter
-     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags (default = 100, < 1 = no limit)
+     * @param bool   $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
-    public function getTagBrowseList(string $sort, int $limit): array
+    public function getTagBrowseList(string $sort, int $limit, bool $caseSensitive = false): array
     {
         $callback = function ($select) {
             // Discard user list tags
             $select->where->isNotNull('resource_tags.resource_id');
         };
-
-        return $this->getDbTable('Tags')->getTagList(
-            $sort,
-            $limit,
-            $callback
-        );
+        return $this->getDbTable('Tags')->getTagList($sort, $limit, $callback, $caseSensitive);
     }
 
     /**

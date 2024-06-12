@@ -109,20 +109,21 @@ class Tags extends Gateway implements DbServiceAwareInterface
     /**
      * Get the tags that match a string
      *
-     * @param string $text  Tag to look up.
-     * @param string $sort  Sort/search parameter
-     * @param int    $limit Maximum number of tags
+     * @param string $text          Tag to look up.
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags
+     * @param ?bool  $caseSensitive Should tags be case sensitive? (null to use configured default)
      *
      * @return array Array of \VuFind\Db\Row\Tags objects
      */
-    public function matchText($text, $sort = 'alphabetical', $limit = 100)
+    public function matchText($text, $sort = 'alphabetical', $limit = 100, $caseSensitive = null)
     {
         $callback = function ($select) use ($text) {
             $select->where->literal('lower(tag) like lower(?)', [$text . '%']);
             // Discard tags assigned to a user list.
             $select->where->isNotNull('resource_tags.resource_id');
         };
-        return $this->getTagList($sort, $limit, $callback);
+        return $this->getTagList($sort, $limit, $callback, $caseSensitive);
     }
 
     /**
