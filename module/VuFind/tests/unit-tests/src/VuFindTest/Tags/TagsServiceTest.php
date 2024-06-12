@@ -51,7 +51,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return TagsService
      */
-    public function getTagsService($maxLength = 64, ?ResourcePopulator $resourcePopulator = null): Tags
+    public function getTagsService($maxLength = 64, ?ResourcePopulator $resourcePopulator = null): TagsService
     {
         return new TagsService(
             $resourcePopulator ?? $this->createMock(ResourcePopulator::class),
