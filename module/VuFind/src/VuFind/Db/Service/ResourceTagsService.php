@@ -198,7 +198,8 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
-     * Unlink all tag rows associated with favorite lists for the specified resource and user.
+     * Unlink all tag rows associated with favorite lists for the specified resource and user. Tags added directly
+     * to records outside of favorites will not be impacted.
      *
      * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
      * resources)
