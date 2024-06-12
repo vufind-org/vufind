@@ -127,4 +127,14 @@ interface ResourceServiceInterface extends DbServiceInterface
      * @throws Exception
      */
     public function deleteResourceByRecordId(string $id, string $source): bool;
+
+    /**
+     * Globally change the name of a source value in the database; return the number of rows affected.
+     *
+     * @param string $old Old source value
+     * @param string $new New source value
+     *
+     * @return int
+     */
+    public function renameSource(string $old, string $new): int;
 }

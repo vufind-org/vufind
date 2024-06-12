@@ -361,7 +361,23 @@ class ResourceService extends AbstractDbService implements
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $result = $query->execute();
-        return $result;
+        return $query->execute();
+    }
+
+    /**
+     * Globally change the name of a source value in the database; return the number of rows affected.
+     *
+     * @param string $old Old source value
+     * @param string $new New source value
+     *
+     * @return int
+     */
+    public function renameSource(string $old, string $new): int
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'SET r.source=:new WHERE r.source=:old';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('new', 'old'));
+        return $query->execute();
     }
 }

@@ -318,15 +318,9 @@ class UpgradeController extends AbstractBase
      */
     protected function fixVuFindSourceInDatabase()
     {
-        $resource = $this->getTable('resource');
-        $resourceWhere = ['source' => 'VuFind'];
-        $resourceRows = $resource->select($resourceWhere);
-        if (count($resourceRows) > 0) {
-            $resource->update(['source' => 'Solr'], $resourceWhere);
-            $this->session->warnings->append(
-                'Converted ' . count($resourceRows)
-                . ' legacy "VuFind" source value(s) in resource table'
-            );
+        if ($count = $this->getDbService(ResourceServiceInterface::class)->renameSource('VuFind', 'Solr')) {
+            $this->session->warnings
+                ->append('Converted ' . $count . ' legacy "VuFind" source value(s) in resource table');
         }
     }
 
