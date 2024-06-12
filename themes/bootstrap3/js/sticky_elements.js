@@ -3,6 +3,7 @@
 VuFind.register("sticky_elements", function StickyElements() {
   var _stickyElements;
   var _hiddenStickyElementsConfig;
+  var _resizeObserver;
 
   function setChildElementsHidden(element, hidden = true) {
     _hiddenStickyElementsConfig.forEach(
@@ -126,9 +127,7 @@ VuFind.register("sticky_elements", function StickyElements() {
     handleStickyElements(true);
   }
 
-  // todo load again after result loaded
-
-  function init() {
+  function updateContainer() {
     let stickyElementsConfig = VuFind.config.get('sticky-elements', []);
     _stickyElements = stickyElementsConfig.flatMap(
       (c) => {
@@ -142,33 +141,34 @@ VuFind.register("sticky_elements", function StickyElements() {
         }
         return Array.from(elements);
       });
-    if (!_stickyElements.length) {
-      return;
-    }
-
-    _hiddenStickyElementsConfig = VuFind.config.get('hidden-sticky-elements', []);
-
-    let resizeObserver = new ResizeObserver(calculateStyles);
 
     _stickyElements.forEach(
       (stickyElement) => {
-        let placeholder = document.createElement('div');
-        placeholder.classList.add('sticky-placeholder', 'hidden');
-        stickyElement.parentNode.insertBefore(placeholder, stickyElement);
+        if (!stickyElement.parentNode.classList.contains("sticky-container")) {
+          let placeholder = document.createElement('div');
+          placeholder.classList.add('sticky-placeholder', 'hidden');
+          stickyElement.parentNode.insertBefore(placeholder, stickyElement);
 
-        let container = document.createElement('div');
-        container.classList.add('sticky-container');
-        stickyElement.parentNode.insertBefore(container, stickyElement);
-        stickyElement.previousSibling.insertAdjacentElement('beforeEnd', stickyElement);
+          let container = document.createElement('div');
+          container.classList.add('sticky-container');
+          stickyElement.parentNode.insertBefore(container, stickyElement);
+          stickyElement.previousSibling.insertAdjacentElement('beforeEnd', stickyElement);
 
-        setPlaceholderStyle(stickyElement);
-        stickyElement.parentNode.style.backgroundColor = getInheritedBackgroundColor(stickyElement.parentNode);
+          setPlaceholderStyle(stickyElement);
+          stickyElement.parentNode.style.backgroundColor = getInheritedBackgroundColor(stickyElement.parentNode);
 
-        resizeObserver.observe(stickyElement);
+          _resizeObserver.observe(stickyElement);
+        }
       }
     );
     handleStickyElements(true);
+  }
 
+  function init() {
+    _resizeObserver = new ResizeObserver(calculateStyles);
+    _hiddenStickyElementsConfig = VuFind.config.get('hidden-sticky-elements', []);
+    updateContainer();
+    VuFind.listen('results-init', updateContainer);
     window.addEventListener("resize", calculateStyles);
     window.addEventListener("orientationchange", calculateStyles);
     document.addEventListener("scroll", () => handleStickyElements());
