@@ -56,6 +56,7 @@ use VuFind\Favorites\FavoritesService;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
+use VuFind\Tags\TagsService;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -1150,8 +1151,12 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    $tagService = $this->getDbService(TagServiceInterface::class);
-                    foreach ($tagService->getListTags($list, $list->getUser()) as $tag) {
+                    $tags = $this->getDbService(TagServiceInterface::class)->getListTags(
+                        $list,
+                        $list->getUser(),
+                        $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
+                    );
+                    foreach ($tags as $tag) {
                         $listTags[$tag['id']] = $tag['tag'];
                     }
                 }

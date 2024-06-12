@@ -310,7 +310,7 @@ class User extends RowGateway implements
      */
     public function getListTags($listId)
     {
-        return $this->getDbService(TagServiceInterface::class)->getListTags($listId, $this);
+        return $this->getDbTable('Tags')->getForList($listId, $this->getId());
     }
 
     /**

@@ -183,14 +183,16 @@ interface TagServiceInterface extends DbServiceInterface
     /**
      * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
      *
-     * @param UserListEntityInterface|int  $listOrId List ID or entity
-     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     * @param UserListEntityInterface|int  $listOrId      List ID or entity
+     * @param UserEntityInterface|int|null $userOrId      User ID or entity to look up (null for no filter).
+     * @param bool                         $caseSensitive Treat tags as case-sensitive?
      *
      * @return array[]
      */
     public function getListTags(
         UserListEntityInterface|int $listOrId,
-        UserEntityInterface|int|null $userOrId = null
+        UserEntityInterface|int|null $userOrId = null,
+        $caseSensitive = false
     ): array;
 
     /**
