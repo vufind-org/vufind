@@ -416,6 +416,45 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test account deletion.
+     *
+     * @return void
+     *
+     * @depends testDefaultPickUpLocation
+     */
+    public function testAccountDeletion(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => ['account_deletion' => true],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Delete the account
+        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.modal #delete-account-submit');
+        $this->waitForPageLoad($page);
+
+        // Try to log back in; it shouldn't work:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Invalid login -- please try again.', $this->findCssAndGetText($page, '.alert-danger'));
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
