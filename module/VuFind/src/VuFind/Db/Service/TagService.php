@@ -70,7 +70,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      *
      * @return array
      */
-    public function matchText(
+    public function getNonListTagsFuzzilyMatchingString(
         string $text,
         string $sort = 'alphabetical',
         int $limit = 100,

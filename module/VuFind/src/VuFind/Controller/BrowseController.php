@@ -341,7 +341,7 @@ class BrowseController extends AbstractBase implements
                     // Note -- this does not need to be escaped because
                     // $params['query'] has already been validated against
                     // the getAlphabetList() method below!
-                    $tags = $tagService->matchText(
+                    $tags = $tagService->getNonListTagsFuzzilyMatchingString(
                         $params['query'],
                         caseSensitive: $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
                     );

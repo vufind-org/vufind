@@ -64,7 +64,7 @@ interface TagServiceInterface extends DbServiceInterface
      *
      * @return array
      */
-    public function matchText(
+    public function getNonListTagsFuzzilyMatchingString(
         string $text,
         string $sort = 'alphabetical',
         int $limit = 100,

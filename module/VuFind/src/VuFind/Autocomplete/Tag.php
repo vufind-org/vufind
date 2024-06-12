@@ -65,7 +65,7 @@ class Tag implements AutocompleteInterface
     public function getSuggestions($query)
     {
         $tagList = [];
-        $tags = $this->tagService->matchText($query, $this->caseSensitive);
+        $tags = $this->tagService->getNonListTagsFuzzilyMatchingString($query, $this->caseSensitive);
         if ($tags) {
             foreach ($tags as $tag) {
                 $tagList[] = $tag['tag'];
