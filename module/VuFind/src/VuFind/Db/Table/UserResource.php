@@ -33,6 +33,10 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 use function is_array;
 
@@ -45,8 +49,10 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class UserResource extends Gateway
+class UserResource extends Gateway implements DbServiceAwareInterface
 {
+    use DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -126,6 +132,8 @@ class UserResource extends Gateway
      * @param string $notes       Notes to associate with link
      *
      * @return \VuFind\Db\Row\UserResource
+     *
+     * @deprecated Use UserResourceServiceInterface::createOrUpdateLink()
      */
     public function createOrUpdateLink(
         $resource_id,
@@ -133,24 +141,8 @@ class UserResource extends Gateway
         $list_id,
         $notes = ''
     ) {
-        $params = [
-            'resource_id' => $resource_id, 'list_id' => $list_id,
-            'user_id' => $user_id,
-        ];
-        $result = $this->select($params)->current();
-
-        // Only create row if it does not already exist:
-        if (empty($result)) {
-            $result = $this->createRow();
-            $result->resource_id = $resource_id;
-            $result->list_id = $list_id;
-            $result->user_id = $user_id;
-        }
-
-        // Update the notes:
-        $result->notes = $notes;
-        $result->save();
-        return $result;
+        return $this->getDbService(UserResourceServiceInterface::class)
+            ->createOrUpdateLink($resource_id, $user_id, $list_id, $notes);
     }
 
     /**
@@ -172,8 +164,8 @@ class UserResource extends Gateway
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyResourceLinks($resource_id, $user_id, $list_id);
+        $this->getDbService(ResourceTagsServiceInterface::class)
+            ->destroyResourceTagsLinksForUser($resource_id, $user_id, $list_id);
 
         // Now build the where clause to figure out which rows to remove:
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {
@@ -185,7 +177,7 @@ class UserResource extends Gateway
                 $select->where->in('resource_id', $resource_id);
             }
             // null or true values of $list_id have different meanings in the
-            // context of the $resourceTags->destroyResourceLinks() call above, since
+            // context of the destroyResourceTagsLinksForUser() call above, since
             // some tags have a null $list_id value. In the case of user_resource
             // rows, however, every row has a non-null $list_id value, so the
             // two cases are equivalent and may be handled identically.

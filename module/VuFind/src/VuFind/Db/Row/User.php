@@ -36,9 +36,11 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
@@ -440,10 +442,8 @@ class User extends RowGateway implements
         $notes,
         $replaceExisting = true
     ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
+        // Create the resource link if it doesn't exist and update the notes in any case:
+        $this->getDbService(UserResourceServiceInterface::class)->createOrUpdateLink($resource, $this, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
@@ -614,6 +614,8 @@ class User extends RowGateway implements
      * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Account\UserAccountService::purgeUserData()
      */
     public function delete($removeComments = true, $removeRatings = true)
     {
@@ -622,8 +624,7 @@ class User extends RowGateway implements
         foreach ($listService->getUserListsByUser($this) as $current) {
             $this->favoritesService->destroyList($current, $this, true);
         }
-        $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyResourceLinks(null, $this->id);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $this);
         if ($removeComments) {
             $comments = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class

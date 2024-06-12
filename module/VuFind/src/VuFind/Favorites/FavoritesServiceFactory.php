@@ -35,10 +35,11 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 /**
  * Favorites service
@@ -74,9 +75,10 @@ class FavoritesServiceFactory implements FactoryInterface
             $serviceManager->get(ResourceTagsServiceInterface::class),
             $serviceManager->get(TagServiceInterface::class),
             $serviceManager->get(UserListServiceInterface::class),
+            $serviceManager->get(UserResourceServiceInterface::class),
             $serviceManager->get(UserServiceInterface::class),
             $container->get(ResourcePopulator::class),
-            $container->get(Tags::class),
+            $container->get(TagsService::class),
             $container->get(Loader::class),
             $container->get(\VuFind\Record\Cache::class),
             $session

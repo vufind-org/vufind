@@ -67,14 +67,14 @@ interface CommentsServiceInterface extends DbServiceInterface
     ): ?int;
 
     /**
-     * Get comments associated with the specified resource.
+     * Get comments associated with the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
      * @return CommentsEntityInterface[]
      */
-    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array;
+    public function getRecordComments(string $id, string $source = DEFAULT_SEARCH_BACKEND): array;
 
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
