@@ -177,4 +177,22 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
         $row->delete();
         return true;
     }
+
+    /**
+     * Globally change the name of a source value in the database; return the number of rows affected.
+     *
+     * @param string $old Old source value
+     * @param string $new New source value
+     *
+     * @return int
+     */
+    public function renameSource(string $old, string $new): int
+    {
+        $resourceWhere = ['source' => $old];
+        $resourceRows = $this->resourceTable->select($resourceWhere);
+        if ($count = count($resourceRows)) {
+            $this->resourceTable->update(['source' => $new], $resourceWhere);
+        }
+        return $count;
+    }
 }
