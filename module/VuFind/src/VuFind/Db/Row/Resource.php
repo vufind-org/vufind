@@ -126,6 +126,8 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      * (optional).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Tags\TagsService::unlinkTagFromResource()
      */
     public function deleteTag($tagText, $user, $list_id = null)
     {

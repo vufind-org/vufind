@@ -87,8 +87,8 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         if (strlen($tag) > 0) { // don't add empty tags
             $driver = $this->loader->load($id, $source);
             $serviceMethod = ('false' === $params->fromPost('remove', 'false'))
-                ? 'addTagsToRecord'
-                : 'deleteTagsFromRecord';
+                ? 'linkTagsToRecord'
+                : 'unlinkTagsFromRecord';
             $this->tagsService->$serviceMethod(
                 $driver,
                 $this->user,

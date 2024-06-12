@@ -242,7 +242,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $tagsService = $this->serviceLocator->get(TagsService::class);
-            $tagsService->addTagsToRecord(
+            $tagsService->linkTagsToRecord(
                 $driver,
                 $user,
                 $tagsService->parse($tags)
@@ -280,7 +280,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->serviceLocator->get(TagsService::class)->deleteTagsFromRecord(
+            $this->serviceLocator->get(TagsService::class)->unlinkTagsFromRecord(
                 $driver,
                 $user,
                 [$tag]

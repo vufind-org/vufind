@@ -29,7 +29,13 @@
 
 namespace VuFind\Tags;
 
+use Exception;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
@@ -44,8 +50,9 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class TagsService implements DbTableAwareInterface
+class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
 {
+    use DbServiceAwareTrait;
     use DbTableAwareTrait;
 
     /**
@@ -87,11 +94,46 @@ class TagsService implements DbTableAwareInterface
      *
      * @return void
      */
-    public function addTagsToRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function linkTagsToRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
     {
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
+        }
+    }
+
+    /**
+     * Unlink a tag from a resource object.
+     *
+     * @param string                           $tagText      Text of tag to unlink
+     * @param ResourceEntityInterface|int      $resourceOrId Resource entity or ID to unlink
+     * @param UserEntityInterface|int          $userOrId     Owner of tag to unlink
+     * @param null|UserListEntityInterface|int $listOrId     Optional filter (only unlink from this list if provided)
+     *
+     * @return void
+     */
+    public function unlinkTagFromResource(
+        string $tagText,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ) {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tags = $this->getDbTable('Tags');
+            $tagIds = [];
+            foreach ($tags->getByText($tagText, false, false) as $tag) {
+                $tagIds[] = $tag->getId();
+            }
+            if (!empty($tagIds)) {
+                $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(
+                    $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId,
+                    $userOrId,
+                    $listId,
+                    $tagIds
+                );
+            }
         }
     }
 
@@ -104,11 +146,11 @@ class TagsService implements DbTableAwareInterface
      *
      * @return void
      */
-    public function deleteTagsFromRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
+    public function unlinkTagsFromRecord(RecordDriver $driver, UserEntityInterface $user, array $tags): void
     {
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
         foreach ($tags as $tag) {
-            $resource->deleteTag($tag, $user);
+            $this->unlinkTagFromResource($tag, $resource, $user);
         }
     }
 
