@@ -49,13 +49,14 @@ h4 {
 }
 
 blockquote {
-  font: 12pt Courier;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-size: 12pt;
   margin-top: 1em;
   white-space: pre-line;
+  background-color: #2d6086;
 }
 
 p {
-  line-height: 22px;
   text-align: left;
   text-indent: 2em;
 }
