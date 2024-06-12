@@ -44,7 +44,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface RatingsServiceInterface extends DbServiceInterface
 {
     /**
-     * Get average rating and rating count associated with the specified resource.
+     * Get average rating and rating count associated with the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
@@ -52,10 +52,10 @@ interface RatingsServiceInterface extends DbServiceInterface
      *
      * @return array Array with keys count and rating (between 0 and 100)
      */
-    public function getForResource(string $id, string $source, ?int $userId): array;
+    public function getRecordRatings(string $id, string $source, ?int $userId): array;
 
     /**
-     * Get rating breakdown for the specified resource.
+     * Get rating breakdown for the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
@@ -64,7 +64,7 @@ interface RatingsServiceInterface extends DbServiceInterface
      * @return array Array with keys count and rating (between 0 and 100) as well as
      * an groups array with ratings from lowest to highest
      */
-    public function getCountsForResource(
+    public function getCountsForRecord(
         string $id,
         string $source,
         array $groups

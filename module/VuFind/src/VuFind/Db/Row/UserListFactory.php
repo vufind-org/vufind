@@ -72,7 +72,7 @@ class UserListFactory extends RowGatewayFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\VuFind\Tags::class), $session]
+            [$container->get(\VuFind\Tags\TagsService::class), $session]
         );
     }
 }

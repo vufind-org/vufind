@@ -154,11 +154,11 @@ abstract class AbstractBase implements
      *
      * @return array
      *
-     * @deprecated Use CommentsServiceInterface::getForResource()
+     * @deprecated Use CommentsServiceInterface::getRecordComments()
      */
     public function getComments()
     {
-        return $this->getDbService(CommentsServiceInterface::class)->getForResource(
+        return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
             $this->getUniqueId(),
             $this->getSourceIdentifier()
         );
@@ -216,7 +216,7 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Tags::addTagsToRecord()
+     * @deprecated Use \VuFind\Tags\TagsService::addTagsToRecord()
      */
     public function addTags($user, $tags)
     {
@@ -238,7 +238,7 @@ abstract class AbstractBase implements
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Tags::deleteTagsFromRecord()
+     * @deprecated Use \VuFind\Tags\TagsService::deleteTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {
@@ -274,7 +274,7 @@ abstract class AbstractBase implements
             $ratingsService = $this->getDbService(
                 \VuFind\Db\Service\RatingsServiceInterface::class
             );
-            $this->ratingCache[$cacheKey] = $ratingsService->getForResource(
+            $this->ratingCache[$cacheKey] = $ratingsService->getRecordRatings(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
                 $userId
@@ -301,7 +301,7 @@ abstract class AbstractBase implements
     public function getRatingBreakdown(array $groups)
     {
         return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
-            ->getCountsForResource(
+            ->getCountsForRecord(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
                 $groups
