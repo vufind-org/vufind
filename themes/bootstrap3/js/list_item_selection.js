@@ -209,6 +209,13 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     });
   }
 
+  /**
+   * Helper variable to store the bound function for the unload event.
+   *
+   * @var {null|function}
+   */
+  let boundFunction = null;
+
   function _setupMultiPageSelectionForm(form) {
     let nonDefaultIdsInput = document.createElement('input');
     nonDefaultIdsInput.setAttribute('class', 'non_default_ids hidden');
@@ -235,8 +242,27 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       'checkedDefault': checkedDefault,
     });
     _updateSelectionState(form);
+    boundFunction = _writeState.bind(this, form);
+    window.addEventListener('beforeunload', boundFunction);
+  }
 
-    window.addEventListener('beforeunload', () => _writeState(form));
+  /**
+   * Clear selected items from session storage when delete is called.
+   *
+   * @param {SubmitEvent} event 
+   * @param {object} data 
+   * @returns 
+   */
+  function onDeleteSubmitHandler(event, data) {
+    let form = 'form-favorites';
+    const formData = data.find(el => el.name === 'listID');
+    if (formData) {
+      form += '-' + formData.value;
+    }
+    window.sessionStorage.setItem(form, '{}');
+    // Remove unload now as we don't want any ids to be updated.
+    window.removeEventListener('beforeunload', boundFunction);
+    return null;
   }
 
   function init() {
@@ -249,6 +275,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
 
   return {
     init: init,
-    getAllSelected: getAllSelected
+    getAllSelected: getAllSelected,
+    onDeleteSubmitHandler: onDeleteSubmitHandler
   };
 });
