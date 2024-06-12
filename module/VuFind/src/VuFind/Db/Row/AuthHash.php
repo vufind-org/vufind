@@ -154,7 +154,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function getData(): ?string
     {
-        return $this->data;
+        return $this->__get('data');
     }
 
     /**
@@ -166,7 +166,7 @@ class AuthHash extends RowGateway implements AuthHashEntityInterface, DbServiceA
      */
     public function setData(?string $data): AuthHashEntityInterface
     {
-        $this->data = $data;
+        $this->__set('data', $data);
         return $this;
     }
 
