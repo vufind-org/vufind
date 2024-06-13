@@ -423,6 +423,7 @@ $config = [
             'VuFind\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
             'VuFind\Cover\Router' => 'VuFind\Cover\RouterFactory',
             'VuFind\Crypt\HMAC' => 'VuFind\Crypt\HMACFactory',
+            'VuFind\Crypt\SecretCalculator' => 'VuFind\Crypt\SecretCalculatorFactory',
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

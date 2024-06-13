@@ -34,6 +34,7 @@ namespace VuFind\Session;
 use Laminas\Config\Config;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Base class for session handling
@@ -144,10 +145,8 @@ abstract class AbstractBase implements HandlerInterface
      */
     public function destroy($sessId): bool
     {
-        $searchTable = $this->getTable('Search');
-        $searchTable->destroySession($sessId);
-        $sessionService = $this->getDbService(ExternalSessionServiceInterface::class);
-        $sessionService->destroySession($sessId);
+        $this->getDbService(SearchServiceInterface::class)->destroySession($sessId);
+        $this->getDbService(ExternalSessionServiceInterface::class)->destroySession($sessId);
         return true;
     }
 
