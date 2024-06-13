@@ -217,19 +217,19 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * Persist a resource to the record cache (if applicable).
      *
      * @param RecordDriver            $driver   Record driver to persist
-     * @param \VuFind\Db\Row\Resource $resource Resource row
+     * @param ResourceEntityInterface $resource Resource row
      *
      * @return void
      */
     protected function persistToCache(
         RecordDriver $driver,
-        \VuFind\Db\Row\Resource $resource
+        ResourceEntityInterface $resource
     ) {
         if ($this->recordCache) {
             $this->recordCache->setContext(RecordCache::CONTEXT_FAVORITE);
             $this->recordCache->createOrUpdate(
-                $resource->record_id,
-                $resource->source,
+                $resource->getRecordId(),
+                $resource->getSource(),
                 $driver->getRawData()
             );
         }

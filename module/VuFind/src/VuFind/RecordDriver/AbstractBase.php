@@ -211,7 +211,7 @@ abstract class AbstractBase implements
     /**
      * Add tags to the record.
      *
-     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param UserEntityInterface $user The user posting the tag
      * @param array               $tags The user-provided tags
      *
      * @return void
@@ -233,7 +233,7 @@ abstract class AbstractBase implements
     /**
      * Remove tags from the record.
      *
-     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param UserEntityInterface $user The user posting the tag
      * @param array               $tags The user-provided tags
      *
      * @return void

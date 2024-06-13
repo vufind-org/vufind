@@ -31,8 +31,8 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
-use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
@@ -58,13 +58,13 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      * Constructor
      *
      * @param SessionSettings              $ss                  Session settings
-     * @param ?User                        $user                Logged in user (or null)
+     * @param ?UserEntityInterface         $user                Logged in user (or null)
      * @param Url                          $urlHelper           URL helper
      * @param UserResourceServiceInterface $userResourceService User resource database service
      */
     public function __construct(
         SessionSettings $ss,
-        protected ?User $user,
+        protected ?UserEntityInterface $user,
         protected Url $urlHelper,
         protected UserResourceServiceInterface $userResourceService
     ) {
