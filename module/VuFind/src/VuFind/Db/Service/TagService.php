@@ -248,9 +248,11 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      */
     public function getTagsByText(string $text, bool $caseSensitive = false): array
     {
-        $where = ['LOWER(t.tag) LIKE LOWER(:text)', 'rt.resource is NOT NULL '];
-        $parameters = ['text' => $text . '%'];
-        return $this->getTagListWithDoctrine(where: $where, parameters: $parameters, caseSensitive: $caseSensitive);
+        $dql = 'SELECT t FROM ' . $this->getEntityClass(Tags::class) . ' t '
+            . ($caseSensitive ? 'WHERE t.tag=:tag' : 'WHERE LOWER(t.tag) = LOWER(:tag)');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['tag' => $text]);
+        return $query->getResult();
     }
 
     /**
