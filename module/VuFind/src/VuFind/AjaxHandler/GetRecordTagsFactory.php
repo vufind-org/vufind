@@ -70,7 +70,6 @@ class GetRecordTagsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $container->get(TagsService::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
