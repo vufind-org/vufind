@@ -1272,7 +1272,7 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $tagsService = $this->getDbService(TagsService::class);
+            $tagsService = $this->serviceLocator->get(TagsService::class);
             $listTags = $favoritesService
                 ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
