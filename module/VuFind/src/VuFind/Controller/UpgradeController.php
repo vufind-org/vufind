@@ -51,6 +51,7 @@ use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -1042,18 +1043,15 @@ class UpgradeController extends AbstractBase
      */
     protected function fixshortlinks()
     {
-        $shortlinksTable = $this->getTable('shortlinks');
+        $shortlinks = $this->getDbService(ShortlinksServiceInterface::class);
         $base62 = new Base62();
 
         try {
-            $results = $shortlinksTable->select(['hash' => null]);
+            $results = $shortlinks->getShortLinksWithMissingHashes();
 
             foreach ($results as $result) {
-                $id = $result['id'];
-                $shortlinksTable->update(
-                    ['hash' => $base62->encode($id)],
-                    ['id' => $id]
-                );
+                $result->setHash($base62->encode($result->getId()));
+                $shortlinks->persistEntity($result);
             }
 
             if (count($results) > 0) {
