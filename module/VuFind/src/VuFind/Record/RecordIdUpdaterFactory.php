@@ -48,7 +48,7 @@ use VuFind\Db\Service\UserResourceServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ResourcePopulatorFactory implements FactoryInterface
+class RecordIdUpdaterFactory implements FactoryInterface
 {
     /**
      * Create an object
