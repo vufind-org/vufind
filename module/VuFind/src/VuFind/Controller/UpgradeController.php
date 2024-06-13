@@ -784,7 +784,8 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $problems = $this->getDbService(ResourceServiceInterface::class)->findMissingMetadata();
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $problems = $resourceService->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
@@ -794,18 +795,22 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted()) {
-            $resourceService = $this->getDbService(ResourceServiceInterface::class);
             $resourcePopulator = $this->serviceLocator->get(ResourcePopulator::class);
             foreach ($problems as $problem) {
+                $recordId = $problem->getRecordId();
+                $source = $problem->getSource();
                 try {
-                    $driver = $this->getRecordLoader()->load($problem->getRecordId(), $problem->getSource());
+                    $driver = $this->getRecordLoader()->load($recordId, $source);
                     $resourceService->persistEntity(
                         $resourcePopulator->assignMetadata($problem, $driver)
                     );
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
-                        'Unable to load metadata for record '
-                        . "{$problem->getSource()}:{$problem->getRecordId()}"
+                        "Unable to load metadata for record {$source}:{$recordId}"
+                    );
+                } catch (\Exception $e) {
+                    $this->session->warnings->append(
+                        "Problem saving metadata updates for record {$source}:{$recordId}"
                     );
                 }
             }
