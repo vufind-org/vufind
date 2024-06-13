@@ -82,15 +82,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             $set
         );
 
-        $totalSet = array_map(
-            function ($a) {
-                $a[] = true;
-                $a[] = true;
-                return $a;
-            },
-            [...$msgSet, ...$groupSet, ...$allSet]
-        );
-
+        $totalSet = [...$msgSet, ...$groupSet, ...$allSet];
         $totalSet[] = array_merge($set[0], ['msg', false, true]);
         $totalSet[] = array_merge($set[1], ['group', true, false]);
         $totalSet[] = array_merge($set[2], ['all', false, false]);
@@ -119,8 +111,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         string $expected,
         string $expectedType,
         string $multipleLocations,
-        bool $loadBatchWise,
-        bool $loadObservableOnly,
+        bool $loadBatchWise = true,
+        bool $loadObservableOnly = true,
     ): void {
         $this->changeConfigs(
             [
@@ -223,8 +215,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         string $expected,
         string $expectedType,
         string $multipleLocations,
-        bool $loadBatchWise,
-        bool $loadObservableOnly
+        bool $loadBatchWise = true,
+        bool $loadObservableOnly = true
     ): void {
         $this->changeConfigs(
             [
