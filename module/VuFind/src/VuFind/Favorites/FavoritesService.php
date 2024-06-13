@@ -75,7 +75,6 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @param ResourceServiceInterface     $resourceService     Resource database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
-     * @param TagServiceInterface          $tagService          Tag database service
      * @param UserListServiceInterface     $userListService     UserList database service
      * @param UserResourceServiceInterface $userResourceService UserResource database service
      * @param UserServiceInterface         $userService         User database service
@@ -88,7 +87,6 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected ResourceTagsServiceInterface $resourceTagsService,
-        protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService,
         protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,
@@ -443,7 +441,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tag = $this->getDbTable('tags')->getByText($tagText);
+            $tag = $this->tagsService->getOrCreateTagByText($tagText);
             $this->resourceTagsService->createLink(null, $tag, $user, $list);
         }
     }
@@ -616,7 +614,12 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         ?string $source = null
     ): string {
         return $this->formatTagStringForEditing(
-            $this->tagService->getUserTagsFromFavorites($userOrId, $listOrId, $recordId, $source)
+            $this->tagsService->getUserTagsFromFavorites(
+                $userOrId,
+                $listOrId,
+                $recordId,
+                $source
+            )
         );
     }
 

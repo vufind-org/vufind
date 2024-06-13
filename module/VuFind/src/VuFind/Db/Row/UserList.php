@@ -119,7 +119,7 @@ class UserList extends RowGateway implements
      */
     public function getListTags()
     {
-        return $this->getDbService(TagServiceInterface::class)->getListTags($this, $this->getUser());
+        return $this->getDbTable('Tags')->getForList($this->getId(), $this->getUser()->getId());
     }
 
     /**

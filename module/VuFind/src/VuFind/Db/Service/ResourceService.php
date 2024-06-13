@@ -130,13 +130,14 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
     /**
      * Get a set of resources from the requested favorite list.
      *
-     * @param UserEntityInterface|int          $userOrId ID of user owning favorite list
-     * @param UserListEntityInterface|int|null $listOrId ID of list to retrieve (null for all favorites)
-     * @param string[]                         $tags     Tags to use for limiting results
-     * @param ?string                          $sort     Resource table field to use for sorting (null for no
+     * @param UserEntityInterface|int          $userOrId          ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId          ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags              Tags to use for limiting results
+     * @param ?string                          $sort              Resource table field to use for sorting (null for no
      * particular sort).
-     * @param int                              $offset   Offset for results
-     * @param ?int                             $limit    Limit for results (null for none)
+     * @param int                              $offset            Offset for results
+     * @param ?int                             $limit             Limit for results (null for none)
+     * @param bool                             $caseSensitiveTags Treat tags as case-sensitive?
      *
      * @return ResourceEntityInterface[]
      */
@@ -146,7 +147,8 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
         array $tags = [],
         ?string $sort = null,
         int $offset = 0,
-        ?int $limit = null
+        ?int $limit = null,
+        bool $caseSensitiveTags = false
     ): array {
         return iterator_to_array(
             $this->resourceTable->getFavorites(
@@ -155,7 +157,8 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
                 $tags,
                 $sort,
                 $offset,
-                $limit
+                $limit,
+                $caseSensitiveTags
             )
         );
     }

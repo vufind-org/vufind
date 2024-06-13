@@ -51,12 +51,13 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Get Resource Tags Paginator
      *
-     * @param ?int    $userId     ID of user (null for any)
-     * @param ?int    $resourceId ID of the resource (null for any)
-     * @param ?int    $tagId      ID of the tag (null for any)
-     * @param ?string $order      The order in which to return the data
-     * @param ?int    $page       The page number to select
-     * @param int     $limit      The number of items to fetch
+     * @param ?int    $userId            ID of user (null for any)
+     * @param ?int    $resourceId        ID of the resource (null for any)
+     * @param ?int    $tagId             ID of the tag (null for any)
+     * @param ?string $order             The order in which to return the data
+     * @param ?int    $page              The page number to select
+     * @param int     $limit             The number of items to fetch
+     * @param bool    $caseSensitiveTags Should we treat tags as case-sensitive?
      *
      * @return Paginator
      */
@@ -66,7 +67,8 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
         ?int $tagId = null,
         ?string $order = null,
         ?int $page = null,
-        int $limit = 20
+        int $limit = 20,
+        bool $caseSensitiveTags = false
     ): Paginator;
 
     /**
@@ -174,16 +176,18 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Gets unique tags from the database.
      *
-     * @param ?int $userId     ID of user (null for any)
-     * @param ?int $resourceId ID of the resource (null for any)
-     * @param ?int $tagId      ID of the tag (null for any)
+     * @param ?int $userId        ID of user (null for any)
+     * @param ?int $resourceId    ID of the resource (null for any)
+     * @param ?int $tagId         ID of the tag (null for any)
+     * @param bool $caseSensitive Should we treat tags in a case-sensitive manner?
      *
      * @return array[]
      */
     public function getUniqueTags(
         ?int $userId = null,
         ?int $resourceId = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**

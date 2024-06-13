@@ -47,41 +47,97 @@ interface TagServiceInterface extends DbServiceInterface
     /**
      * Get statistics on use of tags.
      *
-     * @param bool $extended Include extended (unique/anonymous) stats.
+     * @param bool $extended          Include extended (unique/anonymous) stats.
+     * @param bool $caseSensitiveTags Should we treat tags case-sensitively?
      *
      * @return array
      */
-    public function getStatistics(bool $extended = false): array;
+    public function getStatistics(bool $extended = false, bool $caseSensitiveTags = false): array;
 
     /**
      * Get the tags that match a string
      *
-     * @param string $text Tag to look up.
+     * @param string $text          Tag to look up.
+     * @param string $sort          Sort type
+     * @param int    $limit         Maximum results to retrieve
+     * @param bool   $caseSensitive Should tags be treated as case-sensitive?
      *
      * @return array
      */
-    public function matchText(string $text): array;
+    public function getNonListTagsFuzzilyMatchingString(
+        string $text,
+        string $sort = 'alphabetical',
+        int $limit = 100,
+        bool $caseSensitive = false
+    ): array;
+
+    /**
+     * Get all matching tags by text. Normally, 0 or 1 results will be retrieved, but more
+     * may be retrieved under exceptional circumstances (e.g. if retrieving case-insensitively
+     * after storing data case-sensitively).
+     *
+     * @param string $text          Tag text to match
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagsByText(string $text, bool $caseSensitive = false): array;
+
+    /**
+     * Get the first available matching tag by text; return null if no match is found.
+     *
+     * @param string $text          Tag text to match
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagByText(string $text, bool $caseSensitive = false): ?TagsEntityInterface;
+
+    /**
+     * Get all resources associated with the provided tag query.
+     *
+     * @param string $q             Search query
+     * @param string $source        Record source (optional limiter)
+     * @param string $sort          Resource field to sort on (optional)
+     * @param int    $offset        Offset for results
+     * @param ?int   $limit         Limit for results (null for none)
+     * @param bool   $fuzzy         Are we doing an exact (false) or fuzzy (true) search?
+     * @param ?bool  $caseSensitive Should search be case sensitive? (Ignored when fuzzy = true)
+     *
+     * @return array
+     */
+    public function getResourcesMatchingTagQuery(
+        string $q,
+        string $source = null,
+        string $sort = null,
+        int $offset = 0,
+        ?int $limit = null,
+        bool $fuzzy = true,
+        bool $caseSensitive = false
+    ): array;
 
     /**
      * Get a list of tags for the browse interface.
      *
-     * @param string $sort  Sort/search parameter
-     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags (default = 100, < 1 = no limit)
+     * @param bool   $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
-    public function getTagBrowseList(string $sort, int $limit): array;
+    public function getTagBrowseList(string $sort, int $limit, bool $caseSensitive = false): array;
 
     /**
      * Get all tags associated with the specified record (and matching provided filters).
      *
-     * @param string                           $id        Record ID to look up
-     * @param string                           $source    Source of record to look up
-     * @param int                              $limit     Max. number of tags to return (0 = no limit)
-     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
-     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
-     * @param string                           $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * @param string                           $id            Record ID to look up
+     * @param string                           $source        Source of record to look up
+     * @param int                              $limit         Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId      ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId      ID of user to load tags from (null for all users)
+     * @param string                           $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId     ID of user to check for ownership
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -92,21 +148,23 @@ interface TagServiceInterface extends DbServiceInterface
         UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
      * Get all tags from favorite lists associated with the specified record (and matching provided filters).
      *
-     * @param string                           $id        Record ID to look up
-     * @param string                           $source    Source of record to look up
-     * @param int                              $limit     Max. number of tags to return (0 = no limit)
-     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * @param string                           $id            Record ID to look up
+     * @param string                           $source        Source of record to look up
+     * @param int                              $limit         Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId      ID of list to load tags from (null for tags that
      * are associated with ANY list, but excluding non-list tags)
-     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
-     * @param string                           $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * @param UserEntityInterface|int|null     $userOrId      ID of user to load tags from (null for all users)
+     * @param string                           $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId     ID of user to check for ownership
      * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -114,22 +172,24 @@ interface TagServiceInterface extends DbServiceInterface
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
-        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
      * Get all tags outside of favorite lists associated with the specified record (and matching provided filters).
      *
-     * @param string                       $id        Record ID to look up
-     * @param string                       $source    Source of record to look up
-     * @param int                          $limit     Max. number of tags to return (0 = no limit)
-     * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
-     * @param string                       $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
+     * @param string                       $id            Record ID to look up
+     * @param string                       $source        Source of record to look up
+     * @param int                          $limit         Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId      User entity/ID to load tags from (null for all users)
+     * @param string                       $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId     Entity/ID representing user to check for ownership
      * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     * @param bool                         $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -139,28 +199,32 @@ interface TagServiceInterface extends DbServiceInterface
         int $limit = 0,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
-     * Get a list of duplicate tags (this should never happen, but past bugs
-     * and the introduction of case-insensitive tags have introduced problems).
+     * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
+     * tags have introduced problems).
+     *
+     * @param bool $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
-    public function getDuplicateTags(): array;
+    public function getDuplicateTags(bool $caseSensitive = false): array;
 
     /**
      * Get a list of all tags generated by the user in favorites lists. Note that the returned list WILL NOT include
      * tags attached to records that are not saved in favorites lists. Returns an array of arrays with id and tag keys.
      *
-     * @param UserEntityInterface|int          $userOrId User ID to look up.
-     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
+     * @param UserEntityInterface|int          $userOrId      User ID to look up.
+     * @param UserListEntityInterface|int|null $listOrId      Filter for tags tied to a specific list (null for no
      * filter).
-     * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
+     * @param ?string                          $recordId      Filter for tags tied to a specific resource (null for no
      * filter).
-     * @param ?string                          $source   Filter for tags tied to a specific record source (null for
-     * no filter).
+     * @param ?string                          $source        Filter for tags tied to a specific record source (null
+     * for no filter).
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -168,20 +232,23 @@ interface TagServiceInterface extends DbServiceInterface
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null,
         ?string $recordId = null,
-        ?string $source = null
+        ?string $source = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
      * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
      *
-     * @param UserListEntityInterface|int  $listOrId List ID or entity
-     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     * @param UserListEntityInterface|int  $listOrId      List ID or entity
+     * @param UserEntityInterface|int|null $userOrId      User ID or entity to look up (null for no filter).
+     * @param bool                         $caseSensitive Treat tags as case-sensitive?
      *
      * @return array[]
      */
     public function getListTags(
         UserListEntityInterface|int $listOrId,
-        UserEntityInterface|int|null $userOrId = null
+        UserEntityInterface|int|null $userOrId = null,
+        $caseSensitive = false
     ): array;
 
     /**
@@ -199,4 +266,11 @@ interface TagServiceInterface extends DbServiceInterface
      * @return ?TagsEntityInterface
      */
     public function getTagById(int $id): ?TagsEntityInterface;
+
+    /**
+     * Create a new Tag entity.
+     *
+     * @return TagsEntityInterface
+     */
+    public function createEntity(): TagsEntityInterface;
 }
