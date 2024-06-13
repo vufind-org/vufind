@@ -179,9 +179,14 @@ class LoginToken extends Gateway
     /**
      * Remove expired login tokens
      *
+     * @param string   $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
+     * @param int|null $limit     Maximum number of rows to delete or null for no
+     * limit.
+     *
      * @return int
      */
-    public function deleteExpired(): int
+    public function deleteExpired($dateLimit, $limit = null): int
     {
         $callback = function ($select) {
             $select->where->lessThanOrEqualTo('expires', time());

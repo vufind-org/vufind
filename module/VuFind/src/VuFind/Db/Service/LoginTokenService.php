@@ -173,6 +173,6 @@ class LoginTokenService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->getDbTable('LoginToken')->deleteExpired();
+        return $this->getDbTable('LoginToken')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
     }
 }
