@@ -800,7 +800,7 @@ class UpgradeController extends AbstractBase
                 $recordId = $problem->getRecordId();
                 $source = $problem->getSource();
                 try {
-                    $driver = $this->getRecordLoader()->load($problem->getRecordId(), $problem->getSource());
+                    $driver = $this->getRecordLoader()->load($recordId, $source);
                     $resourceService->persistEntity(
                         $resourcePopulator->assignMetadata($problem, $driver)
                     );
