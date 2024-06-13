@@ -795,7 +795,6 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted()) {
-            $resourceService = $this->getDbService(ResourceServiceInterface::class);
             $resourcePopulator = $this->serviceLocator->get(ResourcePopulator::class);
             foreach ($problems as $problem) {
                 $recordId = $problem->getRecordId();
