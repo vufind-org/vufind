@@ -30,7 +30,6 @@
 namespace VuFind\RecordDriver;
 
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
