@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service interface for shortlinks.
+ * Interface for exposing the database transaction functionality.
  *
  * PHP version 8
  *
@@ -22,57 +22,45 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service;
-
-use VuFind\Db\Entity\ShortlinksEntityInterface;
+namespace VuFind\Db\Service\Feature;
 
 /**
- * Database service interface for shortlinks.
+ * Interface for exposing the database transaction functionality.
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways interface
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface ShortlinksServiceInterface extends DbServiceInterface
+interface TransactionInterface
 {
     /**
-     * Create a short link entity.
+     * Begin a database transaction.
      *
-     * @return ShortlinksEntityInterface
+     * @return void
+     * @throws Exception
      */
-    public function createEntity(): ShortlinksEntityInterface;
+    public function beginTransaction(): void;
 
     /**
-     * Create and persist an entity for the provided path.
+     * Commit a database transaction.
      *
-     * @param string $path Path part of URL being shortened.
-     *
-     * @return ShortlinksEntityInterface
+     * @return void
+     * @throws Exception
      */
-    public function createAndPersistEntityForPath(string $path): ShortlinksEntityInterface;
+    public function commitTransaction(): void;
 
     /**
-     * Look up a short link by hash value.
+     * Roll back a database transaction.
      *
-     * @param string $hash Hash value.
-     *
-     * @return ?ShortlinksEntityInterface
+     * @return void
+     * @throws Exception
      */
-    public function getShortLinkByHash(string $hash): ?ShortlinksEntityInterface;
-
-    /**
-     * Get rows with missing hashes (for legacy upgrading).
-     *
-     * @return ShortlinksEntityInterface[]
-     */
-    public function getShortLinksWithMissingHashes(): array;
+    public function rollBackTransaction(): void;
 }

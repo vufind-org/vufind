@@ -32,6 +32,7 @@ namespace VuFindTest\UrlShortener;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use VuFind\Db\Entity\ShortlinksEntityInterface;
+use VuFind\Db\Service\ShortlinksService;
 use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\UrlShortener\Database;
 
@@ -76,7 +77,7 @@ class DatabaseTest extends TestCase
         $entity->method('getPath')->willReturn('/bar');
         $entity->expects($this->once())->method('setHash')->with($hash)->willReturn($entity);
         $entity->method('getHash')->willReturn($hash);
-        $service = $this->createMock(ShortlinksServiceInterface::class);
+        $service = $this->createMock(ShortlinksService::class);
         $service->expects($this->once())->method('beginTransaction');
         $service->expects($this->once())->method('getShortLinkByHash')->with($hash)->willReturn(null);
         $service->expects($this->once())->method('createEntity')->willReturn($entity);
