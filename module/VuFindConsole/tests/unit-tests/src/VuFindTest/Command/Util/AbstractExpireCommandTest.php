@@ -57,11 +57,11 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $targetClass = AbstractExpireCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class (or interface) to test with
      *
      * @var string
      */
-    protected $validServiceClass = \VuFind\Db\Service\AuthHashService::class;
+    protected $validServiceClass = \VuFind\Db\Service\Feature\DeleteExpiredInterface::class;
 
     /**
      * Label to use for rows in help messages.

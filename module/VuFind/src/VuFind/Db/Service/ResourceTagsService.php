@@ -30,11 +30,9 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTags;
@@ -63,21 +61,6 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
     use DbServiceAwareTrait;
 
     /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param bool                $caseSensitive       Are tags case sensitive?
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        protected bool $caseSensitive
-    ) {
-        parent::__construct($entityManager, $entityPluginManager);
-    }
-
-    /**
      * Given an array for sorting database results, make sure the tag field is
      * sorted in a case-insensitive fashion and that no illegal fields are
      * specified.
@@ -102,12 +85,13 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
     /**
      * Get Resource Tags Paginator
      *
-     * @param ?int    $userId     ID of user (null for any)
-     * @param ?int    $resourceId ID of the resource (null for any)
-     * @param ?int    $tagId      ID of the tag (null for any)
-     * @param ?string $order      The order in which to return the data
-     * @param ?int    $page       The page number to select
-     * @param int     $limit      The number of items to fetch
+     * @param ?int    $userId            ID of user (null for any)
+     * @param ?int    $resourceId        ID of the resource (null for any)
+     * @param ?int    $tagId             ID of the tag (null for any)
+     * @param ?string $order             The order in which to return the data
+     * @param ?int    $page              The page number to select
+     * @param int     $limit             The number of items to fetch
+     * @param bool    $caseSensitiveTags Should we treat tags as case-sensitive?
      *
      * @return Paginator
      */
@@ -117,9 +101,10 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
         ?int $tagId = null,
         ?string $order = null,
         ?int $page = null,
-        int $limit = 20
+        int $limit = 20,
+        bool $caseSensitiveTags = false
     ): Paginator {
-        $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $tag = $caseSensitiveTags ? 't.tag' : 'lower(t.tag)';
         $dql = 'SELECT rt.id, ' . $tag . ' AS tag, u.username AS username, r.title AS title,'
             . ' t.id AS tag_id, r.id AS resource_id, u.id AS user_id,'
             . ' lower(t.tag) AS HIDDEN tagSort, lower(u.username) AS HIDDEN usernameSort,'
@@ -468,18 +453,20 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
     /**
      * Gets unique tags from the database.
      *
-     * @param ?int $userId     ID of user (null for any)
-     * @param ?int $resourceId ID of the resource (null for any)
-     * @param ?int $tagId      ID of the tag (null for any)
+     * @param ?int $userId        ID of user (null for any)
+     * @param ?int $resourceId    ID of the resource (null for any)
+     * @param ?int $tagId         ID of the tag (null for any)
+     * @param bool $caseSensitive Should we treat tags in a case-sensitive manner?
      *
      * @return array[]
      */
     public function getUniqueTags(
         ?int $userId = null,
         ?int $resourceId = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        bool $caseSensitive = false
     ): array {
-        if ($this->caseSensitive) {
+        if ($caseSensitive) {
             $tagClause = 't.tag AS tag';
             $sort = 'LOWER(t.tag), tag';
         } else {

@@ -30,10 +30,8 @@
 
 namespace VuFind\Db\Service;
 
-use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceTags;
 use VuFind\Db\Entity\User;
@@ -63,22 +61,6 @@ class UserListService extends AbstractDbService implements
 {
     use LoggerAwareTrait;
     use DbServiceAwareTrait;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param bool                $caseSensitive       Are tags case sensitive?
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        protected bool $caseSensitive
-    ) {
-        parent::__construct($entityManager, $entityPluginManager);
-        $this->caseSensitive = $caseSensitive;
-    }
 
     /**
      * Create a UserList entity object.
@@ -179,10 +161,11 @@ class UserListService extends AbstractDbService implements
      * Get lists associated with a particular tag and/or list of IDs. If IDs and
      * tags are both provided, only the intersection of matches will be returned.
      *
-     * @param string|string[]|null $tag        Tag or tags to match (by text, not ID; null for all)
-     * @param int|int[]|null       $listId     List ID or IDs to match (null for all)
-     * @param bool                 $publicOnly Whether to return only public lists
-     * @param bool                 $andTags    Use AND operator when filtering by tag.
+     * @param string|string[]|null $tag               Tag or tags to match (by text, not ID; null for all)
+     * @param int|int[]|null       $listId            List ID or IDs to match (null for all)
+     * @param bool                 $publicOnly        Whether to return only public lists
+     * @param bool                 $andTags           Use AND operator when filtering by tag.
+     * @param bool                 $caseSensitiveTags Should we treat tags case-sensitively?
      *
      * @return UserListEntityInterface[]
      */
@@ -190,7 +173,8 @@ class UserListService extends AbstractDbService implements
         string|array|null $tag = null,
         int|array|null $listId = null,
         bool $publicOnly = true,
-        bool $andTags = true
+        bool $andTags = true,
+        bool $caseSensitiveTags = false
     ): array {
         $tag = $tag ? (array)$tag : null;
         $listId = $listId ? (array)$listId : null;
@@ -211,7 +195,7 @@ class UserListService extends AbstractDbService implements
             $dql .= "AND l.public = '1' ";
         }
         if ($tag) {
-            if ($this->caseSensitive) {
+            if ($caseSensitiveTags) {
                 $dql .= 'AND t.tag IN (:tag) ';
                 $parameters['tag'] = $tag;
             } else {

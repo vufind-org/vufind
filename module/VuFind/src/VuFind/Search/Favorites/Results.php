@@ -34,12 +34,12 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Tags\TagsService;
 use VuFindSearch\Service as SearchService;
 
 use function array_slice;
@@ -59,7 +59,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Object if user is logged in, false otherwise.
+     * Object if user is logged in, null otherwise.
      *
      * @var ?UserEntityInterface
      */
@@ -93,16 +93,16 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * @param SearchService              $searchService   Search service
      * @param Loader                     $recordLoader    Record loader
      * @param ResourceServiceInterface   $resourceService Resource database service
-     * @param TagServiceInterface        $tagService      Tag database service
      * @param UserListServiceInterface   $userListService UserList database service
+     * @param TagsService                $tagsService     Tags service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
         protected ResourceServiceInterface $resourceService,
-        protected TagServiceInterface $tagService,
-        protected UserListServiceInterface $userListService
+        protected UserListServiceInterface $userListService,
+        protected TagsService $tagsService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -140,10 +140,10 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 ];
                 switch ($field) {
                     case 'tags':
-                        if ($this->list) {
-                            $tags = $this->tagService->getUserTagsFromFavorites($this->list->getUser(), $this->list);
+                        if ($list = $this->getListObject()) {
+                            $tags = $this->tagsService->getUserTagsFromFavorites($list->getUser(), $list);
                         } else {
-                            $tags = $this->user ? $this->user->getTags() : [];
+                            $tags = $this->tagsService->getUserTagsFromFavorites($this->user);
                         }
                         foreach ($tags as $tag) {
                             $this->facets[$field]['list'][] = [
@@ -197,7 +197,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $userId,
             $listId,
             $this->getTagFilters(),
-            $this->getParams()->getSort()
+            $this->getParams()->getSort(),
+            caseSensitiveTags: $this->tagsService->hasCaseSensitiveTags()
         );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {

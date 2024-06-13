@@ -32,6 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\RecordDriver\Response\PublicationDetails;
+use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -80,7 +81,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getViewHelpers($container): array
     {
         $context = new \VuFind\View\Helper\Root\Context();
-        $record = new \VuFind\View\Helper\Root\Record();
+        $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')->willReturnCallback(function ($service) {
             return $this->createMock($service);

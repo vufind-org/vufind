@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
@@ -244,8 +245,7 @@ class InstallController extends AbstractBase
     {
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
-            $tagService->getByText('test', false);
+            $this->getDbService(TagServiceInterface::class)->getTagsByText('test');
             $status = true;
         } catch (\Exception $e) {
             $status = false;

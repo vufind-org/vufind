@@ -179,36 +179,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get tags associated with this record.
-     *
-     * @param int    $list_id ID of list to load tags from (null for all lists)
-     * @param int    $user_id ID of user to load tags from (null for all users)
-     * @param string $sort    Sort type ('count' or 'tag')
-     * @param int    $ownerId ID of user to check for ownership
-     *
-     * @return array
-     *
-     * @deprecated Use TagServiceInterface::getRecordTags() or TagServiceInterface::getRecordTagsFromFavorites()
-     * or TagServiceInterface::getRecordTagsNotInFavorites()
-     */
-    public function getTags(
-        $list_id = null,
-        $user_id = null,
-        $sort = 'count',
-        $ownerId = null
-    ) {
-        return $this->getDbTable('Tags')->getForResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            0,
-            $list_id,
-            $user_id,
-            $sort,
-            $ownerId
-        );
-    }
-
-    /**
      * Get rating information for this record.
      *
      * Returns an array with the following keys:

@@ -29,9 +29,9 @@
 
 namespace VuFind\Search\Tags;
 
-use VuFind\Db\Service\TagService as TagService;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Tags\TagsService;
 use VuFindSearch\Service as SearchService;
 
 use function count;
@@ -48,29 +48,21 @@ use function count;
 class Results extends BaseResults
 {
     /**
-     * Tag Service
-     *
-     * @var TagService
-     */
-    protected $tagService;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
-     * @param TagService                 $tagService    Tags database service
+     * @param TagsService                $tagsService   Tags service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        TagService $tagService
+        protected TagsService $tagsService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->tagService = $tagService;
     }
 
     /**
@@ -99,7 +91,7 @@ class Results extends BaseResults
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
-        $rawResults = $this->tagService->resourceSearch(
+        $rawResults = $this->tagsService->getResourcesMatchingTagQuery(
             $query,
             null,
             $this->getParams()->getSort(),
@@ -114,7 +106,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->tagService->resourceSearch(
+            $rawResults = $this->tagsService->getResourcesMatchingTagQuery(
                 $query,
                 null,
                 $this->getParams()->getSort(),

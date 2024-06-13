@@ -280,13 +280,14 @@ class ResourceService extends AbstractDbService implements
     /**
      * Get a set of resources from the requested favorite list.
      *
-     * @param UserEntityInterface|int          $userOrId ID of user owning favorite list
-     * @param UserListEntityInterface|int|null $listOrId ID of list to retrieve (null for all favorites)
-     * @param string[]                         $tags     Tags to use for limiting results
-     * @param ?string                          $sort     Resource table field to use for sorting (null for no
+     * @param UserEntityInterface|int          $userOrId          ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId          ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags              Tags to use for limiting results
+     * @param ?string                          $sort              Resource table field to use for sorting (null for no
      * particular sort).
-     * @param int                              $offset   Offset for results
-     * @param ?int                             $limit    Limit for results (null for none)
+     * @param int                              $offset            Offset for results
+     * @param ?int                             $limit             Limit for results (null for none)
+     * @param bool                             $caseSensitiveTags Treat tags as case-sensitive?
      *
      * @return ResourceEntityInterface[]
      */
@@ -296,7 +297,8 @@ class ResourceService extends AbstractDbService implements
         array $tags = [],
         ?string $sort = null,
         int $offset = 0,
-        ?int $limit = null
+        ?int $limit = null,
+        bool $caseSensitiveTags = false
     ): array {
         $user = $this->getDoctrineReference(User::class, $userOrId);
         $list = $listOrId ? $this->getDoctrineReference(UserList::class, $listOrId) : null;
@@ -320,7 +322,8 @@ class ResourceService extends AbstractDbService implements
             $linkingTable = $this->getDbService(TagService::class);
             $matches = [];
             foreach ($tags as $tag) {
-                $matches[] = $linkingTable->getResourceIDsForTag($tag, $user->getId(), $list?->getId());
+                $matches[] = $linkingTable
+                    ->getResourceIDsForTag($tag, $user->getId(), $list?->getId(), $caseSensitiveTags);
             }
             $dqlWhere[] = 'r.id IN (:ids)';
             $parameters['ids'] = $matches;

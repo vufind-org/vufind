@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Factory for Tags search results objects.
@@ -67,11 +68,6 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $sm = $container->get(\VuFind\Db\Service\PluginManager::class);
-        return parent::__invoke(
-            $container,
-            $requestedName,
-            [$sm->get(\VuFind\Db\Service\TagService::class)]
-        );
+        return parent::__invoke($container, $requestedName, [$container->get(TagsService::class)]);
     }
 }

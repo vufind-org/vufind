@@ -41,7 +41,6 @@ use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsService;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
-use VuFind\Db\Service\TagService;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceService;
@@ -83,7 +82,6 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
      *
      * @param ResourceServiceInterface     $resourceService     Resource database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
-     * @param TagServiceInterface          $tagService          Tag database service
      * @param UserListServiceInterface     $userListService     UserList database service
      * @param UserResourceServiceInterface $userResourceService UserResource database service
      * @param UserServiceInterface         $userService         User database service
@@ -96,7 +94,6 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected ResourceTagsServiceInterface $resourceTagsService,
-        protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService,
         protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,
@@ -451,14 +448,8 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tagService = $this->getDbService(TagService::class);
-            $tag = $tagService->getByText($tagText);
-            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
-                null,
-                $tag,
-                $user,
-                $list
-            );
+            $tag = $this->tagsService->getOrCreateTagByText($tagText);
+            $this->resourceTagsService->createLink(null, $tag, $user, $list);
         }
     }
 
@@ -630,7 +621,12 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
         ?string $source = null
     ): string {
         return $this->formatTagStringForEditing(
-            $this->tagService->getUserTagsFromFavorites($userOrId, $listOrId, $recordId, $source)
+            $this->tagsService->getUserTagsFromFavorites(
+                $userOrId,
+                $listOrId,
+                $recordId,
+                $source
+            )
         );
     }
 

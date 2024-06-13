@@ -35,6 +35,9 @@ use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\Gateway;
 use VuFind\Db\Table\PluginManager as TableManager;
 use VuFind\Favorites\FavoritesService;
@@ -207,10 +210,6 @@ trait LiveDatabaseTrait
                 \Laminas\Db\Adapter\Adapter::class,
                 $adapterFactory->getAdapter()
             );
-            $container->set(
-                \VuFind\Tags\TagsService::class,
-                new \VuFind\Tags\TagsService($container->get(ResourcePopulator::class))
-            );
             $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
             $container->set(
                 \VuFind\Db\Row\PluginManager::class,
@@ -220,6 +219,15 @@ trait LiveDatabaseTrait
             $container->set(TableManager::class, $liveTableManager);
             $liveServiceManager = new ServiceManager($container, []);
             $container->set(ServiceManager::class, $liveServiceManager);
+            $container->set(
+                \VuFind\Tags\TagsService::class,
+                new \VuFind\Tags\TagsService(
+                    $liveServiceManager->get(TagServiceInterface::class),
+                    $liveServiceManager->get(ResourceTagsServiceInterface::class),
+                    $liveServiceManager->get(UserListServiceInterface::class),
+                    $container->get(ResourcePopulator::class)
+                )
+            );
             $favoritesFactory = new FavoritesServiceFactory();
             $favoritesService = $favoritesFactory($container, FavoritesService::class);
             $favoritesService->setDbServiceManager($liveServiceManager);

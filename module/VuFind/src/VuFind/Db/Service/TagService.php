@@ -29,10 +29,8 @@
 
 namespace VuFind\Db\Service;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceTags;
 use VuFind\Db\Entity\Tags;
@@ -59,22 +57,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
 {
     use DbServiceAwareTrait;
     use LoggerAwareTrait;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param bool                $caseSensitive       Are tags case sensitive?
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        protected bool $caseSensitive
-    ) {
-        parent::__construct($entityManager, $entityPluginManager);
-        $this->caseSensitive = $caseSensitive;
-    }
 
     /**
      * Check whether or not the specified tags are present in the table.
@@ -108,18 +90,19 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Get resources associated with a particular tag.
      *
-     * @param string $tag  Tag to match
-     * @param string $user ID of user owning favorite list
-     * @param string $list ID of list to retrieve (null for all favorites)
+     * @param string $tag               Tag to match
+     * @param string $user              ID of user owning favorite list
+     * @param string $list              ID of list to retrieve (null for all favorites)
+     * @param bool   $caseSensitiveTags Should tags be treated case sensitively?
      *
      * @return array
      */
-    public function getResourceIDsForTag($tag, $user, $list = null)
+    public function getResourceIDsForTag($tag, $user, $list = null, $caseSensitiveTags = false)
     {
         $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'JOIN rt.tag t '
-            . 'WHERE ' . ($this->caseSensitive ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
+            . 'WHERE ' . ($caseSensitiveTags ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
             . 'AND rt.user = :user ';
 
         $user = $this->getDoctrineReference(User::class, $user);
@@ -211,11 +194,12 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Get statistics on use of tags.
      *
-     * @param bool $extended Include extended (unique/anonymous) stats.
+     * @param bool $extended          Include extended (unique/anonymous) stats.
+     * @param bool $caseSensitiveTags Should we treat tags case-sensitively?
      *
      * @return array
      */
-    public function getStatistics(bool $extended = false): array
+    public function getStatistics(bool $extended = false, bool $caseSensitiveTags = false): array
     {
         $dql = 'SELECT COUNT(DISTINCT(rt.user)) AS users, '
             . 'COUNT(DISTINCT(rt.resource)) AS resources, '
@@ -225,84 +209,83 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $stats = current($query->getResult());
         $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
         if ($extended) {
-            $stats['unique'] = count($resourceTagsService->getUniqueTags());
+            $stats['unique'] = count($resourceTagsService->getUniqueTags($caseSensitiveTags));
             $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
         }
         return $stats;
     }
 
     /**
-     * Create a Tags entity object.
-     *
-     * @return Tags
-     */
-    public function createTags(): Tags
-    {
-        $class = $this->getEntityClass(Tags::class);
-        return new $class();
-    }
-
-    /**
-     * Get the row associated with a specific tag string.
-     *
-     * @param string $tag       Tag to look up.
-     * @param bool   $create    Should we create the row if it does not exist?
-     * @param bool   $firstOnly Should we return the first matching row (true)
-     * or the entire result set (in case of multiple matches)?
-     *
-     * @return mixed Matching row/result set if found or created, null otherwise.
-     */
-    public function getByText($tag, $create = true, $firstOnly = true)
-    {
-        $dql = 'SELECT t '
-            . 'FROM ' . $this->getEntityClass(Tags::class) . ' t '
-            . 'WHERE ' . ($this->caseSensitive ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ');
-        $parameters = compact('tag');
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $result =  $query->getResult();
-        if (count($result) == 0 && $create) {
-            $row = $this->createTags()
-                ->setTag($this->caseSensitive ? $tag : mb_strtolower($tag, 'UTF8'));
-            try {
-                $this->persistEntity($row);
-            } catch (\Exception $e) {
-                $this->logError('Could not save tag: ' . $e->getMessage());
-                return false;
-            }
-            return $firstOnly ? $row : [$row];
-        }
-        return $firstOnly ? current($result) : $result;
-    }
-
-    /**
      * Get the tags that match a string
      *
-     * @param string $text Tag to look up.
+     * @param string $text          Tag to look up.
+     * @param string $sort          Sort type
+     * @param int    $limit         Maximum results to retrieve
+     * @param bool   $caseSensitive Should tags be treated as case-sensitive?
      *
      * @return array
      */
-    public function matchText(string $text): array
+    public function getNonListTagsFuzzilyMatchingString(
+        string $text,
+        string $sort = 'alphabetical',
+        int $limit = 100,
+        bool $caseSensitive = false
+    ): array {
+        $where = ['LOWER(t.tag) LIKE LOWER(:text)', 'rt.resource is NOT NULL '];
+        $parameters = ['text' => $text . '%'];
+        return $this->getTagListWithDoctrine($sort, $limit, $where, $parameters, $caseSensitive);
+    }
+
+    /**
+     * Get all matching tags by text. Normally, 0 or 1 results will be retrieved, but more
+     * may be retrieved under exceptional circumstances (e.g. if retrieving case-insensitively
+     * after storing data case-sensitively).
+     *
+     * @param string $text          Tag text to match
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagsByText(string $text, bool $caseSensitive = false): array
     {
         $where = ['LOWER(t.tag) LIKE LOWER(:text)', 'rt.resource is NOT NULL '];
         $parameters = ['text' => $text . '%'];
-        return $this->getTagListWithDoctrine(where: $where, parameters: $parameters);
+        return $this->getTagListWithDoctrine(where: $where, parameters: $parameters, caseSensitive: $caseSensitive);
+    }
+
+    /**
+     * Get the first available matching tag by text; return null if no match is found.
+     *
+     * @param string $text          Tag text to match
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagByText(string $text, bool $caseSensitive = false): ?TagsEntityInterface
+    {
+        $tags = $this->getTagsByText($text, $caseSensitive);
+        return $tags[0] ?? null;
     }
 
     /**
      * Get a list of tags based on a sort method ($sort) and a where clause.
      *
-     * @param string $sort       Sort/search parameter
-     * @param int    $limit      Maximum number of tags (default = 100,
-     *                           < 1 = no limit)
-     * @param array  $where      Array of where clauses
-     * @param array  $parameters Array of query parameters
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags (default = 100, < 1 = no limit)
+     * @param array  $where         Array of where clauses
+     * @param array  $parameters    Array of query parameters
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
      *
      * @return array Tag details.
      */
-    protected function getTagListWithDoctrine($sort = 'alphabetical', $limit = 100, $where = [], $parameters = [])
-    {
-        $tagClause = $this->caseSensitive ? 't.tag' : 'LOWER(t.tag)';
+    protected function getTagListWithDoctrine(
+        string $sort = 'alphabetical',
+        int $limit = 100,
+        array $where = [],
+        array $parameters = [],
+        bool $caseSensitive = false
+    ) {
+        $tagClause = $caseSensitive ? 't.tag' : 'LOWER(t.tag)';
         $dql = 'SELECT t.id as id, COUNT(DISTINCT(rt.resource)) as cnt, MAX(rt.posted) as posted, '
             . $tagClause . ' AS tag '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
@@ -337,23 +320,25 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Get all resources associated with the provided tag query.
      *
-     * @param string $q      Search query
-     * @param string $source Record source (optional limiter)
-     * @param string $sort   Resource field to sort on (optional)
-     * @param int    $offset Offset for results
-     * @param int    $limit  Limit for results (null for none)
-     * @param bool   $fuzzy  Are we doing an exact or fuzzy search?
+     * @param string $q             Search query
+     * @param string $source        Record source (optional limiter)
+     * @param string $sort          Resource field to sort on (optional)
+     * @param int    $offset        Offset for results
+     * @param ?int   $limit         Limit for results (null for none)
+     * @param bool   $fuzzy         Are we doing an exact (false) or fuzzy (true) search?
+     * @param ?bool  $caseSensitive Should search be case sensitive? (Ignored when fuzzy = true)
      *
      * @return array
      */
-    public function resourceSearch(
-        $q,
-        $source = null,
-        $sort = null,
-        $offset = 0,
-        $limit = null,
-        $fuzzy = true
-    ) {
+    public function getResourcesMatchingTagQuery(
+        string $q,
+        string $source = null,
+        string $sort = null,
+        int $offset = 0,
+        ?int $limit = null,
+        bool $fuzzy = true,
+        bool $caseSensitive = false
+    ): array {
         $orderByDetails = empty($sort) ? [] : ResourceService::getOrderByClause($sort);
         $dql = 'SELECT DISTINCT(r.id) AS resource, r';
         if (!empty($orderByDetails['extraSelect'])) {
@@ -366,7 +351,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $parameters = compact('q');
         if ($fuzzy) {
             $dql .= 'AND LOWER(t.tag) LIKE LOWER(:q) ';
-        } elseif (!$this->caseSensitive) {
+        } elseif (!$caseSensitive) {
             $dql .= 'AND LOWER(t.tag) = LOWER(:q) ';
         } else {
             $dql .= 'AND t.tag = :q ';
@@ -404,6 +389,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      * @param UserEntityInterface|int|null $ownerOrId         ID of user to check for ownership
      * @param array                        $extraWhereClauses Extra where clauses to apply to query
      * @param array                        $extraParameters   Extra parameters to provide with query
+     * @param bool                         $caseSensitive     Should tags be treated case-sensitively?
      *
      * @return array
      */
@@ -415,10 +401,11 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null,
         array $extraWhereClauses = [],
-        array $extraParameters = []
+        array $extraParameters = [],
+        bool $caseSensitive = false
     ): array {
         $parameters = compact('id', 'source') + $extraParameters;
-        $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
         $fieldList = 't.id AS id, COUNT(DISTINCT(rt.user)) AS cnt, ' . $tag . ' AS tag';
         // If we're looking for ownership, adjust query to include an "is_me" flag value indicating
         // if the selected resource is tagged by the specified user.
@@ -458,27 +445,30 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Get a list of tags for the browse interface.
      *
-     * @param string $sort  Sort/search parameter
-     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags (default = 100, < 1 = no limit)
+     * @param bool   $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
-    public function getTagBrowseList(string $sort, int $limit): array
+    public function getTagBrowseList(string $sort, int $limit, bool $caseSensitive = false): array
     {
         // Extra where clause is to discard user list tags:
-        return $this->getTagListWithDoctrine($sort, $limit, ['rt.resource is NOT NULL']);
+        return $this
+            ->getTagListWithDoctrine($sort, $limit, ['rt.resource is NOT NULL'], caseSensitive: $caseSensitive);
     }
 
     /**
      * Get all tags associated with the specified record (and matching provided filters).
      *
-     * @param string                           $id        Record ID to look up
-     * @param string                           $source    Source of record to look up
-     * @param int                              $limit     Max. number of tags to return (0 = no limit)
-     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
-     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
-     * @param string                           $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * @param string                           $id            Record ID to look up
+     * @param string                           $source        Source of record to look up
+     * @param int                              $limit         Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId      ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId      ID of user to load tags from (null for all users)
+     * @param string                           $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId     ID of user to check for ownership
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -489,7 +479,8 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array {
         $extraClauses = $extraParams = [];
         if ($listOrId) {
@@ -511,15 +502,16 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Get all tags from favorite lists associated with the specified record (and matching provided filters).
      *
-     * @param string                           $id        Record ID to look up
-     * @param string                           $source    Source of record to look up
-     * @param int                              $limit     Max. number of tags to return (0 = no limit)
-     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * @param string                           $id            Record ID to look up
+     * @param string                           $source        Source of record to look up
+     * @param int                              $limit         Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId      ID of list to load tags from (null for tags that
      * are associated with ANY list, but excluding non-list tags)
-     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
-     * @param string                           $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     * @param UserEntityInterface|int|null     $userOrId      ID of user to load tags from (null for all users)
+     * @param string                           $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId     ID of user to check for ownership
      * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -527,10 +519,11 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
-        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array {
         $extraClauses = $extraParams = [];
         if ($listOrId) {
@@ -547,20 +540,22 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             $sort,
             $ownerOrId,
             $extraClauses,
-            $extraParams
+            $extraParams,
+            $caseSensitive
         );
     }
 
     /**
      * Get all tags outside of favorite lists associated with the specified record (and matching provided filters).
      *
-     * @param string                       $id        Record ID to look up
-     * @param string                       $source    Source of record to look up
-     * @param int                          $limit     Max. number of tags to return (0 = no limit)
-     * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
-     * @param string                       $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
+     * @param string                       $id            Record ID to look up
+     * @param string                       $source        Source of record to look up
+     * @param int                          $limit         Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId      User entity/ID to load tags from (null for all users)
+     * @param string                       $sort          Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId     Entity/ID representing user to check for ownership
      * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
+     * @param bool                         $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -570,7 +565,8 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         int $limit = 0,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
-        UserEntityInterface|int|null $ownerOrId = null
+        UserEntityInterface|int|null $ownerOrId = null,
+        bool $caseSensitive = false
     ): array {
         return $this->getRecordTagsWithDoctrine(
             $id,
@@ -580,6 +576,8 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             $sort,
             $ownerOrId,
             ['rt.list IS NULL'],
+            [],
+            $caseSensitive
         );
     }
 
@@ -627,14 +625,15 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Support method for fixDuplicateTags()
      *
-     * @param string $tag Tag to deduplicate.
+     * @param string $tag           Tag to deduplicate.
+     * @param bool   $caseSensitive Treat tags as case-sensitive?
      *
      * @return void
      */
-    protected function fixDuplicateTag($tag)
+    protected function fixDuplicateTag($tag, $caseSensitive)
     {
         // Make sure this really is a duplicate.
-        $result = $this->getByText($tag, false, false);
+        $result = $this->getTagsByText($tag, $caseSensitive);
         if (count($result) < 2) {
             return;
         }
@@ -648,12 +647,14 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Repair duplicate tags in the database (if any).
      *
+     * @param bool $caseSensitive Treat tags as case-sensitive?
+     *
      * @return void
      */
-    public function fixDuplicateTags()
+    public function fixDuplicateTags($caseSensitive = false)
     {
         foreach ($this->getDuplicateTags() as $dupe) {
-            $this->fixDuplicateTag($dupe['tag']);
+            $this->fixDuplicateTag($dupe['tag'], $caseSensitive);
         }
     }
 
@@ -661,9 +662,11 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
      * tags have introduced problems).
      *
+     * @param bool $caseSensitive Treat tags as case-sensitive?
+     *
      * @return array
      */
-    public function getDuplicateTags(): array
+    public function getDuplicateTags(bool $caseSensitive = false): array
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('tag', 'tag');
@@ -671,7 +674,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $rsm->addScalarResult('id', 'id');
         $sql = 'SELECT MIN(tag) AS tag, COUNT(tag) AS cnt, MIN(id) AS id '
             . 'FROM tags t '
-            . 'GROUP BY ' . ($this->caseSensitive ? 't.tag ' : 'LOWER(t.tag) ')
+            . 'GROUP BY ' . ($caseSensitive ? 't.tag ' : 'LOWER(t.tag) ')
             . 'HAVING COUNT(tag) > 1';
         $statement = $this->entityManager->createNativeQuery($sql, $rsm);
         $results = $statement->getResult();
@@ -682,13 +685,14 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
      * Get a list of all tags generated by the user in favorites lists. Note that the returned list WILL NOT include
      * tags attached to records that are not saved in favorites lists. Returns an array of arrays with id and tag keys.
      *
-     * @param UserEntityInterface|int          $userOrId User ID to look up.
-     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
+     * @param UserEntityInterface|int          $userOrId      User ID to look up.
+     * @param UserListEntityInterface|int|null $listOrId      Filter for tags tied to a specific list (null for no
      * filter).
-     * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
+     * @param ?string                          $recordId      Filter for tags tied to a specific resource (null for no
      * filter).
-     * @param ?string                          $source   Filter for tags tied to a specific record source (null for
-     * no filter).
+     * @param ?string                          $source        Filter for tags tied to a specific record source (null
+     * for no filter).
+     * @param bool                             $caseSensitive Treat tags as case-sensitive?
      *
      * @return array
      */
@@ -696,11 +700,12 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null,
         ?string $recordId = null,
-        ?string $source = null
+        ?string $source = null,
+        bool $caseSensitive = false
     ): array {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
         $dql = 'SELECT MIN(t.id) AS id, ' . $tag . ' AS tag, COUNT(DISTINCT(rt.resource)) AS cnt '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'JOIN rt.tag t '
@@ -731,18 +736,20 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     /**
      * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
      *
-     * @param UserListEntityInterface|int  $listOrId List ID or entity
-     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     * @param UserListEntityInterface|int  $listOrId      List ID or entity
+     * @param UserEntityInterface|int|null $userOrId      User ID or entity to look up (null for no filter).
+     * @param bool                         $caseSensitive Treat tags as case-sensitive?
      *
      * @return array[]
      */
     public function getListTags(
         UserListEntityInterface|int $listOrId,
-        UserEntityInterface|int|null $userOrId = null
+        UserEntityInterface|int|null $userOrId = null,
+        $caseSensitive = false
     ): array {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         $user = $this->getDoctrineReference(User::class, $userOrId);
-        $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
 
         $dql = 'SELECT MIN(t.id) AS id, ' . $tag . ' AS tag '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
@@ -785,5 +792,16 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     public function getTagById(int $id): ?TagsEntityInterface
     {
         return $this->entityManager->find($this->getEntityClass(Tags::class), $id);
+    }
+
+    /**
+     * Create a new Tag entity.
+     *
+     * @return TagsEntityInterface
+     */
+    public function createEntity(): TagsEntityInterface
+    {
+        $class = $this->getEntityClass(Tags::class);
+        return new $class();
     }
 }
