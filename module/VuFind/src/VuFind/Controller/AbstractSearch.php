@@ -523,8 +523,8 @@ class AbstractSearch extends AbstractBase
     protected function retrieveSearchSecurely($searchId)
     {
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $user = $this->getUser() ?: null;
-        return $this->getDbService(SearchServiceInterface::class)->getSearchByIdAndOwner($searchId, $sessId, $user);
+        return $this->getDbService(SearchServiceInterface::class)
+            ->getSearchByIdAndOwner($searchId, $sessId, $this->getUser());
     }
 
     /**
@@ -536,12 +536,11 @@ class AbstractSearch extends AbstractBase
      */
     protected function saveSearchToHistory($results)
     {
-        $user = $this->getUser() ?: null;
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
         $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class)->saveNormalizedSearch(
             $results,
             $sessId,
-            $user?->getId()
+            $this->getUser()?->getId()
         );
     }
 

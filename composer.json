@@ -35,7 +35,7 @@
         "composer/semver": "3.4.0",
         "doctrine/doctrine-orm-module": "^6.0",
         "doctrine/orm": "^2.10.2",
-        "endroid/qr-code": "5.0.7",
+        "endroid/qr-code": "5.0.9",
         "guzzlehttp/guzzle": "7.8.1",
         "jaybizzle/crawler-detect": "^1.2",
         "laminas/laminas-cache": "3.12.1",
