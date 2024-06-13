@@ -209,7 +209,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $stats = current($query->getResult());
         $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
         if ($extended) {
-            $stats['unique'] = count($resourceTagsService->getUniqueTags($caseSensitiveTags));
+            $stats['unique'] = count($resourceTagsService->getUniqueTags(caseSensitive: $caseSensitiveTags));
             $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
         }
         return $stats;
