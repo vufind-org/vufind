@@ -37,6 +37,7 @@ use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\Gateway;
 use VuFind\Db\Table\PluginManager as TableManager;
 use VuFind\Favorites\FavoritesService;
@@ -113,6 +114,7 @@ trait LiveDatabaseTrait
                 new \VuFind\Tags\TagsService(
                     $liveServiceManager->get(TagServiceInterface::class),
                     $liveServiceManager->get(ResourceTagsServiceInterface::class),
+                    $liveServiceManager->get(UserListServiceInterface::class),
                     $container->get(ResourcePopulator::class)
                 )
             );

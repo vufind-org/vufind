@@ -243,12 +243,11 @@ class ListItems extends AbstractChannelProvider
     protected function getListsByTagAndId(): array
     {
         // Get public lists by search criteria
-        return $this->userListService->getUserListsByTagAndId(
+        return $this->tagsService->getUserListsByTagAndId(
             $this->tags,
             $this->ids,
             true,
-            $this->andTags,
-            $this->tagsService->hasCaseSensitiveTags()
+            $this->andTags
         );
     }
 

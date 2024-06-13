@@ -36,6 +36,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
@@ -61,6 +62,7 @@ class TagsService implements DbTableAwareInterface
      *
      * @param TagServiceInterface          $tagDbService        Tag database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
+     * @param UserListServiceInterface     $userListService     User list database service
      * @param ResourcePopulator            $resourcePopulator   Resource populator service
      * @param int                          $maxLength           Maximum tag length
      * @param bool                         $caseSensitive       Are tags case sensitive?
@@ -68,6 +70,7 @@ class TagsService implements DbTableAwareInterface
     public function __construct(
         protected TagServiceInterface $tagDbService,
         protected ResourceTagsServiceInterface $resourceTagsService,
+        protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected int $maxLength = 64,
         protected bool $caseSensitive = false
@@ -506,5 +509,26 @@ class TagsService implements DbTableAwareInterface
     ): Paginator {
         return $this->resourceTagsService
             ->getResourceTagsPaginator($userId, $resourceId, $tagId, $order, $page, $limit, $this->caseSensitive);
+    }
+
+    /**
+     * Get lists associated with a particular tag and/or list of IDs. If IDs and
+     * tags are both provided, only the intersection of matches will be returned.
+     *
+     * @param string|string[]|null $tag               Tag or tags to match (by text, not ID; null for all)
+     * @param int|int[]|null       $listId            List ID or IDs to match (null for all)
+     * @param bool                 $publicOnly        Whether to return only public lists
+     * @param bool                 $andTags           Use AND operator when filtering by tag.
+     *
+     * @return UserListEntityInterface[]
+     */
+    public function getUserListsByTagAndId(
+        string|array|null $tag = null,
+        int|array|null $listId = null,
+        bool $publicOnly = true,
+        bool $andTags = true
+    ): array {
+        return $this->userListService
+            ->getUserListsByTagAndId($tag, $listId, $publicOnly, $andTags, $this->caseSensitive);
     }
 }
