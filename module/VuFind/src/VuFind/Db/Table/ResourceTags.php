@@ -351,7 +351,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 }
             }
         };
-        $this->processDestroyLinks($callback);
+        $this->delete($callback);
     }
 
     /**
@@ -363,6 +363,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * for ALL matching tags)
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Service\ResourceTagsServiceInterface::destroyUserListLinks()
      */
     public function destroyListLinks($list, $user, $tag = null)
     {
@@ -382,37 +384,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 }
             }
         };
-        $this->processDestroyLinks($callback);
-    }
-
-    /**
-     * Process link rows marked to be destroyed.
-     *
-     * @param Object $callback Callback function for selecting deleted rows.
-     *
-     * @return void
-     */
-    protected function processDestroyLinks($callback)
-    {
-        // Get a list of all tag IDs being deleted; we'll use these for
-        // orphan-checking:
-        $potentialOrphans = $this->select($callback);
-
-        // Now delete the unwanted rows:
         $this->delete($callback);
-
-        // Check for orphans:
-        if (count($potentialOrphans) > 0) {
-            $ids = [];
-            foreach ($potentialOrphans as $current) {
-                $ids[] = $current->tag_id;
-            }
-            $checkResults = $this->checkForTags(array_unique($ids));
-            if (count($checkResults['missing']) > 0) {
-                $tagTable = $this->getDbTable('Tags');
-                $tagTable->deleteByIdArray($checkResults['missing']);
-            }
-        }
     }
 
     /**

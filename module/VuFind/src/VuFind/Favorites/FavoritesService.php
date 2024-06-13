@@ -40,8 +40,6 @@ use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
@@ -64,10 +62,9 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface, DbTableAwareInterface
+class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use DbTableAwareTrait;
 
     /**
      * Constructor
@@ -135,13 +132,13 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             throw new ListPermissionException('list_access_denied');
         }
 
-        // Remove user_resource and resource_tags rows:
-        $userResource = $this->getDbTable('UserResource');
-        $userResource->destroyLinks(null, $list->getUser()?->getId(), $list->getId());
+        // Remove user_resource and resource_tags rows for favorites tags:
+        $listUser = $list->getUser();
+        $this->resourceTagsService->destroyResourceTagsLinksForUser(null, $listUser, $list);
+        $this->userResourceService->unlinkFavorites(null, $listUser, $list);
 
         // Remove resource_tags rows for list tags:
-        $linker = $this->getDbTable('resourcetags');
-        $linker->destroyListLinks($list->getId(), $user?->getId());
+        $this->resourceTagsService->destroyUserListLinks($list, $user);
 
         $this->userListService->deleteUserList($list);
     }
@@ -263,13 +260,10 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $resourceIDs[] = $current->getId();
         }
 
-        // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = $this->getDbTable('UserResource');
-        $userResourceTable->destroyLinks(
-            $resourceIDs,
-            $list->getUser()->getId(),
-            $list->getId()
-        );
+        // Remove Resource and related tags:
+        $listUser = $list->getUser();
+        $this->resourceTagsService->destroyResourceTagsLinksForUser($resourceIDs, $listUser, $list);
+        $this->userResourceService->unlinkFavorites($resourceIDs, $listUser, $list);
     }
 
     /**
@@ -294,10 +288,9 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $resourceIDs[] = $current->getId();
         }
 
-        // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = $this->getDbTable('UserResource');
-        // true here makes sure that only tags in lists are deleted
-        $userResourceTable->destroyLinks($resourceIDs, $user->getId(), true);
+        // Remove resource and related tags:
+        $this->resourceTagsService->destroyAllListResourceTagsLinksForUser($resourceIDs, $user);
+        $this->userResourceService->unlinkFavorites($resourceIDs, $user->getId(), null);
     }
 
     /**
@@ -462,14 +455,13 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         ?UserEntityInterface $user,
         Parameters $request
     ): int {
-        $list->setTitle($request->get('title'));
-        $list->setDescription($request->get('desc'));
-        $list->setPublic((bool)$request->get('public'));
+        $list->setTitle($request->get('title'))
+            ->setDescription($request->get('desc'))
+            ->setPublic((bool)$request->get('public'));
         $this->saveListForUser($list, $user);
 
         if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbTable('resourcetags');
-            $linker->destroyListLinks($list->getId(), $user->getId());
+            $this->resourceTagsService->destroyUserListLinks($list, $user);
             foreach ($this->tagsService->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);
             }

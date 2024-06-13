@@ -221,6 +221,38 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
+     * Unlink rows for the specified user list. This removes tags ON THE LIST ITSELF, not tags on
+     * resources within the list.
+     *
+     * @param UserListEntityInterface|int $listOrId ID or entity representing list
+     * @param UserEntityInterface|int     $userOrId ID or entity representing user
+     * @param int|int[]|null              $tagId    ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyUserListLinks(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($userId, $listId, $tagId) {
+            $select->where->equalTo('user_id', $userId);
+            // retrieve tags assigned to a user list
+            // and filter out user resource tags
+            // (resource_id is NULL for list tags).
+            $select->where->isNull('resource_id');
+            $select->where->equalTo('list_id', $listId);
+
+            if (null !== $tagId) {
+                $select->where->in('tag_id', (array)$tagId);
+            }
+        };
+        $this->getDbTable('ResourceTags')->delete($callback);
+    }
+
+    /**
      * Gets unique tagged resources from the database.
      *
      * @param ?int $userId     ID of user (null for any)
