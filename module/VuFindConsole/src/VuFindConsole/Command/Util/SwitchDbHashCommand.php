@@ -43,10 +43,9 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
 
@@ -69,7 +68,7 @@ class SwitchDbHashCommand extends Command
      * Constructor
      *
      * @param Config                   $config          VuFind configuration
-     * @param UserTable                $userTable       User table gateway
+     * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService UserCard database service
      * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
@@ -77,7 +76,7 @@ class SwitchDbHashCommand extends Command
      */
     public function __construct(
         protected Config $config,
-        protected UserTable $userTable,
+        protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
         ?string $name = null,
         protected ?PathResolver $pathResolver = null
@@ -124,26 +123,6 @@ class SwitchDbHashCommand extends Command
     protected function getOpenSsl($algorithm)
     {
         return ($algorithm == 'none') ? null : new Openssl(compact('algorithm'));
-    }
-
-    /**
-     * Re-encrypt a row.
-     *
-     * @param UserRow      $row       Row to update
-     * @param ?BlockCipher $oldcipher Old cipher (null for none)
-     * @param BlockCipher  $newcipher New cipher
-     *
-     * @return void
-     * @throws InvalidArgumentException
-     */
-    protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
-    {
-        $pass = ($oldcipher && $row->getCatPassEnc() !== null)
-            ? $oldcipher->decrypt($row->getCatPassEnc())
-            : $row->getRawCatPassword();
-        $row->setRawCatPassword(null);
-        $row->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
-        $row->save();
     }
 
     /**
@@ -249,15 +228,12 @@ class SwitchDbHashCommand extends Command
         $newcipher->setKey($newkey);
 
         // Now do the database rewrite:
-        $callback = function ($select) {
-            $select->where->isNotNull('cat_username');
-        };
-        $users = $this->userTable->select($callback);
+        $users = $this->userService->getAllUsersWithCatUsernames();
         $cards = $this->userCardService->getAllRowsWithUsernames();
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             try {
-                $this->fixRow($row, $oldcipher, $newcipher);
+                $this->fixEntity($this->userService, $row, $oldcipher, $newcipher);
             } catch (\Exception $e) {
                 $output->writeln("Problem with user {$row->getUsername()}: " . (string)$e);
             }

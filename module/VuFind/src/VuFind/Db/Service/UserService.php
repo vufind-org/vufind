@@ -224,6 +224,19 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Get all rows with catalog usernames.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getAllUsersWithCatUsernames(): array
+    {
+        $callback = function ($select) {
+            $select->where->isNotNull('cat_username');
+        };
+        return iterator_to_array($this->getDbTable('User')->select($callback));
+    }
+
+    /**
      * Create a new user entity.
      *
      * @return UserEntityInterface

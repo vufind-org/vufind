@@ -36,8 +36,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Config\Writer;
 use VuFind\Db\Entity\UserCardEntityInterface;
-use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
@@ -70,13 +71,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     protected $encryptionAlgorithm = 'aes';
 
     /**
-     * Get mock user table object
+     * Get mock user database service object
      *
-     * @return MockObject&User
+     * @return MockObject&UserServiceInterface
      */
-    protected function getMockUserTable(): MockObject&User
+    protected function getMockUserService(): MockObject&UserServiceInterface
     {
-        return $this->createMock(User::class);
+        return $this->createMock(UserServiceInterface::class);
     }
 
     /**
@@ -92,22 +93,22 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock command object
      *
-     * @param array            $config      Config settings
-     * @param ?User            $userTable   User table gateway
-     * @param ?UserCardService $cardService User table gateway
+     * @param array                     $config      Config settings
+     * @param ?UserServiceInterface     $userService User table gateway
+     * @param ?UserCardServiceInterface $cardService User table gateway
      *
      * @return MockObject&SwitchDbHashCommand
      */
     protected function getMockCommand(
         array $config = [],
-        ?User $userTable = null,
+        ?UserServiceInterface $userService = null,
         ?UserCardServiceInterface $cardService = null
     ): MockObject&SwitchDbHashCommand {
         return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
                     new Config($config),
-                    $userTable ?? $this->getMockUserTable(),
+                    $userService ?? $this->getMockUserService(),
                     $cardService ?? $this->getMockCardService(),
                 ]
             )->onlyMethods(['getConfigWriter'])
@@ -241,11 +242,11 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $writer->expects($this->once())->method('save')->willReturn(true);
-        $userTable = $this->getMockUserTable();
-        $userTable->expects($this->once())->method('select')->willReturn([]);
+        $userService = $this->getMockUserService();
+        $userService->expects($this->once())->method('getAllUsersWithCatUsernames')->willReturn([]);
         $cardService = $this->getMockCardService();
         $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([]);
-        $command = $this->getMockCommand([], $userTable, $cardService);
+        $command = $this->getMockCommand([], $userService, $cardService);
         $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -262,28 +263,37 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock row representing a user.
      *
-     * @return MockObject&UserRow
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUserObject(): MockObject&UserRow
+    protected function getMockUserObject(): MockObject&UserEntityInterface
     {
-        $user = $this->createMock(UserRow::class);
+        $user = $this->createMock(UserEntityInterface::class);
         $user->method('getId')->willReturn(2);
         $user->method('getUsername')->willReturn('foo');
         $user->method('getEmail')->willReturn('fake@myuniversity.edu');
         $user->method('getCreated')->willReturn(\DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00'));
-        $user->method('getRawCatPassword')->willReturn('mypassword');
         $user->method('getLastLanguage')->willReturn('en');
         // Use mock setters and getters to actually store/retrieve an encrypted password value
-        $pass = null;
-        $setPass = function ($new) use (&$pass) {
-            $pass = $new;
+        $rawPass = 'mypassword';
+        $rawSetter = function ($new) use (&$rawPass) {
+            $rawPass = $new;
             return true;
         };
-        $user->method('setCatPassEnc')->with($this->callback($setPass))->willReturn($user);
-        $getPass = function () use (&$pass) {
-            return $pass;
+        $rawGetter = function () use (&$rawPass) {
+            return $rawPass;
         };
-        $user->method('getCatPassEnc')->willReturnCallback($getPass);
+        $user->method('setRawCatPassword')->with($this->callback($rawSetter))->willReturn($user);
+        $user->method('getRawCatPassword')->willReturnCallback($rawGetter);
+        $enc = null;
+        $encSetter = function ($new) use (&$enc) {
+            $enc = $new;
+            return true;
+        };
+        $encGetter = function () use (&$enc) {
+            return $enc;
+        };
+        $user->method('setCatPassEnc')->with($this->callback($encSetter))->willReturn($user);
+        $user->method('getCatPassEnc')->willReturnCallback($encGetter);
         return $user;
     }
 
@@ -357,12 +367,12 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         );
         $writer->expects($this->once())->method('save')->willReturn(true);
         $user = $this->getMockUserObject();
-        $user->expects($this->once())->method('save');
-        $userTable = $this->getMockUserTable();
-        $userTable->expects($this->once())->method('select')->willReturn([$user]);
+        $userService = $this->getMockUserService();
+        $userService->expects($this->once())->method('getAllUsersWithCatUsernames')->willReturn([$user]);
+        $userService->expects($this->once())->method('persistEntity')->with($user);
         $cardService = $this->getMockCardService();
         $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([]);
-        $command = $this->getMockCommand([], $userTable, $cardService);
+        $command = $this->getMockCommand([], $userService, $cardService);
         $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -374,7 +384,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(null, $user['cat_password']);
+        $this->assertEquals(null, $user->getRawCatPassword());
         $this->assertEquals('mypassword', $this->decode($user->getCatPassEnc()));
     }
 
@@ -401,13 +411,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         );
         $writer->expects($this->once())->method('save')->willReturn(true);
         $card = $this->getMockUserCardEntity();
-        $userTable = $this->getMockUserTable();
-        $userTable->expects($this->once())->method('select')->willReturn([]);
+        $userService = $this->getMockUserService();
+        $userService->expects($this->once())->method('getAllUsersWithCatUsernames')->willReturn([]);
         $cardService = $this->getMockCardService();
         $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([$card]);
         $cardService->expects($this->once())->method('persistEntity')
             ->with($this->equalTo($card));
-        $command = $this->getMockCommand([], $userTable, $cardService);
+        $command = $this->getMockCommand([], $userService, $cardService);
         $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
