@@ -179,13 +179,13 @@ class LoginToken extends Gateway
     /**
      * Remove expired login tokens
      *
-     * @return void
+     * @return int
      */
-    public function deleteExpired(): void
+    public function deleteExpired(): int
     {
         $callback = function ($select) {
             $select->where->lessThanOrEqualTo('expires', time());
         };
-        $this->delete($callback);
+        return $this->delete($callback);
     }
 }

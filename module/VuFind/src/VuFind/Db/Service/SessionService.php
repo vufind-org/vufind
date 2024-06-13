@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
@@ -44,7 +45,10 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SessionService extends AbstractDbService implements DbTableAwareInterface, SessionServiceInterface
+class SessionService extends AbstractDbService implements
+    DbTableAwareInterface,
+    SessionServiceInterface,
+    Feature\DeleteExpiredInterface
 {
     use DbTableAwareTrait;
 
@@ -122,5 +126,18 @@ class SessionService extends AbstractDbService implements DbTableAwareInterface,
     public function createEntity(): SessionEntityInterface
     {
         return $this->getDbTable('Session')->createRow();
+    }
+
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        return $this->getDbTable('Session')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
     }
 }

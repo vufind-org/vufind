@@ -46,7 +46,10 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class LoginTokenService extends AbstractDbService implements LoginTokenServiceInterface, DbTableAwareInterface
+class LoginTokenService extends AbstractDbService implements
+    LoginTokenServiceInterface,
+    Feature\DeleteExpiredInterface,
+    DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
@@ -161,12 +164,15 @@ class LoginTokenService extends AbstractDbService implements LoginTokenServiceIn
     }
 
     /**
-     * Remove expired login tokens.
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
-     * @return void
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
      */
-    public function deleteExpired(): void
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        $this->getDbTable('LoginToken')->deleteExpired();
+        return $this->getDbTable('LoginToken')->deleteExpired();
     }
 }

@@ -121,11 +121,4 @@ interface LoginTokenServiceInterface extends DbServiceInterface
      * @return LoginTokenEntityInterface[]
      */
     public function getBySeries(string $series): array;
-
-    /**
-     * Remove expired login tokens.
-     *
-     * @return void
-     */
-    public function deleteExpired(): void;
 }
