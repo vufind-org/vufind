@@ -20,7 +20,7 @@ $link = $this->recordLinker()->getUrl($this->driver);
   <p>
     <?=
       $this->translate('explain_relevance', [
-      '%%recordId%%' => '<a href="' . $this->escapeHtmlAttr($link) . '">' . $recordId . '</a>',
+      '%%recordId%%' => '<a href="' . $this->escapeHtmlAttr($link) . '">' . $this->escapeHtml($recordId) . '</a>',
       '%%relevanceValue%%' => $this->localizedNumber($totalScore, $decimalPlaces)])
     ?>
     <?php if (isset($coord) || isset($boost)): ?>

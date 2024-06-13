@@ -251,7 +251,7 @@ class Search extends Gateway
         };
         $results = [];
         foreach ($this->select($callback) as $match) {
-            $minified = $match->getSearchObject();
+            $minified = $match->getSearchObjectOrThrowException();
             if ($normalized->isEquivalentToMinifiedSearch($minified)) {
                 $results[] = $match;
                 if (count($results) >= $limit) {
@@ -293,7 +293,7 @@ class Search extends Gateway
                 $existingRow->created = date('Y-m-d H:i:s');
                 // Keep the ID of the old search:
                 $minified = $normalized->getMinified();
-                $minified->id = $existingRow->getSearchObject()->id;
+                $minified->id = $existingRow->getSearchObjectOrThrowException()->id;
                 $existingRow->search_object = serialize($minified);
                 $existingRow->session_id = $sessionId;
                 $existingRow->save();

@@ -68,35 +68,35 @@ class CommentsService extends AbstractDbService implements
     /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
-     * @param string                      $comment  The comment to save.
-     * @param int|UserEntityInterface     $user     User object or identifier
-     * @param int|ResourceEntityInterface $resource Resource object or identifier
+     * @param string                      $comment      The comment to save.
+     * @param UserEntityInterface|int     $userOrId     User object or identifier
+     * @param ResourceEntityInterface|int $resourceOrId Resource object or identifier
      *
      * @return ?int
      */
     public function addComment(
         string $comment,
-        int|UserEntityInterface $user,
-        int|ResourceEntityInterface $resource
+        UserEntityInterface|int $userOrId,
+        ResourceEntityInterface|int $resourceOrId
     ): ?int {
-        $userVal = is_int($user)
-            ? $this->getDbService(UserServiceInterface::class)->getUserById($user)
-            : $user;
-        $resourceVal = is_int($resource)
-            ? $this->getDbService(ResourceServiceInterface::class)->getResourceById($resource)
-            : $resource;
-        return $resourceVal->addComment($comment, $userVal);
+        $user = is_int($userOrId)
+            ? $this->getDbService(UserServiceInterface::class)->getUserById($userOrId)
+            : $userOrId;
+        $resource = is_int($resourceOrId)
+            ? $this->getDbService(ResourceServiceInterface::class)->getResourceById($resourceOrId)
+            : $resourceOrId;
+        return $resource->addComment($comment, $user);
     }
 
     /**
-     * Get comments associated with the specified resource.
+     * Get comments associated with the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
      * @return CommentsEntityInterface[]
      */
-    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
+    public function getRecordComments(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
     {
         $comments = $this->getDbTable('comments')->getForResource($id, $source);
         return is_array($comments) ? $comments : iterator_to_array($comments);
@@ -105,31 +105,29 @@ class CommentsService extends AbstractDbService implements
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                     $id   ID of row to delete
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param int                     $id       ID of row to delete
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return bool
      */
-    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool
+    public function deleteIfOwnedByUser(int $id, UserEntityInterface|int $userOrId): bool
     {
-        if (is_int($user)) {
-            $user = $this->getDbService(UserServiceInterface::class)->getUserById($user);
-        }
+        $user = is_int($userOrId)
+            ? $this->getDbService(UserServiceInterface::class)->getUserById($userOrId) : $userOrId;
         return $this->getDbTable('comments')->deleteIfOwnedByUser($id, $user);
     }
 
     /**
      * Deletes all comments by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void
+    public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
-        if (is_int($user)) {
-            $user = $this->getDbService(UserServiceInterface::class)->getUserById($user);
-        }
+        $user = is_int($userOrId)
+            ? $this->getDbService(UserServiceInterface::class)->getUserById($userOrId) : $userOrId;
         $this->getDbTable('comments')->deleteByUser($user);
     }
 

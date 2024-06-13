@@ -304,7 +304,7 @@ class Memory
             $search
                 = $this->searchTable->getOwnedRowById($id, $this->sessionId, null);
             if ($search) {
-                $minSO = $search->getSearchObject();
+                $minSO = $search->getSearchObjectOrThrowException();
                 $this->searchCache[$id] = $minSO->deminify($this->resultsManager);
             } else {
                 $this->searchCache[$id] = null;

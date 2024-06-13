@@ -29,6 +29,7 @@
 
 namespace VuFind\Record\FallbackLoader;
 
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Table\Resource;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Service;
@@ -52,26 +53,21 @@ class Solr extends AbstractFallbackLoader
     protected $source = 'Solr';
 
     /**
-     * Solr field containing legacy IDs.
-     *
-     * @var string
-     */
-    protected $legacyIdField;
-
-    /**
      * Constructor
      *
-     * @param Resource $table         Resource database table object
-     * @param Service  $searchService Search service
-     * @param ?string  $legacyIdField Solr field containing legacy IDs (null to
+     * @param Resource                 $table           Resource database table object
+     * @param ResourceServiceInterface $resourceService Resource database service
+     * @param Service                  $searchService   Search service
+     * @param ?string                  $legacyIdField   Solr field containing legacy IDs (null to
      * disable lookups)
      */
     public function __construct(
         Resource $table,
+        ResourceServiceInterface $resourceService,
         Service $searchService,
-        ?string $legacyIdField = 'previous_id_str_mv'
+        protected ?string $legacyIdField = 'previous_id_str_mv'
     ) {
-        parent::__construct($table, $searchService);
+        parent::__construct($table, $resourceService, $searchService);
         $this->legacyIdField = $legacyIdField;
     }
 

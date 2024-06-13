@@ -27,13 +27,14 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind;
+namespace VuFind\Tags;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Record\ResourcePopulator;
 
 /**
  * Tags factory.
@@ -44,7 +45,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TagsFactory implements FactoryInterface
+class TagsServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +69,10 @@ class TagsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $maxLength = $config->Social->max_tag_length ?? 64;
-        return new $requestedName($maxLength);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return new $requestedName(
+            $container->get(ResourcePopulator::class),
+            $config->Social->max_tag_length ?? 64
+        );
     }
 }

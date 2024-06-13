@@ -29,10 +29,14 @@
 
 namespace VuFind\Db\Table;
 
+use DateTime;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 
 use function count;
 use function in_array;
@@ -47,14 +51,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ResourceTags extends Gateway
+class ResourceTags extends Gateway implements DbServiceAwareInterface
 {
-    /**
-     * Are tags case sensitive?
-     *
-     * @var bool
-     */
-    protected $caseSensitive;
+    use DbServiceAwareTrait;
 
     /**
      * Constructor
@@ -71,10 +70,9 @@ class ResourceTags extends Gateway
         PluginManager $tm,
         $cfg,
         ?RowGateway $rowObj = null,
-        $caseSensitive = false,
+        protected $caseSensitive = false,
         $table = 'resource_tags'
     ) {
-        $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
@@ -88,6 +86,8 @@ class ResourceTags extends Gateway
      * @param string $posted   Posted date (optional -- omit for current)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::createLink()
      */
     public function createLink(
         $resource,
@@ -96,38 +96,13 @@ class ResourceTags extends Gateway
         $list = null,
         $posted = null
     ) {
-        $callback = function ($select) use ($resource, $tag, $user, $list) {
-            $select->where->equalTo('resource_id', $resource)
-                ->equalTo('tag_id', $tag);
-            if (null !== $list) {
-                $select->where->equalTo('list_id', $list);
-            } else {
-                $select->where->isNull('list_id');
-            }
-            if (null !== $user) {
-                $select->where->equalTo('user_id', $user);
-            } else {
-                $select->where->isNull('user_id');
-            }
-        };
-        $result = $this->select($callback)->current();
-
-        // Only create row if it does not already exist:
-        if (empty($result)) {
-            $result = $this->createRow();
-            $result->resource_id = $resource;
-            $result->tag_id = $tag;
-            if (null !== $list) {
-                $result->list_id = $list;
-            }
-            if (null !== $user) {
-                $result->user_id = $user;
-            }
-            if (null !== $posted) {
-                $result->posted = $posted;
-            }
-            $result->save();
-        }
+        $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+            $resource,
+            $tag,
+            $user,
+            $list,
+            $posted ? DateTime::createFromFormat('Y-m-d H:i:s', $posted) : null
+        );
     }
 
     /**
@@ -208,8 +183,8 @@ class ResourceTags extends Gateway
     /**
      * Get lists associated with a particular tag.
      *
-     * @param string|array      $tag        Tag to match
-     * @param null|string|array $listId     List ID to retrieve (null for all)
+     * @param string|array|null $tag        Tag to match (null for all)
+     * @param string|array|null $listId     List ID to retrieve (null for all)
      * @param bool              $publicOnly Whether to return only public lists
      * @param bool              $andTags    Use AND operator when filtering by tag.
      *
@@ -221,7 +196,7 @@ class ResourceTags extends Gateway
         $publicOnly = true,
         $andTags = true
     ) {
-        $tag = (array)$tag;
+        $tag = (array)($tag ?? []);
         $listId = $listId ? (array)$listId : null;
 
         $callback = function ($select) use (
@@ -586,7 +561,7 @@ class ResourceTags extends Gateway
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['tag_id', 'tag']);
-            $select->order([new Expression('lower(tag)')]);
+            $select->order([new Expression('lower(tag)'), 'tag']);
         };
         return $this->select($callback);
     }
