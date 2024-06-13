@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
+use VuFind\Db\Entity\SearchEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
@@ -48,6 +51,169 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
     use DbTableAwareTrait;
 
     /**
+     * Create a search entity.
+     *
+     * @return SearchEntityInterface
+     */
+    public function createEntity(): SearchEntityInterface
+    {
+        return $this->getDbTable('search')->createRow();
+    }
+
+    /**
+     * Create a search entity containing the specified checksum, persist it to the database,
+     * and return a fully populated object. Throw an exception if something goes wrong during
+     * the process.
+     *
+     * @param int $checksum Checksum
+     *
+     * @return SearchEntityInterface
+     * @throws Exception
+     */
+    public function createAndPersistEntityWithChecksum(int $checksum): SearchEntityInterface
+    {
+        $table = $this->getDbTable('search');
+        $table->insert(
+            [
+                'created' => date('Y-m-d H:i:s'),
+                'checksum' => $checksum,
+            ]
+        );
+        $lastInsert = $table->getLastInsertValue();
+        if (!($row = $this->getSearchById($lastInsert))) {
+            throw new Exception('Cannot find id ' . $lastInsert);
+        }
+        return $row;
+    }
+
+    /**
+     * Destroy unsaved searches belonging to the specified session/user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return void
+     */
+    public function destroySession(string $sessionId, UserEntityInterface|int|null $userOrId = null): void
+    {
+        $uid = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($sessionId, $uid) {
+            $select->where->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if ($uid !== null) {
+                $select->where->OR
+                    ->equalTo('user_id', $uid)->and->equalTo('saved', 0);
+            }
+        };
+        $this->getDbTable('search')->delete($callback);
+    }
+
+    /**
+     * Get a SearchEntityInterface object by ID.
+     *
+     * @param int $id Search identifier
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchById(int $id): ?SearchEntityInterface
+    {
+        return $this->getDbTable('search')->select(['id' => $id])->current();
+    }
+
+    /**
+     * Get a SearchEntityInterface object by ID and owner.
+     *
+     * @param int                          $id        Search identifier
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return ?SearchEntityInterface
+     */
+    public function getSearchByIdAndOwner(
+        int $id,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId
+    ): ?SearchEntityInterface {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($id, $sessionId, $userId) {
+            $nest = $select->where
+                ->equalTo('id', $id)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessionId);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        return $this->getDbTable('search')->select($callback)->current();
+    }
+
+    /**
+     * Get an array of rows for the specified user.
+     *
+     * @param string                       $sessionId Session ID of current user.
+     * @param UserEntityInterface|int|null $userOrId  User entity or ID of current user (optional).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSearches(string $sessionId, UserEntityInterface|int|null $userOrId = null): array
+    {
+        $uid = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($sessionId, $uid) {
+            $select->where->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if ($uid !== null) {
+                $select->where->OR->equalTo('user_id', $uid);
+            }
+            $select->order('created');
+        };
+        return iterator_to_array($this->getDbTable('search')->select($callback));
+    }
+
+    /**
+     * Get scheduled searches.
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getScheduledSearches(): array
+    {
+        $callback = function ($select) {
+            $select->where->equalTo('saved', 1);
+            $select->where->greaterThan('notification_frequency', 0);
+            $select->order('user_id');
+        };
+        return iterator_to_array($this->getDbTable('search')->select($callback));
+    }
+
+    /**
+     * Retrieve all searches matching the specified checksum and belonging to the user specified by session or user
+     * entity/ID.
+     *
+     * @param int                          $checksum  Checksum to match
+     * @param string                       $sessionId Current session ID
+     * @param UserEntityInterface|int|null $userOrId  Entity or ID representing current user (optional).
+     *
+     * @return SearchEntityInterface[]
+     * @throws Exception
+     */
+    public function getSearchesByChecksumAndOwner(
+        int $checksum,
+        string $sessionId,
+        UserEntityInterface|int|null $userOrId = null
+    ): array {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($checksum, $sessionId, $userId) {
+            $nest = $select->where
+                ->equalTo('checksum', $checksum)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        return iterator_to_array($this->getDbTable('search')->select($callback));
+    }
+
+    /**
      * Set invalid user_id values in the table to null; return count of affected rows.
      *
      * @return int
@@ -65,5 +231,16 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
             $searchTable->update(['user_id' => null], $searchCallback);
         }
         return $count;
+    }
+
+    /**
+     * Get saved searches with missing checksums (used for cleaning up legacy data).
+     *
+     * @return SearchEntityInterface[]
+     */
+    public function getSavedSearchesWithMissingChecksums(): array
+    {
+        $searchWhere = ['checksum' => null, 'saved' => 1];
+        return iterator_to_array($this->getDbTable('search')->select($searchWhere));
     }
 }

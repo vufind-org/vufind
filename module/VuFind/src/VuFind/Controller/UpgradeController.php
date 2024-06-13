@@ -345,16 +345,18 @@ class UpgradeController extends AbstractBase
     protected function fixSearchChecksumsInDatabase()
     {
         $manager = $this->serviceLocator->get(ResultsManager::class);
-        $search = $this->getTable('search');
-        $searchWhere = ['checksum' => null, 'saved' => 1];
-        $searchRows = $search->select($searchWhere);
+        $searchService = $this->getDbService(SearchServiceInterface::class);
+        $searchRows = $searchService->getSavedSearchesWithMissingChecksums();
         if (count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
-                $searchObj = $searchRow->getSearchObjectOrThrowException()->deminify($manager);
+                $searchObj = $searchRow->getSearchObject()?->deminify($manager);
+                if (!$searchObj) {
+                    throw new Exception("Missing search data for row {$searchRow->getId()}.");
+                }
                 $url = $searchObj->getUrlQuery()->getParams();
                 $checksum = crc32($url) & 0xFFFFFFF;
-                $searchRow->checksum = $checksum;
-                $searchRow->save();
+                $searchRow->setChecksum($checksum);
+                $searchService->persistEntity($searchRow);
             }
             $this->session->warnings->append(
                 'Added checksum to ' . count($searchRows) . ' rows in search table'
