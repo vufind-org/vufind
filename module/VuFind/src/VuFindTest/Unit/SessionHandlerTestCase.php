@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Unit;
 
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Session\AbstractBase as SessionHandler;
 
 /**
@@ -103,8 +104,9 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function injectMockDatabaseServices(SessionHandler $handler)
+    protected function injectMockDatabaseDependencies(SessionHandler $handler)
     {
+        $this->injectMockDatabaseTables($handler);
         $handler->setDbServiceManager($this->getServices());
     }
 
@@ -117,20 +119,17 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function setUpDestroyExpectations($sessId)
     {
-        $search = $this->getMockBuilder(\VuFind\Db\Table\Search::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $search = $this->createMock(\VuFind\Db\Table\Search::class);
         $search->expects($this->once())
             ->method('destroySession')
             ->with($this->equalTo($sessId));
-        $external = $this->getMockBuilder(\VuFind\Db\Table\ExternalSession::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $external = $this->createMock(ExternalSessionServiceInterface::class);
         $external->expects($this->once())
             ->method('destroySession')
             ->with($this->equalTo($sessId));
         $tables = $this->getTables();
+        $services = $this->getServices();
         $tables->set('Search', $search);
-        $tables->set('ExternalSession', $external);
+        $services->set(ExternalSessionServiceInterface::class, $external);
     }
 }

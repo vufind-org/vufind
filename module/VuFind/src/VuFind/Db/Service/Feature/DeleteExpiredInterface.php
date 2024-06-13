@@ -45,8 +45,7 @@ use DateTime;
 interface DeleteExpiredInterface
 {
     /**
-     * Delete expired records. Allows setting of 'from' and 'to' ID's so that rows
-     * can be deleted in small batches.
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.
      * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
