@@ -37,7 +37,6 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -595,7 +594,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
-     * Call TagServiceInterface::getUserTagsFromFavorites() and format the results for editing.
+     * Call TagsService::getUserTagsFromFavorites() and format the results for editing.
      *
      * @param UserEntityInterface|int          $userOrId User ID to look up.
      * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
