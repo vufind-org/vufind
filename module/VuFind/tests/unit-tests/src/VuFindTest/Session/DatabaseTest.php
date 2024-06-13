@@ -109,7 +109,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function ztestDestroy(): void
+    public function testDestroy(): void
     {
         $handler = $this->getHandler();
         $this->setUpDestroyExpectations('foo');

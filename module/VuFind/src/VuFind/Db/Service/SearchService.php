@@ -189,7 +189,7 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
      *
      * @param int                          $checksum  Checksum to match
      * @param string                       $sessionId Current session ID
-     * @param null|UserEntityInterface|int $userOrId  Entity or ID representing current user.
+     * @param UserEntityInterface|int|null $userOrId  Entity or ID representing current user (optional).
      *
      * @return SearchEntityInterface[]
      * @throws Exception

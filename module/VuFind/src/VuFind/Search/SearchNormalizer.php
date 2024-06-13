@@ -124,16 +124,16 @@ class SearchNormalizer
      *
      * @param \VuFind\Search\Base\Results $results   Search to save
      * @param string                      $sessionId Current session ID
-     * @param int|null                    $userId    Current user ID
+     * @param ?int                        $userId    Current user ID
      *
      * @return SearchEntityInterface
      * @throws Exception
      */
     public function saveNormalizedSearch(
-        $results,
-        $sessionId,
-        $userId
-    ) {
+        \VuFind\Search\Base\Results $results,
+        string $sessionId,
+        ?int $userId
+    ): SearchEntityInterface {
         $normalized = $this->normalizeSearch($results);
         $duplicates = $this->getSearchesMatchingNormalizedSearch(
             $normalized,
