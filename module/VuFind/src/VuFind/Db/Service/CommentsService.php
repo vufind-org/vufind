@@ -152,4 +152,17 @@ class CommentsService extends AbstractDbService implements
     {
         return $this->getDbTable('comments')->select(['id' => $id])->current();
     }
+
+    /**
+     * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $this->getDbTable('comments')->update(['resource_id' => $new], ['resource_id' => $old]);
+    }
 }
