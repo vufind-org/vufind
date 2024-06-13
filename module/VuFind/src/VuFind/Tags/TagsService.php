@@ -122,9 +122,9 @@ class TagsService implements DbTableAwareInterface
         if ($entity = $this->getTagByText($tag)) {
             return $entity;
         }
-        $newEntity = $tagDbService->createEntity()
+        $newEntity = $this->tagDbService->createEntity()
             ->setTag($this->caseSensitive ? $tag : mb_strtolower($tag, 'UTF8'));
-        $tagDbService->persistEntity($newEntity);
+        $this->tagDbService->persistEntity($newEntity);
         return $newEntity;
     }
 
