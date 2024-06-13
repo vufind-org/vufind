@@ -209,13 +209,6 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     });
   }
 
-  /**
-   * Helper variable to store the bound function for the unload event.
-   *
-   * @var {null|function}
-   */
-  let boundFunction = null;
-
   function _setupMultiPageSelectionForm(form) {
     let nonDefaultIdsInput = document.createElement('input');
     nonDefaultIdsInput.setAttribute('class', 'non_default_ids hidden');
@@ -232,7 +225,11 @@ VuFind.register("listItemSelection", function ListItemSelection() {
 
     let nonDefaultIds = _sessionGet(form, 'nonDefaultIds') || [];
     let checkedDefault = _sessionGet(form, 'checkedDefault') || false;
-
+    // Check if the form contains all the ids in the nonDefaultIds
+    const allIds = JSON.parse(form.querySelector('.all-ids-global').value || '[]');
+    if (allIds) {
+      nonDefaultIds = nonDefaultIds.filter(item => allIds.includes(item));
+    }
     form.querySelectorAll('.checkbox-select-item').forEach(itemCheckbox => {
       itemCheckbox.checked = nonDefaultIds.includes(itemCheckbox.value) ? !checkedDefault : checkedDefault;
     });
@@ -242,27 +239,8 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       'checkedDefault': checkedDefault,
     });
     _updateSelectionState(form);
-    boundFunction = _writeState.bind(this, form);
-    window.addEventListener('beforeunload', boundFunction);
-  }
 
-  /**
-   * Clear selected items from session storage when delete is called.
-   *
-   * @param {SubmitEvent} event 
-   * @param {object} data 
-   * @returns 
-   */
-  function onDeleteSubmitHandler(event, data) {
-    let form = 'form-favorites';
-    const formData = data.find(el => el.name === 'listID');
-    if (formData) {
-      form += '-' + formData.value;
-    }
-    window.sessionStorage.setItem(form, '{}');
-    // Remove unload now as we don't want any ids to be updated.
-    window.removeEventListener('beforeunload', boundFunction);
-    return null;
+    window.addEventListener('beforeunload', () => _writeState(form));
   }
 
   function init() {
@@ -275,7 +253,6 @@ VuFind.register("listItemSelection", function ListItemSelection() {
 
   return {
     init: init,
-    getAllSelected: getAllSelected,
-    onDeleteSubmitHandler: onDeleteSubmitHandler
+    getAllSelected: getAllSelected
   };
 });
