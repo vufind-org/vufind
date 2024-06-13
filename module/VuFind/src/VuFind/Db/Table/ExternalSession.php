@@ -94,11 +94,12 @@ class ExternalSession extends Gateway implements DbServiceAwareInterface
      *
      * @return ?\VuFind\Db\Row\ExternalSession
      *
-     * @deprecated Use ExternalSessionServiceInterface::getByExternalSessionId()
+     * @deprecated Use ExternalSessionServiceInterface::getAllByExternalSessionId()
      */
     public function getByExternalSessionId($sid)
     {
-        $this->getDbService(ExternalSessionServiceInterface::class)->getByExternalSessionId($sid);
+        $sessions = $this->getDbService(ExternalSessionServiceInterface::class)->getAllByExternalSessionId($sid);
+        return $sessions[0] ?? null;
     }
 
     /**
