@@ -43,9 +43,7 @@ foreach ($ids as $id) {
             : ($avail->copiesAvailable . ' / ' . $avail->copiesOwned);
         $current['full_status'] .= ' ' . $this->transEsc('od_copies_available', ['%%copies%%' => $copies]);
         if ($avail->numberOfHolds > 0) {
-            $current['full_status'] .= '; ' . $avail->numberOfHolds
-              . ' ' . ($avail->numberOfHolds > 1 ? $this->transEsc('od_people') : $this->transEsc('od_person'))
-              . ' ' . $this->transEsc('od_waiting');
+            $current['full_status'] .= '; ' . $this->transEsc('od_waiting', ['holds' => $avail->numberOfHolds], null, true);
         }
     }
     $data[] = $current;
