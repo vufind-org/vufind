@@ -29,7 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use DateTime;
 use VuFind\Db\Entity\ExternalSessionEntityInterface;
 
 /**
