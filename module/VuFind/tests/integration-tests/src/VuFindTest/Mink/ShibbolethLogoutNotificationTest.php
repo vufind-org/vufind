@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Table\ExternalSession;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 
 /**
  * Shibboleth logout notification test class.
@@ -79,8 +79,8 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
 
         // Add a session id mapping to external_session table:
         $sessionId = $session->getCookie('VUFIND_SESSION');
-        $table = $this->getTable(ExternalSession::class);
-        $table->addSessionMapping($sessionId, 'EXTERNAL_SESSION_ID');
+        $service = $this->getLiveDbServiceManager()->get(ExternalSessionServiceInterface::class);
+        $service->addSessionMapping($sessionId, 'EXTERNAL_SESSION_ID');
 
         // Call the notification endpoint:
         $result = $this->httpPost(

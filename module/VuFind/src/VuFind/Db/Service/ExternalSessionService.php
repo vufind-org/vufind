@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service for auth_hash table.
+ * Database service for external_session table.
  *
  * PHP version 8
  *
@@ -30,12 +30,12 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use VuFind\Db\Entity\AuthHashEntityInterface;
+use VuFind\Db\Entity\ExternalSessionEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
- * Database service for auth_hash table.
+ * Database service for external_session table.
  *
  * @category VuFind
  * @package  Database
@@ -43,61 +43,66 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AuthHashService extends AbstractDbService implements
-    AuthHashServiceInterface,
-    DbTableAwareInterface,
-    Feature\DeleteExpiredInterface
+class ExternalSessionService extends AbstractDbService implements
+    ExternalSessionServiceInterface,
+    Feature\DeleteExpiredInterface,
+    DbTableAwareInterface
 {
     use DbTableAwareTrait;
 
     /**
-     * Create an auth_hash entity object.
+     * Create a new external session entity.
      *
-     * @return AuthHashEntityInterface
+     * @return ExternalSessionEntityInterface
      */
-    public function createEntity(): AuthHashEntityInterface
+    public function createEntity(): ExternalSessionEntityInterface
     {
-        return $this->getDbTable('AuthHash')->createRow();
+        return $this->getDbTable('ExternalSession')->createRow();
     }
 
     /**
-     * Delete an auth_hash entity object.
+     * Add a mapping between local and external session id's; return the newly-created entity.
      *
-     * @param AuthHashEntityInterface|int $authHashOrId Object or ID value representing auth_hash to delete
+     * @param string $localSessionId    Local (VuFind) session id
+     * @param string $externalSessionId External session id
+     *
+     * @return ExternalSessionEntityInterface
+     */
+    public function addSessionMapping(
+        string $localSessionId,
+        string $externalSessionId
+    ): ExternalSessionEntityInterface {
+        $this->destroySession($localSessionId);
+        $row = $this->createEntity()
+            ->setSessionId($localSessionId)
+            ->setExternalSessionId($externalSessionId)
+            ->setCreated(new DateTime());
+        $this->persistEntity($row);
+        return $row;
+    }
+
+    /**
+     * Retrieve an object from the database based on an external session ID
+     *
+     * @param string $sid External session ID to retrieve
+     *
+     * @return ?ExternalSessionEntityInterface
+     */
+    public function getByExternalSessionId(string $sid): ?ExternalSessionEntityInterface
+    {
+        return $this->getDbTable('ExternalSession')->select(['external_session_id' => $sid])->current();
+    }
+
+    /**
+     * Destroy data for the given session ID.
+     *
+     * @param string $sid Session ID to erase
      *
      * @return void
      */
-    public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId): void
+    public function destroySession(string $sid): void
     {
-        $authHashId = $authHashOrId instanceof AuthHashEntityInterface ? $authHashOrId->getId() : $authHashOrId;
-        $this->getDbTable('AuthHash')->delete(['id' => $authHashId]);
-    }
-
-    /**
-     * Retrieve an object from the database based on hash and type; possibly create a new
-     * row if no existing match is found.
-     *
-     * @param string $hash   Hash
-     * @param string $type   Hash type
-     * @param bool   $create Should we create rows that don't already exist?
-     *
-     * @return ?AuthHashEntityInterface
-     */
-    public function getByHashAndType(string $hash, string $type, bool $create = true): ?AuthHashEntityInterface
-    {
-        return $this->getDbTable('AuthHash')->getByHashAndType($hash, $type, $create);
-    }
-
-    /**
-     * Retrieve last object from the database based on session id.
-     *
-     * @param string $sessionId Session ID
-     *
-     * @return ?AuthHashEntityInterface
-     */
-    public function getLatestBySessionId(string $sessionId): ?AuthHashEntityInterface
-    {
-        return $this->getDbTable('AuthHash')->getLatestBySessionId($sessionId);
+        $this->getDbTable('ExternalSession')->delete(['session_id' => $sid]);
     }
 
     /**
@@ -110,6 +115,6 @@ class AuthHashService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->getDbTable('AuthHash')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
+        return $this->getDbTable('ExternalSession')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
     }
 }

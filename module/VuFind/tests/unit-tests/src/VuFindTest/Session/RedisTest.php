@@ -132,7 +132,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     protected function getHandler($client, $config = null)
     {
         $handler = new Redis($client, $config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }
