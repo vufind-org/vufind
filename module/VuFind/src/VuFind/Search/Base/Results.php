@@ -472,9 +472,8 @@ abstract class Results
      */
     public function isSavedSearch()
     {
-        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called... blow up if somebody tries to get data that is not yet
-        // available.
+        // This data is not available until the search has been saved; blow up if somebody
+        // tries to get data that is not yet available.
         if (null === $this->savedSearch) {
             throw new \Exception(
                 'Cannot retrieve save status before updateSaveStatus is called.'
@@ -492,13 +491,11 @@ abstract class Results
      */
     public function getNotificationFrequency(): int
     {
-        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called... blow up if somebody tries to get data that is not yet
-        // available.
+        // This data is not available until the search has been saved; blow up if somebody
+        // tries to get data that is not yet available.
         if (null === $this->notificationFrequency) {
             throw new \Exception(
-                'Cannot retrieve notification frequency before '
-                . 'updateSaveStatus is called.'
+                'Cannot retrieve notification frequency before updateSaveStatus is called.'
             );
         }
         return $this->notificationFrequency;
@@ -508,16 +505,15 @@ abstract class Results
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
-     * @param \VuFind\Db\Row\Search $row Relevant database row.
+     * @param SearchEntityInterface $row Relevant database row.
      *
      * @return void
      */
     public function updateSaveStatus($row)
     {
-        $this->searchId = $row->id;
-        $this->savedSearch = ($row->saved == true);
-        $this->notificationFrequency = $this->savedSearch
-            ? $row->notification_frequency : 0;
+        $this->searchId = $row->getId();
+        $this->savedSearch = $row->getSaved();
+        $this->notificationFrequency = $this->savedSearch ? $row->getNotificationFrequency() : 0;
     }
 
     /**

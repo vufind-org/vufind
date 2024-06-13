@@ -57,12 +57,13 @@ class ResourceTagsService extends AbstractDbService implements
     /**
      * Get Resource Tags Paginator
      *
-     * @param ?int    $userId     ID of user (null for any)
-     * @param ?int    $resourceId ID of the resource (null for any)
-     * @param ?int    $tagId      ID of the tag (null for any)
-     * @param ?string $order      The order in which to return the data
-     * @param ?int    $page       The page number to select
-     * @param int     $limit      The number of items to fetch
+     * @param ?int    $userId            ID of user (null for any)
+     * @param ?int    $resourceId        ID of the resource (null for any)
+     * @param ?int    $tagId             ID of the tag (null for any)
+     * @param ?string $order             The order in which to return the data
+     * @param ?int    $page              The page number to select
+     * @param int     $limit             The number of items to fetch
+     * @param bool    $caseSensitiveTags Should we treat tags as case-sensitive?
      *
      * @return Paginator
      */
@@ -72,9 +73,11 @@ class ResourceTagsService extends AbstractDbService implements
         ?int $tagId = null,
         ?string $order = null,
         ?int $page = null,
-        int $limit = 20
+        int $limit = 20,
+        bool $caseSensitiveTags = false
     ): Paginator {
-        return $this->getDbTable('ResourceTags')->getResourceTags($userId, $resourceId, $tagId, $order, $page, $limit);
+        return $this->getDbTable('ResourceTags')
+            ->getResourceTags($userId, $resourceId, $tagId, $order, $page, $limit, $caseSensitiveTags);
     }
 
     /**
@@ -237,18 +240,21 @@ class ResourceTagsService extends AbstractDbService implements
     /**
      * Gets unique tags from the database.
      *
-     * @param ?int $userId     ID of user (null for any)
-     * @param ?int $resourceId ID of the resource (null for any)
-     * @param ?int $tagId      ID of the tag (null for any)
+     * @param ?int $userId        ID of user (null for any)
+     * @param ?int $resourceId    ID of the resource (null for any)
+     * @param ?int $tagId         ID of the tag (null for any)
+     * @param bool $caseSensitive Should we treat tags in a case-sensitive manner?
      *
      * @return array[]
      */
     public function getUniqueTags(
         ?int $userId = null,
         ?int $resourceId = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        bool $caseSensitive = false
     ): array {
-        return $this->getDbTable('ResourceTags')->getUniqueTags($userId, $resourceId, $tagId)->toArray();
+        return $this->getDbTable('ResourceTags')->getUniqueTags($userId, $resourceId, $tagId, $caseSensitive)
+            ->toArray();
     }
 
     /**
