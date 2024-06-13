@@ -73,8 +73,8 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $resourceService = $serviceManager->get(ResourceServiceInterface::class);
         $listService = $serviceManager->get(UserListServiceInterface::class);
-        $caseSensitiveTags = $container->get(TagsService::class)->hasCaseSensitiveTags();
-        $obj = parent::__invoke($container, $requestedName, [$resourceService, $listService, $caseSensitiveTags]);
+        $tagsService = $container->get(TagsService::class);
+        $obj = parent::__invoke($container, $requestedName, [$resourceService, $listService, $tagsService]);
         $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
         $init($container, $obj);
         return $obj;

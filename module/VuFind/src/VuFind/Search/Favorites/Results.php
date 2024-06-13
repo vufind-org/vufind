@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,6 +39,7 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Tags\TagsService;
 use VuFindSearch\Service as SearchService;
 
 use function array_slice;
@@ -58,7 +59,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Object if user is logged in, false otherwise.
+     * Object if user is logged in, null otherwise.
      *
      * @var ?UserEntityInterface
      */
@@ -88,12 +89,12 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params            Object representing user search parameters
-     * @param SearchService              $searchService     Search service
-     * @param Loader                     $recordLoader      Record loader
-     * @param ResourceServiceInterface   $resourceService   Resource database service
-     * @param UserListServiceInterface   $userListService   UserList database service
-     * @param bool                       $caseSensitiveTags Treat tags as case-sensitive?
+     * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
+     * @param SearchService              $searchService   Search service
+     * @param Loader                     $recordLoader    Record loader
+     * @param ResourceServiceInterface   $resourceService Resource database service
+     * @param UserListServiceInterface   $userListService UserList database service
+     * @param TagsService                $tagsService     Tags service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
@@ -101,7 +102,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         Loader $recordLoader,
         protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService,
-        protected bool $caseSensitiveTags = false
+        protected TagsService $tagsService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -140,9 +141,9 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 switch ($field) {
                     case 'tags':
                         if ($list = $this->getListObject()) {
-                            $tags = $list->getResourceTags();
+                            $tags = $this->tagsService->getUserTagsFromFavorites($list->getUser(), $list);
                         } else {
-                            $tags = $this->user ? $this->user->getTags() : [];
+                            $tags = $this->tagsService->getUserTagsFromFavorites($this->user);
                         }
                         foreach ($tags as $tag) {
                             $this->facets[$field]['list'][] = [
@@ -197,7 +198,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $listId,
             $this->getTagFilters(),
             $this->getParams()->getSort(),
-            caseSensitiveTags: $this->caseSensitiveTags
+            caseSensitiveTags: $this->tagsService->hasCaseSensitiveTags()
         );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
