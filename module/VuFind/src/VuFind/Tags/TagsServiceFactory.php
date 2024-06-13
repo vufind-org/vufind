@@ -36,6 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Record\ResourcePopulator;
 
 /**
@@ -76,6 +77,7 @@ class TagsServiceFactory implements FactoryInterface
         return new $requestedName(
             $serviceManager->get(TagServiceInterface::class),
             $serviceManager->get(ResourceTagsServiceInterface::class),
+            $serviceManager->get(UserListServiceInterface::class),
             $container->get(ResourcePopulator::class),
             $config->Social->max_tag_length ?? 64,
             $config->Social->case_sensitive_tags ?? false
