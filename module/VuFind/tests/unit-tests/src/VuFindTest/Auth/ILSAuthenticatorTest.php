@@ -273,8 +273,6 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock user object
      *
-     * @param array $methods Methods to mock
-     *
      * @return MockObject&UserEntityInterface
      */
     protected function getMockUser(): MockObject&UserEntityInterface
