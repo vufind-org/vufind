@@ -34,9 +34,10 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
 
 use function intval;
 
@@ -56,22 +57,24 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource                 $table               Resource database table
+     * @param ResourcePopulator        $resourcePopulator   Resource populator service
      * @param CommentsServiceInterface $commentsService     Comments database service
      * @param Captcha                  $captcha             Captcha controller plugin
      * @param ?UserEntityInterface     $user                Logged in user (or null)
      * @param bool                     $enabled             Are comments enabled?
      * @param RecordLoader             $recordLoader        Record loader
      * @param AccountCapabilities      $accountCapabilities Account capabilities helper
+     * @param RatingsService           $ratingsService      Ratings service
      */
     public function __construct(
-        protected Resource $table,
+        protected ResourcePopulator $resourcePopulator,
         protected CommentsServiceInterface $commentsService,
         protected Captcha $captcha,
         protected ?UserEntityInterface $user,
         protected bool $enabled,
         protected RecordLoader $recordLoader,
-        protected AccountCapabilities $accountCapabilities
+        protected AccountCapabilities $accountCapabilities,
+        protected RatingsService $ratingsService
     ) {
     }
 
@@ -132,7 +135,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        $resource = $this->table->findResource($id, $source);
+        $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
         $commentId = $this->commentsService->addComment(
             $comment,
             $this->user,
@@ -145,7 +148,8 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             && ('' !== $rating
             || $this->accountCapabilities->isRatingRemovalAllowed())
         ) {
-            $driver->addOrUpdateRating(
+            $this->ratingsService->saveRating(
+                $driver,
                 $this->user->getId(),
                 '' === $rating ? null : intval($rating)
             );

@@ -97,21 +97,21 @@ interface LoginTokenServiceInterface extends DbServiceInterface
     /**
      * Delete all tokens for a user.
      *
-     * @param UserEntityInterface|int $user User entity object or identifier
+     * @param UserEntityInterface|int $userOrId User entity object or identifier
      *
      * @return void
      */
-    public function deleteByUser(UserEntityInterface|int $user): void;
+    public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
      * Get tokens for a given user.
      *
-     * @param UserEntityInterface|int $user    User entity object or identifier
-     * @param bool                    $grouped Whether to return results grouped by series
+     * @param UserEntityInterface|int $userOrId User entity object or identifier
+     * @param bool                    $grouped  Whether to return results grouped by series
      *
      * @return LoginTokenEntityInterface[]
      */
-    public function getByUser(UserEntityInterface|int $user, bool $grouped = true): array;
+    public function getByUser(UserEntityInterface|int $userOrId, bool $grouped = true): array;
 
     /**
      * Get token by series.

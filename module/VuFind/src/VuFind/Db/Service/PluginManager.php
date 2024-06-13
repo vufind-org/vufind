@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Auth\UserSessionPersistenceInterface;
+
 /**
  * Database service plugin manager
  *
@@ -47,13 +49,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
+        AuthHashServiceInterface::class => AuthHashService::class,
         ChangeTrackerServiceInterface::class => ChangeTrackerService::class,
         CommentsServiceInterface::class => CommentsService::class,
+        ExternalSessionServiceInterface::class => ExternalSessionService::class,
         FeedbackServiceInterface::class => FeedbackService::class,
         LoginTokenServiceInterface::class => LoginTokenService::class,
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
         RatingsServiceInterface::class => RatingsService::class,
+        RecordServiceInterface::class => RecordService::class,
         ResourceServiceInterface::class => ResourceService::class,
+        ResourceTagsServiceInterface::class => ResourceTagsService::class,
+        SearchServiceInterface::class => SearchService::class,
         SessionServiceInterface::class => SessionService::class,
         ShortlinksServiceInterface::class => ShortlinksService::class,
         TagServiceInterface::class => TagService::class,
@@ -61,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         UserListServiceInterface::class => UserListService::class,
         UserResourceServiceInterface::class => UserResourceService::class,
         UserServiceInterface::class => UserService::class,
+        UserSessionPersistenceInterface::class => UserService::class,
     ];
 
     /**
@@ -70,13 +78,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessTokenService::class => AccessTokenServiceFactory::class,
+        AuthHashService::class => AbstractDbServiceFactory::class,
         ChangeTrackerService::class => AbstractDbServiceFactory::class,
         CommentsService::class => AbstractDbServiceFactory::class,
+        ExternalSessionService::class => AbstractDbServiceFactory::class,
         FeedbackService::class => AbstractDbServiceFactory::class,
         LoginTokenService::class => AbstractDbServiceFactory::class,
         OaiResumptionService::class => AbstractDbServiceFactory::class,
         RatingsService::class => AbstractDbServiceFactory::class,
+        RecordService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
+        ResourceTagsService::class => AbstractDbServiceFactory::class,
+        SearchService::class => AbstractDbServiceFactory::class,
         SessionService::class => AbstractDbServiceFactory::class,
         ShortlinksService::class => AbstractDbServiceFactory::class,
         TagService::class => AbstractDbServiceFactory::class,

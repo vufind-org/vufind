@@ -35,6 +35,8 @@ use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 
+use function count;
+
 /**
  * Database service for feedback.
  *
@@ -89,7 +91,25 @@ class FeedbackService extends AbstractDbService implements DbTableAwareInterface
         ?int $page = null,
         int $limit = 20
     ): Paginator {
-        return $this->getDbTable('feedback')->getFeedbackByFilter($formName, $siteUrl, $status, $page, $limit);
+        // The template expects a different format than what is returned by Laminas\Db; we need to do
+        // some data conversion and then populate a new paginator with the remapped results. We'll use
+        // a padded array and the array adapter to make this work. Probably not the most robust solution,
+        // but good enough for the current needs of the software; this will go away in a future database
+        // layer migration.
+        $feedbackTable = $this->getDbTable('feedback');
+        $paginator = $feedbackTable->getFeedbackByFilter($formName, $siteUrl, $status, $page, $limit);
+        $results = array_fill(0, count($paginator->getAdapter()), []);
+        $index = (($page ?? 1) - 1) * $limit;
+        foreach ($paginator as $current) {
+            $row = (array)$current;
+            $row['feedback_entity'] = $feedbackTable->createRow()->populate($row);
+            $results[$index] = $row;
+            $index++;
+        }
+        $newPaginator = new Paginator(new \Laminas\Paginator\Adapter\ArrayAdapter($results));
+        $newPaginator->setCurrentPageNumber($page ?? 1);
+        $newPaginator->setItemCountPerPage($limit);
+        return $newPaginator;
     }
 
     /**

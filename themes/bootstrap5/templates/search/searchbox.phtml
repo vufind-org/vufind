@@ -83,10 +83,11 @@
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
     <div class="searchForm-inputs">
       <?php
+        // Note: we need type="text" for autocomplete role="combobox"
         $searchboxAttributes = [
           'id' => 'searchForm_lookfor',
           'class' => 'searchForm_lookfor form-control search-query',
-          'type' => 'search',
+          'type' => 'text',
           'name' => 'lookfor',
           'value' => $this->lookfor,
           'aria-label' => $this->translate('search_terms'),

@@ -30,6 +30,8 @@
 namespace VuFindTest\Record\FallbackLoader;
 
 use SerialsSolutions\Summon\Laminas as Connector;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Summon;
 use VuFindSearch\ParamBag;
 
@@ -55,8 +57,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $record->expects($this->once())->method('setPreviousUniqueId')
             ->with($this->equalTo('oldId'));
-        $record->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue('newId'));
+        $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Summon\Response\RecordCollection(
             ['recordCount' => 1]
         );
@@ -81,7 +82,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
         };
         $search->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
 
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
@@ -91,14 +92,14 @@ class SummonTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('newId'),
                 $this->equalTo('Summon')
             );
-        $row = $this->getMockBuilder(\VuFind\Db\Row\Resource::class)
-            ->disableOriginalConstructor()->getMock();
-        $row->expects($this->once())->method('getExtraMetadata')
+        $entity = $this->createMock(ResourceEntityInterface::class);
+        $entity->expects($this->once())->method('getExtraMetadata')
             ->willReturn('{ "bookmark": "bar" }');
-        $resource->expects($this->once())->method('findResource')
+        $resourceService = $this->createMock(ResourceServiceInterface::class);
+        $resourceService->expects($this->once())->method('getResourceByRecordId')
             ->with($this->equalTo('oldId'), $this->equalTo('Summon'))
-            ->will($this->returnValue($row));
-        $loader = new Summon($resource, $search);
+            ->willReturn($entity);
+        $loader = new Summon($resource, $resourceService, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));
     }
 }
