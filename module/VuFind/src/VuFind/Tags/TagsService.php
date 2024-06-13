@@ -145,7 +145,7 @@ class TagsService implements DbTableAwareInterface
         UserListEntityInterface|int|null $listOrId = null
     ): void {
         if (($trimmedTagText = trim($tagText)) !== '') {
-            $this->getResourceTagsService->createLink(
+            $this->resourceTagsService->createLink(
                 $resourceOrId,
                 $this->getOrCreateTagByText($trimmedTagText),
                 $userOrId,
