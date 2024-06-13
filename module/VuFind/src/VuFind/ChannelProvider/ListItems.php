@@ -35,6 +35,7 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
+use VuFind\Tags\TagsService;
 
 use function count;
 
@@ -93,13 +94,14 @@ class ListItems extends AbstractChannelProvider
      * @param UserListServiceInterface             $userListService UserList database service
      * @param Url                                  $url             URL helper
      * @param \VuFind\Search\Results\PluginManager $resultsManager  Results manager
-     * @param array                                $options         Settings
-     * (optional)
+     * @param TagsService                          $tagsService     Tags service
+     * @param array                                $options         Settings (optional)
      */
     public function __construct(
         protected UserListServiceInterface $userListService,
         protected Url $url,
         protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected TagsService $tagsService,
         array $options = []
     ) {
         $this->setOptions($options);
@@ -241,7 +243,7 @@ class ListItems extends AbstractChannelProvider
     protected function getListsByTagAndId(): array
     {
         // Get public lists by search criteria
-        return $this->userListService->getUserListsByTagAndId(
+        return $this->tagsService->getUserListsByTagAndId(
             $this->tags,
             $this->ids,
             true,

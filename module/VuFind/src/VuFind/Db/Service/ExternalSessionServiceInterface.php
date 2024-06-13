@@ -63,13 +63,13 @@ interface ExternalSessionServiceInterface extends DbServiceInterface
     ): ExternalSessionEntityInterface;
 
     /**
-     * Retrieve an object from the database based on an external session ID
+     * Retrieve objects from the database based on an external session ID
      *
      * @param string $sid External session ID to retrieve
      *
-     * @return ?ExternalSessionEntityInterface
+     * @return ExternalSessionEntityInterface[]
      */
-    public function getByExternalSessionId(string $sid): ?ExternalSessionEntityInterface;
+    public function getAllByExternalSessionId(string $sid): array;
 
     /**
      * Destroy data for the given session ID.

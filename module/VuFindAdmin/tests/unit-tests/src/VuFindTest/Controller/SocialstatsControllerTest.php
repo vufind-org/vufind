@@ -31,8 +31,8 @@ namespace VuFindTest\Controller;
 
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\RatingsServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Unit tests for Socialstats controller.
@@ -80,10 +80,10 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $dbServices->set(RatingsServiceInterface::class, $ratingsService);
 
         $mockTagStats = ['users' => 31, 'resources' => 32, 'total' => 33];
-        $tagService = $this->createMock(TagServiceInterface::class);
+        $tagService = $this->createMock(TagsService::class);
         $tagService->expects($this->once())->method('getStatistics')
             ->will($this->returnValue($mockTagStats));
-        $dbServices->set(TagServiceInterface::class, $tagService);
+        $container->set(TagsService::class, $tagService);
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()

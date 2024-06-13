@@ -43,7 +43,6 @@ use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -60,6 +59,7 @@ use VuFind\Favorites\FavoritesService;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
+use VuFind\Tags\TagsService;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -1150,8 +1150,8 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    $tagService = $this->getDbService(TagServiceInterface::class);
-                    foreach ($tagService->getListTags($list, $list->getUser()) as $tag) {
+                    $tags = $this->serviceLocator->get(TagsService::class)->getListTags($list, $list->getUser());
+                    foreach ($tags as $tag) {
                         $listTags[$tag['id']] = $tag['tag'];
                     }
                 }
@@ -1272,9 +1272,9 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $tagService = $this->getDbService(TagServiceInterface::class);
+            $tagsService = $this->serviceLocator->get(TagsService::class);
             $listTags = $favoritesService
-                ->formatTagStringForEditing($tagService->getListTags($list, $list->getUser()));
+                ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(

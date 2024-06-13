@@ -88,18 +88,20 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
-     * @param SearchService              $searchService   Search service
-     * @param Loader                     $recordLoader    Record loader
-     * @param ResourceServiceInterface   $resourceService Resource database service
-     * @param UserListServiceInterface   $userListService UserList database service
+     * @param \VuFind\Search\Base\Params $params            Object representing user search parameters
+     * @param SearchService              $searchService     Search service
+     * @param Loader                     $recordLoader      Record loader
+     * @param ResourceServiceInterface   $resourceService   Resource database service
+     * @param UserListServiceInterface   $userListService   UserList database service
+     * @param bool                       $caseSensitiveTags Treat tags as case-sensitive?
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
         protected ResourceServiceInterface $resourceService,
-        protected UserListServiceInterface $userListService
+        protected UserListServiceInterface $userListService,
+        protected bool $caseSensitiveTags = false
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -194,7 +196,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $userId,
             $listId,
             $this->getTagFilters(),
-            $this->getParams()->getSort()
+            $this->getParams()->getSort(),
+            caseSensitiveTags: $this->caseSensitiveTags
         );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {

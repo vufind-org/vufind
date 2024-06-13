@@ -40,6 +40,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
@@ -687,7 +688,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $view->expects($this->any())->method('resolver')
             ->willReturn($this->getMockResolver());
         $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
-        $record = new Record($config);
+        $record = new Record($this->createMock(TagsService::class), $config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);
         return $record($driver);

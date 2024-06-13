@@ -82,15 +82,15 @@ class ExternalSessionService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve an object from the database based on an external session ID
+     * Retrieve objects from the database based on an external session ID
      *
      * @param string $sid External session ID to retrieve
      *
-     * @return ?ExternalSessionEntityInterface
+     * @return ExternalSessionEntityInterface[]
      */
-    public function getByExternalSessionId(string $sid): ?ExternalSessionEntityInterface
+    public function getAllByExternalSessionId(string $sid): array
     {
-        return $this->getDbTable('ExternalSession')->select(['external_session_id' => $sid])->current();
+        return iterator_to_array($this->getDbTable('ExternalSession')->select(['external_session_id' => $sid]));
     }
 
     /**
