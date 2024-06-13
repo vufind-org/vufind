@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010-2023.
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,10 +46,12 @@ use VuFind\Config\Version;
 use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
+use VuFind\Crypt\Base62;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -1047,12 +1049,20 @@ class UpgradeController extends AbstractBase
      */
     protected function fixshortlinks()
     {
+        $shortlinks = $this->getDbService(ShortlinksServiceInterface::class);
+        $base62 = new Base62();
+
         try {
-            $shortlinksService = $this->getDbService(\VuFind\Db\Service\ShortlinksService::class);
-            $updateCount = $shortlinksService->fixshortlinks();
-            if ($updateCount > 0) {
+            $results = $shortlinks->getShortLinksWithMissingHashes();
+
+            foreach ($results as $result) {
+                $result->setHash($base62->encode($result->getId()));
+                $shortlinks->persistEntity($result);
+            }
+
+            if (count($results) > 0) {
                 $this->session->warnings->append(
-                    'Added hash value(s) to ' . $updateCount . ' short links.'
+                    'Added hash value(s) to ' . count($results) . ' short links.'
                 );
             }
         } catch (Exception $e) {

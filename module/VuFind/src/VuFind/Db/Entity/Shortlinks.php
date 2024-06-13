@@ -92,7 +92,16 @@ class Shortlinks implements ShortlinksEntityInterface
      *          options={"default"="CURRENT_TIMESTAMP"}
      * )
      */
-    protected $created = 'CURRENT_TIMESTAMP';
+    protected $created;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Set the default value as a \DateTime object
+        $this->created = new DateTime();
+    }
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).

@@ -31,6 +31,7 @@ namespace VuFind\UrlShortener;
 
 use Exception;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 
 /**
  * Factory for local database-driven URL shortener.
@@ -63,12 +64,8 @@ class DatabaseFactory
         $router = $container->get('HttpRouter');
         $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
-        $shortlinksService =  $servicePluginManager->get(
-            \VuFind\Db\Service\ShortlinksService::class
-        );
+        $service = $container->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(ShortlinksServiceInterface::class);
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $salt = $config->Security->HMACkey ?? '';
@@ -76,11 +73,6 @@ class DatabaseFactory
             throw new Exception('HMACkey missing from configuration.');
         }
         $hashType = $config->Mail->url_shortener_key_type ?? 'md5';
-        return new $requestedName(
-            rtrim($baseUrl, '/'),
-            $shortlinksService,
-            $salt,
-            $hashType
-        );
+        return new $requestedName(rtrim($baseUrl, '/'), $service, $salt, $hashType);
     }
 }

@@ -62,6 +62,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ResourceTagsServiceInterface::class => ResourceTagsService::class,
         SearchServiceInterface::class => SearchService::class,
         SessionServiceInterface::class => SessionService::class,
+        ShortlinksServiceInterface::class => ShortlinksService::class,
         TagServiceInterface::class => TagService::class,
         UserCardServiceInterface::class => UserCardService::class,
         UserListServiceInterface::class => UserListService::class,

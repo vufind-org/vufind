@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,8 @@
 
 namespace VuFind\UrlShortener;
 
-use VuFind\Db\Service\ShortlinksService;
+use Exception;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 
 /**
  * Local database-driven URL shortener.
@@ -43,34 +44,6 @@ use VuFind\Db\Service\ShortlinksService;
  */
 class Database implements UrlShortenerInterface
 {
-    /**
-     * Hash algorithm to use
-     *
-     * @var string
-     */
-    protected $hashAlgorithm;
-
-    /**
-     * Base URL of current VuFind site
-     *
-     * @var string
-     */
-    protected $baseUrl;
-
-    /**
-     * Shortlinks database service
-     *
-     * @var ShortlinksService
-     */
-    protected $shortlinksService;
-
-    /**
-     * HMacKey from config
-     *
-     * @var string
-     */
-    protected $salt;
-
     /**
      * When using a hash algorithm other than base62, the preferred number of
      * characters to use from the hash in the URL (more may be used for
@@ -92,21 +65,77 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param string            $baseUrl           Base URL of current VuFind site
-     * @param ShortlinksService $shortlinksService Shortlinks database service
-     * @param string            $salt              HMacKey from config
-     * @param string            $hashAlgorithm     Hash algorithm to use
+     * @param string                     $baseUrl       Base URL of current VuFind site
+     * @param ShortlinksServiceInterface $service       Shortlinks database service
+     * @param string                     $salt          HMacKey from config
+     * @param string                     $hashAlgorithm Hash algorithm to use
      */
     public function __construct(
-        string $baseUrl,
-        ShortlinksService $shortlinksService,
-        string $salt,
-        string $hashAlgorithm = 'md5'
+        protected string $baseUrl,
+        protected ShortlinksServiceInterface $service,
+        protected string $salt,
+        protected string $hashAlgorithm = 'md5'
     ) {
-        $this->baseUrl = $baseUrl;
-        $this->shortlinksService = $shortlinksService;
-        $this->salt = $salt;
-        $this->hashAlgorithm = $hashAlgorithm;
+    }
+
+    /**
+     * Generate a short hash using the base62 algorithm (and write a row to the
+     * database).
+     *
+     * @param string $path Path to store in database
+     *
+     * @return string
+     */
+    protected function getBase62Hash(string $path): string
+    {
+        $row = $this->service->createAndPersistEntityForPath($path);
+        $b62 = new \VuFind\Crypt\Base62();
+        $hash = $b62->encode($row->getId());
+        $row->setHash($hash);
+        $this->service->persistEntity($row);
+        return $hash;
+    }
+
+    /**
+     * Support method for getGenericHash(): do the work of picking a short version
+     * of the hash and writing to the database as needed.
+     *
+     * @param string $path   Path to store in database
+     * @param string $hash   Hash of $path (generated in getGenericHash)
+     * @param int    $length Minimum number of characters from hash to use for
+     * lookups (may be increased to enforce uniqueness)
+     *
+     * @throws Exception
+     * @return string
+     */
+    protected function saveAndShortenHash($path, $hash, $length)
+    {
+        // Validate hash length:
+        if ($length > $this->maxHashLength) {
+            throw new \Exception(
+                'Could not generate unique hash under ' . $this->maxHashLength
+                . ' characters in length.'
+            );
+        }
+        $shorthash = str_pad(substr($hash, 0, $length), $length, '_');
+        $match = $this->service->getShortLinkByHash($shorthash);
+
+        // Brand new hash? Create row and return:
+        if (!$match) {
+            $newEntity = $this->service->createEntity()->setPath($path)->setHash($shorthash);
+            $this->service->persistEntity($newEntity);
+            return $shorthash;
+        }
+
+        // If we got this far, the hash already exists; let's check if it matches
+        // the path...
+        if ($match->getHash() === $path) {
+            return $shorthash;
+        }
+
+        // If we got here, we have encountered an unexpected hash collision. Let's
+        // disambiguate by making it one character longer:
+        return $this->saveAndShortenHash($path, $hash, $length + 1);
     }
 
     /**
@@ -120,13 +149,16 @@ class Database implements UrlShortenerInterface
     protected function getGenericHash(string $path): string
     {
         $hash = hash($this->hashAlgorithm, $path . $this->salt);
-        $shortHash = $this->shortlinksService
-            ->saveAndShortenHash(
-                $path,
-                $hash,
-                $this->preferredHashLength,
-                $this->maxHashLength
-            );
+        // Generate short hash within a transaction to avoid odd timing-related
+        // problems:
+        $this->service->beginTransaction();
+        try {
+            $shortHash = $this->saveAndShortenHash($path, $hash, $this->preferredHashLength);
+        } catch (Exception $e) {
+            $this->service->rollBackTransaction();
+            throw $e;
+        }
+        $this->service->commitTransaction();
         return $shortHash;
     }
 
@@ -145,8 +177,7 @@ class Database implements UrlShortenerInterface
         // We need to handle things differently depending on whether we're
         // using the legacy base62 algorithm, or a different hash mechanism.
         $shorthash = $this->hashAlgorithm === 'base62'
-            ? $this->shortlinksService->getBase62Hash($path)
-            : $this->getGenericHash($path);
+            ? $this->getBase62Hash($path) : $this->getGenericHash($path);
 
         return $shorthash;
     }
@@ -169,9 +200,15 @@ class Database implements UrlShortenerInterface
      * @param string $input hash
      *
      * @return string
+     * @throws Exception
      */
     public function resolve($input)
     {
-        return $this->shortlinksService->resolve($input, $this->baseUrl);
+        $match = $this->service->getShortLinkByHash($input);
+        if (!$match) {
+            throw new Exception('Shortlink could not be resolved: ' . $input);
+        }
+
+        return $this->baseUrl . $match->getPath();
     }
 }

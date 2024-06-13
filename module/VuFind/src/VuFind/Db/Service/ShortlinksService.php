@@ -23,175 +23,118 @@
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Shortlinks;
-use VuFind\Log\LoggerAwareTrait;
-
-use function count;
+use VuFind\Db\Entity\ShortlinksEntityInterface;
 
 /**
  * Database service for shortlinks.
  *
  * @category VuFind
  * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ShortlinksService extends AbstractDbService implements LoggerAwareInterface
+class ShortlinksService extends AbstractDbService implements
+    ShortlinksServiceInterface,
+    Feature\TransactionInterface
 {
-    use LoggerAwareTrait;
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->entityManager->getConnection()->beginTransaction();
+    }
 
     /**
-     * Create a shortlinks entity object.
+     * Commit a database transaction.
      *
-     * @return Shortlinks
+     * @return void
+     * @throws Exception
      */
-    public function createEntity(): Shortlinks
+    public function commitTransaction(): void
+    {
+        $this->entityManager->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->entityManager->getConnection()->rollBack();
+    }
+
+    /**
+     * Create a short link entity.
+     *
+     * @return ShortlinksEntityInterface
+     */
+    public function createEntity(): ShortlinksEntityInterface
     {
         $class = $this->getEntityClass(Shortlinks::class);
         return new $class();
     }
 
     /**
-     * Generate a short hash using the base62 algorithm (and write a row to the
-     * database).
+     * Create and persist an entity for the provided path.
      *
-     * @param string $path Path to store in database
+     * @param string $path Path part of URL being shortened.
      *
-     * @return string
+     * @return ShortlinksEntityInterface
      */
-    public function getBase62Hash(string $path): string
+    public function createAndPersistEntityForPath(string $path): ShortlinksEntityInterface
     {
-        $shortlink = $this->createEntity();
-        $now = new \DateTime();
-        $shortlink->setPath($path)
-            ->setCreated($now);
-        try {
-            $this->entityManager->persist($shortlink);
-            $this->entityManager->flush();
-            $id = $shortlink->getId();
-            $b62 = new \VuFind\Crypt\Base62();
-            $shortlink->setHash($b62->encode($id));
-            $this->entityManager->persist($shortlink);
-            $this->entityManager->flush();
-        } catch (Exception $e) {
-            $this->logError('Could not save shortlink: ' . $e->getMessage());
-            throw $e;
-        }
-        return $shortlink->getHash();
-    }
-
-    /**
-     * Pick a shortened version of a hash and write it to the database as needed.
-     *
-     * @param string $path          Path to store in database
-     * @param string $hash          Hash of $path
-     * @param int    $length        Minimum number of characters from hash to use for
-     *                              lookups (may be increased to enforce uniqueness)
-     * @param int    $maxHashLength The maximum allowed hash length
-     *
-     * @throws Exception
-     * @return string
-     */
-    public function saveAndShortenHash($path, $hash, $length, $maxHashLength)
-    {
-        // Validate hash length:
-        if ($length > $maxHashLength) {
-            throw new Exception(
-                'Could not generate unique hash under ' . $maxHashLength
-                . ' characters in length.'
-            );
-        }
-        $shorthash = str_pad(substr($hash, 0, $length), $length, '_');
-
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('s')
-            ->from($this->getEntityClass(Shortlinks::class), 's')
-            ->where('s.hash = :hash')
-            ->setParameter('hash', $shorthash);
-        $query = $queryBuilder->getQuery();
-        $results = $query->getResult();
-
-        // Brand new hash? Create row and return:
-        if (count($results) == 0) {
-            $shortlink = $this->createEntity();
-            $now = new \DateTime();
-            // Generate short hash within a transaction to avoid odd timing-related
-            // problems:
-            $this->entityManager->getConnection()->beginTransaction();
-            $shortlink->setHash($shorthash)
-                ->setPath($path)
-                ->setCreated($now);
-            try {
-                $this->entityManager->persist($shortlink);
-                $this->entityManager->flush();
-                $this->entityManager->getConnection()->commit();
-            } catch (Exception $e) {
-                $this->logError('Could not save shortlink: ' . $e->getMessage());
-                $this->entityManager->getConnection()->rollBack();
-                throw $e;
-            }
-            return $shorthash;
-        }
-
-        // If we got this far, the hash already exists; let's check if it matches
-        // the path...
-        if (current($results)->getPath() === $path) {
-            return $shorthash;
-        }
-
-        // If we got here, we have encountered an unexpected hash collision. Let's
-        // disambiguate by making it one character longer:
-        return $this->saveAndShortenHash($path, $hash, $length + 1, $maxHashLength);
-    }
-
-    /**
-     * Resolve URL from Database via id.
-     *
-     * @param string $input   hash
-     * @param string $baseUrl Base URL of current VuFind site
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    public function resolve($input, $baseUrl)
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('s')
-            ->from($this->getEntityClass(Shortlinks::class), 's')
-            ->where('s.hash = :hash')
-            ->setParameter('hash', $input);
-        $query = $queryBuilder->getQuery();
-        $result = $query->getResult();
-        if (count($result) !== 1) {
-            throw new Exception('Shortlink could not be resolved: ' . $input);
-        }
-        return $baseUrl . current($result)->getPath();
-    }
-
-    /**
-     * Generate base62 encoding to migrate old shortlinks and return total number of migrated links.
-     *
-     * @return int
-     */
-    public function fixshortlinks()
-    {
-        $base62 = new \VuFind\Crypt\Base62();
-        $results = $this->entityManager->getRepository($this->getEntityClass(Shortlinks::class))
-            ->findBy(['hash' => null]);
-        foreach ($results as $result) {
-            $result->setHash($base62->encode($result->getId()));
-        }
+        $shortlink = $this->createEntity()
+            ->setPath($path)
+            ->setCreated(new DateTime());
+        $this->entityManager->persist($shortlink);
         $this->entityManager->flush();
-        return count($results);
+        return $shortlink;
+    }
+
+    /**
+     * Look up a short link by hash value.
+     *
+     * @param string $hash Hash value.
+     *
+     * @return ?ShortlinksEntityInterface
+     */
+    public function getShortLinkByHash(string $hash): ?ShortlinksEntityInterface
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('s')
+            ->from($this->getEntityClass(Shortlinks::class), 's')
+            ->where('s.hash = :hash')
+            ->setParameter('hash', $hash);
+        $query = $queryBuilder->getQuery();
+        return $query->getResult()[0] ?? null;
+    }
+
+    /**
+     * Get rows with missing hashes (for legacy upgrading).
+     *
+     * @return ShortlinksEntityInterface[]
+     */
+    public function getShortLinksWithMissingHashes(): array
+    {
+        return $this->entityManager->getRepository($this->getEntityClass(Shortlinks::class))->findBy(['hash' => null]);
     }
 }
