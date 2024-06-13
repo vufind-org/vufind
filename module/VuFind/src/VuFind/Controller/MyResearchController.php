@@ -32,12 +32,17 @@
 namespace VuFind\Controller;
 
 use DateTime;
+use Exception;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
+use VuFind\Account\UserAccountService;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Crypt\SecretCalculator;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -54,6 +59,7 @@ use VuFind\Favorites\FavoritesService;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
+use VuFind\Tags\TagsService;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -438,14 +444,14 @@ class MyResearchController extends AbstractBase
      * @param int $userId   ID of active user
      *
      * @throws ForbiddenException
-     * @return \VuFind\Db\Row\Search
+     * @return SearchEntityInterface
      */
     protected function getSearchRowSecurely($searchId, $userId)
     {
-        $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator
             ->get(\Laminas\Session\SessionManager::class)->getId();
-        $search = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        $search = $this->getDbService(SearchServiceInterface::class)
+            ->getSearchByIdAndOwner($searchId, $sessId, $userId);
         if (empty($search)) {
             throw new ForbiddenException('Access denied.');
         }
@@ -505,7 +511,6 @@ class MyResearchController extends AbstractBase
         if (!isset($scheduleOptions[$schedule])) {
             throw new ForbiddenException('Illegal schedule option: ' . $schedule);
         }
-        $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
         $userId = $user->getId();
         $savedRow = $this->getSearchRowSecurely($sid, $userId);
@@ -514,7 +519,6 @@ class MyResearchController extends AbstractBase
         $sessId = $this->serviceLocator
             ->get(\Laminas\Session\SessionManager::class)->getId();
         $duplicateId = $this->isDuplicateOfSavedSearch(
-            $search,
             $savedRow,
             $sessId,
             $userId
@@ -534,9 +538,11 @@ class MyResearchController extends AbstractBase
             // By default, a first scheduled email will be sent because the database
             // last notification date will be initialized to a past date. If we don't
             // want that to happen, we need to set it to a more appropriate date:
-            $savedRow->last_notification_sent = date('Y-m-d H:i:s');
+            $savedRow->setLastNotificationSent(new DateTime());
         }
-        $savedRow->setSchedule($schedule, $baseurl);
+        $savedRow->setNotificationFrequency($schedule);
+        $savedRow->setNotificationBaseUrl($baseurl);
+        $this->getDbService(SearchServiceInterface::class)->persistEntity($savedRow);
         return $this->redirect()->toRoute('search-history');
     }
 
@@ -573,11 +579,8 @@ class MyResearchController extends AbstractBase
 
         // If the user has just logged in, the search might be a duplicate; if
         // so, let's switch to the pre-existing version instead.
-        $searchTable = $this->getTable('search');
-        $sessId = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $sessId = $this->serviceLocator->get(\Laminas\Session\SessionManager::class)->getId();
         $duplicateId = $this->isDuplicateOfSavedSearch(
-            $searchTable,
             $search,
             $sessId,
             $user->getId()
@@ -592,9 +595,11 @@ class MyResearchController extends AbstractBase
         }
 
         // Now fetch all the results:
-        $resultsManager = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class);
-        $results = $search->getSearchObjectOrThrowException()->deminify($resultsManager);
+        $resultsManager = $this->serviceLocator->get(\VuFind\Search\Results\PluginManager::class);
+        $results = $search->getSearchObject()?->deminify($resultsManager);
+        if (!$results) {
+            throw new Exception("Problem getting search object from search {$search->getId()}.");
+        }
 
         // Build the form.
         return $this->createViewModel(
@@ -605,36 +610,34 @@ class MyResearchController extends AbstractBase
     /**
      * Is the provided search row a duplicate of a search that is already saved?
      *
-     * @param \VuFind\Db\Table\Search $searchTable Search table
-     * @param ?\VuFind\Db\Row\Search  $rowToCheck  Search row to check (if any)
-     * @param string                  $sessId      Current session ID
-     * @param int                     $userId      Current user ID
+     * @param ?SearchEntityInterface $rowToCheck Search row to check (if any)
+     * @param string                 $sessId     Current session ID
+     * @param int                    $userId     Current user ID
      *
      * @return ?int
      */
     protected function isDuplicateOfSavedSearch(
-        \VuFind\Db\Table\Search $searchTable,
-        ?\VuFind\Db\Row\Search $rowToCheck,
+        ?SearchEntityInterface $rowToCheck,
         string $sessId,
         int $userId
     ): ?int {
         if (!$rowToCheck) {
             return null;
         }
-        $normalizer = $this->serviceLocator
-            ->get(\VuFind\Search\SearchNormalizer::class);
-        $normalized = $normalizer
-            ->normalizeMinifiedSearch($rowToCheck->getSearchObjectOrThrowException());
-        $matches = $searchTable->getSearchRowsMatchingNormalizedSearch(
+        $normalizer = $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class);
+        $searchObject = $rowToCheck->getSearchObject();
+        if (!$searchObject) {
+            throw new Exception("Problem getting search object from search {$rowToCheck->getId()}.");
+        }
+        $normalized = $normalizer->normalizeMinifiedSearch($searchObject);
+        $matches = $normalizer->getSearchesMatchingNormalizedSearch(
             $normalized,
             $sessId,
             $userId
         );
         foreach ($matches as $current) {
-            // $current->saved may be 1 (MySQL) or true (PostgreSQL), so we should
-            // avoid a strict === comparison here:
-            if ($current->saved == 1 && $current->id !== $rowToCheck->id) {
-                return $current->id;
+            if ($current->getSaved() && $current->getId() !== $rowToCheck->getId()) {
+                return $current->getId();
             }
         }
         return null;
@@ -671,12 +674,11 @@ class MyResearchController extends AbstractBase
             // saved row, we should just delete the duplicate. (This can happen if
             // the user clicks "save" before logging in, then logs in during the
             // save process, but has the same search already saved in their account).
-            $searchTable = $this->getTable('search');
+            $searchService = $this->getDbService(SearchServiceInterface::class);
             $sessId = $this->serviceLocator
                 ->get(\Laminas\Session\SessionManager::class)->getId();
-            $rowToCheck = $searchTable->getOwnedRowById($id, $sessId, $user->getId());
+            $rowToCheck = $searchService->getSearchByIdAndOwner($id, $sessId, $user);
             $duplicateId = $this->isDuplicateOfSavedSearch(
-                $searchTable,
                 $rowToCheck,
                 $sessId,
                 $user->getId()
@@ -949,7 +951,7 @@ class MyResearchController extends AbstractBase
     protected function processEditSubmit(UserEntityInterface $user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists', []);
-        $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
+        $tagsService = $this->serviceLocator->get(\VuFind\Tags\TagsService::class);
         $favorites = $this->serviceLocator
             ->get(\VuFind\Favorites\FavoritesService::class);
         $didSomething = false;
@@ -958,7 +960,7 @@ class MyResearchController extends AbstractBase
             $favorites->save(
                 [
                     'list'  => $list,
-                    'mytags'  => $tagParser->parse($tags),
+                    'mytags'  => $tagsService->parse($tags),
                     'notes' => $this->params()->fromPost('notes' . $list),
                 ],
                 $user,
@@ -1015,6 +1017,7 @@ class MyResearchController extends AbstractBase
         $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
         $userResources = $userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
+        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
         foreach ($userResources as $current) {
             // There should always be list data based on the way we retrieve this result, but
             // check just to be on the safe side.
@@ -1023,7 +1026,7 @@ class MyResearchController extends AbstractBase
                     'listId' => $currentList->getId(),
                     'listTitle' => $currentList->getTitle(),
                     'notes' => $current->getNotes(),
-                    'tags' => $user->getTagString($id, $currentList->getId(), $source),
+                    'tags' => $favoritesService->getTagStringForEditing($user, $currentList, $id, $source),
                 ];
             }
         }
@@ -1147,8 +1150,9 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    foreach ($list->getListTags() as $tag) {
-                        $listTags[$tag->id] = $tag->tag;
+                    $tags = $this->serviceLocator->get(TagsService::class)->getListTags($list, $list->getUser());
+                    foreach ($tags as $tag) {
+                        $listTags[$tag['id']] = $tag['tag'];
                     }
                 }
             }
@@ -1268,7 +1272,9 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $listTags = $user->formatTagString($list->getListTags());
+            $tagsService = $this->serviceLocator->get(TagsService::class);
+            $listTags = $favoritesService
+                ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(
@@ -2281,7 +2287,8 @@ class MyResearchController extends AbstractBase
                 // After successful token verification, clear list to shrink session:
                 $csrf->trimTokenList(0);
             }
-            $user->delete(
+            $this->serviceLocator->get(UserAccountService::class)->purgeUserData(
+                $user,
                 $config->Authentication->delete_comments_with_user ?? true,
                 $config->Authentication->delete_ratings_with_user ?? true
             );
@@ -2311,25 +2318,21 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         if ($this->params()->fromQuery('confirm', false) == 1) {
             if ($type == 'alert') {
-                $search
-                    = $this->getTable('Search')->select(['id' => $id])->current();
+                $searchService = $this->getDbService(SearchServiceInterface::class);
+                $search = $searchService->getSearchById($id);
                 if (!$search) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $user = $this->getTable('User')->getById($search->user_id);
-                $secret = $search->getUnsubscribeSecret(
-                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class),
-                    $user
-                );
+                $secret = $this->serviceLocator->get(SecretCalculator::class)->getSearchUnsubscribeSecret($search);
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $search->setSchedule(0);
+                $search->setNotificationFrequency(0);
+                $searchService->persistEntity($search);
                 $view->success = true;
             }
         } else {
-            $view->unsubscribeUrl
-                = $this->getRequest()->getRequestUri() . '&confirm=1';
+            $view->unsubscribeUrl = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
     }

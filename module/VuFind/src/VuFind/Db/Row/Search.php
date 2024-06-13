@@ -111,6 +111,8 @@ class Search extends RowGateway implements
      *
      * @return \VuFind\Search\Minified
      * @throws \Exception
+     *
+     * @deprecated
      */
     public function getSearchObjectOrThrowException(): \VuFind\Search\Minified
     {
@@ -139,6 +141,8 @@ class Search extends RowGateway implements
      * @param string $time Time.
      *
      * @return mixed
+     *
+     * @deprecated
      */
     public function setLastExecuted($time)
     {
@@ -153,6 +157,8 @@ class Search extends RowGateway implements
      * @param string $url      Site base URL
      *
      * @return mixed
+     *
+     * @deprecated
      */
     public function setSchedule($schedule, $url = null)
     {
@@ -171,6 +177,8 @@ class Search extends RowGateway implements
      * @param UserEntityInterface $user User object
      *
      * @return string token
+     *
+     * @deprecated Use \VuFind\Crypt\SecretCalculator::getSearchUnsubscribeSecret()
      */
     public function getUnsubscribeSecret(HMAC $hmac, $user)
     {

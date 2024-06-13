@@ -37,7 +37,11 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
+use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -54,8 +58,10 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Shibboleth extends AbstractBase
+class Shibboleth extends AbstractBase implements DbTableAwareInterface
 {
+    use DbTableAwareTrait;
+
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
@@ -159,7 +165,7 @@ class Shibboleth extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -194,7 +200,7 @@ class Shibboleth extends AbstractBase
 
         // If we made it this far, we should log in the user!
         $userService = $this->getUserService();
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
         // attributes since we need to use setUserCatalogCredentials method to store it):
@@ -210,11 +216,11 @@ class Shibboleth extends AbstractBase
                     $attribute == 'cat_username' && isset($shib['prefix'])
                     && !empty($value)
                 ) {
-                    $user->cat_username = $shib['prefix'] . '.' . $value;
+                    $user->setCatUsername($shib['prefix'] . '.' . $value);
                 } elseif ($attribute == 'cat_password') {
                     $catPassword = $value;
                 } else {
-                    $user->$attribute = $value ?? '';
+                    $this->setUserValueByField($user, $attribute, $value ?? '');
                 }
             }
         }
@@ -318,7 +324,7 @@ class Shibboleth extends AbstractBase
      * Connect user authenticated by Shibboleth to library card.
      *
      * @param Request             $request        Request object containing account credentials.
-     * @param \VuFind\Db\Row\User $connectingUser Connect newly created library card to this user.
+     * @param UserEntityInterface $connectingUser Connect newly created library card to this user.
      *
      * @return void
      */
@@ -402,8 +408,8 @@ class Shibboleth extends AbstractBase
             return;
         }
         $localSessionId = $this->sessionManager->getId();
-        $externalSession = $this->getDbTableManager()->get('ExternalSession');
-        $externalSession->addSessionMapping($localSessionId, $shibSessionId);
+        $this->getDbService(ExternalSessionServiceInterface::class)
+            ->addSessionMapping($localSessionId, $shibSessionId);
         $this->debug(
             "Cached Shibboleth session id '$shibSessionId' for local session"
             . " '$localSessionId'"

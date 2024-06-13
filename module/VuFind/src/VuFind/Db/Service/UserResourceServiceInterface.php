@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
@@ -69,4 +70,28 @@ interface UserResourceServiceInterface extends DbServiceInterface
      * @return array
      */
     public function getStatistics(): array;
+
+    /**
+     * Create user/resource/list link if one does not exist; update notes if one does.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Entity or ID of resource to link up
+     * @param UserEntityInterface|int     $userOrId     Entity or ID of user creating link
+     * @param UserListEntityInterface|int $listOrId     Entity or ID of list to link up
+     * @param string                      $notes        Notes to associate with link
+     *
+     * @return UserResource|false
+     */
+    public function createOrUpdateLink(
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int $listOrId,
+        string $notes = ''
+    ): UserResourceEntityInterface;
+
+    /**
+     * Create a UserResource entity object.
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function createEntity(): UserResourceEntityInterface;
 }

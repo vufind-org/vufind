@@ -142,13 +142,13 @@ class Resource extends Gateway implements DbServiceAwareInterface
     /**
      * Get a set of records from the requested favorite list.
      *
-     * @param string $user   ID of user owning favorite list
-     * @param string $list   ID of list to retrieve (null for all favorites)
-     * @param array  $tags   Tags to use for limiting results
-     * @param string $sort   Resource table field to use for sorting (null for
-     * no particular sort).
-     * @param int    $offset Offset for results
-     * @param int    $limit  Limit for results (null for none)
+     * @param string $user              ID of user owning favorite list
+     * @param string $list              ID of list to retrieve (null for all favorites)
+     * @param array  $tags              Tags to use for limiting results
+     * @param string $sort              Resource table field to use for sorting (null for no particular sort).
+     * @param int    $offset            Offset for results
+     * @param int    $limit             Limit for results (null for none)
+     * @param ?bool  $caseSensitiveTags Should tags be searched case sensitively (null for configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
@@ -158,49 +158,43 @@ class Resource extends Gateway implements DbServiceAwareInterface
         $tags = [],
         $sort = null,
         $offset = 0,
-        $limit = null
+        $limit = null,
+        $caseSensitiveTags = null
     ) {
         // Set up base query:
         return $this->select(
-            function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
-                $columns = [
-                    new Expression(
-                        'DISTINCT(?)',
-                        ['resource.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR,
-                ];
-                $s->columns($columns);
-                $s->join(
-                    ['ur' => 'user_resource'],
-                    'resource.id = ur.resource_id',
-                    []
-                );
-                $s->where->equalTo('ur.user_id', $user);
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $caseSensitiveTags) {
+                $subQuery = $this->getDbTable('UserResource')
+                    ->getSql()
+                    ->select()
+                    ->quantifier(Select::QUANTIFIER_DISTINCT)
+                    ->columns(['resource_id']);
+                $subQuery->where->equalTo('user_id', $user);
 
                 // Adjust for list if necessary:
                 if (null !== $list) {
-                    $s->where->equalTo('ur.list_id', $list);
+                    $subQuery->where->equalTo('list_id', $list);
+                }
+                // Adjust for tags if necessary:
+                if (!empty($tags)) {
+                    $linkingTable = $this->getDbTable('ResourceTags');
+                    foreach ($tags as $tag) {
+                        $matches = $linkingTable->getResourcesForTag($tag, $user, $list, $caseSensitiveTags)->toArray();
+                        $getId = function ($i) {
+                            return $i['resource_id'];
+                        };
+                        $subQuery->where->in('resource_id', array_map($getId, $matches));
+                    }
                 }
 
+                $columns = [Select::SQL_STAR];
+                $s->columns($columns);
+                $s->where->in('id', $subQuery);
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
                 if (null !== $limit) {
                     $s->limit($limit);
-                }
-
-                // Adjust for tags if necessary:
-                if (!empty($tags)) {
-                    $linkingTable = $this->getDbTable('ResourceTags');
-                    foreach ($tags as $tag) {
-                        $matches = $linkingTable
-                            ->getResourcesForTag($tag, $user, $list)->toArray();
-                        $getId = function ($i) {
-                            return $i['resource_id'];
-                        };
-                        $s->where->in('resource.id', array_map($getId, $matches));
-                    }
                 }
 
                 // Apply sorting, if necessary:

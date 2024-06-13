@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\ResponseInterface as Response;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 
 use function extension_loaded;
 
@@ -115,15 +116,15 @@ class ShibbolethLogoutNotificationController extends AbstractBase
      */
     public function logoutNotification($sessionId)
     {
-        $table = $this->getTable('ExternalSession');
-        $row = $table->getByExternalSessionId(trim($sessionId));
-        if (empty($row)) {
-            return;
+        $rows = $this->getDbService(ExternalSessionServiceInterface::class)
+            ->getAllByExternalSessionId(trim($sessionId));
+        if ($rows) {
+            $sessionManager = $this->serviceLocator->get(\Laminas\Session\SessionManager::class);
+            $handler = $sessionManager->getSaveHandler();
+            foreach ($rows as $row) {
+                $handler->destroy($row->getSessionId());
+            }
         }
-        $sessionManager = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class);
-        $handler = $sessionManager->getSaveHandler();
-        $handler->destroy($row['session_id']);
     }
 
     /**

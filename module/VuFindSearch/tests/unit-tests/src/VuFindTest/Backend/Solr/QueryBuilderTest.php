@@ -610,7 +610,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Single value' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -626,7 +626,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Two values' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => [
@@ -651,7 +651,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SearchTypeIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -674,7 +674,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SearchTypeNotIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -697,7 +697,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with NoDisMaxParams = [bf] condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -718,7 +718,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SortIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -741,7 +741,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SortNotIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -829,7 +829,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'Search type in [test]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -840,12 +840,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, test2]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -856,12 +856,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, no]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -872,12 +872,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => null,
                 ],
             ],
             'All search types in [test, test2, no]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -888,7 +888,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],

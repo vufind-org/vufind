@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Record helper factory.
@@ -68,9 +69,8 @@ class RecordFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $helper = new $requestedName($config);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $helper = new $requestedName($container->get(TagsService::class), $config);
         $helper->setCoverRouter($container->get(\VuFind\Cover\Router::class));
         return $helper;
     }

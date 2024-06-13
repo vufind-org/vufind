@@ -49,10 +49,12 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
 use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Tags\TagsService;
 
 use function count;
 use function dirname;
@@ -316,15 +318,9 @@ class UpgradeController extends AbstractBase
      */
     protected function fixVuFindSourceInDatabase()
     {
-        $resource = $this->getTable('resource');
-        $resourceWhere = ['source' => 'VuFind'];
-        $resourceRows = $resource->select($resourceWhere);
-        if (count($resourceRows) > 0) {
-            $resource->update(['source' => 'Solr'], $resourceWhere);
-            $this->session->warnings->append(
-                'Converted ' . count($resourceRows)
-                . ' legacy "VuFind" source value(s) in resource table'
-            );
+        if ($count = $this->getDbService(ResourceServiceInterface::class)->renameSource('VuFind', 'Solr')) {
+            $this->session->warnings
+                ->append('Converted ' . $count . ' legacy "VuFind" source value(s) in resource table');
         }
     }
 
@@ -350,16 +346,18 @@ class UpgradeController extends AbstractBase
     protected function fixSearchChecksumsInDatabase()
     {
         $manager = $this->serviceLocator->get(ResultsManager::class);
-        $search = $this->getTable('search');
-        $searchWhere = ['checksum' => null, 'saved' => 1];
-        $searchRows = $search->select($searchWhere);
+        $searchService = $this->getDbService(SearchServiceInterface::class);
+        $searchRows = $searchService->getSavedSearchesWithMissingChecksums();
         if (count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
-                $searchObj = $searchRow->getSearchObjectOrThrowException()->deminify($manager);
+                $searchObj = $searchRow->getSearchObject()?->deminify($manager);
+                if (!$searchObj) {
+                    throw new Exception("Missing search data for row {$searchRow->getId()}.");
+                }
                 $url = $searchObj->getUrlQuery()->getParams();
                 $checksum = crc32($url) & 0xFFFFFFF;
-                $searchRow->checksum = $checksum;
-                $searchRow->save();
+                $searchRow->setChecksum($checksum);
+                $searchService->persistEntity($searchRow);
             }
             $this->session->warnings->append(
                 'Added checksum to ' . count($searchRows) . ' rows in search table'
@@ -585,13 +583,12 @@ class UpgradeController extends AbstractBase
             // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
-            $resourceTagsTable = $this->getTable('ResourceTags');
-            $anonymousTags = $resourceTagsTable->getAnonymousCount();
+            $anonymousTags = $this->getDbService(ResourceTagsServiceInterface::class)->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->getTable('Tags')->getDuplicates();
+            $dupeTags = $this->serviceLocator->get(TagsService::class)->getDuplicateTags();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -730,10 +727,9 @@ class UpgradeController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage("User {$user} not found.", 'error');
                 } else {
-                    $table = $this->getTable('ResourceTags');
-                    $table->assignAnonymousTags($user->id);
+                    $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
-                        "Assigned all anonymous tags to {$user->username}."
+                        "Assigned all anonymous tags to {$user->getUsername()}."
                     );
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 }
@@ -762,7 +758,7 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $this->getTable('Tags')->fixDuplicateTags();
+            $this->serviceLocator->get(TagsService::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
