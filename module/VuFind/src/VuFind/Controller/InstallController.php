@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
@@ -244,8 +245,7 @@ class InstallController extends AbstractBase
     {
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tags = $this->getTable('Tags');
-            $tags->getByText('test', false);
+            $this->getDbService(TagServiceInterface::class)->getTagsByText('test');
             $status = true;
         } catch (\Exception $e) {
             $status = false;
@@ -811,6 +811,7 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
+        $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
         $userRows = $this->getTable('user')->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
@@ -819,8 +820,8 @@ class InstallController extends AbstractBase
                     $row->pass_hash = $bcrypt->create($row->password);
                     $row->password = '';
                 }
-                if ($row->cat_password) {
-                    $row->saveCredentials($row->cat_username, $row->cat_password);
+                if ($rawPassword = $row->getRawCatPassword()) {
+                    $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);
                 } else {
                     $row->save();
                 }
@@ -830,7 +831,6 @@ class InstallController extends AbstractBase
         }
         $cardService = $this->getDbService(UserCardServiceInterface::class);
         $cardRows = $cardService->getInsecureRows();
-        $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
         if (count($cardRows) > 0) {
             foreach ($cardRows as $row) {
                 $row->setCatPassEnc($ilsAuthenticator->encrypt($row->getRawCatPassword()));

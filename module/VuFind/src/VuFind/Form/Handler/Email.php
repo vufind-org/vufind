@@ -125,16 +125,21 @@ class Email implements HandlerInterface, LoggerAwareInterface
 
         $result = true;
         foreach ($recipients as $recipient) {
-            $success = $this->sendEmail(
-                $recipient['name'],
-                $recipient['email'],
-                $senderName,
-                $senderEmail,
-                $replyToName,
-                $replyToEmail,
-                $emailSubject,
-                $emailMessage
-            );
+            if ($recipient['email']) {
+                $success = $this->sendEmail(
+                    $recipient['name'],
+                    $recipient['email'],
+                    $senderName,
+                    $senderEmail,
+                    $replyToName,
+                    $replyToEmail,
+                    $emailSubject,
+                    $emailMessage
+                );
+            } else {
+                $this->logError('Form recipient email missing; check recipient_email in config.ini.');
+                $success = false;
+            }
 
             $result = $result && $success;
         }

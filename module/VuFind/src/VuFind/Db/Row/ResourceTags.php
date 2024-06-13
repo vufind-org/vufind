@@ -119,8 +119,8 @@ class ResourceTags extends RowGateway implements
     public function getTag(): TagsEntityInterface
     {
         return $this->tag_id
-        ? $this->getDbServiceManager()->get(TagServiceInterface::class)->getForResource($this->tag_id)
-        : null;
+            ? $this->getDbServiceManager()->get(TagServiceInterface::class)->getTagById($this->tag_id)
+            : null;
     }
 
     /**

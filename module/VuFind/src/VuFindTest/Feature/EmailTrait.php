@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Tags Test Class
+ * Trait adding the ability to inspect sent emails.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,10 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest;
+namespace VuFindTest\Feature;
 
 /**
- * Tags Test Class
+ * Trait adding the ability to inspect sent emails.
  *
  * @category VuFind
  * @package  Tests
@@ -38,67 +38,25 @@ namespace VuFindTest;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TagsTest extends \PHPUnit\Framework\TestCase
+trait EmailTrait
 {
     /**
-     * Tag parser
+     * Get the path to the email message log file.
      *
-     * @var \VuFind\Tags
+     * @return string
      */
-    protected $parser;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
+    protected function getEmailLogPath(): string
     {
-        $this->parser = new \VuFind\Tags();
+        return APPLICATION_PATH . '/vufind-mail.log';
     }
 
     /**
-     * Test tag parsing
+     * Clear out the email log to eliminate any past contents.
      *
      * @return void
      */
-    public function testTagParsing()
+    protected function resetEmailLog(): void
     {
-        $this->assertEquals(
-            ['this', 'that', 'the other'],
-            $this->parser->parse('this that "the other"')
-        );
-    }
-
-    /**
-     * Test empty tag parsing
-     *
-     * @return void
-     */
-    public function testEmptyTagParsing()
-    {
-        $this->assertEquals([], $this->parser->parse(''));
-    }
-
-    /**
-     * Test deduplication
-     *
-     * @return void
-     */
-    public function testDeduplication()
-    {
-        $this->assertEquals(['test'], $this->parser->parse('test test test'));
-    }
-
-    /**
-     * Test truncation
-     *
-     * @return void
-     */
-    public function testTruncation()
-    {
-        // Create custom object w/ small size limit:
-        $parser = new \VuFind\Tags(10);
-        $this->assertEquals(['0123456789'], $parser->parse('01234567890'));
+        file_put_contents($this->getEmailLogPath(), '');
     }
 }

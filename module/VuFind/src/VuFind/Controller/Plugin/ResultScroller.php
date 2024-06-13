@@ -666,7 +666,7 @@ class ResultScroller extends AbstractPlugin
             null
         );
         if (!empty($row)) {
-            $minSO = $row->getSearchObject();
+            $minSO = $row->getSearchObjectOrThrowException();
             $search = $minSO->deminify($this->resultsManager);
             // The saved search does not remember its original limit or sort;
             // we should reapply them from the session data:

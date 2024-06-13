@@ -6,11 +6,11 @@
   $idSuffixEsc = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
 
-<div class="list-tabs panel-group" id="accordion_<?=$idSuffixEsc?>">
+<div class="list-tabs panel-group" id="accordion_<?=$idSuffixEsc?>" role="tablist">
   <?php $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
   <?php if (!empty($coreMetadata)): ?>
     <div class="panel panel-default">
-      <div id="information_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#information_<?=$idSuffixEsc?>-content">
+      <div id="information_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#information_<?=$idSuffixEsc?>-content" role="tab">
         <h4 class="panel-title">
           <a class="accordion-toggle">
             <?=$this->translate('ajaxview_label_information') ?>
@@ -30,7 +30,7 @@
   <?php $toolbar = $this->record($this->driver)->getToolbar(); ?>
   <?php if (!empty($toolbar)): ?>
     <div class="panel panel-default">
-      <div id="tools_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#tools_<?=$idSuffixEsc?>-content">
+      <div id="tools_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#tools_<?=$idSuffixEsc?>-content" role="tab">
         <h4 class="panel-title">
           <a class="accordion-toggle">
             <?=$this->translate('ajaxview_label_tools') ?>
@@ -48,7 +48,7 @@
   <?php $relatedList = $this->related()->getList($this->driver); ?>
   <?php if ($relatedList != null): ?>
     <div class="panel panel-default">
-      <div id="related_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#related_<?=$idSuffixEsc?>-content">
+      <div id="related_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#related_<?=$idSuffixEsc?>-content" role="tab">
         <h4 class="panel-title">
           <a class="accordion-toggle">
             <?=$this->transEsc('Related Items')?>

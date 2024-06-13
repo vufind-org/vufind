@@ -31,9 +31,18 @@
 
 namespace VuFindTest\Feature;
 
+use Throwable;
+use VuFind\Account\UserAccountService;
+use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Table\Gateway;
 use VuFind\Db\Table\PluginManager as TableManager;
+use VuFind\Favorites\FavoritesService;
+use VuFind\Favorites\FavoritesServiceFactory;
+use VuFind\Record\ResourcePopulator;
 use VuFindTest\Container\MockContainer;
 
 use function count;
@@ -90,7 +99,6 @@ trait LiveDatabaseTrait
                 \Laminas\Db\Adapter\Adapter::class,
                 $adapterFactory->getAdapter()
             );
-            $container->set(\VuFind\Tags::class, new \VuFind\Tags());
             $container->set('config', $config);
             $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
             $container->set(
@@ -101,6 +109,19 @@ trait LiveDatabaseTrait
             $container->set(TableManager::class, $liveTableManager);
             $liveServiceManager = new ServiceManager($container, []);
             $container->set(ServiceManager::class, $liveServiceManager);
+            $container->set(
+                \VuFind\Tags\TagsService::class,
+                new \VuFind\Tags\TagsService(
+                    $liveServiceManager->get(TagServiceInterface::class),
+                    $liveServiceManager->get(ResourceTagsServiceInterface::class),
+                    $liveServiceManager->get(UserListServiceInterface::class),
+                    $container->get(ResourcePopulator::class)
+                )
+            );
+            $favoritesFactory = new FavoritesServiceFactory();
+            $favoritesService = $favoritesFactory($container, FavoritesService::class);
+            $favoritesService->setDbTableManager($liveTableManager);
+            $container->set(FavoritesService::class, $favoritesService);
             $this->liveDatabaseContainer = $container;
         }
         return $this->liveDatabaseContainer;
@@ -124,6 +145,28 @@ trait LiveDatabaseTrait
     public function getLiveTableManager(): TableManager
     {
         return $this->getLiveDatabaseContainer()->get(TableManager::class);
+    }
+
+    /**
+     * Get a database service.
+     *
+     * @param string $service Name of service to load
+     *
+     * @return DbServiceInterface
+     */
+    public function getDbService(string $service): DbServiceInterface
+    {
+        return $this->getLiveDbServiceManager()->get($service);
+    }
+
+    /**
+     * Get the favorites service.
+     *
+     * @return FavoritesService
+     */
+    public function getFavoritesService(): FavoritesService
+    {
+        return $this->getLiveDatabaseContainer()->get(FavoritesService::class);
     }
 
     /**
@@ -195,24 +238,30 @@ trait LiveDatabaseTrait
      */
     protected static function removeUsers(array|string $users): void
     {
-        $test = new static('');   // create instance of current class
-        // Fail if the test does not include the LiveDetectionTrait.
-        if (!$test->hasLiveDetectionTrait ?? false) {
-            self::fail(
-                'Test requires LiveDetectionTrait, but it is not used.'
-            );
-        }
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-        // Delete test user
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        foreach ((array)$users as $username) {
-            $user = $userTable->getByUsername($username, false);
-            if (!empty($user)) {
-                $user->delete();
+        try {
+            $test = new static('');   // create instance of current class
+            // Fail if the test does not include the LiveDetectionTrait.
+            if (!$test->hasLiveDetectionTrait ?? false) {
+                self::fail(
+                    'Test requires LiveDetectionTrait, but it is not used.'
+                );
             }
+            // If CI is not running, all tests were skipped, so no work is necessary:
+            if (!$test->continuousIntegrationRunning()) {
+                return;
+            }
+            // Delete test user
+            $userTable = $test->getTable(\VuFind\Db\Table\User::class);
+            foreach ((array)$users as $username) {
+                $user = $userTable->getByUsername($username, false);
+                if (!empty($user)) {
+                    $purgeService = new UserAccountService($test->getFavoritesService());
+                    $purgeService->setDbServiceManager($test->getLiveDbServiceManager());
+                    $purgeService->purgeUserData($user);
+                }
+            }
+        } catch (Throwable $t) {
+            echo "\n\nError in removeUsers(): " . (string)$t . "\n";
         }
     }
 }

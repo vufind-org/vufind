@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * AJAX handler to get all tags for a record as HTML.
@@ -48,12 +48,12 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param TagServiceInterface  $tagService Tags database service
-     * @param ?UserEntityInterface $user       Logged in user (or null)
-     * @param RendererInterface    $renderer   View renderer
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
+     * @param RendererInterface    $renderer    View renderer
      */
     public function __construct(
-        protected TagServiceInterface $tagService,
+        protected TagsService $tagsService,
         protected ?UserEntityInterface $user,
         protected RendererInterface $renderer
     ) {
@@ -71,7 +71,7 @@ class GetRecordTags extends AbstractBase
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $tags = $this->tagService->getForResource(
+        $tags = $this->tagsService->getRecordTags(
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0,
