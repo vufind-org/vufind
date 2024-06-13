@@ -220,7 +220,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         string $id,
         string $source = DEFAULT_SEARCH_BACKEND,
         int $limit = 0,
-        UserListEntityInterface|int|bool|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null,

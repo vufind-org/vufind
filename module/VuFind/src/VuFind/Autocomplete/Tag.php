@@ -29,7 +29,7 @@
 
 namespace VuFind\Autocomplete;
 
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Tag Autocomplete Module
@@ -47,10 +47,9 @@ class Tag implements AutocompleteInterface
     /**
      * Constructor
      *
-     * @param TagServiceInterface $tagService    Tag database service
-     * @param bool                $caseSensitive Treat tags as case-sensitive?
+     * @param TagsService $tagsService Tag database service
      */
-    public function __construct(protected TagServiceInterface $tagService, protected bool $caseSensitive = false)
+    public function __construct(protected TagsService $tagsService)
     {
     }
 
@@ -65,7 +64,7 @@ class Tag implements AutocompleteInterface
     public function getSuggestions($query)
     {
         $tagList = [];
-        $tags = $this->tagService->getNonListTagsFuzzilyMatchingString($query, $this->caseSensitive);
+        $tags = $this->tagsService->getNonListTagsFuzzilyMatchingString($query);
         if ($tags) {
             foreach ($tags as $tag) {
                 $tagList[] = $tag['tag'];

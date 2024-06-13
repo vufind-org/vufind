@@ -83,8 +83,7 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
-        $view->statistics = $this->getDbService(TagServiceInterface::class)
-            ->getStatistics(true, $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags());
+        $view->statistics = $this->serviceLocator->get(TagsService::class)->getStatistics(true);
         return $view;
     }
 

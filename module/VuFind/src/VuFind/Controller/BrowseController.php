@@ -331,7 +331,7 @@ class BrowseController extends AbstractBase implements
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagServiceInterface::class);
+            $tagsService = $this->serviceLocator->get(TagsService::class);
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
@@ -341,10 +341,7 @@ class BrowseController extends AbstractBase implements
                     // Note -- this does not need to be escaped because
                     // $params['query'] has already been validated against
                     // the getAlphabetList() method below!
-                    $tags = $tagService->getNonListTagsFuzzilyMatchingString(
-                        $params['query'],
-                        caseSensitive: $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
-                    );
+                    $tags = $tagsService->getNonListTagsFuzzilyMatchingString($params['query']);
                     $tagList = [];
                     foreach ($tags as $tag) {
                         if ($tag['cnt'] > 0) {
@@ -363,10 +360,9 @@ class BrowseController extends AbstractBase implements
                 }
             } else {
                 // Default case: always display tag list for non-alphabetical modes:
-                $tagList = $tagService->getTagBrowseList(
+                $tagList = $tagsService->getTagBrowseList(
                     $params['findby'],
-                    (int)($this->config->Browse->result_limit ?? 100),
-                    $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
+                    (int)($this->config->Browse->result_limit ?? 100)
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {

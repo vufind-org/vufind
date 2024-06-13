@@ -39,7 +39,6 @@ use VuFind\Account\UserAccountService;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -1151,11 +1150,7 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    $tags = $this->getDbService(TagServiceInterface::class)->getListTags(
-                        $list,
-                        $list->getUser(),
-                        $this->serviceLocator->get(TagsService::class)->hasCaseSensitiveTags()
-                    );
+                    $tags = $this->serviceLocator->get(TagsService::class)->getListTags($list, $list->getUser());
                     foreach ($tags as $tag) {
                         $listTags[$tag['id']] = $tag['tag'];
                     }
@@ -1277,9 +1272,9 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $tagService = $this->getDbService(TagServiceInterface::class);
+            $tagsService = $this->getDbService(TagsService::class);
             $listTags = $favoritesService
-                ->formatTagStringForEditing($tagService->getListTags($list, $list->getUser()));
+                ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
         // Send the list to the view:
         return $this->createViewModel(

@@ -36,7 +36,6 @@ use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Tags\TagsService;
@@ -380,15 +379,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
-        return $this->getDbService(TagServiceInterface::class)->getRecordTags(
+        return $this->tagsService->getRecordTags(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier(),
             0,
             $listOrId,
             $userOrId,
             $sort,
-            $ownerOrId,
-            $this->tagsService->hasCaseSensitiveTags()
+            $ownerOrId
         );
     }
 
@@ -409,15 +407,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
-        return $this->getDbService(TagServiceInterface::class)->getRecordTagsFromFavorites(
+        return $this->tagsService->getRecordTagsFromFavorites(
             $this->driver->getUniqueId(),
             $this->driver->getSourceIdentifier(),
             0,
             $listOrId,
             $userOrId,
             $sort,
-            $ownerOrId,
-            $this->tagsService->hasCaseSensitiveTags()
+            $ownerOrId
         );
     }
 

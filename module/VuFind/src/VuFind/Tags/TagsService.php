@@ -33,8 +33,6 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
@@ -53,19 +51,22 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
+class TagsService implements DbTableAwareInterface
 {
-    use DbServiceAwareTrait;
     use DbTableAwareTrait;
 
     /**
      * Constructor
      *
-     * @param ResourcePopulator $resourcePopulator Resource populator service
-     * @param int               $maxLength         Maximum tag length
-     * @param bool              $caseSensitive     Are tags case sensitive?
+     * @param TagServiceInterface          $tagDbService        Tag database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param int                          $maxLength           Maximum tag length
+     * @param bool                         $caseSensitive       Are tags case sensitive?
      */
     public function __construct(
+        protected TagServiceInterface $tagDbService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
         protected ResourcePopulator $resourcePopulator,
         protected int $maxLength = 64,
         protected bool $caseSensitive = false
@@ -118,8 +119,7 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
      */
     public function getOrCreateTagByText(string $tag): TagsEntityInterface
     {
-        $tagDbService = $this->getDbService(TagServiceInterface::class);
-        if ($entity = $tagDbService->getTagByText($tag, $this->caseSensitive)) {
+        if ($entity = $this->getTagByText($tag)) {
             return $entity;
         }
         $newEntity = $tagDbService->createEntity()
@@ -145,7 +145,7 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
         UserListEntityInterface|int|null $listOrId = null
     ): void {
         if (($trimmedTagText = trim($tagText)) !== '') {
-            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+            $this->getResourceTagsService->createLink(
                 $resourceOrId,
                 $this->getOrCreateTagByText($trimmedTagText),
                 $userOrId,
@@ -172,13 +172,12 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
     ) {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         if (($trimmedTagText = trim($tagText)) !== '') {
-            $tagService = $this->getDbService(TagServiceInterface::class);
             $tagIds = [];
-            foreach ($tagService->getTagsByText($trimmedTagText, $this->caseSensitive) as $tag) {
+            foreach ($this->getTagsByText($trimmedTagText) as $tag) {
                 $tagIds[] = $tag->getId();
             }
             if ($tagIds) {
-                $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(
+                $this->resourceTagsService->destroyResourceTagsLinksForUser(
                     $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId,
                     $userOrId,
                     $listId,
@@ -223,5 +222,247 @@ class TagsService implements DbServiceAwareInterface, DbTableAwareInterface
     public function hasCaseSensitiveTags(): bool
     {
         return $this->caseSensitive;
+    }
+
+    /**
+     * Get statistics on use of tags.
+     *
+     * @param bool $extended Include extended (unique/anonymous) stats.
+     *
+     * @return array
+     */
+    public function getStatistics(bool $extended = false): array
+    {
+        return $this->tagDbService->getStatistics($extended, $this->caseSensitive);
+    }
+
+    /**
+     * Get the tags that match a string
+     *
+     * @param string $text  Tag to look up.
+     * @param string $sort  Sort type
+     * @param int    $limit Maximum results to retrieve
+     *
+     * @return array
+     */
+    public function getNonListTagsFuzzilyMatchingString(
+        string $text,
+        string $sort = 'alphabetical',
+        int $limit = 100
+    ): array {
+        return $this->tagDbService->getNonListTagsFuzzilyMatchingString($text, $sort, $limit, $this->caseSensitive);
+    }
+
+    /**
+     * Get all matching tags by text. Normally, 0 or 1 results will be retrieved, but more
+     * may be retrieved under exceptional circumstances (e.g. if retrieving case-insensitively
+     * after storing data case-sensitively).
+     *
+     * @param string $text Tag text to match
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagsByText(string $text): array
+    {
+        return $this->tagDbService->getTagsByText($text, $this->caseSensitive);
+    }
+
+    /**
+     * Get the first available matching tag by text; return null if no match is found.
+     *
+     * @param string $text Tag text to match
+     *
+     * @return TagsEntityInterface[]
+     */
+    public function getTagByText(string $text): ?TagsEntityInterface
+    {
+        return $this->tagDbService->getTagByText($text, $this->caseSensitive);
+    }
+
+    /**
+     * Get all resources associated with the provided tag query.
+     *
+     * @param string $q      Search query
+     * @param string $source Record source (optional limiter)
+     * @param string $sort   Resource field to sort on (optional)
+     * @param int    $offset Offset for results
+     * @param ?int   $limit  Limit for results (null for none)
+     * @param bool   $fuzzy  Are we doing an exact (false) or fuzzy (true) search?
+     *
+     * @return array
+     */
+    public function getResourcesMatchingTagQuery(
+        string $q,
+        string $source = null,
+        string $sort = null,
+        int $offset = 0,
+        ?int $limit = null,
+        bool $fuzzy = true
+    ): array {
+        return $this->tagDbService
+            ->getResourcesMatchingTagQuery($q, $source, $sort, $offset, $limit, $fuzzy, $this->caseSensitive);
+    }
+
+    /**
+     * Get a list of tags for the browse interface.
+     *
+     * @param string $sort  Sort/search parameter
+     * @param int    $limit Maximum number of tags (default = 100, < 1 = no limit)
+     *
+     * @return array
+     */
+    public function getTagBrowseList(string $sort, int $limit): array
+    {
+        return $this->tagDbService->getTagBrowseList($sort, $limit, $this->caseSensitive);
+    }
+
+    /**
+     * Get all tags associated with the specified record (and matching provided filters).
+     *
+     * @param string                           $id        Record ID to look up
+     * @param string                           $source    Source of record to look up
+     * @param int                              $limit     Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getRecordTags(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->tagDbService
+            ->getRecordTags($id, $source, $limit, $listOrId, $userOrId, $sort, $ownerOrId, $this->caseSensitive);
+    }
+
+    /**
+     * Get all tags from favorite lists associated with the specified record (and matching provided filters).
+     *
+     * @param string                           $id        Record ID to look up
+     * @param string                           $source    Source of record to look up
+     * @param int                              $limit     Max. number of tags to return (0 = no limit)
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     *                                                    are associated with ANY list, but excluding
+     *                                                    non-list tags)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *                                                    (this will not filter the result
+     *                                                    list, but rows owned by this user
+     *                                                    will have an is_me column set to
+     *                                                    1)
+     *
+     * @return array
+     */
+    public function getRecordTagsFromFavorites(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ) {
+        return $this->tagDbService->getRecordTagsFromFavorites(
+            $id,
+            $source,
+            $limit,
+            $listOrId,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            $this->caseSensitive
+        );
+    }
+
+    /**
+     * Get all tags outside of favorite lists associated with the specified record (and matching provided filters).
+     *
+     * @param string                       $id        Record ID to look up
+     * @param string                       $source    Source of record to look up
+     * @param int                          $limit     Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
+     * @param string                       $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
+     *                                                (this will not filter the result list, but rows
+     *                                                owned by this user will have an is_me column set
+     *                                                to 1)
+     *
+     * @return array
+     */
+    public function getRecordTagsNotInFavorites(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->tagDbService->getRecordTagsNotInFavorites(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            $this->caseSensitive
+        );
+    }
+
+    /**
+     * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive
+     * tags have introduced problems).
+     *
+     * @return array
+     */
+    public function getDuplicateTags(): array
+    {
+        return $this->tagDbService->getDuplicateTags($this->caseSensitive);
+    }
+
+    /**
+     * Get a list of all tags generated by the user in favorites lists. Note that the returned list WILL NOT include
+     * tags attached to records that are not saved in favorites lists. Returns an array of arrays with id and tag keys.
+     *
+     * @param UserEntityInterface|int          $userOrId User ID to look up.
+     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
+     *                                                   filter).
+     * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
+     *                                                   filter).
+     * @param ?string                          $source   Filter for tags tied to a specific record source (null
+     *                                                   for no filter).
+     *
+     * @return array
+     */
+    public function getUserTagsFromFavorites(
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        ?string $recordId = null,
+        ?string $source = null
+    ): array {
+        return $this->tagDbService
+            ->getUserTagsFromFavorites($userOrId, $listOrId, $recordId, $source, $this->caseSensitive);
+    }
+
+    /**
+     * Get tags assigned to a user list. Returns an array of arrays with id and tag keys.
+     *
+     * @param UserListEntityInterface|int  $listOrId List ID or entity
+     * @param UserEntityInterface|int|null $userOrId User ID or entity to look up (null for no filter).
+     *
+     * @return array[]
+     */
+    public function getListTags(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int|null $userOrId = null,
+    ): array {
+        return $this->tagDbService->getListTags($listOrId, $userOrId, $this->caseSensitive);
     }
 }

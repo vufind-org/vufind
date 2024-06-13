@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Tags\TagsService;
 
 /**
@@ -68,9 +67,6 @@ class TagFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFind\Db\Service\PluginManager::class)->get(TagServiceInterface::class),
-            $container->get(TagsService::class)->hasCaseSensitiveTags()
-        );
+        return new $requestedName($container->get(TagsService::class));
     }
 }

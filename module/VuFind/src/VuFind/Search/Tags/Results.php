@@ -29,7 +29,6 @@
 
 namespace VuFind\Search\Tags;
 
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFind\Tags\TagsService;
@@ -56,14 +55,12 @@ class Results extends BaseResults
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
      * @param TagsService                $tagsService   Tags service
-     * @param TagServiceInterface        $tagsDbService Tags database service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        protected TagsService $tagsService,
-        protected TagServiceInterface $tagsDbService
+        protected TagsService $tagsService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -94,14 +91,13 @@ class Results extends BaseResults
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
-        $rawResults = $this->tagsDbService->getResourcesMatchingTagQuery(
+        $rawResults = $this->tagsService->getResourcesMatchingTagQuery(
             $query,
             null,
             $this->getParams()->getSort(),
             0,
             null,
-            $fuzzy,
-            $this->tagsService->hasCaseSensitiveTags()
+            $fuzzy
         );
 
         // How many results were there?
@@ -110,14 +106,13 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->tagsDbService->getResourcesMatchingTagQuery(
+            $rawResults = $this->tagsService->getResourcesMatchingTagQuery(
                 $query,
                 null,
                 $this->getParams()->getSort(),
                 $this->getStartRecord() - 1,
                 $limit,
-                $fuzzy,
-                $this->tagsService->hasCaseSensitiveTags()
+                $fuzzy
             );
         }
 

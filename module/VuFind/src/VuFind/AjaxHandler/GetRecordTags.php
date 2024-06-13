@@ -32,7 +32,6 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Tags\TagsService;
 
 /**
@@ -49,13 +48,11 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param TagServiceInterface  $tagDbService Tags database service
-     * @param TagsService          $tagsService  Tags service
-     * @param ?UserEntityInterface $user         Logged in user (or null)
-     * @param RendererInterface    $renderer     View renderer
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
+     * @param RendererInterface    $renderer    View renderer
      */
     public function __construct(
-        protected TagServiceInterface $tagDbService,
         protected TagsService $tagsService,
         protected ?UserEntityInterface $user,
         protected RendererInterface $renderer
@@ -74,15 +71,14 @@ class GetRecordTags extends AbstractBase
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $tags = $this->tagDbService->getRecordTags(
+        $tags = $this->tagsService->getRecordTags(
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0,
             null,
             null,
             'count',
-            $is_me_id,
-            $this->tagsService->hasCaseSensitiveTags()
+            $is_me_id
         );
 
         // Build data structure for return:
