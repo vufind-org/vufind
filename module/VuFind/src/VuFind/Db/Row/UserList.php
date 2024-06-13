@@ -37,9 +37,10 @@ use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 /**
  * Row Definition for user_list
@@ -66,30 +67,14 @@ class UserList extends RowGateway implements
     use DbServiceAwareTrait;
 
     /**
-     * Session container for last list information.
-     *
-     * @var Container
-     */
-    protected $session = null;
-
-    /**
-     * Tag parser.
-     *
-     * @var Tags
-     */
-    protected $tagParser;
-
-    /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter   Database adapter
-     * @param Tags                        $tagParser Tag parser
-     * @param Container                   $session   Session container
+     * @param \Laminas\Db\Adapter\Adapter $adapter     Database adapter
+     * @param TagsService                 $tagsService Tags service
+     * @param ?Container                  $session     Session container for last list information
      */
-    public function __construct($adapter, Tags $tagParser, Container $session = null)
+    public function __construct($adapter, protected TagsService $tagsService, protected ?Container $session = null)
     {
-        $this->tagParser = $tagParser;
-        $this->session = $session;
         parent::__construct('id', 'user_list', $adapter);
     }
 
@@ -129,15 +114,12 @@ class UserList extends RowGateway implements
      * Get an array of tags assigned to this list.
      *
      * @return array
+     *
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags()
     {
-        $table = $this->getDbTable('User');
-        $user = $table->select(['id' => $this->user_id])->current();
-        if (empty($user)) {
-            return [];
-        }
-        return $user->getListTags($this->id, $this->user_id);
+        return $this->getDbService(TagServiceInterface::class)->getListTags($this, $this->getUser());
     }
 
     /**
@@ -147,6 +129,8 @@ class UserList extends RowGateway implements
      * @param UserEntityInterface $user    The user posting the tag.
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::addListTag()
      */
     public function addListTag($tagText, $user)
     {

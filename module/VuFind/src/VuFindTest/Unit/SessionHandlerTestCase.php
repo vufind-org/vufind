@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Unit;
 
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Session\AbstractBase as SessionHandler;
 
@@ -123,13 +124,12 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
         $search->expects($this->once())
             ->method('destroySession')
             ->with($this->equalTo($sessId));
-        $external = $this->createMock(\VuFind\Db\Table\ExternalSession::class);
+        $external = $this->createMock(ExternalSessionServiceInterface::class);
         $external->expects($this->once())
             ->method('destroySession')
             ->with($this->equalTo($sessId));
-        $tables = $this->getTables();
         $services = $this->getServices();
         $services->set(SearchServiceInterface::class, $search);
-        $tables->set('ExternalSession', $external);
+        $services->set(ExternalSessionServiceInterface::class, $external);
     }
 }

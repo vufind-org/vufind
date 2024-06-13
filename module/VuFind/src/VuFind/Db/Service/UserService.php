@@ -66,6 +66,31 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntityForUsername(string $username): UserEntityInterface
+    {
+        return $this->getDbTable('User')->createRowForUsername($username);
+    }
+
+    /**
+     * Delete a user entity.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUser(UserEntityInterface|int $userOrId): void
+    {
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $this->getDbTable('User')->delete(['id' => $userId]);
+    }
+
+    /**
      * Retrieve a user object from the database based on ID.
      *
      * @param int $id ID.
@@ -79,7 +104,7 @@ class UserService extends AbstractDbService implements
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username or cat_id.
+     * Field name must be id, username, email or cat_id.
      *
      * @param string          $fieldName  Field name
      * @param int|string|null $fieldValue Field value
@@ -89,6 +114,8 @@ class UserService extends AbstractDbService implements
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
         switch ($fieldName) {
+            case 'email':
+                return $this->getDbTable('User')->getByEmail($fieldValue);
             case 'id':
                 return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
@@ -96,7 +123,7 @@ class UserService extends AbstractDbService implements
             case 'cat_id':
                 return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
-        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+        throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
     }
 
     /**

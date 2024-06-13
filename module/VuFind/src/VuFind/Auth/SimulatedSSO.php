@@ -30,6 +30,9 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Session\ManagerInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function is_array;
@@ -76,9 +79,14 @@ class SimulatedSSO extends AbstractBase
      * @param callable         $url              Session initiator URL callback
      * @param array            $config           Configuration settings
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     * @param ManagerInterface $sessionManager   Session manager
      */
-    public function __construct($url, array $config, protected ILSAuthenticator $ilsAuthenticator)
-    {
+    public function __construct(
+        $url,
+        array $config,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected ManagerInterface $sessionManager
+    ) {
         $this->getSessionInitiatorCallback = $url;
         $this->simulatedSSOConfig = $config;
     }
@@ -89,7 +97,7 @@ class SimulatedSSO extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -99,7 +107,7 @@ class SimulatedSSO extends AbstractBase
             throw new AuthException('Simulated failure');
         }
         $userService = $this->getUserService();
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Get attribute configuration -- use defaults if no value is set, and use an
         // empty array if something invalid was provided.
@@ -114,7 +122,7 @@ class SimulatedSSO extends AbstractBase
             if ($attribute == 'email') {
                 $userService->updateUserEmail($user, $value);
             } elseif ($attribute != 'cat_password') {
-                $user->$attribute = $value ?? '';
+                $this->setUserValueByField($user, $attribute, $value ?? '');
             } else {
                 $catPassword = $value;
             }
@@ -126,6 +134,8 @@ class SimulatedSSO extends AbstractBase
                 empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
+
+        $this->storeExternalSession();
 
         // Save and return the user object:
         $userService->persistEntity($user);
@@ -145,5 +155,19 @@ class SimulatedSSO extends AbstractBase
     {
         $target .= (str_contains($target, '?') ? '&' : '?') . 'auth_method=SimulatedSSO';
         return ($this->getSessionInitiatorCallback)($target);
+    }
+
+    /**
+     * Add session id mapping to external_session table for single logout support
+     *
+     * Using 'EXTERNAL_SESSION_ID' as the id -- for testing only.
+     *
+     * @return void
+     */
+    protected function storeExternalSession(): void
+    {
+        $localSessionId = $this->sessionManager->getId();
+        $this->getDbService(ExternalSessionServiceInterface::class)
+            ->addSessionMapping($localSessionId, 'EXTERNAL_SESSION_ID');
     }
 }

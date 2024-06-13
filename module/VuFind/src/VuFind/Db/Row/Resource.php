@@ -82,11 +82,13 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      * (optional -- omitting this will delete ALL of the user's tags).
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyResourceTagsLinksForUser()
      */
     public function deleteTags($user, $list_id = null)
     {
-        $unlinker = $this->getDbTable('ResourceTags');
-        $unlinker->destroyResourceLinks($this->id, $user->id, $list_id);
+        $this->getDbService(ResourceTagsServiceInterface::class)
+            ->destroyResourceTagsLinksForUser($this->getId(), $user, $list_id);
     }
 
     /**
@@ -98,6 +100,8 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      * (optional).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Tags\TagService::linkTagToResource()
      */
     public function addTag($tagText, $user, $list_id = null)
     {
@@ -124,6 +128,8 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
      * (optional).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Tags\TagsService::unlinkTagFromResource()
      */
     public function deleteTag($tagText, $user, $list_id = null)
     {
@@ -132,13 +138,12 @@ class Resource extends RowGateway implements DbServiceAwareInterface, DbTableAwa
             $tags = $this->getDbTable('Tags');
             $tagIds = [];
             foreach ($tags->getByText($tagText, false, false) as $tag) {
-                $tagIds[] = $tag->id;
+                $tagIds[] = $tag->getId();
             }
             if (!empty($tagIds)) {
-                $linker = $this->getDbTable('ResourceTags');
-                $linker->destroyResourceLinks(
-                    $this->id,
-                    $user->id,
+                $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(
+                    $this->getId(),
+                    $user,
                     $list_id,
                     $tagIds
                 );

@@ -29,6 +29,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\View\Helper\Root\RecordDataFormatter;
@@ -56,16 +57,16 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock record router.
      *
-     * @return \VuFind\Record\Router
+     * @return MockObject&\VuFind\Record\Router
      */
-    protected function getMockRecordRouter()
+    protected function getMockRecordRouter(): MockObject&\VuFind\Record\Router
     {
         $mock = $this->getMockBuilder(\VuFind\Record\Router::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
         $mock->expects($this->any())->method('getActionRouteDetails')
-            ->will($this->returnValue(['route' => 'home', 'params' => []]));
+            ->willReturn(['route' => 'home', 'params' => []]);
         return $mock;
     }
 
@@ -76,9 +77,15 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getViewHelpers($container)
+    protected function getViewHelpers($container): array
     {
         $context = new \VuFind\View\Helper\Root\Context();
+        $record = new \VuFind\View\Helper\Root\Record();
+        $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
+        $serviceManager->method('get')->willReturnCallback(function ($service) {
+            return $this->createMock($service);
+        });
+        $record->setDbServiceManager($serviceManager);
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
@@ -99,7 +106,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $this->createMock(\VuFind\Resolver\Driver\PluginManager::class)
             ),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
-            'record' => new \VuFind\View\Helper\Root\Record(),
+            'record' => $record,
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
             'schemaOrg' => new \VuFind\View\Helper\Root\SchemaOrg(
                 new \Laminas\View\Helper\HtmlAttributes()

@@ -32,10 +32,15 @@ namespace VuFind\Favorites;
 use DateTime;
 use Laminas\Session\Container;
 use Laminas\Stdlib\Parameters;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -45,8 +50,9 @@ use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
+use function count;
 use function func_get_args;
 use function intval;
 
@@ -67,19 +73,27 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param ResourceServiceInterface $resourceService   Resource database service
-     * @param UserListServiceInterface $userListService   UserList database service
-     * @param ResourcePopulator        $resourcePopulator Resource populator service
-     * @param Tags                     $tagHelper         Tag helper service
-     * @param RecordLoader             $recordLoader      Record loader
-     * @param ?RecordCache             $recordCache       Record cache (optional)
-     * @param ?Container               $session           Session container for remembering state (optional)
+     * @param ResourceServiceInterface     $resourceService     Resource database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
+     * @param TagServiceInterface          $tagService          Tag database service
+     * @param UserListServiceInterface     $userListService     UserList database service
+     * @param UserResourceServiceInterface $userResourceService UserResource database service
+     * @param UserServiceInterface         $userService         User database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param TagsService                  $tagsService         Tags service
+     * @param RecordLoader                 $recordLoader        Record loader
+     * @param ?RecordCache                 $recordCache         Record cache (optional)
+     * @param ?Container                   $session             Session container for remembering state (optional)
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
+        protected TagServiceInterface $tagService,
         protected UserListServiceInterface $userListService,
+        protected UserResourceServiceInterface $userResourceService,
+        protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
-        protected Tags $tagHelper,
+        protected TagsService $tagsService,
         protected RecordLoader $recordLoader,
         protected ?RecordCache $recordCache = null,
         protected ?Container $session = null
@@ -302,6 +316,53 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
+     * Add/update a resource in the user's account.
+     *
+     * @param UserEntityInterface|int     $userOrId        The user entity or ID saving the favorites
+     * @param ResourceEntityInterface|int $resourceOrId    The resource entity or ID to add/update
+     * @param UserListEntityInterface|int $listOrId        The list entity or ID to store the resource in.
+     * @param array                       $tagArray        An array of tags to associate with the resource.
+     * @param string                      $notes           User notes about the resource.
+     * @param bool                        $replaceExisting Whether to replace all existing tags (true) or
+     * append to the existing list (false).
+     *
+     * @return void
+     */
+    public function saveResourceToFavorites(
+        UserEntityInterface|int $userOrId,
+        ResourceEntityInterface|int $resourceOrId,
+        UserListEntityInterface|int $listOrId,
+        array $tagArray,
+        string $notes,
+        bool $replaceExisting = true
+    ): void {
+        $user = $userOrId instanceof UserEntityInterface
+            ? $userOrId
+            : $this->userService->getUserById($userOrId);
+        $resource = $resourceOrId instanceof ResourceEntityInterface
+            ? $resourceOrId
+            : $this->resourceService->getResourceById($resourceOrId);
+        $list = $listOrId instanceof UserListEntityInterface
+            ? $listOrId
+            : $this->userListService->getUserListById($listOrId);
+
+        // Create the resource link if it doesn't exist and update the notes in any
+        // case:
+        $this->userResourceService->createOrUpdateLink($resource, $user, $list, $notes);
+
+        // If we're replacing existing tags, delete the old ones before adding the
+        // new ones:
+        if ($replaceExisting) {
+            $this->resourceTagsService->destroyResourceTagsLinksForUser($resource->getId(), $user, $list);
+        }
+
+        // Add the new tags:
+        foreach ($tagArray as $tag) {
+            $this->tagsService->linkTagToResource($tag, $resource, $user, $list);
+        }
+    }
+
+    /**
      * Save this record to the user's favorites.
      *
      * @param array               $params Array with some or all of these keys:
@@ -335,7 +396,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $this->persistToCache($driver, $resource);
 
         // Add the information to the user's account:
-        $user->saveResource(
+        $this->saveResourceToFavorites(
+            $user,
             $resource,
             $list,
             $params['mytags'] ?? [],
@@ -369,6 +431,24 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     }
 
     /**
+     * Add a tag to a list.
+     *
+     * @param string                  $tagText The tag to save.
+     * @param UserListEntityInterface $list    The list being tagged.
+     * @param UserEntityInterface     $user    The user posting the tag.
+     *
+     * @return void
+     */
+    public function addListTag(string $tagText, UserListEntityInterface $list, UserEntityInterface $user): void
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tag = $this->getDbTable('tags')->getByText($tagText);
+            $this->resourceTagsService->createLink(null, $tag, $user, $list);
+        }
+    }
+
+    /**
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
@@ -393,8 +473,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         if (null !== ($tags = $request->get('tags'))) {
             $linker = $this->getDbTable('resourcetags');
             $linker->destroyListLinks($list->getId(), $user->getId());
-            foreach ($this->tagHelper->parse($tags) as $tag) {
-                $list->addListTag($tag, $user);
+            foreach ($this->tagsService->parse($tags) as $tag) {
+                $this->addListTag($tag, $list, $user);
             }
         }
 
@@ -468,8 +548,8 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
 
             // Add the information to the user's account:
-            $tags = isset($params['mytags']) ? $this->tagHelper->parse($params['mytags']) : [];
-            $user->saveResource($resource, $list, $tags, '', false);
+            $tags = isset($params['mytags']) ? $this->tagsService->parse($params['mytags']) : [];
+            $this->saveResourceToFavorites($user, $resource, $list, $tags, '', false);
 
             // Collect record IDs for caching
             if ($this->recordCache?->isCachable($resource->source)) {
@@ -514,5 +594,51 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 $this->removeListResourcesById($list, $user, $ids, $source);
             }
         }
+    }
+
+    /**
+     * Call TagServiceInterface::getUserTagsFromFavorites() and format the results for editing.
+     *
+     * @param UserEntityInterface|int          $userOrId User ID to look up.
+     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
+     * filter).
+     * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
+     * filter).
+     * @param ?string                          $source   Filter for tags tied to a specific record source (null for
+     * no filter).
+     *
+     * @return string
+     */
+    public function getTagStringForEditing(
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null,
+        ?string $recordId = null,
+        ?string $source = null
+    ): string {
+        return $this->formatTagStringForEditing(
+            $this->tagService->getUserTagsFromFavorites($userOrId, $listOrId, $recordId, $source)
+        );
+    }
+
+    /**
+     * Convert an array representing tags into a string for an edit form
+     *
+     * @param array $tags Tags
+     *
+     * @return string
+     */
+    public function formatTagStringForEditing($tags): string
+    {
+        $tagStr = '';
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
+                } else {
+                    $tagStr .= "{$tag['tag']} ";
+                }
+            }
+        }
+        return trim($tagStr);
     }
 }

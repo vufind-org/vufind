@@ -115,8 +115,6 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             $authenticator
         );
         $auth->setDbServiceManager($this->getLiveDbServiceManager());
-        $auth->setDbTableManager($this->getLiveTableManager());
-        $auth->setDbServiceManager($this->getLiveDbServiceManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }
@@ -210,8 +208,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
             ->will($this->returnValue($response));
         $user = $this->getAuth($driver)->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('user@test.com', $user->email);
+        $this->assertEquals('testuser', $user->getUsername());
+        $this->assertEquals('user@test.com', $user->getEmail());
     }
 
     /**
@@ -321,7 +319,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(['success' => true]));
         $patron = ['cat_username' => 'testuser'];
         $user = $this->getAuth($driver, $patron)->updatePassword($request);
-        $this->assertEquals('testuser', $user->username);
+        $this->assertEquals('testuser', $user->getUsername());
         $this->assertEquals('newpass', $user->getRawCatPassword());
     }
 
@@ -347,7 +345,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
         $auth->setConfig(new \Laminas\Config\Config($config));
         $user = $auth->updatePassword($request);
-        $this->assertEquals('1234', $user->username);
+        $this->assertEquals('1234', $user->getUsername());
         $this->assertEquals('newpass', $user->getRawCatPassword());
     }
 

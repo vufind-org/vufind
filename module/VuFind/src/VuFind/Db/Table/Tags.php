@@ -207,7 +207,7 @@ class Tags extends Gateway implements DbServiceAwareInterface
      * @param string $source      Source of record to look up
      * @param int    $limit       Max. number of tags to return (0 = no limit)
      * @param int    $list        ID of list to load tags from (null for no
-     * restriction,  true for on ANY list, false for on NO list)
+     * restriction, true for on ANY list, false for on NO list)
      * @param int    $user        ID of user to load tags from (null for all users)
      * @param string $sort        Sort type ('count' or 'tag')
      * @param int    $userToCheck ID of user to check for ownership (this will
@@ -385,8 +385,8 @@ class Tags extends Gateway implements DbServiceAwareInterface
     /**
      * Get tags assigned to a user list.
      *
-     * @param int    $listId List ID
-     * @param string $userId User ID to look up (null for no filter).
+     * @param int  $listId List ID
+     * @param ?int $userId User ID to look up (null for no filter).
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */

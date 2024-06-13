@@ -36,8 +36,12 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
@@ -114,6 +118,8 @@ class User extends RowGateway implements
      * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setConfig(\Laminas\Config\Config $config)
     {
@@ -219,6 +225,8 @@ class User extends RowGateway implements
      * Is ILS password encryption enabled?
      *
      * @return bool
+     *
+     * @deprecated
      */
     protected function passwordEncryptionEnabled()
     {
@@ -253,12 +261,12 @@ class User extends RowGateway implements
      * to be used
      *
      * @return mixed               The output of the save method.
+     *
+     * @deprecated Use ILSAuthenticator::updateUserHomeLibrary()
      */
     public function changeHomeLibrary($homeLibrary)
     {
-        $this->home_library = $homeLibrary;
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-        return $this->save();
+        return $this->ilsAuthenticator->updateUserHomeLibrary($this, $homeLibrary);
     }
 
     /**
@@ -278,19 +286,18 @@ class User extends RowGateway implements
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
-     * (null for no filter).
+     * @param string $resourceId Filter for tags tied to a specific resource (null for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no filter).
+     * @param string $source     Filter for tags tied to a specific record source. (null for no filter).
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getUserTagsFromFavorites()
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbTable('Tags')
-            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+        return $this->getDbService(TagServiceInterface::class)
+            ->getUserTagsFromFavorites($this, $resourceId, $listId, $source);
     }
 
     /**
@@ -298,12 +305,13 @@ class User extends RowGateway implements
      *
      * @param int $listId List id
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags($listId)
     {
-        return $this->getDbTable('Tags')
-            ->getForList($listId, $this->id);
+        return $this->getDbService(TagServiceInterface::class)->getListTags($listId, $this);
     }
 
     /**
@@ -318,6 +326,8 @@ class User extends RowGateway implements
      * (null for no filter).
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::getTagStringForEditing()
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
@@ -330,16 +340,18 @@ class User extends RowGateway implements
      * @param array $tags Tags
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::formatTagStringForEditing()
      */
     public function formatTagString($tags)
     {
         $tagStr = '';
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                if (strstr($tag->tag, ' ')) {
-                    $tagStr .= "\"$tag->tag\" ";
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
                 } else {
-                    $tagStr .= "$tag->tag ";
+                    $tagStr .= "{$tag['tag']} ";
                 }
             }
         }
@@ -421,6 +433,8 @@ class User extends RowGateway implements
      * existing tags (true) or append to the existing list (false).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::saveResourceToFavorites()
      */
     public function saveResource(
         $resource,
@@ -429,15 +443,14 @@ class User extends RowGateway implements
         $notes,
         $replaceExisting = true
     ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
+        // Create the resource link if it doesn't exist and update the notes in any case:
+        $this->getDbService(UserResourceServiceInterface::class)->createOrUpdateLink($resource, $this, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
         if ($replaceExisting) {
-            $resource->deleteTags($this, $list->id);
+            $this->getDbService(ResourceTagsService::class)
+                ->destroyResourceTagsLinksForUser($resource->getId(), $this, $list);
         }
 
         // Add the new tags:
@@ -603,6 +616,8 @@ class User extends RowGateway implements
      * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Account\UserAccountService::purgeUserData()
      */
     public function delete($removeComments = true, $removeRatings = true)
     {
@@ -611,8 +626,7 @@ class User extends RowGateway implements
         foreach ($listService->getUserListsByUser($this) as $current) {
             $this->favoritesService->destroyList($current, $this, true);
         }
-        $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyResourceLinks(null, $this->id);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $this);
         if ($removeComments) {
             $comments = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class
