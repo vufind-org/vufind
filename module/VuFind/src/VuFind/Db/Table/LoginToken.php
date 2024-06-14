@@ -47,6 +47,8 @@ use VuFind\Exception\LoginToken as LoginTokenException;
  */
 class LoginToken extends Gateway
 {
+    use ExpirationTrait;
+
     /**
      * Constructor
      *
@@ -177,20 +179,19 @@ class LoginToken extends Gateway
     }
 
     /**
-     * Remove expired login tokens
+     * Update the select statement to find records to delete.
      *
-     * @param string   $dateLimit Date threshold of an "expired" record in format
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
      * 'Y-m-d H:i:s'.
-     * @param int|null $limit     Maximum number of rows to delete or null for no
-     * limit.
      *
-     * @return int
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function deleteExpired($dateLimit, $limit = null): int
+    protected function expirationCallback($select, $dateLimit)
     {
-        $callback = function ($select) {
-            $select->where->lessThanOrEqualTo('expires', time());
-        };
-        return $this->delete($callback);
+        // Date limit ignored since login token already contains an expiration time.
+        $select->where->lessThan('expires', time());
     }
 }
