@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ExpireSearchesCommand test.
+ * ExpireAccessTokensCommand test.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,10 +29,10 @@
 
 namespace VuFindTest\Command\Util;
 
-use VuFindConsole\Command\Util\ExpireSearchesCommand;
+use VuFindConsole\Command\Util\ExpireAccessTokensCommand;
 
 /**
- * ExpireSearchesCommand test.
+ * ExpireAccessTokensCommand test.
  *
  * @category VuFind
  * @package  Tests
@@ -40,26 +40,26 @@ use VuFindConsole\Command\Util\ExpireSearchesCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireSearchesCommandTest extends AbstractExpireCommandTest
+class ExpireAccessTokensCommandTest extends AbstractExpireCommandTest
 {
     /**
      * Name of class being tested
      *
      * @var string
      */
-    protected $targetClass = ExpireSearchesCommand::class;
+    protected $targetClass = ExpireAccessTokensCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class (or interface) to test with
      *
      * @var string
      */
-    protected $validServiceClass = \VuFind\Db\Service\SearchService::class;
+    protected $validServiceClass = \VuFind\Db\Service\AccessTokenService::class;
 
     /**
      * Label to use for rows in help messages.
      *
      * @var string
      */
-    protected $rowLabel = 'searches';
+    protected $rowLabel = 'access tokens';
 }

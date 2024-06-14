@@ -200,7 +200,6 @@ class Database implements UrlShortenerInterface
      * @param string $input hash
      *
      * @return string
-     *
      * @throws Exception
      */
     public function resolve($input)

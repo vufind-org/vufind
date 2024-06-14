@@ -135,7 +135,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $onlyMethods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary', 'getNewerTitles',
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getSummary', 'getNewerTitles',
         ];
         $addMethods = [
             'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
@@ -146,8 +146,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods($onlyMethods)
             ->addMethods($addMethods)
             ->getMock();
-        $record->expects($this->any())->method('getTags')
-            ->will($this->returnValue([]));
         // Force a return value of zero so we can test this edge case value (even
         // though in the context of "building"/"container title" it makes no sense):
         $record->expects($this->any())->method('getBuildings')
