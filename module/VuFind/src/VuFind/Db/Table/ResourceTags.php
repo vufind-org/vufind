@@ -370,7 +370,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Db\Service\ResourceTagsServiceInterface::destroyUserListLinks()
+     * @deprecated Use ResourceTagsServiceInterface::destroyUserListLinks()
      */
     public function destroyListLinks($list, $user, $tag = null)
     {
