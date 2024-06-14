@@ -30,7 +30,6 @@
 namespace VuFind\Record\FallbackLoader;
 
 use VuFind\Db\Service\ResourceServiceInterface;
-use VuFind\Db\Table\Resource;
 use VuFind\Record\RecordIdUpdater;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Service;
