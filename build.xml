@@ -907,7 +907,10 @@ ${git_status}
 
     <!-- Remove Apache settings (if Apache was enabled) -->
     <if>
-      <istrue value="${apachectl}" />
+      <and>
+        <istrue value="${apachectl}" />
+        <available file="${apacheconfdir}/vufindtest.conf" />
+      </and>
       <then>
         <delete file="${apacheconfdir}/vufindtest.conf" />
         <exec executable="${apachectl}">
