@@ -39,7 +39,7 @@
   <property name="pgsqlrootuser" value="postgres" />
   <property name="disable_csp" value="false" /> <!-- set value to "true" to disable Content Security Policy -->
   <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" />
-  <property name="phpunit_extra_params" value="" /><!-- if you have issues with segfaults during code coverage generation, try adding -dzend.enable_gc=0 to this (but this fix was probably only needed in PHP 5) -->
+  <property name="phpunit_extra_params" value="" />
   <property name="composer_version" value="2.1.6" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
@@ -787,9 +787,6 @@ return [
           </else>
         </if>
 
-        <!--<exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" />
-        </exec>-->
         <exec executable="psql" checkreturn="true">
           <arg line="-U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" />
           <env key="PGPASSWORD" value="${vufinddbpass}" />
