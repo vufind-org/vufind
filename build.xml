@@ -929,10 +929,10 @@ ${git_status}
       </then>
       <else>
         <exec executable="mysql">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
         </exec>
-        <exec executable="mysqladmin">
-          <arg line="-f ${mysqlconnectionargs} drop ${vufinddb}" />
+        <exec executable="mysql">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
         </exec>
       </else>
     </if>
