@@ -899,7 +899,7 @@ return [
       </not>
       <then>
         <fail>
-          Changed detected in tracked files:
+          Changes detected in tracked files:
 ${git_status}
         </fail>
       </then>
