@@ -804,7 +804,7 @@ return [
           <arg line="${mysqlconnectionargs} create ${vufinddb}" />
         </exec>
         <exec executable="mysql" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
+          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
         </exec>
         <exec executable="mysql" checkreturn="true" passthru="true">
           <arg line="${mysqlconnectionargs} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" />
