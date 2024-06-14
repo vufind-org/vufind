@@ -797,11 +797,11 @@ return [
       </then>
       <else>
         <!-- build database -->
-        <exec executable="mysqladmin">
-          <arg line="-f ${mysqlconnectionargs} drop ${vufinddb}" />
+        <exec executable="mysql" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
         </exec>
-        <exec executable="mysqladmin" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} create ${vufinddb}" />
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;CREATE DATABASE ${vufinddb}&quot;" />
         </exec>
         <exec executable="mysql" passthru="true">
           <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
