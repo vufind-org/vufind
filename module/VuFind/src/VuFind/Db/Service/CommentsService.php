@@ -200,4 +200,22 @@ class CommentsService extends AbstractDbService implements
             $id
         );
     }
+
+    /**
+     * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass(Comments::class) . ' e '
+            . 'SET e.resource = :newResource WHERE e.resource = :oldResource';
+        $parameters = compact('newResource', 'oldResource');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
 }

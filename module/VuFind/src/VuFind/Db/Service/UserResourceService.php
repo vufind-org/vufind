@@ -76,57 +76,6 @@ class UserResourceService extends AbstractDbService implements
     }
 
     /**
-     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
-     *
-     * @return void
-     */
-    public function deduplicate()
-    {
-        $repo = $this->entityManager->getRepository($this->getEntityClass(UserResource::class));
-        foreach ($this->getDuplicates() as $dupe) {
-            // Do this as a transaction to prevent odd behavior:
-            $this->entityManager->getConnection()->beginTransaction();
-
-            // Merge notes together...
-            $mainCriteria = [
-                'resource' => $dupe['resource_id'],
-                'list' => $dupe['list_id'],
-                'user' => $dupe['user_id'],
-            ];
-            try {
-                $dupeRows = $repo->findBy($mainCriteria);
-                $notes = [];
-                foreach ($dupeRows as $row) {
-                    if (!empty($row->getNotes())) {
-                        $notes[] = $row->getNotes();
-                    }
-                }
-                $userResource = $this->getDoctrineReference(UserResource::class, $dupe['id']);
-                $userResource->setNotes(implode(' ', $notes));
-                $this->entityManager->flush();
-
-                // Now delete extra rows...
-                // match on all relevant IDs in duplicate group
-                // getDuplicates returns the minimum id in the set, so we want to
-                // delete all of the duplicates with a higher id value.
-                $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur '
-                    . 'WHERE ur.resource = :resource AND ur.list = :list '
-                    . 'AND ur.user = :user AND ur.id > :id';
-                $mainCriteria['id'] = $dupe['id'];
-                $query = $this->entityManager->createQuery($dql);
-                $query->setParameters($mainCriteria);
-                $query->execute();
-                // Done -- commit the transaction:
-                $this->entityManager->getConnection()->commit();
-            } catch (\Exception $e) {
-                // If something went wrong, roll back the transaction and rethrow the error:
-                $this->entityManager->getConnection()->rollBack();
-                throw $e;
-            }
-        }
-    }
-
-    /**
      * Get information saved in a user's favorites for a particular record.
      *
      * @param string                           $recordId ID of record being checked.
@@ -279,5 +228,74 @@ class UserResourceService extends AbstractDbService implements
     {
         $class = $this->getEntityClass(UserResource::class);
         return new $class();
+    }
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass(UserResource::class) . ' e '
+            . 'SET e.resource = :newResource WHERE e.resource = :oldResource';
+        $parameters = compact('newResource', 'oldResource');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void
+    {
+        $repo = $this->entityManager->getRepository($this->getEntityClass(UserResource::class));
+        foreach ($this->getDuplicates() as $dupe) {
+            // Do this as a transaction to prevent odd behavior:
+            $this->entityManager->getConnection()->beginTransaction();
+
+            // Merge notes together...
+            $mainCriteria = [
+                'resource' => $dupe['resource_id'],
+                'list' => $dupe['list_id'],
+                'user' => $dupe['user_id'],
+            ];
+            try {
+                $dupeRows = $repo->findBy($mainCriteria);
+                $notes = [];
+                foreach ($dupeRows as $row) {
+                    if (!empty($row->getNotes())) {
+                        $notes[] = $row->getNotes();
+                    }
+                }
+                $userResource = $this->getDoctrineReference(UserResource::class, $dupe['id']);
+                $userResource->setNotes(implode(' ', $notes));
+                $this->entityManager->flush();
+
+                // Now delete extra rows...
+                // match on all relevant IDs in duplicate group
+                // getDuplicates returns the minimum id in the set, so we want to
+                // delete all of the duplicates with a higher id value.
+                $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur '
+                    . 'WHERE ur.resource = :resource AND ur.list = :list '
+                    . 'AND ur.user = :user AND ur.id > :id';
+                $mainCriteria['id'] = $dupe['id'];
+                $query = $this->entityManager->createQuery($dql);
+                $query->setParameters($mainCriteria);
+                $query->execute();
+                // Done -- commit the transaction:
+                $this->entityManager->getConnection()->commit();
+            } catch (\Exception $e) {
+                // If something went wrong, roll back the transaction and rethrow the error:
+                $this->entityManager->getConnection()->rollBack();
+                throw $e;
+            }
+        }
     }
 }

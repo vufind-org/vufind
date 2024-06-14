@@ -606,4 +606,73 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
         $query->setParameters($parameters);
         $query->execute();
     }
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTags::class) . ' e '
+            . 'SET e.resource = :newResource WHERE e.resource = :oldResource';
+        $parameters = compact('newResource', 'oldResource');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Get a list of duplicate resource_tags rows (this sometimes happens after merging IDs,
+     * for example after a Summon resource ID changes).
+     *
+     * @return array
+     */
+    protected function getDuplicateResourceLinks(): array
+    {
+        $dql = 'SELECT MIN(rt.resource) as resource_id, MiN(rt.tag) as tag_id, MIN(rt.list) as list_id, '
+            . 'MIN(rt.user) as user_id, COUNT(rt.resource) as cnt, MIN(rt.id) as id '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'GROUP BY rt.resource, rt.tag, rt.list, rt.user '
+            . 'HAVING COUNT(rt.resource) > 1';
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
+    }
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void
+    {
+        // match on all relevant IDs in duplicate group
+        // getDuplicates returns the minimum id in the set, so we want to
+        // delete all of the duplicates with a higher id value.
+        foreach ($this->getDuplicateResourceLinks() as $dupe) {
+            $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+                . 'WHERE rt.resource = :resource AND rt.tag = :tag '
+                . 'AND rt.user = :user AND rt.id > :id';
+            $parameters = [
+                'resource' => $dupe['resource_id'],
+                'user' => $dupe['user_id'],
+                'tag' => $dupe['tag_id'],
+                'id' =>  $dupe['id'],
+            ];
+            // List ID might be null (for record-level tags); this requires special handling.
+            if ($dupe['list_id'] !== null) {
+                $parameters['list'] = $dupe['list_id'];
+                $dql .= ' AND rt.list = :list ';
+            } else {
+                $dql .= ' AND rt.list IS NULL';
+            }
+            $query =  $this->entityManager->createQuery($dql);
+            $query->setParameters($parameters);
+            $query->execute();
+        }
+    }
 }

@@ -475,6 +475,7 @@ $config = [
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
             'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
+            'VuFind\Record\RecordIdUpdater' => 'VuFind\Record\RecordIdUpdaterFactory',
             'VuFind\Record\ResourcePopulator' => 'VuFind\Record\ResourcePopulatorFactory',
             'VuFind\Record\Router' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

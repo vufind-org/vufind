@@ -30,6 +30,7 @@
 namespace VuFind\Record\FallbackLoader;
 
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Record\RecordIdUpdater;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\Feature\PreviousUniqueIdInterface;
 use VuFindSearch\Service;
@@ -56,10 +57,12 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
      * Constructor
      *
      * @param ResourceServiceInterface $resourceService Resource database service
+     * @param RecordIdUpdater          $recordIdUpdater Record ID updater service
      * @param Service                  $searchService   Search service
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
+        protected RecordIdUpdater $recordIdUpdater,
         protected Service $searchService
     ) {
     }
@@ -108,6 +111,6 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
         $record->setPreviousUniqueId($previousId);
 
         // Update the database to replace the obsolete identifier...
-        $this->resourceService->updateRecordId($previousId, $record->getUniqueId(), $this->source);
+        $this->recordIdUpdater->updateRecordId($previousId, $record->getUniqueId(), $this->source);
     }
 }

@@ -57,6 +57,7 @@ use function in_array;
 class ResourceService extends AbstractDbService implements
     ResourceServiceInterface,
     DbServiceAwareInterface,
+    Feature\TransactionInterface,
     LoggerAwareInterface
 {
     use DbServiceAwareTrait;
@@ -83,6 +84,39 @@ class ResourceService extends AbstractDbService implements
     ) {
         $this->resourcePopulatorLoader = $resourcePopulatorLoader;
         parent::__construct($entityManager, $entityPluginManager);
+    }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->entityManager->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->entityManager->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->entityManager->getConnection()->rollBack();
     }
 
     /**
@@ -127,26 +161,6 @@ class ResourceService extends AbstractDbService implements
         $query = $this->entityManager->createQuery($dql);
         $result = $query->getResult();
         return $result;
-    }
-
-    /**
-     * Update resource IDs for a specific class of entity (useful when merging
-     * duplicate resources).
-     *
-     * @param string       $entity      Entity class
-     * @param int|Resource $newResource New resourceid.
-     * @param int|User     $oldResource Old resourceid.
-     *
-     * @return void
-     */
-    public function updateResource($entity, $newResource, $oldResource)
-    {
-        $dql = 'UPDATE ' . $this->getEntityClass($entity) . ' e '
-            . 'SET e.resource = :newResource WHERE e.resource = :oldResource';
-        $parameters = compact('newResource', 'oldResource');
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $query->execute();
     }
 
     /**
@@ -221,60 +235,6 @@ class ResourceService extends AbstractDbService implements
             'source' => $source,
         ];
         return $repo->findBy($criteria);
-    }
-
-    /**
-     * Update the database to reflect a changed record identifier.
-     *
-     * @param string $oldId  Original record ID
-     * @param string $newId  Revised record ID
-     * @param string $source Record source
-     *
-     * @return void
-     */
-    public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
-    {
-        if (
-            $oldId !== $newId
-            && $resource = $this->getResourceByRecordId($oldId, $source)
-        ) {
-            // Do this as a transaction to prevent odd behavior:
-            $this->entityManager->getConnection()->beginTransaction();
-            // Does the new ID already exist?
-            $deduplicate = false;
-            if ($newResource = $this->getResourceByRecordId($newId, $source)) {
-                // Special case: merge new ID and old ID:
-                $entitiesToUpdate = [
-                    \VuFind\Db\Entity\Comments::class,
-                    \VuFind\Db\Entity\UserResource::class,
-                    \VuFind\Db\Entity\ResourceTags::class,
-                ];
-                foreach ($entitiesToUpdate as $entityToUpdate) {
-                    $this->updateResource($entityToUpdate, $newResource, $resource);
-                }
-                $this->entityManager->remove($resource);
-                $deduplicate = true;
-            } else {
-                // Default case: just update the record ID:
-                $resource->setRecordId($newId);
-            }
-            // Done -- commit the transaction:
-            try {
-                $this->entityManager->flush();
-                $this->entityManager->getConnection()->commit();
-            } catch (\Exception $e) {
-                $this->logError('Could not update the record: ' . $e->getMessage());
-                $this->entityManager->getConnection()->rollBack();
-                throw $e;
-            }
-            // Deduplicate rows where necessary (this can be safely done outside of the transaction):
-            if ($deduplicate) {
-                $tagService = $this->getDbService(TagService::class);
-                $tagService->deduplicateResourceLinks();
-                $userResourceService = $this->getDbService(UserResourceService::class);
-                $userResourceService->deduplicate();
-            }
-        }
     }
 
     /**
@@ -382,5 +342,17 @@ class ResourceService extends AbstractDbService implements
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('new', 'old'));
         return $query->execute();
+    }
+
+    /**
+     * Delete a resource entity.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Resource entity or ID value.
+     *
+     * @return void
+     */
+    public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
+    {
+        $this->deleteEntity($this->getDoctrineReference(UserResource::class, $resourceOrId));
     }
 }
