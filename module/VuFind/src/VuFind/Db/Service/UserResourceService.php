@@ -241,8 +241,8 @@ class UserResourceService extends AbstractDbService implements
     public function changeResourceId(int $old, int $new): void
     {
         $dql = 'UPDATE ' . $this->getEntityClass(UserResource::class) . ' e '
-            . 'SET e.resource = :newResource WHERE e.resource = :oldResource';
-        $parameters = compact('newResource', 'oldResource');
+            . 'SET e.resource = :new WHERE e.resource = :old';
+        $parameters = compact('new', 'old');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->execute();
