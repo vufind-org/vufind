@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Abstract record fallback loader factory
+ * Record ID updater factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,29 +24,31 @@
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Record\FallbackLoader;
+namespace VuFind\Record;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
-use VuFind\Record\RecordIdUpdater;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 
 /**
- * Abstract record fallback loader factory
+ * Record ID updater factory.
  *
  * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractFallbackLoaderFactory implements FactoryInterface
+class RecordIdUpdaterFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -67,11 +69,15 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
-            $container->get(RecordIdUpdater::class),
-            $container->get(\VuFindSearch\Service::class),
-            ...$options ?? []
+            $serviceManager->get(ResourceServiceInterface::class),
+            $serviceManager->get(CommentsServiceInterface::class),
+            $serviceManager->get(UserResourceServiceInterface::class),
+            $serviceManager->get(ResourceTagsServiceInterface::class)
         );
     }
 }

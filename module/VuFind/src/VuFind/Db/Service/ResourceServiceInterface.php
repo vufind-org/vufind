@@ -139,4 +139,13 @@ interface ResourceServiceInterface extends DbServiceInterface
      * @return int
      */
     public function renameSource(string $old, string $new): int;
+
+    /**
+     * Delete a resource entity.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Resource entity or ID value.
+     *
+     * @return void
+     */
+    public function deleteResource(ResourceEntityInterface|int $resourceOrId): void;
 }

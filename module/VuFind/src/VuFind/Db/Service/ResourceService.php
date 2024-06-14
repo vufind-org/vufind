@@ -48,7 +48,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractDbService implements ResourceServiceInterface
+class ResourceService extends AbstractDbService implements ResourceServiceInterface, Feature\TransactionInterface
 {
     /**
      * Constructor.
@@ -57,6 +57,39 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function __construct(protected Resource $resourceTable)
     {
+    }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->resourceTable->getAdapter()->getDriver()->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->resourceTable->getAdapter()->getDriver()->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->resourceTable->getAdapter()->getDriver()->getConnection()->rollback();
     }
 
     /**
@@ -199,5 +232,18 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
             $this->resourceTable->update(['source' => $new], $resourceWhere);
         }
         return $count;
+    }
+
+    /**
+     * Delete a resource entity.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Resource entity or ID value.
+     *
+     * @return void
+     */
+    public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
+    {
+        $id = $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId;
+        $this->resourceTable->delete(['id' => $id]);
     }
 }
