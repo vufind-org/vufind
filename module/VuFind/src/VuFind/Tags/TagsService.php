@@ -529,6 +529,11 @@ class TagsService implements DbTableAwareInterface
             ->getUserListsByTagAndId($tag, $listId, $publicOnly, $andTags, $this->caseSensitive);
     }
 
+    /**
+     * Delete orphaned tags (those not present in resource_tags) from the tags table.
+     *
+     * @return void
+     */
     public function deleteOrphanedTags(): void
     {
         $this->tagDbService->deleteOrphanedTags();
