@@ -225,7 +225,11 @@ VuFind.register("listItemSelection", function ListItemSelection() {
 
     let nonDefaultIds = _sessionGet(form, 'nonDefaultIds') || [];
     let checkedDefault = _sessionGet(form, 'checkedDefault') || false;
-
+    // Check if the form contains all the ids in the nonDefaultIds
+    const allIds = JSON.parse(form.querySelector('.all-ids-global').value || '[]');
+    if (allIds) {
+      nonDefaultIds = nonDefaultIds.filter(item => allIds.includes(item));
+    }
     form.querySelectorAll('.checkbox-select-item').forEach(itemCheckbox => {
       itemCheckbox.checked = nonDefaultIds.includes(itemCheckbox.value) ? !checkedDefault : checkedDefault;
     });

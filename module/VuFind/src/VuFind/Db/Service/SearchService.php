@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Exception;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -46,7 +47,10 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SearchService extends AbstractDbService implements SearchServiceInterface, DbTableAwareInterface
+class SearchService extends AbstractDbService implements
+    SearchServiceInterface,
+    Feature\DeleteExpiredInterface,
+    DbTableAwareInterface
 {
     use DbTableAwareTrait;
 
@@ -242,5 +246,18 @@ class SearchService extends AbstractDbService implements SearchServiceInterface,
     {
         $searchWhere = ['checksum' => null, 'saved' => 1];
         return iterator_to_array($this->getDbTable('search')->select($searchWhere));
+    }
+
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        return $this->getDbTable('search')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
     }
 }

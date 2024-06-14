@@ -85,23 +85,6 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $expectedMinAge = 2;
 
     /**
-     * Test an unsupported table class.
-     *
-     * @return void
-     */
-    public function testUnsupportedTableClass()
-    {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            $table::class . ' does not support deleteExpired()'
-        );
-        new $this->targetClass($table, 'foo');
-    }
-
-    /**
      * Test an illegal age parameter.
      *
      * @return void

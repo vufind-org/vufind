@@ -41,7 +41,6 @@ use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsService;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceService;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -602,7 +601,7 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
     }
 
     /**
-     * Call TagServiceInterface::getUserTagsFromFavorites() and format the results for editing.
+     * Call TagsService::getUserTagsFromFavorites() and format the results for editing.
      *
      * @param UserEntityInterface|int          $userOrId User ID to look up.
      * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no

@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
@@ -47,7 +48,10 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SessionService extends AbstractDbService implements LoggerAwareInterface, SessionServiceInterface
+class SessionService extends AbstractDbService implements
+    LoggerAwareInterface,
+    SessionServiceInterface,
+    Feature\DeleteExpiredInterface
 {
     use LoggerAwareTrait;
 
@@ -186,5 +190,30 @@ class SessionService extends AbstractDbService implements LoggerAwareInterface, 
     {
         $class = $this->getEntityClass(SessionEntityInterface::class);
         return new $class();
+    }
+
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('s.id')
+            ->from($this->getEntityClass(SessionEntityInterface::class), 's')
+            ->where('s.lastUsed < :used')
+            ->setParameter('used', $dateLimit->getTimestamp());
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete($this->getEntityClass(SessionEntityInterface::class), 's')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }
