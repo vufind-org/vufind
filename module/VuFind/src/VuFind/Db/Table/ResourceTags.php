@@ -111,6 +111,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * @param array $ids IDs to check.
      *
      * @return array     Associative array with two keys: present and missing
+     *
+     * @deprecated
      */
     public function checkForTags($ids)
     {
@@ -322,6 +324,10 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * for ALL matching tags)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyResourceTagsLinksForUser() or
+     * ResourceTagsServiceInterface::destroyNonListResourceTagsLinksForUser() or
+     * ResourceTagsServiceInterface::destroyAllListResourceTagsLinksForUser()
      */
     public function destroyResourceLinks($resource, $user, $list = null, $tag = null)
     {
@@ -351,7 +357,7 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 }
             }
         };
-        $this->delete($callback);
+        $this->processDestroyLinks($callback);
     }
 
     /**
@@ -384,7 +390,39 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
                 }
             }
         };
+        $this->processDestroyLinks($callback);
+    }
+
+    /**
+     * Process link rows marked to be destroyed.
+     *
+     * @param Object $callback Callback function for selecting deleted rows.
+     *
+     * @return void
+     *
+     * @deprecated
+     */
+    protected function processDestroyLinks($callback)
+    {
+        // Get a list of all tag IDs being deleted; we'll use these for
+        // orphan-checking:
+        $potentialOrphans = $this->select($callback);
+
+        // Now delete the unwanted rows:
         $this->delete($callback);
+
+        // Check for orphans:
+        if (count($potentialOrphans) > 0) {
+            $ids = [];
+            foreach ($potentialOrphans as $current) {
+                $ids[] = $current->tag_id;
+            }
+            $checkResults = $this->checkForTags(array_unique($ids));
+            if (count($checkResults['missing']) > 0) {
+                $tagTable = $this->getDbTable('Tags');
+                $tagTable->deleteByIdArray($checkResults['missing']);
+            }
+        }
     }
 
     /**

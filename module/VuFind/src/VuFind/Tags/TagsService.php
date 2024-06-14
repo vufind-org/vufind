@@ -34,6 +34,7 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -60,16 +61,16 @@ class TagsService implements DbTableAwareInterface
     /**
      * Constructor
      *
-     * @param TagServiceInterface          $tagDbService        Tag database service
-     * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
-     * @param UserListServiceInterface     $userListService     User list database service
-     * @param ResourcePopulator            $resourcePopulator   Resource populator service
-     * @param int                          $maxLength           Maximum tag length
-     * @param bool                         $caseSensitive       Are tags case sensitive?
+     * @param TagServiceInterface                               $tagDbService        Tag database service
+     * @param ResourceTagsServiceInterface&TransactionInterface $resourceTagsService Resource/Tags database service
+     * @param UserListServiceInterface                          $userListService     User list database service
+     * @param ResourcePopulator                                 $resourcePopulator   Resource populator service
+     * @param int                                               $maxLength           Maximum tag length
+     * @param bool                                              $caseSensitive       Are tags case sensitive?
      */
     public function __construct(
         protected TagServiceInterface $tagDbService,
-        protected ResourceTagsServiceInterface $resourceTagsService,
+        protected ResourceTagsServiceInterface&TransactionInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected int $maxLength = 64,
@@ -149,12 +150,14 @@ class TagsService implements DbTableAwareInterface
         UserListEntityInterface|int|null $listOrId = null
     ): void {
         if (($trimmedTagText = trim($tagText)) !== '') {
+            $this->resourceTagsService->beginTransaction();
             $this->resourceTagsService->createLink(
                 $resourceOrId,
                 $this->getOrCreateTagByText($trimmedTagText),
                 $userOrId,
                 $listOrId
             );
+            $this->resourceTagsService->commitTransaction();
         }
     }
 
@@ -358,10 +361,7 @@ class TagsService implements DbTableAwareInterface
      * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
      * @param string                           $sort      Sort type ('count' or 'tag')
      * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
-     *                                                    (this will not filter the result
-     *                                                    list, but rows owned by this user
-     *                                                    will have an is_me column set to
-     *                                                    1)
+     * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
      *
      * @return array
      */
@@ -394,10 +394,8 @@ class TagsService implements DbTableAwareInterface
      * @param int                          $limit     Max. number of tags to return (0 = no limit)
      * @param UserEntityInterface|int|null $userOrId  User entity/ID to load tags from (null for all users)
      * @param string                       $sort      Sort type ('count' or 'tag')
-     * @param UserEntityInterface|int|null $ownerOrId Entity/ID representing user to check for ownership
-     *                                                (this will not filter the result list, but rows
-     *                                                owned by this user will have an is_me column set
-     *                                                to 1)
+     * @param UserEntityInterface|int|null $ownerOrId ID of user to check for ownership
+     * (this will not filter the result list, but rows owned by this user will have an is_me column set to 1)
      *
      * @return array
      */
@@ -436,12 +434,11 @@ class TagsService implements DbTableAwareInterface
      * tags attached to records that are not saved in favorites lists. Returns an array of arrays with id and tag keys.
      *
      * @param UserEntityInterface|int          $userOrId User ID to look up.
-     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no
-     *                                                   filter).
+     * @param UserListEntityInterface|int|null $listOrId Filter for tags tied to a specific list (null for no filter).
      * @param ?string                          $recordId Filter for tags tied to a specific resource (null for no
-     *                                                   filter).
+     * filter).
      * @param ?string                          $source   Filter for tags tied to a specific record source (null
-     *                                                   for no filter).
+     * for no filter).
      *
      * @return array
      */
@@ -530,5 +527,10 @@ class TagsService implements DbTableAwareInterface
     ): array {
         return $this->userListService
             ->getUserListsByTagAndId($tag, $listId, $publicOnly, $andTags, $this->caseSensitive);
+    }
+
+    public function deleteOrphanedTags(): void
+    {
+        $this->tagDbService->deleteOrphanedTags();
     }
 }
