@@ -1120,7 +1120,7 @@ ${git_status}
 
     <!-- build the a zip archive -->
     <echo message="Building .zip...." />
-    <exec dir="{builddir}/export" executable="zip" checkreturn="true">
+    <exec dir="${builddir}/export" executable="zip" checkreturn="true">
       <arg line="-r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
     </exec>
 
