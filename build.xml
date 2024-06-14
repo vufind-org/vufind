@@ -1301,8 +1301,9 @@ ${git_status}
   <target name="check-bootstrap5">
     <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/templates" />
     <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/templates" />
-    <foreach target="check-dir-single-file" param="filename">
+    <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
+        <type type="file" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
         <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
@@ -1311,9 +1312,9 @@ ${git_status}
 
     <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/scss" />
     <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/scss" />
-    <foreach target="check-dir-single-file" param="filename">
+    <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
-        <exclude name="/" />
+        <type type="file" />
         <exclude name="bootstrap.scss" />
         <exclude name="components/similar-carousel.scss" />
         <exclude name="vendor/**" />
@@ -1323,9 +1324,9 @@ ${git_status}
 
     <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/js" />
     <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/js" />
-    <foreach target="check-dir-single-file" param="filename">
+    <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
-        <exclude name="/" />
+        <type type="file" />
         <exclude name="account_ajax.js" />
         <exclude name="cart.js" />
         <exclude name="channels.js" />
