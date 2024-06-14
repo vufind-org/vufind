@@ -305,8 +305,7 @@ class ResourceTagsService extends AbstractDbService implements
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $callback = function ($select) use ($userId, $listId, $tagId) {
             $select->where->equalTo('user_id', $userId);
-            // retrieve tags assigned to a user list
-            // and filter out user resource tags
+            // retrieve tags assigned to a user list and filter out user resource tags
             // (resource_id is NULL for list tags).
             $select->where->isNull('resource_id');
             $select->where->equalTo('list_id', $listId);
