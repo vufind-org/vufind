@@ -104,7 +104,7 @@ class UserService extends AbstractDbService implements
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username, email or cat_id.
+     * Field name must be id, username, email, verify_hash or cat_id.
      *
      * @param string          $fieldName  Field name
      * @param int|string|null $fieldValue Field value
@@ -120,6 +120,8 @@ class UserService extends AbstractDbService implements
                 return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
                 return $this->getDbTable('User')->getByUsername($fieldValue, false);
+            case 'verify_hash':
+                return $this->getDbTable('User')->getByVerifyHash($fieldValue);
             case 'cat_id':
                 return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }

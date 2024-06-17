@@ -71,7 +71,7 @@ interface UserServiceInterface extends DbServiceInterface
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username, email or cat_id.
+     * Field name must be id, username, email, verify_hash or cat_id.
      *
      * @param string          $fieldName  Field name
      * @param int|string|null $fieldValue Field value

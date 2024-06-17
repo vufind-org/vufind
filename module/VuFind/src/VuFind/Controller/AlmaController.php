@@ -82,11 +82,11 @@ class AlmaController extends AbstractBase
     protected $configAlma;
 
     /**
-     * User table
+     * User database service
      *
-     * @var \VuFind\Db\Table\User
+     * @var UserServiceInterface
      */
-    protected $userTable;
+    protected $userService;
 
     /**
      * Alma Controller constructor.
@@ -100,7 +100,7 @@ class AlmaController extends AbstractBase
         $this->httpHeaders = $this->httpResponse->getHeaders();
         $this->config = $this->getConfig('config');
         $this->configAlma = $this->getConfig('Alma');
-        $this->userTable = $this->getTable('user');
+        $this->userService = $this->getDbService(UserServiceInterface::class);
     }
 
     /**
@@ -237,11 +237,10 @@ class AlmaController extends AbstractBase
             }
 
             if ($method == 'CREATE') {
-                $user = $this->userTable->getByUsername($username, true);
-            }
-
-            if ($method == 'UPDATE') {
-                $user = $this->userTable->getByCatalogId($primaryId);
+                $user = $this->userService->getUserByField('username', $username)
+                    ?? $this->userService->createEntityForUsername($username);
+            } elseif ($method == 'UPDATE') {
+                $user = $this->userService->getUserByField('cat_id', $primaryId);
             }
 
             if ($user) {
@@ -281,7 +280,7 @@ class AlmaController extends AbstractBase
                 );
             }
         } elseif ($method == 'DELETE') {
-            $user = $this->userTable->getByCatalogId($primaryId);
+            $user = $this->userService->getUserByField('cat_id', $primaryId);
             if ($user) {
                 try {
                     $this->serviceLocator->get(UserAccountService::class)->purgeUserData($user);
