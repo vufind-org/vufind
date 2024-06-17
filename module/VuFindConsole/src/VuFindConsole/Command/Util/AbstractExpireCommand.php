@@ -36,7 +36,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
-use VuFind\Db\Table\Gateway;
 
 use function floatval;
 
@@ -83,25 +82,19 @@ class AbstractExpireCommand extends Command
     /**
      * Table on which to expire rows
      *
-     * @var Gateway|DeleteExpiredInterface
+     * @var DeleteExpiredInterface
      */
     protected $table;
 
     /**
      * Constructor
      *
-     * @param Gateway|DeleteExpiredInterface $service Service on which to expire rows
-     * @param ?string                        $name    The name of the command; passing null means it
+     * @param DeleteExpiredInterface $service Service on which to expire rows
+     * @param ?string                $name    The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(
-        protected Gateway|DeleteExpiredInterface $service,
-        ?string $name = null
-    ) {
-        if (!method_exists($service, 'deleteExpired')) {
-            $serviceName = $service::class;
-            throw new \Exception("$serviceName does not support deleteExpired()");
-        }
+    public function __construct(protected DeleteExpiredInterface $service, ?string $name = null)
+    {
         parent::__construct($name);
     }
 
@@ -185,11 +178,7 @@ class AbstractExpireCommand extends Command
         // delete are found.
         $total = 0;
         do {
-            $count = $this->service->deleteExpired(
-                // Format DateTime into string for legacy table Gateway objects:
-                $this->service instanceof Gateway ? $dateLimit->format('Y-m-d H:i:s') : $dateLimit,
-                $batchSize
-            );
+            $count = $this->service->deleteExpired($dateLimit, $batchSize);
             if ($count > 0) {
                 $output->writeln(
                     $this->getTimestampedMessage("$count {$this->rowLabel} deleted.")

@@ -251,4 +251,21 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @return void
      */
     public function assignAnonymousTags(UserEntityInterface|int $userOrId): void;
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void;
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void;
 }

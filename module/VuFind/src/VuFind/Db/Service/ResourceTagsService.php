@@ -421,4 +421,27 @@ class ResourceTagsService extends AbstractDbService implements
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $this->getDbTable('ResourceTags')->assignAnonymousTags($userId);
     }
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $this->getDbTable('ResourceTags')->update(['resource_id' => $new], ['resource_id' => $old]);
+    }
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void
+    {
+        $this->getDbTable('ResourceTags')->deduplicate();
+    }
 }

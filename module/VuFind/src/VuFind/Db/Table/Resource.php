@@ -226,6 +226,8 @@ class Resource extends Gateway implements DbServiceAwareInterface
      * @param string $source Record source
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Record\RecordIdUpdater::updateRecordId()
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {

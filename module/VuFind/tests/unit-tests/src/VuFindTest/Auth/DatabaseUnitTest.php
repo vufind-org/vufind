@@ -34,7 +34,6 @@ use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Http\PhpEnvironment\Request;
 
@@ -548,16 +547,6 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             'password2' => 'pass',
             'email' => 'me@mysite.com',
         ];
-    }
-
-    /**
-     * Get a mock row object
-     *
-     * @return MockObject&User
-     */
-    protected function getMockRow(): MockObject&User
-    {
-        return $this->createMock(User::class);
     }
 
     /**
