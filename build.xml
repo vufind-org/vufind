@@ -62,7 +62,7 @@
   <property name="test_theme" value="" /><!-- set to a theme name to override the default theme for Mink tests -->
   <property name="psql_needs_sudo" value="true" /><!-- set to false if psql (Postgresql) must be run with current user instead of sudo -->
 
-  <property name="version" value="9.1.2" />
+  <property name="version" value="10.0" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
