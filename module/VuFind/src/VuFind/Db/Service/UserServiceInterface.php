@@ -99,6 +99,13 @@ interface UserServiceInterface extends DbServiceInterface
     ): void;
 
     /**
+     * Get all rows with catalog usernames.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getAllUsersWithCatUsernames(): array;
+
+    /**
      * Create a new user entity.
      *
      * @return UserEntityInterface
