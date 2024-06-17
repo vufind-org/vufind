@@ -239,6 +239,16 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array
+    {
+        return iterator_to_array($this->getDbTable('User')->getInsecureRows());
+    }
+
+    /**
      * Create a new user entity.
      *
      * @return UserEntityInterface

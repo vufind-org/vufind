@@ -106,6 +106,13 @@ interface UserServiceInterface extends DbServiceInterface
     public function getAllUsersWithCatUsernames(): array;
 
     /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array;
+
+    /**
      * Create a new user entity.
      *
      * @return UserEntityInterface
