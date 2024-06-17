@@ -44,6 +44,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
@@ -63,7 +64,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class FavoritesService implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -347,8 +348,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         // case:
         $this->userResourceService->createOrUpdateLink($resource, $user, $list, $notes);
 
-        // If we're replacing existing tags, delete the old ones before adding the
-        // new ones:
+        // If we're replacing existing tags, delete the old ones before adding the new ones:
         if ($replaceExisting) {
             $this->resourceTagsService->destroyResourceTagsLinksForUser($resource->getId(), $user, $list);
         }
@@ -551,7 +551,7 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $this->saveResourceToFavorites($user, $resource, $list, $tags, '', false);
 
             // Collect record IDs for caching
-            if ($this->recordCache?->isCachable($resource->source)) {
+            if ($this->recordCache?->isCachable($resource->getSource())) {
                 $cacheRecordIds[] = $current;
             }
         }
