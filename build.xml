@@ -57,7 +57,7 @@
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
-  <property name="version" value="9.1.1" />
+  <property name="version" value="9.1.2" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
