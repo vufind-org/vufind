@@ -59,35 +59,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     use LoggerAwareTrait;
 
     /**
-     * Check whether or not the specified tags are present in the table.
-     *
-     * @param array $ids IDs to check.
-     *
-     * @return array     Associative array with two keys: present and missing
-     */
-    public function checkForTags($ids)
-    {
-        // Set up return arrays:
-        $retVal = ['present' => [], 'missing' => []];
-
-        // Look up IDs in the table:
-        $dql = 'SELECT IDENTITY(rt.tag) FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
-            . 'WHERE rt.tag IN (:ids)';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters(compact('ids'));
-        $results = $query->getSingleColumnResult();
-
-        // Record all IDs that are present:
-        $retVal['present'] = array_unique($results);
-
-        // Detect missing IDs:
-        $retVal['missing'] = array_diff($ids, $retVal['present']);
-
-        // Send back the results:
-        return $retVal;
-    }
-
-    /**
      * Get resources associated with a particular tag.
      *
      * @param string $tag               Tag to match
@@ -116,28 +87,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         $query->setParameters($parameters);
         $result =  $query->getSingleColumnResult();
         return $result;
-    }
-
-    /**
-     * Delete a group of entity objects.
-     *
-     * @param array $ids Tags to delete.
-     *
-     * @return void
-     */
-    public function deleteByIdArray($ids)
-    {
-        // Do nothing if we have no IDs to delete!
-        if (empty($ids)) {
-            return;
-        }
-        $dql = 'DELETE FROM ' . $this->getEntityClass(Tags::class) . ' t '
-            . 'WHERE t.id in (:ids)';
-
-        $parameters = compact('ids');
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $query->execute();
     }
 
     /**

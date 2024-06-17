@@ -130,56 +130,6 @@ class UserResourceService extends AbstractDbService implements
     }
 
     /**
-     * Unlink rows for the specified resource. This will also automatically remove
-     * any tags associated with the relationship.
-     *
-     * @param User|int          $userOrId    ID of user removing links
-     * @param string|array|null $resource_id ID (or array of IDs) of resource(s) to unlink
-     * (null for ALL matching resources)
-     * @param UserList|null     $list        list to unlink (null for ALL matching lists, with the destruction
-     * of all tags associated with the $resource_id value; true for ALL matching lists,
-     * but retaining any tags associated with the resource_id independently of lists)
-     *
-     * @return void
-     */
-    public function destroyLinks($userOrId, $resource_id = null, $list = null)
-    {
-        $user = $this->getDoctrineReference(User::class, $userOrId);
-
-        // Remove any tags associated with the links we are removing; we don't
-        // want to leave orphaned tags in the resource_tags table after we have
-        // cleared out favorites in user_resource!
-        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
-        if ($list === true) {
-            $resourceTagsService->destroyAllListResourceTagsLinksForUser($resource_id, $user);
-        } else {
-            $resourceTagsService->destroyResourceTagsLinksForUser($resource_id, $user, $list);
-        }
-
-        $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur ';
-        $dqlWhere = ['ur.user = :user '];
-        $parameters = compact('user');
-        if (null !== $resource_id) {
-            $dqlWhere[] = ' ur.resource IN (:resource_id) ';
-            $parameters['resource_id'] = (array)$resource_id;
-        }
-
-        // null or true values of $list have different meanings in the
-        // context of the destroyResourceTagsLinksForUser() call above, since
-        // some tags have a null $list value. In the case of user_resource
-        // rows, however, every row has a non-null $list value, so the
-        // two cases are equivalent and may be handled identically.
-        if (null !== $list && true !== $list) {
-            $dqlWhere[] = ' ur.list = :list ';
-            $parameters['list'] = $list;
-        }
-        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        $query->execute();
-    }
-
-    /**
      * Create user/resource/list link if one does not exist; update notes if one does.
      *
      * @param ResourceEntityInterface|int $resourceOrId Entity or ID of resource to link up
@@ -217,6 +167,40 @@ class UserResourceService extends AbstractDbService implements
             return false;
         }
         return $result;
+    }
+
+    /**
+     * Unlink rows for the specified resource.
+     *
+     * @param int|int[]|null              $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL
+     * matching resources)
+     * @param UserEntityInterface|int     $userOrId   ID or entity representing user removing links
+     * @param UserListEntityInterface|int $listOrId   ID or entity representing list to unlink (null for ALL
+     * matching lists)
+     *
+     * @return void
+     */
+    public function unlinkFavorites(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ): void {
+        $user = $this->getDoctrineReference(User::class, $userOrId);
+        $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur ';
+        $dqlWhere = ['ur.user = :user '];
+        $parameters = compact('user');
+        if (null !== $resourceId) {
+            $dqlWhere[] = ' ur.resource IN (:resource_id) ';
+            $parameters['resource_id'] = (array)$resourceId;
+        }
+        if (null !== $listOrId) {
+            $dqlWhere[] = ' ur.list = :list ';
+            $parameters['list'] = $this->getDoctrineReference(UserList::class, $listOrId);
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**

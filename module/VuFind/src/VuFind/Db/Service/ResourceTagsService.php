@@ -56,7 +56,10 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceTagsService extends AbstractDbService implements DbServiceAwareInterface, ResourceTagsServiceInterface
+class ResourceTagsService extends AbstractDbService implements
+    DbServiceAwareInterface,
+    ResourceTagsServiceInterface,
+    Feature\TransactionInterface
 {
     use DbServiceAwareTrait;
 
@@ -80,6 +83,39 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
             }
         }
         return $newOrder;
+    }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->entityManager->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->entityManager->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->entityManager->getConnection()->rollBack();
     }
 
     /**
@@ -270,7 +306,7 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
         $extraWhere = [],
         $extraParams = [],
     ) {
-        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
 
         $dqlWhere = ['rt.user = :user '];
         $parameters = ['user' => $this->getDoctrineReference(User::class, $userOrId)];
@@ -285,8 +321,7 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
         $dql .= ' WHERE ' . implode(' AND ', array_merge($dqlWhere, $extraWhere));
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters + $extraParams);
-        $result = $query->getResult();
-        $this->processDestroyLinks($result);
+        $query->execute();
     }
 
     /**
@@ -356,56 +391,32 @@ class ResourceTagsService extends AbstractDbService implements DbServiceAwareInt
     }
 
     /**
-     * Unlink rows for the specified user list.
+     * Unlink rows for the specified user list. This removes tags ON THE LIST ITSELF, not tags on
+     * resources within the list.
      *
-     * @param int|UserList $listOrId ID of list to unlink
-     * @param int|User     $userOrId ID of user removing links
-     * @param string|array $tag      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     * @param UserListEntityInterface|int $listOrId ID or entity representing list
+     * @param UserEntityInterface|int     $userOrId ID or entity representing user
+     * @param int|int[]|null              $tagId    ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
      *
      * @return void
      */
-    public function destroyListLinks($listOrId, $userOrId, $tag = null)
-    {
+    public function destroyUserListLinks(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
         $list = $this->getDoctrineReference(UserList::class, $listOrId);
         $user = $this->getDoctrineReference(User::class, $userOrId);
-        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+        $dql = 'DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
         $parameters = compact('user', 'list');
-        if (null !== $tag) {
+        if (null !== $tagId) {
             $dqlWhere[] = 'AND rt.tag IN (:tag) ';
-            $parameters['tag'] = (array)$tag;
+            $parameters['tag'] = (array)$tagId;
         }
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $result = $query->getResult();
-        $this->processDestroyLinks($result);
-    }
-
-    /**
-     * Process link rows marked to be destroyed.
-     *
-     * @param array $potentialOrphans List of resource tags being destroyed.
-     *
-     * @return void
-     */
-    protected function processDestroyLinks($potentialOrphans)
-    {
-        if (count($potentialOrphans) > 0) {
-            $ids = [];
-            // Now delete the unwanted rows:
-            foreach ($potentialOrphans as $current) {
-                $ids[] = $current->getTag()->getId();
-                $this->entityManager->remove($current);
-            }
-            $this->entityManager->flush();
-
-            // Check for orphans:
-            $tagService = $this->getDbService(TagService::class);
-            $checkResults = $tagService->checkForTags(array_unique($ids));
-            if (count($checkResults['missing']) > 0) {
-                $tagService->deleteByIdArray($checkResults['missing']);
-            }
-        }
+        $query->execute();
     }
 
     /**
