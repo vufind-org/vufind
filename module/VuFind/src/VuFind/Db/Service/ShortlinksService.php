@@ -60,7 +60,7 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function beginTransaction(): void
     {
-        $this->getDbTable('shortlinks')->getAdapter()->getDriver()->getConnection()->beginTransaction();
+        $this->getDbTable('shortlinks')->beginTransaction();
     }
 
     /**
@@ -71,7 +71,7 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function commitTransaction(): void
     {
-        $this->getDbTable('shortlinks')->getAdapter()->getDriver()->getConnection()->commit();
+        $this->getDbTable('shortlinks')->commitTransaction();
     }
 
     /**
@@ -82,7 +82,7 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function rollBackTransaction(): void
     {
-        $this->getDbTable('shortlinks')->getAdapter()->getDriver()->getConnection()->rollback();
+        $this->getDbTable('shortlinks')->rollbackTransaction();
     }
 
     /**

@@ -67,7 +67,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function beginTransaction(): void
     {
-        $this->resourceTable->getAdapter()->getDriver()->getConnection()->beginTransaction();
+        $this->resourceTable->beginTransaction();
     }
 
     /**
@@ -78,7 +78,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function commitTransaction(): void
     {
-        $this->resourceTable->getAdapter()->getDriver()->getConnection()->commit();
+        $this->resourceTable->commitTransaction();
     }
 
     /**
@@ -89,7 +89,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function rollBackTransaction(): void
     {
-        $this->resourceTable->getAdapter()->getDriver()->getConnection()->rollback();
+        $this->resourceTable->rollbackTransaction();
     }
 
     /**

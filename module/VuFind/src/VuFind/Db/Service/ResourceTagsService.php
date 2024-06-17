@@ -63,7 +63,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function beginTransaction(): void
     {
-        $this->getDbTable('ResourceTags')->getAdapter()->getDriver()->getConnection()->beginTransaction();
+        $this->getDbTable('ResourceTags')->beginTransaction();
     }
 
     /**
@@ -74,7 +74,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function commitTransaction(): void
     {
-        $this->getDbTable('ResourceTags')->getAdapter()->getDriver()->getConnection()->commit();
+        $this->getDbTable('ResourceTags')->commitTransaction();
     }
 
     /**
@@ -85,7 +85,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function rollBackTransaction(): void
     {
-        $this->getDbTable('ResourceTags')->getAdapter()->getDriver()->getConnection()->rollback();
+        $this->getDbTable('ResourceTags')->rollbackTransaction();
     }
 
     /**
