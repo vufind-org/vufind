@@ -50,9 +50,43 @@ use function is_int;
  */
 class ResourceTagsService extends AbstractDbService implements
     ResourceTagsServiceInterface,
+    Feature\TransactionInterface,
     \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->getDbTable('ResourceTags')->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->getDbTable('ResourceTags')->commitTransaction();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->getDbTable('ResourceTags')->rollbackTransaction();
+    }
 
     /**
      * Get Resource Tags Paginator
@@ -178,7 +212,19 @@ class ResourceTagsService extends AbstractDbService implements
     ): void {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $this->getDbTable('ResourceTags')->destroyResourceLinks($resourceId, $userId, $listId, $tagId);
+        $callback = function ($select) use ($resourceId, $userId, $listId, $tagId) {
+            $select->where->equalTo('user_id', $userId);
+            if (null !== $resourceId) {
+                $select->where->in('resource_id', (array)$resourceId);
+            }
+            if (null !== $listId) {
+                $select->where->equalTo('list_id', $listId);
+            }
+            if (null !== $tagId) {
+                $select->where->in('tag_id', (array)$tagId);
+            }
+        };
+        $this->getDbTable('ResourceTags')->delete($callback);
     }
 
     /**
@@ -197,7 +243,17 @@ class ResourceTagsService extends AbstractDbService implements
         int|array|null $tagId = null
     ): void {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $this->getDbTable('ResourceTags')->destroyResourceLinks($resourceId, $userId, 'none', $tagId);
+        $callback = function ($select) use ($resourceId, $userId, $tagId) {
+            $select->where->equalTo('user_id', $userId);
+            if (null !== $resourceId) {
+                $select->where->in('resource_id', (array)$resourceId);
+            }
+            $select->where->isNull('list_id');
+            if (null !== $tagId) {
+                $select->where->in('tag_id', (array)$tagId);
+            }
+        };
+        $this->getDbTable('ResourceTags')->delete($callback);
     }
 
     /**
@@ -217,7 +273,48 @@ class ResourceTagsService extends AbstractDbService implements
         int|array|null $tagId = null
     ): void {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $this->getDbTable('ResourceTags')->destroyResourceLinks($resourceId, $userId, true, $tagId);
+        $callback = function ($select) use ($resourceId, $userId, $tagId) {
+            $select->where->equalTo('user_id', $userId);
+            if (null !== $resourceId) {
+                $select->where->in('resource_id', (array)$resourceId);
+            }
+            $select->where->isNotNull('list_id');
+            if (null !== $tagId) {
+                $select->where->in('tag_id', (array)$tagId);
+            }
+        };
+        $this->getDbTable('ResourceTags')->delete($callback);
+    }
+
+    /**
+     * Unlink rows for the specified user list. This removes tags ON THE LIST ITSELF, not tags on
+     * resources within the list.
+     *
+     * @param UserListEntityInterface|int $listOrId ID or entity representing list
+     * @param UserEntityInterface|int     $userOrId ID or entity representing user
+     * @param int|int[]|null              $tagId    ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyUserListLinks(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void {
+        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $callback = function ($select) use ($userId, $listId, $tagId) {
+            $select->where->equalTo('user_id', $userId);
+            // retrieve tags assigned to a user list and filter out user resource tags
+            // (resource_id is NULL for list tags).
+            $select->where->isNull('resource_id');
+            $select->where->equalTo('list_id', $listId);
+
+            if (null !== $tagId) {
+                $select->where->in('tag_id', (array)$tagId);
+            }
+        };
+        $this->getDbTable('ResourceTags')->delete($callback);
     }
 
     /**

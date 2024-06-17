@@ -159,6 +159,22 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     ): void;
 
     /**
+     * Unlink rows for the specified user list. This removes tags ON THE LIST ITSELF, not tags on
+     * resources within the list.
+     *
+     * @param UserListEntityInterface|int $listOrId ID or entity representing list
+     * @param UserEntityInterface|int     $userOrId ID or entity representing user
+     * @param int|int[]|null              $tagId    ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyUserListLinks(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void;
+
+    /**
      * Gets unique tagged resources from the database.
      *
      * @param ?int $userId     ID of user (null for any)

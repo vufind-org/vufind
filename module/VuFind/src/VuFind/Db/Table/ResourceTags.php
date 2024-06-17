@@ -111,6 +111,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * @param array $ids IDs to check.
      *
      * @return array     Associative array with two keys: present and missing
+     *
+     * @deprecated
      */
     public function checkForTags($ids)
     {
@@ -322,6 +324,10 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * for ALL matching tags)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyResourceTagsLinksForUser() or
+     * ResourceTagsServiceInterface::destroyNonListResourceTagsLinksForUser() or
+     * ResourceTagsServiceInterface::destroyAllListResourceTagsLinksForUser()
      */
     public function destroyResourceLinks($resource, $user, $list = null, $tag = null)
     {
@@ -363,6 +369,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * for ALL matching tags)
      *
      * @return void
+     *
+     * @deprecated Use ResourceTagsServiceInterface::destroyUserListLinks()
      */
     public function destroyListLinks($list, $user, $tag = null)
     {
@@ -391,6 +399,8 @@ class ResourceTags extends Gateway implements DbServiceAwareInterface
      * @param Object $callback Callback function for selecting deleted rows.
      *
      * @return void
+     *
+     * @deprecated
      */
     protected function processDestroyLinks($callback)
     {

@@ -35,13 +35,12 @@ use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
@@ -64,28 +63,28 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface, DbTableAwareInterface
+class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use DbTableAwareTrait;
 
     /**
      * Constructor
      *
-     * @param ResourceServiceInterface     $resourceService     Resource database service
-     * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
-     * @param UserListServiceInterface     $userListService     UserList database service
-     * @param UserResourceServiceInterface $userResourceService UserResource database service
-     * @param UserServiceInterface         $userService         User database service
-     * @param ResourcePopulator            $resourcePopulator   Resource populator service
-     * @param TagsService                  $tagsService         Tags service
-     * @param RecordLoader                 $recordLoader        Record loader
-     * @param ?RecordCache                 $recordCache         Record cache (optional)
-     * @param ?Container                   $session             Session container for remembering state (optional)
+     * @param ResourceServiceInterface                          $resourceService     Resource database service
+     * @param ResourceTagsServiceInterface&TransactionInterface $resourceTagsService Resource tags database service
+     * @param UserListServiceInterface                          $userListService     UserList database service
+     * @param UserResourceServiceInterface                      $userResourceService UserResource database service
+     * @param UserServiceInterface                              $userService         User database service
+     * @param ResourcePopulator                                 $resourcePopulator   Resource populator service
+     * @param TagsService                                       $tagsService         Tags service
+     * @param RecordLoader                                      $recordLoader        Record loader
+     * @param ?RecordCache                                      $recordCache         Record cache (optional)
+     * @param ?Container                                        $session             Session container for remembering
+     * state (optional)
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
-        protected ResourceTagsServiceInterface $resourceTagsService,
+        protected ResourceTagsServiceInterface&TransactionInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,
@@ -135,13 +134,16 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             throw new ListPermissionException('list_access_denied');
         }
 
-        // Remove user_resource and resource_tags rows:
-        $userResource = $this->getDbTable('UserResource');
-        $userResource->destroyLinks(null, $list->getUser()?->getId(), $list->getId());
+        // Remove user_resource and resource_tags rows for favorites tags:
+        $listUser = $list->getUser();
+        $this->resourceTagsService->destroyResourceTagsLinksForUser(null, $listUser, $list);
+        $this->userResourceService->unlinkFavorites(null, $listUser, $list);
 
         // Remove resource_tags rows for list tags:
-        $linker = $this->getDbTable('resourcetags');
-        $linker->destroyListLinks($list->getId(), $user?->getId());
+        $this->resourceTagsService->destroyUserListLinks($list, $user);
+
+        // Clean up orphaned tags:
+        $this->tagsService->deleteOrphanedTags();
 
         $this->userListService->deleteUserList($list);
     }
@@ -263,13 +265,11 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $resourceIDs[] = $current->getId();
         }
 
-        // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = $this->getDbTable('UserResource');
-        $userResourceTable->destroyLinks(
-            $resourceIDs,
-            $list->getUser()->getId(),
-            $list->getId()
-        );
+        // Remove Resource and related tags:
+        $listUser = $list->getUser();
+        $this->resourceTagsService->destroyResourceTagsLinksForUser($resourceIDs, $listUser, $list);
+        $this->userResourceService->unlinkFavorites($resourceIDs, $listUser, $list);
+        $this->tagsService->deleteOrphanedTags();
     }
 
     /**
@@ -294,10 +294,10 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $resourceIDs[] = $current->getId();
         }
 
-        // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = $this->getDbTable('UserResource');
-        // true here makes sure that only tags in lists are deleted
-        $userResourceTable->destroyLinks($resourceIDs, $user->getId(), true);
+        // Remove resource and related tags:
+        $this->resourceTagsService->destroyAllListResourceTagsLinksForUser($resourceIDs, $user);
+        $this->userResourceService->unlinkFavorites($resourceIDs, $user->getId(), null);
+        $this->tagsService->deleteOrphanedTags();
     }
 
     /**
@@ -440,8 +440,11 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
+            // Create and link tag in a transaction so we don't accidentally purge it as an orphan:
+            $this->resourceTagsService->beginTransaction();
             $tag = $this->tagsService->getOrCreateTagByText($tagText);
             $this->resourceTagsService->createLink(null, $tag, $user, $list);
+            $this->resourceTagsService->commitTransaction();
         }
     }
 
@@ -462,14 +465,13 @@ class FavoritesService implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         ?UserEntityInterface $user,
         Parameters $request
     ): int {
-        $list->setTitle($request->get('title'));
-        $list->setDescription($request->get('desc'));
-        $list->setPublic((bool)$request->get('public'));
+        $list->setTitle($request->get('title'))
+            ->setDescription($request->get('desc'))
+            ->setPublic((bool)$request->get('public'));
         $this->saveListForUser($list, $user);
 
         if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbTable('resourcetags');
-            $linker->destroyListLinks($list->getId(), $user->getId());
+            $this->resourceTagsService->destroyUserListLinks($list, $user);
             foreach ($this->tagsService->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);
             }

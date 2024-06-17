@@ -120,7 +120,6 @@ trait LiveDatabaseTrait
             );
             $favoritesFactory = new FavoritesServiceFactory();
             $favoritesService = $favoritesFactory($container, FavoritesService::class);
-            $favoritesService->setDbTableManager($liveTableManager);
             $container->set(FavoritesService::class, $favoritesService);
             $this->liveDatabaseContainer = $container;
         }

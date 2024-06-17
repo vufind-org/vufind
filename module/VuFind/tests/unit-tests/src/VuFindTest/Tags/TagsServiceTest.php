@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Tags;
 
-use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Record\ResourcePopulator;
@@ -58,7 +58,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
     {
         return new TagsService(
             $this->createMock(TagServiceInterface::class),
-            $this->createMock(ResourceTagsServiceInterface::class),
+            $this->createMock(ResourceTagsService::class),
             $this->createMock(UserListServiceInterface::class),
             $resourcePopulator ?? $this->createMock(ResourcePopulator::class),
             $maxLength

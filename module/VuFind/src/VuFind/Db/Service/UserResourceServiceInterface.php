@@ -89,6 +89,23 @@ interface UserResourceServiceInterface extends DbServiceInterface
     ): UserResourceEntityInterface;
 
     /**
+     * Unlink rows for the specified resource.
+     *
+     * @param int|int[]|null              $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL
+     * matching resources)
+     * @param UserEntityInterface|int     $userOrId   ID or entity representing user removing links
+     * @param UserListEntityInterface|int $listOrId   ID or entity representing list to unlink (null for ALL
+     * matching lists)
+     *
+     * @return void
+     */
+    public function unlinkFavorites(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ): void;
+
+    /**
      * Create a UserResource entity object.
      *
      * @return UserResourceEntityInterface
