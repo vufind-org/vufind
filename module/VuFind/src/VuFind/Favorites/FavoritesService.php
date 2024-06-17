@@ -225,7 +225,7 @@ class FavoritesService implements TranslatorAwareInterface, DbServiceAwareInterf
      * Persist a resource to the record cache (if applicable).
      *
      * @param RecordDriver            $driver   Record driver to persist
-     * @param ResourceEntityInterface $resource Resource object
+     * @param ResourceEntityInterface $resource Resource row
      *
      * @return void
      */
