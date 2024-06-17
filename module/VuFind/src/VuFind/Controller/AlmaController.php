@@ -349,7 +349,7 @@ class AlmaController extends AbstractBase
      * Send the "set password email" to a new user that was created in Alma and sent
      * to VuFind via webhook.
      *
-     * @param \VuFind\Db\Row\User    $user   A user row object from the VuFind
+     * @param UserEntityInterface    $user   A user row object from the VuFind
      * user table.
      * @param \Laminas\Config\Config $config A config object of config.ini
      *
