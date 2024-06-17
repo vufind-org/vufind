@@ -244,15 +244,15 @@ class AlmaController extends AbstractBase
             }
 
             if ($user) {
-                $user->username = $username;
-                $user->firstname = $firstname;
-                $user->lastname = $lastname;
-                $this->getDbService(UserServiceInterface::class)->updateUserEmail($user, $email);
-                $user->cat_id = $primaryId;
-                $user->cat_username = $username;
+                $user->setUsername($username)
+                    ->setFirstname($firstname)
+                    ->setLastname($lastname)
+                    ->setCatId($primaryId)
+                    ->setCatUsername($username);
+                $this->userService->updateUserEmail($user, $email);
 
                 try {
-                    $user->save();
+                    $this->userService->persistEntity($user);
                     if ($method == 'CREATE') {
                         $this->sendSetPasswordEmail($user, $this->config);
                     }
