@@ -1031,7 +1031,6 @@ ${git_status}
         <delete file="${srcdir}/vufind-mail.log" failonerror="true" />
       </then>
     </if>
-    <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <if>
       <available file="${localdir}" type="dir" />
       <then>
