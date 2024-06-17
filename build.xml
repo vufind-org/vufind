@@ -546,6 +546,12 @@
 
     <phingcall target="check_local_config" />
 
+    <!-- Install / update dependencies -->
+    <phingcall target="composer" />
+    <exec executable="${srcdir}/composer.phar">
+      <arg value="install" />
+    </exec>
+
     <!-- run extra startup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
