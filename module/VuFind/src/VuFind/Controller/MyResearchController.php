@@ -2007,7 +2007,7 @@ class MyResearchController extends AbstractBase
      * already been loaded from an existing hash, this resets the hash and updates
      * the form so that the user can try again.
      *
-     * @param ?UserEntityInterface $userFromHash User loaded from database, or false if none.
+     * @param ?UserEntityInterface $userFromHash User loaded from database, or null if none.
      * @param ViewModel            $view         View object
      *
      * @return ViewModel
