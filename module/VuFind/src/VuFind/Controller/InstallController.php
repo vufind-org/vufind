@@ -34,6 +34,7 @@ use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -773,7 +774,7 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $userRows = $this->getTable('user')->getInsecureRows();
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
         $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
@@ -812,7 +813,7 @@ class InstallController extends AbstractBase
         // Now we want to loop through the database and update passwords (if
         // necessary).
         $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
-        $userRows = $this->getTable('user')->getInsecureRows();
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
             foreach ($userRows as $row) {
