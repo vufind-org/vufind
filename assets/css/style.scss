@@ -121,8 +121,6 @@ iframe {
   a:not(.logo) {
     display: inline-block;
     padding: 29px 10px;
-    font-size: 17px;
-    font-family: "Questrial";
     color: black;
     text-decoration: none;
     vertical-align: top;
@@ -134,6 +132,10 @@ iframe {
 
     @media (max-width: $screen-sm-max) {
       padding: 10px;
+    }
+    @media (min-width: $screen-md-min) {
+      font-family: "Questrial";
+      font-size: 14pt;
     }
   }
 
@@ -241,26 +243,72 @@ iframe {
   color: white;
 }
 
+iframe {
+  font: inherit;
+  background-color: white;
+}
+
 .footer {
-  @extend .lgrey;
-  padding: 1em;
-  font-size: 14px;
+  padding: 1rem;
+  line-height: 1.7;
+  text-align: center;
   border-top: 1px solid $grey;
-  color: $grey;
+  color: $dgrey;
+  background-color: $lgrey;
+
+  .flex {
+    align-items: center;
+    margin-inline: auto;
+    margin-block: 1rem;
+  }
 
   p {
-    line-height: 1em;
+    margin-block: 1rem;
+    text-align: center;
     text-indent: 0;
+  }
 
-    &.lead a {
-      color: $dgrey;
-      margin: 0;
-    }
+  a {
+    font-weight: 500;
+    margin: 0;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    margin-inline: auto;
   }
 
   iframe {
     display: block;
     margin: auto;
+  }
+}
+
+.footer__statement {
+  text-wrap: balance;
+}
+
+.footer__sponsors {
+  margin-block: 2rem;
+}
+.footer__sponsor-link {
+  display: block;
+  padding: 1rem;
+
+  &:hover {
+    background-color: white;
+  }
+}
+.footer__sponsor-img {
+  max-height: 4rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .footer__sponsors {
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -357,6 +405,28 @@ quote {
 
 abbr[title] {
   text-decoration: none;
+}
+
+// Utilities
+
+.w-content {
+  width: 100%;
+  max-width: fit-content;
+}
+
+@media (min-width: 64px) {
+  .flex {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 // Font Faces
