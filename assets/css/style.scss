@@ -158,7 +158,7 @@ iframe {
     font-weight: 500;
     text-decoration-thickness: max(0.08em, 2px);
 
-    &:hover {
+    &:hover, &:focus, &:active {
       color: $green;
     }
   }
