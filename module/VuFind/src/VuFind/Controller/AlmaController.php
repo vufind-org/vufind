@@ -238,10 +238,10 @@ class AlmaController extends AbstractBase
             }
 
             if ($method == 'CREATE') {
-                $user = $this->userService->getUserByField('username', $username)
+                $user = $this->userService->getUserByUsername($username)
                     ?? $this->userService->createEntityForUsername($username);
             } elseif ($method == 'UPDATE') {
-                $user = $this->userService->getUserByField('cat_id', $primaryId);
+                $user = $this->userService->getUserByCatId($primaryId);
             }
 
             if ($user) {
@@ -281,7 +281,7 @@ class AlmaController extends AbstractBase
                 );
             }
         } elseif ($method == 'DELETE') {
-            $user = $this->userService->getUserByField('cat_id', $primaryId);
+            $user = $this->userService->getUserByCatId($primaryId);
             if ($user) {
                 try {
                     $this->serviceLocator->get(UserAccountService::class)->purgeUserData($user);

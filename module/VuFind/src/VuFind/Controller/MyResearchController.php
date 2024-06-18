@@ -1298,7 +1298,7 @@ class MyResearchController extends AbstractBase
             $change = false;
             // Case 1: new user:
             $user = $this->getDbService(UserServiceInterface::class)
-                ->getUserByField('username', $this->getUserVerificationContainer()->user);
+                ->getUserByUsername($this->getUserVerificationContainer()->user);
             // Case 2: pending email change:
             if (!$user) {
                 $user = $this->getUser();
@@ -1734,9 +1734,9 @@ class MyResearchController extends AbstractBase
         // Check if we have a submitted form, and use the information
         // to get the user's information
         if ($email = $this->params()->fromPost('email')) {
-            $user = $userService->getUserByField('email', $email);
+            $user = $userService->getUserByEmail($email);
         } elseif ($username = $this->params()->fromPost('username')) {
-            $user = $userService->getUserByField('username', $username);
+            $user = $userService->getUserByUsername($username);
         }
         $view = $this->createViewModel();
         $view->useCaptcha = $this->captcha()->active('passwordRecovery');
@@ -1943,7 +1943,7 @@ class MyResearchController extends AbstractBase
             } else {
                 // If the hash is valid, forward user to create new password
                 // Also treat email address as verified
-                if ($user = $this->getDbService(UserServiceInterface::class)->getUserByField('verify_hash', $hash)) {
+                if ($user = $this->getDbService(UserServiceInterface::class)->getUserByVerifyHash($hash)) {
                     $user->setEmailVerified(new DateTime());
                     $this->getDbService(UserServiceInterface::class)->persistEntity($user);
                     $this->setUpAuthenticationFromRequest();
@@ -1983,7 +1983,7 @@ class MyResearchController extends AbstractBase
                 return $this->forwardTo('MyResearch', 'Profile');
             } else {
                 // If the hash is valid, store validation in DB and forward to login
-                if ($user = $this->getDbService(UserServiceInterface::class)->getUserByField('verify_hash', $hash)) {
+                if ($user = $this->getDbService(UserServiceInterface::class)->getUserByVerifyHash($hash)) {
                     // Apply pending email address change, if applicable:
                     if ($pending = $user->getPendingEmail()) {
                         $this->getDbService(UserServiceInterface::class)
@@ -2040,7 +2040,7 @@ class MyResearchController extends AbstractBase
         $post = $request->getPost();
         // Verify hash
         $userFromHash = isset($post->hash)
-            ? $this->getDbService(UserServiceInterface::class)->getUserByField('verify_hash', $post->hash)
+            ? $this->getDbService(UserServiceInterface::class)->getUserByVerifyHash($post->hash)
             : false;
         // View, password policy and Captcha
         $view = $this->createViewModel($post);
