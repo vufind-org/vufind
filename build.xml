@@ -510,15 +510,15 @@
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
       <then>
-        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}" filename="composer.phar" />
+        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${localdir}" filename="composer.phar" />
       </then>
       <else>
-        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${localdir}" />
       </else>
     </if>
     <echo message="Installing dependencies..." />
     <exec executable="php" passthru="true" checkreturn="true">
-      <arg line="${srcdir}/composer.phar install ${composer_extra_params}" />
+      <arg line="${localdir}/composer.phar install ${composer_extra_params}" />
     </exec>
   </target>
 
@@ -1008,6 +1008,13 @@ ${git_status}
         <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
       </then>
     </if>
+    <if>
+      <available file="${localdir}/composer.phar" />
+      <then>
+        <delete file="${localdir}/composer.phar" failonerror="true" />
+      </then>
+    </if>
+    <!-- Remove also any composer.phar installed by an older build script version: -->
     <if>
       <available file="${srcdir}/composer.phar" />
       <then>
