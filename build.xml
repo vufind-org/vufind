@@ -507,26 +507,26 @@
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
+    <property name="composer_filename" value="composer-${composer_version}.phar" />
+    <mkdir dir="${srcdir}/downloads" />
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
       <then>
-        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${localdir}" filename="composer.phar" />
+        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}/downloads" filename="${composer_filename}" />
       </then>
       <else>
         <!-- download if not already present in the downloads cache -->
         <if>
-          <not><available file="${srcdir}/downloads/composer-${composer_version}.phar" /></not>
+          <not><available file="${srcdir}/downloads/${composer_filename}" /></not>
            <then>
-            <mkdir dir="${srcdir}/downloads" />
-            <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}/downloads" filename="composer-${composer_version}.phar"/>
+            <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}/downloads" filename="${composer_filename}" />
           </then>
         </if>
-        <copy file="${srcdir}/downloads/composer-${composer_version}.phar" tofile="${localdir}/composer.phar" overwrite="true" />
       </else>
     </if>
     <echo message="Installing dependencies..." />
     <exec executable="php" passthru="true" checkreturn="true">
-      <arg line="${localdir}/composer.phar install ${composer_extra_params}" />
+      <arg line="${srcdir}/downloads/${composer_filename} install ${composer_extra_params}" />
     </exec>
   </target>
 
@@ -1016,13 +1016,7 @@ ${git_status}
         <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
       </then>
     </if>
-    <if>
-      <available file="${localdir}/composer.phar" />
-      <then>
-        <delete file="${localdir}/composer.phar" failonerror="true" />
-      </then>
-    </if>
-    <!-- Remove also any composer.phar installed by an older build script version: -->
+    <!-- Remove any composer.phar installed by an older build script version: -->
     <if>
       <available file="${srcdir}/composer.phar" />
       <then>
