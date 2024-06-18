@@ -486,7 +486,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Recover account
         $this->clickCss($page, '#loginOptions a');
-        $this->clickCss($page, '.modal-body .recoverAccountLink');
+        $this->clickCss($page, '.modal-body .recover-account-link');
         $this->findCssAndSetValue($page, '#recovery_username', 'bad');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
