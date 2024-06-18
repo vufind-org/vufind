@@ -513,7 +513,15 @@
         <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${localdir}" filename="composer.phar" />
       </then>
       <else>
-        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${localdir}" />
+        <!-- download if not already present in the downloads cache -->
+        <if>
+          <not><available file="${srcdir}/downloads/composer-${composer_version}.phar" /></not>
+           <then>
+            <mkdir dir="${srcdir}/downloads" />
+            <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}/downloads" filename="composer-${composer_version}.phar"/>
+          </then>
+        </if>
+        <copy file="${srcdir}/downloads/composer-${composer_version}.phar" tofile="${localdir}/composer.phar" overwrite="true" />
       </else>
     </if>
     <echo message="Installing dependencies..." />
