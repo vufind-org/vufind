@@ -548,9 +548,6 @@
 
     <!-- Install / update dependencies -->
     <phingcall target="composer" />
-    <exec executable="${srcdir}/composer.phar">
-      <arg value="install" />
-    </exec>
 
     <!-- run extra startup action, if any -->
     <if>
