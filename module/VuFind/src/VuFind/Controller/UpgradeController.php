@@ -52,6 +52,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\ShortlinksServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -60,7 +61,6 @@ use VuFind\Tags\TagsService;
 use function count;
 use function dirname;
 use function in_array;
-use function is_object;
 use function is_string;
 use function strlen;
 
@@ -717,16 +717,14 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $user = $this->params()->fromPost('username');
-            if (empty($user)) {
+            $username = $this->params()->fromPost('username');
+            if (empty($username)) {
                 $this->flashMessenger()
                     ->addMessage('Username must not be empty.', 'error');
             } else {
-                $userTable = $this->getTable('User');
-                $user = $userTable->getByUsername($user, false);
-                if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    $this->flashMessenger()
-                        ->addMessage("User {$user} not found.", 'error');
+                $user = $this->getDbService(UserServiceInterface::class)->getUserByField('username', $username);
+                if (!$user) {
+                    $this->flashMessenger()->addMessage("User {$username} not found.", 'error');
                 } else {
                     $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(

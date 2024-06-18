@@ -115,7 +115,7 @@ class UserService extends AbstractDbService implements
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username, email or cat_id.
+     * Field name must be id, username, email, verify_hash or cat_id.
      *
      * @param string          $fieldName  Field name
      * @param int|string|null $fieldValue Field value
@@ -125,7 +125,13 @@ class UserService extends AbstractDbService implements
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
         // Map expected incoming values (actual database columns) to legal values (Doctrine properties)
-        $legalFieldMap = ['id' => 'id', 'username' => 'username', 'email' => 'email', 'cat_id' => 'catId'];
+        $legalFieldMap = [
+            'id' => 'id',
+            'username' => 'username',
+            'email' => 'email',
+            'cat_id' => 'catId',
+            'verify_hash' => 'verifyHash',
+        ];
         if (isset($legalFieldMap[$fieldName])) {
             $dql = 'SELECT U FROM ' . $this->getEntityClass(User::class) . ' U '
                 . 'WHERE U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
@@ -246,6 +252,16 @@ class UserService extends AbstractDbService implements
             $select->where->isNotNull('cat_username');
         };
         return iterator_to_array($this->getDbTable('User')->select($callback));
+    }
+
+    /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array
+    {
+        return iterator_to_array($this->getDbTable('User')->getInsecureRows());
     }
 
     /**
