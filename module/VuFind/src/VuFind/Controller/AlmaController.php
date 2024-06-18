@@ -33,6 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\RequestInterface;
 use Throwable;
 use VuFind\Account\UserAccountService;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
 /**
@@ -348,58 +349,49 @@ class AlmaController extends AbstractBase
      * Send the "set password email" to a new user that was created in Alma and sent
      * to VuFind via webhook.
      *
-     * @param UserEntityInterface    $user   A user row object from the VuFind
-     * user table.
+     * @param UserEntityInterface    $user   User entity object
      * @param \Laminas\Config\Config $config A config object of config.ini
      *
      * @return void
      */
-    protected function sendSetPasswordEmail($user, $config)
+    protected function sendSetPasswordEmail(UserEntityInterface $user, $config)
     {
-        // If we can't find a user
-        if (null == $user) {
-            error_log(
-                'Could not send the email to new user for setting the ' .
-                'password because the user object was not found.'
-            );
-        } else {
-            // Attempt to send the email
-            try {
-                // Create a fresh hash
-                $this->getAuthManager()->updateUserVerifyHash($user);
-                $config = $this->getConfig();
-                $renderer = $this->getViewRenderer();
-                $method = $this->getAuthManager()->getAuthMethod();
+        // Attempt to send the email
+        try {
+            // Create a fresh hash
+            $this->getAuthManager()->updateUserVerifyHash($user);
+            $config = $this->getConfig();
+            $renderer = $this->getViewRenderer();
+            $method = $this->getAuthManager()->getAuthMethod();
 
-                // Custom template for emails (text-only)
-                $message = $renderer->render(
-                    'Email/new-user-welcome.phtml',
-                    [
-                        'library' => $config->Site->title,
-                        'firstname' => $user->firstname,
-                        'lastname' => $user->lastname,
-                        'username' => $user->username,
-                        'url' => $this->getServerUrl('myresearch-verify') . '?hash='
-                            . $user->verify_hash . '&auth_method=' . $method,
-                    ]
-                );
-                // Send the email
-                $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
-                    $user->email,
-                    $config->Site->email,
-                    $this->translate(
-                        'new_user_welcome_subject',
-                        ['%%library%%' => $config->Site->title]
-                    ),
-                    $message
-                );
-            } catch (\VuFind\Exception\Mail $e) {
-                error_log(
-                    'Could not send the \'set-password-email\' to user with ' .
-                    'primary ID \'' . $user->cat_id . '\' | username \'' .
-                    $user->username . '\': ' . $e->getMessage()
-                );
-            }
+            // Custom template for emails (text-only)
+            $message = $renderer->render(
+                'Email/new-user-welcome.phtml',
+                [
+                    'library' => $config->Site->title,
+                    'firstname' => $user->getFirstname(),
+                    'lastname' => $user->getLastname(),
+                    'username' => $user->getUsername(),
+                    'url' => $this->getServerUrl('myresearch-verify') . '?hash='
+                        . $user->getVerifyHash() . '&auth_method=' . $method,
+                ]
+            );
+            // Send the email
+            $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
+                $user->getEmail(),
+                $config->Site->email,
+                $this->translate(
+                    'new_user_welcome_subject',
+                    ['%%library%%' => $config->Site->title]
+                ),
+                $message
+            );
+        } catch (\VuFind\Exception\Mail $e) {
+            error_log(
+                'Could not send the \'set-password-email\' to user with ' .
+                'primary ID \'' . $user->getCatId() . '\' | username \'' .
+                $user->getUsername() . '\': ' . $e->getMessage()
+            );
         }
     }
 
