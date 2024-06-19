@@ -473,14 +473,13 @@
         </if>
         <!-- unpack the archive into solr/vendor -->
         <mkdir dir="${builddir}/solr" />
-        <untar file="${downloadsdir}/solr-${solr_version}.tgz" todir="${builddir}/solr" />
         <if>
           <available file="${srcdir}/solr/vendor" type="dir" />
           <then>
             <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
           </then>
         </if>
-        <move file="${builddir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+        <untar file="${downloadsdir}/solr-${solr_version}.tgz" todir="${srcdir}/solr/vendor" removepath="solr-${solr_version}" />
         <!-- make scripts executable -->
         <chmod mode="0755">
           <fileset dir="${srcdir}/solr/vendor/bin">
