@@ -564,6 +564,7 @@
         <equals arg1="${extra_startup_command}" arg2="" />
       </not>
       <then>
+        <echo message="Running extra startup command" />
         <exec executable="$sh">
           <arg line="-c &apos;${extra_startup_command}&apos;" />
           <env key="VUFIND_HOME" value="${srcdir}" />
@@ -980,6 +981,7 @@ ${git_status}
         <equals arg1="${extra_shutdown_cleanup}" arg2="" />
       </not>
       <then>
+        <echo message="Running extra shutdown cleanup" />
         <exec executable="$sh">
           <arg line="-c &apos;${extra_shutdown_cleanup}&apos;" />
           <env key="VUFIND_HOME" value="${srcdir}" />
