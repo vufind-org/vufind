@@ -81,6 +81,42 @@ interface UserServiceInterface extends DbServiceInterface
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface;
 
     /**
+     * Retrieve a user object by catalog ID. Returns null if no match is found.
+     *
+     * @param string $catId Catalog ID
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByCatId(string $catId): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by email address. Returns null if no match is found.
+     *
+     * @param string $email Email address
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByEmail(string $email): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by username. Returns null if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByUsername(string $username): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by verify hash. Returns null if no match is found.
+     *
+     * @param string $hash Verify hash
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByVerifyHash(string $hash): ?UserEntityInterface;
+
+    /**
      * Update the user's email address, if appropriate. Note that this does NOT
      * automatically save the row; it assumes a subsequent call will be made to
      * persist the data.

@@ -722,7 +722,7 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()
                     ->addMessage('Username must not be empty.', 'error');
             } else {
-                $user = $this->getDbService(UserServiceInterface::class)->getUserByField('username', $username);
+                $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($username);
                 if (!$user) {
                     $this->flashMessenger()->addMessage("User {$username} not found.", 'error');
                 } else {
