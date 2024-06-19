@@ -5,6 +5,7 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
+  <property name="downloadsdir"   value="${srcdir}/downloads" override="true" />
   <!--
     Use builddir/local as the local directory if defaultconfigs=true. This allows the
     tests to be run without any custom configuration possibly interfering in the
@@ -460,15 +461,15 @@
 
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
-          <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
+          <not><available file="${downloadsdir}/solr-${solr_version}.tgz" /></not>
            <then>
-            <mkdir dir="${srcdir}/downloads" />
-            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+            <mkdir dir="${downloadsdir}" />
+            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${downloadsdir}" />
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
         <mkdir dir="${builddir}/solr" />
-        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${builddir}/solr" />
+        <untar file="${downloadsdir}/solr-${solr_version}.tgz" todir="${builddir}/solr" />
         <if>
           <available file="${srcdir}/solr/vendor" type="dir" />
           <then>
@@ -508,25 +509,25 @@
 
   <target name="composer" description="Install dependencies with Composer">
     <property name="composer_filename" value="composer-${composer_version}.phar" />
-    <mkdir dir="${srcdir}/downloads" />
+    <mkdir dir="${downloadsdir}" />
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
       <then>
-        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}/downloads" filename="${composer_filename}" />
+        <httpget url="https://getcomposer.org/composer-2.phar" dir="${downloadsdir}" filename="${composer_filename}" />
       </then>
       <else>
         <!-- download if not already present in the downloads cache -->
         <if>
-          <not><available file="${srcdir}/downloads/${composer_filename}" /></not>
+          <not><available file="${downloadsdir}/${composer_filename}" /></not>
            <then>
-            <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}/downloads" filename="${composer_filename}" />
+            <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" dir="${downloadsdir}" filename="${composer_filename}" />
           </then>
         </if>
       </else>
     </if>
     <echo message="Installing dependencies..." />
     <exec executable="php" passthru="true" checkreturn="true">
-      <arg line="${srcdir}/downloads/${composer_filename} install ${composer_extra_params}" />
+      <arg line="${downloadsdir}/${composer_filename} install ${composer_extra_params}" />
     </exec>
   </target>
 
