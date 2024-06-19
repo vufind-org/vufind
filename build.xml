@@ -623,8 +623,8 @@
             </reflexive>
           </then>
         </if>
-        <exec executable="${apachectl}" passthru="true">
-          <arg line="restart" />
+        <exec executable="${sh}" passthru="true">
+          <arg line="-c &apos;${apachectl} restart&apos;" />
         </exec>
       </then>
     </if>
@@ -934,8 +934,8 @@ ${git_status}
       </and>
       <then>
         <delete file="${apacheconfdir}/vufindtest.conf" />
-        <exec executable="${apachectl}">
-          <arg line="restart" />
+        <exec executable="${sh}" passthru="true">
+          <arg line="-c &apos;${apachectl} restart&apos;" />
         </exec>
       </then>
     </if>
