@@ -47,7 +47,7 @@ class UrlShortenerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testEmailAuthentication(): void
+    public function testDatabaseDrivenShortening(): void
     {
         // Set up configs, session and message logging:
         $this->changeConfigs(

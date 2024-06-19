@@ -247,7 +247,9 @@ CREATE TABLE `user` (
   `last_language` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`(190)),
-  UNIQUE KEY `cat_id` (`cat_id`(190))
+  UNIQUE KEY `cat_id` (`cat_id`(190)),
+  KEY `email` (`email`(190)),
+  KEY `verify_hash` (`verify_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
