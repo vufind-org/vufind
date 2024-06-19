@@ -87,7 +87,7 @@ class Database extends AbstractBase
 
         // Validate the credentials:
         $userService = $this->getUserService();
-        $user = $userService->getUserByField('username', $this->username);
+        $user = $userService->getUserByUsername($this->username);
         if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
             throw new AuthException('authentication_error_invalid');
         }
@@ -211,7 +211,7 @@ class Database extends AbstractBase
         $this->validatePassword($params);
 
         // Create the row and send it back to the caller:
-        $user = $this->getUserService()->getUserByField('username', $params['username']);
+        $user = $this->getUserService()->getUserByUsername($params['username']);
         $this->setUserPassword($user, $params['password']);
         $this->getUserService()->persistEntity($user);
         return $user;
@@ -448,12 +448,12 @@ class Database extends AbstractBase
         }
 
         // Make sure we have a unique username
-        if ($userService->getUserByField('username', $params['username'])) {
+        if ($userService->getUserByUsername($params['username'])) {
             throw new AuthException('That username is already taken');
         }
 
         // Make sure we have a unique email
-        if ($userService->getUserByField('email', $params['email'])) {
+        if ($userService->getUserByEmail($params['email'])) {
             throw new AuthException('That email address is already used');
         }
     }

@@ -550,7 +550,7 @@ abstract class AbstractBase implements
     protected function getOrCreateUserByUsername(string $username): UserEntityInterface
     {
         $userService = $this->getUserService();
-        $user = $userService->getUserByField('username', $username);
+        $user = $userService->getUserByUsername($username);
         return $user ? $user : $userService->createEntityForUsername($username);
     }
 
