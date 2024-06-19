@@ -565,7 +565,7 @@
       </not>
       <then>
         <echo message="Running extra startup command" />
-        <exec executable="$sh">
+        <exec executable="${sh}">
           <arg line="-c &apos;${extra_startup_command}&apos;" />
           <env key="VUFIND_HOME" value="${srcdir}" />
           <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
@@ -982,7 +982,7 @@ ${git_status}
       </not>
       <then>
         <echo message="Running extra shutdown cleanup" />
-        <exec executable="$sh">
+        <exec executable="${sh}">
           <arg line="-c &apos;${extra_shutdown_cleanup}&apos;" />
           <env key="VUFIND_HOME" value="${srcdir}" />
           <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
