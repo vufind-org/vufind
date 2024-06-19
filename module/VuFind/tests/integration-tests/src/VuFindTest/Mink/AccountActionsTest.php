@@ -49,6 +49,7 @@ use function count;
  */
 final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
     use \VuFindTest\Feature\DemoDriverTestTrait;
@@ -452,6 +453,67 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
         $this->assertEquals('Invalid login -- please try again.', $this->findCssAndGetText($page, '.alert-danger'));
+    }
+
+    /**
+     * Test recovering a password by username.
+     *
+     * @return void
+     *
+     * @depends testChangePassword
+     */
+    public function testRecoverPasswordByUsername(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'recover_password' => true,
+                        'recover_interval' => 0,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Recover account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .recover-account-link');
+        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
+        $this->findCssAndSetValue($page, '#recovery_username', 'username1');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEquals(
+            'Password recovery instructions have been sent to the email address registered with this account.',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        // Extract URL from email:
+        $email = file_get_contents($this->getEmailLogPath());
+        preg_match('/You can reset your password at this URL: (http.*)/', $email, $matches);
+        $link = $matches[1];
+
+        // Reset the password:
+        $session->visit($link);
+        $this->assertEquals('username1', $this->findCssAndGetText($page, '.form-control-static'));
+        $this->findCssAndSetValue($page, '#password', 'recovered');
+        $this->findCssAndSetValue($page, '#password2', 'recovered');
+        $this->clickCss($page, '.form-new-password .btn-primary');
+        $this->assertEquals(
+            'Your password has successfully been changed',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        $this->resetEmailLog();
     }
 
     /**

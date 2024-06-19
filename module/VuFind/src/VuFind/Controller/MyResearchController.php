@@ -2007,17 +2007,17 @@ class MyResearchController extends AbstractBase
      * already been loaded from an existing hash, this resets the hash and updates
      * the form so that the user can try again.
      *
-     * @param mixed     $userFromHash User loaded from database, or false if none.
-     * @param ViewModel $view         View object
+     * @param ?UserEntityInterface $userFromHash User loaded from database, or null if none.
+     * @param ViewModel            $view         View object
      *
      * @return ViewModel
      */
-    protected function resetNewPasswordForm($userFromHash, ViewModel $view)
+    protected function resetNewPasswordForm(?UserEntityInterface $userFromHash, ViewModel $view)
     {
         if ($userFromHash) {
             $this->getAuthManager()->updateUserVerifyHash($userFromHash);
-            $view->username = $userFromHash->username;
-            $view->hash = $userFromHash->verify_hash;
+            $view->username = $userFromHash->getUsername();
+            $view->hash = $userFromHash->getVerifyHash();
         }
         return $view;
     }
@@ -2041,7 +2041,7 @@ class MyResearchController extends AbstractBase
         // Verify hash
         $userFromHash = isset($post->hash)
             ? $this->getDbService(UserServiceInterface::class)->getUserByField('verify_hash', $post->hash)
-            : false;
+            : null;
         // View, password policy and Captcha
         $view = $this->createViewModel($post);
         $view->passwordPolicy = $this->getAuthManager()->getPasswordPolicy();
@@ -2051,12 +2051,12 @@ class MyResearchController extends AbstractBase
             return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Missing or invalid hash
-        if (false == $userFromHash) {
+        if (!$userFromHash) {
             $this->flashMessenger()->addMessage('recovery_user_not_found', 'error');
             // Force login or restore hash
             $post->username = false;
             return $this->forwardTo('MyResearch', 'Recover');
-        } elseif ($userFromHash->username !== $post->username) {
+        } elseif ($userFromHash->getUsername() !== $post->username) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_invalid', 'error');
             return $this->resetNewPasswordForm($userFromHash, $view);
