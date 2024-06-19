@@ -357,8 +357,17 @@
     </if>
 
     <!-- Run tests -->
-    <exec dir="${srcdir}/module/VuFind/tests" executable="${phpunit_command}" passthru="true" checkreturn="true">
-      <arg line="--log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" />
+    <if>
+      <istrue value="${phpunit_remote_coverage}" />
+      <then>
+        <property name="remote_coverage_dir" value="${coveragedir}/tmp" />
+      </then>
+      <else>
+        <property name="remote_coverage_dir" value="" />
+      </else>
+    </if>
+    <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
+      <arg line="-c &apos;${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}&apos;" />
       <env key="XDEBUG_MODE" value="coverage" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
       <env key="VUFIND_SCREENSHOT_DIR" value="${screenshot_dir}" />
@@ -373,12 +382,7 @@
       <env key="VUFIND_URL" value="${vufindurl}" />
       <env key="VUFIND_TEST_THEME" value="${test_theme}" />
       <env key="SOLR_PORT" value="${solr_port}" />
-      <if>
-        <istrue value="${phpunit_remote_coverage}" />
-        <then>
-          <env key="VUFIND_REMOTE_COVERAGE_DIR" value="${coveragedir}/tmp" />
-        </then>
-      </if>
+      <env key="VUFIND_REMOTE_COVERAGE_DIR" value="${remote_coverage_dir}" />
     </exec>
 
     <!-- Produce coverage reports -->
@@ -401,8 +405,8 @@
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" executable="${phpunit_command}" passthru="true" checkreturn="true">
-      <arg line="${phpunit_extra_params}" />
+    <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
+      <arg line="-c &apos;${phpunit_command} ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
       <env key="VUFIND_SCREENSHOT_DIR" value="${screenshot_dir}" />
       <env key="VUFIND_HTML_VALIDATOR" value="${html_validator}" />
@@ -421,8 +425,8 @@
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" executable="${phpunit_command}" passthru="true" checkreturn="true">
-      <arg line="--stop-on-defect ${phpunit_extra_params}" />
+    <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
+      <arg line="-c &apos;${phpunit_command} --stop-on-defect ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
       <env key="VUFIND_SCREENSHOT_DIR" value="${screenshot_dir}" />
       <env key="VUFIND_HTML_VALIDATOR" value="${html_validator}" />
