@@ -31,6 +31,8 @@ namespace VuFind\I18n;
 
 use Laminas\I18n\Translator\TextDomain;
 
+use function in_array;
+
 /**
  * Class to consistently format ExtendedIni language files.
  *
