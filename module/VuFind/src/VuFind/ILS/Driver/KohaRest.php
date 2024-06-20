@@ -174,6 +174,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'gonenoaddress' => 'patron_status_address_missing',
         'debarred' => 'patron_status_card_blocked',
         'debt' => 'ILSMessages::too_much_debt',
+        'recalled' => 'ILSMessages::renewal_recalled',
     ];
 
     /**
