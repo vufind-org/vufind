@@ -868,7 +868,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $entry['pickup_library_id'] ?? null
                 ),
                 'create' => $this->convertDate($entry['hold_date'] ?? null),
-		'__create' = $entry['hold_date'] ?? null,
+		'__create' => $entry['hold_date'] ?? null,
 		'expire' => $available ? null : $expirationDate,
                 'position' => $entry['priority'],
                 'available' => $available,
@@ -924,7 +924,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         $entry['pickup_library_id'] ?? null
                     ),
                     'create' => $this->convertDate($entry['hold_date'] ?? null),
-		    '__create' = $entry['hold_date'] ?? null,
+		    '__create' => $entry['hold_date'] ?? null,
 		    'expire' => $available ? null : $expirationDate,
                     'position' => $entry['priority'],
                     'available' => $available,
