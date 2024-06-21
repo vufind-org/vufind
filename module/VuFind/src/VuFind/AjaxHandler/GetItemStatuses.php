@@ -359,7 +359,7 @@ class GetItemStatuses extends AbstractBase implements
 
             $locationInfo = [
                 'availability' =>
-                    $locationAvailability->is(AvailabilityStatusInterface::STATUS_AVAILABLE),
+                    $locationAvailability->availabilityAsString(),
                 'location' => htmlentities(
                     $this->translateWithPrefix('location_', $location),
                     ENT_COMPAT,
@@ -367,8 +367,6 @@ class GetItemStatuses extends AbstractBase implements
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
-                'status_unknown' =>
-                    $locationAvailability->is(AvailabilityStatusInterface::STATUS_UNKNOWN),
                 'callnumber_handler' => $callnumberHandler,
             ];
             $locationList[] = $locationInfo;
