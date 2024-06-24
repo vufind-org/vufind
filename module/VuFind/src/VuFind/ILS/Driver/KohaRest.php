@@ -2014,13 +2014,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $duedate = null;
             }
 
-	    $extraStatusInformation = [];
+            $extraStatusInformation = [];
             if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
                 if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
-		    $status = 'transit_to';
-		    $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
+                    $status = 'HoldingStatus::transit_to';
+                    $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
                     if (isset($transit['datesent'])) {
-                        $status = 'transit_to_date';
+                        $status = 'HoldingStatus::transit_to_date';
                         $extraStatusInformation['date'] = $this->convertDate(
                             $transit['datesent'],
                             true
