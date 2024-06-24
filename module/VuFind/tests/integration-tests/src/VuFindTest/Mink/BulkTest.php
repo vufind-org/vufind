@@ -339,6 +339,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the print control works.
      *
      * @return void
+     *
+     * @depends testBulkEmail
      */
     public function testBulkActionLimits(): void
     {

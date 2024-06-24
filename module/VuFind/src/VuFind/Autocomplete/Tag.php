@@ -29,7 +29,7 @@
 
 namespace VuFind\Autocomplete;
 
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Tag Autocomplete Module
@@ -47,9 +47,9 @@ class Tag implements AutocompleteInterface
     /**
      * Constructor
      *
-     * @param TagServiceInterface $tagService Tag database service
+     * @param TagsService $tagsService Tag database service
      */
-    public function __construct(protected TagServiceInterface $tagService)
+    public function __construct(protected TagsService $tagsService)
     {
     }
 
@@ -64,7 +64,7 @@ class Tag implements AutocompleteInterface
     public function getSuggestions($query)
     {
         $tagList = [];
-        $tags = $this->tagService->matchText($query);
+        $tags = $this->tagsService->getNonListTagsFuzzilyMatchingString($query);
         if ($tags) {
             foreach ($tags as $tag) {
                 $tagList[] = $tag['tag'];

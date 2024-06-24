@@ -133,7 +133,7 @@ CREATE TABLE `resource_tags` (
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `search` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
   `session_id` varchar(128) DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `title` varchar(20) DEFAULT NULL,
@@ -247,7 +247,9 @@ CREATE TABLE `user` (
   `last_language` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`(190)),
-  UNIQUE KEY `cat_id` (`cat_id`(190))
+  UNIQUE KEY `cat_id` (`cat_id`(190)),
+  KEY `email` (`email`(190)),
+  KEY `verify_hash` (`verify_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

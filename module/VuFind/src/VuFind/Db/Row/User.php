@@ -36,9 +36,14 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 
@@ -96,11 +101,13 @@ class User extends RowGateway implements
      * @param \Laminas\Db\Adapter\Adapter $adapter          Database adapter
      * @param ILSAuthenticator            $ilsAuthenticator ILS authenticator
      * @param AccountCapabilities         $capabilities     Account capabilities configuration (null for defaults)
+     * @param FavoritesService            $favoritesService Favorites service
      */
     public function __construct(
         $adapter,
         protected ILSAuthenticator $ilsAuthenticator,
-        protected AccountCapabilities $capabilities
+        protected AccountCapabilities $capabilities,
+        protected FavoritesService $favoritesService,
     ) {
         parent::__construct('id', 'user', $adapter);
     }
@@ -111,6 +118,8 @@ class User extends RowGateway implements
      * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setConfig(\Laminas\Config\Config $config)
     {
@@ -121,6 +130,8 @@ class User extends RowGateway implements
      * Reset ILS login credentials.
      *
      * @return void
+     *
+     * @deprecated Use setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null)
      */
     public function clearCredentials()
     {
@@ -136,6 +147,8 @@ class User extends RowGateway implements
      *
      * @return mixed        The output of the save method.
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use UserEntityInterface::setCatId() and \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveCatalogId($catId)
     {
@@ -150,17 +163,12 @@ class User extends RowGateway implements
      * @param ?string $password Password to save (null for none)
      *
      * @return void
+     *
+     * @deprecated Use ILSAuthenticator::setUserCatalogCredentials()
      */
     public function setCredentials($username, $password)
     {
-        $this->cat_username = $username;
-        if ($this->passwordEncryptionEnabled()) {
-            $this->cat_password = null;
-            $this->cat_pass_enc = $this->ilsAuthenticator->encrypt($password);
-        } else {
-            $this->cat_password = $password;
-            $this->cat_pass_enc = null;
-        }
+        $this->ilsAuthenticator->setUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -169,19 +177,14 @@ class User extends RowGateway implements
      * @param string $username Username to save
      * @param string $password Password to save
      *
-     * @return mixed           The output of the save method.
+     * @return void
      * @throws \VuFind\Exception\PasswordSecurity
+     *
+     * @deprecated Use ILSAuthenticator::saveUserCatalogCredentials()
      */
     public function saveCredentials($username, $password)
     {
-        $this->setCredentials($username, $password);
-        $result = $this->save();
-
-        // Update library card entry after saving the user so that we always have a
-        // user id:
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-
-        return $result;
+        $this->ilsAuthenticator->saveUserCatalogCredentials($this, $username, $password);
     }
 
     /**
@@ -190,6 +193,9 @@ class User extends RowGateway implements
      * @param string $datetime optional date/time to save.
      *
      * @return mixed           The output of the save method.
+     *
+     * @deprecated Use UserEntityInterface::setEmailVerified() and
+     * \VuFind\Db\Service\DbServiceInterface::persistEntity()
      */
     public function saveEmailVerified($datetime = null)
     {
@@ -219,6 +225,8 @@ class User extends RowGateway implements
      * Is ILS password encryption enabled?
      *
      * @return bool
+     *
+     * @deprecated
      */
     protected function passwordEncryptionEnabled()
     {
@@ -253,18 +261,20 @@ class User extends RowGateway implements
      * to be used
      *
      * @return mixed               The output of the save method.
+     *
+     * @deprecated Use ILSAuthenticator::updateUserHomeLibrary()
      */
     public function changeHomeLibrary($homeLibrary)
     {
-        $this->home_library = $homeLibrary;
-        $this->getUserCardService()->synchronizeUserLibraryCardData($this);
-        return $this->save();
+        return $this->ilsAuthenticator->updateUserHomeLibrary($this, $homeLibrary);
     }
 
     /**
      * Check whether the email address has been verified yet.
      *
      * @return bool
+     *
+     * @deprecated Use getEmailVerified()
      */
     public function checkEmailVerified()
     {
@@ -276,19 +286,17 @@ class User extends RowGateway implements
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
-     * (null for no filter).
+     * @param string $resourceId Filter for tags tied to a specific resource (null for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no filter).
+     * @param string $source     Filter for tags tied to a specific record source. (null for no filter).
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getUserTagsFromFavorites()
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbTable('Tags')
-            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+        return $this->getDbTable('Tags')->getListTagsForUser($this->getId(), $resourceId, $listId, $source);
     }
 
     /**
@@ -296,12 +304,13 @@ class User extends RowGateway implements
      *
      * @param int $listId List id
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
+     *
+     * @deprecated Use TagServiceInterface::getListTags()
      */
     public function getListTags($listId)
     {
-        return $this->getDbTable('Tags')
-            ->getForList($listId, $this->id);
+        return $this->getDbTable('Tags')->getForList($listId, $this->getId());
     }
 
     /**
@@ -316,6 +325,8 @@ class User extends RowGateway implements
      * (null for no filter).
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::getTagStringForEditing()
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
@@ -328,16 +339,18 @@ class User extends RowGateway implements
      * @param array $tags Tags
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::formatTagStringForEditing()
      */
     public function formatTagString($tags)
     {
         $tagStr = '';
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                if (strstr($tag->tag, ' ')) {
-                    $tagStr .= "\"$tag->tag\" ";
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= "\"{$tag['tag']}\" ";
                 } else {
-                    $tagStr .= "$tag->tag ";
+                    $tagStr .= "{$tag['tag']} ";
                 }
             }
         }
@@ -348,6 +361,8 @@ class User extends RowGateway implements
      * Get all of the lists associated with this user.
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
+     *
+     * @deprecated Use UserListServiceInterface::getUserListsAndCountsByUser()
      */
     public function getLists()
     {
@@ -392,6 +407,8 @@ class User extends RowGateway implements
      * @param string $source     Source of record to look up
      *
      * @return array
+     *
+     * @deprecated Use UserResourceServiceInterface::getFavoritesForRecord()
      */
     public function getSavedData(
         $resourceId,
@@ -415,6 +432,8 @@ class User extends RowGateway implements
      * existing tags (true) or append to the existing list (false).
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::saveResourceToFavorites()
      */
     public function saveResource(
         $resource,
@@ -423,15 +442,14 @@ class User extends RowGateway implements
         $notes,
         $replaceExisting = true
     ) {
-        // Create the resource link if it doesn't exist and update the notes in any
-        // case:
-        $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
+        // Create the resource link if it doesn't exist and update the notes in any case:
+        $this->getDbService(UserResourceServiceInterface::class)->createOrUpdateLink($resource, $this, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
         if ($replaceExisting) {
-            $resource->deleteTags($this, $list->id);
+            $this->getDbService(ResourceTagsService::class)
+                ->destroyResourceTagsLinksForUser($resource->getId(), $this, $list);
         }
 
         // Add the new tags:
@@ -447,6 +465,8 @@ class User extends RowGateway implements
      * @param string $source Type of resource identified by IDs
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Favorites\FavoritesService::removeUserResourcesById()
      */
     public function removeResourcesById($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
@@ -583,7 +603,7 @@ class User extends RowGateway implements
      *
      * @return UserCardServiceInterface
      */
-    public function getUserCardService()
+    protected function getUserCardService()
     {
         return $this->getDbService(UserCardServiceInterface::class);
     }
@@ -595,20 +615,17 @@ class User extends RowGateway implements
      * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
+     *
+     * @deprecated Use \VuFind\Account\UserAccountService::purgeUserData()
      */
     public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
-        $lists = $this->getLists();
         $listService = $this->getDbService(UserListServiceInterface::class);
-        foreach ($lists as $current) {
-            // The rows returned by getLists() are read-only, so we need to retrieve
-            // a new object for each row in order to perform a delete operation:
-            $list = $listService->getUserListById($current->getId());
-            $list->delete($this, true);
+        foreach ($listService->getUserListsByUser($this) as $current) {
+            $this->favoritesService->destroyList($current, $this, true);
         }
-        $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyResourceLinks(null, $this->id);
+        $this->getDbService(ResourceTagsServiceInterface::class)->destroyResourceTagsLinksForUser(null, $this);
         if ($removeComments) {
             $comments = $this->getDbService(
                 \VuFind\Db\Service\CommentsServiceInterface::class
@@ -628,6 +645,8 @@ class User extends RowGateway implements
      * Update the verification hash for this user
      *
      * @return bool save success
+     *
+     * @deprecated Use \VuFind\Auth\Manager::updateUserVerifyHash()
      */
     public function updateHash()
     {
@@ -713,6 +732,52 @@ class User extends RowGateway implements
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    /**
+     * Set raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @param string $password Password
+     *
+     * @return UserEntityInterface
+     */
+    public function setRawPassword(string $password): UserEntityInterface
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get raw (unhashed) password (if available). This should only be used when hashing is disabled.
+     *
+     * @return string
+     */
+    public function getRawPassword(): string
+    {
+        return $this->password ?? '';
+    }
+
+    /**
+     * Set hashed password. This should only be used when hashing is enabled.
+     *
+     * @param ?string $hash Password hash
+     *
+     * @return UserEntityInterface
+     */
+    public function setPasswordHash(?string $hash): UserEntityInterface
+    {
+        $this->pass_hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get hashed password. This should only be used when hashing is enabled.
+     *
+     * @return ?string
+     */
+    public function getPasswordHash(): ?string
+    {
+        return $this->pass_hash ?? null;
     }
 
     /**
@@ -850,7 +915,7 @@ class User extends RowGateway implements
      */
     public function getCatUsername(): ?string
     {
-        return $this->cat_username;
+        return $this->cat_username ?? '';
     }
 
     /**
@@ -920,6 +985,65 @@ class User extends RowGateway implements
     public function getCatPassEnc(): ?string
     {
         return $this->cat_pass_enc;
+    }
+
+    /**
+     * Set college.
+     *
+     * @param string $college College
+     *
+     * @return UserEntityInterface
+     */
+    public function setCollege(string $college): UserEntityInterface
+    {
+        $this->college = $college;
+        return $this;
+    }
+
+    /**
+     * Get college.
+     *
+     * @return string
+     */
+    public function getCollege(): string
+    {
+        return $this->college ?? '';
+    }
+
+    /**
+     * Set major.
+     *
+     * @param string $major Major
+     *
+     * @return UserEntityInterface
+     */
+    public function setMajor(string $major): UserEntityInterface
+    {
+        $this->major = $major;
+        return $this;
+    }
+
+    /**
+     * Get major.
+     *
+     * @return string
+     */
+    public function getMajor(): string
+    {
+        return $this->major ?? '';
+    }
+
+    /**
+     * Set verification hash for recovery.
+     *
+     * @param string $hash Hash value to save
+     *
+     * @return UserEntityInterface
+     */
+    public function setVerifyHash(string $hash): UserEntityInterface
+    {
+        $this->verify_hash = $hash;
+        return $this;
     }
 
     /**
@@ -1027,7 +1151,7 @@ class User extends RowGateway implements
     /**
      * Created setter
      *
-     * @param DateTime $dateTime Last login date
+     * @param DateTime $dateTime Creation date
      *
      * @return UserEntityInterface
      */
@@ -1045,5 +1169,28 @@ class User extends RowGateway implements
     public function getCreated(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set email verification date (or null for unverified).
+     *
+     * @param ?DateTime $dateTime Verification date (or null)
+     *
+     * @return UserEntityInterface
+     */
+    public function setEmailVerified(?DateTime $dateTime): UserEntityInterface
+    {
+        $this->email_verified = $dateTime?->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get email verification date (or null for unverified).
+     *
+     * @return ?DateTime
+     */
+    public function getEmailVerified(): ?DateTime
+    {
+        return $this->email_verified ? DateTime::createFromFormat('Y-m-d H:i:s', $this->email_verified) : null;
     }
 }

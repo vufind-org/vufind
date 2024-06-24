@@ -50,11 +50,11 @@ class ExpireAuthHashesCommandTest extends AbstractExpireCommandTest
     protected $targetClass = ExpireAuthHashesCommand::class;
 
     /**
-     * Name of a valid table class to test with
+     * Name of a valid service class (or interface) to test with
      *
      * @var string
      */
-    protected $validTableClass = \VuFind\Db\Table\AuthHash::class;
+    protected $validServiceClass = \VuFind\Db\Service\AuthHashService::class;
 
     /**
      * Label to use for rows in help messages.

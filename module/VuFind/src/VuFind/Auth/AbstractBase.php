@@ -30,13 +30,15 @@
 
 namespace VuFind\Auth;
 
+use Exception;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function get_class;
 use function in_array;
+use function is_callable;
 
 /**
  * Abstract authentication base class
@@ -50,12 +52,10 @@ use function in_array;
  */
 abstract class AbstractBase implements
     \VuFind\Db\Service\DbServiceAwareInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Db\Service\DbServiceAwareTrait;
-    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -72,6 +72,21 @@ abstract class AbstractBase implements
      * @var \Laminas\Config\Config
      */
     protected $config = null;
+
+    /**
+     * Map of database column name to setter method for UserEntityInterface objects.
+     *
+     * @return array
+     */
+    protected $userSetterMap = [
+        'cat_username' => 'setCatUsername',
+        'college' => 'setCollege',
+        'email' => 'setEmail',
+        'firstname' => 'setFirstname',
+        'lastname' => 'setLastname',
+        'home_library' => 'setHomeLibrary',
+        'major' => 'setMajor',
+    ];
 
     /**
      * Get configuration (load automatically if not previously set). Throw an
@@ -181,7 +196,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     abstract public function authenticate($request);
 
@@ -202,7 +217,7 @@ abstract class AbstractBase implements
         } catch (AuthException $e) {
             return false;
         }
-        return $user instanceof User;
+        return $user instanceof UserEntityInterface;
     }
 
     /**
@@ -222,7 +237,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface New user entity.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -239,7 +254,7 @@ abstract class AbstractBase implements
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface Updated user entity.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -417,16 +432,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get access to the user table.
-     *
-     * @return \VuFind\Db\Table\User
-     */
-    public function getUserTable()
-    {
-        return $this->getDbTableManager()->get('User');
-    }
-
-    /**
      * Verify that a username fulfills the username policy. Throws exception if
      * the username is invalid.
      *
@@ -532,5 +537,39 @@ abstract class AbstractBase implements
                 throw new AuthException($this->translate("{$type}_error_invalid"));
             }
         }
+    }
+
+    /**
+     * Look up a user by username; create a new entity if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     * @throws Exception
+     */
+    protected function getOrCreateUserByUsername(string $username): UserEntityInterface
+    {
+        $userService = $this->getUserService();
+        $user = $userService->getUserByUsername($username);
+        return $user ? $user : $userService->createEntityForUsername($username);
+    }
+
+    /**
+     * Set a value in a UserEntityObject using a field name.
+     *
+     * @param UserEntityInterface $user  User to update
+     * @param string              $field Field name being updated
+     * @param mixed               $value New value to set
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function setUserValueByField(UserEntityInterface $user, string $field, $value): void
+    {
+        $setter = $this->userSetterMap[$field] ?? null;
+        if (!$setter || !is_callable([$user, $setter])) {
+            throw new Exception("Unsupported field: $field");
+        }
+        $user->$setter($value);
     }
 }

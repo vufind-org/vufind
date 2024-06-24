@@ -175,6 +175,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'gonenoaddress' => 'patron_status_address_missing',
         'debarred' => 'patron_status_card_blocked',
         'debt' => 'ILSMessages::too_much_debt',
+        'recalled' => 'ILSMessages::renewal_recalled',
     ];
 
     /**
@@ -2457,7 +2458,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function mapRenewalBlockReason($reason, $itype)
     {
-        return $this->config['ItypeRenewalBlockMappings'][$itype][$reason]
+        return $this->config['ItemTypeRenewalBlockMappings'][$itype][$reason]
             ?? $this->renewalBlockMappings[$reason]
             ?? 'renew_item_no';
     }

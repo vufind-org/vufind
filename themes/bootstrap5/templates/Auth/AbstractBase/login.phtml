@@ -19,7 +19,7 @@
         <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
       <?php endif; ?>
       <?php if ($account->supportsRecovery()): ?>
-        <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+        <a class="btn btn-link recover-account-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
       <?php endif; ?>
     </div>
   </form>
