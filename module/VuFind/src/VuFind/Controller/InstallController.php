@@ -32,7 +32,9 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFindSearch\Command\RetrieveCommand;
 
 use function count;
@@ -244,8 +246,7 @@ class InstallController extends AbstractBase
     {
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tags = $this->getTable('Tags');
-            $tags->getByText('test', false);
+            $this->getDbService(TagServiceInterface::class)->getTagsByText('test');
             $status = true;
         } catch (\Exception $e) {
             $status = false;
@@ -773,7 +774,7 @@ class InstallController extends AbstractBase
         }
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
-        $userRows = $this->getTable('user')->getInsecureRows();
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
         $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
@@ -811,7 +812,8 @@ class InstallController extends AbstractBase
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
-        $userRows = $this->getTable('user')->getInsecureRows();
+        $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
+        $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
         if (count($userRows) > 0) {
             $bcrypt = new Bcrypt();
             foreach ($userRows as $row) {
@@ -819,8 +821,8 @@ class InstallController extends AbstractBase
                     $row->pass_hash = $bcrypt->create($row->password);
                     $row->password = '';
                 }
-                if ($row->cat_password) {
-                    $row->saveCredentials($row->cat_username, $row->cat_password);
+                if ($rawPassword = $row->getRawCatPassword()) {
+                    $ilsAuthenticator->saveUserCatalogCredentials($row, $row->getCatUsername(), $rawPassword);
                 } else {
                     $row->save();
                 }
@@ -830,7 +832,6 @@ class InstallController extends AbstractBase
         }
         $cardService = $this->getDbService(UserCardServiceInterface::class);
         $cardRows = $cardService->getInsecureRows();
-        $ilsAuthenticator = $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
         if (count($cardRows) > 0) {
             foreach ($cardRows as $row) {
                 $row->setCatPassEnc($ilsAuthenticator->encrypt($row->getRawCatPassword()));

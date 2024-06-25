@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,7 +27,13 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest;
+namespace VuFindTest\Tags;
+
+use VuFind\Db\Service\ResourceTagsService;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Record\ResourcePopulator;
+use VuFind\Tags\TagsService;
 
 /**
  * Tags Test Class
@@ -38,23 +44,25 @@ namespace VuFindTest;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TagsTest extends \PHPUnit\Framework\TestCase
+class TagsServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Tag parser
+     * Get an object to test
      *
-     * @var \VuFind\Tags
-     */
-    protected $parser;
-
-    /**
-     * Standard setup method.
+     * @param int                $maxLength         Maximum tag length
+     * @param ?ResourcePopulator $resourcePopulator Resource populator service (null for default mock)
      *
-     * @return void
+     * @return TagsService
      */
-    public function setUp(): void
+    public function getTagsService($maxLength = 64, ?ResourcePopulator $resourcePopulator = null): TagsService
     {
-        $this->parser = new \VuFind\Tags();
+        return new TagsService(
+            $this->createMock(TagServiceInterface::class),
+            $this->createMock(ResourceTagsService::class),
+            $this->createMock(UserListServiceInterface::class),
+            $resourcePopulator ?? $this->createMock(ResourcePopulator::class),
+            $maxLength
+        );
     }
 
     /**
@@ -66,7 +74,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals(
             ['this', 'that', 'the other'],
-            $this->parser->parse('this that "the other"')
+            $this->getTagsService()->parse('this that "the other"')
         );
     }
 
@@ -77,7 +85,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyTagParsing()
     {
-        $this->assertEquals([], $this->parser->parse(''));
+        $this->assertEquals([], $this->getTagsService()->parse(''));
     }
 
     /**
@@ -87,7 +95,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDeduplication()
     {
-        $this->assertEquals(['test'], $this->parser->parse('test test test'));
+        $this->assertEquals(['test'], $this->getTagsService()->parse('test test test'));
     }
 
     /**
@@ -98,7 +106,6 @@ class TagsTest extends \PHPUnit\Framework\TestCase
     public function testTruncation()
     {
         // Create custom object w/ small size limit:
-        $parser = new \VuFind\Tags(10);
-        $this->assertEquals(['0123456789'], $parser->parse('01234567890'));
+        $this->assertEquals(['0123456789'], $this->getTagsService(10)->parse('01234567890'));
     }
 }

@@ -168,7 +168,7 @@ class ImportLokaliseCommand extends AbstractCommand
     protected function formatLokaliseLine(string $line): string
     {
         // Strip single quotes:
-        return preg_replace("/^(.* = )'(.*)'(\\n)\$/", '$1$2$3', $line);
+        return preg_replace("/^(.* = )'(.*)'(\\n)?\$/", '$1$2$3', $line);
     }
 
     /**

@@ -70,11 +70,10 @@ class ListItemsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory!');
         }
         return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('UserList'),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('ResourceTags'),
             $container->get('ControllerPluginManager')->get('url'),
-            $container->get(\VuFind\Search\Results\PluginManager::class)
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Tags\TagsService::class)
         );
     }
 }

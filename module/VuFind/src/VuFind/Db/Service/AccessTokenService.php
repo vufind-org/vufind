@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Table\AccessToken;
@@ -45,6 +46,7 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class AccessTokenService extends AbstractDbService implements
     AccessTokenServiceInterface,
+    Feature\DeleteExpiredInterface,
     LoggerAwareInterface
 {
     use LoggerAwareTrait;
@@ -99,5 +101,18 @@ class AccessTokenService extends AbstractDbService implements
     public function getNonce(int $userId): ?string
     {
         return $this->accessTokenTable->getNonce($userId);
+    }
+
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        return $this->accessTokenTable->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
     }
 }

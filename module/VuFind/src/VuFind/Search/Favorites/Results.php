@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,14 +33,16 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Tags\TagsService;
 use VuFindSearch\Service as SearchService;
 
+use function array_slice;
 use function count;
 
 /**
@@ -57,7 +59,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Object if user is logged in, false otherwise.
+     * Object if user is logged in, null otherwise.
      *
      * @var ?UserEntityInterface
      */
@@ -90,15 +92,17 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
      * @param SearchService              $searchService   Search service
      * @param Loader                     $recordLoader    Record loader
-     * @param ResourceTable              $resourceTable   Resource table
+     * @param ResourceServiceInterface   $resourceService Resource database service
      * @param UserListServiceInterface   $userListService UserList database service
+     * @param TagsService                $tagsService     Tags service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        protected ResourceTable $resourceTable,
-        protected UserListServiceInterface $userListService
+        protected ResourceServiceInterface $resourceService,
+        protected UserListServiceInterface $userListService,
+        protected TagsService $tagsService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -137,17 +141,17 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 switch ($field) {
                     case 'tags':
                         if ($list = $this->getListObject()) {
-                            $tags = $list->getResourceTags();
+                            $tags = $this->tagsService->getUserTagsFromFavorites($list->getUser(), $list);
                         } else {
-                            $tags = $this->user ? $this->user->getTags() : [];
+                            $tags = $this->tagsService->getUserTagsFromFavorites($this->user);
                         }
                         foreach ($tags as $tag) {
                             $this->facets[$field]['list'][] = [
-                                'value' => $tag->tag,
-                                'displayText' => $tag->tag,
-                                'count' => $tag->cnt,
+                                'value' => $tag['tag'],
+                                'displayText' => $tag['tag'],
+                                'count' => $tag['cnt'],
                                 'isApplied' => $this->getParams()
-                                    ->hasFilter("$field:" . $tag->tag),
+                                    ->hasFilter("$field:" . $tag['tag']),
                             ];
                         }
                         break;
@@ -189,38 +193,31 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         $userId = $list ? $list->getUser()->getId() : $this->user->getId();
         $listId = $list?->getId();
         // Get results as an array so that we can rewind it:
-        $rawResults = $this->resourceTable->getFavorites(
+        $rawResults = $this->resourceService->getFavorites(
             $userId,
             $listId,
             $this->getTagFilters(),
-            $this->getParams()->getSort()
-        )->toArray();
+            $this->getParams()->getSort(),
+            caseSensitiveTags: $this->tagsService->hasCaseSensitiveTags()
+        );
         $this->resultTotal = count($rawResults);
         $this->allIds = array_map(function ($result) {
-            return $result['source'] . '|' . $result['record_id'];
+            return $result->getSource() . '|' . $result->getRecordId();
         }, $rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            // Get results as an array so that we can rewind it:
-            $rawResults = $this->resourceTable->getFavorites(
-                $userId,
-                $listId,
-                $this->getTagFilters(),
-                $this->getParams()->getSort(),
-                $this->getStartRecord() - 1,
-                $limit
-            )->toArray();
+            $rawResults = array_slice($rawResults, $this->getStartRecord() - 1, $limit);
         }
 
         // Retrieve record drivers for the selected items.
         $recordsToRequest = [];
         foreach ($rawResults as $row) {
             $recordsToRequest[] = [
-                'id' => $row['record_id'], 'source' => $row['source'],
+                'id' => $row->getRecordId(), 'source' => $row->getSource(),
                 'extra_fields' => [
-                    'title' => $row['title'],
+                    'title' => $row->getTitle(),
                 ],
             ];
         }

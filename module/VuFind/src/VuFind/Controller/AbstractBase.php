@@ -37,6 +37,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -58,7 +59,6 @@ use function is_object;
  *
  * @method Plugin\Captcha captcha() Captcha plugin
  * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
- * @method Plugin\Favorites favorites() Favorites plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
@@ -317,11 +317,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Get the user object if logged in, false otherwise.
      *
-     * @return \VuFind\Db\Row\User|bool
+     * @return ?UserEntityInterface
      */
-    protected function getUser()
+    protected function getUser(): ?UserEntityInterface
     {
-        return $this->getAuthManager()->getUserObject() ?? false;
+        return $this->getAuthManager()->getUserObject();
     }
 
     /**

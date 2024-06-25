@@ -142,7 +142,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
             );
         }
         $handler = new File($config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }
