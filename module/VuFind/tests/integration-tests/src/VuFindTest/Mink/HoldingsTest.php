@@ -59,6 +59,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             [AvailabilityStatusInterface::STATUS_UNAVAILABLE, 'Checked Out', 'Checked Out', 'danger'],
             [AvailabilityStatusInterface::STATUS_UNCERTAIN, 'Check with Staff', 'Check with Staff', 'warning'],
             [null, 'Live Status Unavailable', 'Live Status Unavailable', 'muted'],
+            [false, 'HoldingStatus::transit_to', 'In transit to pick up location 1', 'danger'],
+            [false, 'HoldingStatus::transit_to_date', 'In transit to pick up location 1, sent on 01.01.2001', 'danger'],
         ];
         $msgSet = array_map(
             function ($a) {
@@ -344,6 +346,10 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             $item['availability'] = false;
         } else {
             $item['availability'] = $availability;
+        }
+        if (str_contains($statusMsg, 'transit_to')) {
+            $item['use_status_class'] = true;
+            $item['extraStatusInformation'] = ['location' => 'pick up location 1', 'date' => '01.01.2001'];
         }
         $item['status'] = $statusMsg;
         $item['location'] = 'main';
