@@ -1,6 +1,9 @@
 /*global AjaxRequestQueue, VuFind */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
+  var _checkItemHandlers = {};
+  var _handlerUrls = {};
+
   function formatCallnumbers(callnumber, callnumber_handler) {
     var cns = callnumber.split(',\t');
     for (var i = 0; i < cns.length; i++) {
@@ -155,8 +158,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   }
 
   function getStatusUrl(handlerName) {
-    if (handlerName === "overdrive") {
-      return "/Overdrive/getStatus";
+    if (_handlerUrls[handlerName] !== undefined) {
+      return _handlerUrls[handlerName];
     }
     return "/AJAX/JSON?method=getItemStatuses";
   }
@@ -197,12 +200,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       delay,
     });
   }
-
-  //store the handlers in a "hash" obj
-  var checkItemHandlers = {
-    ils: makeItemStatusQueue(),
-    overdrive: makeItemStatusQueue({handlerName: "overdrive"}),
-  };
 
   function checkItemStatus(el) {
     const hiddenIdEl = el.querySelector(".hiddenId");
@@ -246,7 +243,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     // queue the element into the queue
     let payload = { el, id: hiddenIdEl.value };
     if (VuFind.config.get('item-status:load-batch-wise', true)) {
-      checkItemHandlers[handlerName].add(payload);
+      _checkItemHandlers[handlerName].add(payload);
     } else {
       let runFunc = getItemStatusPromise({handlerName: handlerName});
       runFunc([payload])
@@ -282,10 +279,19 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
 
+  function addHandler(handlerName, handlerUrl) {
+    _checkItemHandlers[handlerName] = makeItemStatusQueue({handlerName: handlerName});
+    _handlerUrls[handlerName] = handlerUrl;
+  }
+
   function init() {
+    _checkItemHandlers = {
+      ils: makeItemStatusQueue()
+    };
+    addHandler("overdrive", "/Overdrive/getStatus");
     updateContainer({container: document});
     VuFind.listen('results-init', updateContainer);
   }
 
-  return { init: init, check: checkAllItemStatuses, checkRecord: checkItemStatus };
+  return { init: init, addHandler: addHandler, check: checkAllItemStatuses, checkRecord: checkItemStatus };
 });
