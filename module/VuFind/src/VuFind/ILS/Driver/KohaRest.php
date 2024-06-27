@@ -2292,6 +2292,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get shelving locations from cache or from the API
+     *
+     * @return array
+     */
+    protected function getShelvingLocations()
+    {
+        $cacheKey = 'shelvingLocations';
+        $shelvingLocations = $this->getCachedData($cacheKey);
+        if (null === $shelvingLocations) {
+
+            $result = $this->makeRequest('v1/authorised_value_categories/loc/authorised_values?_per_page=-1');
+
+            $shelvingLocations = [];
+            foreach ($result['data'] as $shelvingLocation) {
+                $shelvingLocations[$shelvingLocation['value']] = $shelvingLocation;
+            }
+            $this->putCachedData($cacheKey, $shelvingLocations, 3600);
+        }
+        return $shelvingLocations;
+    }
+
+    /**
      * Get library name
      *
      * @param string $library Library ID
@@ -2449,7 +2471,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return a location for a Koha item
+     * Return a location (branch or shelving) for a Koha item
      *
      * @param array $item Item
      *
@@ -2457,14 +2479,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
-            ? $item['holding_library_id'] : $item['home_library_id'];
-        $name = $this->translateLocation($libraryId);
-        if ($name === $libraryId) {
-            $libraries = $this->getLibraries();
-            $name = isset($libraries[$libraryId])
+        if ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Branch') {
+            $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
+                ? $item['holding_library_id'] : $item['home_library_id'];
+            $name = $this->translateLocation($libraryId);
+            if ($name === $libraryId) {
+                $libraries = $this->getLibraries();
+                $name = isset($libraries[$libraryId])
                 ? $libraries[$libraryId]['name'] : $libraryId;
-        }
+	    }
+	}
+	else if ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Shelving') {            
+            $shelvingLocationId = $item['location'];
+            $name = $this->translateLocation($shelvingLocationId);
+            if ($name === $shelvingLocationId) {
+                $shelvingLocations = $this->getShelvingLocations();
+                $name = isset($shelvingLocations[$shelvingLocationId])
+                ? $shelvingLocations[$shelvingLocationId]['description'] : $shelvingLocationId;
+	    }
+	}
         return $name;
     }
 
