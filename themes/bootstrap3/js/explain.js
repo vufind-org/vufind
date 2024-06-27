@@ -205,7 +205,6 @@ VuFind.register('explain', function explain() {
   }
 
   function updateContainer(params = null) {
-    console.log(params);
     _setupResultListChart(params.container);
     _setupExplainPieChart(params.container);
     _setupExplainColumnChart(params.container);
