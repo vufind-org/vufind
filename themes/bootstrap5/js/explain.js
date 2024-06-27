@@ -24,8 +24,8 @@ VuFind.register('explain', function explain() {
     };
   }
 
-  function _setupResultListChart() {
-    document.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
+  function _setupResultListChart(container) {
+    container.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
       const maxScore = barChart.dataset.maxScore;
       const score = barChart.dataset.score;
       const diff = Math.abs(maxScore - score);
@@ -91,8 +91,8 @@ VuFind.register('explain', function explain() {
   }
 
 
-  function _setupExplainPieChart() {
-    const pieChart = document.getElementById('js-explain-pie-chart');
+  function _setupExplainPieChart(container) {
+    const pieChart = container.querySelector('#js-explain-pie-chart');
     if (!pieChart) {
       return;
     }
@@ -135,8 +135,8 @@ VuFind.register('explain', function explain() {
     });
   }
 
-  function _setupExplainColumnChart() {
-    const columnChart = document.getElementById('js-explain-column-chart');
+  function _setupExplainColumnChart(container) {
+    const columnChart = container.querySelector('#js-explain-column-chart');
     if (!columnChart) {
       return;
     }
@@ -204,14 +204,14 @@ VuFind.register('explain', function explain() {
     });
   }
 
-  function updateContainer() {
-    _setupResultListChart();
-    _setupExplainPieChart();
-    _setupExplainColumnChart();
+  function updateContainer(params = null) {
+    _setupResultListChart(params.container);
+    _setupExplainPieChart(params.container);
+    _setupExplainColumnChart(params.container);
   }
 
   function init() {
-    updateContainer();
+    updateContainer({ container: document });
     VuFind.listen('results-init', updateContainer);
   }
 
