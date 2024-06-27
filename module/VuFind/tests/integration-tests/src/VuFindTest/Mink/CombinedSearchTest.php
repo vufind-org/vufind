@@ -159,6 +159,29 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results work in mixed AJAX mode when Explain is turned on.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsMixedAjaxWithExplain(): void
+    {
+        $config = $this->getCombinedIniOverrides();
+        $config['Solr:two']['ajax'] = true;
+        $this->changeConfigs(
+            ['combined' => $config, 'searches' => ['Explain' => ['enabled' => true]]],
+            ['combined']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
      * Test that combined results work in mixed AJAX/non-AJAX mode.
      *
      * @return void
