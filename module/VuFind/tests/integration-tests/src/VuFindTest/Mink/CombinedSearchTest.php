@@ -62,6 +62,24 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Start a session, perform a combined search, and return the resulting page.
+     *
+     * @param string $query Combined search query to perform.
+     *
+     * @return Element
+     */
+    protected function performCombinedSearch(string $query): Element
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Combined');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->clickCss($page, '.btn.btn-primary');
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
      * Several different methods perform the same query against different
      * configurations of the combined feature; this support method makes a
      * standard set of assertions against the final results.
@@ -108,13 +126,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $this->getCombinedIniOverrides()],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
     }
@@ -148,13 +160,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -171,13 +177,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config, 'searches' => ['Explain' => ['enabled' => true]]],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -194,13 +194,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ['combined' => $config],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('id:"testsample1" OR id:"theplus+andtheminus-"');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->assertResultsForDefaultQuery($page);
     }
 
@@ -232,13 +226,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             ],
             ['combined']
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Combined');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('*:*');
-        $this->clickCss($page, '.btn.btn-primary');
-        $this->waitForPageLoad($page);
+        $page = $this->performCombinedSearch('*:*');
         // Whether the combined column was loaded inline or via AJAX, it should
         // now include a DOI link:
         $this->assertStringStartsWith(
