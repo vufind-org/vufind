@@ -136,7 +136,7 @@ VuFind.register('explain', function explain() {
   }
 
   function _setupExplainColumnChart() {
-    const columnChart = document.querySelector('#js-explain-column-chart');
+    const columnChart = document.getElementById('js-explain-column-chart');
     if (!columnChart) {
       return;
     }
