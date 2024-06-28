@@ -25,7 +25,7 @@ VuFind.register('explain', function explain() {
   }
 
   function _setupResultListChart(container = document) {
-    container?.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
+    container.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
       const maxScore = barChart.dataset.maxScore;
       const score = barChart.dataset.score;
       const diff = Math.abs(maxScore - score);
@@ -205,7 +205,7 @@ VuFind.register('explain', function explain() {
   }
 
   function _resultsInitCallback(params = null) {
-    _setupResultListChart(params?.container);
+    _setupResultListChart(params && params.container ? params.container : document);
   }
 
   function init() {
