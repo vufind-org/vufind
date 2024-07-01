@@ -97,13 +97,14 @@ interface ResourceServiceInterface extends DbServiceInterface
     /**
      * Get a set of resources from the requested favorite list.
      *
-     * @param UserEntityInterface|int          $userOrId ID of user owning favorite list
-     * @param UserListEntityInterface|int|null $listOrId ID of list to retrieve (null for all favorites)
-     * @param string[]                         $tags     Tags to use for limiting results
-     * @param ?string                          $sort     Resource table field to use for sorting (null for no
+     * @param UserEntityInterface|int          $userOrId          ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId          ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags              Tags to use for limiting results
+     * @param ?string                          $sort              Resource table field to use for sorting (null for no
      * particular sort).
-     * @param int                              $offset   Offset for results
-     * @param ?int                             $limit    Limit for results (null for none)
+     * @param int                              $offset            Offset for results
+     * @param ?int                             $limit             Limit for results (null for none)
+     * @param bool                             $caseSensitiveTags Treat tags as case-sensitive?
      *
      * @return ResourceEntityInterface[]
      */
@@ -113,7 +114,8 @@ interface ResourceServiceInterface extends DbServiceInterface
         array $tags = [],
         ?string $sort = null,
         int $offset = 0,
-        ?int $limit = null
+        ?int $limit = null,
+        bool $caseSensitiveTags = false
     ): array;
 
     /**
@@ -127,4 +129,23 @@ interface ResourceServiceInterface extends DbServiceInterface
      * @throws Exception
      */
     public function deleteResourceByRecordId(string $id, string $source): bool;
+
+    /**
+     * Globally change the name of a source value in the database; return the number of rows affected.
+     *
+     * @param string $old Old source value
+     * @param string $new New source value
+     *
+     * @return int
+     */
+    public function renameSource(string $old, string $new): int;
+
+    /**
+     * Delete a resource entity.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Resource entity or ID value.
+     *
+     * @return void
+     */
+    public function deleteResource(ResourceEntityInterface|int $resourceOrId): void;
 }

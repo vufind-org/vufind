@@ -51,7 +51,8 @@ use VuFind\Db\AdapterFactory;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -60,7 +61,6 @@ use VuFind\Tags\TagsService;
 use function count;
 use function dirname;
 use function in_array;
-use function is_object;
 use function is_string;
 use function strlen;
 
@@ -319,15 +319,9 @@ class UpgradeController extends AbstractBase
      */
     protected function fixVuFindSourceInDatabase()
     {
-        $resource = $this->getTable('resource');
-        $resourceWhere = ['source' => 'VuFind'];
-        $resourceRows = $resource->select($resourceWhere);
-        if (count($resourceRows) > 0) {
-            $resource->update(['source' => 'Solr'], $resourceWhere);
-            $this->session->warnings->append(
-                'Converted ' . count($resourceRows)
-                . ' legacy "VuFind" source value(s) in resource table'
-            );
+        if ($count = $this->getDbService(ResourceServiceInterface::class)->renameSource('VuFind', 'Solr')) {
+            $this->session->warnings
+                ->append('Converted ' . $count . ' legacy "VuFind" source value(s) in resource table');
         }
     }
 
@@ -353,16 +347,18 @@ class UpgradeController extends AbstractBase
     protected function fixSearchChecksumsInDatabase()
     {
         $manager = $this->serviceLocator->get(ResultsManager::class);
-        $search = $this->getTable('search');
-        $searchWhere = ['checksum' => null, 'saved' => 1];
-        $searchRows = $search->select($searchWhere);
+        $searchService = $this->getDbService(SearchServiceInterface::class);
+        $searchRows = $searchService->getSavedSearchesWithMissingChecksums();
         if (count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
-                $searchObj = $searchRow->getSearchObjectOrThrowException()->deminify($manager);
+                $searchObj = $searchRow->getSearchObject()?->deminify($manager);
+                if (!$searchObj) {
+                    throw new Exception("Missing search data for row {$searchRow->getId()}.");
+                }
                 $url = $searchObj->getUrlQuery()->getParams();
                 $checksum = crc32($url) & 0xFFFFFFF;
-                $searchRow->checksum = $checksum;
-                $searchRow->save();
+                $searchRow->setChecksum($checksum);
+                $searchService->persistEntity($searchRow);
             }
             $this->session->warnings->append(
                 'Added checksum to ' . count($searchRows) . ' rows in search table'
@@ -593,7 +589,7 @@ class UpgradeController extends AbstractBase
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->getDbService(TagServiceInterface::class)->getDuplicateTags();
+            $dupeTags = $this->serviceLocator->get(TagsService::class)->getDuplicateTags();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -721,16 +717,14 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $user = $this->params()->fromPost('username');
-            if (empty($user)) {
+            $username = $this->params()->fromPost('username');
+            if (empty($username)) {
                 $this->flashMessenger()
                     ->addMessage('Username must not be empty.', 'error');
             } else {
-                $userTable = $this->getTable('User');
-                $user = $userTable->getByUsername($user, false);
-                if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    $this->flashMessenger()
-                        ->addMessage("User {$user} not found.", 'error');
+                $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($username);
+                if (!$user) {
+                    $this->flashMessenger()->addMessage("User {$username} not found.", 'error');
                 } else {
                     $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
@@ -788,7 +782,8 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $problems = $this->getDbService(ResourceServiceInterface::class)->findMissingMetadata();
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $problems = $resourceService->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
@@ -798,18 +793,22 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted()) {
-            $resourceService = $this->getDbService(ResourceServiceInterface::class);
             $resourcePopulator = $this->serviceLocator->get(ResourcePopulator::class);
             foreach ($problems as $problem) {
+                $recordId = $problem->getRecordId();
+                $source = $problem->getSource();
                 try {
-                    $driver = $this->getRecordLoader()->load($problem->getRecordId(), $problem->getSource());
+                    $driver = $this->getRecordLoader()->load($recordId, $source);
                     $resourceService->persistEntity(
                         $resourcePopulator->assignMetadata($problem, $driver)
                     );
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
-                        'Unable to load metadata for record '
-                        . "{$problem->getSource()}:{$problem->getRecordId()}"
+                        "Unable to load metadata for record {$source}:{$recordId}"
+                    );
+                } catch (\Exception $e) {
+                    $this->session->warnings->append(
+                        "Problem saving metadata updates for record {$source}:{$recordId}"
                     );
                 }
             }
@@ -1047,18 +1046,15 @@ class UpgradeController extends AbstractBase
      */
     protected function fixshortlinks()
     {
-        $shortlinksTable = $this->getTable('shortlinks');
+        $shortlinks = $this->getDbService(ShortlinksServiceInterface::class);
         $base62 = new Base62();
 
         try {
-            $results = $shortlinksTable->select(['hash' => null]);
+            $results = $shortlinks->getShortLinksWithMissingHashes();
 
             foreach ($results as $result) {
-                $id = $result['id'];
-                $shortlinksTable->update(
-                    ['hash' => $base62->encode($id)],
-                    ['id' => $id]
-                );
+                $result->setHash($base62->encode($result->getId()));
+                $shortlinks->persistEntity($result);
             }
 
             if (count($results) > 0) {

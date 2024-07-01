@@ -241,14 +241,8 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagsService = $this->serviceLocator->get(TagsService::class);
-            $tagsService->addTagsToRecord(
-                $driver,
-                $user,
-                $tagsService->parse($tags)
-            );
-            $this->flashMessenger()
-                ->addMessage(['msg' => 'add_tag_success'], 'success');
+            $this->serviceLocator->get(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
+            $this->flashMessenger()->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
         }
 
@@ -278,9 +272,9 @@ class AbstractRecord extends AbstractBase
         // Obtain the current record object:
         $driver = $this->loadRecord();
 
-        // Save tags, if any:
+        // Delete tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
-            $this->serviceLocator->get(TagsService::class)->deleteTagsFromRecord(
+            $this->serviceLocator->get(TagsService::class)->unlinkTagsFromRecord(
                 $driver,
                 $user,
                 [$tag]

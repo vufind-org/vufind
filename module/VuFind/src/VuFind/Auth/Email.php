@@ -80,7 +80,7 @@ class Email extends AbstractBase
 
         if (!$hash) {
             // Validate the credentials:
-            $user = $this->getUserService()->getUserByField('email', $email);
+            $user = $this->getUserService()->getUserByEmail($email);
             if ($user) {
                 $loginData = [
                     'vufind_id' => $user->getId(),
@@ -142,7 +142,7 @@ class Email extends AbstractBase
     {
         // Check to see if we already have an account for this user:
         if (!empty($info['id'])) {
-            $user = $this->getUserService()->getUserByField('cat_id', $info['id']);
+            $user = $this->getUserService()->getUserByCatId($info['id']);
             if (empty($user)) {
                 $user = $this->getOrCreateUserByUsername($info['email']);
                 $user->setCatId($info['id']);

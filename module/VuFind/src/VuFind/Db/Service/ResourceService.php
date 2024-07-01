@@ -36,6 +36,8 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Table\Resource;
 
+use function count;
+
 /**
  * Database service for resource.
  *
@@ -46,7 +48,7 @@ use VuFind\Db\Table\Resource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractDbService implements ResourceServiceInterface
+class ResourceService extends AbstractDbService implements ResourceServiceInterface, Feature\TransactionInterface
 {
     /**
      * Constructor.
@@ -55,6 +57,39 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function __construct(protected Resource $resourceTable)
     {
+    }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->resourceTable->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->resourceTable->commitTransaction();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->resourceTable->rollbackTransaction();
     }
 
     /**
@@ -128,13 +163,14 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
     /**
      * Get a set of resources from the requested favorite list.
      *
-     * @param UserEntityInterface|int          $userOrId ID of user owning favorite list
-     * @param UserListEntityInterface|int|null $listOrId ID of list to retrieve (null for all favorites)
-     * @param string[]                         $tags     Tags to use for limiting results
-     * @param ?string                          $sort     Resource table field to use for sorting (null for no
+     * @param UserEntityInterface|int          $userOrId          ID of user owning favorite list
+     * @param UserListEntityInterface|int|null $listOrId          ID of list to retrieve (null for all favorites)
+     * @param string[]                         $tags              Tags to use for limiting results
+     * @param ?string                          $sort              Resource table field to use for sorting (null for no
      * particular sort).
-     * @param int                              $offset   Offset for results
-     * @param ?int                             $limit    Limit for results (null for none)
+     * @param int                              $offset            Offset for results
+     * @param ?int                             $limit             Limit for results (null for none)
+     * @param bool                             $caseSensitiveTags Treat tags as case-sensitive?
      *
      * @return ResourceEntityInterface[]
      */
@@ -144,7 +180,8 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
         array $tags = [],
         ?string $sort = null,
         int $offset = 0,
-        ?int $limit = null
+        ?int $limit = null,
+        bool $caseSensitiveTags = false
     ): array {
         return iterator_to_array(
             $this->resourceTable->getFavorites(
@@ -153,7 +190,8 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
                 $tags,
                 $sort,
                 $offset,
-                $limit
+                $limit,
+                $caseSensitiveTags
             )
         );
     }
@@ -176,5 +214,36 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
         }
         $row->delete();
         return true;
+    }
+
+    /**
+     * Globally change the name of a source value in the database; return the number of rows affected.
+     *
+     * @param string $old Old source value
+     * @param string $new New source value
+     *
+     * @return int
+     */
+    public function renameSource(string $old, string $new): int
+    {
+        $resourceWhere = ['source' => $old];
+        $resourceRows = $this->resourceTable->select($resourceWhere);
+        if ($count = count($resourceRows)) {
+            $this->resourceTable->update(['source' => $new], $resourceWhere);
+        }
+        return $count;
+    }
+
+    /**
+     * Delete a resource entity.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Resource entity or ID value.
+     *
+     * @return void
+     */
+    public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
+    {
+        $id = $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId;
+        $this->resourceTable->delete(['id' => $id]);
     }
 }

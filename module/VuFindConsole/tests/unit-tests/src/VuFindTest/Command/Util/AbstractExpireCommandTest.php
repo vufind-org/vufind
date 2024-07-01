@@ -57,11 +57,11 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $targetClass = AbstractExpireCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class (or interface) to test with
      *
      * @var string
      */
-    protected $validServiceClass = \VuFind\Db\Service\AuthHashService::class;
+    protected $validServiceClass = \VuFind\Db\Service\Feature\DeleteExpiredInterface::class;
 
     /**
      * Label to use for rows in help messages.
@@ -83,23 +83,6 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
      * @var int
      */
     protected $expectedMinAge = 2;
-
-    /**
-     * Test an unsupported table class.
-     *
-     * @return void
-     */
-    public function testUnsupportedTableClass()
-    {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            $table::class . ' does not support deleteExpired()'
-        );
-        new $this->targetClass($table, 'foo');
-    }
 
     /**
      * Test an illegal age parameter.

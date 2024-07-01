@@ -34,7 +34,6 @@ use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Http\PhpEnvironment\Request;
 
@@ -49,8 +48,6 @@ use VuFind\Http\PhpEnvironment\Request;
  */
 class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\WithConsecutiveTrait;
-
     /**
      * Test validation of empty create request.
      *
@@ -466,15 +463,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         // Fake services:
         $service = $this->createMock(UserServiceInterface::class);
         $mockUser = $this->createMock(UserEntityInterface::class);
-        $this->expectConsecutiveCalls(
-            $service,
-            'getUserByField',
-            [
-                ['username', 'good'],
-                ['email', 'me@mysite.com'],
-            ],
-            [null, $mockUser]
-        );
+        $service->expects($this->once())->method('getUserByUsername')->with('good')->willReturn(null);
+        $service->expects($this->once())->method('getUserByEmail')->with('me@mysite.com')->willReturn($mockUser);
         $db = $this->getDatabase($service);
         $this->assertEquals(
             false,
@@ -495,8 +485,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         // Fake services:
         $service = $this->createMock(UserServiceInterface::class);
         $mockUser = $this->createMock(UserEntityInterface::class);
-        $service->expects($this->once())->method('getUserByField')
-            ->with('username', 'good')->willReturn($mockUser);
+        $service->expects($this->once())->method('getUserByUsername')->with('good')->willReturn($mockUser);
         $db = $this->getDatabase($service);
         $this->assertEquals(
             false,
@@ -514,18 +503,10 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         // Fake services:
         $service = $this->createMock(UserServiceInterface::class);
         $mockUser = $this->createMock(UserEntityInterface::class);
-        $service->expects($this->once())->method('createEntityForUsername')
-            ->with('good')->willReturn($mockUser);
+        $service->expects($this->once())->method('createEntityForUsername')->with('good')->willReturn($mockUser);
         $service->expects($this->once())->method('persistEntity')->with($mockUser);
-        $this->expectConsecutiveCalls(
-            $service,
-            'getUserByField',
-            [
-                ['username', 'good'],
-                ['email', 'me@mysite.com'],
-            ],
-            null
-        );
+        $service->expects($this->once())->method('getUserByUsername')->with('good')->willReturn(null);
+        $service->expects($this->once())->method('getUserByEmail')->with('me@mysite.com')->willReturn(null);
         $db = $this->getDatabase($service);
         $user = $db->create($this->getRequest($this->getCreateParams()));
         $this->assertIsObject($user);
@@ -548,16 +529,6 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             'password2' => 'pass',
             'email' => 'me@mysite.com',
         ];
-    }
-
-    /**
-     * Get a mock row object
-     *
-     * @return MockObject&User
-     */
-    protected function getMockRow(): MockObject&User
-    {
-        return $this->createMock(User::class);
     }
 
     /**

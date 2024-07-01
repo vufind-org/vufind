@@ -32,6 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\RecordDriver\Response\PublicationDetails;
+use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -80,7 +81,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getViewHelpers($container): array
     {
         $context = new \VuFind\View\Helper\Root\Context();
-        $record = new \VuFind\View\Helper\Root\Record();
+        $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')->willReturnCallback(function ($service) {
             return $this->createMock($service);
@@ -134,7 +135,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $onlyMethods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary', 'getNewerTitles',
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getSummary', 'getNewerTitles',
         ];
         $addMethods = [
             'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
@@ -145,8 +146,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods($onlyMethods)
             ->addMethods($addMethods)
             ->getMock();
-        $record->expects($this->any())->method('getTags')
-            ->will($this->returnValue([]));
         // Force a return value of zero so we can test this edge case value (even
         // though in the context of "building"/"container title" it makes no sense):
         $record->expects($this->any())->method('getBuildings')

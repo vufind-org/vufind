@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection as IlsConnection;
 
 /**
@@ -380,9 +380,9 @@ class AccountMenu extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get authenticated user
      *
-     * @return ?User Object if user is logged in, null otherwise.
+     * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
-    protected function getUser(): ?User
+    protected function getUser(): ?UserEntityInterface
     {
         return $this->getAuthHelper()->getUserObject();
     }

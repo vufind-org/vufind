@@ -129,7 +129,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock change tracker
+     * Get mock change tracker service
      *
      * @return MockObject&ChangeTrackerServiceInterface
      */

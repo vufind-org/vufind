@@ -71,7 +71,7 @@ interface UserServiceInterface extends DbServiceInterface
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username, email or cat_id.
+     * Field name must be id, username, email, verify_hash or cat_id.
      *
      * @param string          $fieldName  Field name
      * @param int|string|null $fieldValue Field value
@@ -79,6 +79,42 @@ interface UserServiceInterface extends DbServiceInterface
      * @return ?UserEntityInterface
      */
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by catalog ID. Returns null if no match is found.
+     *
+     * @param string $catId Catalog ID
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByCatId(string $catId): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by email address. Returns null if no match is found.
+     *
+     * @param string $email Email address
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByEmail(string $email): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by username. Returns null if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByUsername(string $username): ?UserEntityInterface;
+
+    /**
+     * Retrieve a user object by verify hash. Returns null if no match is found.
+     *
+     * @param string $hash Verify hash
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByVerifyHash(string $hash): ?UserEntityInterface;
 
     /**
      * Update the user's email address, if appropriate. Note that this does NOT
@@ -97,6 +133,20 @@ interface UserServiceInterface extends DbServiceInterface
         string $email,
         bool $userProvided = false
     ): void;
+
+    /**
+     * Get all rows with catalog usernames.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getAllUsersWithCatUsernames(): array;
+
+    /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array;
 
     /**
      * Create a new user entity.

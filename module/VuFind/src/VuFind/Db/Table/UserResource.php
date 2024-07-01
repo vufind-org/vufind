@@ -38,8 +38,6 @@ use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 
-use function is_array;
-
 /**
  * Table Definition for user_resource
  *
@@ -158,23 +156,26 @@ class UserResource extends Gateway implements DbServiceAwareInterface
      * any tags associated with the $resource_id independently of lists)
      *
      * @return void
+     *
+     * @deprecated
      */
     public function destroyLinks($resource_id, $user_id, $list_id = null)
     {
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $this->getDbService(ResourceTagsServiceInterface::class)
-            ->destroyResourceTagsLinksForUser($resource_id, $user_id, $list_id);
+        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
+        if ($list_id === true) {
+            $resourceTagsService->destroyAllListResourceTagsLinksForUser($resource_id, $user_id);
+        } else {
+            $resourceTagsService->destroyResourceTagsLinksForUser($resource_id, $user_id, $list_id);
+        }
 
         // Now build the where clause to figure out which rows to remove:
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {
             $select->where->equalTo('user_id', $user_id);
             if (null !== $resource_id) {
-                if (!is_array($resource_id)) {
-                    $resource_id = [$resource_id];
-                }
-                $select->where->in('resource_id', $resource_id);
+                $select->where->in('resource_id', (array)$resource_id);
             }
             // null or true values of $list_id have different meanings in the
             // context of the destroyResourceTagsLinksForUser() call above, since

@@ -104,7 +104,7 @@ class UserService extends AbstractDbService implements
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username, email or cat_id.
+     * Field name must be id, username, email, verify_hash or cat_id.
      *
      * @param string          $fieldName  Field name
      * @param int|string|null $fieldValue Field value
@@ -120,10 +120,60 @@ class UserService extends AbstractDbService implements
                 return $this->getDbTable('User')->getById($fieldValue);
             case 'username':
                 return $this->getDbTable('User')->getByUsername($fieldValue, false);
+            case 'verify_hash':
+                return $this->getDbTable('User')->getByVerifyHash($fieldValue);
             case 'cat_id':
                 return $this->getDbTable('User')->getByCatalogId($fieldValue);
         }
         throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
+    }
+
+    /**
+     * Retrieve a user object by catalog ID. Returns null if no match is found.
+     *
+     * @param string $catId Catalog ID
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByCatId(string $catId): ?UserEntityInterface
+    {
+        return $this->getUserByField('cat_id', $catId);
+    }
+
+    /**
+     * Retrieve a user object by email address. Returns null if no match is found.
+     *
+     * @param string $email Email address
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByEmail(string $email): ?UserEntityInterface
+    {
+        return $this->getUserByField('email', $email);
+    }
+
+    /**
+     * Retrieve a user object by username. Returns null if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByUsername(string $username): ?UserEntityInterface
+    {
+        return $this->getUserByField('username', $username);
+    }
+
+    /**
+     * Retrieve a user object by verify hash. Returns null if no match is found.
+     *
+     * @param string $hash Verify hash
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByVerifyHash(string $hash): ?UserEntityInterface
+    {
+        return $this->getUserByField('verify_hash', $hash);
     }
 
     /**
@@ -221,6 +271,29 @@ class UserService extends AbstractDbService implements
     {
         return isset($this->userSessionContainer->userId)
             || isset($this->userSessionContainer->userDetails);
+    }
+
+    /**
+     * Get all rows with catalog usernames.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getAllUsersWithCatUsernames(): array
+    {
+        $callback = function ($select) {
+            $select->where->isNotNull('cat_username');
+        };
+        return iterator_to_array($this->getDbTable('User')->select($callback));
+    }
+
+    /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array
+    {
+        return iterator_to_array($this->getDbTable('User')->getInsecureRows());
     }
 
     /**

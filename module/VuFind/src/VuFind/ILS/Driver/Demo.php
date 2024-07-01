@@ -40,6 +40,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
@@ -729,6 +730,19 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         if ($json = $this->config['StaticHoldings'][$id] ?? null) {
             foreach (json_decode($json, true) as $i => $status) {
+                if ($status['use_status_class'] ?? false) {
+                    $availability = $status['availability'] ?? false;
+                    if ($status['use_unknown_message'] ?? false) {
+                        $availability = AvailabilityStatusInterface::STATUS_UNKNOWN;
+                    }
+                    $status['availability'] = new AvailabilityStatus(
+                        $availability,
+                        $status['status'] ?? '',
+                        $status['extraStatusInformation'] ?? []
+                    );
+                    unset($status['status']);
+                    unset($status['use_unknown_message']);
+                }
                 $this->setStatus($id, $status, $i > 0, $patron);
             }
         }

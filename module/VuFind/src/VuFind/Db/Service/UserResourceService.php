@@ -140,6 +140,39 @@ class UserResourceService extends AbstractDbService implements
     }
 
     /**
+     * Unlink rows for the specified resource.
+     *
+     * @param int|int[]|null              $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL
+     * matching resources)
+     * @param UserEntityInterface|int     $userOrId   ID or entity representing user removing links
+     * @param UserListEntityInterface|int $listOrId   ID or entity representing list to unlink (null for ALL
+     * matching lists)
+     *
+     * @return void
+     */
+    public function unlinkFavorites(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ): void {
+        // Build the where clause to figure out which rows to remove:
+        $listId = is_int($listOrId) ? $listOrId : $listOrId?->getId();
+        $userId = is_int($userOrId) ? $userOrId : $userOrId->getId();
+        $callback = function ($select) use ($resourceId, $userId, $listId) {
+            $select->where->equalTo('user_id', $userId);
+            if (null !== $resourceId) {
+                $select->where->in('resource_id', (array)$resourceId);
+            }
+            if (null !== $listId) {
+                $select->where->equalTo('list_id', $listId);
+            }
+        };
+
+        // Delete the rows:
+        $this->getDbTable('UserResource')->delete($callback);
+    }
+
+    /**
      * Create a UserResource entity object.
      *
      * @return UserResourceEntityInterface
@@ -147,5 +180,28 @@ class UserResourceService extends AbstractDbService implements
     public function createEntity(): UserResourceEntityInterface
     {
         return $this->getDbTable('UserResource')->createRow();
+    }
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $this->getDbTable('UserResource')->update(['resource_id' => $new], ['resource_id' => $old]);
+    }
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void
+    {
+        $this->getDbTable('UserResource')->deduplicate();
     }
 }

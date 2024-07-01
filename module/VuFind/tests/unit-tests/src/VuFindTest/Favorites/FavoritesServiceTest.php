@@ -33,8 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
-use VuFind\Db\Service\ResourceTagsServiceInterface;
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\ResourceTagsService;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -65,8 +64,7 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
     {
         return new FavoritesService(
             $this->createMock(ResourceServiceInterface::class),
-            $this->createMock(ResourceTagsServiceInterface::class),
-            $this->createMock(TagServiceInterface::class),
+            $this->createMock(ResourceTagsService::class),
             $listService ?? $this->createMock(UserListServiceInterface::class),
             $this->createMock(UserResourceServiceInterface::class),
             $this->createMock(UserServiceInterface::class),

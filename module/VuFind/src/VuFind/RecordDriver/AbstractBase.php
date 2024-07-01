@@ -211,12 +211,12 @@ abstract class AbstractBase implements
     /**
      * Add tags to the record.
      *
-     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param UserEntityInterface $user The user posting the tag
      * @param array               $tags The user-provided tags
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Tags\TagsService::addTagsToRecord()
+     * @deprecated Use \VuFind\Tags\TagsService::linkTagsToRecord()
      */
     public function addTags($user, $tags)
     {
@@ -233,12 +233,12 @@ abstract class AbstractBase implements
     /**
      * Remove tags from the record.
      *
-     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param UserEntityInterface $user The user posting the tag
      * @param array               $tags The user-provided tags
      *
      * @return void
      *
-     * @deprecated Use \VuFind\Tags\TagsService::deleteTagsFromRecord()
+     * @deprecated Use \VuFind\Tags\TagsService::unlinkTagsFromRecord()
      */
     public function deleteTags($user, $tags)
     {

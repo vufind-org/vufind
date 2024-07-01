@@ -479,13 +479,27 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Make sure we have a facet list:
-        $facetList = $this->findCss($page, 'nav[aria-labelledby="acc-menu-favs-header"]');
-        $this->assertEquals('1 test 3 1 test1 1 test2', $facetList->getText());
+        $facetLinks = $page->findAll('css', 'nav[aria-labelledby="acc-menu-favs-header"] a');
+        $linkToClick = null;
+        $allText = [];
+        foreach ($facetLinks as $link) {
+            $allText[] = $link->getText();
+            if ($link->getText() === '1 test 3') {
+                $linkToClick = $link;
+            }
+        }
+        // Facet order may vary by database engine, but let's make sure all the values are there:
+        $this->assertCount(3, $allText);
+        $expectedLinks = [
+            '1 test 3',
+            '1 test1',
+            '1 test2',
+        ];
+        $this->assertEmpty(array_diff($expectedLinks, $allText));
 
         // Now click on one and confirm that it filters the list down to just one item:
-        $firstLink = $this->findCss($facetList, 'a');
-        $this->assertEquals('1 test 3', $firstLink->getText());
-        $firstLink->click();
+        $this->assertEquals('1 test 3', $linkToClick?->getText());
+        $linkToClick->click();
         $this->waitForPageLoad($page);
         $this->assertFavoriteTitleOrder($page, ['Fake Record 1 with multiple relators/']);
     }

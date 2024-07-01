@@ -51,12 +51,13 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Get Resource Tags Paginator
      *
-     * @param ?int    $userId     ID of user (null for any)
-     * @param ?int    $resourceId ID of the resource (null for any)
-     * @param ?int    $tagId      ID of the tag (null for any)
-     * @param ?string $order      The order in which to return the data
-     * @param ?int    $page       The page number to select
-     * @param int     $limit      The number of items to fetch
+     * @param ?int    $userId            ID of user (null for any)
+     * @param ?int    $resourceId        ID of the resource (null for any)
+     * @param ?int    $tagId             ID of the tag (null for any)
+     * @param ?string $order             The order in which to return the data
+     * @param ?int    $page              The page number to select
+     * @param int     $limit             The number of items to fetch
+     * @param bool    $caseSensitiveTags Should we treat tags as case-sensitive?
      *
      * @return Paginator
      */
@@ -66,7 +67,8 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
         ?int $tagId = null,
         ?string $order = null,
         ?int $page = null,
-        int $limit = 20
+        int $limit = 20,
+        bool $caseSensitiveTags = false
     ): Paginator;
 
     /**
@@ -107,12 +109,11 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Unlink tag rows for the specified resource and user.
      *
-     * @param int|int[]|null                               $resourceId ID (or array of IDs) of resource(s) to
+     * @param int|int[]|null                   $resourceId ID (or array of IDs) of resource(s) to
      * unlink (null for ALL matching resources)
-     * @param UserEntityInterface|int                      $userOrId   ID or entity representing user
-     * @param UserListEntityInterface|int|bool|string|null $listOrId   ID of list to unlink (null for ALL matching
-     * tags, 'none' for tags not in a list, true for tags only found in a list)
-     * @param int|int[]|null                               $tagId      ID or array of IDs of tag(s) to unlink (null
+     * @param UserEntityInterface|int          $userOrId   ID or entity representing user
+     * @param UserListEntityInterface|int|null $listOrId   ID of list to unlink (null for ALL matching tags)
+     * @param int|int[]|null                   $tagId      ID or array of IDs of tag(s) to unlink (null
      * for ALL matching tags)
      *
      * @return void
@@ -120,9 +121,58 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     public function destroyResourceTagsLinksForUser(
         int|array|null $resourceId,
         UserEntityInterface|int $userOrId,
-        UserListEntityInterface|int|bool|string|null $listOrId = null,
+        UserListEntityInterface|int|null $listOrId = null,
         int|array|null $tagId = null
-    );
+    ): void;
+
+    /**
+     * Unlink tag rows that are not associated with a favorite list for the specified resource and user.
+     *
+     * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
+     * resources)
+     * @param UserEntityInterface|int $userOrId   ID or entity representing user
+     * @param int|int[]|null          $tagId      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyNonListResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void;
+
+    /**
+     * Unlink all tag rows associated with favorite lists for the specified resource and user. Tags added directly
+     * to records outside of favorites will not be impacted.
+     *
+     * @param int|int[]|null          $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL matching
+     * resources)
+     * @param UserEntityInterface|int $userOrId   ID or entity representing user
+     * @param int|int[]|null          $tagId      ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyAllListResourceTagsLinksForUser(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void;
+
+    /**
+     * Unlink rows for the specified user list. This removes tags ON THE LIST ITSELF, not tags on
+     * resources within the list.
+     *
+     * @param UserListEntityInterface|int $listOrId ID or entity representing list
+     * @param UserEntityInterface|int     $userOrId ID or entity representing user
+     * @param int|int[]|null              $tagId    ID or array of IDs of tag(s) to unlink (null for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyUserListLinks(
+        UserListEntityInterface|int $listOrId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null
+    ): void;
 
     /**
      * Gets unique tagged resources from the database.
@@ -142,16 +192,18 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
     /**
      * Gets unique tags from the database.
      *
-     * @param ?int $userId     ID of user (null for any)
-     * @param ?int $resourceId ID of the resource (null for any)
-     * @param ?int $tagId      ID of the tag (null for any)
+     * @param ?int $userId        ID of user (null for any)
+     * @param ?int $resourceId    ID of the resource (null for any)
+     * @param ?int $tagId         ID of the tag (null for any)
+     * @param bool $caseSensitive Should we treat tags in a case-sensitive manner?
      *
      * @return array[]
      */
     public function getUniqueTags(
         ?int $userId = null,
         ?int $resourceId = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        bool $caseSensitive = false
     ): array;
 
     /**
@@ -199,4 +251,21 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
      * @return void
      */
     public function assignAnonymousTags(UserEntityInterface|int $userOrId): void;
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void;
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void;
 }

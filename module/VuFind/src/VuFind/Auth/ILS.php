@@ -300,7 +300,7 @@ class ILS extends AbstractBase
         // Check to see if we already have an account for this user:
         $userService = $this->getUserService();
         if (!empty($info['id'])) {
-            $user = $userService->getUserByField('cat_id', $info['id']);
+            $user = $userService->getUserByCatId($info['id']);
             if (empty($user)) {
                 $user = $this->getOrCreateUserByUsername($info[$usernameField]);
                 $user->setCatId($info['id']);
