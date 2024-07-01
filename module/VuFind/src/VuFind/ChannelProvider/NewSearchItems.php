@@ -66,6 +66,13 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
     protected $maxAge;
 
     /**
+     * Sort order for results.
+     *
+     * @var string
+     */
+    protected $sort;
+
+    /**
      * Constructor
      *
      * @param \VuFindSearch\Service               $searchService Search service
@@ -93,6 +100,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
     {
         $this->channelSize = $options['channelSize'] ?? 20;
         $this->maxAge = $options['maxAge'] ?? 30;
+        $this->sort = $options['sort'] ?? 'first_indexed desc';
     }
 
     /**
@@ -146,7 +154,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
             'providerId' => $this->providerId,
         ];
         $params->addHiddenFilter($this->newItems->getSolrFilter($this->maxAge));
-        $params->setSort('first_indexed desc', true);
+        $params->setSort($this->sort, true);
         $query = $params->getQuery();
         $paramBag = $params->getBackendParameters();
         $command = new SearchCommand(
