@@ -332,5 +332,29 @@ return [
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
+    /**
+     * Html elements can be made sticky which means that they don't leave the screen on scrolling.
+     * You can make an element sticky by adding an array with the css selector to stickyElements.
+     * Warning! The order of the entries in the config will be used to order the elements while they are sticky.
+     * If you want to hide some child elements of sticky elements you can add array with their css selectors
+     * to hiddenStickyElements.
+     * You can also add "min-width" and "max-width" to the configs so that the effect only applies on specific
+     * screen sizes.
+     * Examples:
+     */
+    'stickyElements' => [
+        // Navbar Banner on non-mobile screens
+        //["selector" => ".banner.container.navbar", "min-width" => 768],
+        // Searchbox on search home page
+        //["selector" => ".searchHomeContent"],
+        // Searchbox on other pages
+        //["selector" => ".search.container.navbar"],
+        // Breadcrumbs on non-mobile screens
+        //["selector" => ".breadcrumbs", "min-width" => 768]
+    ],
+    'hiddenStickyElements' => [
+        // Hide search tab selection on mobile screens
+        //["selector" => ".searchForm > .nav.nav-tabs", "max-width" => 767]
+    ],
     'doctype' => 'HTML5',
 ];
