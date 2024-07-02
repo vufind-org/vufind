@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="vufind" basedir="." default="main">
+  <property name="sh" value="/bin/sh" />
   <property name="tmp" value="/tmp" />
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
+  <property name="downloadsdir" value="${srcdir}/downloads" override="true" />
   <!--
     Use builddir/local as the local directory if defaultconfigs=true. This allows the
     tests to be run without any custom configuration possibly interfering in the
@@ -19,11 +21,11 @@
     </else>
   </if>
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
-  <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
-  <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
+  <property name="apachectl" value="" /><!-- set to apachectl path to spin up Apache instance -->
+  <property name="seleniumjar" value="" /><!-- set to Selenium jar path to spin up Selenium instance -->
   <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
-  <property name="extra_startup_command" value="false" />
-  <property name="extra_shutdown_cleanup" value="false" />
+  <property name="extra_startup_command" value="" />
+  <property name="extra_shutdown_cleanup" value="" />
   <property name="vufindurl" value="http://localhost/vufind" />
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
@@ -37,9 +39,9 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="disable_csp" value="false" /> <!-- set value to "true" to disable Content Security Policy -->
-  <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" /><!-- if you have issues with segfaults during code coverage generation, try adding -dzend.enable_gc=0 to this (but this fix was probably only needed in PHP 5) -->
+  <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="2.1.6" />
+  <property name="composer_version" value="2.7.7" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
@@ -56,11 +58,11 @@
   <property name="html_validator_fail_tests" value="1" /><!-- set to 0 to just log HTML validation errors without causing tests to fail -->
   <property name="html_validator_log_file" value="" /><!-- set to a file name to log HTML validation messages to -->
   <property name="html_validator_quiet" value="" /><!-- set to 1 to prevent the HTML validation from outputting results to the console  -->
-  <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
   <property name="test_theme" value="" /><!-- set to a theme name to override the default theme for Mink tests -->
   <property name="psql_needs_sudo" value="true" /><!-- set to false if psql (Postgresql) must be run with current user instead of sudo -->
+  <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
 
   <property name="version" value="10.0" />
 
@@ -170,18 +172,24 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    <exec executable="${srcdir}/vendor/bin/phpmd">
+      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    </exec>
   </target>
 
   <!-- PHP_Depend code analysis -->
   <target name="pdepend">
-    <exec command="${srcdir}/vendor/bin/pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
+    <exec executable="${srcdir}/vendor/bin/pdepend">
+      <arg line="--jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
+    </exec>
   </target>
 
   <!-- PHP CodeSniffer -->
   <target name="phpcbf">
     <!-- Run phpcs first to find any problems (faster than phpcbf): -->
-    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" escape="false" returnProperty="phpcs_retval" outputProperty="phpcs_output" />
+    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false" returnProperty="phpcs_retval" outputProperty="phpcs_output">
+      <arg line="--cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" />
+    </exec>
     <if>
       <not><equals arg1="${phpcs_retval}" arg2="0" /></not>
       <then>
@@ -200,70 +208,104 @@
           </filterchain>
         </property>
         <!-- Finally, run phpcbf: -->
-        <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml ${phpcbf_filelist}" escape="false" passthru="true" />
+        <exec executable="${srcdir}/vendor/bin/phpcbf" escape="false" passthru="true">
+          <arg line="--standard=${srcdir}/tests/phpcs.xml ${phpcbf_filelist}" />
+        </exec>
       </then>
     </if>
   </target>
   <target name="phpcs">
-    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false">
+      <arg line="--cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" />
+    </exec>
   </target>
   <target name="phpcs-console">
-    <exec command="${srcdir}/vendor/bin/phpcs --cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false" passthru="true" checkreturn="true">
+      <arg line="--cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml" />
+    </exec>
   </target>
 
   <!-- Phpstan -->
   <target name="phpstan-checkstyle">
-    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G --error-format=checkstyle analyse &gt; ${builddir}/reports/phpstan-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/phpstan" escape="false" passthru="true" checkreturn="true">
+      <arg line="--configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G --error-format=checkstyle analyse &gt; ${builddir}/reports/phpstan-checkstyle.xml" />
+    </exec>
   </target>
   <target name="phpstan-console">
-    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G analyse" escape="false" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/phpstan" escape="false" passthru="true" checkreturn="true">
+      <arg line="--configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G analyse" />
+    </exec>
   </target>
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php-cs-fixer.php -vvv" passthru="true" escape="false" />
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php -vvv" passthru="true" escape="false" />
+    <exec executable="${srcdir}/vendor/bin/php-cs-fixer" passthru="true" escape="false">
+      <arg line="fix --config=${srcdir}/tests/vufind.php-cs-fixer.php -vvv" />
+    </exec>
+    <exec executable="${srcdir}/vendor/bin/php-cs-fixer" passthru="true" escape="false">
+      <arg line="fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php -vvv" />
+    </exec>
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php-cs-fixer.php --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/php-cs-fixer" passthru="true" escape="false" checkreturn="true">
+      <arg line="fix --config=${srcdir}/tests/vufind.php-cs-fixer.php --dry-run -vvv --diff" />
+    </exec>
+    <exec executable="${srcdir}/vendor/bin/php-cs-fixer" passthru="true" escape="false" checkreturn="true">
+      <arg line="fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php --dry-run -vvv --diff" />
+    </exec>
   </target>
 
   <!-- ESLint -->
   <target name="eslint">
-    <exec command="npx eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js" escape="false" checkreturn="true" passthru="true" />
+    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js" />
+    </exec>
   </target>
   <target name="eslint-fix">
-    <exec command="npx eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --fix" escape="false" passthru="true" />
+    <exec executable="npx" escape="false" passthru="true">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --fix" />
+    </exec>
   </target>
   <target name="eslint-report">
-    <exec command="npx eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
+    <exec executable="npx" escape="false">
+      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
+    </exec>
   </target>
 
   <!-- JSHint -->
   <target name="jshint">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules ${srcdir}/themes" checkreturn="true" passthru="true" />
+    <exec executable="npx" checkreturn="true" passthru="true">
+      <arg line="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules ${srcdir}/themes" />
+    </exec>
   </target>
   <target name="jshint-report">
-    <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+    <exec executable="npx">
+      <arg line="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+    </exec>
   </target>
 
   <!-- Run Sass build, error if it fails -->
   <target name="checkSassBuild">
-    <exec command="npm run check:scss" checkreturn="true" passthru="true" />
+    <exec executable="npm" checkreturn="true" passthru="true">
+      <arg line="run check:scss" />
+    </exec>
   </target>
 
   <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
   <target name="checkLessToSass">
-    <exec command="npm run lessToSass" checkreturn="true" passthru="true" />
-    <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
+    <exec executable="npm" checkreturn="true" passthru="true">
+      <arg line="run lessToSass" />
+    </exec>
+    <exec executable="git" checkreturn="true" passthru="true">
+      <arg line="diff --exit-code *.scss" />
+    </exec>
   </target>
 
   <!-- PHP API Documentation -->
   <target name="phpdoc">
     <!-- Skip the whole phpdoc task when disabled -->
     <if>
-      <not><istrue value="${skip_phpdoc}" /></not>
+      <not><equals arg1="${skip_phpdoc}" arg2="true" /></not>
       <then>
         <!-- GET phpDocumentor.phar -->
         <if>
@@ -289,7 +331,9 @@
           </fileset>
         </phpdoc2>
         -->
-        <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --cache-folder=${builddir}/docs_cache --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
+        <exec executable="php" passthru="true">
+          <arg line="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --cache-folder=${builddir}/docs_cache --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" />
+        </exec>
       </then>
     </if>
   </target>
@@ -316,16 +360,35 @@
     <if>
       <istrue value="${phpunit_remote_coverage}" />
       <then>
-        <property name="paramCoverageDir" value="VUFIND_REMOTE_COVERAGE_DIR=${coveragedir}/tmp" />
+        <property name="remote_coverage_dir" value="${coveragedir}/tmp" />
       </then>
       <else>
-        <property name="paramCoverageDir" value="" />
+        <property name="remote_coverage_dir" value="" />
       </else>
     </if>
-    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} VUFIND_TEST_THEME=${test_theme} SOLR_PORT=${solr_port} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
+      <arg line="-c &apos;${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}&apos;" />
+      <env key="XDEBUG_MODE" value="coverage" />
+      <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
+      <env key="VUFIND_SCREENSHOT_DIR" value="${screenshot_dir}" />
+      <env key="VUFIND_HTML_VALIDATOR" value="${html_validator}" />
+      <env key="VUFIND_HTML_VALIDATOR_FAIL_TESTS" value="${html_validator_fail_tests}" />
+      <env key="VUFIND_HTML_VALIDATOR_LOG_FILE" value="${html_validator_log_file}" />
+      <env key="VUFIND_HTML_VALIDATOR_QUIET" value="${html_validator_quiet}" />
+      <env key="VUFIND_SELENIUM_BROWSER" value="${selenium_browser}" />
+      <env key="VUFIND_SNOOZE_MULTIPLIER" value="${snooze_multiplier}" />
+      <env key="VUFIND_DEFAULT_TEST_TIMEOUT" value="${default_test_timeout}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+      <env key="VUFIND_URL" value="${vufindurl}" />
+      <env key="VUFIND_TEST_THEME" value="${test_theme}" />
+      <env key="SOLR_PORT" value="${solr_port}" />
+      <env key="VUFIND_REMOTE_COVERAGE_DIR" value="${remote_coverage_dir}" />
+    </exec>
 
     <!-- Produce coverage reports -->
-    <exec command="${srcdir}/vendor/bin/phpcov merge --clover ${coveragedir}/clover.xml --html ${coveragedir} ${coveragedir}/tmp" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/phpcov" passthru="true" checkreturn="true">
+      <arg line="merge --clover ${coveragedir}/clover.xml --html ${coveragedir} ${coveragedir}/tmp" />
+    </exec>
 
     <!-- Clean up any tmp files unless told not to, but keep the directory to avoid changing its permissions -->
     <if>
@@ -342,12 +405,42 @@
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} VUFIND_TEST_THEME=${test_theme} SOLR_PORT=${solr_port} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
+      <arg line="-c &apos;${phpunit_command} ${phpunit_extra_params}&apos;" />
+      <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
+      <env key="VUFIND_SCREENSHOT_DIR" value="${screenshot_dir}" />
+      <env key="VUFIND_HTML_VALIDATOR" value="${html_validator}" />
+      <env key="VUFIND_HTML_VALIDATOR_FAIL_TESTS" value="${html_validator_fail_tests}" />
+      <env key="VUFIND_HTML_VALIDATOR_LOG_FILE" value="${html_validator_log_file}" />
+      <env key="VUFIND_HTML_VALIDATOR_QUIET" value="${html_validator_quiet}" />
+      <env key="VUFIND_SELENIUM_BROWSER" value="${selenium_browser}" />
+      <env key="VUFIND_SNOOZE_MULTIPLIER" value="${snooze_multiplier}" />
+      <env key="VUFIND_DEFAULT_TEST_TIMEOUT" value="${default_test_timeout}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+      <env key="VUFIND_URL" value="${vufindurl}" />
+      <env key="VUFIND_TEST_THEME" value="${test_theme}" />
+      <env key="SOLR_PORT" value="${solr_port}" />
+    </exec>
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_DEFAULT_TEST_TIMEOUT=${default_test_timeout} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} VUFIND_TEST_THEME=${test_theme} SOLR_PORT=${solr_port} ${phpunit_command} --stop-on-defect ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
+      <arg line="-c &apos;${phpunit_command} --stop-on-defect ${phpunit_extra_params}&apos;" />
+      <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
+      <env key="VUFIND_SCREENSHOT_DIR" value="${screenshot_dir}" />
+      <env key="VUFIND_HTML_VALIDATOR" value="${html_validator}" />
+      <env key="VUFIND_HTML_VALIDATOR_FAIL_TESTS" value="${html_validator_fail_tests}" />
+      <env key="VUFIND_HTML_VALIDATOR_LOG_FILE" value="${html_validator_log_file}" />
+      <env key="VUFIND_HTML_VALIDATOR_QUIET" value="${html_validator_quiet}" />
+      <env key="VUFIND_SELENIUM_BROWSER" value="${selenium_browser}" />
+      <env key="VUFIND_SNOOZE_MULTIPLIER" value="${snooze_multiplier}" />
+      <env key="VUFIND_DEFAULT_TEST_TIMEOUT" value="${default_test_timeout}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+      <env key="VUFIND_URL" value="${vufindurl}" />
+      <env key="VUFIND_TEST_THEME" value="${test_theme}" />
+      <env key="SOLR_PORT" value="${solr_port}" />
+    </exec>
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -372,22 +465,21 @@
 
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
-          <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
+          <not><available file="${downloadsdir}/solr-${solr_version}.tgz" /></not>
            <then>
-            <mkdir dir="${srcdir}/downloads" />
-            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+            <mkdir dir="${downloadsdir}" />
+            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${downloadsdir}" />
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
         <mkdir dir="${builddir}/solr" />
-        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${builddir}/solr" />
         <if>
           <available file="${srcdir}/solr/vendor" type="dir" />
           <then>
             <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
           </then>
         </if>
-        <move file="${builddir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+        <untar file="${downloadsdir}/solr-${solr_version}.tgz" todir="${srcdir}/solr/vendor" removepath="solr-${solr_version}" />
         <!-- make scripts executable -->
         <chmod mode="0755">
           <fileset dir="${srcdir}/solr/vendor/bin">
@@ -419,22 +511,31 @@
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
+    <property name="composer_filename" value="composer-${composer_version}.phar" />
+    <mkdir dir="${downloadsdir}" />
     <if>
       <equals arg1="${composer_version}" arg2="latest-2.x" />
       <then>
-        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}" filename="composer.phar" />
+        <httpget url="https://getcomposer.org/composer-2.phar" dir="${downloadsdir}" filename="${composer_filename}" />
       </then>
       <else>
-        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+        <!-- download if not already present in the downloads cache -->
+        <if>
+          <not><available file="${downloadsdir}/${composer_filename}" /></not>
+           <then>
+            <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" dir="${downloadsdir}" filename="${composer_filename}" />
+          </then>
+        </if>
       </else>
     </if>
     <echo message="Installing dependencies..." />
-    <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
+    <exec executable="php" passthru="true" checkreturn="true">
+      <arg line="${downloadsdir}/${composer_filename} install ${composer_extra_params}" />
+    </exec>
   </target>
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
     <!-- fail if the system is already running -->
     <if>
       <available file="${solr_pid_file}" />
@@ -457,34 +558,60 @@
 
     <phingcall target="check_local_config" />
 
+    <!-- Install / update dependencies -->
+    <phingcall target="composer" />
+
     <!-- run extra startup action, if any -->
     <if>
-      <istrue value="${extra_startup_command}" />
+      <not>
+        <equals arg1="${extra_startup_command}" arg2="" />
+      </not>
       <then>
-        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${extra_startup_command}" />
+        <echo message="Running extra startup command" />
+        <exec executable="${sh}" passthru="true">
+          <arg line="-c &apos;${extra_startup_command}&apos;" />
+          <env key="VUFIND_HOME" value="${srcdir}" />
+          <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+        </exec>
       </then>
     </if>
 
     <!-- set up appropriate read/write permissions for Apache -->
-    <exec command="chmod -R a+w ${localdir}/cache" />
-    <exec command="touch ${srcdir}/vufind-mail.log" />
-    <exec command="chmod a+w ${srcdir}/vufind-mail.log" />
-    <exec command="touch ${srcdir}/vufind-exception.log" />
-    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
+    <exec executable="chmod">
+      <arg line="-R a+w ${localdir}/cache" />
+    </exec>
+    <exec executable="touch">
+      <arg line="${srcdir}/vufind-mail.log" />
+    </exec>
+    <exec executable="chmod">
+      <arg line="a+w ${srcdir}/vufind-mail.log" />
+    </exec>
+    <exec executable="touch">
+      <arg line="${srcdir}/vufind-exception.log" />
+    </exec>
+    <exec executable="chmod">
+      <arg line="a+w ${srcdir}/vufind-exception.log" />
+    </exec>
 
     <phingcall target="configure_install" />
 
     <!-- Activate Selenium (if a path has been provided) -->
     <if>
-      <istrue value="${seleniumjar}" />
+      <not>
+        <equals arg1="${seleniumjar}" arg2="" />
+      </not>
       <then>
-        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar}" passthru="true" spawn="true" checkreturn="true" />
+        <exec executable="xvfb-run" passthru="true" spawn="true" checkreturn="true">
+          <arg line="--server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar}" />
+        </exec>
       </then>
     </if>
 
     <!-- Activate Apache (if an apachectl path has been provided) -->
     <if>
-      <istrue value="${apachectl}" />
+      <not>
+        <equals arg1="${apachectl}" arg2="" />
+      </not>
       <then>
         <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <if>
@@ -499,7 +626,9 @@
             </reflexive>
           </then>
         </if>
-        <exec command="${apachectl} restart" passthru="true" />
+        <exec executable="${sh}" passthru="true">
+          <arg line="-c &apos;${apachectl} restart&apos;" />
+        </exec>
       </then>
     </if>
 
@@ -533,7 +662,9 @@
 
     <!-- Generate basic configuration -->
     <php expression="substr(parse_url('${vufindurl}', PHP_URL_PATH), 1)" returnProperty="basepath" />
-    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive --solr-port=${solr_port}" passthru="true" checkreturn="true" />
+    <exec executable="php" passthru="true" checkreturn="true">
+      <arg line="${srcdir}/install.php --basepath=/${basepath} --non-interactive --solr-port=${solr_port}" />
+    </exec>
 
     <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <if>
@@ -610,6 +741,11 @@
         <available file="${contentdir}/test/sub" type="dir" />
       </not>
       <then>
+        <!-- avoid PHP Errors by creating each level separately -->
+        <mkdir dir="${themedir}" />
+        <mkdir dir="${themedir}/templates" />
+        <mkdir dir="${contentdir}" />
+        <mkdir dir="${contentdir}/test" />
         <mkdir dir="${contentdir}/test/sub" />
       </then>
     </if>
@@ -638,33 +774,69 @@ return [
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />
           <then>
-            <exec command="psql -c &quot;DROP DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
-            <exec command="psql -c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
-            <exec command="psql -c &quot;CREATE DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" checkreturn="true" />
-            <exec command="psql -c &quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';&quot; ${pgsqlrootuser}" checkreturn="true" />
-            <exec command="psql -c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec executable="psql">
+              <arg line="-c &quot;DROP DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="psql">
+              <arg line="-c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="psql" checkreturn="true">
+              <arg line="-c &quot;CREATE DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="psql" checkreturn="true">
+              <arg line="-c &quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="psql" checkreturn="true">
+              <arg line="-c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            </exec>
           </then>
           <else>
-            <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
-            <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
-            <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-            <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-            <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+            <exec executable="sudo">
+              <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo">
+              <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+            </exec>
           </else>
         </if>
 
-        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
-        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
+        <exec executable="psql" checkreturn="true">
+          <arg line="-U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" />
+          <env key="PGPASSWORD" value="${vufinddbpass}" />
+        </exec>
       </then>
       <else>
         <!-- build database -->
-        <exec command="mysqladmin -f ${mysqlconnectionargs} drop ${vufinddb}" />
-        <exec command="mysqladmin ${mysqlconnectionargs} create ${vufinddb}" checkreturn="true" passthru="true" />
-        <exec command="mysql ${mysqlconnectionargs} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" passthru="true" />
-        <exec command="mysql ${mysqlconnectionargs} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" passthru="true" />
-        <exec command="mysql ${mysqlconnectionargs} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" checkreturn="true" passthru="true" />
-        <exec command="mysql ${mysqlconnectionargs} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" passthru="true" />
-        <exec command="mysql ${mysqlconnectionargs} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" passthru="true" />
+        <exec executable="mysql" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
+        </exec>
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;CREATE DATABASE ${vufinddb}&quot;" />
+        </exec>
+        <exec executable="mysql" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
+        </exec>
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" />
+        </exec>
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" />
+        </exec>
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;FLUSH PRIVILEGES&quot;" />
+        </exec>
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" />
+        </exec>
       </else>
     </if>
   </target>
@@ -672,7 +844,13 @@ return [
   <!-- Set up Solr -->
   <target name="setup_solr">
     <!-- Start Solr using restart in case of old PID files -->
-    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} SOLR_PORT=${solr_port} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/solr.sh" passthru="true" checkreturn="true">
+      <arg line="restart" />
+      <env key="SOLR_PID_DIR" value="${localdir}" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="SOLR_ADDITIONAL_JVM_OPTIONS" value="${solr_additional_jvm_options}" />
+      <env key="SOLR_PORT" value="${solr_port}" />
+    </exec>
     <!-- fail if Solr did not start up successfully: -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -688,7 +866,9 @@ return [
       </then>
       <else>
         <echo message="Waiting ${solr_startup_sleep} seconds for Solr to be ready..." />
-        <exec command="sleep ${solr_startup_sleep}" />
+        <exec executable="sleep">
+          <arg line="${solr_startup_sleep}" />
+        </exec>
       </else>
     </if>
   </target>
@@ -714,25 +894,34 @@ return [
 
   <!-- Delete some fake record IDs so we have deleted records to test with -->
   <target name="delete_fake_records" description="delete fake records">
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} php ${srcdir}/public/index.php util/deletes ${srcdir}/tests/data/fake-deleted-ids.txt flat" checkreturn="true" passthru="true" />
+    <exec executable="php" checkreturn="true" passthru="true">
+      <arg line="${srcdir}/public/index.php util/deletes ${srcdir}/tests/data/fake-deleted-ids.txt flat" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
   </target>
 
   <!-- Build alphabrowse index -->
   <target name="build_alphabrowse" description="build the alphabrowse index">
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/index-alphabetic-browse.sh" passthru="true" />
+    <exec executable="${srcdir}/index-alphabetic-browse.sh" passthru="true">
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
   </target>
 
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
 
-    <exec command="git status --porcelain --untracked-files=no" outputProperty="git_status" />
+    <exec executable="git" outputProperty="git_status">
+      <arg line="status --porcelain --untracked-files=no" />
+    </exec>
     <if>
       <not>
         <equals arg1="${git_status}" arg2="" />
       </not>
       <then>
         <fail>
-          Changed detected in tracked files:
+          Changes detected in tracked files:
 ${git_status}
         </fail>
       </then>
@@ -740,10 +929,17 @@ ${git_status}
 
     <!-- Remove Apache settings (if Apache was enabled) -->
     <if>
-      <istrue value="${apachectl}" />
+      <and>
+        <not>
+          <equals arg1="${apachectl}" arg2="" />
+        </not>
+        <available file="${apacheconfdir}/vufindtest.conf" />
+      </and>
       <then>
         <delete file="${apacheconfdir}/vufindtest.conf" />
-        <exec command="${apachectl} restart" />
+        <exec executable="${sh}" passthru="true">
+          <arg line="-c &apos;${apachectl} restart&apos;" />
+        </exec>
       </then>
     </if>
 
@@ -751,33 +947,65 @@ ${git_status}
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec executable="sudo" checkreturn="true">
+          <arg line="su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+        </exec>
+        <exec executable="sudo" checkreturn="true">
+          <arg line="su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+        </exec>
       </then>
       <else>
-        <exec command="mysql ${mysqlconnectionargs} -e &quot;DROP USER '${vufinddbuser}'@'%'&quot;" />
-        <exec command="mysqladmin -f ${mysqlconnectionargs} drop ${vufinddb}" />
+        <exec executable="mysql">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
+        </exec>
+        <exec executable="mysql">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
+        </exec>
       </else>
     </if>
 
     <!-- stop Solr -->
-    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} SOLR_PORT=${solr_port} ${srcdir}/solr.sh stop" passthru="true" />
+    <if>
+      <available file="${solr_pid_file}" />
+      <then>
+        <exec executable="${srcdir}/solr.sh" passthru="true">
+          <arg line="stop" />
+          <env key="SOLR_PID_DIR" value="${localdir}" />
+          <env key="VUFIND_HOME" value="${srcdir}" />
+          <env key="SOLR_ADDITIONAL_JVM_OPTIONS" value="${solr_additional_jvm_options}" />
+          <env key="SOLR_PORT" value="${solr_port}" />
+        </exec>
+      </then>
+    </if>
 
     <!-- run extra cleanup action, if any -->
     <if>
-      <istrue value="${extra_shutdown_cleanup}" />
+      <not>
+        <equals arg1="${extra_shutdown_cleanup}" arg2="" />
+      </not>
       <then>
-        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${extra_shutdown_cleanup}" />
+        <echo message="Running extra shutdown cleanup" />
+        <exec executable="${sh}" passthru="true">
+          <arg line="-c &apos;${extra_shutdown_cleanup}&apos;" />
+          <env key="VUFIND_HOME" value="${srcdir}" />
+          <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+        </exec>
       </then>
     </if>
 
     <!-- shut down selenium if necessary -->
     <if>
-      <istrue value="${seleniumjar}" />
+      <not>
+        <equals arg1="${seleniumjar}" arg2="" />
+      </not>
       <then>
-        <exec command="pkill -f xvfb" />
+        <exec executable="pkill">
+          <arg line="-f xvfb" />
+        </exec>
         <basename file="${seleniumjar}" property="seleniumbase" />
-        <exec command="pkill -f &quot;java -jar ${seleniumbase}&quot;" />
+        <exec executable="pkill">
+          <arg line="-f &quot;java -jar ${seleniumbase}&quot;" />
+        </exec>
       </then>
     </if>
 
@@ -806,6 +1034,7 @@ ${git_status}
         <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
       </then>
     </if>
+    <!-- Remove any composer.phar installed by an older build script version: -->
     <if>
       <available file="${srcdir}/composer.phar" />
       <then>
@@ -832,14 +1061,15 @@ ${git_status}
         <delete file="${srcdir}/vufind-mail.log" failonerror="true" />
       </then>
     </if>
-    <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <if>
       <available file="${localdir}" type="dir" />
       <then>
         <delete dir="${localdir}" includeemptydirs="true" failonerror="true" />
       </then>
     </if>
-    <exec command="git reset --hard" passthru="true" />
+    <exec executable="git" passthru="true">
+      <arg line="reset --hard" />
+    </exec>
   </target>
 
   <!-- Reset database and configuration of the demo setup -->
@@ -900,7 +1130,9 @@ ${git_status}
     <phingcall target="composer">
       <property name="composer_extra_params" value="--no-dev" />
     </phingcall>
-    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
+    <exec executable="git">
+      <arg line="archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
+    </exec>
     <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
       <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
     </copy>
@@ -913,21 +1145,31 @@ ${git_status}
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
-    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind ${builddir}/export/vufind-${version}" />
+    <exec executable="ln">
+      <arg line="-s ${builddir}/export/vufind/usr/local/vufind ${builddir}/export/vufind-${version}" />
+    </exec>
 
     <!-- build the standard tar.gz archive -->
     <echo message="Building .tar.gz...." />
-    <exec command="cd ${builddir}/export ; tar czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" checkreturn="true" />
+    <exec dir="${builddir}/export" executable="tar" checkreturn="true">
+      <arg line="czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" />
+    </exec>
 
     <!-- build the a zip archive -->
     <echo message="Building .zip...." />
-    <exec command="cd ${builddir}/export ; zip -r ${builddir}/packages/vufind-${version}.zip vufind-${version}" checkreturn="true" />
+    <exec dir="${builddir}/export" executable="zip" checkreturn="true">
+      <arg line="-r ${builddir}/packages/vufind-${version}.zip vufind-${version}" />
+    </exec>
 
     <!-- build the DEB package -->
     <echo message="Building .deb...." />
     <move file="${builddir}/export/vufind/usr/local/vufind/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
-    <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
-    <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" checkreturn="true" />
+    <exec executable="chmod">
+      <arg line="0775 ${builddir}/export/vufind/DEBIAN/postinst" />
+    </exec>
+    <exec executable="dpkg-deb" checkreturn="true">
+      <arg line="-b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+    </exec>
 
     <!-- clean up -->
     <delete dir="${builddir}/export" includeemptydirs="true" failonerror="true" />
@@ -938,7 +1180,11 @@ ${git_status}
 
   <target name="importauthrec" description="import each of the MARC authority test records">
     <!-- perform the import -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/import-marc-auth.sh" passthru="true" checkreturn="true">
+      <arg line="${filename} marc_auth_ils.properties" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
   </target>
 
   <target name="importrec" description="import each of the MARC bibliographic test records">
@@ -974,7 +1220,11 @@ ${git_status}
     </if>
 
     <!-- perform the import -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${localdir} ${srcdir}/import-marc.sh -p ${localdir}/import/import-${BASENAME}.properties ${filename}" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/import-marc.sh" passthru="true" checkreturn="true">
+      <arg line="-p ${localdir}/import/import-${BASENAME}.properties ${filename}" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
+      <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+    </exec>
 
     <!-- clean up temp files -->
     <delete file="${localdir}/import/marc-${BASENAME}.properties" />
@@ -1003,7 +1253,9 @@ ${git_status}
       <available file="${templatesdir}"></available>
       <then>
         <echo message="Checking for uncommitted changes in ${templatesdir}" />
-        <exec command="git diff --exit-code ${templatesdir}" checkreturn="true" passthru="true" />
+        <exec executable="git" checkreturn="true" passthru="true">
+          <arg line="diff --exit-code ${templatesdir}" />
+        </exec>
         <delete failonerror="true">
           <fileset dir="${templatesdir}">
             <exclude name="header.phtml" />
@@ -1045,7 +1297,9 @@ ${git_status}
       <available file="${templatesdir}"></available>
       <then>
         <echo message="Checking for uncommitted changes in ${templatesdir}" />
-        <exec command="git diff --exit-code ${templatesdir}" checkreturn="true" passthru="true" />
+        <exec executable="git" checkreturn="true" passthru="true">
+          <arg line="diff --exit-code ${templatesdir}" />
+        </exec>
         <delete failonerror="true">
           <fileset dir="${templatesdir}">
             <exclude name="header.phtml" />
@@ -1081,8 +1335,9 @@ ${git_status}
   <target name="check-bootstrap5">
     <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/templates" />
     <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/templates" />
-    <foreach target="check-dir-single-file" param="filename">
+    <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
+        <type type="file" />
         <exclude name="header.phtml" />
         <exclude name="RecordTab/similaritemscarousel.phtml" />
         <different targetdir="${check_dir_compare}" ignoreFileTimes="true" />
@@ -1091,9 +1346,9 @@ ${git_status}
 
     <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/scss" />
     <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/scss" />
-    <foreach target="check-dir-single-file" param="filename">
+    <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
-        <exclude name="/" />
+        <type type="file" />
         <exclude name="bootstrap.scss" />
         <exclude name="components/similar-carousel.scss" />
         <exclude name="vendor/**" />
@@ -1103,9 +1358,9 @@ ${git_status}
 
     <property override="true" name="check_dir_base" value="${srcdir}/themes/bootstrap3/js" />
     <property override="true" name="check_dir_compare" value="${srcdir}/themes/bootstrap5/js" />
-    <foreach target="check-dir-single-file" param="filename">
+    <foreach target="check-dir-single-file" param="filename" inheritall="true">
       <fileset dir="${check_dir_base}">
-        <exclude name="/" />
+        <type type="file" />
         <exclude name="account_ajax.js" />
         <exclude name="cart.js" />
         <exclude name="channels.js" />

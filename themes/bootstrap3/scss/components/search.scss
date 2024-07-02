@@ -738,9 +738,14 @@ table.search-history-table {
   }
 }
 
+.nav.searchbox{
+  width: 100%;
+}
+
 .searchForm {
   margin: 0;
   padding: 0;
+  width: 100%;
 
   .searchForm-query {
     position: relative;

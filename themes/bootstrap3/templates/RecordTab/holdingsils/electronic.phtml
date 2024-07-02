@@ -15,8 +15,9 @@
           $availabilityStatus = $item['availability'];
           $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
           $statusDescription = $availabilityStatus->getStatusDescription();
+          $statusDescriptionTokens = $availabilityStatus->getStatusDescriptionTokens();
         ?>
-        <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription)?></span>
+        <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription, $statusDescriptionTokens)?></span>
         <?php if (isset($item['item_notes'])): ?>
           <div class="item-notes">
             <b><?=$this->transEsc('Item Notes')?>:</b>

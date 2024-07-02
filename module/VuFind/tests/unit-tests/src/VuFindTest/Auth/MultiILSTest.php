@@ -312,7 +312,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockUser ??= $this->getMockUser();
         $mockUserService = $this->createMock(UserServiceInterface::class);
         $mockUserService->expects($this->any())
-            ->method('getUserByField')
+            ->method('getUserByUsername')
             ->willReturn($mockUser);
         $mockUserService->expects($this->any())
             ->method('updateUserEmail')
