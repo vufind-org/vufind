@@ -7,4 +7,13 @@
 //$this->jsConfigs()->add('myConfig', true);
 //$this->jsConfigs()->add('siteTitle', $this->config()->get('config')->Site->title);
 
+$this->jsConfigs()->add(
+    'item-status:load-batch-wise',
+    $this->config()->get('config')->Item_Status->load_batch_wise ?? true
+);
+$this->jsConfigs()->add(
+    'item-status:load-observable-only',
+    $this->config()->get('config')->Item_Status->load_observable_only ?? true
+);
+
 echo $this->jsConfigs()->getJSON();

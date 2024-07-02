@@ -24,8 +24,8 @@ VuFind.register('explain', function explain() {
     };
   }
 
-  function _setupResultListChart() {
-    document.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
+  function _setupResultListChart(container = document) {
+    container.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
       const maxScore = barChart.dataset.maxScore;
       const score = barChart.dataset.score;
       const diff = Math.abs(maxScore - score);
@@ -204,15 +204,15 @@ VuFind.register('explain', function explain() {
     });
   }
 
-  function updateContainer() {
-    _setupResultListChart();
-    _setupExplainPieChart();
-    _setupExplainColumnChart();
+  function _resultsInitCallback(params = null) {
+    _setupResultListChart(params && params.container ? params.container : document);
   }
 
   function init() {
-    updateContainer();
-    VuFind.listen('results-init', updateContainer);
+    _setupExplainPieChart();
+    _setupExplainColumnChart();
+    _setupResultListChart();
+    VuFind.listen('results-init', _resultsInitCallback);
   }
 
   return {
