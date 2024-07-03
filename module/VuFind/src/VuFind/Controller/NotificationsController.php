@@ -57,7 +57,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
      *
      * @var array
      */
-    private $config;
+    protected $config;
 
     /**
      * Constructor
@@ -71,7 +71,6 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
     {
         parent::__construct($sm);
         $this->config = $sm->get(\VuFind\Config\YamlReader::class)->get('Notifications.yaml');
-        $this->accessPermission = 'notifications.Admin';
     }
 
     /**
@@ -84,7 +83,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'Pages']);
         }
-        if (!$this->getAuthManager()->isLoggedIn()) {
+        if (!$this->getAuthManager()->isLoggedIn() || !$this->permission()->isAuthorized('notifications.Admin')) {
             return $this->redirect()->toRoute('myresearch-home');
         }
 
@@ -124,7 +123,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
             return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
         }
-        if (!$this->getAuthManager()->isLoggedIn()) {
+        if (!$this->getAuthManager()->isLoggedIn() || !$this->permission()->isAuthorized('notifications.Admin')) {
             return $this->redirect()->toRoute('myresearch-home');
         }
 
@@ -165,8 +164,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'EditPage']);
         }
-        $user = $this->getAuthManager()->isLoggedIn();
-        if (!$user) {
+        if (!$this->getAuthManager()->isLoggedIn() || !$this->permission()->isAuthorized('notifications.Admin')) {
             return $this->redirect()->toRoute('myresearch-home');
         }
         if ($this->getRequest()->getPost('cancel')) {
@@ -234,8 +232,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
             return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'EditBroadcast']);
         }
-        $user = $this->getAuthManager()->isLoggedIn();
-        if (!$user) {
+        if (!$this->getAuthManager()->isLoggedIn() || !$this->permission()->isAuthorized('notifications.Admin')) {
             return $this->redirect()->toRoute('myresearch-home');
         }
         if ($this->getRequest()->getPost('cancel')) {
@@ -306,7 +303,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'DeletePage']);
         }
-        if (!$this->getAuthManager()->isLoggedIn()) {
+        if (!$this->getAuthManager()->isLoggedIn() || !$this->permission()->isAuthorized('notifications.Admin')) {
             return $this->redirect()->toRoute('myresearch-home');
         }
 
@@ -351,7 +348,7 @@ class NotificationsController extends \VuFind\Controller\AbstractBase
         if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
             return $this->redirect()->toRoute('admin/notifications-pages', ['action' => 'DeleteBroadcast']);
         }
-        if (!$this->getAuthManager()->isLoggedIn()) {
+        if (!$this->getAuthManager()->isLoggedIn() || !$this->permission()->isAuthorized('notifications.Admin')) {
             return $this->redirect()->toRoute('myresearch-home');
         }
 
