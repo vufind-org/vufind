@@ -159,7 +159,7 @@
     text-shadow: 0 1px 0 $black;
   }
   @media (min-width: 768px) {
-    height: 300px;
+    min-height: 300px;
     padding: 7rem calc(50vw - 50% + .5rem); // Align searchbox with container
   }
 }
