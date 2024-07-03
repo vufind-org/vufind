@@ -108,11 +108,10 @@
           <?php endif; ?>
         </ul>
       </nav>
-
-      <?php if($this->layout()->notifications !== false): ?>
-        <?=$this->context($this)->renderInContext('notifications/headerbroadcasts.phtml', [])?>
-      <?php endif; ?>
     </div>
+  <?php endif; ?>
+  <?php if($this->layout()->notifications !== false): ?>
+    <?=$this->context($this)->renderInContext('notifications/headerbroadcasts.phtml', [])?>
   <?php endif; ?>
 </div>
 <?php if ($this->layout()->searchbox !== false): ?>
