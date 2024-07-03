@@ -17,46 +17,48 @@ $(function() {
         });
     });
 
-    var notificationsTable = $('#notifications-list').DataTable({
-        paging: false,
-        ordering: false,
-        searching: false,
-        info: false,
-        rowReorder: {
-            enable: true,
-            update: false,
-            selector: 'span.reorder'
-        },
-    });
-
-    notificationsTable.on('row-reorder', function(e, diff, edit) {
-        for (var i=0, ien=diff.length ; i<ien ; i++) {
-            $(diff[i].node).addClass("reordered");
-        }
-        var order = [];
-        var type = '';
-        $('#notifications-list tbody tr').each(function() {
-            if ($(this).data('page-id') !== undefined && $(this).data('page-id') !== '') {
-                order.push($(this).data('page-id'));
-                type = 'page';
-            }
-            if ($(this).data('broadcast-id') !== undefined && $(this).data('broadcast-id') !== '') {
-                order.push($(this).data('broadcast-id'));
-                type = 'broadcast';
-            }
-        });
-
-        $.ajax({
-            url : '/vufind/AJAX/JSON?method=NotificationsReorder',
-            dataType:'json',
-            data: {
-                'order': order,
-                'type': type,
-            },
-            success : function(data) {
+    if ($('#notifications-list').length) {
+        var notificationsTable = $('#notifications-list').DataTable({
+            paging: false,
+            ordering: false,
+            searching: false,
+            info: false,
+            rowReorder: {
+                enable: true,
+                update: false,
+                selector: 'span.reorder'
             },
         });
-    });
+
+        notificationsTable.on('row-reorder', function (e, diff, edit) {
+            for (var i = 0, ien = diff.length; i < ien; i++) {
+                $(diff[i].node).addClass("reordered");
+            }
+            var order = [];
+            var type = '';
+            $('#notifications-list tbody tr').each(function () {
+                if ($(this).data('page-id') !== undefined && $(this).data('page-id') !== '') {
+                    order.push($(this).data('page-id'));
+                    type = 'page';
+                }
+                if ($(this).data('broadcast-id') !== undefined && $(this).data('broadcast-id') !== '') {
+                    order.push($(this).data('broadcast-id'));
+                    type = 'broadcast';
+                }
+            });
+
+            $.ajax({
+                url: '/vufind/AJAX/JSON?method=NotificationsReorder',
+                dataType: 'json',
+                data: {
+                    'order': order,
+                    'type': type,
+                },
+                success: function (data) {
+                },
+            });
+        });
+    }
 
     $('.notifications-visibility').on('click', function(e){
         e.preventDefault();
