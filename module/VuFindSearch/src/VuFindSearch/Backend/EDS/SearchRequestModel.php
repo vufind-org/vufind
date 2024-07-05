@@ -181,7 +181,6 @@ class SearchRequestModel
         foreach ($parameters as $key => $values) {
             switch ($key) {
                 case 'filters':
-                    $cnt = 1;
                     foreach ($values as $filter) {
                         if (str_starts_with($filter, 'LIMIT|')) {
                             $this->addLimiter(substr($filter, 6));
@@ -192,8 +191,7 @@ class SearchRequestModel
                         } elseif (str_starts_with($filter, 'PublicationDate')) {
                             $this->addLimiter($this->formatDateLimiter($filter));
                         } else {
-                            $this->addFilter("$cnt,$filter");
-                            $cnt++;
+                            $this->addFilter($filter);
                         }
                     }
                     break;
@@ -238,11 +236,24 @@ class SearchRequestModel
         }
 
         if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
-            $formatFilter = function ($raw) {
-                [$field, $value] = explode(':', $raw, 2);
-                return $field . ':' . static::escapeSpecialCharacters($value);
-            };
-            $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
+            $filterId = 1;
+            $qs['facetfilter'] = [];
+            foreach ($this->facetFilters as $field => $values) {
+                $field = str_replace("~", "", $field);
+                $values = array_map(fn($value) => static::escapeSpecialCharacters($value), $values);
+                $operator = $this->getFacetOperator($field);
+                if ('OR' == $operator) {
+                    $valuesString = implode(',', array_map(fn($value) => "{$field}:{$value}", $values));
+                    $qs['facetfilter'][] = "{$filterId},{$valuesString}";
+                    $filterId++; 
+                }
+                else {
+                    foreach ($values as $value) {
+                        $qs['facetfilter'][] = "{$filterId},{$field}:{$value}";
+                        $filterId++;
+                    }
+                }
+            }
         }
 
         if (isset($this->limiters) && 0 < count($this->limiters)) {
@@ -316,16 +327,33 @@ class SearchRequestModel
 
         if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $json->SearchCriteria->FacetFilters = [];
-            foreach ($this->facetFilters as $currentFilter) {
-                [$id, $filter] = explode(',', $currentFilter, 2);
-                [$field, $value] = explode(':', $filter, 2);
-                $filterObj = new \stdClass();
-                $filterObj->FilterId = $id;
-                $valueObj = new \stdClass();
-                $valueObj->Id = $field;
-                $valueObj->Value = $value;
-                $filterObj->FacetValues = [$valueObj];
-                $json->SearchCriteria->FacetFilters[] = $filterObj;
+            $id = 1;
+            foreach ($this->facetFilters as $field => $values) {
+                // OR fields
+                if ('OR' == $this->getFacetOperator($field)) {
+                    $filterObj = new \stdClass();
+                    $filterObj->FilterId = $id++;
+                    $filterObj->FacetValues = [];
+                    foreach ($values as $value) {
+                        $valueObj = new \stdClass();
+                        $valueObj->Id = $field;
+                        $valueObj->Value = $value;
+                        $filterObj->FacetValues[] = $valueObj;
+                    }
+                    $json->SearchCriteria->FacetFilters[] = $filterObj;
+                }
+                // AND fields
+                else {
+                    foreach ($values as $value) {
+                        $filterObj = new \stdClass();
+                        $filterObj->FilterId = $id++;
+                        $valueObj = new \stdClass();
+                        $valueObj->Id = $field;
+                        $valueObj->Value = $value;
+                        $filterObj->FacetValues = [$valueObj];
+                        $json->SearchCriteria->FacetFilters[] = $filterObj;
+                    }
+                }
             }
         }
 
@@ -460,7 +488,11 @@ class SearchRequestModel
      */
     public function addfilter($facetFilter)
     {
-        $this->facetFilters[] = $facetFilter;
+        [$field, $value] = explode(':', $facetFilter, 2);
+        if (!array_key_exists($field, $this->facetFilters)) {
+            $this->facetFilters[$field] = [];
+        }
+        $this->facetFilters[$field][] = $value;
     }
 
     /**
@@ -516,5 +548,44 @@ class SearchRequestModel
         }
 
         return $this;
+    }
+
+    // all copied for draft purposes from Base/Params
+    protected $orFacets = [];
+    // protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
+    public function initFacetList($facetList, $facetSettings, $config)
+    {
+        // $config = $this->configLoader
+        //     ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        if (!isset($config->$facetList)) {
+            return false;
+        }
+        if (isset($config->$facetSettings->orFacets)) {
+            $orFields
+                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
+        } else {
+            $orFields = [];
+        }
+        foreach ($config->$facetList as $key => $value) {
+            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                || in_array($key, $orFields);
+            $this->addFacet($key, $value, $useOr);
+        }
+
+        return true;
+    }
+    public function addFacet($newField, $newAlias = null, $ored = false)
+    {
+        // if ($newAlias == null) {
+        //     $newAlias = $newField;
+        // }
+        // $this->facetConfig[$newField] = $newAlias;
+        if ($ored) {
+            $this->orFacets[] = $newField;
+        }
+    }
+    public function getFacetOperator($field)
+    {
+        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 }

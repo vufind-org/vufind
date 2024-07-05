@@ -91,4 +91,18 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
         $viewArr = explode('|', $this->view ?? '');
         return $viewArr[0];
     }
+
+    /**
+     * Don't actually parse the operator.  Use $this->getFacetOperator();
+     *
+     * @param string $field Prefixed string
+     *
+     * @return array (0 = operator, 1 = field name)
+     */
+    protected function parseOperatorAndFieldName($field)
+    {
+        $field = str_replace("~", "", $field);
+        return [$this->getFacetOperator($field), $field];
+    }
+
 }

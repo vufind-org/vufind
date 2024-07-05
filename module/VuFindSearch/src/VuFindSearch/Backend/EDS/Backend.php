@@ -147,6 +147,13 @@ class Backend extends AbstractBackend
     protected $backendType = null;
 
     /**
+     * EDS config
+     *
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * Constructor.
      *
      * @param Connector                        $client  EdsApi client to use
@@ -169,6 +176,7 @@ class Backend extends AbstractBackend
         $this->setRecordCollectionFactory($factory);
         $this->cache = $cache;
         $this->session = $session;
+        $this->config = $config;
         $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
@@ -414,7 +422,9 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
-        return new SearchRequestModel($options);
+        $searchRequestModel = new SearchRequestModel($options);
+        $searchRequestModel->initFacetList('Facets', 'Results_Settings', $this->config);
+        return $searchRequestModel;
     }
 
     /**
