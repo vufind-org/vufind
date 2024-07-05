@@ -29,7 +29,9 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function array_key_exists;
 use function count;
+use function in_array;
 use function intval;
 use function strlen;
 
@@ -239,15 +241,14 @@ class SearchRequestModel
             $filterId = 1;
             $qs['facetfilter'] = [];
             foreach ($this->facetFilters as $field => $values) {
-                $field = str_replace("~", "", $field);
-                $values = array_map(fn($value) => static::escapeSpecialCharacters($value), $values);
+                $field = str_replace('~', '', $field);
+                $values = array_map(fn ($value) => static::escapeSpecialCharacters($value), $values);
                 $operator = $this->getFacetOperator($field);
                 if ('OR' == $operator) {
-                    $valuesString = implode(',', array_map(fn($value) => "{$field}:{$value}", $values));
+                    $valuesString = implode(',', array_map(fn ($value) => "{$field}:{$value}", $values));
                     $qs['facetfilter'][] = "{$filterId},{$valuesString}";
-                    $filterId++; 
-                }
-                else {
+                    $filterId++;
+                } else {
                     foreach ($values as $value) {
                         $qs['facetfilter'][] = "{$filterId},{$field}:{$value}";
                         $filterId++;
@@ -329,7 +330,6 @@ class SearchRequestModel
             $json->SearchCriteria->FacetFilters = [];
             $id = 1;
             foreach ($this->facetFilters as $field => $values) {
-                // OR fields
                 if ('OR' == $this->getFacetOperator($field)) {
                     $filterObj = new \stdClass();
                     $filterObj->FilterId = $id++;
@@ -341,9 +341,7 @@ class SearchRequestModel
                         $filterObj->FacetValues[] = $valueObj;
                     }
                     $json->SearchCriteria->FacetFilters[] = $filterObj;
-                }
-                // AND fields
-                else {
+                } else {
                     foreach ($values as $value) {
                         $filterObj = new \stdClass();
                         $filterObj->FilterId = $id++;
@@ -552,6 +550,7 @@ class SearchRequestModel
 
     // all copied for draft purposes from Base/Params
     protected $orFacets = [];
+
     // protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     public function initFacetList($facetList, $facetSettings, $config)
     {
@@ -574,6 +573,7 @@ class SearchRequestModel
 
         return true;
     }
+
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
         // if ($newAlias == null) {
@@ -584,6 +584,7 @@ class SearchRequestModel
             $this->orFacets[] = $newField;
         }
     }
+
     public function getFacetOperator($field)
     {
         return in_array($field, $this->orFacets) ? 'OR' : 'AND';

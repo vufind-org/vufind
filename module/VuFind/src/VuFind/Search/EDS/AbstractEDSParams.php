@@ -101,8 +101,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     protected function parseOperatorAndFieldName($field)
     {
-        $field = str_replace("~", "", $field);
+        $field = str_replace('~', '', $field);
         return [$this->getFacetOperator($field), $field];
     }
-
 }
