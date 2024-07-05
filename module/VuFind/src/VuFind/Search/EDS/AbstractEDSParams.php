@@ -49,6 +49,14 @@ use VuFindSearch\ParamBag;
 class AbstractEDSParams extends \VuFind\Search\Base\Params
 {
     /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected $FORCED_OR_FIELDS = [
+    ];
+
+    /**
      * Set up filters based on VuFind settings.
      *
      * @param ParamBag $params Parameter collection to update
@@ -102,6 +110,13 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     protected function parseOperatorAndFieldName($field)
     {
         $field = str_replace('~', '', $field);
-        return [$this->getFacetOperator($field), $field];
+
+        if (array_search($field, $this->FORCED_OR_FIELDS)) {
+            $facetOperator = 'OR';
+        } else {
+            $facetOperator = $this->getFacetOperator($field);
+        }
+
+        return [$facetOperator, $field];
     }
 }
