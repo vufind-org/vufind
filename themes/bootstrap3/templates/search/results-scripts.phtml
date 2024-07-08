@@ -25,10 +25,11 @@ $statuses = [
 $availabilityStatuses = [];
 foreach ($statuses as $status) {
     $status = new \VuFind\ILS\Logic\AvailabilityStatus($status);
-    $availabilityStatusClasses[$status->availabilityAsString()] =
+    $availabilityClasses[$status->availabilityAsString()] =
         $this->availabilityStatus()->getClass($status);
 }
 
+$availabilityClassesJson = json_encode($availabilityClasses);
 $this->headScript()->appendScript(<<<JS
-        var availabilityStatusClasses = $availabilityStatuses;
+        var availabilityClasses = $availabilityClassesJson;
     JS);
