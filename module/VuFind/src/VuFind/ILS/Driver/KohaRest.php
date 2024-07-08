@@ -134,8 +134,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var array
      */
     protected $statusRankings = [
-        'Charged' => 1,
-        'On Hold' => 2,
+        'Charged'                        => 1,
+        'On Hold'                        => 2,
+        'HoldingStatus::transit_to'      => 3,
+        'HoldingStatus::transit_to_date' => 4,
     ];
 
     /**
@@ -2018,10 +2020,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $extraStatusInformation = [];
             if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
                 if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
-                    $status = 'HoldingStatus::transit_to';
                     $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
                     if (isset($transit['datesent'])) {
-                        $status = 'HoldingStatus::transit_to_date';
                         $extraStatusInformation['date'] = $this->convertDate(
                             $transit['datesent'],
                             true
@@ -2183,6 +2183,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
+        if (isset($data['to_library'])) {
+            $status = 'HoldingStatus::transit_to';
+            if (isset($data['datesent'])) {
+                $status = 'HoldingStatus::transit_to_date';
+            }
+            return $status;
+        }
+
         $onHold = array_key_exists(
             'Item::Held',
             $item['availability']['notes'] ?? []
