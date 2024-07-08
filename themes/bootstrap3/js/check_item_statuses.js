@@ -1,4 +1,4 @@
-/*global AjaxRequestQueue, VuFind */
+/*global AjaxRequestQueue, VuFind, availabilityClasses */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function formatCallnumbers(callnumber, callnumber_handler) {
@@ -59,8 +59,13 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       var locationListHTML = "";
       for (var x = 0; x < result.locationList.length; x++) {
         var status = result.locationList[x].status;
+        var locationClass =
+            availabilityClasses[status] === 'true' ? 'available'
+                : availabilityClasses[status] === 'false' ? 'unavailable'
+                    : availabilityClasses[status];
+
         locationListHTML += '<div class="groupLocation">';
-        locationListHTML += '<span class="' + availabilityClasses[status] + '">'
+        locationListHTML += '<span class="' + locationClass + '">'
           + VuFind.icon('status-' + status)
           + result.locationList[x].location
           + '</span> ';
