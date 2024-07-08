@@ -2301,7 +2301,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $cacheKey = 'shelvingLocations';
         $shelvingLocations = $this->getCachedData($cacheKey);
         if (null === $shelvingLocations) {
-
             $result = $this->makeRequest('v1/authorised_value_categories/loc/authorised_values?_per_page=-1');
 
             $shelvingLocations = [];
@@ -2479,6 +2478,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
+        $name = '';
         if ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Branch') {
             $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
                 ? $item['holding_library_id'] : $item['home_library_id'];
@@ -2487,17 +2487,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $libraries = $this->getLibraries();
                 $name = isset($libraries[$libraryId])
                 ? $libraries[$libraryId]['name'] : $libraryId;
-	    }
-	}
-	else if ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Shelving') {            
+            }
+        } elseif ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Shelving') {
             $shelvingLocationId = $item['location'];
             $name = $this->translateLocation($shelvingLocationId);
             if ($name === $shelvingLocationId) {
                 $shelvingLocations = $this->getShelvingLocations();
                 $name = isset($shelvingLocations[$shelvingLocationId])
                 ? $shelvingLocations[$shelvingLocationId]['description'] : $shelvingLocationId;
-	    }
-	}
+            }
+        }
         return $name;
     }
 
