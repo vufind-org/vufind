@@ -31,5 +31,5 @@ foreach ($statuses as $status) {
 
 $availabilityClassesJson = json_encode($availabilityClasses);
 $this->headScript()->appendScript(<<<JS
-    var availabilityClasses = $availabilityClassesJson;
-JS);
+        var availabilityClasses = $availabilityClassesJson;
+    JS);
