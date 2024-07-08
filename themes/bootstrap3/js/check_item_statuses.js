@@ -60,9 +60,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       for (var x = 0; x < result.locationList.length; x++) {
         var status = result.locationList[x].status;
         var locationClass =
-            availabilityClasses[status] === 'true' ? 'available'
-                : availabilityClasses[status] === 'false' ? 'unavailable'
-                    : availabilityClasses[status];
+          availabilityClasses[status] === 'true' ? 'available'
+            : availabilityClasses[status] === 'false' ? 'unavailable'
+              : availabilityClasses[status];
 
         locationListHTML += '<div class="groupLocation">';
         locationListHTML += '<span class="' + locationClass + '">'
