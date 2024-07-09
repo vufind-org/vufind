@@ -2021,7 +2021,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
                 if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
                     $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
-                    if (isset($transit['datesent'])) {
+                    if ($status == 'HoldingStatus::transit_to_date') {
                         $extraStatusInformation['date'] = $this->convertDate(
                             $transit['datesent'],
                             true
@@ -2184,11 +2184,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
         if (isset($data['to_library'])) {
-            $status = 'HoldingStatus::transit_to';
-            if (isset($data['datesent'])) {
-                $status = 'HoldingStatus::transit_to_date';
-            }
-            return $status;
+            return isset($data['datesent']) ? 'HoldingStatus::transit_to_date' : 'HoldingStatus::transit_to';
         }
 
         $onHold = array_key_exists(
