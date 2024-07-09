@@ -111,7 +111,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     {
         $field = str_replace('~', '', $field);
 
-        if (array_search($field, $this->FORCED_OR_FIELDS)) {
+        if (in_array($field, $this->FORCED_OR_FIELDS)) {
             $facetOperator = 'OR';
         } else {
             $facetOperator = $this->getFacetOperator($field);
