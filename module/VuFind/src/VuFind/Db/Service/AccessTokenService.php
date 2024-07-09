@@ -32,9 +32,9 @@ namespace VuFind\Db\Service;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\AccessToken;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Table\AccessToken;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -54,18 +54,14 @@ class AccessTokenService extends AbstractDbService implements
     use LoggerAwareTrait;
 
     /**
-     * Constructor.
+     * Create an access_token entity object.
      *
-     * @param EntityManager       $entityManager       Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager VuFind entity plugin manager
-     * @param AccessToken         $accessTokenTable    Access token table
+     * @return AccessTokenEntityInterface
      */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        protected AccessToken $accessTokenTable
-    ) {
-        parent::__construct($entityManager, $entityPluginManager);
+    public function createEntity(): AccessTokenEntityInterface
+    {
+        $class = $this->getEntityClass(AccessToken::class);
+        return new $class();
     }
 
     /**
@@ -83,7 +79,18 @@ class AccessTokenService extends AbstractDbService implements
         string $type,
         bool $create = true
     ): ?AccessTokenEntityInterface {
-        return $this->accessTokenTable->getByIdAndType($id, $type, $create);
+        
+        $dql = 'SELECT * '
+            . 'FROM ' . $this->getEntityClass(AccessToken::class)
+            . 'WHERE id = :id '
+            . 'AND type = :type';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['id' => $id, 'type' => $type]);
+        $result = $query->getResult();
+        return $result ? : $this->createEntity()
+                           ->setId($id)
+                           ->setType($type)
+                           ->setCreated(date('Y-m-d H:i:s'));
     }
 
     /**
@@ -95,8 +102,11 @@ class AccessTokenService extends AbstractDbService implements
      * @return void
      */
     public function storeNonce(int $userId, ?string $nonce): void
-    {
-        $this->accessTokenTable->storeNonce($userId, $nonce);
+    {   $dql = 'UPDATE ' . $this->getEntityClass(AccessToken::class) . ' e '
+            . 'SET data = :nonce WHERE user_id = :userId';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['nonce' => $nonce, 'userId' => $userId]);
+        $query->execute();
     }
 
     /**
@@ -108,7 +118,14 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function getNonce(int $userId): ?string
     {
-        return $this->accessTokenTable->getNonce($userId);
+        $dql = 'SELECT data '
+            . 'FROM ' . $this->getEntityClass(AccessToken::class)
+            . 'WHERE user_id = :userId';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['userId' => $userId]);
+        $result = $query->getResult();
+        $data = json_decode($result, true);
+        return $data['nonce'] ?? null; 
     }
 
     /**
@@ -121,6 +138,18 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->accessTokenTable->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('at.id')
+            ->from($this->getEntityClass(AccessTokenEnTityInterface::class), 'at')
+            ->where('at.created < :latestCreated')
+            ->setParameter('lastestCreated', $dateLimit->getTimestamp());
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete($this->getEntityClass(AccessTokenEnTityInterface::class), 'at')
+            ->where('at.id IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }

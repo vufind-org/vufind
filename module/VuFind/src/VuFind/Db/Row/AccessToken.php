@@ -32,6 +32,8 @@ namespace VuFind\Db\Row;
 
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
  * Row Definition for access_token
@@ -41,9 +43,19 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ * 
+ * @property string $id
+ * @property string $type
+ * @property int    $user_id
+ * @property string $created
+ * @property string $data
+ * @property int    $revoked
  */
-class AccessToken extends RowGateway implements AccessTokenEntityInterface
+class AccessToken extends RowGateway implements AccessTokenEntityInterface, DbServiceAwareTrait
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+    
     /**
      * Constructor
      *
@@ -55,6 +67,39 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
     }
 
     /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setType(?string $type): AccessTokenEntityInterface
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
      * Set user ID.
      *
      * @param ?UserEntityInterface $user User owning token
@@ -63,8 +108,51 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      */
     public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
     {
-        $this->__set('user_id', $user?->getId());
+        $this->user = $user;
         return $this;
+    }
+
+    /**
+     * User getter (only null if entity has not been populated yet).
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface
+    {
+        return $this->user;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;;
+    }
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
     }
 
     /**
@@ -76,7 +164,7 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      */
     public function setData(string $data): AccessTokenEntityInterface
     {
-        $this->__set('data', $data);
+        $this->data = $data;
         return $this;
     }
 
@@ -87,7 +175,7 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      */
     public function isRevoked(): bool
     {
-        return $this->__get('revoked');
+        return (bool)$this->revoked;
     }
 
     /**
@@ -99,7 +187,7 @@ class AccessToken extends RowGateway implements AccessTokenEntityInterface
      */
     public function setRevoked(bool $revoked): AccessTokenEntityInterface
     {
-        $this->__set('revoked', $revoked);
+        $this->revoked = $revoked ? '1' : '0';
         return $this;
     }
 }

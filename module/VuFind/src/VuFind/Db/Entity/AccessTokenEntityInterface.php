@@ -41,6 +41,29 @@ namespace VuFind\Db\Entity;
 interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string;
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setType(?string $type): AccessTokenEntityInterface;
+
+    /**
      * Set user ID.
      *
      * @param ?UserEntityInterface $user User owning token
@@ -50,13 +73,43 @@ interface AccessTokenEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface;
 
     /**
-     * Set data.
+     * User getter
      *
-     * @param string $data Data
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
      *
      * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenEntityInterface;
+    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface;
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string;
+
+    /**
+     * Set data.
+     *
+     * @param ?string $data Data
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setData(?string $data): AccessTokenEntityInterface;
 
     /**
      * Is the access token revoked?
