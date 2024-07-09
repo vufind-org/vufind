@@ -274,7 +274,7 @@ class Backend extends AbstractBackend
                     );
                 default:
                     $this->logError("Unhandled EDS API error {$e->getApiErrorCode()} : {$e->getMessage()}");
-                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
+                    throw new BackendException("Unhandled EDS API error {$e->getApiErrorCode()} : {$e->getMessage()}", $e->getCode(), $e);
             }
         } catch (Exception $e) {
             $this->debug('Exception found: ' . $e->getMessage());
