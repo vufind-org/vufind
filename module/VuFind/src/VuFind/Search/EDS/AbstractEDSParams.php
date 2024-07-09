@@ -35,6 +35,8 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
+use function in_array;
+
 /**
  * Common EDS & EPF API Params
  *
@@ -73,7 +75,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
                     // Standard case:
-                    $fq = "{$filt['field']}:{$filt['value']}";
+                    $fq = "{$filt['field']}:{$this->getFacetOperator($filt['field'])}:{$filt['value']}";
                     $params->add('filters', $fq);
                 }
             }
@@ -82,7 +84,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
                     // Standard case:
-                    $hfq = "{$field}:{$value}";
+                    $hfq = "{$field}:{$this->getFacetOperator($field)}:{$value}";
                     $params->add('filters', $hfq);
                 }
             }
@@ -101,22 +103,17 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Don't actually parse the operator.  Use $this->getFacetOperator();
+     * Get facet operator for the specified field
      *
-     * @param string $field Prefixed string
+     * @param string $field Field name
      *
-     * @return array (0 = operator, 1 = field name)
+     * @return string
      */
-    protected function parseOperatorAndFieldName($field)
+    public function getFacetOperator($field)
     {
-        $field = str_replace('~', '', $field);
-
         if (in_array($field, $this->FORCED_OR_FIELDS)) {
-            $facetOperator = 'OR';
-        } else {
-            $facetOperator = $this->getFacetOperator($field);
+            return 'OR';
         }
-
-        return [$facetOperator, $field];
+        return parent::getFacetOperator($field);
     }
 }

@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\EDS;
 
 use function array_key_exists;
 use function count;
-use function in_array;
 use function intval;
 use function strlen;
 
@@ -67,6 +66,13 @@ class SearchRequestModel
      * @var array
      */
     protected $facetFilters = [];
+
+    /**
+     * Array mapping a facet field to the AND/OR operator to use with it
+     *
+     * @var array
+     */
+    protected $facetOperators = [];
 
     /**
      * Sort option to apply
@@ -243,7 +249,7 @@ class SearchRequestModel
             foreach ($this->facetFilters as $field => $values) {
                 $field = str_replace('~', '', $field);
                 $values = array_map(fn ($value) => static::escapeSpecialCharacters($value), $values);
-                $operator = $this->getFacetOperator($field);
+                $operator = $this->facetOperators[$field];
                 if ('OR' == $operator) {
                     $valuesString = implode(',', array_map(fn ($value) => "{$field}:{$value}", $values));
                     $qs['facetfilter'][] = "{$filterId},{$valuesString}";
@@ -330,7 +336,7 @@ class SearchRequestModel
             $json->SearchCriteria->FacetFilters = [];
             $id = 1;
             foreach ($this->facetFilters as $field => $values) {
-                if ('OR' == $this->getFacetOperator($field)) {
+                if ('OR' == $this->facetOperators[$field]) {
                     $filterObj = new \stdClass();
                     $filterObj->FilterId = $id++;
                     $filterObj->FacetValues = [];
@@ -486,11 +492,19 @@ class SearchRequestModel
      */
     public function addfilter($facetFilter)
     {
-        [$field, $value] = explode(':', $facetFilter, 2);
+        $filterComponents = explode(':', $facetFilter, 3);
+        if (count($filterComponents) < 3) {
+            [$field, $value] = $filterComponents;
+            // Default to AND, since it's already the default in EDS.ini.
+            $operator = 'AND';
+        } else {
+            [$field, $operator, $value] = $filterComponents;
+        }
         if (!array_key_exists($field, $this->facetFilters)) {
             $this->facetFilters[$field] = [];
         }
         $this->facetFilters[$field][] = $value;
+        $this->facetOperators[$field] = $operator;
     }
 
     /**
@@ -546,47 +560,5 @@ class SearchRequestModel
         }
 
         return $this;
-    }
-
-    // all copied for draft purposes from Base/Params
-    protected $orFacets = [];
-
-    // protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
-    public function initFacetList($facetList, $facetSettings, $config)
-    {
-        // $config = $this->configLoader
-        //     ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (!isset($config->$facetList)) {
-            return false;
-        }
-        if (isset($config->$facetSettings->orFacets)) {
-            $orFields
-                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
-        } else {
-            $orFields = [];
-        }
-        foreach ($config->$facetList as $key => $value) {
-            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
-                || in_array($key, $orFields);
-            $this->addFacet($key, $value, $useOr);
-        }
-
-        return true;
-    }
-
-    public function addFacet($newField, $newAlias = null, $ored = false)
-    {
-        // if ($newAlias == null) {
-        //     $newAlias = $newField;
-        // }
-        // $this->facetConfig[$newField] = $newAlias;
-        if ($ored) {
-            $this->orFacets[] = $newField;
-        }
-    }
-
-    public function getFacetOperator($field)
-    {
-        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 }
