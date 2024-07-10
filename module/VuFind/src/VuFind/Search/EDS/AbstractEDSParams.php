@@ -74,8 +74,9 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    // Standard case:
-                    $fq = "{$filt['field']}:{$this->getFacetOperator($filt['field'])}:{$filt['value']}";
+                    $fq = $filt['field']
+                        . ($this->filterRequiresFacetOperator($filt['field']) ? ":{$this->getFacetOperator($filt['field'])}" : '')
+                        . ":{$filt['value']}";
                     $params->add('filters', $fq);
                 }
             }
@@ -83,12 +84,32 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
         if (!empty($hiddenFilterList)) {
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
-                    // Standard case:
-                    $hfq = "{$field}:{$this->getFacetOperator($field)}:{$value}";
+                    $hfq = $field
+                        . ($this->filterRequiresFacetOperator($filt['field']) ? ":{$this->getFacetOperator($field)}" : '')
+                        . ":{$value}";
                     $params->add('filters', $hfq);
                 }
             }
         }
+    }
+
+    /**
+     * Determines if the given filter field is a normal one, which should include the AND/OR operator,
+     * or a special filter which should not.
+     * 
+     * @param string $field Filter field name
+     * 
+     * @return boolean
+     */
+    protected function filterRequiresFacetOperator($field)
+    {
+        if (str_starts_with($field, 'LIMIT|') ||
+            str_starts_with($field, 'EXPAND:') ||
+            str_starts_with($field, 'SEARCHMODE:') ||
+            str_starts_with($field, 'PublicationDate')) {
+                return false;
+        }
+        return true;
     }
 
     /**
