@@ -55,7 +55,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $FORCED_OR_FIELDS = [
+    protected $forcedOrFields = [
     ];
 
     /**
@@ -111,7 +111,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     public function getFacetOperator($field)
     {
-        if (in_array($field, $this->FORCED_OR_FIELDS)) {
+        if (in_array($field, $this->forcedOrFields)) {
             return 'OR';
         }
         return parent::getFacetOperator($field);

@@ -52,7 +52,7 @@ class Params extends AbstractEDSParams
      *
      * @var array
      */
-    protected $FORCED_OR_FIELDS = [
+    protected $forcedOrFields = [
         'ContentProvider',
         'SourceType',
     ];
