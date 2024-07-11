@@ -2479,24 +2479,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getItemLocationName($item)
     {
         $name = '';
-        if ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Branch') {
-            $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
-                ? $item['holding_library_id'] : $item['home_library_id'];
-            $name = $this->translateLocation($libraryId);
-            if ($name === $libraryId) {
-                $libraries = $this->getLibraries();
-                $name = isset($libraries[$libraryId])
-                ? $libraries[$libraryId]['name'] : $libraryId;
-            }
-        } elseif ($this->config['ItemTypeRenewalBlockMappings']['Location'] == 'Shelving') {
-            $shelvingLocationId = $item['location'];
-            $name = $this->translateLocation($shelvingLocationId);
-            if ($name === $shelvingLocationId) {
-                $shelvingLocations = $this->getShelvingLocations();
-                $name = isset($shelvingLocations[$shelvingLocationId])
-                ? $shelvingLocations[$shelvingLocationId]['description'] : $shelvingLocationId;
-            }
+
+        switch ($this->config['ItemTypeRenewalBlockMappings']['Location']) {
+            case "Shelving":
+                $shelvingLocationId = $item['location'];
+                $name = $this->translateLocation($shelvingLocationId);
+                if ($name === $shelvingLocationId) {
+                    $shelvingLocations = $this->getShelvingLocations();
+                    $name = isset($shelvingLocations[$shelvingLocationId])
+                        ? $shelvingLocations[$shelvingLocationId]['description'] : $shelvingLocationId;
+                }
+                break;
+            default:
+                $libraryId = (!$this->useHomeLibrary && null !== $item['holding_library_id'])
+                    ? $item['holding_library_id'] : $item['home_library_id'];
+                $name = $this->translateLocation($libraryId);
+                if ($name === $libraryId) {
+                    $libraries = $this->getLibraries();
+                    $name = isset($libraries[$libraryId])
+		        ? $libraries[$libraryId]['name'] : $libraryId;
+                }
         }
+
         return $name;
     }
 
