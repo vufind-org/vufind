@@ -86,7 +86,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
                     $hfq = $field
-                        . ($this->filterRequiresFacetOperator($filt['field']) ?
+                        . ($this->filterRequiresFacetOperator($field) ?
                             ":{$this->getFacetOperator($field)}" : '')
                         . ":{$value}";
                     $params->add('filters', $hfq);
