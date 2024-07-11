@@ -73,6 +73,11 @@ class EPFTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * Test getIssns for a record.
+     *
+     * @return void
+     */
     public function testGetIssns(): void
     {
         $issns = $this->getDriverWithIdentifierData()->getISSNs();
