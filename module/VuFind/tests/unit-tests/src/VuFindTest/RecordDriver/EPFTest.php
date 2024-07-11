@@ -73,6 +73,15 @@ class EPFTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testGetIssns(): void
+    {
+        $issns = $this->getDriverWithIdentifierData()->getISSNs();
+        $this->assertEquals(
+            ['19494998', '19495005'],
+            $issns
+        );
+    }
+
     /**
      * Get a record driver with fake identifier data.
      *
@@ -84,6 +93,26 @@ class EPFTest extends \PHPUnit\Framework\TestCase
             [
                 'Header' => [
                     'PublicationId' => '1234-5678',
+                ],
+                'RecordInfo' => [
+                    'BibRecord' => [
+                        'BibEntity' => [
+                            'Identifiers' => [
+                                [
+                                    'Type' => 'issn-print',
+                                    'Value' => '19494998',
+                                ],
+                                [
+                                    'Type' => 'issn-online',
+                                    'Value' => '19495005',
+                                ],
+                                [
+                                    'Type' => 'ejsid',
+                                    'Value' => '723124',
+                                ],
+                            ]
+                        ],
+                    ],
                 ],
                 'FullTextHoldings' => [
                     [
