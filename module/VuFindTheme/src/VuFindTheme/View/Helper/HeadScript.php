@@ -166,7 +166,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
     {
         return empty($item->attributes['src'])
             || isset($item->attributes['conditional'])
-            || strpos($item->attributes['src'], '://');
+            || !$this->isRelativePath($item->attributes['src']);
     }
 
     /**
