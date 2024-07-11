@@ -115,7 +115,7 @@ class EPFTest extends \PHPUnit\Framework\TestCase
                                     'Type' => 'ejsid',
                                     'Value' => '723124',
                                 ],
-                            ]
+                            ],
                         ],
                     ],
                 ],
