@@ -2497,7 +2497,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if ($name === $libraryId) {
                     $libraries = $this->getLibraries();
                     $name = isset($libraries[$libraryId])
-		        ? $libraries[$libraryId]['name'] : $libraryId;
+                        ? $libraries[$libraryId]['name'] : $libraryId;
                 }
         }
 
