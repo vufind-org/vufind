@@ -168,7 +168,7 @@ class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\Log
     protected function isExcludedFromConcat($item)
     {
         return !isset($item->rel) || $item->rel != 'stylesheet'
-            || strpos($item->href, '://');
+            || !$this->isRelativePath($item->href);
     }
 
     /**
