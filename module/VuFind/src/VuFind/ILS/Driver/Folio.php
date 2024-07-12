@@ -994,6 +994,10 @@ class Folio extends AbstractAPI implements
     /**
      * Support method for patronLogin(): authenticate the patron with a CQL looup.
      * Returns the CQL query for retrieving more information about the user.
+     * 
+     * NOTE: this method looks for the existence of a $SERVER['Shib-Session-ID'] variable 
+     * and, if found, looks for a `shib-cql` configuration stanza to use instead of the
+     * standard `cql` stanza.
      *
      * @param string $username The patron username
      * @param string $password The patron password
@@ -1005,9 +1009,16 @@ class Folio extends AbstractAPI implements
         // Construct user query using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
         $passwordField = $this->config['User']['password_field'] ?? false;
-        $cql = $this->config['User']['cql']
-            ?? '%%username_field%% == "%%username%%"'
-            . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        if (
+            isset($this->config['User']['shib_cql'])
+            && array_key_exists('Shib-Session-ID', $_SERVER)
+        ) {
+            $cql = $this->config['User']['shib_cql'];
+        } else {
+            $cql = $this->config['User']['cql']
+                ?? '%%username_field%% == "%%username%%"'
+                . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        }
         $placeholders = [
             '%%username_field%%',
             '%%password_field%%',
