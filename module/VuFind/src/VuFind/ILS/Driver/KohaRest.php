@@ -2478,7 +2478,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-	my $locationConfig = strtolower(trim($this->config['ItemTypeRenewalBlockMappings']['Location'] ?? 'branch'));
+        $locationConfig = strtolower(trim($this->config['ItemTypeRenewalBlockMappings']['Location'] ?? 'branch'));
         switch ($locationConfig) {
             case 'Shelving':
                 $shelvingLocationId = $item['location'];
