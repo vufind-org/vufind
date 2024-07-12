@@ -68,6 +68,26 @@ class EPF extends EDS
     }
 
     /**
+     * Get ISSNs (of containing record)
+     *
+     * @return array
+     */
+    public function getISSNs()
+    {
+        return $this->getFilteredIdentifiers(['issn-print', 'issn-online']);
+    }
+
+    /**
+     * Get an array of ISBNs
+     *
+     * @return array
+     */
+    public function getISBNs()
+    {
+        return $this->getFilteredIdentifiers(['isbn-print', 'isbn-online']);
+    }
+
+    /**
      * Get the list of full text holdings for the record
      *
      * @return array
