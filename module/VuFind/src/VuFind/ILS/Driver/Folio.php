@@ -133,6 +133,13 @@ class Folio extends AbstractAPI implements
     ];
 
     /**
+     * VuFind configuration, config.ini
+     *
+     * @var array
+     */
+    protected $mainConfig = null;
+
+    /**
      * Cache for course reserves course data (null if not yet populated)
      *
      * @var ?array
@@ -187,6 +194,20 @@ class Folio extends AbstractAPI implements
     {
         parent::setConfig($config);
         $this->tenant = $this->config['API']['tenant'];
+    }
+
+    /**
+     * Set main configuration
+     *
+     * Store a reference to the config.ini configuration
+     *
+     * @param array $mainConfig Configuration array loaded from the main VuFind configuration
+     *
+     * @return void
+     */
+    public function setMainConfig($mainConfig)
+    {
+        $this->mainConfig = $mainConfig;
     }
 
     /**
@@ -1273,8 +1294,8 @@ class Folio extends AbstractAPI implements
     /**
      * Support method for patronLogin(): authenticate the patron with a CQL looup.
      * Returns the CQL query for retrieving more information about the user.
-     * 
-     * NOTE: this method looks for the existence of a $SERVER['Shib-Session-ID'] variable 
+     *
+     * NOTE: this method looks for the existence of a $SERVER['Shib-Session-ID'] variable
      * and, if found, looks for a `shib-cql` configuration stanza to use instead of the
      * standard `cql` stanza.
      *

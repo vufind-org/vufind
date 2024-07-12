@@ -71,6 +71,11 @@ class FolioFactory extends DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
-        return parent::__invoke($container, $requestedName, [$sessionFactory]);
+        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $driver = parent::__invoke($container, $requestedName, [$sessionFactory]);
+        if (method_exists($requestedName, 'setMainConfig')) {
+            $driver->setMainConfig($mainConfig);
+        }
+        return $driver;
     }
 }
