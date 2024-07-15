@@ -917,6 +917,12 @@ abstract class Results
                 $isApplied = $this->getParams()->hasFilter("$field:" . $value)
                     || $this->getParams()->hasFilter("~$field:" . $value);
 
+                // Facet counts from EDS assume the AND operator
+                // See https://github.com/vufind-org/vufind/pull/3822
+                if ('OR' == $operator) {
+                    $count = null;
+                }
+
                 // Store the collected values:
                 $resultList[] = compact(
                     'value',
