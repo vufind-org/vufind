@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
@@ -69,4 +70,62 @@ interface UserResourceServiceInterface extends DbServiceInterface
      * @return array
      */
     public function getStatistics(): array;
+
+    /**
+     * Create user/resource/list link if one does not exist; update notes if one does.
+     *
+     * @param ResourceEntityInterface|int $resourceOrId Entity or ID of resource to link up
+     * @param UserEntityInterface|int     $userOrId     Entity or ID of user creating link
+     * @param UserListEntityInterface|int $listOrId     Entity or ID of list to link up
+     * @param string                      $notes        Notes to associate with link
+     *
+     * @return UserResource|false
+     */
+    public function createOrUpdateLink(
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int $listOrId,
+        string $notes = ''
+    ): UserResourceEntityInterface;
+
+    /**
+     * Unlink rows for the specified resource.
+     *
+     * @param int|int[]|null              $resourceId ID (or array of IDs) of resource(s) to unlink (null for ALL
+     * matching resources)
+     * @param UserEntityInterface|int     $userOrId   ID or entity representing user removing links
+     * @param UserListEntityInterface|int $listOrId   ID or entity representing list to unlink (null for ALL
+     * matching lists)
+     *
+     * @return void
+     */
+    public function unlinkFavorites(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        UserListEntityInterface|int|null $listOrId = null
+    ): void;
+
+    /**
+     * Create a UserResource entity object.
+     *
+     * @return UserResourceEntityInterface
+     */
+    public function createEntity(): UserResourceEntityInterface;
+
+    /**
+     * Change all matching rows to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void;
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate(): void;
 }

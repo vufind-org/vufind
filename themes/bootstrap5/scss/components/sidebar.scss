@@ -104,6 +104,26 @@
   overflow: hidden;
 }
 
+.multiFacetSelection {
+  .facet {
+    a.exclude {
+      outline: none;
+    }
+    .exclude.selected {
+      .icon {
+        outline: 2px dotted $list-group-active-bg;
+      }
+    }
+    .exclude {
+      .icon {
+        outline: 2px hidden $list-group-active-bg;
+        width: 1.5em;
+        height: 1.5em;
+      }
+    }
+  }
+}
+
 .top-facets-contents {
   display: block;
   margin: 2px 0;

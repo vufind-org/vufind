@@ -30,10 +30,13 @@
 
 namespace VuFind\Controller;
 
+use Exception;
 use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
+use VuFind\Db\Entity\SearchEntityInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -141,8 +144,10 @@ class AbstractSearch extends AbstractBase
 
         // If we got this far, the user is allowed to view the search, so we can
         // deminify it to a new object.
-        $minSO = $search->getSearchObjectOrThrowException();
-        $savedSearch = $minSO->deminify($this->getResultsManager());
+        $savedSearch = $search->getSearchObject()?->deminify($this->getResultsManager());
+        if (!$savedSearch) {
+            throw new Exception("Problem getting search object from search {$search->getId()}.");
+        }
 
         // Now redirect to the URL associated with the saved search; this
         // simplifies problems caused by mixing different classes of search
@@ -515,15 +520,13 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $searchId Primary key value
      *
-     * @return ?\VuFind\Db\Row\Search
+     * @return ?SearchEntityInterface
      */
     protected function retrieveSearchSecurely($searchId)
     {
-        $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $user = $this->getUser();
-        $userId = $user ? $user->id : null;
-        return $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        return $this->getDbService(SearchServiceInterface::class)
+            ->getSearchByIdAndOwner($searchId, $sessId, $this->getUser());
     }
 
     /**
@@ -535,14 +538,11 @@ class AbstractSearch extends AbstractBase
      */
     protected function saveSearchToHistory($results)
     {
-        $user = $this->getUser();
         $sessId = $this->serviceLocator->get(SessionManager::class)->getId();
-        $history = $this->getTable('Search');
-        $history->saveSearch(
-            $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class),
+        $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class)->saveNormalizedSearch(
             $results,
             $sessId,
-            $user->id ?? null
+            $this->getUser()?->getId()
         );
     }
 
@@ -564,8 +564,10 @@ class AbstractSearch extends AbstractBase
         }
 
         // Restore the full search object:
-        $minSO = $search->getSearchObjectOrThrowException();
-        $savedSearch = $minSO->deminify($this->getResultsManager());
+        $savedSearch = $search->getSearchObject()?->deminify($this->getResultsManager());
+        if (!$savedSearch) {
+            throw new Exception("Problem getting search object from search {$search->getId()}.");
+        }
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {

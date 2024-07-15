@@ -194,8 +194,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         ];
         return [
             'field config' => [
-                'config' => 'numerical',
-                'results' => [
+                'numerical',
+                [
                     [
                         'Street photography',
                         'Mexico',
@@ -212,12 +212,12 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'record config' => [
-                'config' => 'record',
-                'results' => $recordOrderResults,
+                'record',
+                $recordOrderResults,
             ],
             'default config' => [
-                'config' => null,
-                'results' => $recordOrderResults,
+                null,
+                $recordOrderResults,
             ],
         ];
     }

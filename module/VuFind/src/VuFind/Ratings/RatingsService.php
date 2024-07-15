@@ -83,7 +83,7 @@ class RatingsService
         $source = $driver->getSourceIdentifier();
         $cacheKey = $recordId . '-' . $source . '-' . ($userId ?? '');
         if (!isset($this->ratingCache[$cacheKey])) {
-            $this->ratingCache[$cacheKey] = $this->dbService->getForResource($recordId, $source, $userId);
+            $this->ratingCache[$cacheKey] = $this->dbService->getRecordRatings($recordId, $source, $userId);
         }
         return $this->ratingCache[$cacheKey];
     }
@@ -104,7 +104,7 @@ class RatingsService
      */
     public function getRatingBreakdown(RecordDriver $driver, array $groups)
     {
-        return $this->dbService->getCountsForResource(
+        return $this->dbService->getCountsForRecord(
             $driver->getUniqueId(),
             $driver->getSourceIdentifier(),
             $groups

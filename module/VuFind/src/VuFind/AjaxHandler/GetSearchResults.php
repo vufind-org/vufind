@@ -116,7 +116,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param ?UserEntityInterface $user             Logged-in user
      * @param string               $sessionId        Session ID
      * @param SearchNormalizer     $searchNormalizer Search normalizer
-     * @param Search               $searchTable      Search table
      * @param array                $config           Main configuration
      * @param Memory               $searchMemory     Search memory
      */
@@ -128,7 +127,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         protected ?UserEntityInterface $user,
         protected string $sessionId,
         protected SearchNormalizer $searchNormalizer,
-        protected Search $searchTable,
         protected array $config,
         protected Memory $searchMemory
     ) {
@@ -361,8 +359,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function saveSearchToHistory(Results $results): void
     {
-        $this->searchTable->saveSearch(
-            $this->searchNormalizer,
+        $this->searchNormalizer->saveNormalizedSearch(
             $results,
             $this->sessionId,
             $this->user?->getId()

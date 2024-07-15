@@ -52,11 +52,15 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     /**
      * Constructor
      *
-     * @param int|bool $availability Availability
-     * @param string   $status       Status Description
+     * @param int|bool $availability           Availability
+     * @param string   $status                 Status Description
+     * @param array    $extraStatusInformation Extra Status Information
      */
-    public function __construct(int|bool $availability, protected string $status = '')
-    {
+    public function __construct(
+        int|bool $availability,
+        protected string $status = '',
+        protected array $extraStatusInformation = []
+    ) {
         $this->availability = (int)$availability;
     }
 
@@ -113,6 +117,30 @@ class AvailabilityStatus implements AvailabilityStatusInterface
             default:
                 return 'Uncertain';
         }
+    }
+
+    /**
+     * Get extra status information.
+     *
+     * @return array
+     */
+    public function getExtraStatusInformation(): array
+    {
+        return $this->extraStatusInformation;
+    }
+
+    /**
+     * Get status description tokens. Used when status description is being translated.
+     *
+     * @return array
+     */
+    public function getStatusDescriptionTokens(): array
+    {
+        $tokens = [];
+        foreach ($this->getExtraStatusInformation() as $key => $value) {
+            $tokens['%%' . $key . '%%'] = $value;
+        }
+        return $tokens;
     }
 
     /**
