@@ -1,4 +1,9 @@
-<?php $account = $this->auth()->getManager(); ?>
+<?php
+/** @var \Laminas\View\Renderer\PhpRenderer $this */
+$account = $this->auth()->getManager();
+/** @var \VuFind\Search\SearchOrigin\AbstractSearchOrigin|null $searchOrigin */
+$searchOrigin = $this->get('searchOrigin');
+?>
 <div class="banner container navbar">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
@@ -116,4 +121,6 @@
       <?=$this->layout()->searchbox ?>
     </div>
   </div>
+<?php else: ?>
+  <?= $this->render('search/backtoorigin.phtml', ['searchOrigin' => $searchOrigin]); ?>
 <?php endif; ?>

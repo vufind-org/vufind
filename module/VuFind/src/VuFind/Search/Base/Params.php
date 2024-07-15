@@ -31,6 +31,8 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
+use VuFind\Search\SearchOrigin\SearchOriginFactory;
 use VuFind\I18n\TranslatableString;
 use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
@@ -109,6 +111,13 @@ class Params
      * @var string
      */
     protected $searchType  = 'basic';
+
+    /**
+     * Page the search originate from
+     *
+     * @var AbstractSearchOrigin|null
+     */
+    protected $searchOrigin;
 
     /**
      * Shards
@@ -371,6 +380,20 @@ class Params
         $this->initSort($request);
         $this->initFilters($request);
         $this->initHiddenFilters($request);
+        $this->initOrigin($request);
+    }
+
+    /**
+     * Pull origin parameters (ie: alphabrowse) from the request
+     *
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initOrigin($request)
+    {
+        $this->searchOrigin = SearchOriginFactory::createObject($request->toArray());
     }
 
     /**
@@ -1862,6 +1885,7 @@ class Params
     {
         $minified->ty = $this->getSearchType();
         $minified->cl = $this->getSearchClassId();
+        $minified->o = $this->getSearchOrigin();
 
         // Search terms, we'll shorten keys
         $query = $this->getQuery();
@@ -1892,6 +1916,7 @@ class Params
         $this->hiddenFilters = $minified->hf;
         $this->searchType = $minified->ty;
         $this->searchContextParameters = $minified->scp;
+        $this->searchOrigin = $minified->o;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1942,6 +1967,16 @@ class Params
     public function getQueryIDLimit()
     {
         return -1;
+    }
+
+    /**
+     * Get origin (the page originating the search).
+     *
+     * @return null|AbstractSearchOrigin
+     */
+    public function getSearchOrigin(): ?AbstractSearchOrigin
+    {
+        return $this->searchOrigin;
     }
 
     /**

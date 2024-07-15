@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 use Laminas\View\Helper\Url;
 
 /**
@@ -71,12 +72,13 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get link to browse results (or null if no valid URL available)
      *
-     * @param string $source AlphaBrowse index currently being used
-     * @param array  $item   Item to link to
+     * @param string                    $source AlphaBrowse index currently being used
+     * @param array                     $item   Item to link to
+     * @param AbstractSearchOrigin|null $origin Current page to provide the origin of the search
      *
      * @return string
      */
-    public function getUrl($source, $item)
+    public function getUrl($source, $item, ?AbstractSearchOrigin $origin = null)
     {
         if ($item['count'] <= 0) {
             return null;
@@ -91,6 +93,9 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
         }
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
+        }
+        if (isset($origin)) {
+            $query += $origin->getSearchUrlParamsArray();
         }
         return ($this->url)('search-results', [], ['query' => $query]);
     }

@@ -523,7 +523,7 @@ body.rtl {
 .wikipedia img { margin-right: 1rem; }
 .geoItem {
     font-size: .9em;
-    margin: 0px 0px 10px;
+    margin: 0 0 10px;
 }
 .title-in-heading {
   font-size: inherit;
@@ -594,10 +594,10 @@ body.rtl {
 
     .checkbox label {
       display: inline-block;
-      padding: 10px 0px;
+      padding: 10px 0;
       @media (max-width: $screen-sm-min) {
         float: right;
-        padding: 0px;
+        padding: 0;
       }
     }
     .filters-term {
@@ -862,5 +862,12 @@ table.search-history-table {
     li:not(:last-child)::after {
       content: ', ';
     }
+  }
+}
+
+.backtoorigin>p>a {
+  text-decoration: none;
+  &::before {
+    content:"← ";
   }
 }

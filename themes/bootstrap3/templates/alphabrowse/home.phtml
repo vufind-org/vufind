@@ -1,4 +1,5 @@
 <?php
+  /** @var \Laminas\View\Renderer\PhpRenderer $this */
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a></li>';
   $baseQuery = ['source' => $this->source, 'from' => $this->from];
@@ -105,7 +106,7 @@
         <?php endif; ?>
           <td class="<?=$this->source ?>">
             <b>
-              <?php if ($url = $this->alphabrowse()->getUrl($this->source, $item)): ?>
+              <?php if ($url = $this->alphabrowse()->getUrl($this->source, $item, $this->origin)): ?>
                 <a href="<?=$this->escapeHtmlAttr($url)?>"><?=$this->escapeHtml($item['heading'])?></a>
               <?php else: ?>
                 <?=$this->escapeHtml($item['heading'])?>

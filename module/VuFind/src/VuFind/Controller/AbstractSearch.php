@@ -37,6 +37,7 @@ use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Search\Base\Results;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -372,6 +373,7 @@ class AbstractSearch extends AbstractBase
         $lastView = $this->getSearchMemory()
             ->retrieveLastSetting($this->searchClassId, 'view');
         try {
+            /** @var Results $results */
             $view->results = $results = $runner->run(
                 $request,
                 $this->searchClassId,
@@ -428,6 +430,8 @@ class AbstractSearch extends AbstractBase
                 $this->flashMessenger()->addErrorMessage($error);
             }
         }
+        // For the header link
+        $this->layout()->setVariable('searchOrigin', $results->getParams()->getSearchOrigin());
 
         // Special case: If we're in RSS view, we need to render differently:
         if (isset($view->params) && $view->params->getView() == 'rss') {
@@ -457,8 +461,9 @@ class AbstractSearch extends AbstractBase
         }
 
         $recordList = $results->getResults();
+        $queryParams = $results->getParams()->getSearchOrigin()->getSearchUrlParamsArray() ?? [];
         return isset($recordList[$jumpto - 1])
-            ? $this->getRedirectForRecord($recordList[$jumpto - 1]) : false;
+            ? $this->getRedirectForRecord($recordList[$jumpto - 1], $queryParams) : false;
     }
 
     /**
@@ -479,10 +484,9 @@ class AbstractSearch extends AbstractBase
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {
-            return $this->getRedirectForRecord(
-                reset($recordList),
-                ['sid' => $results->getSearchId()]
-            );
+            $queryParams = $results->getParams()->getSearchOrigin()->getSearchUrlParamsArray() ?? [];
+            $queryParams['sid'] = $results->getSearchId();
+            return $this->getRedirectForRecord(reset($recordList), $queryParams);
         }
 
         return false;

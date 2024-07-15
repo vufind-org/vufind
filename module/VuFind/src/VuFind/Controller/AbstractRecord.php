@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Search\SearchOrigin\SearchOriginFactory;
+use Exception;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -953,8 +955,11 @@ class AbstractRecord extends AbstractBase
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
         $view->loadInitialTabWithAjax
-            = isset($config->Site->loadInitialTabWithAjax)
-            ? (bool)$config->Site->loadInitialTabWithAjax : false;
+            = isset($config->Site->loadInitialTabWithAjax) && (bool) $config->Site->loadInitialTabWithAjax;
+        try {
+            $this->layout()->setVariable('searchOrigin', SearchOriginFactory::createObject($this->params()->fromQuery()));
+        } catch (Exception) {
+        }
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

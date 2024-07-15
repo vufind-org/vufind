@@ -30,6 +30,7 @@
 
 namespace VuFind\Search;
 
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 use VuFind\Search\Base\Results;
 
 /**
@@ -141,6 +142,13 @@ class Minified
      * @var array
      */
     public $scp = [];
+
+    /**
+     * Search origin
+     *
+     * @var AbstractSearchOrigin|null
+     */
+    public $o;
 
     /**
      * Constructor.

@@ -1,4 +1,5 @@
 <?php
+  /** @var \Laminas\View\Renderer\PhpRenderer $this */
   $recordLinker = $this->recordLinker($this->results);
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
   $cover = $coverDetails['html'];
