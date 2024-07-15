@@ -112,4 +112,31 @@ class Results extends \VuFind\Search\Base\Results
         }
         return $this->buildFacetList($this->responseFacets, $filter);
     }
+
+    /**
+     * A helper method that converts the list of facets for the last search from
+     * RecordCollection's facet list.
+     *
+     * @param array $facetList Facet list
+     * @param array $filter    Array of field => on-screen description listing
+     * all of the desired facet fields; set to null to get all configured values.
+     *
+     * @return array Facets data arrays
+     */
+    protected function buildFacetList(array $facetList, array $filter = null): array
+    {
+        $result = parent::buildFacetList($facetList, $filter);
+
+        // Facet counts from EDS assume the AND operator
+        // See https://github.com/vufind-org/vufind/pull/3822
+        foreach ($result as &$facet) {
+            if (!empty($facet['list']) && 'OR' == $facet['list'][0]['operator']) {
+                foreach ($facet['list'] as &$facetValue) {
+                    $facetValue['valueIsMinimum'] = true;
+                }
+            }
+        }
+
+        return $result;
+    }
 }
