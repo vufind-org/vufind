@@ -129,7 +129,8 @@ class AccessTokenService extends AbstractDbService implements
         return $data['nonce'] ?? null;
     }
 
-    /**[Semantical Error] line 0, col 69 near 'userId = :us': Error: Class VuFind\Db\Entity\AccessToken has no field or association named userIdleted in small batches.
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.
      * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
