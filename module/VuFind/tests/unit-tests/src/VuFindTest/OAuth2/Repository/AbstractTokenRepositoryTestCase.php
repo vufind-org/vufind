@@ -30,12 +30,11 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Row\AccessToken as AccessTokenRow;
+use VuFind\Db\Entity\AccessTokenEntityInterface as AccessTokenEntity;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Service\AccessTokenService;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\AccessToken;
 use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\ClientEntity;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
@@ -108,21 +107,21 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create AccessToken table
+     * Create AccessToken entity
      *
-     * @return MockObject&AccessToken
+     * @return MockObject&AccessTokenEntity
      */
-    protected function getMockAccessTokenTable(): AccessToken
+    protected function getMockAccessTokenTable(): AccessTokenEntity
     {
         $getByIdAndTypeCallback = function (
             string $id,
             string $type,
             bool $create
-        ): ?AccessTokenRow {
+        ): ?AccessTokenEntity {
             foreach ($this->accessTokenTable as $row) {
                 if (
-                    $id === $row['id']
-                    && $type === $row['type']
+                    $id === $row->getId()
+                    && $type === $row->getType()
                 ) {
                     return $this->createAccessTokenRow($row);
                 }
@@ -135,7 +134,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
                 ) : null;
         };
 
-        $accessTokenTable = $this->getMockBuilder(AccessToken::class)
+        $accessTokenTable = $this->getMockBuilder(AccessTokenService::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getByIdAndType'])
             ->getMock();
@@ -176,11 +175,11 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @param array $data Row data
      *
-     * @return MockObject&AccessTokenRow
+     * @return MockObject&AccessTokenEntity
      */
-    protected function createAccessTokenRow(array $data): AccessTokenRow
+    protected function createAccessTokenRow(array $data): AccessTokenEntity
     {
-        $result = $this->getMockBuilder(AccessTokenRow::class)
+        $result = $this->getMockBuilder(AccessTokenEntity::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['initialize', 'save'])
             ->getMock();
@@ -190,8 +189,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             $data = $result->toArray();
             foreach ($this->accessTokenTable as &$row) {
                 if (
-                    $data['id'] === $row['id']
-                    && $data['type'] === $row['type']
+                    $data['id'] === $row->getId()
+                    && $data['type'] === $row->getType()
                 ) {
                     $row = $data;
                     return 1;

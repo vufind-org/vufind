@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -120,6 +121,39 @@ class AccessToken implements AccessTokenEntityInterface
     protected $revoked = '0';
 
     /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setType(?string $type): AccessTokenEntityInterface
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
      * Set user ID.
      *
      * @param ?UserEntityInterface $user User owning token
@@ -133,13 +167,56 @@ class AccessToken implements AccessTokenEntityInterface
     }
 
     /**
-     * Set data.
+     * User getter (only null if entity has not been populated yet).
      *
-     * @param string $data Data
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface
+    {
+        return $this->user;
+    }
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+    }
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
      *
      * @return AccessTokenEntityInterface
      */
-    public function setData(string $data): AccessTokenEntityInterface
+    public function setCreated(DateTime $dateTime): AccessTokenEntityInterface
+    {
+        $this->created = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set data.
+     *
+     * @param ?string $data Data
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function setData(?string $data): AccessTokenEntityInterface
     {
         $this->data = $data;
         return $this;

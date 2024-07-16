@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for access tokens.
  *

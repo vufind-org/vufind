@@ -30,11 +30,9 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Doctrine\ORM\EntityManager;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\AccessToken;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -79,7 +77,7 @@ class AccessTokenService extends AbstractDbService implements
         string $type,
         bool $create = true
     ): ?AccessTokenEntityInterface {
-        
+
         $dql = 'SELECT * '
             . 'FROM ' . $this->getEntityClass(AccessToken::class)
             . 'WHERE id = :id '
@@ -87,10 +85,12 @@ class AccessTokenService extends AbstractDbService implements
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(['id' => $id, 'type' => $type]);
         $result = $query->getResult();
-        return $result ? : $this->createEntity()
-                           ->setId($id)
-                           ->setType($type)
-                           ->setCreated(date('Y-m-d H:i:s'));
+        $result = $result ?: $this->createEntity()
+                          ->setId($id)
+                          ->setType($type)
+                          ->setCreated(new \DateTime());
+
+        return $result;
     }
 
     /**
@@ -102,10 +102,11 @@ class AccessTokenService extends AbstractDbService implements
      * @return void
      */
     public function storeNonce(int $userId, ?string $nonce): void
-    {   $dql = 'UPDATE ' . $this->getEntityClass(AccessToken::class) . ' e '
-            . 'SET data = :nonce WHERE user_id = :userId';
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass(AccessToken::class) . ' at '
+                . 'SET at.data = :nonce WHERE at.user = :user';
         $query = $this->entityManager->createQuery($dql);
-        $query->setParameters(['nonce' => $nonce, 'userId' => $userId]);
+        $query->setParameters(['nonce' => $nonce, 'user' => $userId]);
         $query->execute();
     }
 
@@ -119,17 +120,16 @@ class AccessTokenService extends AbstractDbService implements
     public function getNonce(int $userId): ?string
     {
         $dql = 'SELECT data '
-            . 'FROM ' . $this->getEntityClass(AccessToken::class)
-            . 'WHERE user_id = :userId';
+            . 'FROM ' . $this->getEntityClass(AccessToken::class) . ' at '
+            . 'WHERE at.user_id = :userId';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(['userId' => $userId]);
         $result = $query->getResult();
         $data = json_decode($result, true);
-        return $data['nonce'] ?? null; 
+        return $data['nonce'] ?? null;
     }
 
-    /**
-     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+    /**[Semantical Error] line 0, col 69 near 'userId = :us': Error: Class VuFind\Db\Entity\AccessToken has no field or association named userIdleted in small batches.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.
      * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
