@@ -52,7 +52,7 @@
                   $lastDisplay = $display;
                   $lastValue = $facetValue;
                 ?>
-                <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
+                <option value="<?='~LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
               <?php endforeach; ?>
             </select>
             <!-- <br> -->
