@@ -474,7 +474,6 @@ class SearchRequestModel
             $this->limiters[$field] = [];
         }
         $this->limiters[$field][] = $value;
-       
     }
 
     /**
