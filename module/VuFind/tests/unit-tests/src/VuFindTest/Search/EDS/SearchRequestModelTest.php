@@ -149,4 +149,62 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
             $model->convertToSearchRequestJSON()
         );
     }
+
+    /**
+     * Test limiter values, always in OR mode.
+     *
+     * @return void
+     */
+    public function testLimiters()
+    {
+        $parameters = [
+            'filters' => [
+                'LIMIT|FT1:y',
+                'LIMIT|LA99:Polish',
+                'LIMIT|LA99:Romanian',
+            ],
+        ];
+        $model = new SearchRequestModel($parameters);
+
+        $this->assertEquals([
+            'highlight' => 'n',
+            'limiter' => [
+                'FT1' => [
+                    'y',
+                ],
+                'LA99' => [
+                    'Polish',
+                    'Romanian',
+                ],
+            ],
+        ], $model->convertToQueryStringParameterArray());
+
+        $this->assertEquals(
+            '{
+    "SearchCriteria": {
+        "Limiters": [
+            {
+                "Id": "FT1",
+                "Values": [
+                    "y"
+                ]
+            },
+            {
+                "Id": "LA99",
+                "Values": [
+                    "Polish",
+                    "Romanian"
+                ]
+            }
+        ],
+        "IncludeFacets": "y"
+    },
+    "RetrievalCriteria": {
+        "Highlight": "n"
+    },
+    "Actions": null
+}',
+            $model->convertToSearchRequestJSON()
+        );
+    }
 }

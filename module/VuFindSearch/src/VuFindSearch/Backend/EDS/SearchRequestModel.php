@@ -363,11 +363,12 @@ class SearchRequestModel
 
         if (isset($this->limiters) && 0 < count($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
-            foreach ($this->limiters as $limiter) {
-                [$id, $values] = explode(':', $limiter, 2);
+            foreach ($this->limiters as $field => $values) {
+                // All EDS limiter values are combined as 'OR'.
+                // There is no alternate 'AND' syntax as with filters.
                 $limiterObj = new \stdClass();
-                $limiterObj->Id = $id;
-                $limiterObj->Values = explode(',', $values);
+                $limiterObj->Id = $field;
+                $limiterObj->Values = $values;
                 $json->SearchCriteria->Limiters[] = $limiterObj;
             }
         }
@@ -468,7 +469,12 @@ class SearchRequestModel
      */
     public function addLimiter($limiter)
     {
-        $this->limiters[] = $limiter;
+        [$field, $value] = explode(':', $limiter);
+        if (!array_key_exists($field, $this->limiters)) {
+            $this->limiters[$field] = [];
+        }
+        $this->limiters[$field][] = $value;
+       
     }
 
     /**
