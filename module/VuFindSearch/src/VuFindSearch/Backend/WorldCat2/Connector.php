@@ -48,6 +48,18 @@ class Connector implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
+     * Fake record for simulation purposes.
+     * TODO: delete when no longer needed.
+     *
+     * @var array
+     */
+    protected $fakeRecord = [
+        'id' => 'foo',
+        'title' => 'Fake simulated record',
+        'title_short' => 'Fake simulated record',
+        'title_full' => 'Fake simulated record',
+    ];
+    /**
      * Constructor
      *
      * @param \Laminas\Http\Client $client  An HTTP client object
@@ -73,7 +85,7 @@ class Connector implements LoggerAwareInterface
         // TODO: implement something real here.
         $this->debug("Fetching record $id");
         $error = false;
-        $body = ['fake record'];
+        $body = $this->fakeRecord;
         return [
             'docs' => $error ? [] : [$body],
             'offset' => 0,
@@ -93,7 +105,7 @@ class Connector implements LoggerAwareInterface
     public function search(ParamBag $params, $offset, $limit)
     {
         // TODO: implement something real here.
-        $docs = ['fake record'];
+        $docs = [$this->fakeRecord];
         $total = 1;
         return compact('docs', 'offset', 'total');
     }
