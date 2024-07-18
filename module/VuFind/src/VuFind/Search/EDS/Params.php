@@ -48,6 +48,16 @@ use function count;
 class Params extends AbstractEDSParams
 {
     /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected $forcedOrFields = [
+        'ContentProvider',
+        'SourceType',
+    ];
+
+    /**
      * Settings for the date facet only
      *
      * @var array
