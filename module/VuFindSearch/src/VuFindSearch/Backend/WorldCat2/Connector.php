@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2022.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -41,40 +41,18 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Connector extends \VuFindSearch\Backend\SRU\Connector
+class Connector
 {
-    /**
-     * OCLC API key
-     *
-     * @var string
-     */
-    protected $wskey;
-
-    /**
-     * Additional options
-     *
-     * @var array
-     */
-    protected $options;
-
     /**
      * Constructor
      *
-     * @param string               $wsKey   Web services key
      * @param \Laminas\Http\Client $client  An HTTP client object
      * @param array                $options Additional config settings
      */
     public function __construct(
-        $wsKey,
-        \Laminas\Http\Client $client,
-        array $options = []
+        protected \Laminas\Http\Client $client,
+        protected array $options = []
     ) {
-        parent::__construct(
-            'http://www.worldcat.org/webservices/catalog/search/sru',
-            $client
-        );
-        $this->wskey = $wsKey;
-        $this->options = $options;
     }
 
     /**
@@ -88,23 +66,9 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     public function getRecord($id, ParamBag $params = null)
     {
-        $params = $params ?: new ParamBag();
-        $params->set('servicelevel', 'full');
-        $params->set('wskey', $this->wskey);
-
-        $this->client->resetParameters();
-        $uri = 'http://www.worldcat.org/webservices/catalog/content/' . $id;
-        $uri .= '?' . implode('&', $params->request());
-        $this->client->setUri($uri);
-        $this->debug('Connect: ' . $uri);
-        $result = $this->client->setMethod('POST')->send();
-        $this->checkForHttpError($result);
-
-        // Check for error message in response:
-        $body = $result->getBody();
-        $xml = simplexml_load_string($body);
-        $error = isset($xml->diagnostic);
-
+        // TODO: implement something real here.
+        $error = false;
+        $body = ['fake record'];
         return [
             'docs' => $error ? [] : [$body],
             'offset' => 0,
@@ -123,23 +87,9 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      */
     public function search(ParamBag $params, $offset, $limit)
     {
-        $params->set('startRecord', $offset);
-        $params->set('maximumRecords', $limit);
-        $params->set('servicelevel', 'full');
-        $params->set('wskey', $this->wskey);
-
-        $response = $this->call('POST', $params->getArrayCopy(), false);
-
-        $xml = simplexml_load_string($response);
-        $docs = $xml->records->record ?? [];
-        $finalDocs = [];
-        foreach ($docs as $doc) {
-            $finalDocs[] = $doc->recordData->asXML();
-        }
-        return [
-            'docs' => $finalDocs,
-            'offset' => $offset,
-            'total' => (int)($xml->numberOfRecords ?? 0),
-        ];
+        // TODO: implement something real here.
+        $docs = ['fake record'];
+        $total = 1;
+        return compact('docs', 'offset', 'total');
     }
 }

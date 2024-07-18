@@ -1,11 +1,11 @@
 <?php
 
 /**
- * WorldCat backend.
+ * WorldCat v2 backend.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,12 +22,12 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 
-namespace VuFindSearch\Backend\WorldCat;
+namespace VuFindSearch\Backend\WorldCat2;
 
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\ParamBag;
@@ -36,11 +36,11 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
- * WorldCat backend.
+ * WorldCat v2 backend.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -159,26 +159,14 @@ class Backend extends AbstractBackend
     public function getRecordCollectionFactory()
     {
         if ($this->collectionFactory === null) {
-            $this->collectionFactory = new Response\XML\RecordCollectionFactory();
+            // TODO: define a default record collection factory.
+            throw new \Exception('No default record collection factory defined.');
         }
         return $this->collectionFactory;
     }
 
     /**
-     * Get holdings information for the specified record.
-     *
-     * @param string $id Record to obtain holdings for.
-     *
-     * @throws \Exception
-     * @return \SimpleXMLElement
-     */
-    public function getHoldings($id)
-    {
-        return $this->getConnector()->getHoldings($id);
-    }
-
-    /**
-     * Return the WorldCat connector.
+     * Return the WorldCat v2 connector.
      *
      * @return Connector
      */
