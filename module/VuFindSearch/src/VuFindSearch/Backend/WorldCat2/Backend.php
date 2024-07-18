@@ -159,8 +159,7 @@ class Backend extends AbstractBackend
     public function getRecordCollectionFactory()
     {
         if ($this->collectionFactory === null) {
-            // TODO: define a default record collection factory.
-            throw new \Exception('No default record collection factory defined.');
+            $this->collectionFactory = new Response\RecordCollectionFactory();
         }
         return $this->collectionFactory;
     }

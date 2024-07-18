@@ -30,6 +30,8 @@
 
 namespace VuFindSearch\Backend\WorldCat2;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\ParamBag;
 
 /**
@@ -41,8 +43,10 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Connector
+class Connector implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Constructor
      *
@@ -67,6 +71,7 @@ class Connector
     public function getRecord($id, ParamBag $params = null)
     {
         // TODO: implement something real here.
+        $this->debug("Fetching record $id");
         $error = false;
         $body = ['fake record'];
         return [
