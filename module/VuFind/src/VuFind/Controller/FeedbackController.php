@@ -17,6 +17,7 @@ namespace VuFind\Controller;
 
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Model\ViewModel;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -92,7 +93,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $params = $this->params();
         $form->setData($params->fromPost());
 
-        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!$this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
@@ -102,7 +103,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         $primaryHandler = $form->getPrimaryHandler();
-        $success = $primaryHandler->handle($form, $params, $user ?: null);
+        $success = $primaryHandler->handle($form, $params, $user);
         if ($success) {
             $view->setVariable('successMessage', $form->getSubmitResponse());
             $view->setTemplate('feedback/response');
@@ -115,7 +116,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $handlers = $form->getSecondaryHandlers();
         foreach ($handlers as $handler) {
             try {
-                $handler->handle($form, $params, $user ?: null);
+                $handler->handle($form, $params, $user);
             } catch (\Exception $e) {
                 $this->logError($e->getMessage());
             }
@@ -127,18 +128,18 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     /**
      * Prefill form sender fields for logged in users.
      *
-     * @param Form  $form Form
-     * @param array $user User
+     * @param Form                 $form Form
+     * @param ?UserEntityInterface $user User
      *
      * @return Form
      */
-    protected function prefillUserInfo($form, $user)
+    protected function prefillUserInfo(Form $form, ?UserEntityInterface $user)
     {
         if ($user) {
             $form->setData(
                 [
-                 'name' => $user->firstname . ' ' . $user->lastname,
-                 'email' => $user['email'],
+                 'name' => $user->getFirstname() . ' ' . $user->getLastname(),
+                 'email' => $user->getEmail(),
                 ]
             );
         }

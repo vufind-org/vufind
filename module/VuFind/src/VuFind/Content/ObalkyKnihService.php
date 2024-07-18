@@ -142,7 +142,7 @@ class ObalkyKnihService implements
      */
     protected function createCacheKey(array $ids)
     {
-        $key = $ids['recordid'];
+        $key = $ids['recordid'] ?? '';
         $key = !empty($key) ? $key
             : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
         $key = !empty($key) ? $key : sha1(json_encode($ids));

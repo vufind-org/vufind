@@ -1,0 +1,28 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
+
+    $toc = $this->tab->getContent();
+    if (empty($toc)) {
+        $driverToc = $this->driver->getTOC();
+        if (!empty($driverToc)) {
+            $toc['RecordDriver'] = $driverToc;
+        }
+    }
+?>
+<?php if (!empty($toc)): ?>
+  <strong><?=$this->transEsc('Table of Contents')?>: </strong>
+  <?php foreach ($toc as $provider => $content): ?>
+    <?php if (!is_array($content)): // treat non-array content as raw HTML ?>
+      <?=$content?>
+    <?php else: ?>
+      <ul class="toc">
+      <?php foreach ($content as $line): ?>
+        <li><?=$this->escapeHtml($line)?></li>
+      <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php else: ?>
+  <?=$this->transEsc('Table of Contents unavailable')?>.
+<?php endif; ?>

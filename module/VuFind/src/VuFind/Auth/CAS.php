@@ -30,6 +30,8 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Log\PsrLoggerAdapter;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function constant;
@@ -47,12 +49,23 @@ use function constant;
  */
 class CAS extends AbstractBase
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Already Setup phpCAS
      *
      * @var bool
      */
     protected $phpCASSetup = false;
+
+    /**
+     * Constructor
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     */
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
+    {
+    }
 
     /**
      * Validate configuration parameters. This is a support method for getConfig(),
@@ -115,7 +128,7 @@ class CAS extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -135,7 +148,8 @@ class CAS extends AbstractBase
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($username);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
@@ -147,9 +161,9 @@ class CAS extends AbstractBase
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
                 if ($attribute == 'email') {
-                    $user->updateEmail($value);
+                    $userService->updateUserEmail($user, $value);
                 } elseif ($attribute != 'cat_password') {
-                    $user->$attribute = $value ?? '';
+                    $this->setUserValueByField($user, $attribute, $value ?? '');
                 } else {
                     $catPassword = $value;
                 }
@@ -164,15 +178,16 @@ class CAS extends AbstractBase
         // see https://github.com/vufind-org/vufind/pull/612). Note that in the
         // (unlikely) scenario that a password can actually change from non-blank
         // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $this->ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 
         // Save and return the user object:
-        $user->save();
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 
@@ -274,6 +289,33 @@ class CAS extends AbstractBase
     }
 
     /**
+     * Return an array of service base URLs for the CAS client.
+     *
+     * @return string[]
+     * @throws AuthException
+     */
+    protected function getServiceBaseUrl(): array
+    {
+        $config = $this->getConfig();
+        $cas = $config->CAS;
+        if (isset($cas->service_base_url)) {
+            return $cas->service_base_url->toArray();
+        } elseif (isset($config->Site->url)) {
+            // fallback method
+            $siteUrl = parse_url($config->Site->url);
+            if (isset($siteUrl['scheme']) && isset($siteUrl['host'])) {
+                return [
+                    $siteUrl['scheme'] . '://' . $siteUrl['host'] .
+                    (isset($siteUrl['port']) ? ':' . $siteUrl['port'] : ''),
+                ];
+            }
+        }
+        throw new AuthException(
+            'Valid CAS/service_base_url or Site/url config parameters are required.'
+        );
+    }
+
+    /**
      * Establishes phpCAS Configuration and Enables the phpCAS Client
      *
      * @return object     Returns phpCAS Object
@@ -286,25 +328,30 @@ class CAS extends AbstractBase
         // client can only be called once.
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
-            if (
-                isset($cas->log)
-                && !empty($cas->log) && isset($cas->debug) && ($cas->debug)
-            ) {
-                $casauth->setDebug($cas->log);
+
+            $casauth->setLogger(new PsrLoggerAdapter($this->logger));
+
+            if ($cas->debug ?? false) {
+                $casauth->setVerbose(true);
             }
+
             $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
+
             $casauth->client(
                 $protocol,
                 $cas->server,
                 (int)$cas->port,
                 $cas->context,
+                $this->getServiceBaseUrl(),
                 false
             );
+
             if (isset($cas->CACert) && !empty($cas->CACert)) {
                 $casauth->setCasServerCACert($cas->CACert);
             } else {
                 $casauth->setNoCasServerValidation();
             }
+
             $this->phpCASSetup = true;
         }
 

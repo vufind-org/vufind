@@ -129,6 +129,21 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test key normalization.
+     *
+     * @return void
+     */
+    public function testKeyNormalization(): void
+    {
+        $reader = new ExtendedIniReader();
+        $normalizer = new ExtendedIniNormalizer();
+        $this->assertEquals(
+            "_21_21_21_21 = \"bar\"\n_28_29_3F_21 = \"foo\"\n",
+            $normalizer->formatAsString($reader->getTextDomain(['()?! = foo', '!!!! = bar']))
+        );
+    }
+
+    /**
      * Test language integrity inside a directory.
      *
      * @param ExtendedIniNormalizer $normalizer Normalizer to test

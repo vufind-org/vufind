@@ -149,7 +149,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @param string $session_id Session id
      *
-     * @return bool|string
+     * @return string|false
      */
     public function read($session_id): string|false
     {

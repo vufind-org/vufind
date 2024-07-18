@@ -116,6 +116,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Site' => [
+                        'theme' => 'sandal',
                         'alternate_themes' => $themeList,
                         'selectable_themes' => $themeList,
                     ],

@@ -1075,7 +1075,7 @@ class PAIA extends DAIA
      * PAIA helper function to map session data to return value of patronLogin()
      *
      * @param array  $details  Patron details returned by patronLogin
-     * @param string $password Patron cataloge password
+     * @param string $password Patron catalogue password
      *
      * @return mixed
      */

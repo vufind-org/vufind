@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\Blender;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
-use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Blender\Response\Json\RecordCollection;
@@ -55,6 +54,8 @@ use function intval;
  */
 class Backend extends AbstractBackend
 {
+    use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
+
     /**
      * Actual backends
      *
@@ -304,12 +305,10 @@ class Backend extends AbstractBackend
         }
 
         $backendOffsets = [];
-        $collectionOffsets = [];
         $backendTotals = [];
         $availableBackendIds = array_keys($collections);
         foreach ($availableBackendIds as $backendId) {
             $backendOffsets[$backendId] = 0;
-            $collectionOffsets[$backendId] = 0;
             $backendTotals[$backendId] = $collections[$backendId]->getTotal();
         }
         // First iterate through the merged records before the offset to
@@ -512,20 +511,6 @@ class Backend extends AbstractBackend
             }
         }
         return $this->blockSize;
-    }
-
-    /**
-     * Set EventManager instance.
-     *
-     * @param EventManagerInterface $events Event manager
-     *
-     * @return void
-     * @todo   Deprecate `VuFind\Search' event namespace (2.2)
-     */
-    protected function setEventManager(EventManagerInterface $events)
-    {
-        $events->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
-        $this->events = $events;
     }
 
     /**

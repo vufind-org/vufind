@@ -34,7 +34,9 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
-use VuFind\Record\Loader;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 use function in_array;
 
@@ -47,44 +49,38 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Resource extends Gateway
+class Resource extends Gateway implements DbServiceAwareInterface
 {
-    /**
-     * Date converter
-     *
-     * @var DateConverter
-     */
-    protected $dateConverter;
+    use DbServiceAwareTrait;
 
     /**
-     * Record loader
+     * Loader for record populator
      *
-     * @var Loader
+     * @var callable
      */
-    protected $recordLoader;
+    protected $resourcePopulatorLoader;
 
     /**
      * Constructor
      *
-     * @param Adapter       $adapter   Database adapter
-     * @param PluginManager $tm        Table manager
-     * @param array         $cfg       Laminas configuration
-     * @param RowGateway    $rowObj    Row prototype object (null for default)
-     * @param DateConverter $converter Date converter
-     * @param Loader        $loader    Record loader
-     * @param string        $table     Name of database table to interface with
+     * @param Adapter       $adapter                 Database adapter
+     * @param PluginManager $tm                      Table manager
+     * @param array         $cfg                     Laminas configuration
+     * @param ?RowGateway   $rowObj                  Row prototype object (null for default)
+     * @param DateConverter $dateConverter           Date converter
+     * @param callable      $resourcePopulatorLoader Resource populator loader
+     * @param string        $table                   Name of database table to interface with
      */
     public function __construct(
         Adapter $adapter,
         PluginManager $tm,
-        $cfg,
+        array $cfg,
         ?RowGateway $rowObj,
-        DateConverter $converter,
-        Loader $loader,
-        $table = 'resource'
+        protected DateConverter $dateConverter,
+        callable $resourcePopulatorLoader,
+        string $table = 'resource'
     ) {
-        $this->dateConverter = $converter;
-        $this->recordLoader = $loader;
+        $this->resourcePopulatorLoader = $resourcePopulatorLoader;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
@@ -101,6 +97,10 @@ class Resource extends Gateway
      *
      * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
+     *
+     * @deprecated Use ResourceServiceInterface::getResourceByRecordId() or
+     * \VuFind\Record\ResourcePopulator::getOrCreateResourceForDriver() or
+     * \VuFind\Record\ResourcePopulator::getOrCreateResourceForRecordId() as appropriate.
      */
     public function findResource(
         $id,
@@ -116,20 +116,10 @@ class Resource extends Gateway
 
         // Create row if it does not already exist and creation is enabled:
         if (empty($result) && $create) {
-            $result = $this->createRow();
-            $result->record_id = $id;
-            $result->source = $source;
-
-            // Load record if it was not provided:
-            if (null === $driver) {
-                $driver = $this->recordLoader->load($id, $source);
-            }
-
-            // Load metadata into the database for sorting/failback purposes:
-            $result->assignMetadata($driver, $this->dateConverter);
-
-            // Save the new row.
-            $result->save();
+            $resourcePopulator = ($this->resourcePopulatorLoader)();
+            $result = $driver
+                ? $resourcePopulator->createAndPersistResourceForDriver($driver)
+                : $resourcePopulator->createAndPersistResourceForRecordId($id, $source);
         }
         return $result;
     }
@@ -140,27 +130,25 @@ class Resource extends Gateway
      * @param array  $ids    Array of IDs
      * @param string $source Source of records to look up
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return ResourceEntityInterface[]
+     *
+     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::getResourcesByRecordIds()
      */
     public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $callback = function ($select) use ($ids, $source) {
-            $select->where->in('record_id', $ids);
-            $select->where->equalTo('source', $source);
-        };
-        return $this->select($callback);
+        return $this->getDbService(ResourceServiceInterface::class)->getResourcesByRecordIds($ids, $source);
     }
 
     /**
      * Get a set of records from the requested favorite list.
      *
-     * @param string $user   ID of user owning favorite list
-     * @param string $list   ID of list to retrieve (null for all favorites)
-     * @param array  $tags   Tags to use for limiting results
-     * @param string $sort   Resource table field to use for sorting (null for
-     * no particular sort).
-     * @param int    $offset Offset for results
-     * @param int    $limit  Limit for results (null for none)
+     * @param string $user              ID of user owning favorite list
+     * @param string $list              ID of list to retrieve (null for all favorites)
+     * @param array  $tags              Tags to use for limiting results
+     * @param string $sort              Resource table field to use for sorting (null for no particular sort).
+     * @param int    $offset            Offset for results
+     * @param int    $limit             Limit for results (null for none)
+     * @param ?bool  $caseSensitiveTags Should tags be searched case sensitively (null for configured default)
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
@@ -170,49 +158,43 @@ class Resource extends Gateway
         $tags = [],
         $sort = null,
         $offset = 0,
-        $limit = null
+        $limit = null,
+        $caseSensitiveTags = null
     ) {
         // Set up base query:
         return $this->select(
-            function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
-                $columns = [
-                    new Expression(
-                        'DISTINCT(?)',
-                        ['resource.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR,
-                ];
-                $s->columns($columns);
-                $s->join(
-                    ['ur' => 'user_resource'],
-                    'resource.id = ur.resource_id',
-                    []
-                );
-                $s->where->equalTo('ur.user_id', $user);
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $caseSensitiveTags) {
+                $subQuery = $this->getDbTable('UserResource')
+                    ->getSql()
+                    ->select()
+                    ->quantifier(Select::QUANTIFIER_DISTINCT)
+                    ->columns(['resource_id']);
+                $subQuery->where->equalTo('user_id', $user);
 
                 // Adjust for list if necessary:
                 if (null !== $list) {
-                    $s->where->equalTo('ur.list_id', $list);
+                    $subQuery->where->equalTo('list_id', $list);
+                }
+                // Adjust for tags if necessary:
+                if (!empty($tags)) {
+                    $linkingTable = $this->getDbTable('ResourceTags');
+                    foreach ($tags as $tag) {
+                        $matches = $linkingTable->getResourcesForTag($tag, $user, $list, $caseSensitiveTags)->toArray();
+                        $getId = function ($i) {
+                            return $i['resource_id'];
+                        };
+                        $subQuery->where->in('resource_id', array_map($getId, $matches));
+                    }
                 }
 
+                $columns = [Select::SQL_STAR];
+                $s->columns($columns);
+                $s->where->in('id', $subQuery);
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
                 if (null !== $limit) {
                     $s->limit($limit);
-                }
-
-                // Adjust for tags if necessary:
-                if (!empty($tags)) {
-                    $linkingTable = $this->getDbTable('ResourceTags');
-                    foreach ($tags as $tag) {
-                        $matches = $linkingTable
-                            ->getResourcesForTag($tag, $user, $list)->toArray();
-                        $getId = function ($i) {
-                            return $i['resource_id'];
-                        };
-                        $s->where->in('resource.id', array_map($getId, $matches));
-                    }
                 }
 
                 // Apply sorting, if necessary:
@@ -227,16 +209,13 @@ class Resource extends Gateway
      * Get a set of records that do not have metadata stored in the resource
      * table.
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return ResourceEntityInterface[]
+     *
+     * @deprecated Use \VuFind\Db\Service\ResourceServiceInterface::findMissingMetadata()
      */
     public function findMissingMetadata()
     {
-        $callback = function ($select) {
-            $select->where->equalTo('title', '')
-                ->OR->isNull('author')
-                ->OR->isNull('year');
-        };
-        return $this->select($callback);
+        return $this->getDbService(ResourceServiceInterface::class)->findMissingMetadata();
     }
 
     /**
@@ -247,19 +226,22 @@ class Resource extends Gateway
      * @param string $source Record source
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Record\RecordIdUpdater::updateRecordId()
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
         if (
             $oldId !== $newId
-            && $resource = $this->findResource($oldId, $source, false)
+            && $resource = $resourceService->getResourceByRecordId($oldId, $source)
         ) {
             $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
-            if ($newResource = $this->findResource($newId, $source, false)) {
+            if ($newResource = $resourceService->getResourceByRecordId($newId, $source)) {
                 // Special case: merge new ID and old ID:
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
                     $tableObjects[$table] = $this->getDbTable($table);

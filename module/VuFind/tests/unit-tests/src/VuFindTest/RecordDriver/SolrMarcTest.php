@@ -142,6 +142,87 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test regular and extended subject heading support for different possible config options.
+     *
+     * @param ?string $marcSubjectHeadingsSortConfig the config value for
+     *                                               $this->mainConfig->Record->marcSubjectHeadingsSort
+     * @param array   $expectedResults               array of the expected values returned from
+     *                                               $record->getAllSubjectHeadings()
+     *
+     * @return void
+     *
+     * @dataProvider marcSubjectHeadingsSortOptionsProvider
+     */
+    public function testSubjectHeadingsOrder(?string $marcSubjectHeadingsSortConfig, array $expectedResults)
+    {
+        $configArray = [
+            'Record' => [
+                'marcSubjectHeadingsSort' => $marcSubjectHeadingsSortConfig,
+            ],
+        ];
+        $marc = $this->getFixture('marc/subjectheadingsorder.xml');
+        $config = new \Laminas\Config\Config($configArray);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals($expectedResults, $record->getAllSubjectHeadings());
+    }
+
+    /**
+     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
+     *
+     * @return array[]
+     */
+    public static function marcSubjectHeadingsSortOptionsProvider()
+    {
+        // Record order is the default; save it to a variable so we
+        // can test both explicit and default configuration behaviors
+        // using the same values.
+        $recordOrderResults = [
+            [
+                'Guerrero (Mexico : State)',
+                'Social life and customs',
+                'Pictorial works.',
+            ],
+            [
+                'Street photography',
+                'Mexico',
+                'Guerrero (State)',
+            ],
+            [
+                'Photobooks.',
+            ],
+        ];
+        return [
+            'field config' => [
+                'numerical',
+                [
+                    [
+                        'Street photography',
+                        'Mexico',
+                        'Guerrero (State)',
+                    ],
+                    [
+                        'Guerrero (Mexico : State)',
+                        'Social life and customs',
+                        'Pictorial works.',
+                    ],
+                    [
+                        'Photobooks.',
+                    ],
+                ],
+            ],
+            'record config' => [
+                'record',
+                $recordOrderResults,
+            ],
+            'default config' => [
+                null,
+                $recordOrderResults,
+            ],
+        ];
+    }
+
+    /**
      * Test table of contents support.
      *
      * @return void

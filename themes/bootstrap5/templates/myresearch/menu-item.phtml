@@ -1,0 +1,16 @@
+<?php
+  if (isset($this->iconMethod) && !isset($this->icon)) {
+    $this->icon = $this->accountMenu()->{$this->iconMethod}();
+  }
+?>
+<li>
+  <a href="<?=$this->url($this->route)?>" class="<?=$this->name?> icon-link<?=$this->active == $this->name ? ' active' : ''?>">
+    <?php if (isset($this->icon)): ?>
+      <?=$this->icon($this->icon, 'icon-link__icon') ?>
+    <?php endif; ?>
+    <span class="icon-link__label"><?=$this->transEsc($this->label)?></span>
+    <?php if ($this->status ?? false): ?>
+      <span class="<?=strtolower($this->name)?>-status status hidden"><?=$this->icon('spinner') ?></span>
+    <?php endif; ?>
+  </a>
+</li>

@@ -96,7 +96,7 @@ class ConnectorTest extends TestCase
         $this->expectExceptionCode(500);
 
         $conn = $this->createConnector('internal-server-error');
-        $resp = $conn->retrieve('id');
+        $conn->retrieve('id');
     }
 
     /**
@@ -110,7 +110,7 @@ class ConnectorTest extends TestCase
         $this->expectExceptionCode(400);
 
         $conn = $this->createConnector('bad-request');
-        $resp = $conn->retrieve('id');
+        $conn->retrieve('id');
     }
 
     /**

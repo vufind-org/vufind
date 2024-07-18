@@ -163,16 +163,7 @@ VuFind.register('cart', function Cart() {
       : $(_form);
     $("#updateCart, #bottom_updateCart").off("click").on("click", function cartUpdate() {
       var elId = this.id;
-      var selected = [];
-      var addToSelected = function processCartFormValues() {
-        if (-1 === selected.indexOf(this.value)) {
-          selected.push(this.value);
-        }
-      };
-      var selectedInForm = $form.find('input[name="ids[]"]:checked');
-      var selectedFormAttr = $('input[form="' + $form.attr('id') + '"][name="ids[]"]:checked');
-      $(selectedInForm).each(addToSelected);
-      $(selectedFormAttr).each(addToSelected);
+      var selected = VuFind.listItemSelection.getAllSelected($form[0]);
       if (selected.length > 0) {
         var orig = getFullItems();
         $(selected).each(function cartCheckedItemsAdd() {
@@ -253,6 +244,10 @@ VuFind.register('cart', function Cart() {
     }
   }
 
+  function updateContainer(params) {
+    registerToggles(params.container);
+  }
+
   function init() {
     // Record buttons
     registerToggles();
@@ -266,6 +261,7 @@ VuFind.register('cart', function Cart() {
       placement: $(document.body).hasClass('rtl') ? 'left' : 'right'
     });
     updateCount();
+    VuFind.listen('results-init', updateContainer);
   }
 
   // Reveal
@@ -312,4 +308,4 @@ function cartFormHandler(event, data) {
   }
 }
 
-document.addEventListener('VuFind.lightbox.closed', VuFind.cart.updateCount, false);
+VuFind.listen('lightbox.closed', VuFind.cart.updateCount);

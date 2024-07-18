@@ -29,13 +29,14 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Table\Record;
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Service\RecordServiceInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Console command: purge a record from cache
@@ -46,41 +47,25 @@ use VuFind\Db\Table\Resource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/purge_cached_record',
+    description: 'Purge a cached record and optionally a resource'
+)]
 class PurgeCachedRecordCommand extends Command
 {
     /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/purge_cached_record';
-
-    /**
-     * Record table object
-     *
-     * @var Record
-     */
-    protected $recordTable;
-
-    /**
-     * Resource table object
-     *
-     * @var Resource
-     */
-    protected $resourceTable;
-
-    /**
      * Constructor
      *
-     * @param Record      $record   Record table object
-     * @param Resource    $resource Resource table object
-     * @param string|null $name     The name of the command; passing null means it
+     * @param RecordServiceInterface   $recordService   Record table object
+     * @param ResourceServiceInterface $resourceService Resource table object
+     * @param string|null              $name            The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Record $record, Resource $resource, $name = null)
-    {
-        $this->recordTable = $record;
-        $this->resourceTable = $resource;
+    public function __construct(
+        protected RecordServiceInterface $recordService,
+        protected ResourceServiceInterface $resourceService,
+        string $name = null
+    ) {
         parent::__construct($name);
     }
 
@@ -92,7 +77,6 @@ class PurgeCachedRecordCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Purge a cached record and optionally a resource')
             ->setHelp('Removes a record and optionally a resource from the database.')
             ->addOption(
                 'purge-resource',
@@ -117,13 +101,13 @@ class PurgeCachedRecordCommand extends Command
     {
         $source = $input->getArgument('source');
         $id = $input->getArgument('id');
-        if ($this->recordTable->delete(['source' => $source, 'record_id' => $id])) {
+        if ($this->recordService->deleteRecord($id, $source)) {
             $output->writeln('Cached record deleted');
         } else {
             $output->writeln('No cached record found');
         }
         if ($input->getOption('purge-resource')) {
-            if ($this->resourceTable->delete(['source' => $source, 'record_id' => $id])) {
+            if ($this->resourceService->deleteResourceByRecordId($id, $source)) {
                 $output->writeln('Resource deleted');
             } else {
                 $output->writeln('No resource found');

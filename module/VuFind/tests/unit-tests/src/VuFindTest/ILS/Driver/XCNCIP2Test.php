@@ -771,7 +771,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test disable renewals configutaion
+     * Test disable renewals configuration
      *
      * @return void
      */
@@ -1345,7 +1345,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $method->setAccessible(true);
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No identifiers for CancelRequest');
-        $request = $method->invokeArgs(
+        $method->invokeArgs(
             $this->driver,
             [
                 'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
@@ -1495,7 +1495,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->expectExceptionMessage(
             'HTTP error: ProblemType: Item Not Renewable, ProblemDetail: No active registration.'
         );
-        $renew = $this->driver->renewMyItems(
+        $this->driver->renewMyItems(
             [
                 'patron' => [
                     'cat_username' => 'my_login',
@@ -1570,6 +1570,22 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testInitDriver()
     {
         $driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $driver->setConfig(
+            [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => 'Test agency',
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'itemUseRestrictionTypesForStatus' => 'In Library Use Only',
+                ],
+            ]
+        );
+        $driver->init();
+        $property = new \ReflectionProperty(\VuFind\ILS\Driver\XCNCIP2::class, 'itemUseRestrictionTypesForStatus');
+        $property->setAccessible(true);
+        $this->assertEquals(['In Library Use Only'], $property->getValue($driver));
+
         $driver->setConfig(
             [
                 'Catalog' => [

@@ -41,12 +41,14 @@ return [
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
-        ['file' => 'lightbox.js', 'priority' => 320],
-        ['file' => 'searchbox_controls.js', 'priority' => 330],
-        ['file' => 'truncate.js', 'priority' => 340],
-        ['file' => 'trigger_print.js', 'priority' => 350],
-        ['file' => 'observer_manager.js', 'priority' => 360],
-        ['file' => 'openurl.js', 'priority' => 370],
+        ['file' => 'config.js', 'priority' => 320],
+        ['file' => 'lightbox.js', 'priority' => 330],
+        ['file' => 'searchbox_controls.js', 'priority' => 340],
+        ['file' => 'truncate.js', 'priority' => 350],
+        ['file' => 'trigger_print.js', 'priority' => 360],
+        ['file' => 'observer_manager.js', 'priority' => 370],
+        ['file' => 'openurl.js', 'priority' => 380],
+        ['file' => 'list_item_selection.js', 'priority' => 390],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -124,7 +126,7 @@ return [
         ],
         'aliases' => [
             /**
-             * Icons can be assigned or overriden here
+             * Icons can be assigned or overridden here
              *
              * Format: 'icon' => [set:]icon[:extra_classes]
              * Icons assigned without set will use the defaultSet.
@@ -143,6 +145,8 @@ return [
             'cart-empty' => 'FontAwesome:times',
             'cart-remove' => 'FontAwesome:minus-circle',
             'cite' => 'FontAwesome:asterisk',
+            'cites' => 'Unicode:275D',
+            'cited-by' => 'Unicode:275E',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
@@ -232,18 +236,25 @@ return [
             'my-account-notification' => 'Alias:notification',
             'my-account-warning' => 'Alias:warning',
             'notification' => 'FontAwesome:bell',
+            'offcanvas-hide-left' => 'FontAwesome:angle-right',
+            'offcanvas-hide-right' => 'FontAwesome:angle-left',
+            'offcanvas-show-left' => 'FontAwesome:angle-double-left',
+            'offcanvas-show-right' => 'FontAwesome:angle-double-right',
             'options' => 'FontAwesome:gear',
             'overdrive' => 'FontAwesome:download',
-            'overdrive-cancel-hold' => 'FontAwesome:flag-o',
+            'overdrive-cancel-hold' => 'Alias:ui-cancel',
             'overdrive-checkout' => 'FontAwesome:arrow-left',
             'overdrive-checkout-rtl' => 'FontAwesome:arrow-right',
             'overdrive-download' => 'FontAwesome:download',
+            'overdrive-edit-hold' => 'Alias:ui-edit',
+            'overdrive-edit-hold-suspension' => 'FontAwesome:calendar',
             'overdrive-help' => 'FontAwesome:question-circle',
-            'overdrive-place-hold' => 'FontAwesome:flag-o',
-            'overdrive-return' => 'FontAwesome:arrow-right',
-            'overdrive-return-rtl' => 'FontAwesome:arrow-left',
+            'overdrive-place-hold' => 'Alias:place-hold',
+            'overdrive-return' => 'FontAwesome:undo',
+            'overdrive-return-rtl' => 'FontAwesome:undo',
             'overdrive-sign-in' => 'FontAwesome:sign-in',
             'overdrive-success' => 'FontAwesome:check',
+            'overdrive-suspend-hold' => 'Alias:place-hold',
             'overdrive-warning' => 'Alias:warning',
             'page-first' => 'FontAwesome:angle-double-left',
             'page-first-rtl' => 'FontAwesome:angle-double-right',
@@ -320,6 +331,30 @@ return [
             'view-visual' => 'FontAwesome:th-large',
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
+    ],
+    /**
+     * Html elements can be made sticky which means that they don't leave the screen on scrolling.
+     * You can make an element sticky by adding an array with the css selector to stickyElements.
+     * Warning! The order of the entries in the config will be used to order the elements while they are sticky.
+     * If you want to hide some child elements of sticky elements you can add array with their css selectors
+     * to hiddenStickyElements.
+     * You can also add "min-width" and "max-width" to the configs so that the effect only applies on specific
+     * screen sizes.
+     * Examples:
+     */
+    'stickyElements' => [
+        // Navbar Banner on non-mobile screens
+        //["selector" => ".banner.container.navbar", "min-width" => 768],
+        // Searchbox on search home page
+        //["selector" => ".searchHomeContent"],
+        // Searchbox on other pages
+        //["selector" => ".search.container.navbar"],
+        // Breadcrumbs on non-mobile screens
+        //["selector" => ".breadcrumbs", "min-width" => 768]
+    ],
+    'hiddenStickyElements' => [
+        // Hide search tab selection on mobile screens
+        //["selector" => ".searchForm > .nav.nav-tabs", "max-width" => 767]
     ],
     'doctype' => 'HTML5',
 ];

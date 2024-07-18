@@ -56,7 +56,6 @@ class Printms extends AbstractHelper
             return $ms;
         }
         $seconds = floor($ms / 1000);
-        $ms = ($ms % 1000);
 
         $minutes = floor($seconds / 60);
         $seconds = ($seconds % 60);

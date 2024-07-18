@@ -279,6 +279,19 @@ class Primo extends DefaultRecord
     }
 
     /**
+     * Get citation references
+     *
+     * @return array
+     */
+    public function getCitations(): array
+    {
+        return [
+            'cites' => $this->fields['cites'] ?? [],
+            'cited_by' => $this->fields['cited_by'] ?? [],
+        ];
+    }
+
+    /**
      * Get an array of strings representing citation formats supported
      * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()

@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,15 +49,12 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/deletes',
+    description: 'Tool for deleting Solr records'
+)]
 class DeletesCommand extends AbstractSolrCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/deletes';
-
     /**
      * Configure the command.
      *
@@ -65,7 +63,6 @@ class DeletesCommand extends AbstractSolrCommand
     protected function configure()
     {
         $this
-            ->setDescription('Tool for deleting Solr records')
             ->setHelp('Deletes a set of records from the Solr index.')
             ->addArgument(
                 'filename',

@@ -1,0 +1,10 @@
+<?php foreach ($this->driver->getSummary() as $summary): ?>
+  <?=$this->escapeHtml($summary) ?><br>
+<?php endforeach; ?>
+<?php $isbn = $this->driver->getCleanISBN(); ?>
+<?php foreach ($this->summaries($isbn) as $provider => $content): ?>
+  <?php foreach ($content as $summary): ?>
+    <?php $htmlContent = str_starts_with($summary, '<') && str_ends_with($summary, '>'); ?>
+    <?=$htmlContent ? $summary : ($this->escapeHtml($summary) . '<br>')?>
+  <?php endforeach; ?>
+<?php endforeach; ?>

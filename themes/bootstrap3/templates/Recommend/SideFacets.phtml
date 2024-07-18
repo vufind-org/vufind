@@ -19,7 +19,7 @@
     }
   }
 ?>
-<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+<?=$this->component('hide-offcanvas-button')?>
 <?php
   $checkboxFilters = $this->recommend->getCheckboxFacetSet();
   $hasVisibleCheckboxes = false;
@@ -54,7 +54,7 @@
           <?=$this->icon('collapse', 'facet-title-icon') ?>
         </button>
       </h3>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" aria-expanded="<?=$collapsed ? 'false' : 'true'?>" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',

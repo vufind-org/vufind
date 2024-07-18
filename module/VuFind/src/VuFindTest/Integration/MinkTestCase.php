@@ -56,6 +56,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\RemoteCoverageTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
 
@@ -86,6 +87,88 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Selector for an open button group dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $btnGroupDropdownMenuSelector = '.btn-group.open .dropdown-menu, .btn-group .dropdown-menu.show';
+
+    /**
+     * Selector for first item in a dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $firstOpenDropdownMenuItemSelector
+        = '.mainbody .open .dropdown-menu li:nth-child(1) a, .mainbody .dropdown-menu.show li:nth-child(1) a';
+
+    /**
+     * Selector for popover content
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $popoverContentSelector = '.popover-body, .popover-content';
+
+    /**
+     * Selector for an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalSelector = '#modal.in, #modal.show';
+
+    /**
+     * Selector for a button link in an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalButtonLinkSelector = '#modal.in a.btn, #modal.show a.btn';
+
+    /**
+     * Selector for a username field in open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
+
+    /**
+     * Selector for next page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pageNextSelector = 'a.page-next, .page-next a';
+
+    /**
+     * Selector for previous page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pagePrevSelector = 'a.page-prev, .page-prev a';
+
+    /**
+     * Selector for active record tab
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
 
     /**
      * Get name of the current test
@@ -283,7 +366,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
-            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+            if ($coverageDir = $this->getRemoteCoverageDirectory()) {
                 $this->session->setRemoteCoverageConfig(
                     $this->getTestName(),
                     $coverageDir
@@ -824,20 +907,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string $handler Search type (optional)
      * @param string $path    Path to use as search starting point (optional)
      *
-     * @return \Behat\Mink\Element\Element
+     * @return Element
      */
     protected function performSearch($query, $handler = null, $path = '/Search')
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
+        $this->submitSearchForm($page, $query, $handler);
+        return $page;
+    }
+
+    /**
+     * Submit a search on the provided page.
+     *
+     * @param Element $page    Current page object
+     * @param string  $query   Search term(s)
+     * @param string  $handler Search type (optional)
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function submitSearchForm(
+        Element $page,
+        string $query,
+        ?string $handler = null
+    ): void {
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
         if ($handler) {
             $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
-        return $page;
     }
 
     /**
@@ -1155,6 +1257,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         // Create a pathResolver:
         $this->pathResolver = $this->getPathResolver();
+
+        // Change theme if requested:
+        if ($theme = (string)getenv('VUFIND_TEST_THEME')) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Site' => [
+                            'theme' => $theme,
+                        ],
+                    ],
+                ]
+            );
+        }
     }
 
     /**

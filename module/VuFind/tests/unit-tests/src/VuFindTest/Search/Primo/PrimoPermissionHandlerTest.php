@@ -267,7 +267,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission (member and deafult) does not match
+     * Test the handler if permission (member and default) does not match
      *
      * @return void
      */
@@ -407,7 +407,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission (member and deafult) does not match
+     * Test the handler if permission (member and default) does not match
      *
      * @return void
      */
@@ -538,7 +538,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Test the handler if permission (member and deafult) does not match
+     * Test the handler if permission (member and default) does not match
      *
      * @return void
      */
@@ -790,7 +790,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Test the handler if permission (member and deafult) does not match
+     * Test the handler if permission (member and default) does not match
      *
      * @return void
      */

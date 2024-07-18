@@ -31,8 +31,11 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
+use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 use function is_array;
@@ -50,6 +53,7 @@ use function strlen;
 class CartController extends AbstractBase
 {
     use Feature\BulkActionControllerTrait;
+    use ListItemSelectionTrait;
 
     /**
      * Session container
@@ -134,11 +138,11 @@ class CartController extends AbstractBase
     {
         // We came in from a search, so let's remember that context so we can
         // return to it later. However, if we came in from a previous instance
-        // of this action (for example, because of a login screen), we should
-        // ignore that!
+        // of this action (for example, because of a login screen), or if we
+        // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (!str_ends_with($referer, $bulk)) {
+        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -179,9 +183,7 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
 
         // Add items if necessary:
         if (strlen($this->params()->fromPost('empty', '')) > 0) {
@@ -259,9 +261,7 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         // Retrieve ID list:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', [])
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
 
         // Retrieve follow-up information if necessary:
         if (!is_array($ids) || empty($ids)) {
@@ -305,7 +305,7 @@ class CartController extends AbstractBase
         $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!($submitDisabled ?? false) && $this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -345,9 +345,7 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
@@ -378,9 +376,7 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', [])
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
 
         // Get export tools:
         $export = $this->export;
@@ -506,9 +502,7 @@ class CartController extends AbstractBase
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids', []))
-            : $this->params()->fromPost('idsAll', []);
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds') ?? [];
         }
@@ -539,8 +533,8 @@ class CartController extends AbstractBase
 
         // Process submission if necessary:
         if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
-            $results = $this->favorites()
-                ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
+            $results = $this->serviceLocator->get(FavoritesService::class)
+                ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
                 'userList',
                 ['id' => $results['listId']]
@@ -559,7 +553,7 @@ class CartController extends AbstractBase
         return $this->createViewModel(
             [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists(),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
             ]
         );
     }

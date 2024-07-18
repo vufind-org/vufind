@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,15 +45,12 @@ use function ini_get;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/commit',
+    description: 'Solr commit tool'
+)]
 class CommitCommand extends AbstractSolrCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/commit';
-
     /**
      * The name of the Solr command, for use in help messages.
      *
@@ -68,7 +66,6 @@ class CommitCommand extends AbstractSolrCommand
     protected function configure()
     {
         $this
-            ->setDescription('Solr ' . $this->solrCommand . ' tool')
             ->setHelp('Sends a ' . $this->solrCommand . ' command to a Solr index.')
             ->addArgument(
                 'core',

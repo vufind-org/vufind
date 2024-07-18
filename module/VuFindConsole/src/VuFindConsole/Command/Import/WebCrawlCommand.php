@@ -30,6 +30,7 @@
 namespace VuFindConsole\Command\Import;
 
 use Laminas\Config\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -46,15 +47,12 @@ use VuFind\XSLT\Importer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'import/webcrawl',
+    description: 'Web crawler'
+)]
 class WebCrawlCommand extends Command
 {
-    /**
-     * The name of the command
-     *
-     * @var string
-     */
-    protected static $defaultName = 'import/webcrawl';
-
     /**
      * XSLT importer
      *
@@ -105,7 +103,6 @@ class WebCrawlCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Web crawler')
             ->setHelp('Crawls websites to populate VuFind\'s web index.')
             ->addOption(
                 'test-only',

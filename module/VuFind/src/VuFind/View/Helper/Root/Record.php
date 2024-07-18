@@ -29,7 +29,16 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Tags\TagsService;
 
 use function get_class;
 use function in_array;
@@ -44,9 +53,10 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends \Laminas\View\Helper\AbstractHelper
+class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Context view helper
@@ -70,18 +80,12 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     protected $driver;
 
     /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param TagsService $tagsService Tags service
+     * @param Config      $config      Configuration from config.ini
      */
-    public function __construct($config = null)
+    public function __construct(protected TagsService $tagsService, protected ?Config $config = null)
     {
         $this->config = $config;
     }
@@ -172,6 +176,19 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get comments associated with the current record.
+     *
+     * @return CommentsEntityInterface[]
+     */
+    public function getComments(): array
+    {
+        return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier()
+        );
+    }
+
+    /**
      * Export the record in the requested format. For legal values, see
      * the export helper's getFormatsForRecord() method.
      *
@@ -224,18 +241,22 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     /**
      * Render an entry in a favorite list.
      *
-     * @param \VuFind\Db\Row\UserList $list Currently selected list (null for
+     * @param ?UserListEntityInterface $list Currently selected list (null for
      * combined favorites)
-     * @param \VuFind\Db\Row\User     $user Current logged in user (false if none)
+     * @param ?UserEntityInterface     $user Current logged in user (null if none)
      *
      * @return string
      */
-    public function getListEntry($list = null, $user = false)
+    public function getListEntry($list = null, $user = null)
     {
         // Get list of lists containing this entry
         $lists = null;
         if ($user) {
-            $lists = $this->driver->getContainingLists($user->id);
+            $lists = $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
+                $this->driver->getUniqueID(),
+                $this->driver->getSourceIdentifier(),
+                $user
+            );
         }
         return $this->renderTemplate(
             'list-entry.phtml',
@@ -246,6 +267,31 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'lists' => $lists,
             ]
         );
+    }
+
+    /**
+     * Get notes associated with this record in user lists.
+     *
+     * @param int $list_id ID of list to load tags from (null for all lists)
+     * @param int $user_id ID of user to load tags from (null for all users)
+     *
+     * @return string[]
+     */
+    public function getListNotes($list_id = null, $user_id = null)
+    {
+        $data = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            $list_id,
+            $user_id
+        );
+        $notes = [];
+        foreach ($data as $current) {
+            if (!empty($note = $current->getNotes())) {
+                $notes[] = $note;
+            }
+        }
+        return $notes;
     }
 
     /**
@@ -315,6 +361,61 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             }
         }
         return $idClasses;
+    }
+
+    /**
+     * Get tags associated with the currently-loaded record.
+     *
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for no restriction)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getTags(
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->tagsService->getRecordTags(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            0,
+            $listOrId,
+            $userOrId,
+            $sort,
+            $ownerOrId
+        );
+    }
+
+    /**
+     * Get tags associated with the currently-loaded record AND with a favorites list.
+     *
+     * @param UserListEntityInterface|int|null $listOrId  ID of list to load tags from (null for tags that
+     * are associated with ANY list, but excluding non-list tags)
+     * @param UserEntityInterface|int|null     $userOrId  ID of user to load tags from (null for all users)
+     * @param string                           $sort      Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null     $ownerOrId ID of user to check for ownership
+     *
+     * @return array
+     */
+    public function getTagsFromFavorites(
+        UserListEntityInterface|int|null $listOrId = null,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null
+    ): array {
+        return $this->tagsService->getRecordTagsFromFavorites(
+            $this->driver->getUniqueId(),
+            $this->driver->getSourceIdentifier(),
+            0,
+            $listOrId,
+            $userOrId,
+            $sort,
+            $ownerOrId
+        );
     }
 
     /**

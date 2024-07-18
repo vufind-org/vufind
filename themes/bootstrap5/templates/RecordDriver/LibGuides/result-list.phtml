@@ -1,0 +1,21 @@
+<?php
+  $url = $this->driver->getUniqueId();
+?>
+<div class="media">
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <h2>
+        <a href="<?=$this->escapeHtmlAttr($url)?>" class="title">
+          <?=$this->record($this->driver)->getTitleHtml()?>
+        </a>
+      </h2>
+    </div>
+    <?php foreach ($this->driver->getSummary() as $summaryItem): ?>
+      <?php if (!empty($summaryItem)): ?>
+        <div class="resultItemLine1 summary">
+          <?=$this->escapeHtml($summaryItem)?>
+        </div>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </div>
+</div>

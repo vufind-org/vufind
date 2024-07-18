@@ -31,6 +31,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\DbServiceAwareInterface;
 
 /**
  * Table Definition for oai_resumption
@@ -41,8 +42,10 @@ use VuFind\Db\Row\RowGateway;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class OaiResumption extends Gateway
+class OaiResumption extends Gateway implements DbServiceAwareInterface
 {
+    use \VuFind\Db\Service\DbServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -82,7 +85,7 @@ class OaiResumption extends Gateway
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return \VuFind\Db\Row\OaiResumption|null
+     * @return ?\VuFind\Db\Row\OaiResumption
      */
     public function findToken($token)
     {
@@ -96,13 +99,12 @@ class OaiResumption extends Gateway
      * @param int   $expire Expiration time for token (Unix timestamp).
      *
      * @return int          ID of new token
+     *
+     * @deprecated Use \VuFind\Db\Service\OaiResumptionService::createAndPersistToken()
      */
     public function saveToken($params, $expire)
     {
-        $row = $this->createRow();
-        $row->saveParams($params);
-        $row->expires = date('Y-m-d H:i:s', $expire);
-        $row->save();
-        return $row->id;
+        return $this->getDbService(\VuFind\Db\Service\OaiResumptionServiceInterface::class)
+            ->createAndPersistToken($params, $expire)->getId();
     }
 }

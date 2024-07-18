@@ -83,14 +83,9 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
     public function testAttach()
     {
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
-        $this->expectConsecutiveCalls(
-            $mock,
-            'attach',
-            [
-                ['VuFind\Search', 'pre', [$this->listener, 'onSearchPre']],
-                ['VuFind\Search', 'post', [$this->listener, 'onSearchPost']],
-            ]
-        );
+        $mock->expects($this->once())
+            ->method('attach')
+            ->with(\VuFindSearch\Service::class, 'pre', [$this->listener, 'onSearchPre']);
         $this->listener->attach($mock);
     }
 
