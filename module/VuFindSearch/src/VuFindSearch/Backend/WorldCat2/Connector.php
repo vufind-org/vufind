@@ -59,6 +59,7 @@ class Connector implements LoggerAwareInterface
         'title_short' => 'Fake simulated record',
         'title_full' => 'Fake simulated record',
     ];
+
     /**
      * Constructor
      *
