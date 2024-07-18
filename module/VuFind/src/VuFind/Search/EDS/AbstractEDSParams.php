@@ -76,7 +76,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
                 foreach ($filterArray as $filt) {
                     $fq = $filt['field']
                         . ($this->filterRequiresFacetOperator($filt['field']) ?
-                            ":{$this->getFacetOperator($filt['field'])}" : '')
+                            ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
                         . ":{$filt['value']}";
                     $params->add('filters', $fq);
                 }
@@ -130,12 +130,16 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     /**
      * Get facet operator for the specified field
      *
-     * @param string $field Field name
+     * @param string $field             Field name
+     * @param string $specifiedOperator Operator specified on a config filter line
      *
      * @return string
      */
-    public function getFacetOperator($field)
+    public function getFacetOperator($field, $specifiedOperator = null)
     {
+        if ($specifiedOperator && $specifiedOperator != 'AND') {
+            return $specifiedOperator;
+        }
         if (in_array($field, $this->forcedOrFields)) {
             return 'OR';
         }

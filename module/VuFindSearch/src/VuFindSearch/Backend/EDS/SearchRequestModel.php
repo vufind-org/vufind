@@ -247,7 +247,6 @@ class SearchRequestModel
             $filterId = 1;
             $qs['facetfilter'] = [];
             foreach ($this->facetFilters as $field => $values) {
-                $field = str_replace('~', '', $field);
                 $values = array_map(fn ($value) => static::escapeSpecialCharacters($value), $values);
                 $operator = $this->facetOperators[$field];
                 if ('OR' == $operator) {
@@ -504,6 +503,10 @@ class SearchRequestModel
             $operator = 'AND';
         } else {
             [$field, $operator, $value] = $filterComponents;
+        }
+        if (str_starts_with($field, '~')) {
+            $field = substr($field, 1);
+            $operator = 'OR';
         }
         if (!array_key_exists($field, $this->facetFilters)) {
             $this->facetFilters[$field] = [];
