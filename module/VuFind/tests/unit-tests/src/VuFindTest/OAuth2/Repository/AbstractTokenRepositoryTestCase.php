@@ -30,9 +30,11 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Entity\AccessToken;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFind\Db\Entity\AccessToken as AccessToken;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Service\AccessTokenService;
+use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\ClientEntity;
@@ -51,7 +53,7 @@ use VuFind\OAuth2\Repository\RefreshTokenRepository;
  */
 abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected $accessTokenTable = [];
+    protected $accessTokenEntity;
 
     /**
      * Create AccessTokenRepository with mocks.
@@ -59,7 +61,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      * @return AccessTokenRepository
      */
     protected function getAccessTokenRepository()
-    {
+    {   
         return new AccessTokenRepository(
             $this->getOAuth2Config(),
             $this->getMockAccessTokenService(),
@@ -96,6 +98,72 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
+     * OaiResumption service object to test.
+     *
+     * @param MockObject  $entityManager Mock entity manager object
+     * @param MockObject  $pluginManager Mock plugin manager object
+     * @param ?MockObject $oaiResumption Mock OaiResumption entity object
+     *
+     * @return MockObject
+     */
+    protected function getService(
+        $entityManager,
+        $pluginManager,
+        $accessToken = null,
+    ) {
+        $serviceMock = $this->getMockBuilder(AccessTokenService::class)
+            ->onlyMethods(['createEntity'])
+            ->setConstructorArgs([$entityManager, $pluginManager])
+            ->getMock();
+        if ($accessToken) {
+            $serviceMock->expects($this->once())->method('createEntity')
+                ->willReturn($accessToken);
+        }
+        return $serviceMock;
+    }
+
+    /**
+     * Mock entity plugin manager.
+     *
+     * @param bool $setExpectation Flag to set the method expectations.
+     *
+     * @return MockObject
+     */
+    protected function getPluginManager($setExpectation = false)
+    {
+        $pluginManager = $this->getMockBuilder(
+            \VuFind\Db\Entity\PluginManager::class
+        )->disableOriginalConstructor()
+            ->getMock();
+        if ($setExpectation) {
+            $pluginManager->expects($this->once())->method('get')
+                ->with($this->equalTo(AccessToken::class))
+                ->willReturn(new AccessToken());
+        }
+        return $pluginManager;
+    }
+
+    /**
+     * Mock entity manager.
+     *
+     * @param int $count Expectation count
+     *
+     * @return MockObject
+     */
+    protected function getEntityManager($count = 0)
+    {
+        $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['createQuery','persist','flush'])
+            ->getMock();
+        $query = $this->createMock(\Doctrine\ORM\Query::class);
+        $entityManager->expects($this->any())->method('createQuery')->willReturn($query);
+        $entityManager->expects($this->exactly($count))->method('persist');
+        $entityManager->expects($this->exactly($count))->method('flush');
+        return $entityManager;
+    }
+
+    /**
      * Create OAuth2 Config
      *
      * @return array
@@ -105,69 +173,48 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         return ['Server' => ['userIdentifierField' => 'id']];
     }
 
-    /**
-     * Create AccessToken
-     *
-     * @return MockObject&AccessToken
-     */
-    protected function getMockAccessTokenTable(): AccessToken
-    {
-        $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
-        $entityPluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
+    /*
+    * Create User table
+    *
+    * @return MockObject&User
+    */
+   protected function getMockUserTable(): User
+   {
+       $getByIdCallback = function (
+           $id
+       ): ?UserRow {
+           $username = 'test';
+           return $this->createUserRow(compact('id', 'username'));
+       };
 
-        $getByIdAndTypeCallback = function (
-            string $id,
-            string $type,
-            bool $create
-        ): ?AccessTokenRow {
-            if (
-                $id === $this->accessTokenTable['id']
-                && $type === $this->accessTokenTable['type']
-            ) {
-                return $this->accessTokenTable;
-            }
-            $revoked = false;
-            $user_id = null;
-            $create = $create
-                ? $this->createAccessTokenRow(
-                    compact('id', 'type', 'revoked', 'user_id')
-                ) : null;
-        };
+       $accessTokenTable = $this->getMockBuilder(User::class)
+           ->disableOriginalConstructor()
+           ->onlyMethods(['getById'])
+           ->getMock();
+       $accessTokenTable->expects($this->any())
+           ->method('getById')
+           ->willReturnCallback($getByIdCallback);
 
-        $accessTokenTable = $this->createMock(AccessToken::class);
-        //$accessTokenTable->expects($this->any())->method('getId')->willReturn(1);
-        $accessTokenTable->expects($this->any())->method('getType')->willReturn('oauth2_access_token');
-        //$accessTokenTable->expects($this->any())->method('getCreated')->willReturn(new DateTime);
-        //$accessTokenTable->expects($this->any())->method('getData')->willReturn($data);
-        $accessTokenTable->expects($this->any())->method('isRevoked')->willReturn(false);
-        //$accessTokenTable->expects($this->any())->method('getUser')->willReturn();
-        return $accessTokenTable;
-    }
+       return $accessTokenTable;
+   }
 
     /**
-     * Create User table
-     *
-     * @return MockObject&User
-     */
-    protected function getMockUserTable(): User
-    {
-        $getByIdCallback = function (
-            $id
-        ): ?UserRow {
-            $username = 'test';
-            return $this->createUserRow(compact('id', 'username'));
-        };
-
-        $userTable = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getById'])
-            ->getMock();
-        $userTable->expects($this->any())
-            ->method('getById')
-            ->willReturnCallback($getByIdCallback);
-
-        return $userTable;
-    }
+ * Mock Access token entity
+ *
+ * @return MockObject&AccessTokenEntityInterface
+ */
+ protected function getMockAccessTokenEntity(): AccessTokenEntityInterface
+{
+    $this->accessTokenEntity = $this->createMock(AccessToken::class);
+    $this->accessTokenEntity->expects($this->any())->method('getId')->willReturn((int)$this->createTokenId());
+    $this->accessTokenEntity->expects($this->any())->method('getType')->willReturn('oauth2_access_token');
+    //$accessTokenEntity->expects($this->any())->method('getData')->willReturn(json_encode());
+    $this->accessTokenEntity->expects($this->any())->method('isRevoked')->willReturn(true);
+    $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+    $user->expects($this->any())->method('getId')->willReturn(1);
+    $this->accessTokenEntity->expects($this->any())->method('getUser')->willReturn($user->getId());
+    return $this->accessTokenEntity;
+}
 
     /**
      * Create User row
@@ -187,31 +234,44 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create AccessToken service mock.
-     *
-     * @return MockObject&AccessTokenService
-     */
-    protected function getMockAccessTokenService(): AccessTokenService
+    * Create Access token service
+    *
+    * @return MockObject&AccessTokenServiceInterface
+    */
+    protected function getMockAccessTokenService(): AccessTokenServiceInterface
     {
-        $accessTokenTable = $this->getMockAccessTokenTable();
-        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'getByIdAndType',
-                    'getNonce',
-                    //'storeNonce',
-                ]
-            )
-            ->getMock();
-        $accessTokenService->expects($this->any())
-            ->method('getByIdAndType')
-            ->willReturn($accessTokenTable);
-        $accessTokenService->expects($this->any())
-            ->method('getNonce')
-            ->willReturn('');
+         $accessTokenEntity = $this->getMockAccessTokenEntity();
+        // $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
+        //     ->disableOriginalConstructor()
+        //     ->onlyMethods(
+        //         [
+        //             'getByIdAndType',
+        //             'getNonce',
+        //             'storeNonce',
+        //         ]
+        //     )
+        //     ->getMock();
+        // $accessTokenService->expects($this->any())
+        //     ->method('getByIdAndType')
+        //     ->willReturnCallback(function ($id, $type, $create) use ($accessTokenEntity) {
+        //         return $accessTokenEntity;
+        //     });                         
+        // $accessTokenService->expects($this->any())
+        //     ->method('getNonce')
+        //     ->willReturnCallback(function () use ($accessTokenEntity) {
+        //         return $accessTokenEntity;
+        //     });
+        
+        // $accessTokenService->expects($this->any())
+        //     ->method('storeNonce')
+        //     ->willReturnCallback(function ($nonce) use ($accessTokenEntity) {
+        //         return $accessTokenEntity;
+        //     });
+        $entityManager = $this->getEntityManager(1);
+        $pluginManager = $this->getPluginManager(true);
+        $accessTokenService = $this->getService($entityManager, $pluginManager);
         return $accessTokenService;
-    }
+}
 
     /**
      * Create User service

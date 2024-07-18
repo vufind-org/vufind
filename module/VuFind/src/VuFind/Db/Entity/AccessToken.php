@@ -79,7 +79,7 @@ class AccessToken implements AccessTokenEntityInterface
     /**
      * User ID.
      *
-     * @var User
+     * @var int
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
@@ -87,7 +87,7 @@ class AccessToken implements AccessTokenEntityInterface
      *              referencedColumnName="id")
      * })
      */
-    protected $user;
+    protected $userId;
 
     /**
      * Creation date.
@@ -156,24 +156,24 @@ class AccessToken implements AccessTokenEntityInterface
     /**
      * Set user ID.
      *
-     * @param ?UserEntityInterface $user User owning token
+     * @param ?int $userId User owning token
      *
      * @return AccessTokenEntityInterface
      */
-    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface
+    public function setUser(?int $userId): AccessTokenEntityInterface
     {
-        $this->user = $user;
+        $this->userId = $userId;
         return $this;
     }
 
     /**
-     * User getter (only null if entity has not been populated yet).
+     * Get user ID.
      *
-     * @return ?UserEntityInterface
+     * @return ?int
      */
-    public function getUser(): ?UserEntityInterface
+    public function getUser(): ?int
     {
-        return $this->user;
+        return $this->userId;
     }
 
     /**
@@ -183,7 +183,7 @@ class AccessToken implements AccessTokenEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('Y-m-d H:i:s', $this->created);
+        return $this->created;
     }
 
     /**

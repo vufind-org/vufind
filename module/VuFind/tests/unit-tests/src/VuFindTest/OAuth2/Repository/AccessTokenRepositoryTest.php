@@ -41,16 +41,15 @@ use VuFind\OAuth2\Entity\ScopeEntity;
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
-{
+{       
     /**
      * Test access token repository
      *
      * @return void
      */
     public function testAccessTokenRepository(): void
-    {
+    {   
         $repo = $this->getAccessTokenRepository();
-
         $token = $repo->getNewToken(
             $this->createClientEntity(),
             [new ScopeEntity(['identifier' => 'openid', 'description' => 'OpenID'])],
@@ -71,7 +70,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
                     'user_id' => '1',
                 ],
             ],
-            $this->accessTokenTable
+            $this->accessTokenEntity
         );
         $this->assertFalse($repo->isAccessTokenRevoked($tokenId));
         $repo->revokeAccessToken($tokenId);
@@ -86,7 +85,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
                     'user_id' => '1',
                 ],
             ],
-            $this->accessTokenTable
+            $this->accessTokenEntity
         );
     }
 
@@ -96,15 +95,12 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      * @return void
      */
     public function testPersistInvalidTokenClass(): void
-    {
+    {   
         $accessTokenRepo = $this->getAccessTokenRepository();
         $authCodeRepo = $this->getAuthCodeRepository();
 
         $token = $authCodeRepo->getNewAuthCode();
-        $this->expectExceptionMessage(
-            'VuFind\OAuth2\Entity\AuthCodeEntity is not'
-            . ' VuFind\OAuth2\Entity\AccessTokenEntity'
-        );
         $accessTokenRepo->persistNew($token);
+        $this->expectExceptionMessage('VuFind\OAuth2\Entity\AuthCodeEntity is not VuFind\OAuth2\Entity\AccessTokenEntity');
     }
 }

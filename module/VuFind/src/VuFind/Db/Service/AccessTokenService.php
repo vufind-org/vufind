@@ -86,7 +86,6 @@ class AccessTokenService extends AbstractDbService implements
         $query->setParameters(['id' => $id, 'type' => $type]);
         $result = $query->getResult();
         $result = $result ?: $this->createEntity()
-                          ->setId($id)
                           ->setType($type)
                           ->setCreated(new \DateTime());
 
