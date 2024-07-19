@@ -30,7 +30,6 @@
 namespace VuFind\Role\PermissionProvider;
 
 use VuFind\Cookie\CookieManager;
-use VuFind\Cookie\Container as CookieContainer;
 
 /**
  * Cookie permission provider for VuFind.
@@ -44,12 +43,13 @@ use VuFind\Cookie\Container as CookieContainer;
 
 class Cookie implements PermissionProviderInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
 
-   /**
-    * Constructor
-    *
-    * @param CookieManager                   $cookieManager     Cookie manager
-    */
+    /**
+     * Constructor
+     *
+     * @param CookieManager $cookieManager Cookie manager
+     */
     public function __construct(
         protected CookieManager $cookieManager
     ) {
@@ -65,15 +65,15 @@ class Cookie implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-	foreach ((array)$options as $cookieName) {
-	    $this->debug("getPermissions: option cookieName '{$cookieName}'");
-	    $cookie = $this->cookieManager->get($cookieName);
-	    if (!(isset($cookie))) {
+        foreach ((array)$options as $cookieName) {
+            $this->debug("getPermissions: option cookieName '{$cookieName}'");
+            $cookie = $this->cookieManager->get($cookieName);
+            if (!(isset($cookie))) {
                 $this->debug('getPermissions: result = false');
-		return [];
-	    }
-	    $this->debug('getPermissions: result = true');
+                return [];
+            }
+            $this->debug('getPermissions: result = true');
         }
-	return ['guest'];
+        return ['guest'];
     }
 }
