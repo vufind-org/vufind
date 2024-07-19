@@ -100,6 +100,10 @@ CookieConsent:
           Domain: '{{vufind_cookie_domain}}'
           Description: CookieConsent::cookie_description_search_open_html
           Expiration: session
+        - Name: vufind_eds_guest
+          Domain: '{{vufind_cookie_domain}}'
+          Description: CookieConsent::cookie_description_eds_guest
+          Expiration: session
 #        - Name: '{{vufind_login_token_cookie_name}}'
 #          Domain: '{{vufind_cookie_domain}}'
 #          Description: CookieConsent::cookie_description_login_token_html
