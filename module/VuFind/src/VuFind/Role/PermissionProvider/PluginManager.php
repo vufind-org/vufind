@@ -61,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+    Cookie::class  => CookieFactory::class,
         IpRange::class => IpRangeFactory::class,
         IpRegEx::class => IpRegExFactory::class,
         Role::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
