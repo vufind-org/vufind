@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2007.
+ * Copyright (C) Catalyst IT 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -74,6 +74,6 @@ class Cookie implements PermissionProviderInterface
             }
             $this->debug('getPermissions: result = true');
         }
-        return ['guest'];
+        return ['guest', 'loggedin'];
     }
 }
