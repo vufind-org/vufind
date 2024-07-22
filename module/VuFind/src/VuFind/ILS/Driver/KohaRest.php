@@ -2480,7 +2480,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $locationConfig = strtolower(trim($this->config['ItemTypeRenewalBlockMappings']['Location'] ?? 'branch'));
         switch ($locationConfig) {
-            case 'Shelving':
+            case 'shelving':
                 $shelvingLocationId = $item['location'];
                 $name = $this->translateLocation($shelvingLocationId);
                 if ($name === $shelvingLocationId) {
