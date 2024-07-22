@@ -138,17 +138,22 @@ class EdsController extends AbstractSearch
 
                     // If we haven't already found a selected facet and the current
                     // facet has been applied to the search, we should store it as
-                    // the selected facet for the current control.
+                    // the selected facet for the current control. Cover AND and OR
+                    // filter cases to be on the safe side; either might be used,
+                    // but we don't currently expect both at once on the same field.
                     if ($searchObject) {
                         $limitFilt = 'LIMIT|' . $fullFilter;
+                        $orLimitFilt = '~' . $limitFilt;
                         if ($searchObject->getParams()->hasFilter($limitFilt)) {
-                            $facetList[$facet]['LimiterValues'][$key]['selected']
-                                = true;
+                            $facetList[$facet]['LimiterValues'][$key]['selected'] = true;
                             // Remove the filter from the search object -- we don't
                             // want it to show up in the "applied filters" sidebar
                             // since it will already be accounted for by being
                             // selected in the filter select list!
                             $searchObject->getParams()->removeFilter($limitFilt);
+                        } elseif ($searchObject->getParams()->hasFilter($orLimitFilt)) {
+                            $facetList[$facet]['LimiterValues'][$key]['selected'] = true;
+                            $searchObject->getParams()->removeFilter($orLimitFilt);
                         }
                     } else {
                         if ('y' == $facetList[$facet]['DefaultOn']) {
