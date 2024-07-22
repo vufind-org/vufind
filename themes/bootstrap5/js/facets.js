@@ -92,14 +92,14 @@ VuFind.register('facetList', function FacetList() {
         $('#btn-reset-contains').removeClass('hidden');
       }
       inputCallbackTimeout = setTimeout(function onInputTimeout() {
-        updateContent({facetpage: 1});
+        updateContent({ facetpage: 1 });
       }, 500);
     });
 
     $('#btn-reset-contains').on('click', function onResetClick() {
       setCurrentContainsValue('');
       $('#btn-reset-contains').addClass('hidden');
-      updateContent({facetpage: 1});
+      updateContent({ facetpage: 1 });
     });
   }
 
@@ -191,7 +191,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       return array.indexOf(value) === index;
     });
     // Removing parameters
-    initialRawParams = initialRawParams.filter(function tmp(obj) { return !globalRemovedParams.includes(obj); });
+    initialRawParams = initialRawParams.filter(function tmp(obj) {
+      return !globalRemovedParams.includes(obj);
+    });
     // Adding parameters
     initialRawParams = initialRawParams.concat(globalAddedParams);
     return window.location.pathname + '?' + initialRawParams.join('&');
@@ -199,7 +201,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   function applyMultiFacetsSelection() {
     document.getElementById('applyMultiFacetsSelection')
-        .removeEventListener('click', applyMultiFacetsSelection);
+      .removeEventListener('click', applyMultiFacetsSelection);
     callbackOnApply();
     window.location.assign(getHrefWithNewParams());
   }
@@ -334,10 +336,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     // Listener on checkbox for multiFacetsSelection feature
     document.getElementById('userSelectionMultiFilters')
-        .addEventListener('change', multiFacetsSelectionToggle);
+      .addEventListener('change', multiFacetsSelectionToggle);
     // Listener on apply filters button
     document.getElementById('applyMultiFacetsSelection')
-        .addEventListener('click', applyMultiFacetsSelection);
+      .addEventListener('click', applyMultiFacetsSelection);
     dateSelectorInit();
     stickApplyFiltersButtonAtTopWhenScrolling();
     applyClickHandling();
@@ -361,10 +363,10 @@ VuFind.register('sideFacets', function SideFacets() {
       elem = $(this).closest(".collapse");
     }
     elem.append(
-        '<div class="facet-loading-overlay">'
-        + '<span class="facet-loading-overlay-label">'
-        + VuFind.loading()
-        + '</span></div>'
+      '<div class="facet-loading-overlay">'
+      + '<span class="facet-loading-overlay-label">'
+      + VuFind.loading()
+      + '</span></div>'
     );
   }
 
@@ -535,7 +537,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       button.attr('disabled', 1);
       button.html(VuFind.translate('loading_ellipsis'));
 
-      const overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
+      const overrideParams = { facetpage: page, layout: 'lightbox', ajax: 1 };
       VuFind.facetList.getContent(overrideParams).then(data => {
         $(data).find('.js-facet-item').each(function eachItem() {
           button.before($(this).prop('outerHTML'));
