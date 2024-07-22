@@ -61,7 +61,6 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 
         $repo->persistNewAccessToken($token);
         $this->assertEquals(
-            [
                 [
                     'id' => $tokenId,
                     'type' => 'oauth2_access_token',
@@ -69,14 +68,13 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
                     'data' => json_encode($token),
                     'user_id' => '1',
                 ],
-            ],
-            $this->accessTokenEntity
+            $this->accessTokenTable
         );
         $this->assertFalse($repo->isAccessTokenRevoked($tokenId));
         $repo->revokeAccessToken($tokenId);
         $this->assertTrue($repo->isAccessTokenRevoked($tokenId));
+        
         $this->assertEquals(
-            [
                 [
                     'id' => $tokenId,
                     'type' => 'oauth2_access_token',
@@ -84,8 +82,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
                     'data' => json_encode($token),
                     'user_id' => '1',
                 ],
-            ],
-            $this->accessTokenEntity
+            $this->accessTokenTable
         );
     }
 
@@ -100,7 +97,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
         $authCodeRepo = $this->getAuthCodeRepository();
 
         $token = $authCodeRepo->getNewAuthCode();
-        $accessTokenRepo->persistNew($token);
         $this->expectExceptionMessage('VuFind\OAuth2\Entity\AuthCodeEntity is not VuFind\OAuth2\Entity\AccessTokenEntity');
+        $accessTokenRepo->persistNew($token);
     }
 }

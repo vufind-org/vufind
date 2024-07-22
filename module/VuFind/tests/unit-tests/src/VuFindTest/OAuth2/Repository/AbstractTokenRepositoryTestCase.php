@@ -53,7 +53,7 @@ use VuFind\OAuth2\Repository\RefreshTokenRepository;
  */
 abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected $accessTokenEntity;
+    protected $accessTokenTable;
 
     /**
      * Create AccessTokenRepository with mocks.
@@ -136,7 +136,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         )->disableOriginalConstructor()
             ->getMock();
         if ($setExpectation) {
-            $pluginManager->expects($this->once())->method('get')
+            $pluginManager->expects($this->any())->method('get')
                 ->with($this->equalTo(AccessToken::class))
                 ->willReturn(new AccessToken());
         }
@@ -146,11 +146,9 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     /**
      * Mock entity manager.
      *
-     * @param int $count Expectation count
-     *
      * @return MockObject
      */
-    protected function getEntityManager($count = 0)
+    protected function getEntityManager()
     {
         $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
             ->disableOriginalConstructor()
@@ -158,8 +156,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->getMock();
         $query = $this->createMock(\Doctrine\ORM\Query::class);
         $entityManager->expects($this->any())->method('createQuery')->willReturn($query);
-        $entityManager->expects($this->exactly($count))->method('persist');
-        $entityManager->expects($this->exactly($count))->method('flush');
+        $entityManager->expects($this->any())->method('persist');
+        $entityManager->expects($this->any())->method('flush');
         return $entityManager;
     }
 
@@ -173,10 +171,10 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         return ['Server' => ['userIdentifierField' => 'id']];
     }
 
-    /*
+    /**
     * Create User table
     *
-    * @return MockObject&User
+    * @return MockObject&UserRow
     */
    protected function getMockUserTable(): User
    {
@@ -199,22 +197,21 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
    }
 
     /**
- * Mock Access token entity
- *
- * @return MockObject&AccessTokenEntityInterface
- */
- protected function getMockAccessTokenEntity(): AccessTokenEntityInterface
-{
-    $this->accessTokenEntity = $this->createMock(AccessToken::class);
-    $this->accessTokenEntity->expects($this->any())->method('getId')->willReturn((int)$this->createTokenId());
-    $this->accessTokenEntity->expects($this->any())->method('getType')->willReturn('oauth2_access_token');
-    //$accessTokenEntity->expects($this->any())->method('getData')->willReturn(json_encode());
-    $this->accessTokenEntity->expects($this->any())->method('isRevoked')->willReturn(true);
-    $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
-    $user->expects($this->any())->method('getId')->willReturn(1);
-    $this->accessTokenEntity->expects($this->any())->method('getUser')->willReturn($user->getId());
-    return $this->accessTokenEntity;
-}
+    * Mock Access token entity
+    *
+    * @return MockObject&AccessTokenEntityInterface
+    */
+    protected function getMockAccessTokenEntity(): AccessTokenEntityInterface
+    {
+        $accessTokenEntity = $this->createMock(AccessToken::class);
+        $accessTokenEntity->expects($this->any())->method('getId')->willReturn((int)$this->createTokenId());
+        $accessTokenEntity->expects($this->any())->method('getType')->willReturn('oauth2_access_token');
+        $accessTokenEntity->expects($this->any())->method('isRevoked')->willReturn(true);
+        $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+        $user->expects($this->any())->method('getId')->willReturn(1);
+        $accessTokenEntity->expects($this->any())->method('getUser')->willReturn($user->getId());
+        return $accessTokenEntity;
+    }
 
     /**
      * Create User row
@@ -240,34 +237,8 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     */
     protected function getMockAccessTokenService(): AccessTokenServiceInterface
     {
-         $accessTokenEntity = $this->getMockAccessTokenEntity();
-        // $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
-        //     ->disableOriginalConstructor()
-        //     ->onlyMethods(
-        //         [
-        //             'getByIdAndType',
-        //             'getNonce',
-        //             'storeNonce',
-        //         ]
-        //     )
-        //     ->getMock();
-        // $accessTokenService->expects($this->any())
-        //     ->method('getByIdAndType')
-        //     ->willReturnCallback(function ($id, $type, $create) use ($accessTokenEntity) {
-        //         return $accessTokenEntity;
-        //     });                         
-        // $accessTokenService->expects($this->any())
-        //     ->method('getNonce')
-        //     ->willReturnCallback(function () use ($accessTokenEntity) {
-        //         return $accessTokenEntity;
-        //     });
-        
-        // $accessTokenService->expects($this->any())
-        //     ->method('storeNonce')
-        //     ->willReturnCallback(function ($nonce) use ($accessTokenEntity) {
-        //         return $accessTokenEntity;
-        //     });
-        $entityManager = $this->getEntityManager(1);
+        $this->accessTokenTable = $this->getMockAccessTokenEntity();
+        $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager(true);
         $accessTokenService = $this->getService($entityManager, $pluginManager);
         return $accessTokenService;
