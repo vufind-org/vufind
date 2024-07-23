@@ -271,7 +271,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
         $driver->setHighlightDetails($details);
         // Should return the snippet from contents since that is the first item in preferredSnippetFields
         $this->assertEquals(
-            ['snippet' => 'Testing content {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}','caption' => false],
+            ['snippet' => 'Testing content {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}', 'caption' => false],
             $driver->getHighlightedSnippet()
         );
     }
@@ -294,7 +294,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
         $driver->setHighlightDetails($details);
         // Should ignore the 'author' snippet since that is forbidden, and return 'toast' instead
         $this->assertEquals(
-            ['snippet' => 'Testing toast {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}','caption' => false],
+            ['snippet' => 'Testing toast {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}', 'caption' => false],
             $driver->getHighlightedSnippet()
         );
     }
