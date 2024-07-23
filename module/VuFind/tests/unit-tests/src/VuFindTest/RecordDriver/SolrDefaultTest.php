@@ -248,7 +248,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
         $details = ['topic' => ['', 'Testing {{{{START_HILITE}}}}Snippets{{{{END_HILITE}}}} highlighting']];
         $driver->setHighlightDetails($details);
         $this->assertEquals(
-            ['snippet' => 'Testing {{{{START_HILITE}}}}Snippets{{{{END_HILITE}}}} highlighting','caption' => false],
+            ['snippet' => 'Testing {{{{START_HILITE}}}}Snippets{{{{END_HILITE}}}} highlighting', 'caption' => false],
             $driver->getHighlightedSnippet()
         );
     }
