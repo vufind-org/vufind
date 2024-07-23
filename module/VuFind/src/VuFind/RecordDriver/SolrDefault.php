@@ -34,7 +34,6 @@ namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
 
-use function array_key_exists;
 use function count;
 use function in_array;
 use function is_array;
@@ -235,14 +234,12 @@ class SolrDefault extends DefaultRecord implements
         if ($this->snippet) {
             // First check for preferred fields:
             foreach ($this->preferredSnippetFields as $current) {
-                if (array_key_exists($current, $this->highlightDetails)) {
-                    foreach ($this->highlightDetails[$current] as $hl) {
-                        if (!empty($hl)) {
-                            return [
-                                'snippet' => $hl,
-                                'caption' => $this->getSnippetCaption($current),
-                            ];
-                        }
+                foreach ($this->highlightDetails[$current] ?? [] as $hl) {
+                    if (!empty($hl)) {
+                        return [
+                            'snippet' => $hl,
+                            'caption' => $this->getSnippetCaption($current),
+                        ];
                     }
                 }
             }
