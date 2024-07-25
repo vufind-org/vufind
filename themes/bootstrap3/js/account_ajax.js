@@ -251,6 +251,9 @@ $(function registerAccountAjax() {
       var level = ICON_LEVELS.NONE;
       $element.html(html);
       return level;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return currentStatus.count !== status.count;
     }
   });
 
