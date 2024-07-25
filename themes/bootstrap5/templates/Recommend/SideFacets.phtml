@@ -35,12 +35,14 @@
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
   <?php if ($this->multiFacetsSelection): ?>
-    <div id="apply-filters-selection">
-      <input id="userSelectionMultiFilters" type="checkbox">
-      <label for="userSelectionMultiFilters"><?= $this->transEsc('Multi-filter selection') ?></label>
-    </div>
-    <div id="apply-filters" class="hidden">
-      <button id="applyMultiFacetsSelection" type="submit" class="btn btn-primary"><?= $this->transEsc('Apply filters') ?></button>
+    <div class="multi-filters-selection">
+      <div class="apply-filters-selection">
+        <input id="userSelectionMultiFilters" class="userSelectionMultiFilters" type="checkbox">
+        <label for="userSelectionMultiFilters"><?= $this->transEsc('Multi-filter selection') ?></label>
+      </div>
+      <div class="apply-filters hidden">
+        <button class="applyMultiFacetsSelection btn btn-primary" type="submit"><?= $this->transEsc('Apply filters') ?></button>
+      </div>
     </div>
   <?php endif; ?>
   <span class="sr-only"><?=$this->transEscAttr('page_reload_on_select_hint') ?></span>
