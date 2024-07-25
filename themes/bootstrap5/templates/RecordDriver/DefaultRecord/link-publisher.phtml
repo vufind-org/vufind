@@ -1,3 +1,8 @@
 <?php
-$searchRoute = $this->searchOptions($this->driver->getSearchBackendIdentifier())->getSearchAction();
-echo $this->url($searchRoute, [], ['query' => ['type' => 'Publisher', 'lookfor' => $this->lookfor]]);
+  $searchBackendId = $this->driver->getSearchBackendIdentifier();
+  $searchRoute = $this->searchOptions($searchBackendId)->getSearchAction();
+  $query = ['type' => 'Publisher', 'lookfor' => $this->lookfor];
+  if ($limit = $this->searchMemory()->getLastLimit($searchBackendId)) {
+    $query['limit'] = $limit;
+  }
+  echo $this->url($searchRoute, [], compact('query'));
