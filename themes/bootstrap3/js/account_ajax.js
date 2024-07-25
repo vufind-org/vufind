@@ -247,7 +247,7 @@ $(function registerAccountAjax() {
     selector: ".favorites-status",
     ajaxMethod: "getUserFavoritesStatus",
     render: function render($element, status, ICON_LEVELS) {
-      var html = '<span class="badge">' + status.count + '</span>';
+      var html = '<span class="badge">' + parseInt(status.count || 0) + '</span>';
       var level = ICON_LEVELS.NONE;
       $element.html(html);
       return level;
