@@ -1,8 +1,11 @@
 <?php
   $searchBackendId = $this->driver->getSearchBackendIdentifier();
-  $searchRoute = $this->searchOptions($searchBackendId)->getSearchAction();
+  $options = $this->searchOptions($searchBackendId);
+  $searchRoute = $options->getSearchAction();
   $query = ['type' => 'Subject', 'lookfor' => '"' . $this->lookfor . '"'];
-  if ($limit = $this->searchMemory()->getLastLimit($searchBackendId)) {
+  if (($limit = $this->searchMemory()->getLastLimit($searchBackendId))
+    && $limit !== $options->getDefaultLimit()
+  ) {
     $query['limit'] = $limit;
   }
   echo $this->url($searchRoute, [], compact('query'));
