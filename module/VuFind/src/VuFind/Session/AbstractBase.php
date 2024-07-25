@@ -160,8 +160,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    #[\ReturnTypeWillChange]
-    public function gc($sessMaxLifetime)
+    public function gc($sessMaxLifetime): int|false
     {
         // how often does this get called (if at all)?
 
@@ -174,7 +173,7 @@ abstract class AbstractBase implements HandlerInterface
         // Anecdotal testing Today and Yesterday seems to indicate destroy()
         //   is called by the garbage collector and everything is good.
         // Something to keep in mind though.
-        return true;
+        return 0;
     }
 
     /**

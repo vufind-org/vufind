@@ -54,8 +54,7 @@ class AuthCodeEntity implements AuthCodeEntityInterface, \JsonSerializable
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $properties = [
             'identifier',
