@@ -49,7 +49,7 @@ class SearchOriginFactory
      *
      * @return AbstractSearchOrigin|null
      */
-    public static function createObject(array $params): ?AbstractSearchOrigin
+    public function createObject(array $params): ?AbstractSearchOrigin
     {
         $nameParam = AbstractSearchOrigin::PARAM_NAME;
         if (empty($params[$nameParam])) {
@@ -58,6 +58,7 @@ class SearchOriginFactory
         try {
             return match ($params[$nameParam]) {
                 AlphaBrowseSearchOrigin::getName() => new AlphaBrowseSearchOrigin(
+                    $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_DISPLAY_PARAM] ?? null,
                     $params[AlphaBrowseSearchOrigin::SEARCH_SOURCE_PARAM] ?? null,
                     $params[AlphaBrowseSearchOrigin::SEARCH_FROM_PARAM] ?? null,
                     $params[AlphaBrowseSearchOrigin::SEARCH_PAGE_PARAM] ?? null

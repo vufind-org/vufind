@@ -351,8 +351,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         ) {
             $params['sid'] = $sid;
         }
-        if (empty($options['excludeSearchOrigin']) && $this->results?->getParams()?->getSearchOrigin()) {
-            $params += $this->results->getParams()->getSearchOrigin()->getSearchUrlParamsArray();
+        if (empty($options['excludeSearchOrigin']) && isset($options['searchOrigin'])) {
+            $params += $options['searchOrigin']->getSearchUrlParamsArray();
         }
         return $params;
     }

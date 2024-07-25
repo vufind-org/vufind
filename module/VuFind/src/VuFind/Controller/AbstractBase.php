@@ -889,4 +889,18 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
         return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
     }
+
+    /**
+     * Retrieve a service
+     *
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getService(string $name)
+    {
+        return $this->serviceLocator->get($name);
+    }
 }

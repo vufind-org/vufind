@@ -54,21 +54,28 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
      *
      * @var string
      */
-    public const SEARCH_SOURCE_PARAM = 'AB-source';
+    public const SEARCH_SOURCE_DISPLAY_PARAM = 'AB-sd';
+
+    /**
+     * URL Parameter for "source" in search URL
+     *
+     * @var string
+     */
+    public const SEARCH_SOURCE_PARAM = 'AB-s';
 
     /**
      * URL Parameter for "from" in search URL
      *
      * @var string
      */
-    public const SEARCH_FROM_PARAM = 'AB-from';
+    public const SEARCH_FROM_PARAM = 'AB-f';
 
     /**
      * URL Parameter for "page" in search URL
      *
      * @var string
      */
-    public const SEARCH_PAGE_PARAM = 'AB-page';
+    public const SEARCH_PAGE_PARAM = 'AB-p';
 
     /**
      * URL Parameter for "source" in origin URL
@@ -90,6 +97,13 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
      * @var string
      */
     public const ORIGIN_PAGE_PARAM = 'page';
+
+    /**
+     * Value of the parameter for "sourceDisplay"
+     *
+     * @var string
+     */
+    protected $sourceDisplay;
 
     /**
      * Value of the parameter for "source"
@@ -115,17 +129,19 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     /**
      *  Constructor
      *
-     * @param string|null $source source parameter for alpha browse search
-     * @param string|null $from   from parameter for alpha browse search
-     * @param int|null    $page   page parameter for alpha browse search
+     * @param string|null $sourceDisplay Display source parameter for alpha browse search
+     * @param string|null $source        source parameter for alpha browse search
+     * @param string|null $from          from parameter for alpha browse search
+     * @param int|null    $page          page parameter for alpha browse search
      *
      * @throws Exception
      */
-    public function __construct(?string $source, ?string $from, ?int $page = null)
+    public function __construct(?string $sourceDisplay, ?string $source, ?string $from, ?int $page = null)
     {
-        if (isset($source, $from) !== true) {
+        if (isset($sourceDisplay, $source, $from) !== true) {
             throw new Exception('Missing parameters');
         }
+        $this->sourceDisplay = $sourceDisplay;
         $this->source = $source;
         $this->from = $from;
         $this->page = $page;
@@ -148,7 +164,7 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
      */
     public function getDisplayName(): string
     {
-        return ucwords($this->source) . ' Browse';
+        return $this->sourceDisplay;
     }
 
     /**
@@ -160,6 +176,7 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     {
         $return = [
             self::PARAM_NAME => self::getName(),
+            self::SEARCH_SOURCE_DISPLAY_PARAM => $this->sourceDisplay,
             self::SEARCH_SOURCE_PARAM => $this->source,
             self::SEARCH_FROM_PARAM => $this->from,
         ];

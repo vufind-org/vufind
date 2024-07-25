@@ -130,9 +130,6 @@ class UrlQueryHelperFactory
         if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
             $urlParams['hiddenFilters'] = $hiddenFilters;
         }
-        if ($origin = $params->getSearchOrigin()) {
-            $urlParams += $origin->getSearchUrlParamsArray();
-        }
         $shards = $params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);

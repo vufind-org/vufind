@@ -957,7 +957,8 @@ class AbstractRecord extends AbstractBase
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax) && (bool) $config->Site->loadInitialTabWithAjax;
         try {
-            $this->layout()->setVariable('searchOrigin', SearchOriginFactory::createObject($this->params()->fromQuery()));
+            $factory = $this->getService(SearchOriginFactory::class);
+            $this->layout()->setVariable('searchOrigin', $factory->createObject($this->params()->fromQuery()));
         } catch (Exception) {
         }
 
