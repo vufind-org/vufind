@@ -252,9 +252,7 @@ $(function registerAccountAjax() {
       $element.html(html);
       return level;
     }
-  }
-
-  );
+  });
 
   VuFind.account.register("holds", {
     selector: ".holds-status",
