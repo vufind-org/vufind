@@ -393,6 +393,7 @@ function recordDocReady() {
   VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
   VuFind.truncate.initTruncate('table.truncate-field', 'tr.holding-row', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
+  VuFind.emit('record-tab-init', {container: document});
   applyRecordTabHash(false);
 }
 

@@ -66,6 +66,7 @@ VuFind.register('embedded', function embedded() {
           if (html.length > 0) {
             $('#' + tabid + '-content').html(VuFind.updateCspNonce(html));
             registerTabEvents();
+            VuFind.emit('record-tab-init', {container: document.querySelector('#' + tabid + '-content')});
           } else {
             $('#' + tabid + '-content').html(VuFind.translate('collection_empty'));
           }
