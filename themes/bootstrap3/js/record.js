@@ -226,6 +226,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
         $newTab.html(VuFind.updateCspNonce(data));
       }
       registerTabEvents();
+      VuFind.emit('record-tab-init', {container: $newTab.get(0)});
       if (typeof syn_get_widget === "function") {
         syn_get_widget();
       }
