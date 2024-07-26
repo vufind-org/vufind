@@ -869,7 +869,7 @@ class Folio extends AbstractAPI implements
                     'location' => $holdingDetails['holdingLocationName'],
                     'id' => $bibId,
                     'reserve' => 'n',
-                    'availability' => new InvisibleAvailabilityStatus(true, 'See full record') 
+                    'availability' => new InvisibleAvailabilityStatus(true, 'See full record')
                 ];
             }
             $items = array_merge(
@@ -2171,7 +2171,19 @@ class Folio extends AbstractAPI implements
     }
 }
 
-class InvisibleAvailabilityStatus extends AvailabilityStatus {
+/**
+ * Invisible Availability Status
+ *
+ * Items with this availability status will not be visible in the list of holdings.
+ *
+ * @category VuFind
+ * @package  ILS_Drivers
+ * @author   Peter Murray <peter@indexdata.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers?s[]=availabilitystatus Wiki
+ */
+class InvisibleAvailabilityStatus extends AvailabilityStatus
+{
     /**
      * Check if status should be visible in the holdings tab.
      *
