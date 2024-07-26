@@ -210,7 +210,7 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
         return $return;
     }
 
-    public function getUrlName(): string
+    public function getRouteName(): string
     {
         return self::URL_NAME;
     }

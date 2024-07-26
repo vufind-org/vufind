@@ -2,7 +2,7 @@
 /** @var \Laminas\View\Renderer\PhpRenderer $this */
 /** @var \VuFind\Search\SearchOrigin\AbstractSearchOrigin|null $searchOrigin */
 if (isset($searchOrigin)) {
-  $link = $this->url($searchOrigin->getUrlName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
+  $link = $this->url($searchOrigin->getRouteName()) . '?' . http_build_query($searchOrigin->getOriginUrlParamsArray());
   $fieldValue = $this->translate($searchOrigin->getDisplayName());
   echo
       '<nav class="backtoorigin container">' .

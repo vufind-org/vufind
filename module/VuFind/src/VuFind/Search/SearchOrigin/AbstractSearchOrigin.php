@@ -68,5 +68,5 @@ abstract class AbstractSearchOrigin
      */
     abstract public function getOriginUrlParamsArray(): array;
 
-    abstract public function getUrlName(): string;
+    abstract public function getRouteName(): string;
 }
