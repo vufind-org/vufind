@@ -11,6 +11,8 @@
   if (!isset($this->layout()->searchbox)) {
     $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
   }
+  /** @var \VuFind\Search\SearchOrigin\AbstractSearchOrigin|null $searchOrigin */
+  $searchOrigin = $this->layout()->searchOrigin;
 ?>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
@@ -145,6 +147,7 @@
       <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
+    <?= $this->render('search/backtoorigin.phtml', ['searchOrigin' => $searchOrigin]); ?>
     <?php if (($this->layout()->showBreadcrumbs ?? true) && $this->layout()->breadcrumbs !== false): ?>
       <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
         <div class="container">

@@ -67,4 +67,6 @@ abstract class AbstractSearchOrigin
      * @return array
      */
     abstract public function getOriginUrlParamsArray(): array;
+
+    abstract public function getUrlName(): string;
 }

@@ -864,3 +864,10 @@ table.search-history-table {
     }
   }
 }
+
+.backtoorigin > p > a {
+  text-decoration: none;
+  &::before {
+    content:"← ";
+  }
+}

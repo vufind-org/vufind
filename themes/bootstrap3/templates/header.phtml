@@ -1,8 +1,6 @@
 <?php
 /** @var \Laminas\View\Renderer\PhpRenderer $this */
 $account = $this->auth()->getManager();
-/** @var \VuFind\Search\SearchOrigin\AbstractSearchOrigin|null $searchOrigin */
-$searchOrigin = $this->get('searchOrigin');
 ?>
 <div class="banner container navbar">
     <div class="navbar-header">
@@ -122,4 +120,3 @@ $searchOrigin = $this->get('searchOrigin');
         </div>
     </div>
 <?php endif; ?>
-<?= $this->render('search/backtoorigin.phtml', ['searchOrigin' => $searchOrigin]); ?>

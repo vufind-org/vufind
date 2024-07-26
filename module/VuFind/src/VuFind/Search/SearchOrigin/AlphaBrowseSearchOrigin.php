@@ -50,6 +50,13 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
     protected const NAME = 'AB';
 
     /**
+     * Name of the route to get back to
+     *
+     * @var string
+     */
+    protected const URL_NAME = 'alphabrowse-home';
+
+    /**
      * URL Parameter for "source" in search URL
      *
      * @var string
@@ -201,5 +208,10 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
             $return[self::ORIGIN_PAGE_PARAM] = $this->page;
         }
         return $return;
+    }
+
+    public function getUrlName(): string
+    {
+        return self::URL_NAME;
     }
 }
