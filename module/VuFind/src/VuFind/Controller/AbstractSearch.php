@@ -185,8 +185,8 @@ class AbstractSearch extends AbstractBase
         // Only save search URL if the property tells us to...
         if ($this->rememberSearch) {
             $searchUrl = $this->url()->fromRoute(
-                    $results->getOptions()->getSearchAction()
-                ) . $results->getUrlQuery()->getParams(false);
+                $results->getOptions()->getSearchAction()
+            ) . $results->getUrlQuery()->getParams(false);
             $this->getSearchMemory()
                 ->rememberSearch($searchUrl, $results->getSearchId());
         }
@@ -457,8 +457,8 @@ class AbstractSearch extends AbstractBase
      * Process the jumpto parameter -- either redirect to a specific record and
      * return view model, or ignore the parameter and return false.
      *
-     * @param Results $results Search results object.
-     * @param AbstractSearchOrigin|null $searchOrigin
+     * @param Results                   $results      Search results object.
+     * @param AbstractSearchOrigin|null $searchOrigin Search origin to propagate
      *
      * @return bool|HttpResponse
      */
@@ -479,8 +479,8 @@ class AbstractSearch extends AbstractBase
     /**
      * Process jump to record if there is only one result.
      *
-     * @param Results $results Search results object.
-     * @param AbstractSearchOrigin|null $searchOrigin
+     * @param Results                   $results      Search results object.
+     * @param AbstractSearchOrigin|null $searchOrigin Search origin to propagate
      *
      * @return bool|HttpResponse
      */

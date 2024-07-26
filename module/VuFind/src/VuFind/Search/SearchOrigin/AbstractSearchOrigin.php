@@ -68,5 +68,10 @@ abstract class AbstractSearchOrigin
      */
     abstract public function getOriginUrlParamsArray(): array;
 
+    /**
+     * Get route name to generate the url
+     *
+     * @return string
+     */
     abstract public function getRouteName(): string;
 }
