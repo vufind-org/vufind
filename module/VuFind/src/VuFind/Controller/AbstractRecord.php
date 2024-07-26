@@ -29,7 +29,6 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Search\SearchOrigin\SearchOriginFactory;
 use Exception;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -39,6 +38,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Search\SearchOrigin\SearchOriginFactory;
 use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
 
@@ -955,7 +955,7 @@ class AbstractRecord extends AbstractBase
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
         $view->loadInitialTabWithAjax
-            = isset($config->Site->loadInitialTabWithAjax) && (bool) $config->Site->loadInitialTabWithAjax;
+            = isset($config->Site->loadInitialTabWithAjax) && (bool)$config->Site->loadInitialTabWithAjax;
         try {
             $factory = $this->getService(SearchOriginFactory::class);
             $this->layout()->setVariable('searchOrigin', $factory->createObject($this->params()->fromQuery()));

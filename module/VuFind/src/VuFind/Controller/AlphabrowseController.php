@@ -30,11 +30,11 @@
 
 namespace VuFind\Controller;
 
-use VuFind\Search\SearchOrigin\AlphaBrowseSearchOrigin;
 use Exception;
 use Laminas\Config\Config;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\BadRequest;
+use VuFind\Search\SearchOrigin\AlphaBrowseSearchOrigin;
 use VuFindSearch\ParamBag;
 
 use function in_array;

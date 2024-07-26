@@ -29,8 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 use Laminas\View\Helper\Url;
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 
 /**
  * AlphaBrowse view helper

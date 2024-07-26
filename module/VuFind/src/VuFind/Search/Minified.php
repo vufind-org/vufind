@@ -30,8 +30,8 @@
 
 namespace VuFind\Search;
 
-use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 use VuFind\Search\Base\Results;
+use VuFind\Search\SearchOrigin\AbstractSearchOrigin;
 
 /**
  * A minified search object used exclusively for trimming a search object down to its
