@@ -210,6 +210,11 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
         return $return;
     }
 
+    /**
+     * Get route name to generate the url
+     *
+     * @return string
+     */
     public function getRouteName(): string
     {
         return self::URL_NAME;
