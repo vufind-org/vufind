@@ -35,6 +35,7 @@ use Exception;
 use Laminas\Http\Response;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
@@ -614,6 +615,9 @@ class Folio extends AbstractAPI implements
             return $statement;
         };
         $id = $holding->id;
+        $locationData = $this->getLocationData($holding->effectiveLocationId);
+        $holdingLocationName = $locationData['name'];
+        $holdingLocationCode = $locationData['code'];
         $holdingNotes = array_filter(
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
@@ -634,6 +638,8 @@ class Folio extends AbstractAPI implements
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
         return compact(
             'id',
+            'holdingLocationName',
+            'holdingLocationCode',
             'holdingNotes',
             'hasHoldingNotes',
             'holdingsStatements',
@@ -848,6 +854,23 @@ class Folio extends AbstractAPI implements
                     $sortNeeded = true;
                 }
                 $nextBatch[] = $nextItem;
+            }
+
+            // If there are no item records at this location, we're going to create a fake one,
+            // fill it with data from the FOLIO holdings record, and make it not appear in
+            // the full record display using InvisibleAvailabilityStatus()
+            if ($number == 0) {
+                $nextBatch[] = [
+                    'callnumber' => $holdingDetails['holdingCallNumber'],
+                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+                    'holdings_notes' => $holdingDetails['holdingsStatements'],
+                    'indexes' => $holdingDetails['holdingsIndexes'],
+                    'supplements' => $holdingDetails['holdingsSupplements'],
+                    'location' => $holdingDetails['holdingLocationName'],
+                    'id' => $bibId,
+                    'reserve' => 'n',
+                    'availability' => new InvisibleAvailabilityStatus(true, 'See full record') 
+                ];
             }
             $items = array_merge(
                 $items,
@@ -2145,5 +2168,18 @@ class Folio extends AbstractAPI implements
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
+    }
+}
+
+class InvisibleAvailabilityStatus extends AvailabilityStatus {
+    /**
+     * Check if status should be visible in the holdings tab.
+     *
+     * @return bool
+     */
+    public function isVisibleInHoldings(): bool
+    {
+        // Can be overridden if the status should not be visible in the holdings tab,
+        return false;
     }
 }
