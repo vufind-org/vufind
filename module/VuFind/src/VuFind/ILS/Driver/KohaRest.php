@@ -397,7 +397,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getHolding($id, array $patron = null, array $options = [])
     {
-        return $this->getItemStatusesForBiblio($id, $patron);
+        $biblio = $this->getBiblio($id);
+        $type   = $biblio['item_type'];
+        if (isset($this->config['Holdings']['itemLimit'][$type])) {
+            $options['itemLimit'] = $this->config['Holdings']['itemLimit'][$type];
+        } else {
+            $options['itemLimit'] = '';
+        }
+        return $this->getItemStatusesForBiblio($id, $patron, $options);
     }
 
     /**
@@ -1971,23 +1978,37 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron information, if available
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron information, if available
+     * @param array  $options Extra options
      *
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    protected function getItemStatusesForBiblio($id, $patron = null)
+    protected function getItemStatusesForBiblio($id, $patron = null, array $options = [])
     {
-        $result = $this->makeRequest(
-            [
-                'path' => [
-                    'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                    'search',
-                ],
-                'errors' => true,
-            ]
-        );
+        if (isset($options['itemLimit']) && $options['itemLimit'] > 0) {
+            $result = $this->makeRequest(
+                [
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
+                        'search',
+                    ],
+                    'query' => [ 'limit' => $options['itemLimit'] ],
+                    'errors' => true,
+                ]
+            );
+        } else {
+            $result = $this->makeRequest(
+                [
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
+                        'search',
+                    ],
+                    'errors' => true,
+                ]
+            );
+        }
         if (404 == $result['code']) {
             return [];
         }
