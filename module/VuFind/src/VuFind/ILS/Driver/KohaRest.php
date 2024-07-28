@@ -2485,8 +2485,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $name = $this->translateLocation($shelvingLocationId);
                 if ($name === $shelvingLocationId) {
                     $shelvingLocations = $this->getShelvingLocations();
-                    $name = isset($shelvingLocations[$shelvingLocationId])
-                        ? $shelvingLocations[$shelvingLocationId]['description'] : $shelvingLocationId;
+                    $name = $shelvingLocations[$shelvingLocationId]['description'] ?? $shelvingLocationId;
                 }
                 break;
             default:
@@ -2495,8 +2494,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $name = $this->translateLocation($libraryId);
                 if ($name === $libraryId) {
                     $libraries = $this->getLibraries();
-                    $name = isset($libraries[$libraryId])
-                        ? $libraries[$libraryId]['name'] : $libraryId;
+                    $name = $libraries[$libraryId]['name'] ?? $libraryId;
                 }
         }
 
