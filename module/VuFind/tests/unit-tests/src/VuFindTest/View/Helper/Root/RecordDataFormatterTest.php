@@ -521,9 +521,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Language' => 'ItalianLatin',
             'Published' => 'Centro di Studi Vichiani, 1992',
             'Edition' => 'Fictional edition.',
-            'Series' => 'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             'Multi Count' => 1,
             'Multi Data' => 'Book',
+            'Series' => 'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
             // Double slash at the end comes from inline javascript

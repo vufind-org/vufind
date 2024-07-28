@@ -332,8 +332,8 @@ class RecordDataFormatterFactory implements FactoryInterface
                 'itemPrefix' => '<span property="bookEdition">',
                 'itemSuffix' => '</span>',
             ]
-	);
-	$spec->setLine(
+        );
+        $spec->setLine(
             'Holdings',
             'getTextualHoldings'
         );
