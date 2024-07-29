@@ -29,7 +29,6 @@
 
 namespace VuFind\Controller;
 
-use Exception;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
