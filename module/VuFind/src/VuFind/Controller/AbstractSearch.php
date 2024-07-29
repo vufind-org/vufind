@@ -396,12 +396,8 @@ class AbstractSearch extends AbstractBase
             $queryParams['page'] = $lastPage;
             return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
         }
-        try {
-            $factory = $this->getService(SearchOriginFactory::class);
-            $searchOrigin = $factory->createObject($this->params()->fromQuery());
-        } catch (Exception) {
-            $searchOrigin = null;
-        }
+        $factory = $this->getService(SearchOriginFactory::class);
+        $searchOrigin = $factory->createObject($this->params()->fromQuery());
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
@@ -439,8 +435,6 @@ class AbstractSearch extends AbstractBase
         }
         // For the header link
         $this->layout()->setVariable('searchOrigin', $searchOrigin);
-        // For the records URL
-        $view->setVariable('searchOrigin', $searchOrigin);
 
         // Special case: If we're in RSS view, we need to render differently:
         if (isset($view->params) && $view->params->getView() == 'rss') {

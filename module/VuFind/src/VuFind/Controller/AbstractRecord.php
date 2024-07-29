@@ -954,13 +954,9 @@ class AbstractRecord extends AbstractBase
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
-        $view->loadInitialTabWithAjax
-            = isset($config->Site->loadInitialTabWithAjax) && (bool)$config->Site->loadInitialTabWithAjax;
-        try {
-            $factory = $this->getService(SearchOriginFactory::class);
-            $this->layout()->setVariable('searchOrigin', $factory->createObject($this->params()->fromQuery()));
-        } catch (Exception) {
-        }
+        $view->loadInitialTabWithAjax = (bool)($config->Site->loadInitialTabWithAjax ?? false);
+        $factory = $this->getService(SearchOriginFactory::class);
+        $this->layout()->setVariable('searchOrigin', $factory->createObject($this->params()->fromQuery()));
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

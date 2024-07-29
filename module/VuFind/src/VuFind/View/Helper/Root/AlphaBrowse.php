@@ -94,9 +94,8 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
-        if (isset($origin)) {
-            $query += $origin->getSearchUrlParamsArray();
-        }
+        $query += $origin?->getSearchUrlParamsArray() ?? [];
+
         return ($this->url)('search-results', [], ['query' => $query]);
     }
 

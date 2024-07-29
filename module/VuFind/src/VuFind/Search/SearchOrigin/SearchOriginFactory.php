@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Michigan State University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  TODO?
+ * @package  Search
  * @author   Robby ROUDON <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -35,13 +35,15 @@ use Exception;
  * Factory for search origin objects
  *
  * @category VuFind
- * @package  TODO?
+ * @package  Search
  * @author   Robby ROUDON <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SearchOriginFactory
+class SearchOriginFactory implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * From a request return an AbstractSearchOrigin object
      *
@@ -65,7 +67,8 @@ class SearchOriginFactory
                 ),
                 default => null,
             };
-        } catch (Exception) {
+        } catch (Exception $e) {
+            $this->logWarning('Error while trying to build search origin object : ' . $e->getMessage());
             return null;
         }
     }

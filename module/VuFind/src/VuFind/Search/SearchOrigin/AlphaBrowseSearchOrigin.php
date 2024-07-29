@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Michigan State University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  TODO?
+ * @package  Search
  * @author   Robby ROUDON <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -35,7 +35,7 @@ use Exception;
  * Object for search originating from AlphaBrowse
  *
  * @category VuFind
- * @package  TODO?
+ * @package  Search
  * @author   Robby ROUDON <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -54,7 +54,7 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
      *
      * @var string
      */
-    protected const URL_NAME = 'alphabrowse-home';
+    protected const ROUTE_NAME = 'alphabrowse-home';
 
     /**
      * URL Parameter for "source" in search URL
@@ -217,6 +217,6 @@ class AlphaBrowseSearchOrigin extends AbstractSearchOrigin
      */
     public function getRouteName(): string
     {
-        return self::URL_NAME;
+        return self::ROUTE_NAME;
     }
 }
