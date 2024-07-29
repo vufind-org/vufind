@@ -34,7 +34,34 @@
                   <h2>
                     <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                     <?=$item['Data']?> </a>
-                  </h2>
+		  </h2>
+                <?php elseif ('Au' == $item['Group']): ?>
+                    <?php if (isset($this->config->AuthorResultListInfo->ResultListPage) && ($this->config->AuthorResultListInfo->ResultListPage == 'Short')): ?>
+                        <?php $authors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
+                       <?php $authorCount = count($authors) ?>
+                       <?php $authorNameLimit = $this->config->AuthorResultListInfo->AuthorNameLimit ?? 3; ?>
+                        <?php if (isset($authors) && !empty($authors)): ?>
+                            <b><?=$this->transEsc($item['Label'])?>:</b>
+                            <?php $count = 0; ?>
+                            <?php foreach ($authors as $author): ?>
+                                <a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a>
+                                <?php $count++?>
+                                <?php if ($authorCount == $count): ?>
+                                    <?php break; ?>
+                                <?php elseif ($count > $authorNameLimit): ?>
+                                    <?=$this->transEsc('more_authors_abbrev')?>
+                                    <?php break; ?>
+                                <?php else:?>
+                                    ,
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                       <?php endif; ?>
+                    <?php else: ?>
+                        <p>
+                            <b><?=$this->transEsc($item['Label'])?>:</b>
+                            <?=$this->driver->linkUrls($item['Data'])?>
+                        </p>
+                    <?php endif; ?>
                 <?php else:?>
                   <p>
                     <b><?=$this->transEsc($item['Label'])?>:</b>
