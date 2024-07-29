@@ -70,7 +70,6 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a generator for testing purposes.
      *
-     * @param mixed  $class   Generator class to construct
      * @param array  $config  Sitemap configuration options
      * @param array  $objects Dependency objects to override
      * @param array  $locales Locales to activate
@@ -79,13 +78,12 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      * @return Generator
      */
     protected function getGenerator(
-        $class = Generator::class,
         array $config = [],
         array $objects = [],
         array $locales = ['en', 'de'],
         string $baseUrl = 'http://foo'
     ) {
-        return new $class(
+        return new Generator(
             $baseUrl,
             new Config($config),
             $locales,
