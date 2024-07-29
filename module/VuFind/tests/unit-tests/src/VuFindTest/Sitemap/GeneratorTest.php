@@ -208,6 +208,8 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     public function testBuildIndex(array $config, string $expectationMethod): void
     {
         if (!empty($config)) {
+            // This value needs to be dynamically determined, so we'll add it to
+            // all non-empty configuration sets.
             $config['Sitemap']['fileLocation'] = $this->getFixturePath('sitemap');
         }
         $config = new Config($config);
