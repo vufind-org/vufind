@@ -353,10 +353,3 @@
   align-items: center;
   justify-content: center;
 }
-
-.backtoorigin > p > a {
-  text-decoration: none;
-  &::before {
-    content:"← ";
-  }
-}
