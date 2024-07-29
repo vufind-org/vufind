@@ -35,11 +35,11 @@
                     <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                     <?=$item['Data']?> </a>
 		  </h2>
-                <?php elseif ('Au' == $item['Group']): ?>
+		<?php elseif ('Au' == $item['Group']): ?>
                     <?php if (isset($this->config->AuthorResultListInfo->ResultListPage) && ($this->config->AuthorResultListInfo->ResultListPage == 'Short')): ?>
                         <?php $authors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
-                       <?php $authorCount = count($authors) ?>
-                       <?php $authorNameLimit = $this->config->AuthorResultListInfo->AuthorNameLimit ?? 3; ?>
+			<?php $authorCount = count($authors) ?>
+		        <?php $authorNameLimit = $this->config->AuthorResultListInfo->AuthorNameLimit ?? 3; ?>
                         <?php if (isset($authors) && !empty($authors)): ?>
                             <b><?=$this->transEsc($item['Label'])?>:</b>
                             <?php $count = 0; ?>
@@ -50,12 +50,12 @@
                                     <?php break; ?>
                                 <?php elseif ($count > $authorNameLimit): ?>
                                     <?=$this->transEsc('more_authors_abbrev')?>
-                                    <?php break; ?>
+				    <?php break; ?>
                                 <?php else:?>
                                     ,
                                 <?php endif; ?>
                             <?php endforeach; ?>
-                       <?php endif; ?>
+			<?php endif; ?>
                     <?php else: ?>
                         <p>
                             <b><?=$this->transEsc($item['Label'])?>:</b>
