@@ -467,7 +467,7 @@ class HoldsController extends AbstractBase
     {
         return new \Laminas\Session\Container(
             'hold_update',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
     }
 

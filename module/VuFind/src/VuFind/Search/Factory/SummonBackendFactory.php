@@ -82,12 +82,11 @@ class SummonBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -139,8 +138,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      */
     protected function isAuthed()
     {
-        return $this->serviceLocator
-            ->get(\LmcRbacMvc\Service\AuthorizationService::class)
+        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
     }
 
@@ -166,8 +164,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $stripSnippets = !($this->summonConfig->General->snippets ?? false);
         $callback = function ($data) use ($manager, $stripSnippets) {
             $driver = $manager->get('Summon');

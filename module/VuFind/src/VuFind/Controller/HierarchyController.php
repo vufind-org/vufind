@@ -122,8 +122,7 @@ class HierarchyController extends AbstractBase
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
-        $results = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get($source);
+        $results = $this->getService(\VuFind\Search\Results\PluginManager::class)->get($source);
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
         $facets = $results->getFullFieldFacets(['id'], false, null === $limit ? -1 : $limit + 1);

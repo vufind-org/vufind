@@ -81,7 +81,7 @@ class SearchController extends AbstractSolrSearch
         // Retrieve and manipulate the parameters:
         $searchHelper = $this->getViewRenderer()->plugin('searchMemory');
         $params = $searchHelper->getLastSearchParams($searchClassId);
-        $factory = $this->serviceLocator->get(UrlQueryHelperFactory::class);
+        $factory = $this->getService(UrlQueryHelperFactory::class);
         $initialParams = $factory->fromParams($params);
 
         if ($removeAllFilters) {
@@ -123,7 +123,7 @@ class SearchController extends AbstractSolrSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+        $mailer = $this->getService(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up Captcha
@@ -196,8 +196,7 @@ class SearchController extends AbstractSolrSearch
         }
         $userId = $user?->getId();
 
-        $searchHistoryHelper = $this->serviceLocator
-            ->get(\VuFind\Search\History::class);
+        $searchHistoryHelper = $this->getService(\VuFind\Search\History::class);
 
         if ($this->params()->fromQuery('purge')) {
             $searchHistoryHelper->purgeSearchHistory($userId);
@@ -208,8 +207,7 @@ class SearchController extends AbstractSolrSearch
         $viewData = $searchHistoryHelper->getSearchHistory($userId);
         // Eliminate schedule settings if scheduled searches are disabled; add
         // user email data if scheduled searches are enabled.
-        $scheduleOptions = $this->serviceLocator
-            ->get(\VuFind\Search\History::class)
+        $scheduleOptions = $this->getService(\VuFind\Search\History::class)
             ->getScheduleOptions();
         if (empty($scheduleOptions)) {
             unset($viewData['schedule']);
@@ -240,8 +238,7 @@ class SearchController extends AbstractSolrSearch
             ]
         );
         if ($this->newItems()->includeFacets()) {
-            $view->options = $this->serviceLocator
-                ->get(\VuFind\Search\Options\PluginManager::class)
+            $view->options = $this->getService(\VuFind\Search\Options\PluginManager::class)
                 ->get($this->searchClassId);
             $this->addFacetDetailsToView($view, 'NewItems');
         }
@@ -373,7 +370,7 @@ class SearchController extends AbstractSolrSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $runner = $this->getService(\VuFind\Search\SearchRunner::class);
         $view->results = $runner->run(
             $request,
             'SolrReserves',
@@ -512,8 +509,7 @@ class SearchController extends AbstractSolrSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $suggester = $this->serviceLocator
-            ->get(\VuFind\Autocomplete\Suggester::class);
+        $suggester = $this->getService(\VuFind\Autocomplete\Suggester::class);
         $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
@@ -533,8 +529,7 @@ class SearchController extends AbstractSolrSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
         return $config->Record->next_prev_navigation ?? false;
     }
 }

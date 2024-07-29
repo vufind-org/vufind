@@ -227,7 +227,7 @@ trait HoldsTrait
         }
 
         // Set default start date to today:
-        $dateConverter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
+        $dateConverter = $this->getService(\VuFind\Date\Converter::class);
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:

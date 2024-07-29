@@ -33,6 +33,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Service\GetServiceTrait;
 
 /**
  * Abstract factory for backends.
@@ -45,12 +46,7 @@ use Psr\Container\ContainerInterface;
  */
 abstract class AbstractBackendFactory implements FactoryInterface
 {
-    /**
-     * Service container.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
      * Constructor
@@ -86,8 +82,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
         array $options = [],
         string $url = null
     ): \Laminas\Http\Client {
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient($url);
+        $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($url);
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
         }
@@ -119,8 +114,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
             'adapter' => $cacheConfig['adapter'],
             'options' => $options,
         ];
-        return $this->serviceLocator
-            ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+        return $this->getService(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($settings);
     }
 }
