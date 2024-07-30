@@ -35,7 +35,7 @@ use Exception;
 use Laminas\Http\Response;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\ILS\Logic\AvailabilityStatus;
+use VuFind\ILS\Logic\InvisibleAvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
@@ -2168,30 +2168,5 @@ class Folio extends AbstractAPI implements
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
-    }
-}
-
-/**
- * Invisible Availability Status
- *
- * Items with this availability status will not be visible in the list of holdings.
- *
- * @category VuFind
- * @package  ILS_Drivers
- * @author   Peter Murray <peter@indexdata.com>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:ils_drivers?s[]=availabilitystatus Wiki
- */
-class InvisibleAvailabilityStatus extends AvailabilityStatus
-{
-    /**
-     * Check if status should be visible in the holdings tab.
-     *
-     * @return bool
-     */
-    public function isVisibleInHoldings(): bool
-    {
-        // Can be overridden if the status should not be visible in the holdings tab,
-        return false;
     }
 }
