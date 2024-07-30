@@ -43,6 +43,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Service\GetServiceTrait;
 
 use function intval;
 use function is_object;
@@ -76,6 +77,7 @@ use function is_object;
  */
 class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
+    use GetServiceTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -96,13 +98,6 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @var string
      */
     protected $accessDeniedBehavior = null;
-
-    /**
-     * Service manager
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Constructor
@@ -288,7 +283,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAuthManager()
     {
-        return $this->serviceLocator->get(\VuFind\Auth\Manager::class);
+        return $this->getService(\VuFind\Auth\Manager::class);
     }
 
     /**
@@ -300,8 +295,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAuthorizationService()
     {
-        return $this->serviceLocator
-            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
+        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -311,7 +305,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getILSAuthenticator()
     {
-        return $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
+        return $this->getService(\VuFind\Auth\ILSAuthenticator::class);
     }
 
     /**
@@ -331,7 +325,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getViewRenderer()
     {
-        return $this->serviceLocator->get('ViewRenderer');
+        return $this->getService('ViewRenderer');
     }
 
     /**
@@ -459,8 +453,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get($id);
+        return $this->getService(\VuFind\Config\PluginManager::class)->get($id);
     }
 
     /**
@@ -470,7 +463,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getILS()
     {
-        return $this->serviceLocator->get(\VuFind\ILS\Connection::class);
+        return $this->getService(\VuFind\ILS\Connection::class);
     }
 
     /**
@@ -480,7 +473,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getRecordLoader()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        return $this->getService(\VuFind\Record\Loader::class);
     }
 
     /**
@@ -490,7 +483,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getRecordCache()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Cache::class);
+        return $this->getService(\VuFind\Record\Cache::class);
     }
 
     /**
@@ -500,7 +493,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getRecordRouter()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Router::class);
+        return $this->getService(\VuFind\Record\Router::class);
     }
 
     /**
@@ -512,8 +505,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
-            ->get($table);
+        return $this->getService(\VuFind\Db\Table\PluginManager::class)->get($table);
     }
 
     /**
@@ -527,8 +519,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
     {
-        return $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
-            ->get($name);
+        return $this->getService(\VuFind\Db\Service\PluginManager::class)->get($name);
     }
 
     /**
@@ -638,7 +629,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function disableSessionWrites()
     {
-        $this->serviceLocator->get(\VuFind\Session\Settings::class)->disableWrite();
+        $this->getService(\VuFind\Session\Settings::class)->disableWrite();
     }
 
     /**
@@ -648,7 +639,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getSearchMemory()
     {
-        return $this->serviceLocator->get(\VuFind\Search\Memory::class);
+        return $this->getService(\VuFind\Search\Memory::class);
     }
 
     /**
@@ -658,8 +649,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function commentsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -670,8 +660,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function listsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -682,8 +671,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function tagsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getTagSetting() !== 'disabled';
     }
 
@@ -817,7 +805,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getRecordTabManager()
     {
-        return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
+        return $this->getService(\VuFind\RecordTab\TabManager::class);
     }
 
     /**
