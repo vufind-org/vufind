@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cookie permission provider for VuFind.
+ * Insecure cookie permission provider for VuFind.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Role\PermissionProvider;
 use VuFind\Cookie\CookieManager;
 
 /**
- * Cookie permission provider for VuFind.
+ * Insecure cookie permission provider for VuFind.
  *
  * @category VuFind
  * @package  Authorization
@@ -41,7 +41,7 @@ use VuFind\Cookie\CookieManager;
  * @link     https://vufind.org Main Page
  */
 
-class Cookie implements PermissionProviderInterface
+class InsecureCookie implements PermissionProviderInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

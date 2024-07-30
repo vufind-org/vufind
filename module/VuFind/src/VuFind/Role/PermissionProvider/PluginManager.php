@@ -46,7 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'cookie' => Cookie::class,
+        'insecurecookie' => InsecureCookie::class,
         'ipRange' => IpRange::class,
         'ipRegEx' => IpRegEx::class,
         'role' => Role::class,
@@ -62,7 +62,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Cookie::class => CookieFactory::class,
+        InsecureCookie::class => CookieFactory::class,
         IpRange::class => IpRangeFactory::class,
         IpRegEx::class => IpRegExFactory::class,
         Role::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
