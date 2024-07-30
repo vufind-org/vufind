@@ -300,7 +300,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   function multiFacetsSelectionToggle() {
     isMultiFacetsSelectionActivated = this.checked;
     let form = document.querySelector('form#' + dateSelectorId);
-    form.querySelector('input[type="submit"]').classList.toggle('hidden');
+    if (form !== null) {
+      form.querySelector('input[type="submit"]').classList.toggle('hidden');
+    }
     let buttons = document.getElementsByClassName('apply-filters');
     for (let i = 0; i < buttons.length; i++) {
       buttons[i].classList.toggle('hidden');
@@ -341,7 +343,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     context.insertAdjacentHTML("beforebegin", elem.outerHTML);
     let checkbox = context.parentElement.getElementsByClassName('userSelectionMultiFilters')[0];
     checkbox.checked = isMultiFacetsSelectionActivated;
+    // Listener on checkbox for multiFacetsSelection feature
     checkbox.addEventListener('change', multiFacetsSelectionToggle);
+    // Listener on apply filters button
+    context.parentElement.getElementsByClassName('applyMultiFacetsSelection')[0]
+      .addEventListener('click', applyMultiFacetsSelection);
   }
 
   function init() {
