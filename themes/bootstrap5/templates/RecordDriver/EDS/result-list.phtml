@@ -43,10 +43,9 @@
                         <b><?=$this->transEsc($item['Label'])?>:</b>
                         <?php foreach ($authors as $i => $author): ?>
                             <a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a>
-                            <?php ($i + 1)?>
-                            <?php if ($authorCount == $i): ?>
+                            <?php if ($authorCount == ($i + 1)): ?>
                                 <?php break; ?>
-                            <?php elseif ($i > $authorNameLimit): ?>
+                            <?php elseif (($i + 1) > $authorNameLimit): ?>
                                 <?=$this->transEsc('more_authors_abbrev')?>
 			        <?php break; ?>
                             <?php else:?>
