@@ -399,11 +399,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $biblio = $this->getBiblio($id);
         $type   = $biblio['item_type'];
-        if (isset($this->config['Holdings']['itemLimit'][$type])) {
-            $options['itemLimit'] = $this->config['Holdings']['itemLimit'][$type];
-        } else {
-            $options['itemLimit'] = '';
-        }
+        $options = [
+            'itemLimit' => $this->config['Holdings']['itemLimit'][$type]
+                ?? $this->config['Holdings']['itemLimit']['DEFAULT']
+                ?? '',
+        ];
         return $this->getItemStatusesForBiblio($id, $patron, $options);
     }
 
@@ -1987,28 +1987,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemStatusesForBiblio($id, $patron = null, array $options = [])
     {
-        if (isset($options['itemLimit']) && $options['itemLimit'] > 0) {
-            $result = $this->makeRequest(
-                [
-                    'path' => [
-                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                        'search',
-                    ],
-                    'query' => [ 'limit' => $options['itemLimit'] ],
-                    'errors' => true,
-                ]
-            );
-        } else {
-            $result = $this->makeRequest(
-                [
-                    'path' => [
-                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                        'search',
-                    ],
-                    'errors' => true,
-                ]
-            );
+        $requestParams = [
+            'path' => [
+                'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
+                'search',
+            ],
+            'errors' => true,
+        ];
+        if (($options['itemLimit'] ?? 0) > 0) {
+            $requestParams['query'] = [ 'limit' => $options['itemLimit'] ];
         }
+        $result = $this->makeRequest($requestParams);
+
         if (404 == $result['code']) {
             return [];
         }
