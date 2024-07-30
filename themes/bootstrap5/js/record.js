@@ -226,6 +226,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
         $newTab.html(VuFind.updateCspNonce(data));
       }
       registerTabEvents();
+      VuFind.emit('record-tab-init', {container: $newTab.get(0)});
       if (typeof syn_get_widget === "function") {
         syn_get_widget();
       }
@@ -392,6 +393,7 @@ function recordDocReady() {
   VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
   VuFind.truncate.initTruncate('table.truncate-field', 'tr.holding-row', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
+  VuFind.emit('record-tab-init', {container: document.querySelector( '.record-tabs')});
   applyRecordTabHash(false);
 }
 

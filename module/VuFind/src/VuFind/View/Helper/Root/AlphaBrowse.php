@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\Url;
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper
  *
  * @category VuFind
  * @package  View_Helpers
