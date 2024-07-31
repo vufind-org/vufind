@@ -139,13 +139,13 @@ class Renewals extends AbstractPlugin
                     }
                     if ($good > 0) {
                         $flashMsg->addMessage(
-                            ['msg' => 'renew_success_summary', 'tokens' => ['%%count%%' => $good]],
+                            ['msg' => 'renew_success_summary', 'tokens' => ['count' => $good], 'icu' => true],
                             'success'
                         );
                     }
                     if ($bad > 0) {
                         $flashMsg->addMessage(
-                            ['msg' => 'renew_error_summary', 'tokens' => ['%%count%%' => $bad]],
+                            ['msg' => 'renew_error_summary', 'tokens' => ['count' => $bad], 'icu' => true],
                             'error'
                         );
                     }
