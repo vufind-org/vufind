@@ -73,7 +73,7 @@ trait RecordVersionsSearchTrait
 
         $view = $this->getSearchResultsView($callback);
         if (null !== $id) {
-            $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+            $loader = $this->getService(\VuFind\Record\Loader::class);
             $view->driver = $loader->load($id, $this->searchClassId);
         }
         return $view;

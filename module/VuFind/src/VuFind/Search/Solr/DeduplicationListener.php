@@ -37,6 +37,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
@@ -54,19 +55,14 @@ use function in_array;
  */
 class DeduplicationListener
 {
+    use GetServiceTrait;
+
     /**
      * Backend.
      *
      * @var Backend
      */
     protected $backend;
-
-    /**
-     * Service container.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Search configuration file identifier.
@@ -217,7 +213,7 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords($event)
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
+        $config = $this->getService(\VuFind\Config\PluginManager::class);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
@@ -343,7 +339,7 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources($event): array
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
+        $config = $this->getService(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
         return !empty($searchConfig->Records->sources)
             ? explode(',', $searchConfig->Records->sources)

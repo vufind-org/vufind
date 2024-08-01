@@ -61,8 +61,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         $command = new \VuFindSearch\Command\GetQueryBuilderCommand($id);
         try {
-            $this->serviceLocator->get(\VuFindSearch\Service::class)
-                ->invoke($command);
+            $this->getService(\VuFindSearch\Service::class)->invoke($command);
         } catch (\Exception $e) {
             return null;
         }
@@ -83,7 +82,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->serviceLocator->get(ResultsManager::class)
+                $this->getService(ResultsManager::class)
             );
         }
         if (isset($view->results) && $view->results) {
@@ -117,7 +116,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     public function iconAction()
     {
-        $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
+        $config = $this->getService(\VuFindTheme\ThemeInfo::class)
             ->getMergedConfig('icons');
         $aliases = array_keys($config['aliases'] ?? []);
         sort($aliases);
@@ -133,7 +132,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         // Test languages with no local overrides and no fallback:
         $loader = new ExtendedIni([APPLICATION_PATH . '/languages']);
-        $langs = $this->serviceLocator->get(LocaleSettings::class)
+        $langs = $this->getService(LocaleSettings::class)
             ->getEnabledLocales();
         $helper = new LanguageHelper($loader, $langs);
         return $helper->getAllDetails(
