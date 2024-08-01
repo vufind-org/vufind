@@ -331,7 +331,7 @@ class BrowseController extends AbstractBase implements
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagsService = $this->serviceLocator->get(TagsService::class);
+            $tagsService = $this->getService(TagsService::class);
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
@@ -633,8 +633,7 @@ class BrowseController extends AbstractBase implements
         $sort = 'count',
         $query = '[* TO *]'
     ) {
-        $results = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $results = $this->getService(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
         if ($category != null) {

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Blended Search Controller
+ * Trait implementing generic getter for top-level services.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,46 +21,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Service;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Container\ContainerInterface;
 
 /**
- * Blended Search Controller
+ * Trait implementing generic getter for top-level services.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BlenderController extends AbstractSearch
+trait GetServiceTrait
 {
     /**
-     * Constructor
+     * Service manager
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @var ContainerInterface
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'Blender';
-        parent::__construct($sm);
-    }
+    protected $serviceLocator;
 
     /**
-     * Is the result scroller active?
+     * Retrieve a service
      *
-     * @return bool
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
      */
-    protected function resultScrollerActive()
+    public function getService(string $name)
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
+        return $this->serviceLocator->get($name);
     }
 }

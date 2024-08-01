@@ -31,6 +31,7 @@ namespace VuFind\XSLT;
 
 use DOMDocument;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
 
@@ -47,12 +48,7 @@ use function is_array;
  */
 class Importer
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
      * Constructor
@@ -86,7 +82,7 @@ class Importer
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
-            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
+            $solr = $this->getService(\VuFind\Solr\Writer::class);
             $solr->save($index, new RawXMLDocument($xml));
         }
         return $xml;
@@ -104,7 +100,7 @@ class Importer
     protected function generateXML($xmlFile, $properties)
     {
         // Load properties file:
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         $properties = $resolver->getConfigPath($properties, 'import');
         if (!file_exists($properties)) {
             throw new \Exception("Cannot load properties file: {$properties}.");

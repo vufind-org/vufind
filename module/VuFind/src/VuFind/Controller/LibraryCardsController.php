@@ -325,8 +325,7 @@ class LibraryCardsController extends AbstractBase
                     $info = $patron;
                     $info['cardID'] = $id;
                     $info['cardName'] = $cardName;
-                    $emailAuthenticator = $this->serviceLocator
-                        ->get(\VuFind\Auth\EmailAuthenticator::class);
+                    $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
                     $emailAuthenticator->sendAuthenticationLink(
                         $info['email'],
                         $info,
@@ -366,8 +365,7 @@ class LibraryCardsController extends AbstractBase
      */
     protected function processEmailLink($user, $hash)
     {
-        $emailAuthenticator = $this->serviceLocator
-            ->get(\VuFind\Auth\EmailAuthenticator::class);
+        $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
         try {
             $info = $emailAuthenticator->authenticate($hash);
             $cardService = $this->getDbService(UserCardServiceInterface::class);
