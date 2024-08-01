@@ -448,8 +448,7 @@ class MyResearchController extends AbstractBase
      */
     protected function getSearchRowSecurely($searchId, $userId)
     {
-        $sessId = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $sessId = $this->getService(\Laminas\Session\SessionManager::class)->getId();
         $search = $this->getDbService(SearchServiceInterface::class)
             ->getSearchByIdAndOwner($searchId, $sessId, $userId);
         if (empty($search)) {
@@ -489,7 +488,7 @@ class MyResearchController extends AbstractBase
     {
         return new \Laminas\Session\Container(
             'user_verification',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
     }
 
@@ -505,8 +504,7 @@ class MyResearchController extends AbstractBase
     protected function scheduleSearch(UserEntityInterface $user, $schedule, $sid)
     {
         // Fail if scheduled searches are disabled.
-        $scheduleOptions = $this->serviceLocator
-            ->get(\VuFind\Search\History::class)
+        $scheduleOptions = $this->getService(\VuFind\Search\History::class)
             ->getScheduleOptions();
         if (!isset($scheduleOptions[$schedule])) {
             throw new ForbiddenException('Illegal schedule option: ' . $schedule);
@@ -516,8 +514,7 @@ class MyResearchController extends AbstractBase
         $savedRow = $this->getSearchRowSecurely($sid, $userId);
 
         // In case the user has just logged in, let's deduplicate...
-        $sessId = $this->serviceLocator
-            ->get(\Laminas\Session\SessionManager::class)->getId();
+        $sessId = $this->getService(\Laminas\Session\SessionManager::class)->getId();
         $duplicateId = $this->isDuplicateOfSavedSearch(
             $savedRow,
             $sessId,
@@ -554,13 +551,11 @@ class MyResearchController extends AbstractBase
     public function schedulesearchAction()
     {
         // Fail if saved searches or subscriptions are disabled.
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         if ($check->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }
-        $scheduleOptions = $this->serviceLocator
-            ->get(\VuFind\Search\History::class)
+        $scheduleOptions = $this->getService(\VuFind\Search\History::class)
             ->getScheduleOptions();
         if (empty($scheduleOptions)) {
             throw new ForbiddenException('Scheduled searches disabled.');
@@ -579,7 +574,7 @@ class MyResearchController extends AbstractBase
 
         // If the user has just logged in, the search might be a duplicate; if
         // so, let's switch to the pre-existing version instead.
-        $sessId = $this->serviceLocator->get(\Laminas\Session\SessionManager::class)->getId();
+        $sessId = $this->getService(\Laminas\Session\SessionManager::class)->getId();
         $duplicateId = $this->isDuplicateOfSavedSearch(
             $search,
             $sessId,
@@ -595,7 +590,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Now fetch all the results:
-        $resultsManager = $this->serviceLocator->get(\VuFind\Search\Results\PluginManager::class);
+        $resultsManager = $this->getService(\VuFind\Search\Results\PluginManager::class);
         $results = $search->getSearchObject()?->deminify($resultsManager);
         if (!$results) {
             throw new Exception("Problem getting search object from search {$search->getId()}.");
@@ -624,7 +619,7 @@ class MyResearchController extends AbstractBase
         if (!$rowToCheck) {
             return null;
         }
-        $normalizer = $this->serviceLocator->get(\VuFind\Search\SearchNormalizer::class);
+        $normalizer = $this->getService(\VuFind\Search\SearchNormalizer::class);
         $searchObject = $rowToCheck->getSearchObject();
         if (!$searchObject) {
             throw new Exception("Problem getting search object from search {$rowToCheck->getId()}.");
@@ -651,8 +646,7 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         // Fail if saved searches are disabled.
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         if ($check->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }
@@ -675,8 +669,7 @@ class MyResearchController extends AbstractBase
             // the user clicks "save" before logging in, then logs in during the
             // save process, but has the same search already saved in their account).
             $searchService = $this->getDbService(SearchServiceInterface::class);
-            $sessId = $this->serviceLocator
-                ->get(\Laminas\Session\SessionManager::class)->getId();
+            $sessId = $this->getService(\Laminas\Session\SessionManager::class)->getId();
             $rowToCheck = $searchService->getSearchByIdAndOwner($id, $sessId, $user);
             $duplicateId = $this->isDuplicateOfSavedSearch(
                 $rowToCheck,
@@ -736,7 +729,7 @@ class MyResearchController extends AbstractBase
                 if (' ** ' === $homeLibrary) {
                     $homeLibrary = null;
                 }
-                $this->serviceLocator->get(ILSAuthenticator::class)->updateUserHomeLibrary($user, $homeLibrary);
+                $this->getService(ILSAuthenticator::class)->updateUserHomeLibrary($user, $homeLibrary);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
             }
 
@@ -879,7 +872,7 @@ class MyResearchController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $this->serviceLocator->get(FavoritesService::class)
+            $this->getService(FavoritesService::class)
                 ->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
             $this->flashMessenger()->addMessage('fav_delete_success', 'success');
             return $this->redirect()->toUrl($newUrl);
@@ -922,7 +915,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Perform delete and send appropriate flash message:
-        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+        $favoritesService = $this->getService(FavoritesService::class);
         if (null !== $listID) {
             // ...Specific List
             $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
@@ -951,9 +944,8 @@ class MyResearchController extends AbstractBase
     protected function processEditSubmit(UserEntityInterface $user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists', []);
-        $tagsService = $this->serviceLocator->get(\VuFind\Tags\TagsService::class);
-        $favorites = $this->serviceLocator
-            ->get(\VuFind\Favorites\FavoritesService::class);
+        $tagsService = $this->getService(\VuFind\Tags\TagsService::class);
+        $favorites = $this->getService(\VuFind\Favorites\FavoritesService::class);
         $didSomething = false;
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags' . $list);
@@ -1017,7 +1009,7 @@ class MyResearchController extends AbstractBase
         $userResourceService = $this->getDbService(UserResourceServiceInterface::class);
         $userResources = $userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
-        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+        $favoritesService = $this->getService(FavoritesService::class);
         foreach ($userResources as $current) {
             // There should always be list data based on the way we retrieve this result, but
             // check just to be on the safe side.
@@ -1126,7 +1118,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+            $runner = $this->getService(\VuFind\Search\SearchRunner::class);
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -1135,8 +1127,7 @@ class MyResearchController extends AbstractBase
                 + ['id' => $this->params()->fromRoute('id')];
 
             // Set up listener for recommendations:
-            $rManager = $this->serviceLocator
-                ->get(\VuFind\Recommend\PluginManager::class);
+            $rManager = $this->getService(\VuFind\Recommend\PluginManager::class);
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
@@ -1150,7 +1141,7 @@ class MyResearchController extends AbstractBase
 
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
-                    $tags = $this->serviceLocator->get(TagsService::class)->getListTags($list, $list->getUser());
+                    $tags = $this->getService(TagsService::class)->getListTags($list, $list->getUser());
                     foreach ($tags as $tag) {
                         $listTags[$tag['id']] = $tag['tag'];
                     }
@@ -1183,7 +1174,7 @@ class MyResearchController extends AbstractBase
     {
         // Process form within a try..catch so we can handle errors appropriately:
         try {
-            $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+            $favoritesService = $this->getService(FavoritesService::class);
             $finalId = $favoritesService->updateListFromRequest($list, $user, $this->getRequest()->getPost());
 
             // If the user is in the process of saving a record, send them back
@@ -1253,7 +1244,7 @@ class MyResearchController extends AbstractBase
         $newList = ($id == 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in
         // a fresh object; if it's an existing list, we can just fetch from the database.
-        $favoritesService = $this->serviceLocator->get(FavoritesService::class);
+        $favoritesService = $this->getService(FavoritesService::class);
         $list = $newList
             ? $favoritesService->createListForUser($user)
             : $this->getDbService(UserListServiceInterface::class)->getUserListById($id);
@@ -1272,7 +1263,7 @@ class MyResearchController extends AbstractBase
 
         $listTags = null;
         if ($this->listTagsEnabled() && !$newList) {
-            $tagsService = $this->serviceLocator->get(TagsService::class);
+            $tagsService = $this->getService(TagsService::class);
             $listTags = $favoritesService
                 ->formatTagStringForEditing($tagsService->getListTags($list, $list->getUser()));
         }
@@ -1337,7 +1328,7 @@ class MyResearchController extends AbstractBase
         if ($confirm) {
             try {
                 $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
-                $this->serviceLocator->get(FavoritesService::class)->destroyList($list, $this->getUser());
+                $this->getService(FavoritesService::class)->destroyList($list, $this->getUser());
 
                 // Success Message
                 $this->flashMessenger()->addMessage('fav_list_delete', 'success');
@@ -1537,7 +1528,7 @@ class MyResearchController extends AbstractBase
                 $this->getRequest()->getPost(),
                 $catalog,
                 $patron,
-                $this->serviceLocator->get(CsrfInterface::class)
+                $this->getService(CsrfInterface::class)
             )
             : [];
 
@@ -1674,7 +1665,7 @@ class MyResearchController extends AbstractBase
         }
 
         if ($driversNeeded) {
-            $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+            $recordLoader = $this->getService(\VuFind\Record\Loader::class);
             $drivers = $recordLoader->loadBatch($driversNeeded, true);
             foreach ($drivers as $i => $driver) {
                 $fines[$i]['driver'] = $driver;
@@ -1691,7 +1682,7 @@ class MyResearchController extends AbstractBase
         if (!empty($this->getConfig()->Authentication->enableAjax)) {
             $accountStatus = $this->getFineSummary(
                 $fines,
-                $this->serviceLocator->get(\VuFind\Service\CurrencyFormatter::class)
+                $this->getService(\VuFind\Service\CurrencyFormatter::class)
             );
         } else {
             $accountStatus = null;
@@ -1789,7 +1780,7 @@ class MyResearchController extends AbstractBase
                                 . $user->getVerifyHash() . '&auth_method=' . $method,
                         ]
                     );
-                    $this->serviceLocator->get(Mailer::class)->send(
+                    $this->getService(Mailer::class)->send(
                         $user->getEmail(),
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),
@@ -1850,7 +1841,7 @@ class MyResearchController extends AbstractBase
         );
         // If the user is setting up a new account, use the main email
         // address; if they have a pending address change, use that.
-        $this->serviceLocator->get(Mailer::class)->send(
+        $this->getService(Mailer::class)->send(
             $user->getEmail(),
             $config->Site->email,
             $this->translate('change_notification_email_subject'),
@@ -1900,7 +1891,7 @@ class MyResearchController extends AbstractBase
                     // If the user is setting up a new account, use the main email
                     // address; if they have a pending address change, use that.
                     $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
-                    $this->serviceLocator->get(Mailer::class)->send(
+                    $this->getService(Mailer::class)->send(
                         $to,
                         $config->Site->email,
                         $this->translate('verification_email_subject'),
@@ -2118,7 +2109,7 @@ class MyResearchController extends AbstractBase
         // Special case: form was submitted:
         if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Do CSRF check
-            $csrf = $this->serviceLocator->get(CsrfInterface::class);
+            $csrf = $this->getService(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
@@ -2195,7 +2186,7 @@ class MyResearchController extends AbstractBase
         if (!$this->getAuthManager()->getIdentity()) {
             return $this->forceLogin();
         }
-        $csrf = $this->serviceLocator->get(CsrfInterface::class);
+        $csrf = $this->getService(CsrfInterface::class);
         if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
             throw new \VuFind\Exception\BadRequest(
                 'error_inconsistent_parameters'
@@ -2216,7 +2207,7 @@ class MyResearchController extends AbstractBase
         if (!$this->getAuthManager()->getIdentity()) {
             return $this->forceLogin();
         }
-        $csrf = $this->serviceLocator->get(CsrfInterface::class);
+        $csrf = $this->getService(CsrfInterface::class);
         if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
             throw new \VuFind\Exception\BadRequest(
                 'error_inconsistent_parameters'
@@ -2275,7 +2266,7 @@ class MyResearchController extends AbstractBase
 
         $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted()) {
-            $csrf = $this->serviceLocator->get(CsrfInterface::class);
+            $csrf = $this->getService(CsrfInterface::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
@@ -2284,7 +2275,7 @@ class MyResearchController extends AbstractBase
                 // After successful token verification, clear list to shrink session:
                 $csrf->trimTokenList(0);
             }
-            $this->serviceLocator->get(UserAccountService::class)->purgeUserData(
+            $this->getService(UserAccountService::class)->purgeUserData(
                 $user,
                 $config->Authentication->delete_comments_with_user ?? true,
                 $config->Authentication->delete_ratings_with_user ?? true
@@ -2320,7 +2311,7 @@ class MyResearchController extends AbstractBase
                 if (!$search) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $secret = $this->serviceLocator->get(SecretCalculator::class)->getSearchUnsubscribeSecret($search);
+                $secret = $this->getService(SecretCalculator::class)->getSearchUnsubscribeSecret($search);
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
@@ -2354,8 +2345,7 @@ class MyResearchController extends AbstractBase
      */
     protected function listTagsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getListTagSetting() === 'enabled';
     }
 

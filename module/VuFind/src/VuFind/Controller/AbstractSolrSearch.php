@@ -58,8 +58,7 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function addFacetDetailsToView(ViewModel $view, $list = 'Advanced'): void
     {
-        $facets = $this->serviceLocator
-            ->get(\VuFind\Search\FacetCache\PluginManager::class)
+        $facets = $this->getService(\VuFind\Search\FacetCache\PluginManager::class)
             ->get($this->searchClassId)
             ->getList($list);
         $view->hierarchicalFacets
@@ -172,8 +171,7 @@ class AbstractSolrSearch extends AbstractSearch
             if (in_array($facet, $hierarchicalFacets)) {
                 // Process the facets
                 if (!$facetHelper) {
-                    $facetHelper = $this->serviceLocator
-                        ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+                    $facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
                     $options = $this->getOptionsForClass();
                 }
 
