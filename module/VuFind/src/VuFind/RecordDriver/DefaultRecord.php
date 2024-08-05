@@ -1689,13 +1689,6 @@ class DefaultRecord extends AbstractBase
     {
         $types = [];
 
-        // Check for functionality from IlsAwareTrait. If this record comes from a real ILS, we need
-        // to add a type of "Product" to support the system's use of https://schema.org/Offer to
-        // represent availability.
-        if ($this->tryMethod('hasILS') && isset($this->ils) && $this->ils->getOfflineMode() !== 'ils-none') {
-            $types['Product'] = 1;
-        }
-
         foreach ($this->getFormats() as $format) {
             switch ($format) {
                 case 'Book':
@@ -1719,6 +1712,14 @@ class DefaultRecord extends AbstractBase
                     $types['CreativeWork'] = 1;
             }
         }
+
+        // Check for functionality from IlsAwareTrait. If this record comes from a real ILS, we need
+        // to add a type of "Product" to support the system's use of https://schema.org/Offer to
+        // represent availability.
+        if ($this->tryMethod('hasILS') && isset($this->ils) && $this->ils->getOfflineMode() !== 'ils-none') {
+            $types['Product'] = 1;
+        }
+
         return array_keys($types);
     }
 
