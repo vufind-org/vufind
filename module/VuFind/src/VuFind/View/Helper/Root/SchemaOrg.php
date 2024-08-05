@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
-use VuFind\RecordDriver\DefaultRecord;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * View helper for injecting schema.org metadata
@@ -113,23 +113,23 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get all record types for the given record.
      *
-     * @param DefaultRecord $driver Record Driver
+     * @param RecordDriver $driver Record Driver
      *
      * @return array
      */
-    public function getRecordTypesArray(DefaultRecord $driver): array
+    public function getRecordTypesArray(RecordDriver $driver): array
     {
-        return $driver->getSchemaOrgFormatsArray();
+        return $driver->tryMethod('getSchemaOrgFormatsArray') ?? [];
     }
 
     /**
      * Get all record types for the given record.
      *
-     * @param DefaultRecord $driver Record Driver
+     * @param RecordDriver $driver Record Driver
      *
      * @return string
      */
-    public function getRecordTypes(DefaultRecord $driver): string
+    public function getRecordTypes(RecordDriver $driver): string
     {
         return implode(' ', $this->getRecordTypesArray($driver));
     }
