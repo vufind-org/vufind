@@ -5,6 +5,7 @@
   $recordLinker = $this->recordLinker($this->results);
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
   $cover = $coverDetails['html'];
+  $edsConfig = $this->config()->get('EDS');
 ?>
 <?php
   $thumbnail = false;
@@ -35,7 +36,7 @@
                     <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
                     <?=$item['Data']?> </a>
 		  </h2>
-		<?php elseif ('Au' == $item['Group'] && strtolower($this->config->AuthorResultListInfo->ResultListPage ?? 'Long') == 'short'): ?> 
+		<?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorResultListInfo->ResultListPage ?? 'Long') == 'short'): ?> 
                     <?php $authors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
 		    <?php $authorCount = count($authors) ?>
 		    <?php $authorNameLimit = $this->config->AuthorResultListInfo->AuthorNameLimit ?? 3; ?>
