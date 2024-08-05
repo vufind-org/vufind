@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
+use VuFind\View\Helper\Root\Ils;
 
 /**
  * View helper for injecting schema.org metadata
@@ -46,9 +47,10 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      * Constructor
      *
      * @param HtmlAttributes $htmlAttributes HtmlAttributes view helper
+     * @param Ils            $ils            ILS view helper
      * @param bool           $enabled        Is schema.org metadata enabled?
      */
-    public function __construct(protected HtmlAttributes $htmlAttributes, protected bool $enabled = true)
+    public function __construct(protected HtmlAttributes $htmlAttributes, protected Ils $ils, protected bool $enabled = true)
     {
     }
 
@@ -105,5 +107,18 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     public function getMeta(string $property, string $content, array $attributes = []): string
     {
         return $this->getTag('meta', compact('property', 'content') + $attributes);
+    }
+
+    /**
+     * Get default record types.
+     *
+     * @return string
+     */
+    public function getDefaultRecordTypes(): string
+    {
+        if ($this->ils->__invoke()->getOfflineMode() !== 'ils-none') {
+            return 'Product';
+        }
+        return '';
     }
 }

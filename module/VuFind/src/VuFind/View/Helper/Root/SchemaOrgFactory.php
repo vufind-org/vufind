@@ -77,6 +77,7 @@ class SchemaOrgFactory implements FactoryInterface
             ->get('config');
         return new $requestedName(
             $container->get('ViewHelperManager')->get('htmlAttributes'),
+            $container->get('ViewHelperManager')->get('ils'),
             $config->Record->includeSchemaOrgMetadata ?? true
         );
     }
