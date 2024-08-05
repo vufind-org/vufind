@@ -81,13 +81,10 @@ class WorldCatBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $this->wcConfig = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)->get('WorldCat');
+        $this->config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
+        $this->wcConfig = $this->getService(\VuFind\Config\PluginManager::class)->get('WorldCat');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -146,8 +143,7 @@ class WorldCatBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('WorldCat');
             $driver->setRawData($data);

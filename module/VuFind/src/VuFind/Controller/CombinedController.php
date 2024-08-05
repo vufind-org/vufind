@@ -73,7 +73,7 @@ class CombinedController extends AbstractSearch
     {
         // We need to load blocks differently in this controller since it
         // doesn't follow the usual configuration pattern.
-        $blocks = $this->serviceLocator->get(\VuFind\ContentBlock\BlockLoader::class)
+        $blocks = $this->getService(\VuFind\ContentBlock\BlockLoader::class)
             ->getFromConfig('combined');
         return $this->createViewModel(compact('blocks'));
     }
@@ -92,7 +92,7 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $sectionId = $this->params()->fromQuery('id');
-        $optionsManager = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class);
+        $optionsManager = $this->getService(\VuFind\Search\Options\PluginManager::class);
         $combinedOptions = $optionsManager->get('combined');
         $tabConfig = $combinedOptions->getTabConfig();
         if (!isset($tabConfig[$sectionId])) {
@@ -147,7 +147,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $results = $this->serviceLocator->get(SearchRunner::class)->run(
+        $results = $this->getService(SearchRunner::class)->run(
             $request,
             'Combined',
             $this->getSearchSetupCallback()
@@ -160,7 +160,7 @@ class CombinedController extends AbstractSearch
 
         // Gather combined results:
         $combinedResults = [];
-        $optionsManager = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class);
+        $optionsManager = $this->getService(\VuFind\Search\Options\PluginManager::class);
         $combinedOptions = $optionsManager->get('combined');
         // Save the initial type value, since it may get manipulated below:
         $initialType = $this->params()->fromQuery('type');
@@ -201,7 +201,7 @@ class CombinedController extends AbstractSearch
         $results->performAndProcessSearch();
 
         $actualMaxColumns = count($combinedResults);
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)->get('combined')->toArray();
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('combined')->toArray();
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';
@@ -212,7 +212,7 @@ class CombinedController extends AbstractSearch
         // Identify if any modules use include_recommendations_side or
         // include_recommendations_noresults_side.
         $columnSideRecommendations = [];
-        $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
+        $recommendationManager = $this->getService(\VuFind\Recommend\PluginManager::class);
         foreach ($config as $subconfig) {
             foreach (['include_recommendations_side', 'include_recommendations_noresults_side'] as $type) {
                 if (is_array($subconfig[$type] ?? false)) {
@@ -261,8 +261,7 @@ class CombinedController extends AbstractSearch
                 // We don't need to pass activeSearchClassId forward:
                 unset($params['activeSearchClassId']);
 
-                $route = $this->serviceLocator
-                    ->get(\VuFind\Search\Options\PluginManager::class)
+                $route = $this->getService(\VuFind\Search\Options\PluginManager::class)
                     ->get($searchClassId)->getSearchAction();
                 $base = $this->url()->fromRoute($route);
                 return $this->redirect()

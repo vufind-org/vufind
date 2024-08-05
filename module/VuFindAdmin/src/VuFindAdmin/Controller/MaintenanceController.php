@@ -102,7 +102,7 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
         $view->caches = $cacheManager->getCacheList();
         $view->nonPersistentCaches = $cacheManager->getNonPersistentCacheList();
         $view->scripts = $this->getScripts();
@@ -118,7 +118,7 @@ class MaintenanceController extends AbstractAdmin
     protected function getScripts(): array
     {
         // Load the AdminScripts.ini settings
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+        $config = $this->getService(\VuFind\Config\PluginManager::class)
             ->get('AdminScripts')->toArray();
         $globalConfig = $config['Global'] ?? [];
         unset($config['Global']);
@@ -169,7 +169,7 @@ class MaintenanceController extends AbstractAdmin
     public function clearcacheAction()
     {
         $cache = null;
-        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
         foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();
         }

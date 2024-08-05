@@ -101,11 +101,10 @@ class EdsBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $this->edsConfig = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)
+        $this->edsConfig = $this->getService(\VuFind\Config\PluginManager::class)
             ->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend = $this->createBackend($connector);
@@ -122,24 +121,23 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector)
     {
-        $auth = $this->serviceLocator
-            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
             $connector,
             $this->createRecordCollectionFactory(),
-            $this->serviceLocator->get(\VuFind\Cache\Manager::class)
+            $this->getService(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
             $session,
             $this->edsConfig,
             $isGuest
         );
         $backend->setAuthManager(
-            $this->serviceLocator->get(\VuFind\Auth\Manager::class)
+            $this->getService(\VuFind\Auth\Manager::class)
         );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
@@ -213,8 +211,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);
@@ -232,7 +229,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         // Attach hide facet value listener:
         $hfvListener = $this->getHideFacetValueListener($backend, $this->edsConfig);

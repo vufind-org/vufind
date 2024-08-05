@@ -30,6 +30,7 @@
 namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 use function count;
@@ -45,12 +46,7 @@ use function count;
  */
 class Importer
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
      * Base path for loading .ini files
@@ -162,7 +158,7 @@ class Importer
         if ($testMode) {
             return $json;
         }
-        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
+        $solr = $this->getService(\VuFind\Solr\Writer::class);
         $solr->save($index, new RawJSONDocument($json), 'update');
         return ''; // no output when not in test mode!
     }
@@ -209,7 +205,7 @@ class Importer
     protected function getConfiguration(string $iniFile, $in): ImporterConfig
     {
         // Load properties file:
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         $ini = $resolver->getConfigPath($iniFile, $this->configBaseDir);
         if (!file_exists($ini)) {
             throw new \Exception("Cannot load .ini file: {$ini}.");
