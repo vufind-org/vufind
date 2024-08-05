@@ -49,7 +49,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBuilder()
+    public function testBuilder(): void
     {
         // Test building a spec:
         $builder = new SpecBuilder();
