@@ -47,12 +47,10 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      * Constructor
      *
      * @param HtmlAttributes $htmlAttributes HtmlAttributes view helper
-     * @param Ils            $ils            ILS view helper
      * @param bool           $enabled        Is schema.org metadata enabled?
      */
     public function __construct(
         protected HtmlAttributes $htmlAttributes,
-        protected Ils $ils,
         protected bool $enabled = true
     ) {
     }
@@ -113,29 +111,6 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get default record types as array.
-     *
-     * @return array
-     */
-    public function getDefaultRecordTypesArray(): array
-    {
-        if (($this->ils)()->getOfflineMode() !== 'ils-none') {
-            return ['Product'];
-        }
-        return [];
-    }
-
-    /**
-     * Get default record types as string.
-     *
-     * @return string
-     */
-    public function getDefaultRecordTypes(): string
-    {
-        return implode(' ', $this->getDefaultRecordTypesArray());
-    }
-
-    /**
      * Get all record types for the given record.
      *
      * @param DefaultRecord $driver Record Driver
@@ -144,9 +119,7 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      */
     public function getRecordTypesArray(DefaultRecord $driver): array
     {
-        $defaultTypes = $this->getDefaultRecordTypesArray();
-        $recordTypes = $driver->getSchemaOrgFormatsArray();
-        return array_unique(array_merge($defaultTypes, $recordTypes));
+        return $driver->getSchemaOrgFormatsArray();
     }
 
     /**

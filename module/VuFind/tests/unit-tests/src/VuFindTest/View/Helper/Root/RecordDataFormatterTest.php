@@ -110,8 +110,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'record' => $record,
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
             'schemaOrg' => new \VuFind\View\Helper\Root\SchemaOrg(
-                new \Laminas\View\Helper\HtmlAttributes(),
-                $this->createMock(\VuFind\View\Helper\Root\Ils::class)
+                new \Laminas\View\Helper\HtmlAttributes()
             ),
             'searchMemory' => $this->getSearchMemoryViewHelper(),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
