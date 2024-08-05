@@ -160,13 +160,24 @@ class ILLRequests extends AbstractRequestBase
             if ($cancelResults == false) {
                 $flashMsg->addMessage('ill_request_cancel_fail', 'error');
             } else {
+                $failed = 0;
+                foreach ($cancelResults['items'] ?? [] as $item) {
+                    if (!$item['success']) {
+                        ++$failed;
+                    }
+                }
+                if ($failed) {
+                    $flashMsg->addErrorMessage(
+                        ['msg' => 'ill_request_cancel_fail_items', 'tokens' => ['%%count%%' => $failed]]
+                    );
+                }
                 if ($cancelResults['count'] > 0) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'ill_request_cancel_success_items',
-                            ['%%count%%' => $cancelResults['count']]
-                        );
-                    $flashMsg->addMessage($msg, 'success');
+                    $flashMsg->addSuccessMessage(
+                        [
+                            'msg' => 'ill_request_cancel_success_items',
+                            'tokens' => ['%%count%%' => $cancelResults['count']],
+                        ]
+                    );
                 }
                 return $cancelResults;
             }

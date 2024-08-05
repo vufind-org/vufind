@@ -35,6 +35,7 @@ namespace VuFind\ILS\Driver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\Service\CurrencyFormatter;
 
 use function array_key_exists;
@@ -133,8 +134,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var array
      */
     protected $statusRankings = [
-        'Charged' => 1,
-        'On Hold' => 2,
+        'Charged'                        => 1,
+        'On Hold'                        => 2,
+        'HoldingStatus::transit_to'      => 3,
+        'HoldingStatus::transit_to_date' => 4,
     ];
 
     /**
@@ -2025,12 +2028,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $duedate = null;
             }
 
+            $extraStatusInformation = [];
+            if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
+                if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
+                    $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
+                    if ($status == 'HoldingStatus::transit_to_date') {
+                        $extraStatusInformation['date'] = $this->convertDate(
+                            $transit['datesent'],
+                            true
+                        );
+                    }
+                }
+            }
+
             $entry = [
                 'id' => $id,
                 'item_id' => $item['item_id'],
                 'location' => $this->getItemLocationName($item),
-                'availability' => $available,
-                'status' => $status,
+                'availability' => new AvailabilityStatus($available, $status, $extraStatusInformation),
                 'status_array' => $statusCodes,
                 'reserve' => 'N',
                 'callnumber' => $this->getItemCallNumber($item),
@@ -2179,6 +2194,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
+        if (isset($data['to_library'])) {
+            return isset($data['datesent']) ? 'HoldingStatus::transit_to_date' : 'HoldingStatus::transit_to';
+        }
+
         $onHold = array_key_exists(
             'Item::Held',
             $item['availability']['notes'] ?? []
