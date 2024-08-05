@@ -31,7 +31,6 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
 use VuFind\RecordDriver\DefaultRecord;
-use VuFind\View\Helper\Root\Ils;
 
 /**
  * View helper for injecting schema.org metadata
@@ -51,8 +50,11 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      * @param Ils            $ils            ILS view helper
      * @param bool           $enabled        Is schema.org metadata enabled?
      */
-    public function __construct(protected HtmlAttributes $htmlAttributes, protected Ils $ils, protected bool $enabled = true)
-    {
+    public function __construct(
+        protected HtmlAttributes $htmlAttributes,
+        protected Ils $ils,
+        protected bool $enabled = true
+    ) {
     }
 
     /**
@@ -136,7 +138,7 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get all record types for the given record.
      *
-     * @param DefaultRecord $driver
+     * @param DefaultRecord $driver Record Driver
      *
      * @return array
      */
@@ -150,7 +152,7 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get all record types for the given record.
      *
-     * @param DefaultRecord $driver
+     * @param DefaultRecord $driver Record Driver
      *
      * @return string
      */

@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
+use VuFind\View\Helper\Root\Ils;
 use VuFind\View\Helper\Root\SchemaOrg;
 
 /**
@@ -52,7 +53,8 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
      */
     public function getHelper(bool $enabled): SchemaOrg
     {
-        return new SchemaOrg(new HtmlAttributes(), $enabled);
+        return new SchemaOrg(new HtmlAttributes(), $this->getMockBuilder(Ils::class)
+            ->disableOriginalConstructor()->getMock(), $enabled);
     }
 
     /**
