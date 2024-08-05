@@ -333,10 +333,6 @@ class RecordDataFormatterFactory implements FactoryInterface
                 'itemSuffix' => '</span>',
             ]
         );
-        $spec->setLine(
-            'Holdings',
-            'getTextualHoldings'
-        );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
             'Subjects',
