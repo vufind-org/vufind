@@ -161,13 +161,24 @@ class StorageRetrievalRequests extends AbstractRequestBase
                 $flashMsg
                     ->addMessage('storage_retrieval_request_cancel_fail', 'error');
             } else {
+                $failed = 0;
+                foreach ($cancelResults['items'] ?? [] as $item) {
+                    if (!$item['success']) {
+                        ++$failed;
+                    }
+                }
+                if ($failed) {
+                    $flashMsg->addErrorMessage(
+                        ['msg' => 'storage_retrieval_request_cancel_fail_items', 'tokens' => ['%%count%%' => $failed]]
+                    );
+                }
                 if ($cancelResults['count'] > 0) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'storage_retrieval_request_cancel_success_items',
-                            ['%%count%%' => $cancelResults['count']]
-                        );
-                    $flashMsg->addMessage($msg, 'success');
+                    $flashMsg->addSuccessMessage(
+                        [
+                            'msg' => 'storage_retrieval_request_cancel_success_items',
+                            'tokens' => ['%%count%%' => $cancelResults['count']],
+                        ]
+                    );
                 }
                 return $cancelResults;
             }
