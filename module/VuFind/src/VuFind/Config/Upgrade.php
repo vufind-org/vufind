@@ -33,6 +33,10 @@ use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Class to upgrade previous VuFind configurations to the current version
  *
@@ -224,7 +228,7 @@ class Upgrade
     {
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
-            // existing key...  otherwise just drop the value in place.
+            // existing key... otherwise just drop the value in place.
             if (is_array($v) && isset($config_ini[$k])) {
                 $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
             } else {
@@ -245,10 +249,10 @@ class Upgrade
         $oldIni = $this->oldDir . '/config.ini';
         $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
 
-        // Merge in local overrides as needed.  VuFind 2 structures configurations
+        // Merge in local overrides as needed. VuFind 2 structures configurations
         // differently, so people who used this mechanism will need to refactor
         // their configurations to take advantage of the new "local directory"
-        // feature.  For now, we'll just merge everything to avoid losing settings.
+        // feature. For now, we'll just merge everything to avoid losing settings.
         if (
             isset($mainArray['Extra_Config'])
             && isset($mainArray['Extra_Config']['local_overrides'])
@@ -295,7 +299,7 @@ class Upgrade
      */
     protected function loadConfigs()
     {
-        // Configuration files to load.  Note that config.ini must always be loaded
+        // Configuration files to load. Note that config.ini must always be loaded
         // first so that getOldConfigPath can work properly!
         $configs = ['config.ini'];
         foreach (glob($this->rawDir . '/*.ini') as $ini) {
@@ -421,7 +425,7 @@ class Upgrade
         // same, we don't need to copy anything!
         if (
             file_exists($src) && file_exists($raw)
-            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+            && md5(file_get_contents($src)) === md5(file_get_contents($raw))
         ) {
             return;
         }
@@ -465,10 +469,10 @@ class Upgrade
                 unset($this->newConfigs['config.ini']['Site'][$setting]);
             } else {
                 $this->addWarning(
-                    "WARNING: This version of VuFind does not support "
+                    'WARNING: This version of VuFind does not support '
                     . "the {$theme} theme. Your config.ini [Site] {$setting} setting"
                     . " has been reset to the default: {$default}. You may need to "
-                    . "reimplement your custom theme."
+                    . 'reimplement your custom theme.'
                 );
                 $this->newConfigs['config.ini']['Site'][$setting] = $default;
             }
@@ -704,6 +708,18 @@ class Upgrade
                 ? '' : 1;
             unset($newConfig['Syndetics']['url']);
         }
+
+        // Convert spellchecker 'simple' option
+        if (
+            // If 'simple' is set
+            isset($newConfig['Spelling']['simple']) &&
+            // and 'dictionaries' is set to default
+            ($newConfig['Spelling']['dictionaries'] == ['default', 'basicSpell'])
+        ) {
+            $newConfig['Spelling']['dictionaries'] = $newConfig['Spelling']['simple']
+                ? ['basicSpell'] : ['default', 'basicSpell'];
+        }
+        unset($newConfig['Spelling']['simple']);
 
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
@@ -1275,7 +1291,7 @@ class Upgrade
         // Does the file contain any meaningful lines?
         foreach (file($src) as $line) {
             $line = trim($line);
-            if (!empty($line) && substr($line, 0, 1) != '#') {
+            if ('' !== $line && !str_starts_with($line, '#')) {
                 return true;
             }
         }
@@ -1325,7 +1341,7 @@ class Upgrade
         }
 
         // VuFind 1.x uses *_local.yaml files as overrides; VuFind 2.x uses files
-        // with the same filename in the local directory.  Copy any old override
+        // with the same filename in the local directory. Copy any old override
         // files into the new expected location:
         $files = ['searchspecs', 'authsearchspecs', 'reservessearchspecs'];
         foreach ($files as $file) {
@@ -1351,13 +1367,15 @@ class Upgrade
     {
         $driver = $this->newConfigs['config.ini']['Catalog']['driver'] ?? '';
         if (empty($driver)) {
-            $this->addWarning("WARNING: Could not find ILS driver setting.");
+            $this->addWarning('WARNING: Could not find ILS driver setting.');
         } elseif ('Sample' == $driver) {
             // No configuration file for Sample driver
+        } elseif ('AdminScripts' == $driver) {
+            // Prevent abuse if upgrade process is hijacked
         } elseif (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
             $this->addWarning(
                 "WARNING: Could not find {$driver}.ini file; "
-                . "check your ILS driver configuration."
+                . 'check your ILS driver configuration.'
             );
         } else {
             $this->saveUnmodifiedConfig($driver . '.ini');
@@ -1381,7 +1399,7 @@ class Upgrade
      * addressed in one place.
      *
      * This gets called from updateConfig(), which gets called before other
-     * configuration upgrade routines.  This means that we need to modify the
+     * configuration upgrade routines. This means that we need to modify the
      * config.ini settings in the newConfigs property (since it is currently
      * being worked on and will be written to disk shortly), but we need to
      * modify the searches.ini/facets.ini settings in the oldConfigs property
@@ -1466,16 +1484,16 @@ class Upgrade
 
             // Is the current line a comment?  If so, add to the currentComments
             // string. Note that we treat blank lines as comments.
-            if (substr($trimmed, 0, 1) == ';' || empty($trimmed)) {
+            if ('' === $trimmed || str_starts_with($trimmed, ';')) {
                 $comments .= $line;
             } elseif (
-                substr($trimmed, 0, 1) == '['
+                str_starts_with($trimmed, '[')
                 && ($closeBracket = strpos($trimmed, ']')) > 1
             ) {
                 // Is the current line the start of a section?  If so, create the
                 // appropriate section of the return value:
                 $section = substr($trimmed, 1, $closeBracket - 1);
-                if (!empty($section)) {
+                if ('' !== $section) {
                     // Grab comments at the end of the line, if any:
                     if (($semicolon = strpos($trimmed, ';')) !== false) {
                         $inline = trim(substr($trimmed, $semicolon));
@@ -1492,7 +1510,7 @@ class Upgrade
                 // Is the current line a setting?  If so, add to the return value:
                 $set = trim(substr($trimmed, 0, $equals));
                 $set = trim(str_replace('[]', '', $set));
-                if (!empty($section) && !empty($set)) {
+                if ('' !== $section && '' !== $set) {
                     // Grab comments at the end of the line, if any:
                     if (($semicolon = strpos($trimmed, ';')) !== false) {
                         $inline = trim(substr($trimmed, $semicolon));
@@ -1501,7 +1519,7 @@ class Upgrade
                     }
                     // Currently, this data structure doesn't support arrays very
                     // well, since it can't distinguish which line of the array
-                    // corresponds with which comments.  For now, we just append all
+                    // corresponds with which comments. For now, we just append all
                     // the preceding and inline comments together for arrays.  Since
                     // we rarely use arrays in the config.ini file, this isn't a big
                     // concern, but we should improve it if we ever need to.

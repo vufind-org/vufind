@@ -45,10 +45,12 @@ namespace VuFind\Recommend;
 class SummonDatabasesDeferred extends AbstractSummonRecommendDeferred
 {
     /**
-     * Constructor
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
      */
-    public function __construct()
+    protected function getAjaxModule()
     {
-        $this->module = 'SummonDatabases';
+        return 'SummonDatabases';
     }
 }

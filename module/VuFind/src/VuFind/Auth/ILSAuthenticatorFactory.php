@@ -68,23 +68,15 @@ class ILSAuthenticatorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        // Construct the ILS authenticator as a lazy loading value holder so that
-        // the object is not instantiated until it is called. This helps break a
-        // potential circular dependency with the MultiBackend driver as well as
-        // saving on initialization costs in cases where the authenticator is not
-        // actually utilized.
-        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
-            // Generate wrapped object:
-            $auth = $container->get(\VuFind\Auth\Manager::class);
-            $catalog = $container->get(\VuFind\ILS\Connection::class);
-            $emailAuth = $container->get(\VuFind\Auth\EmailAuthenticator::class);
-            $wrapped = new $requestedName($auth, $catalog, $emailAuth);
-
-            // Indicate that initialization is complete to avoid reinitialization:
-            $proxy->setProxyInitializer(null);
-        };
-        $cfg = $container->get(\ProxyManager\Configuration::class);
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy($requestedName, $callback);
+        $service = new $requestedName(
+            // Use a callback to retrieve authentication manager to break a circular reference:
+            function () use ($container) {
+                return $container->get(\VuFind\Auth\Manager::class);
+            },
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\EmailAuthenticator::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+        );
+        return $service;
     }
 }

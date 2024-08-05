@@ -85,7 +85,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
 
         $this->check(
             'testuser2',
-            ["college .*Freiburg"],
+            ['college .*Freiburg'],
             []
         );
     }

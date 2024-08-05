@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Mink;
 
-use Behat\Mink\Element\Element;
-
 /**
  * Mink test class for autocomplete functionality.
  *
@@ -39,36 +37,10 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
 {
-    /**
-     * Get an autocomplete item, and assert its value.
-     *
-     * @param Element $page Page element
-     * @param string  $text Expected text
-     *
-     * @return Element
-     */
-    public function getAndAssertFirstAutocompleteValue(Element $page, string $text): Element
-    {
-        $tries = 0;
-        $loadMsg = 'Loading…';
-        do {
-            $acItem = $this->findCss($page, '.autocomplete-results .ac-item');
-            $acItemText = $acItem->getText();
-            if (strcasecmp($acItemText, $loadMsg) === 0) {
-                $this->snooze(0.5);
-            }
-            $tries++;
-        } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
-        $this->assertEquals(
-            $text,
-            $this->findCss($page, '.autocomplete-results .ac-item')->getText()
-        );
-        return $acItem;
-    }
+    use \VuFindTest\Feature\AutocompleteTrait;
 
     /**
      * Test that default autocomplete behavior is correct.
@@ -78,15 +50,36 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     public function testBasicAutocomplete(): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('fake doi test');
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'Fake DOI test 1');
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fake doi test', 'Fake DOI test 1');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=Fake+DOI+test+1&type=AllFields',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Fake+DOI+test+1%22&type=AllFields',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that titles containing quotes are properly escaped.
+     *
+     * @return void
+     */
+    public function testBasicAutocompleteQuoteEscaping(): void
+    {
+        $session = $this->getMinkSession();
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'millers mechanical',
+            'Letterhead enclosure: "The Millers Mechanical Battlefield: world\'s greatest exhibition", [1920?].'
+        );
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Letterhead+enclosure%3A+'
+                . '%5C%22The+Millers+Mechanical+Battlefield%3A+world%27s+greatest+exhibition'
+                . '%5C%22%2C+%5B1920%3F%5D.%22&type=AllFields',
             $session->getCurrentUrl()
         );
     }
@@ -99,17 +92,12 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     public function testBasicAutocompleteForNonDefaultField(): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_type')
-            ->setValue('Author');
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('jsto');
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'JSTOR (Organization)');
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'Author');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=JSTOR+%28Organization%29&type=Author',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
     }
@@ -122,30 +110,26 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testMultipleAutocompletesInSingleSession(): void
     {
+        // Load the page first so we'll use the same context across all testing:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
+        $page = $this->getSearchHomePage($session);
+
         // First do a search in All Fields
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('jsto');
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'Al Gore');
-        // Now repeat the same search in Author
-        $this->findCss($page, '#searchForm_type')
-            ->setValue('Author');
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('jsto');
-        // Make sure we get the right author match, and not a cached All Fields value!
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'JSTOR (Organization)');
+        $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'Al Gore');
+
+        // Now repeat the same search in Author, making sure we get the right author match, and not a cached
+        // All Fields value!
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'Author');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=JSTOR+%28Organization%29&type=Author',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
     }
 
     /**
-     * Test that default autocomplete behavior is correct.
+     * Test that no-autosubmit autocomplete behavior is correct.
      *
      * @return void
      */
@@ -155,19 +139,129 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
             ['searches' => ['Autocomplete' => ['auto_submit' => false]]]
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')
-            ->setValue('fake doi test');
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'Fake DOI test 1');
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fake doi test', 'Fake DOI test 1');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Fake DOI test 1',
-            $this->findCss($page, '#searchForm_lookfor')->getValue()
+            '"Fake DOI test 1"',
+            $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
         $this->assertEquals(
             $this->getVuFindUrl() . '/Search/Home',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Get basic config settings to activate combined search handlers.
+     *
+     * @return array
+     */
+    protected function getCombinedSearchHandlersConfigs(): array
+    {
+        return [
+            'searchbox' => [
+                'General' => [
+                    'combinedHandlers' => true,
+                ],
+                'CombinedHandlers' => [
+                    'type' => ['VuFind', 'VuFind'],
+                    'target' => ['Solr', 'SolrAuth'],
+                    'label' => ['Catalog', 'Authorities'],
+                    'group' => [false, false],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test that default autocomplete works correctly in a searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAutocompleteInCombinedSearchbox(): void
+    {
+        $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
+        $session = $this->getMinkSession();
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fake doi test', 'Fake DOI test 1');
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Fake+DOI+test+1%22&type=AllFields',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that author autocomplete works correctly in a searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAuthorAutocompleteInCombinedSearchbox(): void
+    {
+        $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
+        $session = $this->getMinkSession();
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'jsto',
+            'JSTOR (Organization)',
+            'VuFind:Solr|Author'
+        );
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that authority autocomplete works correctly in a searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAuthorityAutocompleteInCombinedSearchbox(): void
+    {
+        $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
+        $session = $this->getMinkSession();
+        $page = $this->getSearchHomePage($session);
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'roy',
+            'Royal Dublin Society',
+            'VuFind:SolrAuth|MainHeading'
+        );
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Authority/Search?lookfor=%22Royal+Dublin+Society%22&type=MainHeading',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test alphabrowse autocomplete in searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAlphaBrowseAutocompleteInCombinedSearchbox(): void
+    {
+        $config = $this->getCombinedSearchHandlersConfigs();
+        $config['searchbox']['General']['includeAlphaBrowse'] = true;
+        $this->changeConfigs($config);
+        $session = $this->getMinkSession();
+        $page = $this->getSearchHomePage($session);
+        $vufindUrl = $this->getVuFindUrl();
+        $basePath = parse_url($vufindUrl, PHP_URL_PATH);
+        $handler = "External:$basePath/Alphabrowse/Home?source=title&from=";
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'test pu', 'test publication 20001', $handler);
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $vufindUrl . '/Alphabrowse/Home?source=title&from=test+publication+20001',
             $session->getCurrentUrl()
         );
     }

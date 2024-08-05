@@ -35,7 +35,16 @@ namespace VuFind\ILS\Driver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\Service\CurrencyFormatter;
+
+use function array_key_exists;
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
 
 /**
  * VuFind Driver for Koha, using REST API
@@ -99,6 +108,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sessionCache;
 
     /**
+     * Validate passwords
+     *
+     * @var bool
+     */
+    protected $dontValidatePasswords = false;
+
+    /**
      * Default pickup location
      *
      * @var string
@@ -118,8 +134,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var array
      */
     protected $statusRankings = [
-        'Charged' => 1,
-        'On Hold' => 2,
+        'Charged'                        => 1,
+        'On Hold'                        => 2,
+        'HoldingStatus::transit_to'      => 3,
+        'HoldingStatus::transit_to_date' => 4,
     ];
 
     /**
@@ -148,16 +166,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var array
      */
     protected $renewalBlockMappings = [
-        'too_soon' => 'Cannot renew yet',
-        'onsite_checkout' => 'Copy has special circulation',
+        'too_soon' => 'ILSMessages::renewal_too_soon',
+        'auto_too_soon' => 'ILSMessages::will_auto_renew',
+        'onsite_checkout' => 'ILSMessages::special_circulation',
         'on_reserve' => 'renew_item_requested',
         'too_many' => 'renew_item_limit',
-        'restriction' => 'Borrowing Block Message',
+        'restriction' => 'ILSMessages::renewal_block',
         'overdue' => 'renew_item_overdue',
-        'cardlost' => 'renew_card_lost',
+        'cardlost' => 'ILSMessages::lost_card',
         'gonenoaddress' => 'patron_status_address_missing',
         'debarred' => 'patron_status_card_blocked',
-        'debt' => 'renew_debt',
+        'debt' => 'ILSMessages::too_much_debt',
+        'recalled' => 'ILSMessages::renewal_recalled',
     ];
 
     /**
@@ -193,6 +213,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $itemStatusMappings = [
         'Item::Held' => 'On Hold',
         'Item::Waiting' => 'On Holdshelf',
+        'Item::Recalled' => 'Recalled',
     ];
 
     /**
@@ -260,6 +281,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 throw new ILSException("Missing Catalog/{$current} config setting.");
             }
         }
+
+        $this->dontValidatePasswords
+            = !empty($this->config['Catalog']['dontValidatePasswords']);
 
         $this->defaultPickUpLocation
             = $this->config['Holds']['defaultPickUpLocation'] ?? '';
@@ -434,7 +458,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $departments = [];
         foreach ($result['data'] as $department) {
-            $departments[$department['authorised_value']] = $department['lib_opac'];
+            // Before Koha 23.11, authorized values contained authorised_value and lib_opac.
+            // From 23.11, they are 'value' and 'opac_description' (see Koha bug 32981):
+            $code = $department['value'] ?? $department['authorised_value'];
+            $description = $department['opac_description'] ?? $department['lib_opac'];
+            $departments[$code] = $description;
         }
         return $departments;
     }
@@ -543,18 +571,48 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
-        if (empty($username) || empty($password)) {
+        if (empty($username)) {
             return null;
         }
 
-        $result = $this->makeRequest(
-            [
-                'path' => 'v1/contrib/kohasuomi/auth/patrons/validation',
-                'json' => ['userid' => $username, 'password' => $password],
-                'method' => 'POST',
-                'errors' => true,
-            ]
-        );
+        if ($this->dontValidatePasswords) {
+            $result = $this->makeRequest(
+                [
+                    'path' => 'v1/patrons',
+                    'query' => [
+                        'userid' => $username,
+                        '_match' => 'exact',
+                    ],
+                    'method' => 'GET',
+                    'errors' => true,
+                ]
+            );
+
+            if (isset($result['data'][0])) {
+                $data = $result['data'][0];
+            } else {
+                return null;
+            }
+        } else {
+            if (empty($password)) {
+                return null;
+            }
+
+            $result = $this->makeRequest(
+                [
+                    'path' => 'v1/contrib/kohasuomi/auth/patrons/validation',
+                    'json' => ['userid' => $username, 'password' => $password],
+                    'method' => 'POST',
+                    'errors' => true,
+                ]
+            );
+
+            if (isset($result['data'])) {
+                $data = $result['data'];
+            } else {
+                return null;
+            }
+        }
 
         if (401 === $result['code'] || 403 === $result['code']) {
             return null;
@@ -563,17 +621,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             throw new ILSException('Problem with Koha REST API.');
         }
 
-        $result = $result['data'];
         return [
-            'id' => $result['patron_id'],
-            'firstname' => $result['firstname'],
-            'lastname' => $result['surname'],
+            'id' => $data['patron_id'],
+            'firstname' => $data['firstname'],
+            'lastname' => $data['surname'],
             'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => $result['email'],
+            'cat_password' => (string)$password,
+            'email' => $data['email'],
             'major' => null,
             'college' => null,
-            'home_library' => $result['library_id'],
+            'home_library' => $data['library_id'],
         ];
     }
 
@@ -671,7 +728,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -893,10 +950,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1018,7 +1075,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return false|string      The default pickup location for the patron or false
@@ -1670,7 +1727,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
     /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters
@@ -1960,12 +2017,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $duedate = null;
             }
 
+            $extraStatusInformation = [];
+            if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
+                if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
+                    $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
+                    if ($status == 'HoldingStatus::transit_to_date') {
+                        $extraStatusInformation['date'] = $this->convertDate(
+                            $transit['datesent'],
+                            true
+                        );
+                    }
+                }
+            }
+
             $entry = [
                 'id' => $id,
                 'item_id' => $item['item_id'],
                 'location' => $this->getItemLocationName($item),
-                'availability' => $available,
-                'status' => $status,
+                'availability' => new AvailabilityStatus($available, $status, $extraStatusInformation),
                 'status_array' => $statusCodes,
                 'reserve' => 'N',
                 'callnumber' => $this->getItemCallNumber($item),
@@ -2042,7 +2111,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         } else {
             $this->logError(
-                "Unable to determine status for item: " . print_r($item, true)
+                'Unable to determine status for item: ' . $this->varDump($item)
             );
         }
 
@@ -2114,6 +2183,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
+        if (isset($data['to_library'])) {
+            return isset($data['datesent']) ? 'HoldingStatus::transit_to_date' : 'HoldingStatus::transit_to';
+        }
+
         $onHold = array_key_exists(
             'Item::Held',
             $item['availability']['notes'] ?? []
@@ -2134,7 +2207,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $result = $this->getSorter()->compare($a['location'], $b['location']);
 
         if (0 === $result && $this->sortItemsBySerialIssue) {
-            $result = strnatcmp($a['number'], $b['number']);
+            $result = strnatcmp($a['number'] ?? '', $b['number'] ?? '');
         }
 
         if (0 === $result) {
@@ -2383,12 +2456,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Map a Koha renewal block reason code to a VuFind translation string
      *
      * @param string $reason Koha block code
+     * @param string $itype  Koha item type
      *
      * @return string
      */
-    protected function mapRenewalBlockReason($reason)
+    protected function mapRenewalBlockReason($reason, $itype)
     {
-        return $this->renewalBlockMappings[$reason] ?? 'renew_item_no';
+        return $this->config['ItemTypeRenewalBlockMappings'][$itype][$reason]
+            ?? $this->renewalBlockMappings[$reason]
+            ?? 'renew_item_no';
     }
 
     /**
@@ -2612,7 +2688,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $message = '';
             if (!$renewable && !$checkedIn) {
                 $message = $this->mapRenewalBlockReason(
-                    $entry['renewability_blocks']
+                    $entry['renewability_blocks'],
+                    $entry['item_itype']
                 );
                 $permanent = in_array(
                     $entry['renewability_blocks'],

@@ -36,6 +36,10 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
+use function array_slice;
+use function count;
+use function is_array;
+
 /**
  * BrowZine backend.
  *

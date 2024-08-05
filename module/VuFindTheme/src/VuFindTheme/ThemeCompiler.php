@@ -29,6 +29,8 @@
 
 namespace VuFindTheme;
 
+use function is_array;
+
 /**
  * Class to compile a theme hierarchy into a single flat theme.
  *

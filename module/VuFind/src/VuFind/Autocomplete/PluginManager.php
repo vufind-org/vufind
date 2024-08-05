@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -50,7 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'none' => None::class,
         'eds' => Eds::class,
-        'oclcidentities' => OCLCIdentities::class,
+        'oclcidentities' => None::class,
         'search2' => Search2::class,
         'search2cn' => Search2CN::class,
         'solr' => Solr::class,
@@ -61,7 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrprefix' => SolrPrefix::class,
         // for legacy 1.x compatibility
         'noautocomplete' => 'None',
-        'oclcidentitiesautocomplete' => 'OCLCIdentities',
+        'oclcidentitiesautocomplete' => 'None',
         'solrautocomplete' => 'Solr',
         'solrauthautocomplete' => 'SolrAuth',
         'solrcnautocomplete' => 'SolrCN',
@@ -77,14 +77,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         None::class => InvokableFactory::class,
         Eds::class => EdsFactory::class,
-        OCLCIdentities::class => InvokableFactory::class,
         Search2::class => SolrFactory::class,
         Search2CN::class => SolrFactory::class,
         Solr::class => SolrFactory::class,
         SolrAuth::class => SolrFactory::class,
         SolrCN::class => SolrFactory::class,
         SolrReserves::class => SolrFactory::class,
-        Tag::class => InvokableFactory::class,
+        Tag::class => TagFactory::class,
         SolrPrefix::class => SolrFactory::class,
     ];
 

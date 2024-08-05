@@ -37,6 +37,9 @@ use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Command\SimilarCommand;
 
+use function count;
+use function is_object;
+
 /**
  * "Similar items" channel provider.
  *

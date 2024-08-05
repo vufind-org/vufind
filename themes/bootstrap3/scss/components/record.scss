@@ -41,9 +41,26 @@
   .record .media-body { // Add a gap between the thumbnail and the info
     display: block;
     width: auto;
-    margin-top: 1rem;
   }
 }
+
+@media (max-width: 500px) {
+  .record .media-body > table > tbody {
+    > tr {
+      display: block;
+      > th {
+        display: block;
+        padding-bottom: 0;
+      }
+      > td {
+        display: block;
+        border-top: none;
+        padding-top: 0;
+      }
+    }
+  }
+}
+
 // Comma-separate formatting
 .record .format::after { content: ", "; }
 .record .format.badge::after,
@@ -106,10 +123,17 @@
 
 /* ------ Tags ------ */
 .tag-record {
-  @extend .toolbar-btn;
+  float: right;
+  margin: 2px 0 1rem 1rem;
+  padding: $padding-base-vertical $padding-base-horizontal;
 
   &:hover {
     text-decoration: none;
+  }
+
+  @media (max-width: $screen-sm-max) {
+    margin-left: 0.5rem;
+    padding: $padding-base-vertical calc(#{$padding-base-horizontal} / 2);
   }
 }
 
@@ -125,16 +149,16 @@
   padding: 3px 7px;
   font-weight: normal;
 }
-.tagList button .fa-close { margin-top: 3px; }
 .tagList {
   .tag {
     display: inline-block;
-    margin: 0 1px 1px;
-    border-radius: 4px;
+    margin: 2px 1px 1px;
+    border: 1px solid $btn-default-border;
     // Use bootstrap mixin to make tags look like buttons
     @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $line-height-base, $border-radius-base);
     &.selected {
       background-color: $btn-primary-bg;
+      border-color: $btn-primary-border;
       a { color: #fff; }
       .badge {
         color: $gray-darker;
@@ -217,6 +241,17 @@
 .tab-pane .result {
   margin-left: 0;
 }
+.holdings-tab .holdings-table {
+  table-layout: auto;
+
+  th, td {
+    min-width: 10vw;
+  }
+
+  .bound-with-records .direct-item {
+    font-weight: bold;
+  }
+}
 
 /* ------ OpenURL Links ------ */
 .openurls {
@@ -278,6 +313,10 @@
     padding-right: 0;
     margin-right: -0.6em;
     z-index: 2;
+
+    .rating__icon--star {
+      width: 0.5rem;
+    }
   }
 
   /* Set default star color */
@@ -303,4 +342,14 @@
       color: #ddd;
     }
   }
+}
+
+/* Pager */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25rem;
+  row-gap: 10px;
+  align-items: center;
+  justify-content: center;
 }

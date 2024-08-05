@@ -29,6 +29,8 @@
 
 namespace VuFind\CSV\ImportHelper;
 
+use function strlen;
+
 /**
  * Helpers for Scopus CSV import example.
  *

@@ -40,6 +40,9 @@ use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
+use function count;
+use function is_object;
+
 /**
  * Record loader
  *
@@ -191,7 +194,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * @param string   $source                    Record source
      * @param bool     $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * subscriptions
      * @param ParamBag $params                    Search backend parameters
      *
      * @throws \Exception
@@ -307,13 +310,13 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
      * requested order.
      *
      * @param array      $ids                       Array of associative arrays with
-     * id/source keys or strings in source|id format.  In associative array formats,
+     * id/source keys or strings in source|id format. In associative array formats,
      * there is also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
      * @param bool       $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * subscriptions
      * @param ParamBag[] $params                    Associative array of search
      * backend parameters keyed with source key
      *

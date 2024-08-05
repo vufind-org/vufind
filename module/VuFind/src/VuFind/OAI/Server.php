@@ -32,9 +32,17 @@
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
+use VuFind\Db\Entity\ChangeTrackerEntityInterface;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
+use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
+
+use function count;
+use function in_array;
+use function intval;
+use function strlen;
 
 /**
  * OAI Server class
@@ -142,27 +150,6 @@ class Server
     protected $adminEmail;
 
     /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Table manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
-
-    /**
      * Record link helper (optional)
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
@@ -226,19 +213,17 @@ class Server
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Search manager for
-     * retrieving records
-     * @param \VuFind\Record\Loader                $loader  Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
+     * @param \VuFind\Record\Loader                $recordLoader      Record loader
+     * @param ChangeTrackerServiceInterface        $trackerService    ChangeTracker Service
+     * @param OaiResumptionServiceInterface        $resumptionService Database service for resumption tokens
      */
     public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \VuFind\Record\Loader $recordLoader,
+        protected ChangeTrackerServiceInterface $trackerService,
+        protected OaiResumptionServiceInterface $resumptionService
     ) {
-        $this->resultsManager = $results;
-        $this->recordLoader = $loader;
-        $this->tableManager = $tables;
     }
 
     /**
@@ -338,22 +323,22 @@ class Server
     /**
      * Assign necessary interface variables to display a deleted record.
      *
-     * @param SimpleXMLElement $xml        XML to update
-     * @param array            $tracker    Array representing a change_tracker row
-     * @param bool             $headerOnly Only attach the header?
+     * @param SimpleXMLElement             $xml           XML to update
+     * @param ChangeTrackerEntityInterface $trackerEntity ChangeTracker entity
+     * @param bool                         $headerOnly    Only attach the header?
      *
      * @return void
      */
-    protected function attachDeleted($xml, $tracker, $headerOnly = false)
+    protected function attachDeleted($xml, $trackerEntity, $headerOnly = false)
     {
-        // Deleted records only have a header, no metadata.  However, depending
+        // Deleted records only have a header, no metadata. However, depending
         // on the context we are attaching them, they may or may not need a
         // <record> tag wrapping the header.
         $record = $headerOnly ? $xml : $xml->addChild('record');
         $this->attachRecordHeader(
             $record,
-            $this->prefixID($tracker['id']),
-            date($this->iso8601, $this->normalizeDate($tracker['deleted'])),
+            $this->prefixID($trackerEntity->getId()),
+            date($this->iso8601, $trackerEntity->getDeleted()->getTimestamp()),
             [],
             'deleted'
         );
@@ -547,13 +532,13 @@ class Server
             }
         } else {
             // No record in index -- is this deleted?
-            $tracker = $this->tableManager->get('ChangeTracker');
-            $row = $tracker->retrieve(
+
+            $row = $this->trackerService->getChangeTrackerEntity(
                 $this->core,
                 $this->stripID($this->params['identifier'])
             );
-            if (!empty($row) && !empty($row->deleted)) {
-                $this->attachDeleted($xml, $row->toArray());
+            if (!empty($row) && !empty($row->getDeleted())) {
+                $this->attachDeleted($xml, $row);
             } else {
                 // Not deleted and not found in index -- error!
                 return $this->showError('idDoesNotExist', 'Unknown Record');
@@ -663,7 +648,7 @@ class Server
     }
 
     /**
-     * Load data from the OAI section of config.ini.  (This is called by the
+     * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
@@ -798,7 +783,7 @@ class Server
             return $this->showError($parts[0], $parts[1]);
         }
 
-        // Normalize the provided dates into Unix timestamps.  Depending on whether
+        // Normalize the provided dates into Unix timestamps. Depending on whether
         // they come from the OAI-PMH request or the database, the format may be
         // slightly different; this ensures they are reduced to a consistent value!
         $from = $this->normalizeDate($params['from']);
@@ -918,7 +903,7 @@ class Server
 
         // Load set field if applicable:
         if (null !== $this->setField) {
-            // If we got this far, we can load all available set values.  For now,
+            // If we got this far, we can load all available set values. For now,
             // we'll assume that this list is short enough to load in one response;
             // it may be necessary to implement a resumption token mechanism if this
             // proves not to be the case:
@@ -961,15 +946,14 @@ class Server
      * @param int $until         End date.
      * @param int $currentCursor Offset into result set
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return ChangeTrackerEntityInterface[]
      */
     protected function listRecordsGetDeleted($from, $until, $currentCursor)
     {
-        $tracker = $this->tableManager->get('ChangeTracker');
-        return $tracker->retrieveDeleted(
+        return $this->trackerService->getDeletedEntities(
             $this->core,
-            date('Y-m-d H:i:s', $from),
-            date('Y-m-d H:i:s', $until),
+            \DateTime::createFromFormat('U', $from),
+            \DateTime::createFromFormat('U', $until),
             $currentCursor,
             $this->pageSize
         );
@@ -985,11 +969,10 @@ class Server
      */
     protected function listRecordsGetDeletedCount($from, $until)
     {
-        $tracker = $this->tableManager->get('ChangeTracker');
-        return $tracker->retrieveDeletedCount(
+        return $this->trackerService->getDeletedCount(
             $this->core,
-            date('Y-m-d H:i:s', $from),
-            date('Y-m-d H:i:s', $until)
+            \DateTime::createFromFormat('U', $from),
+            \DateTime::createFromFormat('U', $until)
         );
     }
 
@@ -1150,18 +1133,18 @@ class Server
      */
     protected function isBadDate($from, $until)
     {
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
-        if ($dt === false || array_sum($dt->getLastErrors())) {
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
+        if (!$this->dateTimeCreationSuccessful($dt)) {
             return true;
         }
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
-        if ($dt === false || array_sum($dt->getLastErrors())) {
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
+        if (!$this->dateTimeCreationSuccessful($dt)) {
             return true;
         }
-        //check for different date granularity
+        // Check for different date granularity
         if (strpos($from, 'T') && strpos($from, 'Z')) {
             if (strpos($until, 'T') && strpos($until, 'Z')) {
-                //this is good
+                // This is good
             } else {
                 return true;
             }
@@ -1178,6 +1161,28 @@ class Server
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if a DateTime was successfully created without errors or warnings
+     *
+     * @param \DateTime|false $dt DateTime or false (return value of createFromFormat)
+     *
+     * @return bool
+     */
+    protected function dateTimeCreationSuccessful(\DateTime|false $dt): bool
+    {
+        // Return value false is always an error:
+        if (false === $dt) {
+            return false;
+        }
+        $errors = $dt->getLastErrors();
+        // getLastErrors returns false if no errors on PHP 8.2 and later:
+        if (false === $errors) {
+            return true;
+        }
+        // getLastErrors returns an array with no errors on PHP 8.1:
+        return empty($errors['errors']) && empty($errors['warnings']);
     }
 
     /**
@@ -1241,15 +1246,13 @@ class Server
      */
     protected function loadResumptionToken($token)
     {
-        // Create object for loading tokens:
-        $search = $this->tableManager->get('OaiResumption');
-
         // Clean up expired records before doing our search:
-        $search->removeExpired();
+        $this->resumptionService->removeExpired();
 
         // Load the requested token if it still exists:
-        if ($row = $search->findToken($token)) {
-            return $row->restoreParams();
+        if ($row = $this->resumptionService->findToken($token)) {
+            parse_str($row->getResumptionParameters(), $params);
+            return $params;
         }
 
         // If we got this far, the token is invalid or expired:
@@ -1319,9 +1322,8 @@ class Server
         $params['cursorMark'] = $cursorMark;
 
         // Save everything to the database:
-        $search = $this->tableManager->get('OaiResumption');
         $expire = time() + 24 * 60 * 60;
-        $token = $search->saveToken($params, $expire);
+        $token = $this->resumptionService->createAndPersistToken($params, $expire)->getId();
 
         // Add details to the xml:
         $token = $xml->addChild('resumptionToken', $token);
@@ -1399,9 +1401,8 @@ class Server
 
         // Prefix?  Strip it off and return the stripped version if valid:
         $prefix = 'oai:' . $this->idNamespace . ':';
-        $prefixLen = strlen($prefix);
-        if (substr($id, 0, $prefixLen) == $prefix) {
-            return substr($id, $prefixLen);
+        if (str_starts_with($id, $prefix)) {
+            return substr($id, strlen($prefix));
         }
 
         // Invalid prefix -- unrecognized ID:

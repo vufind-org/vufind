@@ -32,6 +32,8 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Service\RecordServiceInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFindConsole\Command\Util\PurgeCachedRecordCommand;
 
 /**
@@ -51,7 +53,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function basicOperationProvider(): array
+    public static function basicOperationProvider(): array
     {
         return [
             ['Solr', '123', false, true, null],
@@ -81,16 +83,12 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
         bool $recordRetVal,
         ?bool $resourceRetVal
     ): void {
-        $recordTable = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
-            ->disableOriginalConstructor()->getMock();
-        $recordTable->expects($this->once())->method('delete')
-            ->with($this->equalTo(['source' => 'Solr', 'record_id' => 123]))
-            ->willReturn($recordRetVal);
+        $recordService = $this->createMock(RecordServiceInterface::class);
+        $recordService->expects($this->once())->method('deleteRecord')->with('123', 'Solr')->willReturn($recordRetVal);
 
-        $resourceTable = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
-            ->disableOriginalConstructor()->getMock();
+        $resourceService = $this->createMock(ResourceServiceInterface::class);
         if (null !== $resourceRetVal) {
-            $resourceTable->expects($this->once())->method('delete')
+            $resourceService->expects($this->once())->method('deleteResourceByRecordId')->with('123', 'Solr')
                 ->willReturn($resourceRetVal);
         }
         $params = compact('source', 'id');
@@ -98,7 +96,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $params['--purge-resource'] = true;
         }
 
-        $command = new PurgeCachedRecordCommand($recordTable, $resourceTable);
+        $command = new PurgeCachedRecordCommand($recordService, $resourceService);
         $commandTester = new CommandTester($command);
         $commandTester->execute($params);
         $expected = $recordRetVal ? "Cached record deleted\n" : "No cached record found\n";

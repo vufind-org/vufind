@@ -45,25 +45,21 @@ use VuFind\OAI\Server as Base;
 class Auth extends Base
 {
     /**
-     * Constructor
+     * Search object class to use
      *
-     * @param \VuFind\Search\Results\PluginManager $results Search manager for
-     * retrieving records
-     * @param \VuFind\Record\Loader                $loader  Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @var string
      */
-    public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables
-    ) {
-        parent::__construct($results, $loader, $tables);
-        $this->core = 'authority';
-        $this->searchClassId = 'SolrAuth';
-    }
+    protected $searchClassId = 'SolrAuth';
 
     /**
-     * Load data from the OAI section of config.ini.  (This is called by the
+     * What Solr core are we serving up?
+     *
+     * @var string
+     */
+    protected $core = 'authority';
+
+    /**
+     * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *

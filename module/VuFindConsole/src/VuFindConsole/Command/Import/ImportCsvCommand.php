@@ -29,12 +29,15 @@
 
 namespace VuFindConsole\Command\Import;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\CSV\Importer;
+
+use function is_callable;
 
 /**
  * Console command: CSV importer
@@ -45,15 +48,12 @@ use VuFind\CSV\Importer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'import/import-csv',
+    description: 'CSV importer'
+)]
 class ImportCsvCommand extends Command
 {
-    /**
-     * The name of the command
-     *
-     * @var string
-     */
-    protected static $defaultName = 'import/import-csv';
-
     /**
      * CSV importer
      *
@@ -82,7 +82,6 @@ class ImportCsvCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('CSV importer')
             ->setHelp('Indexes CSV files into Solr.')
             ->addArgument(
                 'CSV_file',

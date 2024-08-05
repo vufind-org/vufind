@@ -42,7 +42,7 @@ use VuFind\AjaxHandler\KeepAliveFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
+class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Test the AJAX handler's basic response.

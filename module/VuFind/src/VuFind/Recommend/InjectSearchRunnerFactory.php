@@ -38,11 +38,12 @@ use VuFind\Search\SearchRunner;
 /**
  * Factory for instantiating recommendation modules with search runner.
  *
- * @category VuFind
- * @package  Recommendations
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @category   VuFind
+ * @package    Recommendations
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org/wiki/development Wiki
+ * @deprecated Use AbstractSearchObjectFactory
  */
 class InjectSearchRunnerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {

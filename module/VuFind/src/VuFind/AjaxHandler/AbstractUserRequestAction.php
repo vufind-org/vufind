@@ -65,7 +65,7 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
         if (!$patron) {
             return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
         }
-        if (!$this->ils->checkCapability($this->lookupMethod)) {
+        if (!$this->ils->checkCapability($this->lookupMethod, [$patron])) {
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);

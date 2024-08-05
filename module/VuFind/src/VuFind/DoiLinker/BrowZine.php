@@ -33,6 +33,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
 use VuFindSearch\Service;
 
+use function in_array;
+
 /**
  * BrowZine DOI linker
  *

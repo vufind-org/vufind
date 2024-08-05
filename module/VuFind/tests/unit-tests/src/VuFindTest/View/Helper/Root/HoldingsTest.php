@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use VuFind\ILS\Logic\AvailabilityStatus;
+
 /**
  * Holdings view helper Test Class
  *
@@ -45,7 +47,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function barcodeVisibilityBehaviorProvider(): array
+    public static function barcodeVisibilityBehaviorProvider(): array
     {
         return [
             'default' => [[], true, true],
@@ -75,11 +77,16 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
         $helper = new \VuFind\View\Helper\Root\Holdings(['Catalog' => $config]);
         $this->assertEquals(
             $expectedBarcodeResult,
-            $helper->holdingIsVisible(['barcode' => '1234'])
+            $helper->holdingIsVisible(
+                [
+                    'availability' => new AvailabilityStatus(true, 'Available'),
+                    'barcode' => '1234',
+                ]
+            )
         );
         $this->assertEquals(
             $expectedNoBarcodeResult,
-            $helper->holdingIsVisible([])
+            $helper->holdingIsVisible(['availability' => new AvailabilityStatus(true, 'Available')])
         );
     }
 }

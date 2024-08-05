@@ -89,7 +89,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
             throw new \Exception('Invalid XML');
         }
 
-        $i = 0;
         foreach ($this->sourceList as $source => $sourceInfo) {
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
@@ -112,7 +111,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $toc = $sourceInfo['div'];
                 } else {
                     // Get the marc field for toc (970)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld970");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
 
                     foreach ($nodes as $node) {
                         $li = '';
@@ -120,7 +119,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         // Chapter labels.
                         $nodeList = $node->getElementsByTagName('l');
                         if ($nodeList->length > 0) {
-                            $li .= sprintf("%s. ", $nodeList->item(0)->nodeValue);
+                            $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
                         }
 
                         // Chapter title.
@@ -136,7 +135,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         );
                     }
                 }
-                $i++;
             }
         }
 

@@ -31,6 +31,10 @@
 
 namespace VuFind\Search\EDS;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 /**
  * EDS API Options
  *
@@ -43,6 +47,8 @@ namespace VuFind\Search\EDS;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
+
     /**
      * Default limit option
      *
@@ -188,6 +194,8 @@ class Options extends \VuFind\Search\Base\Options
                 $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
             );
         }
+        // Make sure first-last navigation is never enabled since we cannot support:
+        $this->firstLastNavigationSupported = false;
     }
 
     /**
@@ -471,19 +479,16 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $this->searchSettings->General->default_limit;
         }
         if (isset($this->searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(",", $this->searchSettings->General->limit_options);
+            $this->limitOptions = $this->explodeListSetting($this->searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference
         if (isset($this->searchSettings->General->highlighting)) {
-            $this->highlight = $this->searchSettings->General->highlighting;
-        }
-
-        // Load search preferences:
-        if (isset($this->searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $this->searchSettings->General->retain_filters_by_default;
+            // For legacy config compatibility, support the "n" value to disable highlighting:
+            $falsyStrings = ['n', 'false'];
+            $this->highlight = in_array(strtolower($this->searchSettings->General->highlighting), $falsyStrings)
+                ? false
+                : (bool)$this->searchSettings->General->highlighting;
         }
 
         // View preferences
@@ -506,10 +511,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->configureAutocomplete($this->searchSettings);
 
         if (isset($this->searchSettings->General->advanced_limiters)) {
-            $this->advancedLimiters = array_map(
-                'trim',
-                explode(',', $this->searchSettings->General->advanced_limiters)
-            );
+            $this->advancedLimiters = $this->explodeListSetting($this->searchSettings->General->advanced_limiters);
         }
     }
 

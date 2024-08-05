@@ -35,6 +35,9 @@ use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
 
+use function count;
+use function is_array;
+
 /**
  * AJAX handler for fetching versions link
  *

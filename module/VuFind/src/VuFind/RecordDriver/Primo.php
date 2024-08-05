@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+
 /**
  * Model for Primo Central records.
  *
@@ -148,7 +150,13 @@ class Primo extends DefaultRecord
      */
     public function getFormats()
     {
-        return (array)($this->fields['format'] ?? []);
+        // Convert to displayable words and return as an array:
+        return array_map(
+            function ($s) {
+                return ucwords(str_replace('_', ' ', $s));
+            },
+            (array)($this->fields['format'])
+        );
     }
 
     /**
@@ -271,8 +279,21 @@ class Primo extends DefaultRecord
     }
 
     /**
+     * Get citation references
+     *
+     * @return array
+     */
+    public function getCitations(): array
+    {
+        return [
+            'cites' => $this->fields['cites'] ?? [],
+            'cited_by' => $this->fields['cited_by'] ?? [],
+        ];
+    }
+
+    /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *

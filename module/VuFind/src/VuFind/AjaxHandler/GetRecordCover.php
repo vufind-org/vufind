@@ -36,6 +36,8 @@ use VuFind\Cover\Router as CoverRouter;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
 
+use function in_array;
+
 /**
  * GetRecordCover AJAX handler.
  *

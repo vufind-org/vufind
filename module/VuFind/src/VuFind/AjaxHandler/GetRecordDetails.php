@@ -130,7 +130,7 @@ class GetRecordDetails extends AbstractBase
         );
 
         $html = $this->renderer->render(
-            "record/ajaxview-" . $viewtype . ".phtml",
+            'record/ajaxview-' . $viewtype . '.phtml',
             [
                 'defaultTab' => $details['default'],
                 'driver' => $driver,

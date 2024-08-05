@@ -35,6 +35,13 @@ use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
 
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
+use function strlen;
+
 /**
  * Generator tools.
  *
@@ -92,7 +99,7 @@ class GeneratorTools
         $handle = opendir($moduleDir);
         $results = [];
         while ($line = readdir($handle)) {
-            if (substr($line, 0, 6) === 'VuFind' && strlen($line) > 6) {
+            if (str_starts_with($line, 'VuFind') && strlen($line) > 6) {
                 $results[] = $line;
             }
         }
@@ -507,7 +514,7 @@ class GeneratorTools
     ) {
         $factories = $this->getAllFactoriesFromContainer($container);
         foreach (array_keys($factories) as $service) {
-            if (substr($service, -13) == 'PluginManager') {
+            if (str_ends_with($service, 'PluginManager')) {
                 $pm = $container->get($service);
                 if (null !== $this->getFactoryFromContainer($pm, $class)) {
                     return $pm;
@@ -665,7 +672,7 @@ class GeneratorTools
         }
         $className = $classNames[0];
         // Figure out fully qualified name for purposes of createSubclassInModule():
-        $fqClassName = (substr($className, 0, 1) != '\\')
+        $fqClassName = (!str_starts_with($className, '\\'))
             ? "$ns\\$className" : $className;
         $newClass = $this->generateLocalClassName($fqClassName, $module);
         $body = preg_replace(

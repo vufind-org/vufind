@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Language;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,15 +43,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'language/addusingtemplate',
+    description: 'Template-based string builder'
+)]
 class AddUsingTemplateCommand extends AbstractCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'language/addusingtemplate';
-
     /**
      * Configure the command.
      *
@@ -59,7 +57,6 @@ class AddUsingTemplateCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setDescription('Template-based string builder')
             ->setHelp(
                 'Builds new language strings from existing ones using a template'
             )->addArgument(

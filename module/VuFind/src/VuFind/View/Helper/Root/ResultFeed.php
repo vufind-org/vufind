@@ -36,6 +36,10 @@ use Laminas\View\Helper\AbstractHelper;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
+use function is_array;
+use function is_string;
+use function strlen;
+
 /**
  * "Results as feed" view helper
  *

@@ -32,7 +32,10 @@ namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
 
 /**
  * VuFind Driver for Koha (version: 3.02)
@@ -181,7 +184,7 @@ class Koha extends AbstractBase
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -196,19 +199,19 @@ class Koha extends AbstractBase
         $duedate = $status = '';
         $inum = 0;
         $loc = $shelf = '';
-        $sql = "select itemnumber as ITEMNO, location as LOCATION, " .
-            "holdingbranch as HLDBRNCH, reserves as RESERVES, itemcallnumber as " .
-            "CALLNO, barcode as BARCODE, copynumber as COPYNO, " .
-            "enumchron AS ENUMCHRON, notforloan as NOTFORLOAN" .
-            " from items where biblionumber = :id" .
-            " order by itemnumber";
+        $sql = 'select itemnumber as ITEMNO, location as LOCATION, ' .
+            'holdingbranch as HLDBRNCH, reserves as RESERVES, itemcallnumber as ' .
+            'CALLNO, barcode as BARCODE, copynumber as COPYNO, ' .
+            'enumchron AS ENUMCHRON, notforloan as NOTFORLOAN' .
+            ' from items where biblionumber = :id' .
+            ' order by itemnumber';
         try {
             $itemSqlStmt = $this->db->prepare($sql);
             $itemSqlStmt->execute([':id' => $id]);
             foreach ($itemSqlStmt->fetchAll() as $rowItem) {
                 $inum = $rowItem['ITEMNO'];
-                $sql = "select date_due as DUEDATE from issues " .
-                    "where itemnumber = :inum";
+                $sql = 'select date_due as DUEDATE from issues ' .
+                    'where itemnumber = :inum';
 
                 switch ($rowItem['NOTFORLOAN']) {
                     case 0:
@@ -238,8 +241,8 @@ class Koha extends AbstractBase
 
                 //Retrieving the full branch name
                 if (null != ($loc = $rowItem['HLDBRNCH'])) {
-                    $sql = "select branchname as BNAME from branches where " .
-                        "branchcode = :loc";
+                    $sql = 'select branchname as BNAME from branches where ' .
+                        'branchcode = :loc';
                     $locSqlStmt = $this->db->prepare($sql);
                     $locSqlStmt->execute([':loc' => $loc]);
                     $row = $locSqlStmt->fetch();
@@ -247,14 +250,14 @@ class Koha extends AbstractBase
                         $loc = $row['BNAME'];
                     }
                 } else {
-                    $loc = "Unknown";
+                    $loc = 'Unknown';
                 }
 
                 //Retrieving the location (shelf types)
                 $shelf = $rowItem['LOCATION'];
                 $loc = (null != $shelf)
-                    ? $loc . ": " . ($this->locCodes[$shelf] ?? $shelf)
-                    : $loc . ": " . 'Unknown';
+                    ? $loc . ': ' . ($this->locCodes[$shelf] ?? $shelf)
+                    : $loc . ': ' . 'Unknown';
 
                 //A default value is stored for null
                 $holding[] = [
@@ -308,7 +311,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -319,16 +322,16 @@ class Koha extends AbstractBase
         $fineLst = [];
         try {
             $id = $patron['id'];
-            $sql = "select round(accountlines.amount*100) as AMOUNT, " .
-                "issues.issuedate as CHECKOUT, " .
-                "accountlines.description as FINE, " .
-                "round(accountlines.amountoutstanding*100) as BALANCE, " .
-                "issues.date_due as DUEDATE, items.biblionumber as BIBNO " .
-                "from accountlines join issues on " .
-                "accountlines.borrowernumber = issues.borrowernumber and " .
-                "accountlines.itemnumber = issues.itemnumber " .
-                "join items on accountlines.itemnumber = items.itemnumber " .
-                "where accountlines.borrowernumber = :id";
+            $sql = 'select round(accountlines.amount*100) as AMOUNT, ' .
+                'issues.issuedate as CHECKOUT, ' .
+                'accountlines.description as FINE, ' .
+                'round(accountlines.amountoutstanding*100) as BALANCE, ' .
+                'issues.date_due as DUEDATE, items.biblionumber as BIBNO ' .
+                'from accountlines join issues on ' .
+                'accountlines.borrowernumber = issues.borrowernumber and ' .
+                'accountlines.itemnumber = issues.itemnumber ' .
+                'join items on accountlines.itemnumber = items.itemnumber ' .
+                'where accountlines.borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
@@ -354,7 +357,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -365,12 +368,12 @@ class Koha extends AbstractBase
         $holdLst = [];
         try {
             $id = $patron['id'];
-            $sql = "select reserves.biblionumber as BIBNO, " .
-                "branches.branchname as BRNAME, " .
-                "reserves.expirationdate as EXDATE, " .
-                "reserves.reservedate as RSVDATE from reserves " .
-                "join branches on reserves.branchcode = branches.branchcode " .
-                "where reserves.borrowernumber = :id";
+            $sql = 'select reserves.biblionumber as BIBNO, ' .
+                'branches.branchname as BRNAME, ' .
+                'reserves.expirationdate as EXDATE, ' .
+                'reserves.reservedate as RSVDATE from reserves ' .
+                'join branches on reserves.branchcode = branches.branchcode ' .
+                'where reserves.borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
@@ -404,9 +407,9 @@ class Koha extends AbstractBase
         $profile = [];
         try {
             $id = $patron['id'];
-            $sql = "select address as ADDR1, address2 as ADDR2, zipcode as ZIP, " .
-                "phone as PHONE, categorycode as GRP from borrowers " .
-                "where borrowernumber = :id";
+            $sql = 'select address as ADDR1, address2 as ADDR2, zipcode as ZIP, ' .
+                'phone as PHONE, categorycode as GRP from borrowers ' .
+                'where borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             $row = $sqlStmt->fetch();
@@ -436,7 +439,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -447,10 +450,10 @@ class Koha extends AbstractBase
         $row = $sql = $sqlStmt = '';
         try {
             $id = $patron['id'];
-            $sql = "select issues.date_due as DUEDATE, items.biblionumber as " .
-                "BIBNO, items.barcode BARCODE, issues.renewals as RENEWALS " .
-                "from issues join items on issues.itemnumber = items.itemnumber " .
-                "where issues.borrowernumber = :id";
+            $sql = 'select issues.date_due as DUEDATE, items.biblionumber as ' .
+                'BIBNO, items.barcode BARCODE, issues.renewals as RENEWALS ' .
+                'from issues join items on issues.itemnumber = items.itemnumber ' .
+                'where issues.borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
@@ -483,10 +486,10 @@ class Koha extends AbstractBase
 
         try {
             $id = $patron['id'];
-            $sql = "select type as TYPE, comment as COMMENT " .
-                "from borrower_debarments " .
-                "where (expiration is null or expiration >= NOW()) " .
-                "and borrowernumber = :id";
+            $sql = 'select type as TYPE, comment as COMMENT ' .
+                'from borrower_debarments ' .
+                'where (expiration is null or expiration >= NOW()) ' .
+                'and borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
 
@@ -520,7 +523,7 @@ class Koha extends AbstractBase
      * @param array $patron The patron array from patronLogin
      * @param array $params Parameters
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -533,8 +536,8 @@ class Koha extends AbstractBase
             $id = $patron['id'];
 
             // Get total count first
-            $sql = "select count(*) as cnt from old_issues " .
-                "where old_issues.borrowernumber = :id";
+            $sql = 'select count(*) as cnt from old_issues ' .
+                'where old_issues.borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             $totalCount = $sqlStmt->fetch()['cnt'];
@@ -560,14 +563,14 @@ class Koha extends AbstractBase
             } else {
                 $sort = 'ISSUEDATE desc';
             }
-            $sql = "select old_issues.issuedate as ISSUEDATE, " .
-                "old_issues.date_due as DUEDATE, items.biblionumber as " .
-                "BIBNO, items.barcode BARCODE, old_issues.returndate as RETURNED, " .
-                "biblio.title as TITLE " .
-                "from old_issues join items " .
-                "on old_issues.itemnumber = items.itemnumber " .
-                "join biblio on items.biblionumber = biblio.biblionumber " .
-                "where old_issues.borrowernumber = :id " .
+            $sql = 'select old_issues.issuedate as ISSUEDATE, ' .
+                'old_issues.date_due as DUEDATE, items.biblionumber as ' .
+                'BIBNO, items.barcode BARCODE, old_issues.returndate as RETURNED, ' .
+                'biblio.title as TITLE ' .
+                'from old_issues join items ' .
+                'on old_issues.itemnumber = items.itemnumber ' .
+                'join biblio on items.biblionumber = biblio.biblionumber ' .
+                'where old_issues.borrowernumber = :id ' .
                 "order by $sort limit $start,$limit";
             $sqlStmt = $this->db->prepare($sql);
 
@@ -681,7 +684,7 @@ class Koha extends AbstractBase
 
         $stored_hash = '';
         try {
-            $sql = "select password from borrowers where userid = :username";
+            $sql = 'select password from borrowers where userid = :username';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':username' => $username]);
             $row = $sqlStmt->fetch();
@@ -694,7 +697,7 @@ class Koha extends AbstractBase
             $this->throwAsIlsException($e);
         }
 
-        if ("$2a$" == substr($stored_hash, 0, 4)) {
+        if (str_starts_with($stored_hash, '$2a$')) {
             // Newer Koha version that uses bcrypt
             $db_pwd = crypt($password, $stored_hash);
         } else {
@@ -704,14 +707,14 @@ class Koha extends AbstractBase
             $db_pwd = rtrim(base64_encode(pack('H*', md5($password))), '=');
         }
 
-        $sql = "select borrowernumber as ID, firstname as FNAME, " .
-            "surname as LNAME, email as EMAIL from borrowers " .
-            "where userid = :username";
+        $sql = 'select borrowernumber as ID, firstname as FNAME, ' .
+            'surname as LNAME, email as EMAIL from borrowers ' .
+            'where userid = :username';
 
         $parameters = [':username' => $username];
 
         if ($this->validatePasswords) {
-            $sql .= " and password = :db_pwd";
+            $sql .= ' and password = :db_pwd';
             $parameters[':db_pwd'] = $db_pwd;
         }
 
@@ -722,7 +725,7 @@ class Koha extends AbstractBase
             $row = $sqlStmt->fetch();
             if ($row) {
                 // NOTE: Here, 'cat_password' => $password is used, password is
-                // saved in a clear text as user provided.  If 'cat_password' =>
+                // saved in a clear text as user provided. If 'cat_password' =>
                 // $db_pwd was used, then password will be saved encrypted as in
                 // 'borrowers' table of 'koha' database
                 $patron = [
@@ -754,7 +757,7 @@ class Koha extends AbstractBase
     public function displayDate($date)
     {
         if (empty($date)) {
-            return "";
+            return '';
         } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
             return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
@@ -776,7 +779,7 @@ class Koha extends AbstractBase
     public function displayDateTime($date)
     {
         if (empty($date)) {
-            return "";
+            return '';
         } elseif (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
             // YYYY-MM-DD HH:MM:SS
             return

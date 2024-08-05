@@ -40,7 +40,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EDSResults extends SearchObject
+class EDSResults extends AbstractSearchObject
 {
     /**
      * Get the search class ID to use for building search objects.
@@ -50,5 +50,15 @@ class EDSResults extends SearchObject
     protected function getSearchClassId()
     {
         return 'EDS';
+    }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'EDS Results';
     }
 }

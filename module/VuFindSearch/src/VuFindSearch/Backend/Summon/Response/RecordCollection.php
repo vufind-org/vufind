@@ -31,6 +31,8 @@ namespace VuFindSearch\Backend\Summon\Response;
 
 use VuFindSearch\Response\AbstractRecordCollection;
 
+use function is_array;
+
 /**
  * WorldCat record collection.
  *

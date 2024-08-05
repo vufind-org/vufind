@@ -29,6 +29,9 @@
 
 namespace VuFind\XSLT\Import;
 
+use function call_user_func;
+use function count;
+
 /**
  * XSLT importer support methods for geographic indexing.
  *

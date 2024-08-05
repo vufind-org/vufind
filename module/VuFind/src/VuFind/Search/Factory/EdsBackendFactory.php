@@ -70,6 +70,24 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $accountData;
 
     /**
+     * Default URL for the EDS Backend.  Set here for the EDS API.
+     *
+     * @var str
+     */
+    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
+
+    /**
+     * Get the service name. This is used for both configuration
+     * and record driver retrieval.
+     *
+     * @return str
+     */
+    protected function getServiceName()
+    {
+        return 'EDS';
+    }
+
+    /**
      * Create service
      *
      * @param ContainerInterface $sm      Service manager
@@ -83,11 +101,10 @@ class EdsBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $this->edsConfig = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('EDS');
+        $this->edsConfig = $this->getService(\VuFind\Config\PluginManager::class)
+            ->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend = $this->createBackend($connector);
@@ -104,27 +121,27 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector)
     {
-        $auth = $this->serviceLocator
-            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
             $connector,
             $this->createRecordCollectionFactory(),
-            $this->serviceLocator->get(\VuFind\Cache\Manager::class)
+            $this->getService(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
             $session,
             $this->edsConfig,
             $isGuest
         );
         $backend->setAuthManager(
-            $this->serviceLocator->get(\VuFind\Auth\Manager::class)
+            $this->getService(\VuFind\Auth\Manager::class)
         );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setBackendType($this->getServiceName());
         return $backend;
     }
 
@@ -135,17 +152,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
-        $options = [
-            'search_http_method' => $this->edsConfig->General->search_http_method
-                ?? 'POST',
-        ];
-        if (isset($this->edsConfig->General->api_url)) {
-            $options['api_url'] = $this->edsConfig->General->api_url;
-        }
-        if (isset($this->edsConfig->General->auth_url)) {
-            $options['auth_url'] = $this->edsConfig->General->auth_url;
-        }
-
+        $options = $this->createConnectorOptions();
         $httpOptions = [
             'sslverifypeer'
                 => (bool)($this->edsConfig->General->sslverifypeer ?? true),
@@ -162,6 +169,28 @@ class EdsBackendFactory extends AbstractBackendFactory
             $connector->setCache($cache);
         }
         return $connector;
+    }
+
+    /**
+     * Create the options array for the EDS connector.
+     *
+     * @return array
+     */
+    protected function createConnectorOptions()
+    {
+        $options = [
+            'search_http_method' => $this->edsConfig->General->search_http_method
+                ?? 'POST',
+            'api_url' => $this->edsConfig->General->api_url
+                ?? $this->defaultApiUrl,
+        ];
+        if (isset($this->edsConfig->General->auth_url)) {
+            $options['auth_url'] = $this->edsConfig->General->auth_url;
+        }
+        if (isset($this->edsConfig->General->session_url)) {
+            $options['session_url'] = $this->edsConfig->General->session_url;
+        }
+        return $options;
     }
 
     /**
@@ -182,10 +211,9 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
-            $driver = $manager->get('EDS');
+            $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);
             return $driver;
         };
@@ -201,7 +229,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         // Attach hide facet value listener:
         $hfvListener = $this->getHideFacetValueListener($backend, $this->edsConfig);

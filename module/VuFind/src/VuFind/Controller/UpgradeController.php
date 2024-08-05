@@ -47,10 +47,22 @@ use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
-use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Db\Service\ResourceTagsServiceInterface;
+use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Tags\TagsService;
+
+use function count;
+use function dirname;
+use function in_array;
+use function is_string;
+use function strlen;
 
 /**
  * Class controls VuFind upgrading.
@@ -109,7 +121,7 @@ class UpgradeController extends AbstractBase
         $this->cookie = new CookieContainer('vfup', $cookieManager);
 
         // ...however, once the configuration piece of the upgrade is done, we can
-        // safely use the session for storing some values.  We'll use this for the
+        // safely use the session for storing some values. We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
         $this->session = $sessionContainer;
@@ -190,9 +202,7 @@ class UpgradeController extends AbstractBase
     public function establishversionsAction()
     {
         $this->cookie->newVersion = Version::getBuildVersion();
-        $this->cookie->oldVersion = Version::getBuildVersion(
-            $this->cookie->sourceDir
-        );
+        $this->cookie->oldVersion = Version::getBuildVersion($this->getSourceDir());
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
@@ -227,7 +237,7 @@ class UpgradeController extends AbstractBase
     {
         $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
-            ? $this->cookie->sourceDir . '/web/conf'
+            ? $this->getSourceDir() . '/web/conf'
             : $localConfig;
         $upgrader = new Upgrade(
             $this->cookie->oldVersion,
@@ -242,7 +252,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->configOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         } catch (Exception $e) {
-            $extra = is_a($e, 'VuFind\Exception\FileAccess')
+            $extra = is_a($e, \VuFind\Exception\FileAccess::class)
                 ? '  Check file permissions.' : '';
             $this->flashMessenger()->addMessage(
                 'Config upgrade failed: ' . $e->getMessage() . $extra,
@@ -263,7 +273,7 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $factory = $this->serviceLocator->get(AdapterFactory::class);
+            $factory = $this->getService(AdapterFactory::class);
             $adapter = $factory->getAdapter(
                 $this->session->dbRootUser,
                 $this->session->dbRootPass
@@ -309,15 +319,23 @@ class UpgradeController extends AbstractBase
      */
     protected function fixVuFindSourceInDatabase()
     {
-        $resource = $this->getTable('resource');
-        $resourceWhere = ['source' => 'VuFind'];
-        $resourceRows = $resource->select($resourceWhere);
-        if (count($resourceRows) > 0) {
-            $resource->update(['source' => 'Solr'], $resourceWhere);
-            $this->session->warnings->append(
-                'Converted ' . count($resourceRows)
-                . ' legacy "VuFind" source value(s) in resource table'
-            );
+        if ($count = $this->getDbService(ResourceServiceInterface::class)->renameSource('VuFind', 'Solr')) {
+            $this->session->warnings
+                ->append('Converted ' . $count . ' legacy "VuFind" source value(s) in resource table');
+        }
+    }
+
+    /**
+     * Support method for fixdatabaseAction() -- clean up invalid user ID
+     * values in the search table.
+     *
+     * @return void
+     */
+    protected function fixInvalidUserIdsInSearchTable(): void
+    {
+        $count = $this->getDbService(SearchServiceInterface::class)->cleanUpInvalidUserIds();
+        if ($count) {
+            $this->session->warnings->append("Converted $count invalid user_id values in search table");
         }
     }
 
@@ -328,17 +346,19 @@ class UpgradeController extends AbstractBase
      */
     protected function fixSearchChecksumsInDatabase()
     {
-        $manager = $this->serviceLocator->get(ResultsManager::class);
-        $search = $this->getTable('search');
-        $searchWhere = ['checksum' => null, 'saved' => 1];
-        $searchRows = $search->select($searchWhere);
+        $manager = $this->getService(ResultsManager::class);
+        $searchService = $this->getDbService(SearchServiceInterface::class);
+        $searchRows = $searchService->getSavedSearchesWithMissingChecksums();
         if (count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
-                $searchObj = $searchRow->getSearchObject()->deminify($manager);
+                $searchObj = $searchRow->getSearchObject()?->deminify($manager);
+                if (!$searchObj) {
+                    throw new Exception("Missing search data for row {$searchRow->getId()}.");
+                }
                 $url = $searchObj->getUrlQuery()->getParams();
                 $checksum = crc32($url) & 0xFFFFFFF;
-                $searchRow->checksum = $checksum;
-                $searchRow->save();
+                $searchRow->setChecksum($checksum);
+                $searchService->persistEntity($searchRow);
             }
             $this->session->warnings->append(
                 'Added checksum to ' . count($searchRows) . ' rows in search table'
@@ -379,7 +399,7 @@ class UpgradeController extends AbstractBase
                         }
                         $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                         $this->session->warnings->append(
-                            "Removed deprecated column(s) from table(s): "
+                            'Removed deprecated column(s) from table(s): '
                             . implode(', ', array_keys($deprecatedColumns))
                         );
                     }
@@ -391,7 +411,7 @@ class UpgradeController extends AbstractBase
             }
         }
 
-        // Check for missing tables.  Note that we need to finish dealing with
+        // Check for missing tables. Note that we need to finish dealing with
         // missing tables before we proceed to the missing columns check, or else
         // the missing tables will cause fatal errors during the column test.
         $missingTables = $this->dbUpgrade()->getMissingTables();
@@ -403,7 +423,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Created missing table(s): " . implode(', ', $missingTables)
+                    'Created missing table(s): ' . implode(', ', $missingTables)
                 );
             }
             $sql .= $this->dbUpgrade()
@@ -421,7 +441,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Added column(s) to table(s): "
+                    'Added column(s) to table(s): '
                     . implode(', ', array_keys($missingCols))
                 );
             }
@@ -440,7 +460,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified column(s) in table(s): "
+                    'Modified column(s) in table(s): '
                     . implode(', ', array_keys($modifiedCols))
                 );
             }
@@ -458,7 +478,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Added constraint(s) to table(s): "
+                    'Added constraint(s) to table(s): '
                     . implode(', ', array_keys($missingConstraints))
                 );
             }
@@ -477,7 +497,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified constraint(s) in table(s): "
+                    'Modified constraint(s) in table(s): '
                     . implode(', ', array_keys($modifiedConstraints))
                 );
             }
@@ -495,7 +515,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified key(s) in table(s): "
+                    'Modified key(s) in table(s): '
                     . implode(', ', array_keys($modifiedKeys))
                 );
             }
@@ -512,7 +532,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified character set(s)/collation(s) in table(s): "
+                    'Modified character set(s)/collation(s) in table(s): '
                     . implode(', ', array_keys($colProblems))
                 );
             }
@@ -541,8 +561,7 @@ class UpgradeController extends AbstractBase
                 // If this is a MySQL connection, we can do an automatic upgrade;
                 // if VuFind is using a different database, we have to prompt the
                 // user to check the migrations directory and upgrade manually.
-                $adapter = $this->serviceLocator
-                    ->get(Adapter::class);
+                $adapter = $this->getService(Adapter::class);
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);
@@ -564,13 +583,12 @@ class UpgradeController extends AbstractBase
             // content -- the checks below should be platform-independent.
 
             // Check for legacy tag bugs:
-            $resourceTagsTable = $this->getTable('ResourceTags');
-            $anonymousTags = $resourceTagsTable->getAnonymousCount();
+            $anonymousTags = $this->getDbService(ResourceTagsServiceInterface::class)->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->getTable('Tags')->getDuplicates();
+            $dupeTags = $this->getService(TagsService::class)->getDuplicateTags();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -580,6 +598,9 @@ class UpgradeController extends AbstractBase
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
+
+            // Fix invalid user IDs in search table, if necessary.
+            $this->fixInvalidUserIdsInSearchTable();
         } catch (Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(),
@@ -655,16 +676,15 @@ class UpgradeController extends AbstractBase
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
             // Process form submission:
-            if ($this->formWasSubmitted('submit')) {
+            if ($this->formWasSubmitted()) {
                 $pass = $this->params()->fromPost('dbrootpass');
 
                 // Test the connection:
                 try {
                     // Query a table known to exist
-                    $factory = $this->serviceLocator
-                        ->get(AdapterFactory::class);
+                    $factory = $this->getService(AdapterFactory::class);
                     $db = $factory->getAdapter($dbrootuser, $pass);
-                    $db->query("SELECT * FROM user;");
+                    $db->query('SELECT * FROM user;');
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
@@ -694,22 +714,19 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if ($this->formWasSubmitted('submit')) {
-            $user = $this->params()->fromPost('username');
-            if (empty($user)) {
+        if ($this->formWasSubmitted()) {
+            $username = $this->params()->fromPost('username');
+            if (empty($username)) {
                 $this->flashMessenger()
                     ->addMessage('Username must not be empty.', 'error');
             } else {
-                $userTable = $this->getTable('User');
-                $user = $userTable->getByUsername($user, false);
-                if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    $this->flashMessenger()
-                        ->addMessage("User {$user} not found.", 'error');
+                $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($username);
+                if (!$user) {
+                    $this->flashMessenger()->addMessage("User {$username} not found.", 'error');
                 } else {
-                    $table = $this->getTable('ResourceTags');
-                    $table->assignAnonymousTags($user->id);
+                    $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
-                        "Assigned all anonymous tags to {$user->username}."
+                        "Assigned all anonymous tags to {$user->getUsername()}."
                     );
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 }
@@ -737,8 +754,8 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if ($this->formWasSubmitted('submit')) {
-            $this->getTable('Tags')->fixDuplicateTags();
+        if ($this->formWasSubmitted()) {
+            $this->getService(TagsService::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
@@ -763,8 +780,8 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $table = $this->getTable('Resource');
-        $problems = $table->findMissingMetadata();
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $problems = $resourceService->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
@@ -773,17 +790,23 @@ class UpgradeController extends AbstractBase
         }
 
         // Process submit button:
-        if ($this->formWasSubmitted('submit')) {
-            $converter = $this->serviceLocator->get(Converter::class);
+        if ($this->formWasSubmitted()) {
+            $resourcePopulator = $this->getService(ResourcePopulator::class);
             foreach ($problems as $problem) {
+                $recordId = $problem->getRecordId();
+                $source = $problem->getSource();
                 try {
-                    $driver = $this->getRecordLoader()
-                        ->load($problem->record_id, $problem->source);
-                    $problem->assignMetadata($driver, $converter)->save();
+                    $driver = $this->getRecordLoader()->load($recordId, $source);
+                    $resourceService->persistEntity(
+                        $resourcePopulator->assignMetadata($problem, $driver)
+                    );
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
-                        "Unable to load metadata for record "
-                        . "{$problem->source}:{$problem->record_id}"
+                        "Unable to load metadata for record {$source}:{$recordId}"
+                    );
+                } catch (\Exception $e) {
+                    $this->session->warnings->append(
+                        "Problem saving metadata updates for record {$source}:{$recordId}"
                     );
                 }
             }
@@ -802,7 +825,7 @@ class UpgradeController extends AbstractBase
         // Process form submission:
         $dir = $this->params()->fromPost('sourcedir');
         if (!empty($dir)) {
-            if (!is_dir($dir)) {
+            if (!$this->isSourceDirValid($dir)) {
                 $this->flashMessenger()
                     ->addMessage($dir . ' does not exist.', 'error');
             } elseif (!file_exists($dir . '/build.xml')) {
@@ -812,7 +835,7 @@ class UpgradeController extends AbstractBase
                     'error'
                 );
             } else {
-                $this->cookie->sourceDir = rtrim($dir, '\/');
+                $this->setSourceDir(rtrim($dir, '\/'));
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourcedir', '');
                 return $this->forwardTo('Upgrade', 'Home');
@@ -857,7 +880,7 @@ class UpgradeController extends AbstractBase
                 );
             } else {
                 $this->cookie->oldVersion = $version;
-                $this->cookie->sourceDir = realpath(APPLICATION_PATH);
+                $this->setSourceDir(realpath(APPLICATION_PATH));
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourceversion', '');
                 $this->processSkipParam();
@@ -883,6 +906,50 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Validate a source directory string.
+     *
+     * @param string $dir Directory string to check
+     *
+     * @return bool
+     */
+    protected function isSourceDirValid(string $dir): bool
+    {
+        // Prevent abuse of stream wrappers:
+        if (empty($dir) || str_contains($dir, '://')) {
+            return false;
+        }
+        return is_dir($dir);
+    }
+
+    /**
+     * Set the source directory for the upgrade
+     *
+     * @param string $dir Directory to set
+     *
+     * @return void
+     */
+    protected function setSourceDir(string $dir): void
+    {
+        $this->cookie->sourceDir = $dir;
+    }
+
+    /**
+     * Get the source directory for the upgrade
+     *
+     * @param bool $validate Should we validate the directory?
+     *
+     * @return string
+     */
+    protected function getSourceDir($validate = true): string
+    {
+        $sourceDir = $this->cookie->sourceDir ?? '';
+        if ($validate && !$this->isSourceDirValid($sourceDir)) {
+            throw new \Exception('Unexpected source directory value!');
+        }
+        return $sourceDir;
+    }
+
+    /**
      * Display summary of installation status
      *
      * @return mixed
@@ -891,16 +958,13 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = $this->serviceLocator->get(CacheManager::class);
+        $cache = $this->getService(CacheManager::class);
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }
 
         // First find out which version we are upgrading:
-        if (
-            !isset($this->cookie->sourceDir)
-            || !is_dir($this->cookie->sourceDir)
-        ) {
+        if (!$this->isSourceDirValid($this->getSourceDir(false))) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 
@@ -980,18 +1044,15 @@ class UpgradeController extends AbstractBase
      */
     protected function fixshortlinks()
     {
-        $shortlinksTable = $this->getTable('shortlinks');
+        $shortlinks = $this->getDbService(ShortlinksServiceInterface::class);
         $base62 = new Base62();
 
         try {
-            $results = $shortlinksTable->select(['hash' => null]);
+            $results = $shortlinks->getShortLinksWithMissingHashes();
 
             foreach ($results as $result) {
-                $id = $result['id'];
-                $shortlinksTable->update(
-                    ['hash' => $base62->encode($id)],
-                    ['id' => $id]
-                );
+                $result->setHash($base62->encode($result->getId()));
+                $shortlinks->persistEntity($result);
             }
 
             if (count($results) > 0) {

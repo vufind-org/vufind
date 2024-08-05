@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Row;
 
+use DateTime;
+use VuFind\Db\Entity\OaiResumptionEntityInterface;
+
 /**
  * Row Definition for oai_resumption
  *
@@ -42,7 +45,7 @@ namespace VuFind\Db\Row;
  * @property string $params
  * @property string $expires
  */
-class OaiResumption extends RowGateway
+class OaiResumption extends RowGateway implements OaiResumptionEntityInterface
 {
     /**
      * Constructor
@@ -58,6 +61,8 @@ class OaiResumption extends RowGateway
      * Extract an array of parameters from the object.
      *
      * @return array Original saved parameters.
+     *
+     * @deprecated Use parse_str() instead
      */
     public function restoreParams()
     {
@@ -78,6 +83,8 @@ class OaiResumption extends RowGateway
      * @param array $params Parameters to save.
      *
      * @return void
+     *
+     * @deprecated Use \VuFind\Db\Service\OaiResumptionService::createAndPersistToken()
      */
     public function saveParams($params)
     {
@@ -87,5 +94,61 @@ class OaiResumption extends RowGateway
             $processedParams[] = urlencode($key) . '=' . urlencode($value);
         }
         $this->params = implode('&', $processedParams);
+    }
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Resumption parameters setter
+     *
+     * @param ?string $params Resumption parameters.
+     *
+     * @return OaiResumptionEntityInterface
+     */
+    public function setResumptionParameters(?string $params): OaiResumptionEntityInterface
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+    /**
+     * Get resumption parameters.
+     *
+     * @return ?string
+     */
+    public function getResumptionParameters(): ?string
+    {
+        return $this->params;
+    }
+
+    /**
+     * Expiry date setter.
+     *
+     * @param DateTime $dateTime Expiration date
+     *
+     * @return OaiResumptionEntityInterface
+     */
+    public function setExpiry(DateTime $dateTime): OaiResumptionEntityInterface
+    {
+        $this->expires = $dateTime->format('Y-m-d H:i:s');
+        return $this;
+    }
+
+    /**
+     * Get expiry date.
+     *
+     * @return DateTime
+     */
+    public function getExpiry(): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $this->expires);
     }
 }

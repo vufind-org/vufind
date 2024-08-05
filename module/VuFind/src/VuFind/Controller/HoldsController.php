@@ -36,6 +36,10 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\CsrfInterface;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Controller for the user holds area.
  *
@@ -194,6 +198,13 @@ class HoldsController extends AbstractBase
      */
     public function editAction()
     {
+        $this->ilsExceptionResponse = $this->createViewModel(
+            [
+                'selectedIDS' => [],
+                'fields' => [],
+            ]
+        );
+
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -456,7 +467,7 @@ class HoldsController extends AbstractBase
     {
         return new \Laminas\Session\Container(
             'hold_update',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
     }
 

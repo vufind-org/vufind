@@ -101,7 +101,7 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
                 . 'srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or '
                 . 'srw.ti any "faketitle") not srw.no all "fakeid"';
             return $command::class === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "WorldCat"
+                && $command->getTargetIdentifier() === 'WorldCat'
                 && $command->getArguments()[0]->getAllTerms() === $expectedTerms
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 5;

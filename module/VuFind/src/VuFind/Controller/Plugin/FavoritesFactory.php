@@ -69,9 +69,7 @@ class FavoritesFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Record\Cache::class),
-            $container->get(\VuFind\Tags::class)
+            $container->get(\VuFind\Favorites\FavoritesService::class),
         );
     }
 }

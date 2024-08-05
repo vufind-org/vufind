@@ -38,6 +38,16 @@ use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Driver\DriverInterface;
+use VuFind\ILS\Logic\AvailabilityStatus;
+
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function get_class;
+use function intval;
+use function is_array;
+use function is_callable;
+use function is_object;
 
 /**
  * Catalog Connection Class
@@ -51,8 +61,6 @@ use VuFind\ILS\Driver\DriverInterface;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
- *
- * @method array getStatus(string $id)
  */
 class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 {
@@ -279,7 +287,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get configuration for the ILS driver.  We will load an .ini file named
+     * Get configuration for the ILS driver. We will load an .ini file named
      * after the driver class if it exists; otherwise we will return an empty
      * array.
      *
@@ -316,7 +324,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             ) ? $this->getDriver()->getConfig($function, $params) : false;
 
             // See if we have a corresponding check method to analyze the response:
-            $checkMethod = "checkMethod" . $function;
+            $checkMethod = 'checkMethod' . $function;
             if (!method_exists($this, $checkMethod)) {
                 return false;
             }
@@ -325,7 +333,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             return $this->$checkMethod($functionConfig, $params);
         } catch (ILSException $e) {
             $this->logError(
-                "checkFunction($function) with params: " . print_r($params, true)
+                "checkFunction($function) with params: " . $this->varDump($params)
                 . ' failed: ' . $e->getMessage()
             );
             return false;
@@ -353,12 +361,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // the full parameter expected by placeHold() but should contain the
         // necessary details for determining eligibility.
         if (
-            $this->getHoldsMode() != "none"
+            $this->getHoldsMode() != 'none'
             && $this->checkCapability('placeHold', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {
-            $response = ['function' => "placeHold"];
-            $response['HMACKeys'] = explode(":", $functionConfig['HMACKeys']);
+            $response = ['function' => 'placeHold'];
+            $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
             if (isset($functionConfig['defaultRequiredDate'])) {
                 $response['defaultRequiredDate']
                     = $functionConfig['defaultRequiredDate'];
@@ -384,7 +392,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         } else {
             $id = $params['id'] ?? null;
             if ($this->checkCapability('getHoldLink', [$id, []])) {
-                $response = ['function' => "getHoldLink"];
+                $response = ['function' => 'getHoldLink'];
             }
         }
         return $response;
@@ -417,13 +425,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
-            $response = ['function' => "cancelHolds"];
+            $response = ['function' => 'cancelHolds'];
         } elseif (
             isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
-            $response = ['function' => "getCancelHoldLink"];
+            $response = ['function' => 'getCancelHoldLink'];
         }
         return $response;
     }
@@ -454,13 +462,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
-            $response = ['function' => "renewMyItems"];
+            $response = ['function' => 'renewMyItems'];
         } elseif (
             isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
-            $response = ['function' => "renewMyItemsLink"];
+            $response = ['function' => 'renewMyItemsLink'];
         }
         return $response;
     }
@@ -1002,7 +1010,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             }
         } catch (ILSException $e) {
             $this->logError(
-                "checkCapability($method) with params: " . print_r($params, true)
+                "checkCapability($method) with params: " . $this->varDump($params)
                 . ' failed: ' . $e->getMessage()
             );
             if ($throw) {
@@ -1073,7 +1081,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Get holdings
      *
-     * Retrieve holdings from ILS driver class and normalize result array if needed.
+     * Retrieve holdings from ILS driver class and normalize result array and availability if needed.
      *
      * @param string $id      The record id to retrieve the holdings for
      * @param array  $patron  Patron data
@@ -1120,14 +1128,78 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $holdings['electronic_holdings'] = [];
             }
         }
+
+        // parse availability and status to AvailabilityStatus object
+        $holdings['holdings'] = array_map($this->getStatusParser(), $holdings['holdings']);
+        $holdings['electronic_holdings'] = array_map($this->getStatusParser(), $holdings['electronic_holdings']);
         $holdings['page'] = $finalOptions['page'];
         $holdings['itemLimit'] = $finalOptions['itemLimit'];
         return $holdings;
     }
 
     /**
+     * Get status
+     *
+     * Retrieve status from ILS driver class and normalize availability if needed.
+     *
+     * @param string $id The record id to retrieve the status for
+     *
+     * @return array Array with holding data
+     */
+    public function getStatus($id)
+    {
+        $status = $this->__call('getStatus', [$id]);
+
+        // parse availability and status to AvailabilityStatus object
+        return array_map($this->getStatusParser(), $status);
+    }
+
+    /**
+     * Get statuses
+     *
+     * Retrieve statuses from ILS driver class and normalize availability if needed.
+     *
+     * @param string $ids The record ids to retrieve the statuses for
+     *
+     * @return array Array with holding data
+     */
+    public function getStatuses($ids)
+    {
+        $statuses = $this->__call('getStatuses', [$ids]);
+
+        return array_map(function ($status) {
+            // parse availability and status to AvailabilityStatus object
+            return array_map($this->getStatusParser(), $status);
+        }, $statuses);
+    }
+
+    /**
+     * Get a function that parses availability and status to an AvailabilityStatus object if necessary.
+     *
+     * @return callable
+     */
+    public function getStatusParser()
+    {
+        return function ($item) {
+            if (!(($item['availability'] ?? null) instanceof AvailabilityStatus)) {
+                $availability = $item['availability'] ?? false;
+                if ($item['use_unknown_message'] ?? false) {
+                    $availability = Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
+                }
+                $item['availability'] = new AvailabilityStatus(
+                    $availability,
+                    $item['status'] ?? ''
+                );
+                unset($item['status']);
+                unset($item['use_unknown_message']);
+            }
+            return $item;
+        };
+    }
+
+    /**
      * Default method -- pass along calls to the driver if available; return
-     * false otherwise.  This allows custom functions to be implemented in
+     * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
      * @param string $methodName The name of the called method.

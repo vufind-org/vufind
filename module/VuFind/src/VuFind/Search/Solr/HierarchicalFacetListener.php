@@ -35,8 +35,12 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -50,19 +54,14 @@ use VuFindSearch\Service;
  */
 class HierarchicalFacetListener
 {
+    use GetServiceTrait;
+
     /**
      * Backend.
      *
      * @var BackendInterface
      */
     protected $backend;
-
-    /**
-     * Service container.
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Facet configuration.
@@ -123,10 +122,9 @@ class HierarchicalFacetListener
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
 
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
+        $config = $this->getService(\VuFind\Config\PluginManager::class);
         $this->facetConfig = $config->get($facetConfig);
-        $this->facetHelper = $this->serviceLocator
-            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+        $this->facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $specialFacets = $this->facetConfig->SpecialFacets;
         $this->displayStyles
@@ -160,7 +158,7 @@ class HierarchicalFacetListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );

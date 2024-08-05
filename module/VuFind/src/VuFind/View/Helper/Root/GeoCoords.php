@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Base\Options;
 
+use function is_array;
+
 /**
  * GeoCoords view helper
  *

@@ -36,6 +36,8 @@ use Laminas\Session\SessionManager;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
 
+use function is_array;
+
 /**
  * Controller for the user checkouts area.
  *
@@ -231,7 +233,7 @@ class CheckoutsController extends AbstractBase
             }
             $this->flashMessenger()->addMessage(
                 $result['status'],
-                $result['success'] ? 'info' : 'error'
+                $result['success'] ? 'success' : 'error'
             );
         }
         return $redirectResponse;

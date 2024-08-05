@@ -74,11 +74,10 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
         $this->browzineConfig = $configReader->get('BrowZine');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
 
         $connector = $this->createConnector();
@@ -111,10 +110,10 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     {
         // Validate configuration:
         if (empty($this->browzineConfig->General->access_token)) {
-            throw new \Exception("Missing access token in BrowZine.ini");
+            throw new \Exception('Missing access token in BrowZine.ini');
         }
         if (empty($this->browzineConfig->General->library_id)) {
-            throw new \Exception("Missing library ID in BrowZine.ini");
+            throw new \Exception('Missing library ID in BrowZine.ini');
         }
 
         // Create connector:
@@ -145,8 +144,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('BrowZine');
             $driver->setRawData($data);

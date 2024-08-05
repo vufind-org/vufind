@@ -36,6 +36,8 @@ use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
 
+use function in_array;
+
 /**
  * Return random records command.
  *

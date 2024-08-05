@@ -33,6 +33,8 @@ namespace VuFind\RecordDriver\Feature;
 
 use VuFind\Exception\ILS as ILSException;
 
+use function in_array;
+
 /**
  * ILS support for MARC and other types of records.
  *
@@ -145,8 +147,8 @@ trait IlsAwareTrait
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
-            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
+            if ('monograph' == $biblioLevel || strstr($biblioLevel, 'part')) {
+                if ($this->ils->getTitleHoldsMode() != 'disabled') {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }
             }

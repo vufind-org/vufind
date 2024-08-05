@@ -34,12 +34,19 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Service\GetServiceTrait;
+
+use function intval;
+use function is_object;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -53,7 +60,6 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  *
  * @method Plugin\Captcha captcha() Captcha plugin
  * @method Plugin\DbUpgrade dbUpgrade() DbUpgrade plugin
- * @method Plugin\Favorites favorites() Favorites plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
@@ -69,8 +75,9 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
+    use GetServiceTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -78,7 +85,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * restriction, null to use configured default (which is usually the same
      * as false)).
      *
-     * @var string|bool
+     * @var string|bool|null
      */
     protected $accessPermission = null;
 
@@ -91,13 +98,6 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * @var string
      */
     protected $accessDeniedBehavior = null;
-
-    /**
-     * Service manager
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Constructor
@@ -131,9 +131,10 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
-     * Getter for access permission.
+     * Getter for access permission (string for required permission name, false
+     * for no permission required, null to use default permission).
      *
-     * @return string|bool
+     * @return string|bool|null
      */
     public function getAccessPermission()
     {
@@ -143,7 +144,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     /**
      * Getter for access permission.
      *
-     * @param string $ap Permission to require for access to the controller (false
+     * @param string|false $ap Permission to require for access to the controller (false
      * for no requirement)
      *
      * @return void
@@ -200,6 +201,14 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
+        $lightboxParentUrl = new Http($this->getServerUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
+        if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
+            $this->layout()->lightboxChild = $lightboxChild;
+        }
         return new ViewModel($params);
     }
 
@@ -239,28 +248,18 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         }
 
         // Set default values if applicable:
-        if (
-            (!isset($view->to) || empty($view->to)) && $user
-            && isset($config->Mail->user_email_in_to)
-            && $config->Mail->user_email_in_to
-        ) {
-            $view->to = $user->email;
+        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+            $view->to = $user->getEmail();
         }
-        if (!isset($view->from) || empty($view->from)) {
-            if (
-                $user && isset($config->Mail->user_email_in_from)
-                && $config->Mail->user_email_in_from
-            ) {
+        if (empty($view->from)) {
+            if ($user && ($config->Mail->user_email_in_from ?? false)) {
                 $view->userEmailInFrom = true;
-                $view->from = $user->email;
-            } elseif (
-                isset($config->Mail->default_from)
-                && $config->Mail->default_from
-            ) {
+                $view->from = $user->getEmail();
+            } elseif ($config->Mail->default_from ?? false) {
                 $view->from = $config->Mail->default_from;
             }
         }
-        if (!isset($view->subject) || empty($view->subject)) {
+        if (empty($view->subject)) {
             $view->subject = $defaultSubject;
         }
 
@@ -284,7 +283,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getAuthManager()
     {
-        return $this->serviceLocator->get(\VuFind\Auth\Manager::class);
+        return $this->getService(\VuFind\Auth\Manager::class);
     }
 
     /**
@@ -296,8 +295,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getAuthorizationService()
     {
-        return $this->serviceLocator
-            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
+        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -307,17 +305,17 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getILSAuthenticator()
     {
-        return $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
+        return $this->getService(\VuFind\Auth\ILSAuthenticator::class);
     }
 
     /**
      * Get the user object if logged in, false otherwise.
      *
-     * @return \VuFind\Db\Row\User|bool
+     * @return ?UserEntityInterface
      */
-    protected function getUser()
+    protected function getUser(): ?UserEntityInterface
     {
-        return $this->getAuthManager()->isLoggedIn();
+        return $this->getAuthManager()->getUserObject();
     }
 
     /**
@@ -327,7 +325,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getViewRenderer()
     {
-        return $this->serviceLocator->get('ViewRenderer');
+        return $this->getService('ViewRenderer');
     }
 
     /**
@@ -346,16 +344,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $msg = 'You must be logged in first';
         }
 
-        // We don't want to return to the lightbox
-        $serverUrl = $this->getServerUrl();
-        $serverUrl = str_replace(
-            ['?layout=lightbox', '&layout=lightbox'],
-            ['?', '&'],
-            $serverUrl
-        );
+        // store parent url of lightboxes
+        $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras, $serverUrl);
+        $this->followup()->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -381,7 +374,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
-        if ($account->isLoggedIn() == false) {
+        if (!$account->getIdentity()) {
             return $this->forceLogin();
         }
 
@@ -407,7 +400,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
                     $routeMatch = $this->getEvent()->getRouteMatch();
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
-                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
+                    $ilsAuth->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
                     $this->flashMessenger()
                         ->addSuccessMessage('email_login_link_sent');
                 } else {
@@ -459,8 +453,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get($id);
+        return $this->getService(\VuFind\Config\PluginManager::class)->get($id);
     }
 
     /**
@@ -470,7 +463,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getILS()
     {
-        return $this->serviceLocator->get(\VuFind\ILS\Connection::class);
+        return $this->getService(\VuFind\ILS\Connection::class);
     }
 
     /**
@@ -480,7 +473,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getRecordLoader()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        return $this->getService(\VuFind\Record\Loader::class);
     }
 
     /**
@@ -490,7 +483,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getRecordCache()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Cache::class);
+        return $this->getService(\VuFind\Record\Cache::class);
     }
 
     /**
@@ -500,7 +493,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getRecordRouter()
     {
-        return $this->serviceLocator->get(\VuFind\Record\Router::class);
+        return $this->getService(\VuFind\Record\Router::class);
     }
 
     /**
@@ -512,8 +505,21 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
-            ->get($table);
+        return $this->getService(\VuFind\Db\Table\PluginManager::class)->get($table);
+    }
+
+    /**
+     * Get a database service object.
+     *
+     * @param class-string<T> $name Name of service to retrieve
+     *
+     * @template T
+     *
+     * @return T
+     */
+    public function getDbService(string $name): \VuFind\Db\Service\DbServiceInterface
+    {
+        return $this->getService(\VuFind\Db\Service\PluginManager::class)->get($name);
     }
 
     /**
@@ -555,19 +561,29 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string $submitElement Name of the post field of the submit button
-     * @param bool   $useCaptcha    Are we using captcha in this situation?
+     * @param string|string[]|null $submitElements Name of the post field(s) to check
+     * to indicate a form submission (or null for default)
+     * @param bool                 $useCaptcha     Are we using captcha in this situation?
      *
      * @return bool
      */
     protected function formWasSubmitted(
-        $submitElement = 'submit',
+        $submitElements = null,
         $useCaptcha = false
     ) {
-        // Fail if the expected submission element was missing from the POST:
-        // Form was submitted; if CAPTCHA is expected, validate it now.
-        return $this->params()->fromPost($submitElement, false)
-            && (!$useCaptcha || $this->captcha()->verify());
+        $buttonFound = false;
+        // Use of 'submit' as an input name was deprecated in release 10.0, but the
+        // check is retained for backward compatibility with custom templates.
+        $defaultSubmitElements = ['submitButton', 'submit'];
+        foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
+            if ($this->params()->fromPost($submitElement, false)) {
+                $buttonFound = true;
+                break;
+            }
+        }
+        // Fail if all expected submission elements were missing from the POST or
+        // if the form was submitted but expected CAPTCHA does not validate.
+        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
     }
 
     /**
@@ -613,7 +629,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function disableSessionWrites()
     {
-        $this->serviceLocator->get(\VuFind\Session\Settings::class)->disableWrite();
+        $this->getService(\VuFind\Session\Settings::class)->disableWrite();
     }
 
     /**
@@ -623,7 +639,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     public function getSearchMemory()
     {
-        return $this->serviceLocator->get(\VuFind\Search\Memory::class);
+        return $this->getService(\VuFind\Search\Memory::class);
     }
 
     /**
@@ -633,8 +649,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function commentsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -645,8 +660,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function listsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -657,8 +671,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function tagsEnabled()
     {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
+        $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getTagSetting() !== 'disabled';
     }
 
@@ -669,11 +682,12 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
-     * @param bool $allowCurrentUrl Whether the current URL is valid for followup
+     * @param bool  $allowCurrentUrl Whether the current URL is valid for followup
+     * @param array $extras          Extra data for the followup
      *
      * @return void
      */
-    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true)
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = [])
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -681,23 +695,16 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             'lbreferer',
             $this->getRequest()->getServer()->get('HTTP_REFERER', null)
         );
-        // Get the referer -- if it's empty, there's nothing to store!
-        if (empty($referer)) {
-            return;
-        }
-        $refererNorm = $this->normalizeUrlForComparison($referer);
-
-        // If the referer lives outside of VuFind, don't store it! We only
+        // Get the referer -- if it's empty, there's nothing to store! Also,
+        // if the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
-        $baseUrl = $this->getServerUrl('home');
-        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
+        if (empty($referer) || !$this->isLocalUrl($referer)) {
             return;
         }
-
         // If the referer is the MyResearch/Home action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
+        $refererNorm = $this->normalizeUrlForComparison($referer);
         $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
         $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
         if ($mrhuNorm === $refererNorm) {
@@ -718,8 +725,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             return;
         }
 
+        // Clear previously stored lightboxParent.
+        $this->followup()->clear('lightboxParent');
+
         // If we got this far, we want to store the referer:
-        $this->followup()->store([], $referer);
+        $this->followup()->store($extras, $referer);
     }
 
     /**
@@ -737,15 +747,43 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
+     * Checks if a followup url is set
+     *
+     * @return bool
+     */
+    protected function hasFollowupUrl()
+    {
+        return null !== $this->followup()->retrieve('url');
+    }
+
+    /**
      * Retrieve a referer to keep post-login redirect pointing
      * to an appropriate location.
      * Unset the followup before returning.
      *
+     * @param bool $checkRedirect Whether the query should be checked for param 'redirect'
+     *
      * @return string
      */
-    protected function getFollowupUrl()
+    protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        return $this->followup()->retrieve('url', '');
+        if ($url = $this->followup()->retrieveAndClear('url')) {
+            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
+                if (null !== $lightboxParent && !$this->inLightbox()) {
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
+                    $params['lightboxChild'] = $url;
+                    $parentUrl->setQuery($params);
+                    return $parentUrl;
+                }
+                return $url;
+            }
+        }
+        return null;
     }
 
     /**
@@ -755,6 +793,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function clearFollowupUrl()
     {
+        $this->followup()->clear('isReferrer');
+        $this->followup()->clear('lightboxParent');
         $this->followup()->clear('url');
     }
 
@@ -765,7 +805,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getRecordTabManager()
     {
-        return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
+        return $this->getService(\VuFind\RecordTab\TabManager::class);
     }
 
     /**
@@ -835,5 +875,18 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         $response = $this->getResponse();
         $response->setStatusCode(205);
         return $response;
+    }
+
+    /**
+     * Is the provided URL local to this instance?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    protected function isLocalUrl(string $url): bool
+    {
+        $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
+        return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
     }
 }

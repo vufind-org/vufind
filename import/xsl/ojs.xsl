@@ -116,7 +116,7 @@
                             <xsl:value-of select="dc:title[@xml:lang=$preferred_lang][normalize-space()]"/>
                         </field>
                         <field name="title_sort">
-                            <xsl:value-of select="php:function('VuFind::stripArticles', string(dc:title[@xml:lang=$preferred_lang][normalize-space()]))"/>
+                            <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string(dc:title[@xml:lang=$preferred_lang][normalize-space()])))"/>
                         </field>
                         <xsl:for-each select="dc:title[@xml:lang!=$preferred_lang][normalize-space()]">
                             <field name="title_alt">
@@ -137,7 +137,7 @@
                                     <xsl:value-of select="."/>
                                 </field>
                                 <field name="title_sort">
-                                    <xsl:value-of select="php:function('VuFind::stripArticles', string(.))"/>
+                                    <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string(.)))"/>
                                 </field>
                             </xsl:if>
                             <xsl:if test="position()>1">

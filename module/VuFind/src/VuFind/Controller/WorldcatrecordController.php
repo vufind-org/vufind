@@ -63,9 +63,7 @@ class WorldcatrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('WorldCat');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('WorldCat');
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

@@ -29,6 +29,8 @@
 
 namespace VuFind\Record;
 
+use function count;
+
 /**
  * Checklist class (used for checking off a list of values)
  *

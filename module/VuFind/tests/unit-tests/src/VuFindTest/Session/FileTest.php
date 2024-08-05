@@ -31,6 +31,8 @@ namespace VuFindTest\Session;
 
 use VuFind\Session\File;
 
+use function function_exists;
+
 /**
  * File Session Handler Test Class
  *
@@ -140,7 +142,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
             );
         }
         $handler = new File($config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

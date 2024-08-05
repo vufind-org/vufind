@@ -44,6 +44,8 @@ use VuFindTest\RecordDriver\TestHarness;
  */
 class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test deriving channel information from a record driver object.
      *
@@ -196,8 +198,10 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                     [$driver]
                 );
 
-            $search->expects($this->exactly(3))->method('invoke')
-                ->WithConsecutive(
+            $this->expectConsecutiveCalls(
+                $search,
+                'invoke',
+                [
                     [$this->callback(
                         $this->getCommandChecker($retrieveArgs, $class, 'foo_Identifier')
                     )],
@@ -206,30 +210,27 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                     )],
                     [$this->callback(
                         $this->getCommandChecker($retrieveBatchArgs, $retrieveBatchClass)
-                    )]
-                )
-                ->willReturnOnConsecutiveCalls(
-                    $commandObj,
-                    $commandObj,
-                    $commandObj
-                );
+                    )],
+                ],
+                $commandObj
+            );
         } else {
             $commandObj->expects($this->exactly(2))->method('getResult')
                 ->willReturnOnConsecutiveCalls(
                     $details,
                     [$driver]
                 );
-            $search->expects($this->exactly(2))->method('invoke')
-                ->withConsecutive(
+            $this->expectConsecutiveCalls(
+                $search,
+                'invoke',
+                [
                     [$this->callback($this->getCommandChecker($alphabeticArgs))],
                     [$this->callback(
                         $this->getCommandChecker($retrieveBatchArgs, $retrieveBatchClass)
-                    )]
-                )
-                ->willReturnOnConsecutiveCalls(
-                    $commandObj,
-                    $commandObj
-                );
+                    )],
+                ],
+                $commandObj
+            );
         }
 
         $coverRouter = $this->getMockBuilder(\VuFind\Cover\Router::class)
@@ -243,18 +244,16 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($driver))
             ->willReturn($routeDetails);
-        $url->expects($this->exactly(3))->method('fromRoute')
-            ->withConsecutive(
-                [$this->equalTo($routeDetails['route']),
-                $this->equalTo($routeDetails['params'])],
-                [$this->equalTo('channels-record')],
-                [$this->equalTo('alphabrowse-home')]
-            )
-            ->willReturnOnConsecutiveCalls(
-                'url_test',
-                'channels-record',
-                'alphabrowse-home'
-            );
+        $this->expectConsecutiveCalls(
+            $url,
+            'fromRoute',
+            [
+                [$routeDetails['route'], $routeDetails['params']],
+                ['channels-record'],
+                ['alphabrowse-home'],
+            ],
+            ['url_test', 'channels-record', 'alphabrowse-home']
+        );
         $expectedResult = [[
             'title' => 'nearby_items',
             'providerId' => 'foo_ProviderId',

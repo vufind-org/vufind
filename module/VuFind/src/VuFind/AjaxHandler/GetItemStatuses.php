@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Delis <cedelis@uillinois.edu>
  * @author   Tuan Nguyen <tuan@yorku.ca>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -37,8 +39,14 @@ use Laminas\View\Renderer\RendererInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
+use VuFind\ILS\Logic\AvailabilityStatusManager;
 use VuFind\ILS\Logic\Holds;
 use VuFind\Session\Settings as SessionSettings;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * "Get Item Status" AJAX handler
@@ -51,6 +59,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Delis <cedelis@uillinois.edu>
  * @author   Tuan Nguyen <tuan@yorku.ca>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -62,54 +71,24 @@ class GetItemStatuses extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Top-level configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Holds logic
-     *
-     * @var Holds
-     */
-    protected $holdLogic;
-
-    /**
      * Constructor
      *
-     * @param SessionSettings   $ss        Session settings
-     * @param Config            $config    Top-level configuration
-     * @param Connection        $ils       ILS connection
-     * @param RendererInterface $renderer  View renderer
-     * @param Holds             $holdLogic Holds logic
+     * @param SessionSettings           $ss                        Session settings
+     * @param Config                    $config                    Top-level configuration
+     * @param Connection                $ils                       ILS connection
+     * @param RendererInterface         $renderer                  View renderer
+     * @param Holds                     $holdLogic                 Holds logic
+     * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
      */
     public function __construct(
         SessionSettings $ss,
-        Config $config,
-        Connection $ils,
-        RendererInterface $renderer,
-        Holds $holdLogic
+        protected Config $config,
+        protected Connection $ils,
+        protected RendererInterface $renderer,
+        protected Holds $holdLogic,
+        protected AvailabilityStatusManager $availabilityStatusManager
     ) {
         $this->sessionSettings = $ss;
-        $this->config = $config;
-        $this->ils = $ils;
-        $this->renderer = $renderer;
-        $this->holdLogic = $holdLogic;
     }
 
     /**
@@ -259,8 +238,6 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @param array  $record            Information on items linked to a single bib
      *                                  record
-     * @param array  $messages          Custom status HTML
-     *                                  (keys = available/unavailable)
      * @param string $locationSetting   The location mode setting used for
      *                                  pickValue()
      * @param string $callnumberSetting The callnumber mode setting used for
@@ -270,27 +247,13 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function getItemStatus(
         $record,
-        $messages,
         $locationSetting,
         $callnumberSetting
     ) {
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
-        $use_unknown_status = $available = false;
         $services = [];
-
         foreach ($record as $info) {
-            // Find an available copy
-            if ($info['availability']) {
-                $available = true;
-            }
-            // Check for a use_unknown_message flag
-            if (
-                isset($info['use_unknown_message'])
-                && $info['use_unknown_message'] == true
-            ) {
-                $use_unknown_status = true;
-            }
             // Store call number/location info:
             $callNumbers[] = $this->formatCallNo(
                 $info['callnumber_prefix'] ?? '',
@@ -324,26 +287,28 @@ class GetItemStatuses extends AbstractBase implements
             'location_'
         );
 
+        // Get combined availability
+        $combinedInfo = $this->availabilityStatusManager->combine($record);
+        $combinedAvailability = $combinedInfo['availability'];
+
         if (!empty($services)) {
-            $availability_message = $this->reduceServices($services);
+            $availabilityMessage = $this->reduceServices($services);
         } else {
-            $availability_message = $use_unknown_status
-                ? $messages['unknown']
-                : $messages[$available ? 'available' : 'unavailable'];
+            $availabilityMessage = $this->getAvailabilityMessage($combinedAvailability);
         }
+
+        $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
 
         // Send back the collected details:
         return [
             'id' => $record[0]['id'],
-            'availability' => ($available ? 'true' : 'false'),
-            'availability_message' => $availability_message,
+            'availability' => $combinedAvailability->availabilityAsString(),
+            'availability_message' => $availabilityMessage,
             'location' => htmlentities($location, ENT_COMPAT, 'UTF-8'),
             'locationList' => false,
-            'reserve' =>
-                ($record[0]['reserve'] == 'Y' ? 'true' : 'false'),
-            'reserve_message' => $record[0]['reserve'] == 'Y'
-                ? $this->translate('on_reserve')
-                : $this->translate('Not On Reserve'),
+            'reserve' => $reserve ? 'true' : 'false',
+            'reserve_message'
+                => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
             'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
             'callnumber_handler' => $callnumberHandler,
         ];
@@ -355,29 +320,25 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @param array  $record            Information on items linked to a single
      *                                  bib record
-     * @param array  $messages          Custom status HTML
-     *                                  (keys = available/unavailable)
      * @param string $callnumberSetting The callnumber mode setting used for
      *                                  pickValue()
      *
      * @return array                    Summarized availability information
      */
-    protected function getItemStatusGroup($record, $messages, $callnumberSetting)
+    protected function getItemStatusGroup($record, $callnumberSetting)
     {
         // Summarize call number, location and availability info across all items:
         $locations = [];
-        $use_unknown_status = $available = false;
         foreach ($record as $info) {
+            $availabilityStatus = $info['availability'];
             // Find an available copy
-            if ($info['availability']) {
-                $available = $locations[$info['location']]['available'] = true;
+            if ($availabilityStatus->isAvailable()) {
+                if ('true' !== ($locations[$info['location']]['available'] ?? null)) {
+                    $locations[$info['location']]['available'] = $availabilityStatus->getStatusDescription();
+                }
             }
             // Check for a use_unknown_message flag
-            if (
-                isset($info['use_unknown_message'])
-                && $info['use_unknown_message'] == true
-            ) {
-                $use_unknown_status = true;
+            if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNKNOWN)) {
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
@@ -402,8 +363,7 @@ class GetItemStatuses extends AbstractBase implements
                 'Multiple Call Numbers'
             );
             $locationInfo = [
-                'availability' =>
-                    $details['available'] ?? false,
+                'availability' => $details['available'] ?? false,
                 'location' => htmlentities(
                     $this->translateWithPrefix('location_', $location),
                     ENT_COMPAT,
@@ -417,22 +377,22 @@ class GetItemStatuses extends AbstractBase implements
             $locationList[] = $locationInfo;
         }
 
-        $availability_message = $use_unknown_status
-            ? $messages['unknown']
-            : $messages[$available ? 'available' : 'unavailable'];
+        // Get combined availability
+        $combinedInfo = $this->availabilityStatusManager->combine($record);
+        $combinedAvailability = $combinedInfo['availability'];
+
+        $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
 
         // Send back the collected details:
         return [
             'id' => $record[0]['id'],
-            'availability' => ($available ? 'true' : 'false'),
-            'availability_message' => $availability_message,
+            'availability' => $combinedAvailability->availabilityAsString(),
+            'availability_message' => $this->getAvailabilityMessage($combinedAvailability),
             'location' => false,
             'locationList' => $locationList,
-            'reserve' =>
-                ($record[0]['reserve'] == 'Y' ? 'true' : 'false'),
-            'reserve_message' => $record[0]['reserve'] == 'Y'
-                ? $this->translate('on_reserve')
-                : $this->translate('Not On Reserve'),
+            'reserve' => $reserve ? 'true' : 'false',
+            'reserve_message'
+                => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
             'callnumber' => false,
         ];
     }
@@ -461,18 +421,35 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Render full item status.
+     * Get a message for availability status
      *
-     * @param array $record Record
-     * @param array $values Additional values for the template
+     * @param AvailabilityStatusInterface $availability Availability Status
      *
      * @return string
      */
-    protected function renderFullStatus($record, array $values = [])
+    protected function getAvailabilityMessage(AvailabilityStatusInterface $availability): string
+    {
+        return $this->renderer->render(
+            'ajax/status.phtml',
+            ['availabilityStatus' => $availability]
+        );
+    }
+
+    /**
+     * Render full item status.
+     *
+     * @param array $record       Record
+     * @param array $simpleStatus Simple status result
+     * @param array $values       Additional values for the template
+     *
+     * @return string
+     */
+    protected function renderFullStatus($record, $simpleStatus, array $values = [])
     {
         $values = array_merge(
             [
                 'statusItems' => $record,
+                'simpleStatus' => $simpleStatus,
                 'callnumberHandler' => $this->getCallnumberHandler(),
             ],
             $values
@@ -516,18 +493,10 @@ class GetItemStatuses extends AbstractBase implements
         }
 
         // In order to detect IDs missing from the status response, create an
-        // array with a key for every requested ID.  We will clear keys as we
+        // array with a key for every requested ID. We will clear keys as we
         // encounter IDs in the response -- anything left will be problems that
         // need special handling.
         $missingIds = array_flip($ids);
-
-        // Load messages for response:
-        $messages = [
-            'available' => $this->renderer->render('ajax/status-available.phtml'),
-            'unavailable' =>
-                $this->renderer->render('ajax/status-unavailable.phtml'),
-            'unknown' => $this->renderer->render('ajax/status-unknown.phtml'),
-        ];
 
         // Load callnumber and location settings:
         $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
@@ -544,18 +513,22 @@ class GetItemStatuses extends AbstractBase implements
             if (count($record)) {
                 // Check for errors
                 if (!empty($record[0]['error'])) {
+                    $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
+                        AvailabilityStatusInterface::STATUS_UNKNOWN
+                    );
                     $current = $this
-                        ->getItemStatusError($record, $messages['unknown']);
+                        ->getItemStatusError(
+                            $record,
+                            $this->getAvailabilityMessage($unknownStatus)
+                        );
                 } elseif ($locationSetting === 'group') {
                     $current = $this->getItemStatusGroup(
                         $record,
-                        $messages,
                         $callnumberSetting
                     );
                 } else {
                     $current = $this->getItemStatus(
                         $record,
-                        $messages,
                         $locationSetting,
                         $callnumberSetting
                     );
@@ -565,7 +538,8 @@ class GetItemStatuses extends AbstractBase implements
                 if ($showFullStatus && empty($record[0]['error'])) {
                     $current['full_status'] = $this->renderFullStatus(
                         $record,
-                        compact('searchId')
+                        $current,
+                        compact('searchId', 'current'),
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
@@ -578,10 +552,11 @@ class GetItemStatuses extends AbstractBase implements
 
         // If any IDs were missing, send back appropriate dummy data
         foreach ($missingIds as $missingId => $recordNumber) {
+            $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
             $statuses[] = [
                 'id'                   => $missingId,
                 'availability'         => 'false',
-                'availability_message' => $messages['unavailable'],
+                'availability_message' => $this->getAvailabilityMessage($availabilityStatus),
                 'location'             => $this->translate('Unknown'),
                 'locationList'         => false,
                 'reserve'              => 'false',

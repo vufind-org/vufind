@@ -29,6 +29,8 @@
 
 namespace VuFind\Cover\Layer;
 
+use function count;
+
 /**
  * Default cover text layer
  *

@@ -23,15 +23,22 @@
  * @category VuFind
  * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
 namespace VuFindApi\Controller;
 
+use Exception;
+use Laminas\Http\Exception\InvalidArgumentException;
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
+
+use function count;
+use function is_array;
 
 /**
  * Search API Controller
@@ -41,6 +48,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @category VuFind
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -197,7 +205,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
-     * @throws Exception\DomainException
+     * @throws DomainException|InvalidArgumentException|Exception
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
@@ -245,7 +253,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getService(\VuFind\Record\Loader::class);
         $results = [];
         try {
             if (is_array($request['id'])) {
@@ -256,7 +264,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             } else {
                 $results[] = $loader->load($request['id'], $this->searchClassId);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->output(
                 [],
                 self::STATUS_ERROR,
@@ -316,7 +324,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
-        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $runner = $this->getService(\VuFind\Search\SearchRunner::class);
         try {
             $results = $runner->run(
                 $request,
@@ -343,7 +351,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                     }
                 }
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
         }
 
@@ -402,8 +410,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
-        $facetHelper = $this->serviceLocator
-            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+        $facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $facetList = [];
         foreach ($facets as $facet) {
@@ -417,6 +424,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $results->getUrlQuery(),
                 false
             );
+            $facetList[$facet] = $facetHelper->filterFacets($facet, $facetList[$facet], $results->getOptions());
         }
 
         return $facetList;

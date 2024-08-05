@@ -29,6 +29,8 @@
 
 namespace VuFind\Log\Writer;
 
+use function is_array;
+
 /**
  * Trait to add configurable verbosity settings to loggers
  *

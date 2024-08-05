@@ -31,6 +31,9 @@ namespace VuFindTest\Feature;
 
 use VuFind\Config\PathResolver;
 
+use function defined;
+use function strlen;
+
 /**
  * Trait for tests involving PathResolver.
  *

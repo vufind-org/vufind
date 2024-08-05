@@ -56,7 +56,6 @@ class Printms extends AbstractHelper
             return $ms;
         }
         $seconds = floor($ms / 1000);
-        $ms = ($ms % 1000);
 
         $minutes = floor($seconds / 60);
         $seconds = ($seconds % 60);
@@ -74,7 +73,7 @@ class Printms extends AbstractHelper
 
                 if ($years) {
                     return sprintf(
-                        "%d years %d days %d hours %d minutes %d seconds",
+                        '%d years %d days %d hours %d minutes %d seconds',
                         $years,
                         $days,
                         $hours,
@@ -83,7 +82,7 @@ class Printms extends AbstractHelper
                     );
                 } else {
                     return sprintf(
-                        "%d days %d hours %d minutes %d seconds",
+                        '%d days %d hours %d minutes %d seconds',
                         $days,
                         $hours,
                         $minutes,
@@ -92,14 +91,14 @@ class Printms extends AbstractHelper
                 }
             } else {
                 return sprintf(
-                    "%d hours %d minutes %d seconds",
+                    '%d hours %d minutes %d seconds',
                     $hours,
                     $minutes,
                     $seconds
                 );
             }
         } else {
-            return sprintf("%d minutes %d seconds", $minutes, $seconds);
+            return sprintf('%d minutes %d seconds', $minutes, $seconds);
         }
     }
 }

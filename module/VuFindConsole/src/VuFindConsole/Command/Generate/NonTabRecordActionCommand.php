@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,15 +44,12 @@ use VuFindConsole\Generator\GeneratorTools;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/nontabrecordaction',
+    description: 'Non-tab record action route generator'
+)]
 class NonTabRecordActionCommand extends AbstractCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/nontabrecordaction';
-
     /**
      * Main framework configuration
      *
@@ -84,7 +82,6 @@ class NonTabRecordActionCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setDescription('Non-tab record action route generator')
             ->setHelp('Adds routes for a non-tab record action.')
             ->addArgument(
                 'action',
@@ -121,7 +118,7 @@ class NonTabRecordActionCommand extends AbstractCommand
         foreach ($this->mainConfig['router']['routes'] as $key => $val) {
             if (
                 isset($val['options']['route'])
-                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
+                && str_ends_with($val['options']['route'], '[:id[/[:tab]]]')
             ) {
                 $newRoute = $key . '-' . strtolower($action);
                 if (isset($this->mainConfig['router']['routes'][$newRoute])) {

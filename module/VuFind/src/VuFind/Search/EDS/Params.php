@@ -33,6 +33,8 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
+use function count;
+
 /**
  * EDS API Params
  *
@@ -43,8 +45,18 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Params extends \VuFind\Search\Base\Params
+class Params extends AbstractEDSParams
 {
+    /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected $forcedOrFields = [
+        'ContentProvider',
+        'SourceType',
+    ];
+
     /**
      * Settings for the date facet only
      *
@@ -93,6 +105,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $checkboxFacetsAugmented = false;
 
     /**
+     * Default query adapter class (override to use EDS version)
+     *
+     * @var string
+     */
+    protected $queryAdapterClass = QueryAdapter::class;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -138,7 +157,7 @@ class Params extends \VuFind\Search\Base\Params
         $options = $this->getOptions();
 
         // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
+        // this null in order to achieve the desired effect with EDS:
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
@@ -155,54 +174,9 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->set('searchMode', $mode);
         }
 
-        $this->createBackendFilterParameters($backendParams, $options);
+        $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
-    }
-
-    /**
-     * Set up filters based on VuFind settings.
-     *
-     * @param ParamBag $params  Parameter collection to update
-     * @param Options  $options Options from which to add extra filter parameters
-     *
-     * @return void
-     */
-    public function createBackendFilterParameters(ParamBag $params, Options $options)
-    {
-        // Which filters should be applied to our query?
-        $filterList = $this->getFilterList();
-        $hiddenFilterList = $this->getHiddenFilters();
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    // Standard case:
-                    $fq = "{$filt['field']}:{$filt['value']}";
-                    $params->add('filters', $fq);
-                }
-            }
-        }
-        if (!empty($hiddenFilterList)) {
-            foreach ($hiddenFilterList as $field => $hiddenFilters) {
-                foreach ($hiddenFilters as $value) {
-                    // Standard case:
-                    $hfq = "{$field}:{$value}";
-                    $params->add('filters', $hfq);
-                }
-            }
-        }
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        $viewArr = explode('|', $this->view ?? '');
-        return $viewArr[0];
     }
 
     /**
@@ -228,7 +202,7 @@ class Params extends \VuFind\Search\Base\Params
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
         // Save the full field name (which may include extra parameters);
-        // we'll need these to do the proper search using the Summon class:
+        // we'll need these to do the proper search using the EDS class:
         if (strstr($newField, 'PublicationDate')) {
             // Special case -- we don't need to send this to the EDS API,
             // but we do need to set a flag so VuFind knows to display the
@@ -266,9 +240,9 @@ class Params extends \VuFind\Search\Base\Params
     public function getFacetLabel($field, $value = null, $default = null)
     {
         // Also store Limiter/Search Mode IDs/Values in the config file
-        if (substr($field, 0, 6) == 'LIMIT|') {
+        if (str_starts_with($field, 'LIMIT|')) {
             $facetId = substr($field, 6);
-        } elseif (substr($field, 0, 11) == 'SEARCHMODE|') {
+        } elseif (str_starts_with($field, 'SEARCHMODE|')) {
             $facetId = substr($field, 11);
         } else {
             $facetId = $field;
@@ -355,7 +329,7 @@ class Params extends \VuFind\Search\Base\Params
         $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
-        return QueryAdapter::display($this->getQuery(), $translate, $showField);
+        return $this->getQueryAdapter()->display($this->getQuery(), $translate, $showField);
     }
 
     /**

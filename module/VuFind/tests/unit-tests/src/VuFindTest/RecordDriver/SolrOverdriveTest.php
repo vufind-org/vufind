@@ -234,34 +234,6 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getRawData behavior in MARC mode
-     *
-     * @return void
-     */
-    public function testGetRawDataMarc(): void
-    {
-        $connector = $this->getMockConnector('{ "isMarc": true }');
-        $driver = $this->getDriver(null, null, $connector);
-        $raw = ['foo' => 'bar'];
-        $driver->setRawData($raw);
-        $this->assertEquals($raw, $driver->getRawData());
-    }
-
-    /**
-     * Test getRawData behavior in non-MARC mode
-     *
-     * @return void
-     */
-    public function testGetRawDataNonMarc(): void
-    {
-        $connector = $this->getMockConnector('{ "isMarc": false }');
-        $driver = $this->getDriver(null, null, $connector);
-        $raw = ['foo' => 'bar'];
-        $driver->setRawData(['fullrecord' => json_encode($raw)]);
-        $this->assertEquals($raw, $driver->getRawData());
-    }
-
-    /**
      * Get a record driver to test with.
      *
      * @param Config             $config       Main configuration

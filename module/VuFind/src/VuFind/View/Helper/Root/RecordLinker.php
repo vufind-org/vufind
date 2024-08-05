@@ -33,6 +33,9 @@ namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 
+use function is_array;
+use function is_string;
+
 /**
  * Record linker view helper
  *
@@ -297,7 +300,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 
         $urlParams = [
             'id' => $driver->getUniqueID(),
-            'keys' => $driver->tryMethod('getWorkKeys', [], []),
+            'search' => 'versions',
         ];
 
         $urlHelper = $this->getView()->plugin('url');

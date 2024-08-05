@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Make sure VUFIND_HOME is set:
 if [ -z "$VUFIND_HOME" ]
@@ -13,11 +13,25 @@ then
 fi
 
 SKIP_OPTIMIZE=0
+PREFIX=
 
-while getopts ":s" OPT
+while getopts ":s-:" OPT
 do
   case $OPT in
     s) SKIP_OPTIMIZE=1;;
+    -)
+      case "${OPTARG}" in
+        id-prefix)
+          PREFIX="${!OPTIND}";
+          OPTIND=$(( $OPTIND + 1 ))
+          ;;
+        id-prefix=*)
+          PREFIX=${OPTARG#*=}
+          ;;
+        *)
+          echo "Unknown option -- ${OPTARG}" >&2
+          ;;
+      esac;;
     :)
       echo "argument to '-$OPTARG' is missing" >&2
       exit -1;;
@@ -45,6 +59,7 @@ then
   echo ""
   echo "Options:"
   echo "-s:  Skip optimize operation after importing."
+  echo "--id-prefix [prefix]: Specify a prefix to prepend to all IDs."
   exit 1
 fi
 
@@ -78,7 +93,7 @@ do
       FOUNDSOME=1
     fi
     echo "Processing $file ..."
-    php deletes.php $file flat $2
+    php deletes.php $file flat $2 --id-prefix=$PREFIX
     mv $file $BASEPATH/processed/`basename $file`
   fi
 done

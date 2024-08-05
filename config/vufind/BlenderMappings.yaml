@@ -311,7 +311,7 @@ Sorting:
       Mappings:
         Primo: screator
         Solr: author
-        solrAuth: heading
+        SolrAuth: heading
     relevance:
       Mappings:
         EDS: relevance
@@ -321,7 +321,7 @@ Sorting:
       Mappings:
         Primo: title
         Solr: title
-        solrAuth: heading
+        SolrAuth: heading
     year:
       Mappings:
         EDS: date

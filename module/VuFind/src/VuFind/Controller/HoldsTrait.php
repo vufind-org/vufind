@@ -29,6 +29,10 @@
 
 namespace VuFind\Controller;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
@@ -98,7 +102,7 @@ trait HoldsTrait
             $gatheredDetails
         ) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
-            ? explode(":", $checkHolds['extraHoldFields']) : [];
+            ? explode(':', $checkHolds['extraHoldFields']) : [];
 
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)
@@ -205,7 +209,8 @@ trait HoldsTrait
                         $this->flashMessenger()
                             ->addWarningMessage($results['warningMessage']);
                     }
-                    return $this->redirectToRecord('#top');
+                    $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+                    return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
@@ -222,7 +227,7 @@ trait HoldsTrait
         }
 
         // Set default start date to today:
-        $dateConverter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
+        $dateConverter = $this->getService(\VuFind\Date\Converter::class);
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
@@ -253,7 +258,7 @@ trait HoldsTrait
 
         $config = $this->getConfig();
         $homeLibrary = ($config->Account->set_home_library ?? true)
-            ? $this->getUser()->home_library : '';
+            ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility:
         $helpText = $helpTextHtml = $checkHolds['helpText'];
 

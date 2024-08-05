@@ -29,8 +29,11 @@
 
 namespace VuFind\Http;
 
-use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Caching downloader factory.
@@ -68,6 +71,7 @@ class CachingDownloaderFactory implements FactoryInterface
 
         return new $requestedName(
             $container->get(\VuFind\Cache\Manager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
         );
     }
 }

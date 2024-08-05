@@ -44,6 +44,7 @@ if "%1"=="-d" goto dswitch
 if "%1"=="-h" goto helpmessage
 if "%1"=="-m" goto mswitch
 if "%1"=="-p" goto pswitch
+if "%1"=="-x" goto xswitch
 if "%1"=="-z" goto zswitch
 goto switchloopend
 :dswitch
@@ -59,6 +60,10 @@ set PROPERTIES_FILE=%2
 shift
 shift
 goto switchloop
+:xswitch
+echo The -x switch is not currently supported under Windows.
+echo See https://vufind.org/jira/browse/VUFIND-1626 for more details.
+goto end
 :zswitch
 set LOGGING=0
 shift

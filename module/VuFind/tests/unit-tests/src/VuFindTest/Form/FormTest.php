@@ -34,6 +34,8 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
 
+use function get_class;
+
 /**
  * Form Test Class
  *
@@ -154,25 +156,23 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'message',
                     'required' => true,
                     'label' => 'Comments',
-                    'settings' => ['cols' => 50, 'rows' => 8],
+                    'settings' => ['rows' => 8],
                 ],
                 [
                     'type' => 'text',
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'feedback_name',
-                    'settings' => ['size' => 50],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -199,7 +199,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'label' => 'Comments',
                 'name' => 'message',
                 'required' => true,
-                'settings' => ['cols' => 50, 'rows' => 8],
+                'settings' => ['rows' => 8],
             ],
             [
                 'type' => 'text',
@@ -208,7 +208,6 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'name' => 'name',
                 'group' => '__sender__',
                 'label' => 'feedback_name',
-                'settings' => ['size' => 50],
             ],
             [
                 'type' => 'email',
@@ -217,7 +216,6 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'name' => 'email',
                 'group' => '__sender__',
                 'label' => 'feedback_email',
-                'settings' => ['size' => 254],
             ],
         ];
         $postParams = [
@@ -284,25 +282,23 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'message',
                     'required' => true,
                     'label' => 'Comments',
-                    'settings' => ['cols' => 50, 'rows' => 8],
+                    'settings' => ['rows' => 8],
                 ],
                 [
                     'type' => 'text',
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'feedback_name',
-                    'settings' => ['size' => 50],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -317,32 +313,32 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'text',
                     'name' => 'phone',
                     'group' => '__sender__',
                     'label' => 'Phone Number',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'textarea',
                     'name' => 'message',
                     'required' => true,
                     'label' => 'Comments',
-                    'settings' => ['cols' => 50, 'rows' => 8],
+                    'settings' => ['rows' => 8],
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -365,14 +361,16 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 100],
+                    'settings' => [
+                        'size' => 100, // from feedbackforms/test.yaml
+                    ],
                 ],
                 [
                     'type' => 'text',
                     'name' => 'phone',
                     'group' => '__sender__',
                     'label' => 'Phone Number',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'email',
@@ -380,7 +378,6 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'group' => '__sender__',
                     'label' => 'feedback_email',
                     'settings' => [
-                        'size' => 254,
                         'aria-label' => 'Test label',
                     ],
                 ],
@@ -389,11 +386,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'message',
                     'required' => true,
                     'label' => 'Comments',
-                    'settings' => ['cols' => 50, 'rows' => 8],
+                    'settings' => ['rows' => 8],
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -804,7 +801,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getEmailSubjectsData(): array
+    public static function getEmailSubjectsData(): array
     {
         return [
             'with placeholders' => [
@@ -870,21 +867,20 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'textarea',
                     'name' => 'message',
                     'label' => 'Comments',
                     'settings' => [
-                        'cols' => 50,
                         'rows' => 8,
                         'value' => 'Here is your message',
                     ],
@@ -893,7 +889,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'type' => 'text',
                     'name' => 'phone',
                     'label' => 'Phone Number',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'hidden',
@@ -905,7 +901,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],
@@ -935,21 +931,20 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'textarea',
                     'name' => 'message',
                     'label' => 'Comments',
                     'settings' => [
-                        'cols' => 50,
                         'rows' => 8,
                     ],
                 ],
@@ -961,7 +956,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'type' => 'submit',
-                    'name' => 'submit',
+                    'name' => 'submitButton',
                     'label' => 'Send',
                 ],
             ],

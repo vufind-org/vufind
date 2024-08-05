@@ -72,13 +72,6 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     protected $cacheAccessPermission = 'access.api.admin.cache';
 
     /**
-     * Caches that are not cleared by the clearCache command by default
-     *
-     * @var array
-     */
-    protected $defaultIgnoredCaches = ['cover'];
-
-    /**
      * Clear the cache
      *
      * @return \Laminas\Http\Response
@@ -173,10 +166,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     protected function getDefaultCachesToClear(): array
     {
         $result = [];
-        foreach ($this->cacheManager->getCacheList() as $id) {
-            if (in_array($id, $this->defaultIgnoredCaches)) {
-                continue;
-            }
+        foreach ($this->cacheManager->getNonPersistentCacheList() as $id) {
             $cache = $this->cacheManager->getCache($id);
             if ($cache instanceof \Laminas\Cache\Storage\FlushableInterface) {
                 $result[] = $id;

@@ -44,6 +44,8 @@ use VuFindTest\RecordDriver\TestHarness;
  */
 class SimilarItemsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test deriving channel information from a record driver object.
      *
@@ -182,15 +184,15 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                     [$recordDriver]
                 );
 
-            $search->expects($this->exactly(2))->method('invoke')
-                ->WithConsecutive(
+            $this->expectConsecutiveCalls(
+                $search,
+                'invoke',
+                [
                     [$this->callback($this->getCommandChecker($retrieve, $class))],
-                    [$this->callback($this->getCommandChecker($arguments))]
-                )
-                ->willReturnOnConsecutiveCalls(
-                    $commandObj,
-                    $commandObj
-                );
+                    [$this->callback($this->getCommandChecker($arguments))],
+                ],
+                $commandObj
+            );
         } else {
             $commandObj->expects($this->once())->method('getResult')
                 ->willReturn([$recordDriver]);
@@ -228,16 +230,18 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($recordDriver))
             ->willReturn($routeDetails);
-        $url->expects($this->exactly(2))->method('fromRoute')
-            ->withConsecutive(
-                [$this->equalTo($routeDetails['route']),
-                $this->equalTo($routeDetails['params'])],
-                [$this->equalTo('channels-record')]
-            )
-            ->willReturnOnConsecutiveCalls(
+        $this->expectConsecutiveCalls(
+            $url,
+            'fromRoute',
+            [
+                [$this->equalTo($routeDetails['route']), $this->equalTo($routeDetails['params'])],
+                [$this->equalTo('channels-record')],
+            ],
+            [
                 'url_test',
-                'channels-record'
-            );
+                'channels-record',
+            ]
+        );
         return [$similar, $expectedResult];
     }
 

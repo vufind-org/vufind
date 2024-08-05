@@ -45,6 +45,8 @@ use VuFindSearch\Query\Query;
  */
 class RandomCommandTest extends TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test Random with RandomInterface
      *
@@ -110,15 +112,17 @@ class RandomCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new RandomCommand($backendId, $query, 10, $params);
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->addMethods(["shuffle"])
+            ->addMethods(['shuffle'])
             ->getMockForAbstractClass();
 
         $rci->expects($this->once())->method('getTotal')
             ->will($this->returnValue(2));
         $rci->expects($this->once())->method('shuffle')
             ->will($this->returnValue(true));
-        $backend->expects($this->exactly(2))->method('search')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $backend,
+            'search',
+            [
                 [
                     $this->equalTo($query),
                     $this->equalTo(0),
@@ -130,8 +134,10 @@ class RandomCommandTest extends TestCase
                     $this->equalTo(0),
                     $this->equalTo(10),
                     $this->equalTo($params),
-                ]
-            )->willReturnOnConsecutiveCalls($this->returnValue($rci), $this->returnValue($rci));
+                ],
+            ],
+            $rci
+        );
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 
@@ -153,15 +159,13 @@ class RandomCommandTest extends TestCase
             ->getMock();
         $rci->expects($this->once())->method('getTotal')
             ->will($this->returnValue(20));
-        $inputs = [[$query, "0", "0", $params]];
+        $inputs = [[$query, '0', '0', $params]];
         $outputs = [$rci];
         for ($i = 1; $i < $limit + 1; $i++) {
-            $inputs[] = [$query, $this->anything(), "1", $params];
+            $inputs[] = [$query, $this->anything(), '1', $params];
             $outputs[] = $rci;
         }
-        $backend->expects($this->exactly(11))->method('search')
-            ->withConsecutive(...$inputs)
-            ->willReturnOnConsecutiveCalls(...$outputs);
+        $this->expectConsecutiveCalls($backend, 'search', $inputs, $outputs);
         $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
             ->disableOriginalConstructor()->getMock();
         $rci->expects($this->exactly(9))->method('first')->will($this->returnValue($record));

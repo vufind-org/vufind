@@ -30,6 +30,8 @@
 
 namespace VuFind\Search;
 
+use VuFind\Search\Base\Results;
+
 /**
  * A minified search object used exclusively for trimming a search object down to its
  * barest minimum size before storage in a cookie or database.
@@ -127,6 +129,13 @@ class Minified
     public $ex = [];
 
     /**
+     * Extra params data (not used by default)
+     *
+     * @var array
+     */
+    public $exp = [];
+
+    /**
      * Search context parameters
      *
      * @var array
@@ -134,35 +143,15 @@ class Minified
     public $scp = [];
 
     /**
-     * Constructor. Building minified object from the
-     *    searchObject passed in. Needs to be kept
-     *    up-to-date with the deminify() function on
-     *    searchObject.
+     * Constructor.
      *
-     * @param object $searchObject Search Object to minify
+     * Builds minified object from the Results passed in.
+     *
+     * @param Results $results Results object to minify
      */
-    public function __construct($searchObject)
+    public function __construct(Results $results)
     {
-        // Most values will transfer without changes
-        $this->id = $searchObject->getSearchId();
-        $this->i  = $searchObject->getStartTime();
-        $this->s  = $searchObject->getQuerySpeed();
-        $this->r  = $searchObject->getResultTotal();
-        $this->ty = $searchObject->getParams()->getSearchType();
-        $this->cl = $searchObject->getParams()->getSearchClassId();
-
-        // Search terms, we'll shorten keys
-        $query = $searchObject->getParams()->getQuery();
-        $this->t = QueryAdapter::minify($query);
-
-        // It would be nice to shorten filter fields too, but
-        //      it would be a nightmare to maintain.
-        $this->f = $searchObject->getParams()->getRawFilters();
-        $this->hf = $searchObject->getParams()->getHiddenFilters();
-
-        // Extra data has implementation-specific contents, store as is
-        $this->ex = $searchObject->getExtraData();
-        $this->setSearchContextParameters($searchObject);
+        $results->minify($this);
     }
 
     /**
@@ -170,16 +159,15 @@ class Minified
      *
      * @param \VuFind\Search\Results\PluginManager $manager Search manager
      *
-     * @return \VuFind\Search\Base\Results
+     * @return Results
      */
-    public function deminify(\VuFind\Search\Results\PluginManager $manager)
+    public function deminify(\VuFind\Search\Results\PluginManager $manager): Results
     {
         // Figure out the parameter and result classes based on the search class ID:
         $this->populateClassNames();
 
         // Deminify everything:
         $results = $manager->get($this->cl);
-        $results->getParams()->deminify($this);
         $results->deminify($this);
 
         return $results;
@@ -191,7 +179,7 @@ class Minified
      *
      * @return void
      */
-    protected function populateClassNames()
+    protected function populateClassNames(): void
     {
         // If this is a legacy entry from VuFind 1.x, we need to figure out the
         // search class ID for the object we're about to construct:
@@ -218,25 +206,8 @@ class Minified
 
             // Now rewrite the type if necessary (only needed for legacy objects):
             if ($fixType) {
-                $this->ty = (substr($this->ty, -8) == 'Advanced')
-                    ? 'advanced' : 'basic';
+                $this->ty = str_ends_with($this->ty, 'Advanced') ? 'advanced' : 'basic';
             }
         }
-    }
-
-    /**
-     * Set search context parameters from the search object.
-     * Search context parameters contains i.e page number and results limit per page.
-     *
-     * @param object $searchObject Search Object to minify
-     *
-     * @return void
-     */
-    protected function setSearchContextParameters($searchObject): void
-    {
-        $this->scp = [
-            'page' => $searchObject->getParams()->getPage(),
-            'limit' => $searchObject->getParams()->getLimit(),
-        ];
     }
 }

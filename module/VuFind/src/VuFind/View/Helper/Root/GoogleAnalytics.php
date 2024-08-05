@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HeadScript;
 
+use function is_array;
+
 /**
  * GoogleAnalytics view helper
  *

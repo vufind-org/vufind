@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Favorites\FavoritesService;
 
 /**
  * UserList helper factory.
@@ -68,9 +70,11 @@ class UserListFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
-        $session = new \Laminas\Session\Container('List', $sessionManager);
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        return new $requestedName($session, $capabilities->getListSetting());
+        return new $requestedName(
+            $container->get(FavoritesService::class),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
+            $capabilities->getListSetting()
+        );
     }
 }

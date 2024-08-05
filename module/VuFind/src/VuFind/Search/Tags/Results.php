@@ -29,10 +29,12 @@
 
 namespace VuFind\Search\Tags;
 
-use VuFind\Db\Table\Tags as TagsTable;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Tags\TagsService;
 use VuFindSearch\Service as SearchService;
+
+use function count;
 
 /**
  * Search Tags Results
@@ -46,29 +48,21 @@ use VuFindSearch\Service as SearchService;
 class Results extends BaseResults
 {
     /**
-     * Tags table
-     *
-     * @var TagsTable
-     */
-    protected $tagsTable;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
-     * @param TagsTable                  $tagsTable     Resource table
+     * @param TagsService                $tagsService   Tags service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        TagsTable $tagsTable
+        protected TagsService $tagsService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
-        $this->tagsTable = $tagsTable;
     }
 
     /**
@@ -97,7 +91,7 @@ class Results extends BaseResults
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
             : $this->getParams()->getDisplayQuery();
-        $rawResults = $this->tagsTable->resourceSearch(
+        $rawResults = $this->tagsService->getResourcesMatchingTagQuery(
             $query,
             null,
             $this->getParams()->getSort(),
@@ -112,7 +106,7 @@ class Results extends BaseResults
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
-            $rawResults = $this->tagsTable->resourceSearch(
+            $rawResults = $this->tagsService->getResourcesMatchingTagQuery(
                 $query,
                 null,
                 $this->getParams()->getSort(),
@@ -122,7 +116,7 @@ class Results extends BaseResults
             );
         }
 
-        return $rawResults->toArray();
+        return $rawResults;
     }
 
     /**

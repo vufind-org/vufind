@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\MixedList;
 
+use function count;
+
 /**
  * Search Mixed List Parameters
  *

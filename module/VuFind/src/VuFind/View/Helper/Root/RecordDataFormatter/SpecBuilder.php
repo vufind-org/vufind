@@ -107,6 +107,20 @@ class SpecBuilder
     }
 
     /**
+     * Construct a combine alt template spec line.
+     *
+     * @param string $key        Label to associate with this spec line
+     * @param string $dataMethod Method of data retrieval for rendering element
+     * @param array  $options    Additional options
+     *
+     * @return void
+     */
+    public function setCombineAltLine($key, $dataMethod, $options = [])
+    {
+        $this->setLine($key, $dataMethod, 'CombineAlt', $options);
+    }
+
+    /**
      * Construct a record driver template spec line.
      *
      * @param string $key        Label to associate with this spec line

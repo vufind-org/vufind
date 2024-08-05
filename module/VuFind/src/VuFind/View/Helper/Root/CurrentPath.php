@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function strlen;
+
 /**
  * Current path view helper
  *

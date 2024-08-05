@@ -57,4 +57,23 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
             $mod->getUrlParams()
         );
     }
+
+    /**
+     * Test behavior when lookfor is an array (unexpected, but possible through
+     * query manipulation).
+     *
+     * @return void
+     */
+    public function testLookforArray()
+    {
+        $mod = $this->getRecommend(
+            \VuFind\Recommend\EDSResultsDeferred::class,
+            ':3',
+            new \Laminas\Stdlib\Parameters(['lookfor' => ['foo', 'bar']])
+        );
+        $this->assertEquals(
+            'mod=EDSResults&params=lookfor%3A3&lookfor=foo+bar',
+            $mod->getUrlParams()
+        );
+    }
 }

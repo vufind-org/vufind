@@ -53,7 +53,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getTestFlashmessageData(): array
+    public static function getTestFlashmessageData(): array
     {
         return [
             [
@@ -237,7 +237,30 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 
         $fm = new Flashmessages($mockMessenger);
 
-        $helpers = $this->getViewHelpers();
+        $layout = new class () {
+            /**
+             * Set layout template or retrieve "layout" view model
+             *
+             * If no arguments are given, grabs the "root" or "layout" view model.
+             * Otherwise, attempts to set the template for that view model.
+             *
+             * @param null|string $template Template
+             *
+             * @return Model|null|self
+             */
+            public function __invoke($template = null)
+            {
+                return $this;
+            }
+        };
+
+        $helpers = array_merge(
+            $this->getViewHelpers(),
+            [
+                'layout' => $layout,
+            ]
+        );
+
         $fm->setView($this->getPhpRenderer($helpers));
 
         return $fm;

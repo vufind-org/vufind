@@ -67,17 +67,26 @@ class InjectHighlightingListener
     protected $fieldList;
 
     /**
+     * Extra Solr highlighting parameters.
+     *
+     * @var array
+     */
+    protected $extraHighlightingParameters;
+
+    /**
      * Constructor.
      *
      * @param BackendInterface $backend   Backend
      * @param string           $fieldList Field(s) to highlight (hl.fl param)
+     * @param array            $extras    Extra Solr highlighting parameters
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend, $fieldList = '*')
+    public function __construct(BackendInterface $backend, $fieldList = '*', $extras = [])
     {
         $this->backend = $backend;
         $this->fieldList = $fieldList;
+        $this->extraHighlightingParameters = $extras;
     }
 
     /**
@@ -90,14 +99,9 @@ class InjectHighlightingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
-        );
-        $manager->attach(
-            'VuFind\Search',
-            Service::EVENT_POST,
-            [$this, 'onSearchPost']
         );
     }
 
@@ -118,8 +122,13 @@ class InjectHighlightingListener
             if ($params = $command->getSearchParameters()) {
                 // Set highlighting parameters unless explicitly disabled:
                 $hl = $params->get('hl');
-                if (!isset($hl[0]) || $hl[0] != 'false') {
+                if (($hl[0] ?? 'true') != 'false') {
                     $this->active = true;
+                    // Set extra parameters first so they don't override necessary
+                    // core parameters:
+                    foreach ($this->extraHighlightingParameters as $key => $val) {
+                        $params->set($key, $val);
+                    }
                     $params->set('hl', 'true');
                     $params->set('hl.simple.pre', '{{{{START_HILITE}}}}');
                     $params->set('hl.simple.post', '{{{{END_HILITE}}}}');
@@ -127,35 +136,6 @@ class InjectHighlightingListener
                     // Turn on hl.q generation in query builder:
                     $this->backend->getQueryBuilder()
                         ->setFieldsToHighlight($this->fieldList);
-                }
-            }
-        }
-        return $event;
-    }
-
-    /**
-     * Inject highlighting results.
-     *
-     * @param EventInterface $event Event
-     *
-     * @return EventInterface
-     */
-    public function onSearchPost(EventInterface $event)
-    {
-        // Do nothing if highlighting is disabled or context is wrong
-        $command = $event->getParam('command');
-        if (!$this->active || $command->getContext() != 'search') {
-            return $event;
-        }
-
-        // Inject highlighting details into record objects:
-        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
-            $result = $command->getResult();
-            $hlDetails = $result->getHighlighting();
-            foreach ($result->getRecords() as $record) {
-                $id = $record->getUniqueId();
-                if (isset($hlDetails[$id])) {
-                    $record->setHighlightDetails($hlDetails[$id]);
                 }
             }
         }

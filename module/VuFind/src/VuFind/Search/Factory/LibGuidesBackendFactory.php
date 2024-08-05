@@ -47,6 +47,16 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 class LibGuidesBackendFactory extends AbstractBackendFactory
 {
     /**
+     * Return the service name.
+     *
+     * @return string
+     */
+    protected function getServiceName()
+    {
+        return 'LibGuides';
+    }
+
+    /**
      * Logger.
      *
      * @var \Laminas\Log\LoggerInterface
@@ -74,11 +84,10 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
-        $this->libGuidesConfig = $configReader->get('LibGuides');
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
+        $this->libGuidesConfig = $configReader->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -121,12 +130,16 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
         // Get base URI, if available:
         $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
+        // Optionally parse the resource description
+        $displayDescription = $this->libGuidesConfig->General->displayDescription ?? false;
+
         // Create connector:
         $connector = new Connector(
             $iid,
             $this->createHttpClient($this->libGuidesConfig->General->timeout ?? 30),
             $ver,
-            $baseUrl
+            $baseUrl,
+            $displayDescription
         );
         $connector->setLogger($this->logger);
         return $connector;
@@ -150,10 +163,9 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
-            $driver = $manager->get('LibGuides');
+            $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);
             return $driver;
         };

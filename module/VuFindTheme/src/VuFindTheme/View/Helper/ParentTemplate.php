@@ -29,6 +29,7 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Exception;
 use Laminas\View\Resolver\TemplatePathStack;
 
 /**
@@ -71,7 +72,12 @@ class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
     public function __invoke($template, $targetTheme = null)
     {
         $paths = $this->templatePathStack->getPaths();
+
+        // rewind to fix problems with multiple invokes
+        $paths->rewind();
+        // skip current theme
         $paths->next();
+
         while (
             $paths->current() &&
             (!file_exists($paths->current() . $template) ||

@@ -60,12 +60,12 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue('foo'));
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load->expects($this->once())->method('load')
-            ->with($this->equalTo("foo"))
+            ->with($this->equalTo('foo'))
             ->will($this->returnValue($recordDriver));
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);
@@ -73,7 +73,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that getActiveRecord returns false when no ID parameter is provided.
+     * Test that getActiveRecord returns the main record when no ID parameter is provided.
      *
      * @return void
      */
@@ -90,10 +90,15 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue(false));
+            ->will($this->returnValue(null));
         $load->expects($this->never())->method('load');
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);
-        $this->assertFalse($obj->getActiveRecord());
+        $driver = new \VuFind\RecordDriver\DefaultRecord();
+        $obj->setRecordDriver($driver);
+        $this->assertEquals(
+            $driver,
+            $obj->getActiveRecord()
+        );
     }
 }

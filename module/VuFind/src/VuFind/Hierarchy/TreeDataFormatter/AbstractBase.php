@@ -29,6 +29,10 @@
 
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Hierarchy Tree Data Formatter (abstract base)
  *

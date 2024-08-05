@@ -37,6 +37,8 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
+use function count;
+
 /**
  * EIT QueryBuilder.
  * Largely copied from the WorldCat QueryBuilder
@@ -64,19 +66,22 @@ class QueryBuilder
     /**
      * Return EIT search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);
 
         // Send back results
-        $params = new ParamBag();
-        $params->set('query', $queryStr);
-        return $params;
+        $newParams = new ParamBag();
+        $newParams->set('query', $queryStr);
+        return $newParams;
     }
 
     /// Internal API
@@ -119,10 +124,10 @@ class QueryBuilder
                 }
                 // Is this an exclusion (NOT) group or a normal group?
                 if ($params->isNegated()) {
-                    $excludes[] = implode(" OR ", $thisGroup);
+                    $excludes[] = implode(' OR ', $thisGroup);
                 } else {
                     $groups[]
-                        = implode(" " . $params->getOperator() . " ", $thisGroup);
+                        = implode(' ' . $params->getOperator() . ' ', $thisGroup);
                 }
             } else {
                 // Basic Search
@@ -134,11 +139,11 @@ class QueryBuilder
         $queryStr = '';
         if (count($groups) > 0) {
             $queryStr
-                .= "(" . implode(") " . $query->getOperator() . " (", $groups) . ")";
+                .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
         }
         // and concatenate exclusion after that
         if (count($excludes) > 0) {
-            $queryStr .= " NOT ((" . implode(") OR (", $excludes) . "))";
+            $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
         }
 
         return $queryStr;

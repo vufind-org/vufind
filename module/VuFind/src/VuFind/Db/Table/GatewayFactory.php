@@ -57,7 +57,7 @@ class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     {
         $rowManager = $container->get(\VuFind\Db\Row\PluginManager::class);
         // Map Table class to matching Row class.
-        $name = str_replace("\\Table\\", "\\Row\\", $requestedName);
+        $name = str_replace('\\Table\\', '\\Row\\', $requestedName);
         return $rowManager->has($name) ? $rowManager->get($name) : null;
     }
 

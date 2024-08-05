@@ -34,6 +34,9 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
 
+use function in_array;
+use function is_array;
+
 /**
  * MultiIndex listener class file.
  *
@@ -105,7 +108,7 @@ class MultiIndexListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );

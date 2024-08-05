@@ -32,6 +32,8 @@ namespace VuFind\XSLT\Import;
 use DOMDocument;
 use Normalizer;
 
+use function in_array;
+
 /**
  * XSLT importer support methods for work key generation.
  *
@@ -177,6 +179,6 @@ class VuFindWorkKeys
         if (!empty($excludeRegEx)) {
             $normalized = preg_replace($excludeRegEx, '', $normalized);
         }
-        return substr(strtolower($normalized), 0, 255);
+        return mb_substr(mb_strtolower($normalized, 'UTF-8'), 0, 255, 'UTF-8');
     }
 }

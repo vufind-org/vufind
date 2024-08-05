@@ -35,6 +35,10 @@ namespace VuFind\RecordDriver\Feature;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\XSLT\Processor as XSLTProcessor;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
@@ -102,7 +106,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -116,58 +120,129 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        // This is all the collected data:
-        $retval = [];
-
-        // Try each MARC field one at a time:
-        foreach ($this->subjectFields as $field => $fieldType) {
-            // Do we have any results for the current field?  If not, try the next.
-            $results = $this->getMarcReader()->getFields($field);
-            if (!$results) {
-                continue;
-            }
-
-            // If we got here, we found results -- let's loop through them.
-            foreach ($results as $result) {
-                // Start an array for holding the chunks of the current heading:
-                $current = [];
-
-                // Get all the chunks and collect them together:
-                foreach ($result['subfields'] as $subfield) {
-                    // Numeric subfields are for control purposes and should not
-                    // be displayed:
-                    if (!is_numeric($subfield['code'])) {
-                        $current[] = $subfield['data'];
-                    }
-                }
-                // If we found at least one chunk, add a heading to our result:
-                if (!empty($current)) {
-                    if ($extended) {
-                        $sourceIndicator = $result['i2'];
-                        $source = '';
-                        if (isset($this->subjectSources[$sourceIndicator])) {
-                            $source = $this->subjectSources[$sourceIndicator] ?? '';
-                        } else {
-                            $source = $this->getSubfield($result, '2');
-                        }
-                        $retval[] = [
-                            'heading' => $current,
-                            'type' => $fieldType,
-                            'source' => $source,
-                            'id' => $this->getSubfield($result, '0'),
-                        ];
-                    } else {
-                        $retval[] = $current;
-                    }
-                }
-            }
+        if (($this->mainConfig->Record->marcSubjectHeadingsSort ?? '') === 'numerical') {
+            $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
+        } else {
+            // Default | value === 'record'
+            $returnValues = $this->getAllSubjectHeadingsRecordOrder($extended);
         }
 
         // Remove duplicates and then send back everything we collected:
         return array_map(
             'unserialize',
-            array_unique(array_map('serialize', $retval))
+            array_unique(array_map('serialize', $returnValues))
         );
+    }
+
+    /**
+     * Get all subject headings associated with this record. Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific. Sorted in the same way it is saved for the record.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     *  keys:
+     *  - heading: the actual subject heading chunks
+     *  - type: heading type
+     *  - source: source vocabulary
+     *
+     * @return array
+     */
+    protected function getAllSubjectHeadingsRecordOrder(bool $extended = false): array
+    {
+        $returnValues = [];
+        $allFields = $this->getMarcReader()->getAllFields();
+        $subjectFieldsKeys = array_keys($this->subjectFields);
+        // Go through all the fields and handle them if they are part of what we want
+        foreach ($allFields as $field) {
+            if (isset($field['tag']) && in_array($field['tag'], $subjectFieldsKeys)) {
+                $fieldType = $this->subjectFields[$field['tag']];
+                if ($nextLine = $this->processSubjectHeadings($field, $extended, $fieldType)) {
+                    $returnValues[] = $nextLine;
+                }
+            }
+        }
+        return $returnValues;
+    }
+
+    /**
+     * Get all subject headings associated with this record. Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific. Sorted numerically on marc fields.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     *  keys:
+     *  - heading: the actual subject heading chunks
+     *  - type: heading type
+     *  - source: source vocabulary
+     *
+     * @return array
+     */
+    protected function getAllSubjectHeadingsNumericalOrder(bool $extended = false): array
+    {
+        $returnValues = [];
+        // Try each MARC field one at a time:
+        foreach ($this->subjectFields as $field => $fieldType) {
+            // Do we have any results for the current field?  If not, try the next.
+            $fields = $this->getMarcReader()->getFields($field);
+            if (!$fields) {
+                continue;
+            }
+
+            // If we got here, we found results -- let's loop through them.
+            foreach ($fields as $f) {
+                if ($nextLine = $this->processSubjectHeadings($f, $extended, $fieldType)) {
+                    $returnValues[] = $nextLine;
+                }
+            }
+        }
+        return $returnValues;
+    }
+
+    /**
+     * Get subject headings of a given record field.
+     * The heading is returned as a chunk, increasing from least specific to most specific.
+     *
+     * @param array  $field     field to handle
+     * @param bool   $extended  Whether to return a keyed array with the following keys:
+     *                          - heading: the actual subject heading chunks - type:
+     *                          heading type - source: source vocabulary
+     * @param string $fieldType Type of the field
+     *
+     * @return ?array
+     */
+    protected function processSubjectHeadings(
+        array $field,
+        bool $extended,
+        string $fieldType
+    ): ?array {
+        // Start an array for holding the chunks of the current heading:
+        $current = [];
+
+        // Get all the chunks and collect them together:
+        foreach ($field['subfields'] as $subfield) {
+            // Numeric subfields are for control purposes and should not
+            // be displayed:
+            if (!is_numeric($subfield['code'])) {
+                $current[] = $subfield['data'];
+            }
+        }
+        // If we found at least one chunk, add a heading to our result:
+        if (!empty($current)) {
+            if ($extended) {
+                $sourceIndicator = $field['i2'];
+                $source = $this->subjectSources[$sourceIndicator]
+                    ?? $this->getSubfield($field, '2');
+                return [
+                    'heading' => $current,
+                    'type' => $fieldType,
+                    'source' => $source,
+                    'id' => $this->getSubfield($field, '0'),
+                ];
+            } else {
+                return $current;
+            }
+        }
+        return null;
     }
 
     /**
@@ -192,21 +267,21 @@ trait MarcAdvancedTrait
 
         switch ($biblioLevel) {
             case 'M': // Monograph
-                return "Monograph";
+                return 'Monograph';
             case 'S': // Serial
-                return "Serial";
+                return 'Serial';
             case 'A': // Monograph Part
-                return "MonographPart";
+                return 'MonographPart';
             case 'B': // Serial Part
-                return "SerialPart";
+                return 'SerialPart';
             case 'C': // Collection
-                return "Collection";
+                return 'Collection';
             case 'D': // Collection Part
-                return "CollectionPart";
+                return 'CollectionPart';
             case 'I': // Integrating Resource
-                return "IntegratingResource";
+                return 'IntegratingResource';
             default:
-                return "Unknown";
+                return 'Unknown';
         }
     }
 
@@ -413,7 +488,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -421,8 +496,6 @@ trait MarcAdvancedTrait
      */
     public function getSeries()
     {
-        $matches = [];
-
         // First check the 440, 800 and 830 fields for series information:
         $primaryFields = [
             '440' => ['a', 'p'],
@@ -937,23 +1010,18 @@ trait MarcAdvancedTrait
     {
         // Special case for MARC:
         if ($format == 'marc21') {
-            $sanitizeXmlRegEx
-                = '[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+';
-            $xml = simplexml_load_string(
-                trim(
-                    preg_replace(
-                        "/$sanitizeXmlRegEx/u",
-                        ' ',
-                        $this->getMarcReader()->toFormat('MARCXML')
-                    )
-                )
-            );
+            try {
+                $xml = $this->getMarcReader()->toFormat('MARCXML');
+            } catch (\Exception) {
+                return false;
+            }
+            $xml = simplexml_load_string($xml);
             if (!$xml || !isset($xml->record)) {
                 return false;
             }
 
             // Set up proper namespacing and extract just the <record> tag:
-            $xml->record->addAttribute('xmlns', "http://www.loc.gov/MARC21/slim");
+            $xml->record->addAttribute('xmlns', 'http://www.loc.gov/MARC21/slim');
             // There's a quirk in SimpleXML that strips the first namespace
             // declaration, hence the double xmlns: prefix:
             $xml->record->addAttribute(
@@ -981,9 +1049,14 @@ trait MarcAdvancedTrait
      */
     public function getRDFXML()
     {
+        try {
+            $xml = $this->getMarcReader()->toFormat('MARCXML');
+        } catch (\Exception $e) {
+            return '';
+        }
         return XSLTProcessor::process(
             'record-rdf-mods.xsl',
-            trim($this->getMarcReader()->toFormat('MARCXML'))
+            trim($xml)
         );
     }
 
@@ -998,7 +1071,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first ISMN found for this record, or false if no one fonund
+     * Return first ISMN found for this record, or false if no one found
      *
      * @return mixed
      */
@@ -1086,5 +1159,15 @@ trait MarcAdvancedTrait
     {
         return $this->getMarcReader()
             ->getLinkedFieldsSubfields('880', '245', ['n', 'p']);
+    }
+
+    /**
+     * Get an array of textual holdings for the holdings on a record.
+     *
+     * @return array
+     */
+    public function getTextualHoldings()
+    {
+        return $this->getFieldArray('866');
     }
 }

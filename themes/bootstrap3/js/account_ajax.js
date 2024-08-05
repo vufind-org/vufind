@@ -22,8 +22,9 @@ VuFind.register('account', function Account() {
   _accountIcons[ICON_LEVELS.DANGER] = ["my-account-warning", "account-status-danger text-danger"];
 
   var _submodules = [];
-
+  var _clearCaches = false;
   var _sessionDataPrefix = "vf-account-status-";
+
   var _save = function _save(module) {
     sessionStorage.setItem(
       _sessionDataPrefix + module,
@@ -31,14 +32,13 @@ VuFind.register('account', function Account() {
     );
   };
 
+  // Forward declaration for clearAllCaches
+  var clearAllCaches = function clearAllCachesForward() {};
+
   // Clearing save forces AJAX update next page load
   var clearCache = function clearCache(name) {
     if (typeof name === "undefined" || name === '') {
-      for (var sub in _submodules) {
-        if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
-          clearCache(sub);
-        }
-      }
+      clearAllCaches();
     } else {
       sessionStorage.removeItem(_sessionDataPrefix + name);
     }
@@ -77,15 +77,21 @@ VuFind.register('account', function Account() {
         }
       }
     }
-    $("#account-icon").html(VuFind.icon(..._accountIcons[accountStatus]));
-    if (accountStatus > ICON_LEVELS.NONE) {
-      $("#account-icon")
-        .attr("data-toggle", "tooltip")
-        .attr("data-placement", "bottom")
-        .attr("title", VuFind.translate("account_has_alerts"))
-        .tooltip();
-    } else {
-      $("#account-icon").tooltip("destroy");
+    const accountIconEl = document.querySelector('#account-icon');
+    if (accountIconEl) {
+      accountIconEl.innerHTML = VuFind.icon(..._accountIcons[accountStatus]);
+      if (accountStatus > ICON_LEVELS.NONE) {
+        accountIconEl.dataset.toggle = 'tooltip';
+        accountIconEl.dataset.placement = 'bottom';
+        accountIconEl.title = VuFind.translate('account_has_alerts');
+        $(accountIconEl).tooltip();
+      } else {
+        $(accountIconEl).tooltip('destroy');
+      }
+      Object.entries(ICON_LEVELS).forEach(([, level]) => {
+        accountIconEl.classList.remove('notification-level-' + level);
+      });
+      accountIconEl.classList.add('notification-level-' + accountStatus);
     }
   };
   var _ajaxLookup = function _ajaxLookup(module) {
@@ -106,6 +112,9 @@ VuFind.register('account', function Account() {
   };
 
   var _load = function _load(module) {
+    if (_clearCaches) {
+      sessionStorage.removeItem(_sessionDataPrefix + module);
+    }
     var $element = $(_submodules[module].selector);
     if (!$element) {
       _statuses[module] = INACTIVE;
@@ -170,9 +179,20 @@ VuFind.register('account', function Account() {
     }
   };
 
+  clearAllCaches = function clearAllCachesReal() {
+    // Set a flag so that any modules yet to be loaded are cleared as well
+    _clearCaches = true;
+    for (var sub in _submodules) {
+      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
+        _load(sub);
+      }
+    }
+  };
+
   return {
     init: init,
     clearCache: clearCache,
+    clearAllCaches: clearAllCaches,
     notify: notify,
     // if user is logged out, clear cache instead of register
     register: userIsLoggedIn ? register : clearCache

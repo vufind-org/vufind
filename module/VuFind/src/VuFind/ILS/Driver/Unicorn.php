@@ -28,9 +28,17 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Marc\MarcCollection;
 use VuFind\Marc\MarcReader;
+
+use function array_key_exists;
+use function array_slice;
+use function count;
+use function floatval;
+use function in_array;
+use function strlen;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -159,10 +167,10 @@ class Unicorn extends AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -199,7 +207,7 @@ class Unicorn extends AbstractBase implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
@@ -234,7 +242,7 @@ class Unicorn extends AbstractBase implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -257,7 +265,7 @@ class Unicorn extends AbstractBase implements
 
         // process the API response
         if ($response == 'invalid_login') {
-            return ['blocks' => ["authentication_error_admin"]];
+            return ['blocks' => ['authentication_error_admin']];
         }
 
         $results = [];
@@ -354,7 +362,7 @@ class Unicorn extends AbstractBase implements
     {
         $statuses = [];
         $params = [
-            'query' => 'multiple', 'ids' => implode("|", array_unique($idList)),
+            'query' => 'multiple', 'ids' => implode('|', array_unique($idList)),
         ];
         $response = $this->querySirsi($params);
         if (empty($response)) {
@@ -405,7 +413,7 @@ class Unicorn extends AbstractBase implements
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -462,7 +470,7 @@ class Unicorn extends AbstractBase implements
         if ($response == 'invalid_login') {
             return [
               'success' => false,
-              'sysMessage' => "authentication_error_admin"];
+              'sysMessage' => 'authentication_error_admin'];
         }
 
         $matches = [];
@@ -509,7 +517,7 @@ class Unicorn extends AbstractBase implements
             $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
 
         [$last, $first] = explode(',', $name);
-        $first = rtrim($first, " ");
+        $first = rtrim($first, ' ');
 
         if ($expiry != '0') {
             $expiry = $this->parseDateTime(trim($expiry));
@@ -585,7 +593,7 @@ class Unicorn extends AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -643,7 +651,7 @@ class Unicorn extends AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -751,12 +759,12 @@ class Unicorn extends AbstractBase implements
         foreach ($details as $holdKey) {
             if (in_array($holdKey, $failures)) {
                 $items[$holdKey] = [
-                    'success' => false, 'status' => "hold_cancel_fail",
+                    'success' => false, 'status' => 'hold_cancel_fail',
                 ];
             } else {
                 $count++;
                 $items[$holdKey] = [
-                  'success' => true, 'status' => "hold_cancel_success",
+                  'success' => true, 'status' => 'hold_cancel_success',
                 ];
             }
         }
@@ -772,7 +780,7 @@ class Unicorn extends AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -1062,7 +1070,7 @@ class Unicorn extends AbstractBase implements
             $holdcount, $library_code, $library, $location_code, $location,
             $currLocCode, $current_location, $holdable, $circulation_rule, $duedate,
             $date_recalled, $recall_period, $format, $title_holds]
-                = explode("|", $line);
+                = explode('|', $line);
 
         // availability
         $availability = ($number_of_charges == 0) ? 1 : 0;
@@ -1192,10 +1200,10 @@ class Unicorn extends AbstractBase implements
         if (empty($url)) {
             $url = $this->host;
             if ($this->port) {
-                $url = "http://" . $url . ":" . $this->port . "/" .
+                $url = 'http://' . $url . ':' . $this->port . '/' .
                     $this->search_prog;
             } else {
-                $url = "http://" . $url . "/" . $this->search_prog;
+                $url = 'http://' . $url . '/' . $this->search_prog;
             }
         }
 

@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function is_callable;
+
 /**
  * Cover loader factory.
  *
@@ -68,8 +70,10 @@ class LoaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('cover')->getOptions()->getCacheDir();
+        $cacheOptions = $container->get(\VuFind\Cache\Manager::class)
+            ->getCache('cover')->getOptions();
+        $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
+            ? $cacheOptions->getCacheDir() : null;
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $loader = new $requestedName(

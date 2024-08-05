@@ -107,9 +107,9 @@ class User extends Gateway
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param string $id ID.
+     * @param int $id ID.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getById($id)
     {
@@ -135,11 +135,14 @@ class User extends Gateway
      * @param string $username Username to use for retrieval.
      * @param bool   $create   Should we create users that don't already exist?
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByUsername($username, $create = true)
     {
-        $row = $this->select(['username' => $username])->current();
+        $callback = function ($select) use ($username) {
+            $select->where->literal('lower(username) = lower(?)', [$username]);
+        };
+        $row = $this->select($callback)->current();
         return ($create && empty($row))
             ? $this->createRowForUsername($username) : $row;
     }
@@ -149,7 +152,7 @@ class User extends Gateway
      *
      * @param string $email email to use for retrieval.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByEmail($email)
     {
@@ -177,7 +180,7 @@ class User extends Gateway
      *
      * @param string $hash User-unique hash string
      *
-     * @return mixed
+     * @return ?UserRow
      */
     public function getByVerifyHash($hash)
     {

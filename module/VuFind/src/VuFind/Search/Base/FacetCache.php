@@ -31,6 +31,8 @@ namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
 
+use function in_array;
+
 /**
  * Solr FacetCache Factory.
  *
@@ -42,6 +44,8 @@ use VuFind\Cache\Manager as CacheManager;
  */
 abstract class FacetCache
 {
+    use \VuFind\Log\VarDumperTrait;
+
     /**
      * Cache manager
      *
@@ -99,7 +103,7 @@ abstract class FacetCache
             // Factor operator settings into cache key:
             array_map([$params, 'getFacetOperator'], array_keys($facetConfig)),
         ];
-        return $this->language . md5(print_r($settings, true));
+        return $this->language . md5($this->varDump($settings));
     }
 
     /**
@@ -145,7 +149,7 @@ abstract class FacetCache
      */
     public function getList($context = 'Advanced')
     {
-        if (!in_array($context, ['Advanced', 'HomePage'])) {
+        if (!in_array($context, ['Advanced', 'HomePage', 'NewItems'])) {
             throw new \Exception('Invalid context: ' . $context);
         }
         // For now, all contexts are handled the same way.

@@ -45,6 +45,8 @@ use VuFindSearch\Service;
  */
 class SearchServiceTest extends TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Mock backend
      *
@@ -65,8 +67,11 @@ class SearchServiceTest extends TestCase
         $command->expects($this->once())->method('execute')
             ->with($this->equalTo($backend));
         $em = $service->getEventManager();
-        $em->expects($this->exactly(2))->method('trigger')
-            ->withConsecutive(['pre', $service], ['post', $service]);
+        $this->expectConsecutiveCalls(
+            $em,
+            'trigger',
+            [['pre', $service], ['post', $service]]
+        );
         $this->assertEquals($command, $service->invoke($command));
     }
 
@@ -85,10 +90,13 @@ class SearchServiceTest extends TestCase
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
             ->with($this->equalTo($backend))
-            ->will($this->throwException(new BackendException("test")));
+            ->will($this->throwException(new BackendException('test')));
         $em = $service->getEventManager();
-        $em->expects($this->exactly(2))->method('trigger')
-            ->withConsecutive(['pre', $service], ['error', $service]);
+        $this->expectConsecutiveCalls(
+            $em,
+            'trigger',
+            [['pre', $service], ['error', $service]]
+        );
         $this->assertEquals($command, $service->invoke($command));
     }
 

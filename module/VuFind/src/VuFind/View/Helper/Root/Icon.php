@@ -33,6 +33,9 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
 
+use function in_array;
+use function is_string;
+
 /**
  * Icon view helper
  *
@@ -231,7 +234,7 @@ class Icon extends AbstractHelper
                     array_merge(
                         $this->config['sets'][$set] ?? [],
                         [
-                            'icon' => ($this->esc)($icon),
+                            'icon' => $icon,
                             'attrs' => $this->compileAttrs($attrs),
                             'extra' => $attrs,
                         ]

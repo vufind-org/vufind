@@ -29,10 +29,14 @@
 
 namespace VuFind\Db\Table;
 
+use Exception;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\TableGateway\AbstractTableGateway;
 use Laminas\Db\TableGateway\Feature;
 use VuFind\Db\Row\RowGateway;
+
+use function count;
+use function is_object;
 
 /**
  * Generic VuFind table gateway.
@@ -91,7 +95,7 @@ class Gateway extends AbstractTableGateway
     public function initializeFeatures($cfg)
     {
         // Special case for PostgreSQL sequences:
-        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql') {
             $maps = $cfg['vufind']['pgsql_seq_mapping'] ?? null;
             if (isset($maps[$this->table])) {
                 if (!is_object($this->featureSet)) {
@@ -120,7 +124,7 @@ class Gateway extends AbstractTableGateway
         // from a sequence:
         if (
             $this->adapter
-            && $this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
+            && $this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql'
             && $obj instanceof \VuFind\Db\Row\RowGateway
         ) {
             // Do we have a sequence feature?
@@ -150,5 +154,38 @@ class Gateway extends AbstractTableGateway
     public function getDbTable($table)
     {
         return $this->tableManager->get($table);
+    }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->getAdapter()->getDriver()->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->getAdapter()->getDriver()->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->getAdapter()->getDriver()->getConnection()->rollback();
     }
 }

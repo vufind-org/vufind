@@ -32,6 +32,9 @@ namespace VuFind\Cover;
 use VuFind\Cover\Loader as CoverLoader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
+use function get_class;
+use function is_array;
+
 /**
  * Cover image router
  *

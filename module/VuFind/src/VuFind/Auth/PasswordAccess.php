@@ -30,8 +30,10 @@
 
 namespace VuFind\Auth;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+
+use function in_array;
 
 /**
  * Password Access authentication class
@@ -46,7 +48,7 @@ use VuFind\Exception\Auth as AuthException;
 class PasswordAccess extends AbstractBase
 {
     /**
-     * Get configuration (load automatically if not previously set).  Throw an
+     * Get configuration (load automatically if not previously set). Throw an
      * exception if the configuration is invalid.
      *
      * @throws AuthException
@@ -64,24 +66,24 @@ class PasswordAccess extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
         $config = $this->getConfig()->toArray();
-        $req_password = trim($request->getPost()->get('password'));
-
-        if (!in_array($req_password, $config['PasswordAccess']['access_user'])) {
+        $req_password = trim($request->getPost()->get('password', ''));
+        $accessConfig = $config['PasswordAccess']['access_user'] ?? [];
+        if (!in_array($req_password, $accessConfig)) {
             throw new AuthException('authentication_error_invalid');
         }
 
-        $userMap = array_flip($config['PasswordAccess']['access_user']);
-        return $this->getUserTable()->getByUsername($userMap[$req_password]);
+        $userMap = array_flip($accessConfig);
+        return $this->getOrCreateUserByUsername($userMap[$req_password]);
     }
 }

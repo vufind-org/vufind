@@ -30,6 +30,8 @@
 
 namespace VuFind\MetadataVocabulary;
 
+use function is_array;
+
 /**
  * Metadata vocabulary base class
  * (provides results from available RecordDriver methods in a standardized form)
@@ -43,7 +45,7 @@ namespace VuFind\MetadataVocabulary;
 abstract class AbstractBase implements MetadataVocabularyInterface
 {
     /**
-     * This varriable can be overwritten by child classes
+     * This variable can be overwritten by child classes
      * to define which custom field is filled by which generic fields.
      *
      * @var array

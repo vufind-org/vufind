@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -66,7 +67,7 @@ class Facebook extends AbstractBase implements
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -91,13 +92,13 @@ class Facebook extends AbstractBase implements
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -115,25 +116,26 @@ class Facebook extends AbstractBase implements
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($details->id);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($details->id);
         if (isset($details->first_name)) {
-            $user->firstname = $details->first_name;
+            $user->setFirstname($details->first_name);
         }
         if (isset($details->last_name)) {
-            $user->lastname = $details->last_name;
+            $user->setLastname($details->last_name);
         }
         if (isset($details->email)) {
-            $user->updateEmail($details->email);
+            $userService->updateUserEmail($user, $details->email);
         }
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -179,7 +181,7 @@ class Facebook extends AbstractBase implements
      *
      * @param string $accessToken Access token
      *
-     * @return array
+     * @return object
      */
     protected function getDetailsFromAccessToken($accessToken)
     {

@@ -35,6 +35,8 @@ use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 
+use function intval;
+
 /**
  * Table Definition for session
  *

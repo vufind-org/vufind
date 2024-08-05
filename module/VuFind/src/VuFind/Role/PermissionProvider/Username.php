@@ -31,6 +31,8 @@ namespace VuFind\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
 
+use function in_array;
+
 /**
  * Username permission provider for VuFind.
  *

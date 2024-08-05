@@ -34,6 +34,10 @@ namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
@@ -68,7 +72,7 @@ class SolrDefault extends DefaultRecord implements
     ];
 
     /**
-     * These Solr fields should NEVER be used for snippets.  (We exclude author
+     * These Solr fields should NEVER be used for snippets. (We exclude author
      * and title because they are already covered by displayed fields; we exclude
      * spelling because it contains lots of fields jammed together and may cause
      * glitchy output; we exclude ID because random numbers are not helpful).
@@ -119,6 +123,13 @@ class SolrDefault extends DefaultRecord implements
     protected $searchService = null;
 
     /**
+     * If the explain feature is enabled
+     *
+     * @var bool
+     */
+    protected $explainEnabled = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
@@ -149,6 +160,8 @@ class SolrDefault extends DefaultRecord implements
         $this->containerLinking
             = !isset($mainConfig->Hierarchy->simpleContainerLinks)
             ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+
+        $this->explainEnabled = $searchSettings->Explain->enabled ?? false;
 
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
@@ -221,11 +234,13 @@ class SolrDefault extends DefaultRecord implements
         if ($this->snippet) {
             // First check for preferred fields:
             foreach ($this->preferredSnippetFields as $current) {
-                if (isset($this->highlightDetails[$current][0])) {
-                    return [
-                        'snippet' => $this->highlightDetails[$current][0],
-                        'caption' => $this->getSnippetCaption($current),
-                    ];
+                foreach ($this->highlightDetails[$current] ?? [] as $hl) {
+                    if (!empty($hl)) {
+                        return [
+                            'snippet' => $hl,
+                            'caption' => $this->getSnippetCaption($current),
+                        ];
+                    }
                 }
             }
 
@@ -236,10 +251,14 @@ class SolrDefault extends DefaultRecord implements
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
                     if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
-                        return [
-                            'snippet' => $value[0],
-                            'caption' => $this->getSnippetCaption($key),
-                        ];
+                        foreach ($value as $hl) {
+                            if (!empty($hl)) {
+                                return [
+                                    'snippet' => $hl,
+                                    'caption' => $this->getSnippetCaption($key),
+                                ];
+                            }
+                        }
                     }
                 }
             }
@@ -324,5 +343,15 @@ class SolrDefault extends DefaultRecord implements
     public function getWorkKeys()
     {
         return $this->fields['work_keys_str_mv'] ?? [];
+    }
+
+    /**
+     * Get if the explain features is enabled.
+     *
+     * @return bool
+     */
+    public function explainEnabled()
+    {
+        return $this->explainEnabled;
     }
 }

@@ -30,6 +30,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function count;
+
 /**
  * Captcha view helper
  *
@@ -120,7 +122,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get list of URLs with JS dependancies to load for the active CAPTCHA type.
+     * Get list of URLs with JS dependencies to load for the active CAPTCHA type.
      *
      * @return array
      */

@@ -40,6 +40,8 @@ namespace VuFind\Search\Favorites;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
+
     /**
      * Constructor
      *
@@ -59,7 +61,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $config->Social->lists_default_limit;
         }
         if (isset($config->Social->lists_limit_options)) {
-            $this->limitOptions = explode(',', $config->Social->lists_limit_options);
+            $this->limitOptions = $this->explodeListSetting($config->Social->lists_limit_options);
         }
         if (isset($config->Social->lists_view)) {
             $this->listviewOption = $config->Social->lists_view;
@@ -77,7 +79,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).

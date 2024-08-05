@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use VuFind\Connection\Relais;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -48,33 +48,17 @@ abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAw
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Relais connector
-     *
-     * @var Relais
-     */
-    protected $relais;
-
-    /**
-     * Logged-in user (or null if none)
-     *
-     * @var User
-     */
-    protected $user;
-
-    /**
      * Constructor
      *
-     * @param SessionSettings $ss     Session settings
-     * @param Relais          $relais Relais connector
-     * @param User            $user   Logged in user (or null if none)
+     * @param SessionSettings      $ss     Session settings
+     * @param Relais               $relais Relais connector
+     * @param ?UserEntityInterface $user   Logged in user (or null if none)
      */
     public function __construct(
         SessionSettings $ss,
-        Relais $relais,
-        User $user = null
+        protected Relais $relais,
+        protected ?UserEntityInterface $user
     ) {
         $this->sessionSettings = $ss;
-        $this->relais = $relais;
-        $this->user = $user;
     }
 }

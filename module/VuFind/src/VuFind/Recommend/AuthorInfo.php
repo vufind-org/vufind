@@ -29,10 +29,13 @@
 
 namespace VuFind\Recommend;
 
+use Exception;
 use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * AuthorInfo Recommendations Module
@@ -167,7 +170,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -197,8 +200,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function getAuthorInfo()
     {
         // Don't load Wikipedia content if Wikipedia is disabled:
-        return stristr($this->sources, 'wikipedia')
-            ? $this->wikipedia->get($this->getAuthor()) : null;
+        try {
+            return stristr($this->sources, 'wikipedia') ? $this->wikipedia->get($this->getAuthor()) : null;
+        } catch (Exception $e) {
+            error_log("Unexpected error while loading author info: {$e->getMessage()}");
+            return null;
+        }
     }
 
     /**
@@ -227,7 +234,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Translate an LCCN to a Wikipedia name through the VIAF web service.  Returns
+     * Translate an LCCN to a Wikipedia name through the VIAF web service. Returns
      * false if no value can be found.
      *
      * @param string $lccn LCCN

@@ -129,8 +129,8 @@ class CollectionList extends AbstractBase
             $request = $this->getRequest()->getQuery()->toArray()
                 + $this->getRequest()->getPost()->toArray();
             $rManager = $this->recommendManager;
-            $cb = function ($runner, $params, $searchId) use ($driver, $rManager) {
-                $params->initFromRecordDriver($driver);
+            $cb = function ($runner, $params, $searchId) use ($driver, $rManager, $request) {
+                $params->initFromRecordDriver($driver, '' !== ($request['lookfor'] ?? ''));
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
                     $params->getOptions()->getRecommendationSettings()

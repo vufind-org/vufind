@@ -36,6 +36,8 @@ use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 
+use function in_array;
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
@@ -180,28 +182,28 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
                     $size = round($format->fileSize / 1000000);
-                    $size .= " GB";
+                    $size .= ' GB';
                 } elseif ($format->fileSize > 1000) {
                     $size = round($format->fileSize / 1000);
-                    $size .= " MB";
+                    $size .= ' MB';
                 } else {
                     $size = $format->fileSize;
-                    $size .= " KB";
+                    $size .= ' KB';
                 }
-                $tmpresults["File Size"] = $size;
+                $tmpresults['File Size'] = $size;
             }
             if ($format->partCount) {
-                $tmpresults["Parts"] = $format->partCount;
+                $tmpresults['Parts'] = $format->partCount;
             }
             if ($format->identifiers) {
                 foreach ($format->identifiers as $id) {
-                    if (in_array($id->type, ["ISBN", "ASIN"])) {
+                    if (in_array($id->type, ['ISBN', 'ASIN'])) {
                         $tmpresults[$id->type] = $id->value;
                     }
                 }
             }
             if ($format->onSaleDate) {
-                $tmpresults["Release Date"] = $format->onSaleDate;
+                $tmpresults['Release Date'] = $format->onSaleDate;
             }
             $results[$format->name] = $tmpresults;
         }
@@ -221,7 +223,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
-            $data = $fulldata[strtolower($od_id)];
+            $data = $fulldata[strtolower($od_id)] ?? null;
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
@@ -232,12 +234,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 if (
                     $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
+                    || $format->formatType == 'magazine-overdrive'
                 ) {
                     $results = $format;
                 }
             }
         }
-        $this->debug("previewlinks:" . print_r($results, true));
         return $results;
     }
 
@@ -248,8 +250,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        // TODO: add this as an Overdrive configuration to turn it off
-        return true;
+        return $this->config->enableAjaxStatus ?? true;
     }
 
     /**
@@ -270,11 +271,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * Returns whether the current user is logged in
      *
-     * @return object|bool User if logged in, false if not.
+     * @return bool
      */
     public function isLoggedIn()
     {
-        return $this->connector->getUser();
+        return $this->connector->getUser() ? true : false;
     }
 
     /**
@@ -301,7 +302,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result = strtolower($this->getUniqueID());
             }
         }
-        $this->debug("odid: $result");
         return $result;
     }
 
@@ -319,34 +319,59 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Returns a boolean indicating if patron actions are supported
+     *
+     * @return bool
+     */
+    public function supportsPatronActions()
+    {
+        return $this->config->usePatronAPI;
+    }
+
+    /**
      * Is Checked Out
      *
      * Is this resource already checked out to the user?
      *
      * @return object Returns the checkout information if currently checked out
-     *    by this user or false if not.
+     *    by this user or false in the data property if not.
      * @throws \Exception
      */
     public function isCheckedOut()
     {
-        $this->debug(" ischeckout", [], true);
-        $overdriveID = $this->getOverdriveID();
-        $result = $this->connector->getCheckouts(true);
-        if ($result->status) {
-            $checkedout = false;
-            $checkouts = $result->data;
-            foreach ($checkouts as $checkout) {
-                if (strtolower($checkout->reserveId) == $overdriveID) {
-                    $checkedout = true;
-                    $result->status = true;
-                    $result->data = $checkout;
+        $result = $this->connector->getResultObject();
+        if ($this->isLoggedIn() && $this->supportsPatronActions()) {
+            $overdriveID = $this->getOverdriveID();
+            $result = $this->connector->getCheckouts(true);
+            if ($result->status) {
+                $checkedout = false;
+                $checkouts = $result->data;
+                // In case of a magazine issue, we have to get all the checkouts to see if the
+                // current title is the parentID of one of the user's checkouts. Return data as
+                // array in case there are multiple issues checked out to the user.
+                $result->data = [];
+                $result->isMagazine = false;
+                foreach ($checkouts as $checkout) {
+                    if ($checkout->metadata->mediaType == 'Magazine') {
+                        $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
+                    } else {
+                        $idToCheck = $checkout->reserveId;
+                    }
+                    if (strtolower($idToCheck) == $overdriveID) {
+                        $checkedout = true;
+                        $result->status = true;
+                        $result->data[] = $checkout;
+                        //this checkout is a magazine issue of the current title
+                        if ($checkout->metadata->mediaType == 'Magazine') {
+                            $result->isMagazine =  true;
+                        }
+                    }
+                }
+                if (!$checkedout) {
+                    $result->data = false;
                 }
             }
-            if (!$checkedout) {
-                $result->data = false;
-            }
         }
-        // If it didn't work, an error should be logged from the connector
         return $result;
     }
 
@@ -359,13 +384,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isHeld()
     {
-        $overDriveId = $this->getOverdriveID();
-        $result = $this->connector->getHolds(true);
-        if ($result->status) {
-            $holds = $result->data;
-            foreach ($holds as $hold) {
-                if (strtolower($hold->reserveId) == $overDriveId) {
-                    return $hold;
+        if ($this->isLoggedIn() && $this->supportsPatronActions()) {
+            $overDriveId = $this->getOverdriveID();
+            $result = $this->connector->getHolds(true);
+            if ($result->status) {
+                $holds = $result->data;
+                foreach ($holds as $hold) {
+                    if (strtolower($hold->reserveId) == $overDriveId) {
+                        return $hold;
+                    }
                 }
             }
         }
@@ -447,7 +474,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
-            $data = $fulldata[strtolower($od_id)];
+            $data = $fulldata[strtolower($od_id)] ?? null;
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
@@ -466,24 +493,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             return parent::getSummary();
         }
         // Non-MARC case:
-        $desc = $this->fields["description"] ?? '';
+        $desc = $this->fields['description'] ?? '';
 
-        $newDesc = preg_replace("/&#8217;/i", "", $desc);
+        $newDesc = preg_replace('/&#8217;/i', '', $desc);
         $newDesc = strip_tags($newDesc);
-        return ["Summary" => $newDesc];
-    }
-
-    /**
-     * Retrieve raw data from object (primarily for use in staff view and
-     * autocomplete; avoid using whenever possible).
-     *
-     * @return mixed
-     */
-    public function getRawData()
-    {
-        return $this->getIsMarc()
-            ? parent::getRawData()
-            : json_decode($this->fields['fullrecord'], true);
+        return [$newDesc];
     }
 
     /**
@@ -499,7 +513,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -530,17 +544,14 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getFormattedRawData()
     {
-        $result = [];
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
         $c_arr = [];
         foreach ($data['creators'] as $creator) {
-            $c_arr[] = "<strong>{$creator["role"]}<strong>: "
-                . $creator["name"];
+            $c_arr[] = "<strong>{$creator['role']}<strong>: "
+                . $creator['name'];
         }
-        $data['creators'] = implode("<br>", $c_arr);
-
-        $this->debug("raw data:" . print_r($data, true));
+        $data['creators'] = implode('<br>', $c_arr);
         return $data;
     }
 
@@ -560,5 +571,43 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             'anchor' => '',
         ];
         return $urlDetails;
+    }
+
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        return $this->getIsMarc()
+            ? parent::getURLs()
+            : $this->getPermanentLink();
+    }
+
+    /**
+     * Get Permanent Link to the resource on your institution's OverDrive site
+     *
+     * @return array the permanent link to the resource
+     */
+    public function getPermanentLink()
+    {
+        if (!empty($libraryURL = $this->config->libraryURL)) {
+            $data = json_decode($this->fields['fullrecord'], false);
+            $desc = $this->translate('od_resource_page');
+            $permlink = "$libraryURL/media/" . $data->crossRefId;
+            return  [['url' => $permlink, 'desc' => $desc ?: $permlink]];
+        } else {
+            return [];
+        }
     }
 }

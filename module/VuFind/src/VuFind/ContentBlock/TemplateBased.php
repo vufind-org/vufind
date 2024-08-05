@@ -29,6 +29,8 @@
 
 namespace VuFind\ContentBlock;
 
+use function is_callable;
+
 /**
  * Class TemplateBased
  *

@@ -29,6 +29,11 @@
 
 namespace VuFind\Controller\Feature;
 
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+
+use function count;
+
 /**
  * VuFind Action Feature Trait - Configuration file path methods
  *
@@ -69,8 +74,9 @@ trait SecureDatabaseTrait
         // If we're correctly configured, check that the data in the database is ok:
         if ($status) {
             try {
-                $rows = $this->getTable('user')->getInsecureRows();
-                $status = (count($rows) == 0);
+                $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+                $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+                $status = (count($userRows) + count($cardRows) == 0);
             } catch (\Exception $e) {
                 // Any exception means we have a problem!
                 $status = false;

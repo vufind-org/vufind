@@ -30,7 +30,11 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Log\PsrLoggerAdapter;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+
+use function constant;
 
 /**
  * CAS authentication module.
@@ -45,6 +49,8 @@ use VuFind\Exception\Auth as AuthException;
  */
 class CAS extends AbstractBase
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Already Setup phpCAS
      *
@@ -53,7 +59,16 @@ class CAS extends AbstractBase
     protected $phpCASSetup = false;
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Constructor
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     */
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
+    {
+    }
+
+    /**
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -107,13 +122,13 @@ class CAS extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -133,21 +148,22 @@ class CAS extends AbstractBase
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($username);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
-            "cat_username", "cat_password", "email", "lastname", "firstname",
-            "college", "major", "home_library",
+            'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
+            'college', 'major', 'home_library',
         ];
         $catPassword = null;
         foreach ($attribsToCheck as $attribute) {
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
                 if ($attribute == 'email') {
-                    $user->updateEmail($value);
+                    $userService->updateUserEmail($user, $value);
                 } elseif ($attribute != 'cat_password') {
-                    $user->$attribute = $value ?? '';
+                    $this->setUserValueByField($user, $attribute, $value ?? '');
                 } else {
                     $catPassword = $value;
                 }
@@ -162,21 +178,22 @@ class CAS extends AbstractBase
         // see https://github.com/vufind-org/vufind/pull/612). Note that in the
         // (unlikely) scenario that a password can actually change from non-blank
         // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $this->ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
+                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
             );
         }
 
         // Save and return the user object:
-        $user->save();
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -255,20 +272,47 @@ class CAS extends AbstractBase
         // Now extract user attribute values:
         $cas = $this->getConfig()->CAS;
         foreach ($cas as $key => $value) {
-            if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
+            if (preg_match('/userattribute_[0-9]{1,}/', $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
                 $sortedUserAttributes[$value] = $cas->$valueKey ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value . " is missing!"
+                        'User attribute value of ' . $value . ' is missing!'
                     );
                 }
             }
         }
 
         return $sortedUserAttributes;
+    }
+
+    /**
+     * Return an array of service base URLs for the CAS client.
+     *
+     * @return string[]
+     * @throws AuthException
+     */
+    protected function getServiceBaseUrl(): array
+    {
+        $config = $this->getConfig();
+        $cas = $config->CAS;
+        if (isset($cas->service_base_url)) {
+            return $cas->service_base_url->toArray();
+        } elseif (isset($config->Site->url)) {
+            // fallback method
+            $siteUrl = parse_url($config->Site->url);
+            if (isset($siteUrl['scheme']) && isset($siteUrl['host'])) {
+                return [
+                    $siteUrl['scheme'] . '://' . $siteUrl['host'] .
+                    (isset($siteUrl['port']) ? ':' . $siteUrl['port'] : ''),
+                ];
+            }
+        }
+        throw new AuthException(
+            'Valid CAS/service_base_url or Site/url config parameters are required.'
+        );
     }
 
     /**
@@ -284,25 +328,30 @@ class CAS extends AbstractBase
         // client can only be called once.
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
-            if (
-                isset($cas->log)
-                && !empty($cas->log) && isset($cas->debug) && ($cas->debug)
-            ) {
-                $casauth->setDebug($cas->log);
+
+            $casauth->setLogger(new PsrLoggerAdapter($this->logger));
+
+            if ($cas->debug ?? false) {
+                $casauth->setVerbose(true);
             }
+
             $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
+
             $casauth->client(
                 $protocol,
                 $cas->server,
                 (int)$cas->port,
                 $cas->context,
+                $this->getServiceBaseUrl(),
                 false
             );
+
             if (isset($cas->CACert) && !empty($cas->CACert)) {
                 $casauth->setCasServerCACert($cas->CACert);
             } else {
                 $casauth->setNoCasServerValidation();
             }
+
             $this->phpCASSetup = true;
         }
 

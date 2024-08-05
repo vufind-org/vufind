@@ -44,7 +44,7 @@ use VuFind\Session\Settings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTest
+class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
 

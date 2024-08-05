@@ -171,7 +171,7 @@ abstract class AbstractBase implements CommandInterface
     public function getResult()
     {
         if (!$this->isExecuted()) {
-            throw new LogicException("Command was not yet executed");
+            throw new LogicException('Command was not yet executed');
         }
         return $this->result ?? null;
     }

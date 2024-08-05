@@ -39,10 +39,10 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -61,7 +61,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getConfigIniOverrides()
+    protected function getConfigIniOverrides(): array
     {
         return [
             'Catalog' => [
@@ -77,13 +77,43 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get Demo.ini override settings for testing ILS functions.
-     *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
+     * Get config.ini override settings for testing ChoiceAuth with SSO.
      *
      * @return array
      */
-    public function getDemoIniOverrides($bibId = 'testsample1')
+    protected function getConfigIniSSOOverrides(): array
+    {
+        return [
+            'ChoiceAuth' => [
+                'choice_order' => 'ILS, SimulatedSSO',
+            ],
+        ];
+    }
+
+    /**
+     * Get config.ini override settings for testing ChoiceAuth with Email authentication.
+     *
+     * @return array
+     */
+    protected function getConfigIniEmailOverrides(): array
+    {
+        return [
+            'ChoiceAuth' => [
+                'choice_order' => 'Database, Email',
+            ],
+            'Mail' => [
+                'testOnly' => true,
+                'message_log' => $this->getEmailLogPath(),
+            ],
+        ];
+    }
+
+    /**
+     * Get Demo.ini override settings for testing ILS functions.
+     *
+     * @return array
+     */
+    protected function getDemoIniOverrides(): array
     {
         return [
             'Users' => ['catuser' => 'catpass'],
@@ -91,13 +121,25 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test creating a DB user....
+     * Get SimulatedSSO.ini override settings for testing ChoiceAuth with SSO.
      *
-     * @retryCallback tearDownAfterClass
+     * @return array
+     */
+    protected function getSimulatedSSOIniOverrides(): array
+    {
+        return [
+            'General' => [
+                'username' => 'ssofakeuser1',
+            ],
+        ];
+    }
+
+    /**
+     * Test creating a DB user....
      *
      * @return void
      */
-    public function testCreateDatabaseUser()
+    public function testCreateDatabaseUser(): void
     {
         $this->changeConfigs(
             [
@@ -136,7 +178,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testProfile()
+    public function testProfile(): void
     {
         $this->changeConfigs(
             [
@@ -164,12 +206,101 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test login on record page with ILS and SSO authentication
+     *
+     * @return void
+     */
+    public function testRecordPageWithILSAndSSO(): void
+    {
+        // Set up configs and session
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniSSOOverrides() + $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+                'SimulatedSSO' => $this->getSimulatedSSOIniOverrides(),
+            ]
+        );
+        $recordUrl = $this->getVuFindUrl() . '/Record/testsample1';
+        $session = $this->getMinkSession();
+        $session->visit($recordUrl);
+        $page = $session->getPage();
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // login with ILS
+        $this->fillInLoginForm($page, 'catuser', 'catpass', false, '.authmethod0 ');
+        $this->submitLoginForm($page, false, '.authmethod0 ');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // Login with SSO
+        $this->assertEquals(
+            'Institutional Login',
+            $this->findCssAndGetText($page, '.modal-body .authmethod1 .btn.btn-link')
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-link');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test login with Email authentication.
+     *
+     * @return void
+     */
+    public function testEmailAuthentication(): void
+    {
+        // Set up configs, session and message logging:
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniEmailOverrides() + $this->getConfigIniOverrides(),
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Click login and request email:
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCssAndSetValue($page, '#login_Email_username', 'username1@ignore.com');
+        $this->clickCss($page, '.authmethod1 input[type="submit"]');
+        $this->assertEquals(
+            'We have sent a login link to your email address. It may take a few moments for the link to arrive. '
+            . "If you don't receive the link shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.modal .alert-success')
+        );
+
+        // Extract the link from the provided message:
+        $email = file_get_contents($this->getEmailLogPath());
+        preg_match('/Link to login: <(http.*)>/', $email, $matches);
+        $session->visit($matches[1]);
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser']);
+        static::removeUsers(['username1', 'catuser', 'ssofakeuser1']);
     }
 }

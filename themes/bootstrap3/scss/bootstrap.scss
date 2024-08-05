@@ -1,13 +1,29 @@
 /* #SCSS> */
 $fa-font-path: "../../bootstrap3/css/fonts";
-@import "vendor/bootstrap";
+// Load bootstrap via include path to silence deprecation warnings
+// (see vendor subdirectory for the actual contents)
+@import "bootstrap/bootstrap";
 /* <#SCSS */
 /* #LESS>
 @import "vendor/bootstrap/bootstrap";
 
 <#LESS */
 @import "variables";
+// Import custom (non-vendor) mixins
+@import "mixins/mixins";
+
+/* #SCSS> */
+$fa-font-path: "../../bootstrap3/css/fonts";
+// Load font-awesome via include path to silence deprecation warnings
+// (see vendor subdirectory for the actual contents)
+@import "font-awesome/font-awesome";
+/* <#SCSS */
+/* #LESS>
 @import "vendor/font-awesome/font-awesome";
+<#LESS */
+
+@import "../vendor/bootstrap-accessibility/bootstrap-accessibility";
+@import "../vendor/a11y";
 
 @import "components/accessibility";
 @import "components/variables";
@@ -18,9 +34,10 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/channels";
 @import "components/cookie-consent/index";
 @import "components/devtools";
+@import "components/explain";
 @import "components/form";
 @import "components/icons";
-@import "components/js-tree";
+@import "components/keyboard";
 @import "components/lightbox";
 @import "components/offcanvas";
 @import "components/record";
@@ -28,6 +45,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/trees";
 
 /**
  * Notes
@@ -101,6 +119,14 @@ label { cursor: pointer; }
     }
   }
 }
+.navbar-nav button.dropdown-toggle {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  appearance: none;
+  padding: $navbar-padding-vertical;
+  border: 0;
+  color: inherit;
+  background-color: transparent;
+}
 
 // Normalize highlighting
 .highlight,
@@ -148,15 +174,18 @@ h3 { font-size: 16px; }
   #modal .form-control { max-width: none; }
 }
 
-button.dropdown-toggle {
-  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
-  appearance: none;
-  padding: 15px;
-  border: 0;
-  color: $brand-primary;
+/* ------ Layout ------ */
+.sticky {
+  position: fixed;
+  left: 0;
 }
 
-/* ------ Layout ------ */
+.sticky {
+  .sticky-hidden {
+    display: none !important;
+  }
+}
+
 footer {
   @extend .container;
   padding: 1rem;
@@ -255,6 +284,15 @@ footer {
     top: .5rem;
     right: .25rem;
   }
+
+  body.rtl & {
+    padding-left: 3rem;
+    padding-right: 1rem;
+    .badge {
+      left: .25rem;
+      right: auto;
+    }
+  }
 }
 .browse-item.view-record {
   padding: 2px 4px;
@@ -264,21 +302,40 @@ footer {
 }
 
 /* ------ Cart ------ */
-.cart-controls {
+.cart-controls,
+.cart-control-btns {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
 }
-.cart-controls .checkbox {
-  padding-right: 1rem;
-  padding-bottom: 0.25rem;
+.cart-controls > .checkbox {
+  margin-top: 0.5rem;
+  /* wrap below */
+  order: 1;
+  flex-basis: 100%;
+}
+.cart-control-btns {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .cart-controls .toolbar-btn {
   @extend .toolbar-btn;
   @extend .icon-link;
 
   margin: 0;
+}
+
+@media (min-width: 992px) {
+  .cart-controls > .checkbox {
+    margin-block: 0;
+    padding-inline-end: 1rem;
+    padding-bottom: 0.25rem;
+    /* place inline */
+    order: unset;
+    flex-basis: auto;
+  }
 }
 
 .nav .btn-bookbag-toggle { float: left; }
@@ -306,12 +363,18 @@ footer {
 /* ------ MyResearch ------ */
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
+  ul {
+    list-style: none;
+    margin-bottom: $myresearch-menu-ul-margin-bottom;
+    padding-left: $myresearch-menu-ul-padding-left;
+  }
   a {
     display: inline-flex;
     gap: 0.375rem;
     width: 100%;
     padding: 10px 15px;
     line-height: 1.15;
+    align-items: baseline;
 
     &:hover {
       background-color: $gray-lighter;
@@ -373,23 +436,41 @@ footer {
   }
 }
 
-.dropdown-menu > li > .prompt-text {
-  @extend .dropdown-menu > li > a;
+ul.list-group {
+  list-style: none;
+}
 
-  white-space: inherit;
+.dropdown-menu > li .dropdown-header {
   min-width: 200px;
 }
 
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
-#login-dropdown a {
-  margin-right: .5rem;
-  padding-left: .5rem;
-  padding-right: .5rem;
+#login-dropdown {
+  a {
+    margin-right: .5rem;
+  }
+
+  .dropdown-menu {
+    width: 250px;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+
+    .account-menu {
+      display: block;
+    }
+
+    h3 {
+      margin-left: 0.5rem;
+    }
+  }
 }
-#login-dropdown .dropdown-menu { width: 250px; }
-#login-dropdown .dropdown-menu h4 { display: none; }
-#login-dropdown .dropdown-menu .myresearch-menu { display: none; }
+#login-dropdown
 #login-dropdown .dropdown-menu .account-menu { display: block; }
+.login-tokens-table {
+  margin-bottom: 0.5rem;
+  tbody > tr > td {
+    vertical-align: middle;
+  }
+}
 
 /* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
@@ -404,8 +485,74 @@ footer {
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */
 .table {
-  table-layout: fixed;
-  word-wrap: break-word;
+  th {
+    word-wrap: break-word;
+  }
+  &.staff-view th {
+    min-width: 30%;
+    word-wrap: anywhere;
+  }
+  td {
+    word-wrap: anywhere;
+  }
+  td.fullAvailability, td.holdings-table {
+    word-wrap: break-word;
+  }
+}
+.callnumAndLocation .table, .table.holdings-table {
+  td {
+    word-wrap: break-word;
+  }
+}
+// No wrapping for fines table in wide windows
+@media (min-width: 992px) {
+  .table.fines-table {
+    td, th {
+      word-wrap: normal;
+    }
+  }
+}
+
+/* ------ Responsive table for small screen size ------ */
+@media screen and (max-width: 768px) {
+  .table-responsive {
+    border: none;
+    thead, tfoot > tr > th {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    tbody > tr {
+      display: block;
+      margin-bottom: $line-height-computed;
+      border-left: 1px solid $table-border-color;
+      border-right: 1px solid $table-border-color;
+      border-bottom: 4px solid $table-border-color;
+    }
+    td, tbody > tr > th {
+      display: flex;
+      align-items: first baseline;
+      background: #fff;
+      &:before {
+        display: flex;
+        flex-basis: 40%;
+        flex-shrink: 0;
+        font-weight: bold;
+        content: attr(data-label);
+      }
+    }
+    tbody > tr > td:nth-child(even) {
+      background-color: $table-bg-accent;
+    }
+    tfoot > tr > td {
+      border-top: none;
+    }
+  }
 }
 
 /* ------ Visualization View ------ */
@@ -481,6 +628,12 @@ div.holding-notes {
   padding: 7px;
 }
 
+.od_download {
+    width: 100%;
+    border-width: 0px;
+    height: 450px;
+}
+
 .oauth2-prompt {
   ul {
     margin-top: 1rem;
@@ -528,4 +681,19 @@ div.holding-notes {
   .pm__section--toggle {
     background: transparent;
   }
+}
+
+/* --- Help menu --- */
+.HelpMenu {
+  list-style-type: none;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+/* --- Pagination --- */
+.pagination {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }

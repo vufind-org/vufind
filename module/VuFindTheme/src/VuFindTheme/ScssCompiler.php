@@ -29,6 +29,8 @@
 
 namespace VuFindTheme;
 
+use function dirname;
+
 /**
  * Class to compile SCSS into CSS within a theme.
  *
@@ -59,7 +61,7 @@ class ScssCompiler extends AbstractCssPreCompiler
         // Get files
         $files = $this->getAllFiles($theme);
         if (empty($files)) {
-            $this->logMessage("No SCSS in " . $theme);
+            $this->logMessage('No SCSS in ' . $theme);
             return;
         }
 

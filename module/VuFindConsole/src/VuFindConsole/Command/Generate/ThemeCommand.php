@@ -30,6 +30,7 @@
 namespace VuFindConsole\Command\Generate;
 
 use Laminas\Config\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 use VuFindTheme\ThemeGenerator;
 
 /**
@@ -41,15 +42,11 @@ use VuFindTheme\ThemeGenerator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/theme'
+)]
 class ThemeCommand extends AbstractThemeCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/theme';
-
     /**
      * Type of resource being generated (used in help messages)
      *

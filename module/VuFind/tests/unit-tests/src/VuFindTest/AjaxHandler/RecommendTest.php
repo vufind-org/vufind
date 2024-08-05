@@ -38,6 +38,8 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 
+use function count;
+
 /**
  * Recommend test class.
  *
@@ -47,7 +49,7 @@ use VuFind\View\Helper\Root\Recommend as RecommendHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
+class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Get a mock params object.

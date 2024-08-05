@@ -2,7 +2,7 @@
 
 Adopted March 8, 2021.
 
-Last updated December 12, 2022.
+Last updated August 18, 2023.
 
 Developed and drafted by the VuFind® Community Planning Group
 (alphabetically: Oliver Goldschmidt, Leila Gonzales, Christopher
@@ -107,8 +107,9 @@ themselves doing one or more of the following:
 
 Contributors engage with the project through the [issue
 tracker](https://vufind.org/jira), the project's [GitHub
-organization](https://github.com/vufind-org), and the [VuFind®
-Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
+organization](https://github.com/vufind-org), and [community support
+channels](https://vufind.org/vufind/support.html#community) such as the
+[VuFind® Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
 mailing list, or by writing or editing
 [documentation](https://vufind.org/wiki/) and other
 project-related content. They submit changes to the project itself via
@@ -169,13 +170,15 @@ have been nominated, there will be a vote by the project management
 committee (PMC; see below). Committer voting is one of the few
 activities that takes place through private PMC communication. This is
 to allow PMC members to freely express their opinions about a nominee
-without causing embarrassment. Once the vote has been held, the
-aggregated voting results are published on the [VuFind®
-Tech](https://sourceforge.net/projects/vufind/lists/vufind-tech)
-mailing list. The nominee is entitled to request an explanation of any
-'no' votes against them, regardless of the outcome of the vote. This
-explanation will be provided by the PMC Community Manager (see below)
-and will be anonymous and constructive in nature.
+without causing embarrassment.
+
+The nominee will be directly notified by email of voting results, and is
+entitled to request an explanation of any 'no' votes against them,
+regardless of the outcome of the vote. This explanation will be provided
+by the PMC Community Manager (see below) and will be anonymous and
+constructive in nature. New committers who pass the PMC vote are announced
+in the monthly [VuFind® newsletter](https://vufind.org/wiki/community:newsletter),
+which is shared through multiple communication channels.
 
 Nominees may decline their appointment as a committer. However, this is
 unusual, as the project does not expect any specific time or resource
@@ -300,7 +303,7 @@ The OLF Secretary and Treasurer will be nominated and confirmed by the
 PMC.
 
 The Treasurer is not required to be a member of the PMC, but the
-Secretary should be a member of PMC.
+Secretary must be a member of PMC.
 
 The individual serving as the OLF Secretary may also be called upon to
 serve as an interim VuFind® PMC Community Manager if the current
@@ -523,10 +526,6 @@ release while a minor release is still under development.
 
 #### Merging Rules
 
-Any committer can merge a **trivial** contribution, even if it is their
-own, as long as the Continuous Integration process has passed. All other
-contributions require a review by one or more other community members.
-
 Any contribution with an approved review by the Community Manager may be
 merged immediately. For contributions that fall outside of the Community
 Manager's areas of expertise, the Community Manager may delegate the
@@ -536,13 +535,17 @@ responsibility of the Community Manager and his/her delegees not to
 approve pull requests that may require more review and discussion prior
 to merging.
 
-Any contributions with approvals from one or more committers operate on
-the principle of "lazy consensus" and may be merged if there are no
-objections or suggested changes within 72 hours of the first approval.
-This 72 hour waiting period may be overridden by a majority vote of the
-PMC if there is an urgent need to merge a contribution more quickly. For
-contributions that cannot reach "lazy consensus," the voting process
-described above should be followed.
+Any committer can immediately merge an approved **trivial** contribution,
+regardless of reviewer.
+
+Any non-trivial contributions approved by committers other than the
+Community Manager or his/her delegee operate on the principle of "lazy
+consensus" and may be merged if there are no objections or suggested
+changes within 72 hours of the first approval. This 72 hour waiting
+period may be overridden by a majority vote of the PMC if there is an
+urgent need to merge a contribution more quickly. For contributions
+that cannot reach "lazy consensus," the voting process described above
+should be followed.
 
 #### Communication and Monitoring
 
@@ -558,6 +561,12 @@ mailing list if they do not receive a review in a timely fashion.
 
 December 12, 2022: Added ® symbol to VuFind® references; added paragraph
 on Conflict of Interest policy and non-voting PMC guests.
+
+August 18, 2023: Added link to community support channels, instead of
+only mentioning the VuFind® Tech list. Expanded/updated language about
+procedure for notifying/announcing new committers. Clarified that the
+OLF Secretary must be a PMC member. Updated language about merging trivial
+pull requests to reflect GitHub policy.
 
 ## Acknowledgements
 

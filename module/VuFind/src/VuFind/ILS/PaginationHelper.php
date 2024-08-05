@@ -32,6 +32,8 @@
 
 namespace VuFind\ILS;
 
+use function in_array;
+
 /**
  * ILS Pagination Helper
  *

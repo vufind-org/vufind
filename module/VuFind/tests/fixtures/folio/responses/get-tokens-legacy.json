@@ -1,0 +1,16 @@
+[
+  {
+    "comment": "Initial request for token",
+    "expectedMethod": "POST",
+    "expectedParams": "{\"tenant\":\"legacy_tenant\",\"username\":\"config_username\",\"password\":\"config_password\"}",
+    "expectedPath": "/authn/login",
+    "expectedHeaders": { "X-Okapi-Tenant": "legacy_tenant" },
+    "headers": { "X-Okapi-Token": "x-okapi-token-config-tenant" }
+  },
+  {
+    "expectedPath": "/users",
+    "expectedParams": { "query": "id == \"whatever\"" },
+    "expectedHeaders": { "X-Okapi-Token": "x-okapi-token-config-tenant" },
+    "body": "{ \"users\": [ { \"id\": \"id\" } ] }"
+  }
+]

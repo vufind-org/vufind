@@ -33,6 +33,8 @@ use VuFind\Cover\Layer\LayerInterface;
 use VuFind\Cover\Layer\PluginManager as LayerManager;
 use VuFindTheme\ThemeInfo;
 
+use function count;
+
 /**
  * Dynamic Book Cover Generator
  *

@@ -62,7 +62,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue("Summon"));
+            ->will($this->returnValue('Summon'));
         $obj->process($results);
         $results->expects($this->once())->method('getTopicRecommendations')
             ->will($this->returnValue(false));
@@ -87,7 +87,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->addMethods(['setMaxTopicRecommendations'])
             ->getMockForAbstractClass();
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue("Summon"));
+            ->will($this->returnValue('Summon'));
         $parms->expects($this->once())->method('getOptions')
             ->will($this->returnValue($options));
         $options->expects($this->once())->method('setMaxTopicRecommendations')
@@ -106,7 +106,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
      */
     public function testconfigureSummonResults(): void
     {
-        $class = new \ReflectionClass('VuFind\Recommend\SummonTopics');
+        $class = new \ReflectionClass(SummonTopics::class);
         $method = $class->getMethod('configureSummonResults');
         $method->setAccessible(true);
         $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)

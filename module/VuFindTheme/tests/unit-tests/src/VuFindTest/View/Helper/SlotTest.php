@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HeadThemeResources view helper Test Class
+ * Slot view helper Test Class
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper;
 use VuFindTheme\View\Helper\Slot;
 
 /**
- * HeadThemeResources view helper Test Class
+ * Slot view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -198,11 +198,11 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(null, $helper('test')->get());
 
         // test empty strings
-        $ret = $helper('test')->set('');
+        $helper('test')->set('');
         $ret = $helper('test')->prepend('PRE1');
         $this->assertEquals('PRE1', $ret);
         $helper('test')->clear();
-        $ret = $helper('test')->set('BASE');
+        $helper('test')->set('BASE');
         $ret = $helper('test')->prepend('');
         $this->assertEquals('BASE', $ret);
     }
@@ -240,11 +240,11 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(null, $helper('test')->get());
 
         // test empty strings
-        $ret = $helper('test')->set('');
+        $helper('test')->set('');
         $ret = $helper('test')->append('POST');
         $this->assertEquals('POST', $ret);
         $helper('test')->clear();
-        $ret = $helper('test')->set('BASE');
+        $helper('test')->set('BASE');
         $ret = $helper('test')->append('');
         $this->assertEquals('BASE', $ret);
     }

@@ -89,7 +89,7 @@ class Context extends AbstractHelper
 
     /**
      * Render a template using a temporary context; restore the view to its
-     * original state when done.  This offers the template full access to the
+     * original state when done. This offers the template full access to the
      * global scope, modified by $context, then puts the global scope back
      * the way it was.
      *
@@ -107,9 +107,9 @@ class Context extends AbstractHelper
     }
 
     /**
-     * Grab the helper object so we can call methods on it.
+     * Grab the helper object, so we can call methods on it.
      *
-     * @param Renderer $view View object to modify.
+     * @param ?RendererInterface $view View object to modify.
      *
      * @return Context
      */

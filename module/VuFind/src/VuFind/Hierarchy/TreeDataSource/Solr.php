@@ -35,6 +35,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
+use function count;
+
 /**
  * Hierarchy Tree Data Source (Solr)
  *
@@ -131,7 +133,7 @@ class Solr extends AbstractBase
      * Build the XML file from the Solr fields
      *
      * @param string $id      Hierarchy ID.
-     * @param array  $options Additional options for XML generation.  (Currently one
+     * @param array  $options Additional options for XML generation. (Currently one
      * option is supported: 'refresh' may be set to true to bypass caching).
      *
      * @return string
@@ -315,7 +317,7 @@ class Solr extends AbstractBase
      * Build the JSON file from the Solr fields
      *
      * @param string $id      Hierarchy ID.
-     * @param array  $options Additional options for JSON generation.  (Currently one
+     * @param array  $options Additional options for JSON generation. (Currently one
      * option is supported: 'refresh' may be set to true to bypass caching).
      *
      * @return string

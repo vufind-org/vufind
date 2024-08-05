@@ -32,12 +32,14 @@ namespace VuFind\Mailer;
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
-use Laminas\Mail\Message;
 use Laminas\Mail\Transport\TransportInterface;
 use Laminas\Mime\Message as MimeMessage;
 use Laminas\Mime\Mime;
 use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
+
+use function count;
+use function is_callable;
 
 /**
  * VuFind Mailer Class
@@ -89,9 +91,10 @@ class Mailer implements
     /**
      * Constructor
      *
-     * @param TransportInterface $transport Mail transport
+     * @param TransportInterface $transport  Mail transport
+     * @param ?string            $messageLog File to log messages into (null for no logging)
      */
-    public function __construct(TransportInterface $transport)
+    public function __construct(TransportInterface $transport, protected ?string $messageLog = null)
     {
         $this->setTransport($transport);
     }
@@ -331,6 +334,9 @@ class Mailer implements
                 $message->addReplyTo($replyTo);
             }
             $this->getTransport()->send($message);
+            if ($this->messageLog) {
+                file_put_contents($this->messageLog, $message->toString() . "\n", FILE_APPEND);
+            }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
             throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);

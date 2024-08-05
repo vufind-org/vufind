@@ -31,6 +31,7 @@
 namespace VuFindConsole\Command\Harvest;
 
 use SimpleXMLElement;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,19 +47,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'harvest/merge-marc',
+    description: 'MARC merge tool'
+)]
 class MergeMarcCommand extends Command
 {
     /**
      * XML namespace for MARC21.
      */
     public const MARC21_NAMESPACE = 'http://www.loc.gov/MARC21/slim';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'harvest/merge-marc';
 
     /**
      * Configure the command.
@@ -68,7 +66,6 @@ class MergeMarcCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('MARC merge tool')
             ->setHelp(
                 'Merges harvested MARCXML files into a single <collection>; '
                 . 'writes to stdout.'
@@ -115,7 +112,7 @@ class MergeMarcCommand extends Command
         $fileList = [];
         while (false !== ($file = readdir($handle))) {
             // Only operate on XML files:
-            if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'xml') {
                 // get file content
                 $fileList[] = $dir . '/' . $file;
             }
@@ -144,7 +141,7 @@ class MergeMarcCommand extends Command
         libxml_use_internal_errors($prev);
         // Build an exception if something has gone wrong
         if ($xml === false) {
-            $msg = "Problem loading XML file: " . realpath($filePath);
+            $msg = 'Problem loading XML file: ' . realpath($filePath);
             foreach ($errors as $error) {
                 $msg .= "\n" . trim($error->message)
                     . ' in ' . realpath($error->file)

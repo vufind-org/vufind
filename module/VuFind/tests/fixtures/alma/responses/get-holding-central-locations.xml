@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<locations total_record_count="2">
+	<location link="http://localhost/v1/conf/libraries/Central/locations/general">
+		<code>general</code>
+		<name>General</name>
+		<external_name>General Collections</external_name>
+		<type desc="Open">OPEN</type>
+		<remote_storage></remote_storage>
+		<map></map>
+		<suppress_from_publishing>false</suppress_from_publishing>
+		<fulfillment_unit desc="Magazine">Magazine</fulfillment_unit>
+		<accession_placement></accession_placement>
+		<call_number_type></call_number_type>
+	</location>
+	<location link="http://localhost/v1/conf/libraries/Central/locations/staff">
+		<code>staff</code>
+		<name>Staff</name>
+		<external_name>Staff Use Only</external_name>
+		<type desc="Staff Only">STAFF</type>
+		<remote_storage></remote_storage>
+		<map></map>
+		<suppress_from_publishing>false</suppress_from_publishing>
+		<fulfillment_unit desc="Reference">Reference</fulfillment_unit>
+		<accession_placement></accession_placement>
+		<call_number_type></call_number_type>
+	</location>
+	<location link="http://localhost/v1/conf/libraries/Central/locations/stacks">
+		<code>stacks</code>
+		<name>Stacks</name>
+		<external_name>Closed Stacks</external_name>
+		<type desc="Order Only">ORDER</type>
+		<remote_storage></remote_storage>
+		<map></map>
+		<suppress_from_publishing>false</suppress_from_publishing>
+		<fulfillment_unit desc="Reference">Reference</fulfillment_unit>
+		<accession_placement></accession_placement>
+		<call_number_type></call_number_type>
+	</location>
+	<location link="http://localhost/v1/conf/libraries/Central/locations/lost">
+		<code>lost</code>
+		<name>Lost</name>
+		<external_name>Lost Stuff</external_name>
+		<type desc="Unavailable">UNAVAIL</type>
+		<remote_storage></remote_storage>
+		<map></map>
+		<suppress_from_publishing>false</suppress_from_publishing>
+		<fulfillment_unit desc="Reference">Reference</fulfillment_unit>
+		<accession_placement></accession_placement>
+		<call_number_type></call_number_type>
+	</location>
+	<location link="http://localhost/v1/conf/libraries/Central/locations/readingroom">
+		<code>readingroom</code>
+		<name>Reading Room</name>
+		<external_name>Journals Reading Room</external_name>
+		<type desc="Available">AVAIL</type>
+		<remote_storage></remote_storage>
+		<map></map>
+		<suppress_from_publishing>false</suppress_from_publishing>
+		<fulfillment_unit desc="Reference">Reference</fulfillment_unit>
+		<accession_placement></accession_placement>
+		<call_number_type></call_number_type>
+	</location>
+</locations>

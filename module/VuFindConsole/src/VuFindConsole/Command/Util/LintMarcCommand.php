@@ -29,12 +29,15 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Marc\MarcCollectionFile;
 use VuFind\Marc\MarcLint;
+
+use function count;
 
 /**
  * Console command: Lint MARC records.
@@ -45,15 +48,12 @@ use VuFind\Marc\MarcLint;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/lint_marc',
+    description: 'MARC validator'
+)]
 class LintMarcCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/lint_marc';
-
     /**
      * Configure the command.
      *
@@ -62,7 +62,6 @@ class LintMarcCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('MARC validator')
             ->setHelp('This command lets you validate MARC file contents.')
             ->addArgument('filename', InputArgument::REQUIRED, 'MARC filename');
     }

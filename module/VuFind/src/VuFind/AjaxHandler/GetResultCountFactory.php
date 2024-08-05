@@ -29,6 +29,9 @@
 
 namespace VuFind\AjaxHandler;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -67,7 +70,8 @@ class GetResultCountFactory implements \Laminas\ServiceManager\Factory\FactoryIn
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Search\Results\PluginManager::class)
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Session\Settings::class)
         );
     }
 }

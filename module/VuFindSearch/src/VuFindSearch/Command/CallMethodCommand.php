@@ -34,6 +34,8 @@ use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\ParamBag;
 
+use function call_user_func;
+
 /**
  * Call method command.
  *

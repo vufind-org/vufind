@@ -36,6 +36,8 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
+use function count;
+
 /**
  * Abstract FacetCache Factory.
  *

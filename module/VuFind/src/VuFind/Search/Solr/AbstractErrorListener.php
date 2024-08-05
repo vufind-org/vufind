@@ -33,6 +33,8 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Service;
 
+use function in_array;
+
 /**
  * Abstract base class of SOLR error listeners.
  *
@@ -107,7 +109,7 @@ abstract class AbstractErrorListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_ERROR,
             [$this, 'onSearchError']
         );

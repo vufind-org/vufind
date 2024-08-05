@@ -30,8 +30,6 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Entity\ScopeEntity;
-use VuFind\OAuth2\Repository\AccessTokenRepository;
-use VuFind\OAuth2\Repository\RefreshTokenRepository;
 
 /**
  * OAuth2 RefreshTokenRepository tests.
@@ -42,7 +40,7 @@ use VuFind\OAuth2\Repository\RefreshTokenRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
+class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Test refresh token repository
@@ -51,9 +49,8 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
      */
     public function testRefreshTokenRepository(): void
     {
-        $table = $this->getMockAccessTokenTable();
-        $repo = new RefreshTokenRepository($table);
-        $accessTokenRepo = new AccessTokenRepository($table);
+        $repo = $this->getRefreshTokenRepository();
+        $accessTokenRepo = $this->getAccessTokenRepository();
 
         $accessToken = $accessTokenRepo->getNewToken(
             $this->createClientEntity(),

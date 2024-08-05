@@ -51,6 +51,13 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
     use QueryOffsetLimitTrait;
 
     /**
+     * If json should be returned as an array instead an object
+     *
+     * @var ?bool
+     */
+    protected $asArray = null;
+
+    /**
      * Constructor
      *
      * @param string        $backendId Search backend identifier
@@ -58,17 +65,20 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
      * @param int           $offset    Search offset
      * @param int           $limit     Search limit
      * @param ?ParamBag     $params    Search backend parameters
+     * @param ?bool         $asArray   If json should be returned as an array instead an object
      */
     public function __construct(
         string $backendId,
         AbstractQuery $query,
         int $offset = 0,
         int $limit = 100,
-        ParamBag $params = null
+        ParamBag $params = null,
+        ?bool $asArray = null
     ) {
         $this->query = $query;
         $this->offset = $offset;
         $this->limit = $limit;
+        $this->asArray = $asArray;
         parent::__construct(
             $backendId,
             Backend::class,
@@ -103,6 +113,6 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
     protected function finalizeExecution($result): CommandInterface
     {
         // We should JSON-decode the result when we save it, for convenience:
-        return parent::finalizeExecution(json_decode($result));
+        return parent::finalizeExecution(json_decode($result, $this->asArray));
     }
 }

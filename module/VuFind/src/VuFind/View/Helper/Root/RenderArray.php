@@ -45,7 +45,7 @@ class RenderArray extends AbstractHelper
     /**
      * Render a portion of an array.
      *
-     * @param string $tpl  A template for displaying each row.  This should
+     * @param string $tpl  A template for displaying each row. This should
      * include %%LABEL%% and %%VALUE%% placeholders
      * @param array  $arr  An associative array of possible values to display
      * @param array  $rows A label => profile key associative array specifying

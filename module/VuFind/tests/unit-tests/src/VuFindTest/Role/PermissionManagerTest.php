@@ -43,16 +43,16 @@ use VuFind\Role\PermissionManager;
 class PermissionManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Sample configuration with varios config options.
+     * Sample configuration with various config options.
      *
      * @var array
      */
     protected $permissionConfig = [
         'permission.all' => [
-            'permission' => "everyone",
+            'permission' => 'everyone',
         ],
         'permission.nobody' => [
-            'permission' => "nobody",
+            'permission' => 'nobody',
         ],
         'permission.empty' => [
         ],

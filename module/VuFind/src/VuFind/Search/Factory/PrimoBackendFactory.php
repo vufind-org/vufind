@@ -35,8 +35,10 @@ use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
+use VuFindSearch\Backend\Primo\ConnectorInterface;
 use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
+use VuFindSearch\Backend\Primo\RestConnector;
 
 /**
  * Factory for Primo Central backends.
@@ -73,11 +75,18 @@ class PrimoBackendFactory extends AbstractBackendFactory
     protected $backendClass = Backend::class;
 
     /**
-     * Primo connector class
+     * Primo legacy brief search connector class
      *
      * @var string
      */
     protected $connectorClass = Connector::class;
+
+    /**
+     * Primo REST API connector class
+     *
+     * @var string
+     */
+    protected $restConnectorClass = RestConnector::class;
 
     /**
      * Create service
@@ -93,14 +102,17 @@ class PrimoBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
+        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
         $this->primoConfig = $configReader->get('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
-            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+            $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
 
-        $connector = $this->createConnector();
+        if (($this->primoConfig->General->api ?? 'legacy') === 'rest') {
+            $connector = $this->createRestConnector();
+        } else {
+            $connector = $this->createConnector();
+        }
         $backend   = $this->createBackend($connector);
 
         $this->createListeners($backend);
@@ -111,11 +123,11 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Create the Primo Central backend.
      *
-     * @param Connector $connector Connector
+     * @param ConnectorInterface $connector Connector
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(ConnectorInterface $connector)
     {
         $backend = new $this->backendClass(
             $connector,
@@ -135,7 +147,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createListeners(Backend $backend)
     {
-        $events = $this->serviceLocator->get('SharedEventManager');
+        $events = $this->getService('SharedEventManager');
 
         $this->getInjectOnCampusListener()->attach($events);
 
@@ -148,7 +160,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the Primo Central connector.
+     * Create the Primo Central legacy brief search connector.
      *
      * @return Connector
      */
@@ -179,6 +191,51 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
+     * Create the Primo Central REST connector.
+     *
+     * @return Connector
+     */
+    protected function createRestConnector()
+    {
+        // Get the PermissionHandler
+        $permHandler = $this->getPermissionHandler();
+
+        // Load URLs and credentials:
+        if (empty($this->primoConfig->General->search_url)) {
+            throw new \Exception('Missing search_url in Primo.ini');
+        }
+        $instCode = isset($permHandler)
+            ? $permHandler->getInstCode()
+            : null;
+
+        $session = new \Laminas\Session\Container(
+            'Primo',
+            $this->getService(\Laminas\Session\SessionManager::class)
+        );
+
+        // Create connector:
+        $timeout = $this->primoConfig->General->timeout ?? 30;
+        $connector = new $this->restConnectorClass(
+            $this->primoConfig->General->jwt_url ?? '',
+            $this->primoConfig->General->search_url,
+            $instCode,
+            function (string $url) use ($timeout) {
+                return $this->createHttpClient(
+                    $timeout,
+                    $this->getHttpOptions($url),
+                    $url
+                );
+            },
+            $session
+        );
+        $connector->setLogger($this->logger);
+        if ($cache = $this->createConnectorCache($this->primoConfig)) {
+            $connector->setCache($cache);
+        }
+        return $connector;
+    }
+
+    /**
      * Create the Primo query builder.
      *
      * @return QueryBuilder
@@ -196,8 +253,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
@@ -229,12 +285,26 @@ class PrimoBackendFactory extends AbstractBackendFactory
                 $this->primoConfig->Institutions
             );
             $permHandler->setAuthorizationService(
-                $this->serviceLocator->get(AuthorizationService::class)
+                $this->getService(AuthorizationService::class)
             );
             return $permHandler;
         }
 
         // If no PermissionHandler can be set, return null
         return null;
+    }
+
+    /**
+     * Get HTTP options for the client
+     *
+     * @param string $url URL being requested
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getHttpOptions(string $url): array
+    {
+        return [];
     }
 }

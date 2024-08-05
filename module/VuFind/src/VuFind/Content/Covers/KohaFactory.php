@@ -29,10 +29,10 @@
 
 namespace VuFind\Content\Covers;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Koha cover loader factory
@@ -72,7 +72,7 @@ class KohaFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         if (empty($config->Content->koha_cover_url)) {
-            throw new \Exception("Koha cover URL must be provided.");
+            throw new \Exception('Koha cover URL must be provided.');
         }
         return new $requestedName($config->Content->koha_cover_url);
     }

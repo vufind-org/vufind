@@ -32,6 +32,8 @@ namespace VuFindApi\Formatter;
 use Laminas\View\HelperPluginManager;
 use VuFind\I18n\TranslatableString;
 
+use function is_object;
+
 /**
  * Record formatter for API responses
  *

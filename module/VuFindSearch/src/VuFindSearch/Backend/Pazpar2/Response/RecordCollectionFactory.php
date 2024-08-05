@@ -32,6 +32,9 @@ namespace VuFindSearch\Backend\Pazpar2\Response;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
+use function call_user_func;
+use function is_callable;
+
 /**
  * Simple factory for record collection.
  *

@@ -33,6 +33,8 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Service;
 
+use function is_array;
+
 /**
  * Listener to convert one field to another in filters (for legacy purposes).
  *
@@ -73,7 +75,7 @@ class FilterFieldConversionListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );

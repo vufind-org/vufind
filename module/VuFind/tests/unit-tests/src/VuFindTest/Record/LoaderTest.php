@@ -38,6 +38,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service as SearchService;
 
+use function count;
+
 /**
  * Record loader tests.
  *
@@ -49,6 +51,8 @@ use VuFindSearch\Service as SearchService;
  */
 class LoaderTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
      * Test exception for missing record.
      *
@@ -67,7 +71,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $arguments = ["test", new ParamBag()];
+        $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
                 ->with($this->callback($this->getCommandChecker($arguments)))
                 ->will($this->returnValue($commandObj));
@@ -91,7 +95,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
         $class = \VuFindSearch\Command\RetrieveCommand::class;
-        $arguments = ["test", new ParamBag()];
+        $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
             ->with(
                 $this->callback(
@@ -119,7 +123,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $arguments = ["test", new ParamBag()];
+        $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($this->getCommandChecker($arguments)))
             ->will($this->returnValue($commandObj));
@@ -151,7 +155,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $arguments = ["test", new ParamBag()];
+        $arguments = ['test', new ParamBag()];
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($this->getCommandChecker($arguments)))
             ->will($this->returnValue($commandObj));
@@ -179,7 +183,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $arguments = ["test", $params];
+        $arguments = ['test', $params];
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($this->getCommandChecker($arguments)))
             ->will($this->returnValue($commandObj));
@@ -226,17 +230,20 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
 
         $class = \VuFindSearch\Command\RetrieveBatchCommand::class;
-        $arguments1 = [["test1", "test2"], $solrParams];
-        $arguments2 = [["test3"], new ParamBag()];
-        $arguments3 = [["test4"], $worldCatParams];
+        $arguments1 = [['test1', 'test2'], $solrParams];
+        $arguments2 = [['test3'], new ParamBag()];
+        $arguments3 = [['test4'], $worldCatParams];
 
-        $service->expects($this->exactly(3))->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
                 [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
-                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))]
-            )
-            ->will($this->returnValue($commandObj));
+                [$this->callback($this->getCommandChecker($arguments3, $class, 'WorldCat'))],
+            ],
+            $commandObj
+        );
 
         $loader = $this->getLoader($service, $factory);
         $input = [
@@ -279,15 +286,18 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
 
-        $arguments1 = [["test1", "test2"], $solrParams];
-        $arguments2 = [["test3"], new ParamBag()];
+        $arguments1 = [['test1', 'test2'], $solrParams];
+        $arguments2 = [['test3'], new ParamBag()];
         $class = \VuFindSearch\Command\RetrieveBatchCommand::class;
-        $service->expects($this->exactly(2))->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->callback($this->getCommandChecker($arguments1, $class))],
-                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))]
-            )
-            ->will($this->returnValue($commandObj));
+                [$this->callback($this->getCommandChecker($arguments2, $class, 'Summon'))],
+            ],
+            $commandObj
+        );
 
         $fallbackLoader = $this->getFallbackLoader([$driver3]);
         $loader = $this->getLoader($service, null, null, $fallbackLoader);

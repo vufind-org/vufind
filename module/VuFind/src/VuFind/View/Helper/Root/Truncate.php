@@ -31,6 +31,9 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function function_exists;
+use function strlen;
+
 /**
  * Truncate view helper
  *

@@ -33,6 +33,8 @@ use SerialsSolutions\Summon\Laminas as Connector;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
+use function strlen;
+
 /**
  * Summon record fallback loader
  *
@@ -60,8 +62,8 @@ class Summon extends AbstractFallbackLoader
      */
     protected function fetchSingleRecord($id)
     {
-        $resource = $this->table->findResource($id, 'Summon');
-        if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
+        $resource = $this->resourceService->getResourceByRecordId($id, 'Summon');
+        if ($resource && ($extra = json_decode($resource->getExtraMetadata(), true))) {
             $bookmark = $extra['bookmark'] ?? '';
             if (strlen($bookmark) > 0) {
                 $params = new ParamBag(

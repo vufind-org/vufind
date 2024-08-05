@@ -29,6 +29,9 @@
 
 namespace VuFind\Reserves;
 
+use function count;
+use function is_array;
+
 /**
  * Support class to build reserves data from CSV file(s).
  *
@@ -109,8 +112,8 @@ class CsvReader
      * @param array|string $files     Array of files to load (or single filename).
      * @param string       $delimiter Delimiter used by file(s).
      * @param string       $template  Template showing field positions within
-     * file(s).  Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
-     * DEPARTMENT and/or SKIP.  Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
+     * file(s). Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
+     * DEPARTMENT and/or SKIP. Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
      *
      * @throws \Exception
      */

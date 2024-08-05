@@ -455,7 +455,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         <xsl:value-of select="$DC//dc:title[normalize-space()]"/>
                     </field>
                     <field name="title_sort">
-                        <xsl:value-of select="php:function('VuFind::stripArticles', string($DC//dc:title[normalize-space()]))"/>
+                        <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string($DC//dc:title[normalize-space()])))"/>
                     </field>
 
                     <!-- title_alt / dc:titel[gt 1] -->

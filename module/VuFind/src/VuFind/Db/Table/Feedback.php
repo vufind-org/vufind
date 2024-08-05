@@ -35,6 +35,8 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Paginator\Paginator;
 use VuFind\Db\Row\RowGateway;
 
+use function intval;
+
 /**
  * Class Feedback
  *

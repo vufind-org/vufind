@@ -9,12 +9,21 @@
 
   .collapse,
   .collapsing,
-  & > .facet {
+  &.full-facet-list .facet {
     position: relative;
     border-left: 1px solid @list-group-border;
     border-right: 1px solid @list-group-border;
   }
-  & > .facet:first-child { border-top: 1px solid @list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid @list-group-border; }
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  .facet__list__item .facet {
+    display: flex;
+  }
 }
 
 .facet,
@@ -26,11 +35,12 @@
   background-color: transparent;
 }
 .facet,
-.facet-group .title {
+.facet-group .title,
+.user-list-link {
   display: flex;
   align-items: center;
 
-  .text, .hierarchical-facet-anchor {
+  .text {
     display: flex;
     gap: 0.25rem;
     align-items: center;
@@ -48,6 +58,11 @@
     flex-shrink: 0;
     text-align: center;
     padding-left: 0.5rem;
+
+    body.rtl & {
+      padding-left: 0;
+      padding-right: 0.5rem;
+    }
   }
 }
 .facet-group .facet,
@@ -85,9 +100,15 @@
   color: #fff;
   background-color: #000;
 }
+.facet .text {
+  overflow: hidden;
+}
 
 .top-facets-contents {
+  display: block;
   margin: 2px 0;
+  padding: 0;
+  list-style: none;
 }
 .top-facets .facet,
 .top-facets > strong {

@@ -72,6 +72,7 @@ class HierarchicalFacetHelperFactory implements
         }
         $helper = new $requestedName();
         $helper->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        $helper->setViewRenderer($container->get('ViewRenderer'));
         return $helper;
     }
 }

@@ -1,0 +1,44 @@
+[
+    {
+        "expectedParams": [
+            "/bibs/1111/holdings/ALL/items?order_by=library,location,enum_a,enum_b&direction=desc&expand=due_date&limit=10&offset=0",
+            [],
+            [],
+            "GET",
+            null,
+            null,
+            [],
+            false
+        ],
+        "resultFixture": "get-holding-items.xml"
+    },
+    {
+        "expectedParams": [
+            "/conf/libraries/Central/locations",
+            [],
+            [],
+            "GET",
+            null,
+            null,
+            [],
+            false
+        ],
+        "resultFixture": "get-holding-central-locations.xml"
+    },
+    {
+        "expectedParams": [
+            "/bibs",
+            {
+                "mms_id": "1111",
+                "expand": "d_avail,e_avail"
+            },
+            [],
+            "GET",
+            null,
+            null,
+            [],
+            false
+        ],
+        "resultFixture": "get-holding-avail.xml"
+    }
+]
