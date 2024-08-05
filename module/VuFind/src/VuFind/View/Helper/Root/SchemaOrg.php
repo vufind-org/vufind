@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
+use VuFind\RecordDriver\DefaultRecord;
 use VuFind\View\Helper\Root\Ils;
 
 /**
@@ -110,15 +111,51 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get default record types.
+     * Get default record types as array.
+     *
+     * @return array
+     */
+    public function getDefaultRecordTypesArray(): array
+    {
+        if ($this->ils->__invoke()->getOfflineMode() !== 'ils-none') {
+            return ['Product'];
+        }
+        return [];
+    }
+
+    /**
+     * Get default record types as string.
      *
      * @return string
      */
     public function getDefaultRecordTypes(): string
     {
-        if ($this->ils->__invoke()->getOfflineMode() !== 'ils-none') {
-            return 'Product';
-        }
-        return '';
+        return implode(' ', $this->getDefaultRecordTypesArray());
+    }
+
+    /**
+     * Get all record types for the given record.
+     *
+     * @param DefaultRecord $driver
+     *
+     * @return array
+     */
+    public function getRecordTypesArray(DefaultRecord $driver): array
+    {
+        $defaultTypes = $this->getDefaultRecordTypesArray();
+        $recordTypes = $driver->getSchemaOrgFormatsArray();
+        return array_merge($defaultTypes, $recordTypes);
+    }
+
+    /**
+     * Get all record types for the given record.
+     *
+     * @param DefaultRecord $driver
+     *
+     * @return string
+     */
+    public function getRecordTypes(DefaultRecord $driver): string
+    {
+        return implode(' ', $this->getRecordTypesArray($driver));
     }
 }
