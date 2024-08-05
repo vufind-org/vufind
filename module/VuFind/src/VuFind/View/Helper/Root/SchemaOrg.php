@@ -119,7 +119,7 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      */
     public function getDefaultRecordTypesArray(): array
     {
-        if ($this->ils->__invoke()->getOfflineMode() !== 'ils-none') {
+        if (($this->ils)()->getOfflineMode() !== 'ils-none') {
             return ['Product'];
         }
         return [];
@@ -146,7 +146,7 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     {
         $defaultTypes = $this->getDefaultRecordTypesArray();
         $recordTypes = $driver->getSchemaOrgFormatsArray();
-        return array_merge($defaultTypes, $recordTypes);
+        return array_unique(array_merge($defaultTypes, $recordTypes));
     }
 
     /**

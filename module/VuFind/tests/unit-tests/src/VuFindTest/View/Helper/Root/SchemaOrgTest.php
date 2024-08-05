@@ -53,8 +53,7 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
      */
     public function getHelper(bool $enabled): SchemaOrg
     {
-        return new SchemaOrg(new HtmlAttributes(), $this->getMockBuilder(Ils::class)
-            ->disableOriginalConstructor()->getMock(), $enabled);
+        return new SchemaOrg(new HtmlAttributes(), $this->createMock(Ils::class), $enabled);
     }
 
     /**
