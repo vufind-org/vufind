@@ -46,7 +46,7 @@
                             <a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a>
                             <?php if ($authorCount == ($i + 1)): ?>
                                 <?php break; ?>
-                            <?php elseif (($i + 1) > $authorNameLimit): ?>
+                            <?php elseif (($i + 1) >= $authorNameLimit): ?>
                                 <?=$this->transEsc('more_authors_abbrev')?>
 			        <?php break; ?>
                             <?php else:?>
