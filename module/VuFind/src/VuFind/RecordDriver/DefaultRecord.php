@@ -1729,6 +1729,8 @@ class DefaultRecord extends AbstractBase
      * itself if nothing else matches.
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\View\Helper\Root\SchemaOrg::getRecordTypes()
      */
     public function getSchemaOrgFormats()
     {
