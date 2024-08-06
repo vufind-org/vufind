@@ -246,6 +246,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sortItemsBySerialIssue = true;
 
     /**
+     * Whether the location field in holdings/status results is populated from
+     * - branch (Koha library branch/physical location)
+     * or
+     * - shelving (Koha permanent shelving location of an item)
+     * Default is 'branch'.
+     *
+     * @var string
+     */
+    protected $locationConfig = 'branch';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter     Date converter object
@@ -326,6 +337,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->sortItemsBySerialIssue
             = $this->config['Holdings']['sortBySerialIssue'] ?? true;
+
+        $this->locationConfig
+        = strtolower(trim($this->config['ItemTypeRenewalBlockMappings']['Location'] ?? 'branch'));
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -2497,8 +2511,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        $locationConfig = strtolower(trim($this->config['ItemTypeRenewalBlockMappings']['Location'] ?? 'branch'));
-        switch ($locationConfig) {
+        switch ($this->locationConfig) {
             case 'shelving':
                 $shelvingLocationId = $item['location'];
                 $name = $this->translateLocation($shelvingLocationId);
