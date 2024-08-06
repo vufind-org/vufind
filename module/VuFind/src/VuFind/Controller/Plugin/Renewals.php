@@ -124,12 +124,30 @@ class Renewals extends AbstractPlugin
             );
             if ($renewResult !== false) {
                 // Assign Blocks to the Template
-                if (
-                    isset($renewResult['blocks'])
-                    && is_array($renewResult['blocks'])
-                ) {
+                if (is_array($renewResult['blocks'] ?? null)) {
                     foreach ($renewResult['blocks'] as $block) {
                         $flashMsg->addMessage($block, 'info');
+                    }
+                } elseif (is_array($renewResult['details'] ?? null)) {
+                    $bad = $good = 0;
+                    foreach ($renewResult['details'] as $next) {
+                        if ($next['success'] ?? false) {
+                            $good++;
+                        } else {
+                            $bad++;
+                        }
+                    }
+                    if ($good > 0) {
+                        $flashMsg->addMessage(
+                            ['msg' => 'renew_success_summary', 'tokens' => ['count' => $good], 'icu' => true],
+                            'success'
+                        );
+                    }
+                    if ($bad > 0) {
+                        $flashMsg->addMessage(
+                            ['msg' => 'renew_error_summary', 'tokens' => ['count' => $bad], 'icu' => true],
+                            'error'
+                        );
                     }
                 }
 

@@ -61,8 +61,7 @@ class SummonController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('Summon');
+        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('Summon');
         return $config->Record->next_prev_navigation ?? false;
     }
 
@@ -108,8 +107,8 @@ class SummonController extends AbstractSearch
         $view = parent::advancedAction();
 
         // Set up facet information:
-        $facets = $this->serviceLocator
-            ->get(\VuFind\Search\FacetCache\PluginManager::class)->get('Summon')
+        $facets = $this->getService(\VuFind\Search\FacetCache\PluginManager::class)
+            ->get('Summon')
             ->getList('Advanced');
         $view->facetList = $this->processAdvancedFacets($facets, $view->saved);
         $specialFacets = $this->parseSpecialFacetsSetting(

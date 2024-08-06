@@ -119,7 +119,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
         $rows = $this->getDbService(ExternalSessionServiceInterface::class)
             ->getAllByExternalSessionId(trim($sessionId));
         if ($rows) {
-            $sessionManager = $this->serviceLocator->get(\Laminas\Session\SessionManager::class);
+            $sessionManager = $this->getService(\Laminas\Session\SessionManager::class);
             $handler = $sessionManager->getSaveHandler();
             foreach ($rows as $row) {
                 $handler->destroy($row->getSessionId());

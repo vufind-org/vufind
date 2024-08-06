@@ -83,7 +83,7 @@ class TagsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/tags/home');
-        $view->statistics = $this->serviceLocator->get(TagsService::class)->getStatistics(true);
+        $view->statistics = $this->getService(TagsService::class)->getStatistics(true);
         return $view;
     }
 
@@ -118,7 +118,7 @@ class TagsController extends AbstractAdmin
         $view->uniqueUsers = $this->getUniqueUsers();
         $view->uniqueResources = $this->getUniqueResources();
         $page = intval($this->getParam('page', false, '1'));
-        $view->results = $this->serviceLocator->get(TagsService::class)->getResourceTagsPaginator(
+        $view->results = $this->getService(TagsService::class)->getResourceTagsPaginator(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
             $this->convertFilter($this->getParam('tag_id', false)),
@@ -304,7 +304,7 @@ class TagsController extends AbstractAdmin
      */
     protected function confirmTagsDeleteByFilter($originUrl, $newUrl)
     {
-        $count = $this->serviceLocator->get(TagsService::class)->getResourceTagsPaginator(
+        $count = $this->getService(TagsService::class)->getResourceTagsPaginator(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id'))
@@ -351,7 +351,7 @@ class TagsController extends AbstractAdmin
      */
     protected function getUniqueTags(): array
     {
-        return $this->serviceLocator->get(TagsService::class)->getUniqueTags(
+        return $this->getService(TagsService::class)->getUniqueTags(
             $this->convertFilter($this->getParam('user_id', false)),
             $this->convertFilter($this->getParam('resource_id', false)),
             $this->convertFilter($this->getParam('tag_id', false))
