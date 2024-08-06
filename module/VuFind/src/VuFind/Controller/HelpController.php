@@ -52,9 +52,14 @@ class HelpController extends AbstractBase
      */
     public function homeAction()
     {
+        $topic = $this->params()->fromRoute('topic');
+        if (empty($topic)) {
+            $topic = $this->params()->fromQuery('topic');
+        }
+
         $this->layout()->setTemplate('layout/help');
         return $this->createViewModel(
-            ['topic' => $this->params()->fromRoute('topic')]
+            ['topic' => $topic]
         );
     }
 }

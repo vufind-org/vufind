@@ -45,10 +45,10 @@ $config = [
                     'spec' => '/Content/%page%',
                 ],
             ],
-            'help-home' => [
+            'help' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/Help/Home/:topic',
+                    'route'    => '/Help/[:topic]',
                     'constraints' => [
                         'topic'     => '[a-zA-Z0-9_-]+',
                     ],
@@ -776,7 +776,7 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'EPF/Home', 'EPF/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
-    'Feedback/Email', 'Feedback/Home',
+    'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Holds/Edit', 'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
