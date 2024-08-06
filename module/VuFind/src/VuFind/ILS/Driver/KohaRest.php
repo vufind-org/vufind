@@ -400,13 +400,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getHolding($id, array $patron = null, array $options = [])
     {
-        $biblio = $this->getBiblio($id);
-        $type   = $biblio['item_type'];
-        $options = [
-            'itemLimit' => $this->config['Holdings']['itemLimit'][$type]
-                ?? $this->config['Holdings']['itemLimit']['DEFAULT']
-                ?? '',
-        ];
         return $this->getItemStatusesForBiblio($id, $patron, $options);
     }
 
@@ -1726,6 +1719,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '+title' => 'sort_title',
                 ],
                 'default_sort' => '+due_date',
+            ];
+        } elseif ('Holdings' === $function) {
+            $limitByType = $this->config['Holdings']['itemLimitByType'];
+            $type = '';
+            if ($limitByType) {
+                $biblio = $this->getBiblio($params['id']);
+                $type   = $biblio['item_type'];
+            }
+            return [
+                'itemLimit' => $this->config['Holdings']['itemLimitByType'][$type]
+                ?? $this->config['Holdings']['itemLimit']
+                ?? '',
             ];
         }
 
