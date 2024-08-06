@@ -30,6 +30,10 @@
 
 namespace VuFindTest\RecordDriver;
 
+use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\Holds;
+use VuFind\ILS\Logic\TitleHolds;
+
 use function count;
 use function in_array;
 
@@ -278,6 +282,52 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             ],
             $record2->getTOC()
         );
+    }
+
+    /**
+     * Data provider for testGetSchemaOrgFormatsArray().
+     *
+     * @return array
+     */
+    public static function getSchemaOrgFormatsArrayProvider(): array
+    {
+        return [
+            'with ILS' => [true, ['CreativeWork', 'Product']],
+            'without ILS' => [false, ['CreativeWork']],
+        ];
+    }
+
+    /**
+     * Test getSchemaOrgFormatsArray().
+     *
+     * @param bool  $useIls          Should we attach an ILS to the record driver?
+     * @param array $expectedFormats The expected method output
+     *
+     * @return void
+     *
+     * @dataProvider getSchemaOrgFormatsArrayProvider
+     */
+    public function testGetSchemaOrgFormatsArray(bool $useIls, array $expectedFormats)
+    {
+        // Set up record driver:
+        $config = new \Laminas\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+
+        // Load data:
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+
+        // Set up and activate ILS if requested:
+        if ($useIls) {
+            $record->attachILS(
+                $this->createMock(Connection::class),
+                $this->createMock(Holds::class),
+                $this->createMock(TitleHolds::class)
+            );
+            $record->setIlsBackends(['Solr']);
+        }
+
+        $this->assertEquals($expectedFormats, $record->getSchemaOrgFormatsArray());
     }
 
     /**
