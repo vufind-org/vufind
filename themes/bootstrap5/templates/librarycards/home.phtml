@@ -37,7 +37,7 @@
         <td><?=$this->escapeHtml($username)?></td>
         <td>
           <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-            <a class="btn btn-link icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record->getId()) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
+            <a class="btn btn-default icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record->getId()) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
               <?=$this->icon('profile-card-edit', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
             </a>
@@ -49,8 +49,10 @@
                     'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record->getId()]]),
                     'buttonIcon' => 'profile-card-delete',
                     'buttonLabel' => 'Delete',
+                    'buttonClass' => 'btn btn-default',
                     'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record->getId(), 'confirm' => 1]]),
                     'clearAccountCache' => true,
+                    'header' => 'confirm_delete_library_card_brief',
                 ]
             )
           ?>
